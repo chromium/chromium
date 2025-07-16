@@ -55,6 +55,9 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
     const std::optional<CacheEntryKey> key_;
   };
 
+  using OperationCallback =
+      base::OnceCallback<void(std::unique_ptr<OperationHandle>)>;
+
   ExclusiveOperationCoordinator();
   ~ExclusiveOperationCoordinator();
 
@@ -69,56 +72,50 @@ class NET_EXPORT_PRIVATE ExclusiveOperationCoordinator {
   // currently running normal operations have completed. While this and any
   // other exclusive operations are pending or running, no new normal
   // operations will start.
-  void PostOrRunExclusiveOperation(
-      base::OnceCallback<void(std::unique_ptr<OperationHandle>)> operation);
+  void PostOrRunExclusiveOperation(OperationCallback operation);
 
   // Posts a normal operation. If no exclusive operations are pending or
   // running, the operation is executed immediately. Otherwise, it is queued
   // and will be executed after all exclusive operations have finished. This
   // operation will be serialized with other normal operations that have the
   // same `key`.
-  void PostOrRunNormalOperation(
-      const CacheEntryKey& key,
-      base::OnceCallback<void(std::unique_ptr<OperationHandle>)> operation);
+  void PostOrRunNormalOperation(const CacheEntryKey& key,
+                                OperationCallback operation);
 
  private:
+  using NormalOperationsQueueMap =
+      std::map<CacheEntryKey, base::queue<OperationCallback>>;
+  using ExclusiveOperation = OperationCallback;
+  using NormalOperationsQueueMapOrExclusiveOperation =
+      std::variant<NormalOperationsQueueMap, ExclusiveOperation>;
+
   // Called by OperationHandle's destructor. `key` has a value for a normal
   // operation, and is `std::nullopt` for an exclusive operation.
   void OnOperationFinished(const std::optional<CacheEntryKey>& key);
 
   // Checks the current state and runs the next appropriate operation. `key` has
-  // a value if a normal operation has just finished, and is `std::nullopt` if
-  // an exclusive operation has just finished or if no operation has finished.
+  // a value if a normal operation was posted or finished, and is `std::nullopt`
+  // if an exclusive operation was posted or finished.
   void TryToRunNextOperation(const std::optional<CacheEntryKey>& key);
 
-  // Runs pending normal operations. If `key` has a value, only operations for
-  // that key are considered. Otherwise, all pending normal operations are.
-  void RunPendingNormalOperations(const std::optional<CacheEntryKey>& key);
-
-  // Tries to run a pending normal operation for `key`. If an operation can be
-  // run, it is added to `runnable_ops`. Returns true if the queue for `key` is
-  // now empty and can be erased from `pending_normal_operations_`.
-  bool TryToRunNormalOperationForKey(
-      const CacheEntryKey& key,
-      std::queue<base::OnceCallback<void(std::unique_ptr<OperationHandle>)>>&
-          queue,
+  // Prepares a pending `operation` for execution if it is not already running.
+  // The `operation` is moved into a `base::OnceClosure`, bound with an
+  // `OperationHandle`, and added to `runnable_ops`. The original `operation`
+  // callback is reset to a null state to mark it as in-flight.
+  void MaybeTakeAndResetPendingOperation(
+      OperationCallback& operation,
+      const std::optional<CacheEntryKey>& key,
       std::vector<base::OnceClosure>& runnable_ops);
 
-  // True if an exclusive operation is currently running.
-  bool exclusive_operation_running_ = false;
-
-  // A queue of exclusive operations waiting to be run.
-  base::queue<base::OnceCallback<void(std::unique_ptr<OperationHandle>)>>
-      pending_exclusive_operations_;
-
-  // The set of keys for which a normal operation is currently running.
-  std::set<CacheEntryKey> running_normal_operations_;
-
-  // A map from a key to a queue of pending normal operations for that key.
-  std::map<
-      CacheEntryKey,
-      std::queue<base::OnceCallback<void(std::unique_ptr<OperationHandle>)>>>
-      pending_normal_operations_;
+  // A queue of operation "phases". Each element is either a
+  // `NormalOperationsQueueMap` (a batch of normal operations) or a single
+  // `ExclusiveOperation`. This structure enforces the serialization between
+  // normal and exclusive operations. For example, an exclusive operation will
+  // only run after all operations in the preceding `NormalOperationsQueueMap`
+  // batch have completed. Normal operations that arrive while an exclusive
+  // operation is pending are added to a new batch that runs after the exclusive
+  // operation completes.
+  base::queue<NormalOperationsQueueMapOrExclusiveOperation> queue_;
 
   base::WeakPtrFactory<ExclusiveOperationCoordinator> weak_factory_{this};
 };

@@ -134,26 +134,27 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
     // Request the next entry from the persistent store. `res_id_iterator_`
     // keeps track of the last `res_id` returned, allowing the store to fetch
     // entries older than that.
+    // `handle` will be destroyed after executing
+    // `OnOpenLatestEntryBeforeResIdFinished()`, may be triggering queued
+    // operations.
     backend_->store_->OpenLatestEntryBeforeResId(
         res_id_iterator_,
         base::BindOnce(&IteratorImpl::OnOpenLatestEntryBeforeResIdFinished,
-                       weak_factory_.GetWeakPtr(), std::move(handle)));
+                       weak_factory_.GetWeakPtr())
+            .Then(DoNothingWithBoundHandle(std::move(handle))));
   }
 
   // Callback for `SqlPersistentStore::OpenLatestEntryBeforeResId`.
   void OnOpenLatestEntryBeforeResIdFinished(
-      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
       SqlPersistentStore::OptionalEntryInfoWithIdAndKey result) {
     CHECK(callback_);
     if (!backend_) {
       std::move(callback_).Run(EntryResult::MakeError(net::ERR_FAILED));
-      // `handle` is destroyed here, may be triggering queued operations.
       return;
     }
     // If no more entries are found or an error occurred in the store.
     if (!result.has_value()) {
       std::move(callback_).Run(EntryResult::MakeError(net::ERR_FAILED));
-      // `handle` is destroyed here, may be triggering queued operations.
       return;
     }
     SqlPersistentStore::EntryInfoWithIdAndKey& entry_info = *result;
@@ -166,14 +167,6 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
     // reuse the existing `SqlEntryImpl` instance.
     if (SqlEntryImpl* entry = backend_->GetActiveEntry(entry_info.key)) {
       entry->AddRef();
-      // Reset `handle` here to trigger queued operations. This is intended not
-      // to starve normal operations.
-      // TODO(crbug.com/422065015): Resetting the handle here introduces
-      // complexities, such as the possibility of passing a doomed entry to the
-      // callback, which makes the behavior harder to reason about. We should
-      // remove this handle reset once a more sophisticated scheduling mechanism
-      // is implemented in ExclusiveOperationCoordinator.
-      handle.reset();
       std::move(callback_).Run(EntryResult::MakeOpened(entry));
       return;
     }
@@ -207,14 +200,7 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
               .insert(std::make_pair(entry_info.key,
                                      raw_ref<SqlEntryImpl>(*new_entry.get())))
               .second);
-    // Reset `handle` here to trigger queued operations. This is intended not to
-    // starve normal operations.
-    // TODO(crbug.com/422065015): Resetting the handle here introduces
-    // complexities, such as the possibility of passing a doomed entry to the
-    // callback, which makes the behavior harder to reason about. We should
-    // remove this handle reset once a more sophisticated scheduling mechanism
-    // is implemented in ExclusiveOperationCoordinator.
-    handle.reset();
+
     // Return the newly opened entry.
     std::move(callback_).Run(EntryResult::MakeOpened(new_entry.get()));
   }

@@ -734,8 +734,9 @@ TEST_F(SqlBackendImplTest, MultipleDoomsOnSameEntry) {
 }
 
 // Tests that recursive calls to OpenNextEntry from within its callback do not
-// starve normal operations. This is prevented by releasing the exclusive
-// operation handle before invoking the callback.
+// starve normal operations. The ExclusiveOperationCoordinator's sequence-based
+// scheduling ensures that the older normal operation (CreateEntry) is executed
+// before the newer exclusive operation (the second OpenNextEntry).
 TEST_F(SqlBackendImplTest, RecursiveOpenNextEntry) {
   auto backend = CreateBackendAndInit();
 

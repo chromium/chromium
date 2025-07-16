@@ -55,53 +55,76 @@ ExclusiveOperationCoordinator::ExclusiveOperationCoordinator() = default;
 ExclusiveOperationCoordinator::~ExclusiveOperationCoordinator() = default;
 
 void ExclusiveOperationCoordinator::PostOrRunExclusiveOperation(
-    base::OnceCallback<void(std::unique_ptr<OperationHandle>)> operation) {
+    OperationCallback operation) {
+  CHECK(operation);
   operation = WrapWithUmaQueuingTime(
       std::move(operation), "Net.SqlDiskCache.ExclusiveOperationDelay");
-  pending_exclusive_operations_.push(std::move(operation));
+  queue_.emplace(std::move(operation));
   TryToRunNextOperation(std::nullopt);
 }
 
 void ExclusiveOperationCoordinator::PostOrRunNormalOperation(
     const CacheEntryKey& key,
-    base::OnceCallback<void(std::unique_ptr<OperationHandle>)> operation) {
+    OperationCallback operation) {
+  CHECK(operation);
   operation = WrapWithUmaQueuingTime(std::move(operation),
                                      "Net.SqlDiskCache.NormalOperationDelay");
-  // If an exclusive operation is running or pending, queue the normal
-  // operation. It will be run after all exclusive operations are done.
-  // TODO(crbug.com/422065015): The current implementation prioritizes
-  // exclusive operations, which could potentially starve normal operations if
-  // exclusive operations are frequent. If the delay is unacceptable, we may
-  // need to implement a more sophisticated scheduling mechanism to ensure
-  // fairness.
-  if (exclusive_operation_running_ || !pending_exclusive_operations_.empty()) {
-    pending_normal_operations_[key].push(std::move(operation));
-    return;
+  // If there is no queue, or the back of the queue is an exclusive operation,
+  // add a new `NormalOperationsQueueMap` to the back of the queue.
+  if (queue_.empty() ||
+      std::holds_alternative<ExclusiveOperation>(queue_.back())) {
+    queue_.push(NormalOperationsQueueMap());
   }
-
-  if (running_normal_operations_.count(key)) {
-    // An operation for this key is already running, so queue this one.
-    pending_normal_operations_[key].push(std::move(operation));
-    return;
-  }
-
-  // Otherwise, run the normal operation immediately.
-  running_normal_operations_.insert(key);
-  std::move(operation).Run(std::make_unique<OperationHandle>(
-      base::PassKey<ExclusiveOperationCoordinator>(),
-      weak_factory_.GetWeakPtr(), key));
+  // Add the callback to the queue for the given `key`.
+  // Normal operations with the same key are serialized.
+  std::get<NormalOperationsQueueMap>(queue_.back())[key].push(
+      std::move(operation));
+  TryToRunNextOperation(key);
 }
 
 void ExclusiveOperationCoordinator::OnOperationFinished(
     const std::optional<CacheEntryKey>& key) {
+  CHECK(!queue_.empty());
+  // Verify that the front of the queue is a `NormalOperationsQueueMap` iff a
+  // `key` was provided.
+  CHECK_EQ(std::holds_alternative<NormalOperationsQueueMap>(queue_.front()),
+           key.has_value());
+
   if (key.has_value()) {
-    // A normal operation has finished.
-    CHECK(running_normal_operations_.count(key.value()));
-    running_normal_operations_.erase(key.value());
+    // The operation that just finished was a normal operation.
+    // Get a reference to the `NormalOperationsQueueMap` at the front of the
+    // queue.
+    NormalOperationsQueueMap& normal_operations_map =
+        std::get<NormalOperationsQueueMap>(queue_.front());
+    auto it = normal_operations_map.find(key.value());
+    // The `NormalOperationsQueueMap` at the front of `queue_` must have a
+    // `base::queue<OperationCallback>` corresponding to `key`,
+    CHECK(it != normal_operations_map.end());
+    // and that `base::queue<OperationCallback>` must not be empty,
+    CHECK(!it->second.empty());
+    // and the OperationCallback at the front must be a null callback.
+    CHECK(it->second.front().is_null());
+    // Remove the OperationCallback that just finished running.
+    it->second.pop();
+    if (it->second.empty()) {
+      // There are no more operations for this key, so remove the key from the
+      // map.
+      normal_operations_map.erase(it);
+      if (normal_operations_map.empty()) {
+        // There are no more operations in the map, so remove the map from the
+        // queue. This phase has completed.
+        queue_.pop();
+      }
+    }
   } else {
-    // An exclusive operation has finished.
-    CHECK(exclusive_operation_running_);
-    exclusive_operation_running_ = false;
+    // The operation that just finished was an exclusive operation.
+    // Get a reference to the `ExclusiveOperation` at the front of the queue.
+    ExclusiveOperation& exclusive_operation =
+        std::get<ExclusiveOperation>(queue_.front());
+    // The ExclusiveOperation at the front of `queue_` must be a null callback.
+    CHECK(exclusive_operation.is_null());
+    // Remove the ExclusiveOperation from the queue. This phase has completed.
+    queue_.pop();
   }
 
   // The completion of an operation might allow the next one to start.
@@ -110,65 +133,44 @@ void ExclusiveOperationCoordinator::OnOperationFinished(
 
 void ExclusiveOperationCoordinator::TryToRunNextOperation(
     const std::optional<CacheEntryKey>& key) {
-  // An exclusive operation is already running. Let its handle's destruction
-  // trigger the next operation.
-  if (exclusive_operation_running_) {
+  if (queue_.empty()) {
+    // Nothing to do.
     return;
   }
-
-  // If there are pending exclusive operations, try to run one.
-  if (!pending_exclusive_operations_.empty()) {
-    // Wait for all currently active normal operations to complete before
-    // starting an exclusive one.
-    if (!running_normal_operations_.empty()) {
-      return;
-    }
-
-    // All conditions met, run the next exclusive operation.
-    exclusive_operation_running_ = true;
-    auto operation = std::move(pending_exclusive_operations_.front());
-    pending_exclusive_operations_.pop();
-    std::move(operation).Run(std::make_unique<OperationHandle>(
-        base::PassKey<ExclusiveOperationCoordinator>(),
-        weak_factory_.GetWeakPtr(), std::nullopt));
-    return;
-  }
-
-  // No exclusive operations are pending or running. Run any pending normal
-  // operations.
-  RunPendingNormalOperations(key);
-}
-
-void ExclusiveOperationCoordinator::RunPendingNormalOperations(
-    const std::optional<CacheEntryKey>& key) {
-  // This should only be called when no exclusive operations are running or
-  // pending.
-  CHECK(!exclusive_operation_running_);
-  CHECK(pending_exclusive_operations_.empty());
 
   // A list of operations that can be run in this pass. We collect them first
   // and run them later to avoid iterator invalidation issues caused by
   // re-entrant calls if an operation completes synchronously.
   std::vector<base::OnceClosure> runnable_ops;
 
-  if (key.has_value()) {
-    // A normal operation finished. We only need to check its key.
-    auto it = pending_normal_operations_.find(key.value());
-    if (it != pending_normal_operations_.end()) {
-      if (TryToRunNormalOperationForKey(it->first, it->second, runnable_ops)) {
-        pending_normal_operations_.erase(it);
+  if (std::holds_alternative<NormalOperationsQueueMap>(queue_.front())) {
+    // The next phase in the queue is a batch of normal operations.
+    // Get a reference to the `NormalOperationsQueueMap` at the front of the
+    // queue.
+    NormalOperationsQueueMap& normal_operations_map =
+        std::get<NormalOperationsQueueMap>(queue_.front());
+    // If a `key` was provided, attempt to run the next operation for that
+    // `key`. Otherwise, attempt to run operations for all keys.
+    if (key.has_value()) {
+      if (auto it = normal_operations_map.find(key.value());
+          it != normal_operations_map.end()) {
+        CHECK(!it->second.empty());
+        MaybeTakeAndResetPendingOperation(it->second.front(), key,
+                                          runnable_ops);
+      }
+    } else {
+      // Attempt to run one operation for each key in the map.
+      for (auto& pair : normal_operations_map) {
+        CHECK(!pair.second.empty());
+        MaybeTakeAndResetPendingOperation(pair.second.front(), pair.first,
+                                          runnable_ops);
       }
     }
   } else {
-    // An exclusive operation finished. Check all keys.
-    for (auto it = pending_normal_operations_.begin();
-         it != pending_normal_operations_.end();) {
-      if (TryToRunNormalOperationForKey(it->first, it->second, runnable_ops)) {
-        it = pending_normal_operations_.erase(it);
-      } else {
-        ++it;
-      }
-    }
+    // The next phase in the queue is an exclusive operation.
+    MaybeTakeAndResetPendingOperation(
+        std::get<ExclusiveOperation>(queue_.front()), std::nullopt,
+        runnable_ops);
   }
 
   // Run the collected operations.
@@ -177,22 +179,20 @@ void ExclusiveOperationCoordinator::RunPendingNormalOperations(
   }
 }
 
-bool ExclusiveOperationCoordinator::TryToRunNormalOperationForKey(
-    const CacheEntryKey& key,
-    std::queue<base::OnceCallback<void(std::unique_ptr<OperationHandle>)>>&
-        queue,
+void ExclusiveOperationCoordinator::MaybeTakeAndResetPendingOperation(
+    ExclusiveOperationCoordinator::OperationCallback& operation,
+    const std::optional<CacheEntryKey>& key,
     std::vector<base::OnceClosure>& runnable_ops) {
-  if (running_normal_operations_.count(key) == 0 && !queue.empty()) {
-    running_normal_operations_.insert(key);
-    auto operation = std::move(queue.front());
-    queue.pop();
-    runnable_ops.push_back(
-        base::BindOnce(std::move(operation),
-                       std::make_unique<OperationHandle>(
-                           base::PassKey<ExclusiveOperationCoordinator>(),
-                           weak_factory_.GetWeakPtr(), key)));
+  if (!operation) {
+    return;
   }
-  return queue.empty();
+  runnable_ops.push_back(base::BindOnce(
+      std::move(operation), std::make_unique<OperationHandle>(
+                                base::PassKey<ExclusiveOperationCoordinator>(),
+                                weak_factory_.GetWeakPtr(), key)));
+  // Reset to a null callback to indicate that the operation is
+  // currently running.
+  operation.Reset();
 }
 
 }  // namespace disk_cache

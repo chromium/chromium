@@ -248,7 +248,8 @@ TEST_F(ExclusiveOperationCoordinatorTest,
                                           "N2_run", "N1a_end", "N1b_run"));
 }
 
-TEST_F(ExclusiveOperationCoordinatorTest, ExclusiveHasPriorityOverNormal) {
+TEST_F(ExclusiveOperationCoordinatorTest,
+       OlderNormalOpRunsBeforeNewerExclusiveOp) {
   // Start an exclusive operation (E1).
   std::unique_ptr<OperationHandle> exclusive_handle1;
   coordinator_.PostOrRunExclusiveOperation(
@@ -256,7 +257,6 @@ TEST_F(ExclusiveOperationCoordinatorTest, ExclusiveHasPriorityOverNormal) {
         execution_log_.push_back("E1_start");
         exclusive_handle1 = std::move(handle);
       }));
-
   ASSERT_TRUE(exclusive_handle1);
   EXPECT_THAT(execution_log_, ElementsAre("E1_start"));
 
@@ -277,27 +277,84 @@ TEST_F(ExclusiveOperationCoordinatorTest, ExclusiveHasPriorityOverNormal) {
         execution_log_.push_back("E2_start");
         exclusive_handle2 = std::move(handle);
       }));
-
   // Neither N1 nor E2 should have run yet.
   EXPECT_FALSE(n1_handle);
   EXPECT_FALSE(exclusive_handle2);
   EXPECT_THAT(execution_log_, ElementsAre("E1_start"));
 
-  // Complete E1. E2 should run next due to priority.
+  // Complete E1. N1 should run next.
   execution_log_.push_back("E1_end");
   exclusive_handle1.reset();
 
-  ASSERT_TRUE(exclusive_handle2);
-  EXPECT_FALSE(n1_handle);
-  EXPECT_THAT(execution_log_, ElementsAre("E1_start", "E1_end", "E2_start"));
-
-  // Complete E2. N1 should run now.
-  execution_log_.push_back("E2_end");
-  exclusive_handle2.reset();
-
   ASSERT_TRUE(n1_handle);
-  EXPECT_THAT(execution_log_, ElementsAre("E1_start", "E1_end", "E2_start",
-                                          "E2_end", "N1_start"));
+  EXPECT_FALSE(exclusive_handle2);
+  EXPECT_THAT(execution_log_, ElementsAre("E1_start", "E1_end", "N1_start"));
+
+  // Complete N1. E2 should run now.
+  execution_log_.push_back("N1_end");
+  n1_handle.reset();
+
+  ASSERT_TRUE(exclusive_handle2);
+  EXPECT_THAT(execution_log_, ElementsAre("E1_start", "E1_end", "N1_start",
+                                          "N1_end", "E2_start"));
+}
+
+TEST_F(ExclusiveOperationCoordinatorTest, ExclusiveOperationDoesNotStarve) {
+  // Start a normal operation N1a.
+  const CacheEntryKey kKey1("key1");
+  std::unique_ptr<OperationHandle> n1a_handle;
+  coordinator_.PostOrRunNormalOperation(
+      kKey1,
+      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> handle) {
+        execution_log_.push_back("N1a_start");
+        n1a_handle = std::move(handle);
+      }));
+
+  ASSERT_TRUE(n1a_handle);
+  EXPECT_THAT(execution_log_, ElementsAre("N1a_start"));
+
+  // While N1 is running, queue an exclusive operation E1.
+  std::unique_ptr<OperationHandle> e1_handle;
+  coordinator_.PostOrRunExclusiveOperation(
+      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> handle) {
+        execution_log_.push_back("E1_start");
+        e1_handle = std::move(handle);
+      }));
+
+  // E1 should not run yet.
+  EXPECT_FALSE(e1_handle);
+
+  // While N1a is still running, queue another normal operation N1a with the
+  // same key.
+  std::unique_ptr<OperationHandle> n1b_handle;
+  coordinator_.PostOrRunNormalOperation(
+      kKey1,
+      base::BindLambdaForTesting([&](std::unique_ptr<OperationHandle> handle) {
+        execution_log_.push_back("N1b_start");
+        n1b_handle = std::move(handle);
+      }));
+
+  // N1b should not run yet.
+  EXPECT_FALSE(n1b_handle);
+  EXPECT_THAT(execution_log_, ElementsAre("N1a_start"));
+
+  // Complete N1.
+  execution_log_.push_back("N1a_end");
+  n1a_handle.reset();
+
+  // E1 should run next, not N1b. This shows E1 isn't starved.
+  ASSERT_TRUE(e1_handle);
+  EXPECT_FALSE(n1b_handle);
+  EXPECT_THAT(execution_log_, ElementsAre("N1a_start", "N1a_end", "E1_start"));
+
+  // Complete E1.
+  execution_log_.push_back("E1_end");
+  e1_handle.reset();
+
+  // N1b should run.
+  ASSERT_TRUE(n1b_handle);
+  EXPECT_THAT(execution_log_, ElementsAre("N1a_start", "N1a_end", "E1_start",
+                                          "E1_end", "N1b_start"));
 }
 
 }  // namespace disk_cache
