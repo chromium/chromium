@@ -4,8 +4,17 @@
 #include "components/autofill/core/browser/payments/save_and_fill_manager_impl.h"
 
 #include "base/check_deref.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 
 namespace autofill::payments {
 
@@ -16,22 +25,34 @@ using CardSaveAndFillDialogUserDecision =
 using UserProvidedCardSaveAndFillDetails =
     PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails;
 
+// If set, overrides the return value of IsCreditCardUploadEnabled() for tests.
+std::optional<bool> credit_card_upload_enabled_override_;
+
 }  // namespace
 
-SaveAndFillManagerImpl::SaveAndFillManagerImpl(
-    PaymentsAutofillClient* payments_autofill_client)
-    : payments_autofill_client_(CHECK_DEREF(payments_autofill_client)) {}
+SaveAndFillManagerImpl::SaveAndFillManagerImpl(AutofillClient* autofill_client)
+    : autofill_client_(CHECK_DEREF(autofill_client)) {}
 
 SaveAndFillManagerImpl::~SaveAndFillManagerImpl() = default;
 
 void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion() {
-  // TODO(crbug.com/378164165): Attempt to offer upload Save and Fill first and
-  // fall back to the local version.
-  OfferLocalSaveAndFill();
+  if (IsCreditCardUploadEnabled()) {
+    PopulateInitialUploadDetails();
+
+    payments_autofill_client()
+        ->GetMultipleRequestPaymentsNetworkInterface()
+        ->GetDetailsForCreateCard(
+            upload_details_,
+            base::BindOnce(
+                &SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard,
+                weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OfferLocalSaveAndFill();
+  }
 }
 
 void SaveAndFillManagerImpl::OfferLocalSaveAndFill() {
-  payments_autofill_client_->ShowCreditCardLocalSaveAndFillDialog(
+  payments_autofill_client()->ShowCreditCardLocalSaveAndFillDialog(
       base::BindOnce(&SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -48,11 +69,13 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       // Clear the CVC value from the `card_save_candidate` if CVC storage
       // isn't enabled.
       if (!card_save_candidate.cvc().empty() &&
-          !payments_autofill_client_->GetPaymentsDataManager()
+          !payments_autofill_client()
+               ->GetPaymentsDataManager()
                .IsPaymentCvcStorageEnabled()) {
         card_save_candidate.clear_cvc();
       }
-      payments_autofill_client_->GetPaymentsDataManager()
+      payments_autofill_client()
+          ->GetPaymentsDataManager()
           .OnAcceptedLocalCreditCardSave(card_save_candidate);
       break;
     case CardSaveAndFillDialogUserDecision::kDeclined:
@@ -65,7 +88,7 @@ void SaveAndFillManagerImpl::PopulateCreditCardInfo(
     const UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
   const std::string app_locale =
-      payments_autofill_client_->GetPaymentsDataManager().app_locale();
+      payments_autofill_client()->GetPaymentsDataManager().app_locale();
 
   card.SetInfo(CREDIT_CARD_NUMBER,
                user_provided_card_save_and_fill_details.card_number,
@@ -83,6 +106,57 @@ void SaveAndFillManagerImpl::PopulateCreditCardInfo(
   card.SetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR,
                user_provided_card_save_and_fill_details.expiration_date_year,
                app_locale);
+}
+
+void SaveAndFillManagerImpl::SetCreditCardUploadEnabledOverrideForTesting(
+    bool credit_card_upload_enabled_override) {
+  credit_card_upload_enabled_override_ = credit_card_upload_enabled_override;
+}
+
+bool SaveAndFillManagerImpl::IsCreditCardUploadEnabled() const {
+  if (credit_card_upload_enabled_override_.has_value()) {
+    return credit_card_upload_enabled_override_.value();
+  }
+  const PaymentsDataManager& payments_data_manager =
+      payments_autofill_client()->GetPaymentsDataManager();
+  return autofill::IsCreditCardUploadEnabled(
+      autofill_client_->GetSyncService(), *autofill_client_->GetPrefs(),
+      payments_data_manager.GetCountryCodeForExperimentGroup(),
+      payments_data_manager.GetPaymentsSigninStateForMetrics(),
+      autofill_client_->GetCurrentLogManager());
+}
+
+void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    const std::u16string& context_token,
+    std::unique_ptr<base::Value::Dict> legal_message,
+    std::vector<std::pair<int, int>> supported_card_bin_ranges) {
+  // TODO(crbug.com/378164165): Implement logic to handle the preflight call
+  // response.
+}
+
+void SaveAndFillManagerImpl::PopulateInitialUploadDetails() {
+  // For "Save and Fill" flow, we don't know whether CVC will be provided by the
+  // user so we only check the CVC storage user preference to populate the
+  // signal.
+  if (payments_autofill_client()
+          ->GetPaymentsDataManager()
+          .IsPaymentCvcStorageEnabled()) {
+    upload_details_.client_behavior_signals.emplace_back(
+        ClientBehaviorConstants::kOfferingToSaveCvc);
+  }
+  // TODO(crbug.com/432100446): Add kShowAccountEmailInLegalMessage to
+  // `client_behavior_signals` when feature launched to mobile.
+
+  upload_details_.upload_card_source = UploadCardSource::UPSTREAM_SAVE_AND_FILL;
+  upload_details_.billing_customer_number = payments::GetBillingCustomerId(
+      payments_autofill_client()->GetPaymentsDataManager());
+  upload_details_.app_locale = autofill_client_->GetAppLocale();
+
+  // Calculate the unique address from the most recently used
+  // addresses. Can be empty if there is none.
+  // TODO(crbug.com/378164165): This part is rather complex. Do it in a
+  // separate CL.
 }
 
 }  // namespace autofill::payments

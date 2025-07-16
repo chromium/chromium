@@ -1121,6 +1121,8 @@ static_library("test_support") {
     "payments/test/mock_iban_manager.h",
     "payments/test/mock_mandatory_reauth_manager.cc",
     "payments/test/mock_mandatory_reauth_manager.h",
+    "payments/test/mock_multiple_request_payments_network_interface.cc",
+    "payments/test/mock_multiple_request_payments_network_interface.h",
     "payments/test/mock_payments_window_manager.cc",
     "payments/test/mock_payments_window_manager.h",
     "payments/test/mock_save_and_fill_manager.cc",

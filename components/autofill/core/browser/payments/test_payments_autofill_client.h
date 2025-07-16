@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_iban_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/mock_save_and_fill_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
@@ -80,6 +81,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+  MockMultipleRequestPaymentsNetworkInterface*
+  GetMultipleRequestPaymentsNetworkInterface() override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
@@ -135,6 +138,13 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   void set_payments_network_interface(
       std::unique_ptr<PaymentsNetworkInterface> payments_network_interface) {
     payments_network_interface_ = std::move(payments_network_interface);
+  }
+
+  void set_multiple_request_payments_network_interface(
+      std::unique_ptr<MockMultipleRequestPaymentsNetworkInterface>
+          multiple_request_payments_network_interface) {
+    multiple_request_payments_network_interface_ =
+        std::move(multiple_request_payments_network_interface);
   }
 
   bool autofill_error_dialog_shown() { return autofill_error_dialog_shown_; }
@@ -206,6 +216,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   const raw_ref<AutofillClient> client_;
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
+
+  std::unique_ptr<MockMultipleRequestPaymentsNetworkInterface>
+      multiple_request_payments_network_interface_;
 
   bool autofill_progress_dialog_shown_ = false;
 

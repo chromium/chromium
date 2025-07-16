@@ -7,6 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -48,18 +50,32 @@ class SaveAndFillManagerImplTest : public testing::Test {
     autofill_client_->SetPrefs(test::PrefServiceForTesting());
     autofill_client_->GetPersonalDataManager().SetPrefService(
         autofill_client_->GetPrefs());
-    payments_autofill_client_ =
+
+    auto payments_autofill_client =
         std::make_unique<TestPaymentsAutofillClientMock>(
             autofill_client_.get());
-    save_and_fill_manager_impl_ = std::make_unique<SaveAndFillManagerImpl>(
-        payments_autofill_client_.get());
+    payments_autofill_client_ = payments_autofill_client.get();
+    autofill_client_->set_payments_autofill_client(
+        std::move(payments_autofill_client));
+
+    auto mock_network_interface =
+        std::make_unique<MockMultipleRequestPaymentsNetworkInterface>(
+            autofill_client_->GetURLLoaderFactory(),
+            *autofill_client_->GetIdentityManager());
+    mock_network_interface_ = mock_network_interface.get();
+    payments_autofill_client_->set_multiple_request_payments_network_interface(
+        std::move(mock_network_interface));
+
+    save_and_fill_manager_impl_ =
+        std::make_unique<SaveAndFillManagerImpl>(autofill_client_.get());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<autofill::TestAutofillClient> autofill_client_;
-  std::unique_ptr<TestPaymentsAutofillClientMock> payments_autofill_client_;
+  std::unique_ptr<TestAutofillClient> autofill_client_;
+  raw_ptr<TestPaymentsAutofillClientMock> payments_autofill_client_;
   std::unique_ptr<SaveAndFillManagerImpl> save_and_fill_manager_impl_;
+  raw_ptr<MockMultipleRequestPaymentsNetworkInterface> mock_network_interface_;
 };
 
 UserProvidedCardSaveAndFillDetails CreateUserProvidedCardDetails(
@@ -169,5 +185,30 @@ TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOff) {
               u"");
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+TEST_F(SaveAndFillManagerImplTest,
+       OnDidAcceptCreditCardSaveAndFillSuggestion_ServerSaveAndFill) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  UploadCardRequestDetails details;
+
+  EXPECT_CALL(*mock_network_interface_,
+              GetDetailsForCreateCard(testing::_, testing::_))
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
+                               testing::Return(RequestId("11223344"))));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion();
+
+  EXPECT_EQ(details.upload_card_source,
+            UploadCardSource::UPSTREAM_SAVE_AND_FILL);
+  EXPECT_EQ(
+      details.billing_customer_number,
+      payments::GetBillingCustomerId(
+          autofill_client_->GetPersonalDataManager().payments_data_manager()));
+  EXPECT_EQ(details.app_locale, autofill_client_->GetAppLocale());
+  EXPECT_EQ(base::FeatureList::IsEnabled(
+                features::kAutofillEnableCvcStorageAndFilling),
+            !details.client_behavior_signals.empty());
+}
 
 }  // namespace autofill::payments

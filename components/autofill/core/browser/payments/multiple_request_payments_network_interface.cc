@@ -7,7 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/create_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
@@ -29,17 +31,20 @@ MultipleRequestPaymentsNetworkInterface::
     ~MultipleRequestPaymentsNetworkInterface() = default;
 
 RequestId MultipleRequestPaymentsNetworkInterface::GetDetailsForCreateCard(
-    const std::string& unique_country_code,
-    const std::vector<ClientBehaviorConstants>& client_behavior_signals,
-    const std::string& app_locale,
-    GetDetailsForCreateCardCallback callback,
-    const int billable_service_number,
-    const int64_t billing_customer_number,
-    UploadCardSource upload_card_source) {
+    const UploadCardRequestDetails& details,
+    GetDetailsForCreateCardCallback callback) {
+  CHECK_LE(details.profiles.size(), 1U);
+  std::string unique_country_code;
+  // `details.profiles` contain the unique address for the user. It may be empty
+  // if there is no address or multiple conflicting addresses detected.
+  if (!details.profiles.empty()) {
+    unique_country_code = base::UTF16ToUTF8(
+        details.profiles[0].GetRawInfo(FieldType::ADDRESS_HOME_COUNTRY));
+  }
   return IssueRequest(std::make_unique<GetDetailsForCreateCardRequest>(
-      unique_country_code, client_behavior_signals, app_locale,
-      std::move(callback), billable_service_number, billing_customer_number,
-      upload_card_source));
+      unique_country_code, details.client_behavior_signals, details.app_locale,
+      std::move(callback), payments::kUploadPaymentMethodBillableServiceNumber,
+      details.billing_customer_number, details.upload_card_source));
 }
 
 RequestId MultipleRequestPaymentsNetworkInterface::CreateCard(

@@ -7,6 +7,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_test_base.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,15 +51,16 @@ class CreateCardTest : public MultipleRequestPaymentsNetworkInterfaceTest {
 
  protected:
   void SendGetDetailsForCreateCardRequest() {
+    UploadCardRequestDetails details;
+    details.upload_card_source = UploadCardSource::UPSTREAM_SAVE_AND_FILL;
+    details.client_behavior_signals = {};
+    details.app_locale = "language-LOCALE";
+    details.billing_customer_number = 111222333444L;
+    details.profiles = {test::GetFullProfile(AddressCountryCode("US"))};
+
     id_ = payments_network_interface_->GetDetailsForCreateCard(
-        "US",
-        /*client_behavior_signals=*/{}, "language-LOCALE",
-        base::BindOnce(&CreateCardTest::OnDidGetDetailsForCreateCard,
-                       GetWeakPtr()),
-        /*billable_service_number=*/12345,
-        /*billing_customer_number=*/111222333444L,
-        /*upload_card_source=*/
-        UploadCardSource::UPSTREAM_SAVE_AND_FILL);
+        details, base::BindOnce(&CreateCardTest::OnDidGetDetailsForCreateCard,
+                                GetWeakPtr()));
   }
 
   void SendCreateCardRequest() {
