@@ -106,13 +106,13 @@ using ScopedDataSharingSyncObservation =
     return;
   }
 
+  [self.consumer setSharedButtonWhenEmpty:_configuration.showsEmptyState];
+
   CoreAccountInfo account =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (account.IsEmpty()) {
     return;
   }
-
-  [self.consumer setSharedButtonWhenEmpty:_configuration.showsEmptyState];
 
   std::optional<data_sharing::GroupData> groupData =
       _dataSharingService->ReadGroup(_configuration.groupID);

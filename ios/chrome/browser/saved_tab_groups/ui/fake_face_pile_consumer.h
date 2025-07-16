@@ -12,12 +12,11 @@
 // Fake object that implements FacePileConsumer.
 @interface FakeFacePileConsumer : NSObject <FacePileConsumer>
 
-@property(nonatomic, assign) BOOL lastShowsTextWhenEmpty;
+@property(nonatomic, assign) BOOL lastShowsShareButtonWhenEmpty;
 @property(nonatomic, strong) UIColor* lastFacePileBackgroundColor;
 @property(nonatomic, assign) CGFloat lastAvatarSize;
 @property(nonatomic, strong) NSArray<id<ShareKitAvatarPrimitive>>* lastFaces;
 @property(nonatomic, assign) NSInteger lastTotalNumber;
-@property(nonatomic, assign) NSUInteger setShowsTextWhenEmptyCallCount;
 @property(nonatomic, assign) NSUInteger updateWithViewsCallCount;
 
 @end
