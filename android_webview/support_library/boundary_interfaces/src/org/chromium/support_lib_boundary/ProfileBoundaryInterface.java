@@ -43,6 +43,11 @@ public interface ProfileBoundaryInterface {
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParams,
             /* PrefetchOperationCallback */ InvocationHandler callback);
 
+    void clearPrefetch(
+            String url,
+            Executor callbackExecutor,
+            /* PrefetchOperationCallback */ InvocationHandler callback);
+
     void setSpeculativeLoadingConfig(/* SpeculativeLoadingConfig */ InvocationHandler config);
 
     void warmUpRendererProcess();
