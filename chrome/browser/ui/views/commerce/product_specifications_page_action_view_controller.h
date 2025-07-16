@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/views/page_action/page_action_observer.h"
 
 class ScopedWindowCallToAction;
 
@@ -27,9 +26,13 @@ class CommerceUiTabHelper;
 
 namespace commerce {
 
+// This class is responsible for interacting with the PageActionController
+// and CommerceUITabHelper to determine whether the Product Specification icon
+// should be shown, hidden, or expanded with additional text based on the
+// current page's commerce-related context.
 class ProductSpecificationsPageActionViewController {
  public:
-  explicit ProductSpecificationsPageActionViewController(
+  ProductSpecificationsPageActionViewController(
       tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller,
       CommerceUiTabHelper& commerce_ui_tab_helper);
