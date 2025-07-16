@@ -3455,7 +3455,7 @@ enum WebFeature {
   // The items above roughly this point are available in the M101 branch.
   kElementShowPopover = 4189,
   kElementHidePopover = 4190,
-  kValidPopoverAttribute = 4191,
+  kOBSOLETE_ValidPopoverAttribute = 4191,
   kDeprecationExample = 4192,  // Used as an example Deprecation code pointer.
   kRTCLocalSdpModificationOpusStereo = 4193,
   kNavigatorUAData_Mobile = 4194,
@@ -4914,6 +4914,7 @@ enum WebFeature {
   kHTMLCanvasElementLowLatency_WebGL_Discard = 5604,
   kAnimatedImageUsedMoreThanOnce = 5605,
   kClipboardPlatformPermissionDenied = 5606,
+  kValidPopoverAttribute = 5607,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

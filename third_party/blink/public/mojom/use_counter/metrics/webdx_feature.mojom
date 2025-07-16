@@ -62,7 +62,7 @@ enum WebDXFeature {
   kPageVisits = 0,
   kCompressionStreams = 1,
   kViewTransitions = 2,
-  kPopover = 3,
+  kOBSOLETE_Popover = 3,
   kSubgrid = 4,
   kCascadeLayers = 5,
   kAccentColor = 6,
@@ -433,6 +433,7 @@ enum WebDXFeature {
   kWasmNonTrappingFloatToInt = 371,
   kWasmSignExtensionOperators = 372,
   kDRAFT_IncomingCallNotifications = 373,
+  kPopover = 374,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
