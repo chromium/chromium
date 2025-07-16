@@ -32,6 +32,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 namespace {
 
 constexpr char kValidURL[] = "http://zombo.com";
@@ -312,6 +316,10 @@ TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
 // The signin flow is not used on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(TabOrganizationServiceTest, CanStartRequest) {
+  auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
+      DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+          profile());
+  // Not signed in
   // Not signed in
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());

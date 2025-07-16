@@ -123,6 +123,10 @@
 #include "components/trusted_vault/command_line_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 using syncer::SyncServiceImpl;
 
 namespace {
@@ -615,6 +619,11 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
 
   // Sync each of the profiles.
   for (int client_index = 0; client_index < num_clients_; client_index++) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    auto resetter = enterprise_util::
+        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+            GetProfile(client_index));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
     if (!client->SetupSyncNoWaitForCompletion(account)) {

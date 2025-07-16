@@ -335,6 +335,9 @@ class ManagedProfileCreationBrowserTest
       const std::string& email,
       const std::string& hosted_domain,
       bool primary_account = false) {
+    auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
+        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+            GetProfile());
     std::optional<signin::ConsentLevel> consent_level;
     if (primary_account) {
       consent_level = signin::ConsentLevel::kSignin;
@@ -365,8 +368,6 @@ class ManagedProfileCreationBrowserTest
   signin::IdentityManager* GetIdentityManager() {
     return GetIdentityManager(GetProfile());
   }
-
- protected:
 };
 
 IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {

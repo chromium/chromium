@@ -2314,6 +2314,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   other_identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_info.account_id, signin::ConsentLevel::kSync);
+  enterprise_util::SetUserAcceptedAccountManagement(other_profile, true);
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");

@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -495,6 +496,9 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
 }
 
 IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
+  auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
+      DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+          browser()->profile());
   signin::IdentityManager* identity_manager_empty =
       IdentityManagerFactory::GetForProfile(browser()->profile());
   std::vector<AccountInfo> accounts_empty = GetOrderedAccountsForDisplay(

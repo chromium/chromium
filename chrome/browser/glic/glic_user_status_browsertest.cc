@@ -44,6 +44,10 @@
 #include "services/network/test/test_utils.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 namespace glic {
 
 namespace {
@@ -131,6 +135,11 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   }
   // Simulates user signing in and getting a refresh token.
   void SimulatePrimaryAccountChangedSignIn(TestAccount* account) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    auto resetter = enterprise_util::
+        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+            profile());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
 
     AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
@@ -468,6 +477,7 @@ IN_PROC_BROWSER_TEST_F(
   identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
       enterpriseAccount.email, signin::ConsentLevel::kSync);
+  enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_can_use_model_execution_features(true);
   identity_test_env_->UpdateAccountInfoForAccount(account_info);

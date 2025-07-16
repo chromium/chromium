@@ -330,6 +330,11 @@ class FirstRunInteractiveUiTest
 
   void SimulateSignIn(const std::string& account_email,
                       const std::string& account_given_name) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
+        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+            profile());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
 
     // Kombucha note: This function waits on a `base::RunLoop`.
@@ -348,8 +353,9 @@ class FirstRunInteractiveUiTest
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     if (account_email == kTestEnterpriseEmail) {
       account_info.hosted_domain = "chromium.org";
-      mutator.set_is_subject_to_enterprise_policies(true);
     }
+    mutator.set_is_subject_to_enterprise_policies(account_email ==
+                                                  kTestEnterpriseEmail);
 
     if (params_.with_supervision.has_value()) {
       mutator.set_is_subject_to_parental_controls(

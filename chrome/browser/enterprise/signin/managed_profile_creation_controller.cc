@@ -213,6 +213,8 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
   CHECK(policies_received_);
   CHECK(source_profile_);
   Browser* browser = chrome::FindLastActiveWithProfile(source_profile_);
+  bool has_browser_with_tab =
+      browser && browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
 
   if (user_choice_for_testing_.has_value()) {
     CHECK_IS_TEST();
@@ -224,7 +226,7 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
     return;
   }
 
-  if (!browser) {
+  if (!has_browser_with_tab) {
     // Posting the task here so that all code paths are asynchronous.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

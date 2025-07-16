@@ -19,6 +19,7 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
@@ -244,6 +245,12 @@ class PasswordManagerSyncTest : public SyncTest {
   // Implicit browser signin, disables passwords account storage by default.
   void SignIn(SyncTestAccount account = SyncTestAccount::kDefaultAccount,
               bool explicit_signin = true) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
+        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+            GetProfile(0));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
     if (explicit_signin) {
       ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(account));
     } else {

@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -381,6 +382,10 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
 
   if (!signin_delegate_->SignIn(account, signin::ConsentLevel::kSync)) {
     return false;
+  }
+  if (account == SyncTestAccount::kEnterpriseAccount1 ||
+      account == SyncTestAccount::kGoogleDotComAccount1) {
+    enterprise_util::SetUserAcceptedAccountManagement(profile_.get(), true);
   }
 
   signin::IdentityManager* identity_manager =
