@@ -799,6 +799,27 @@ TEST_F(RenderProcessHostUnitTest, DoNotReuseError) {
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
 }
 
+TEST_F(RenderProcessHostUnitTest, GetLiveCount) {
+  // Make sure that there are no hosts initially, as the harness creates one.
+  SetContents(nullptr);
+  EXPECT_EQ(RenderProcessHostImpl::GetLiveCount(), 0U);
+  EXPECT_EQ(RenderProcessHostImpl::GetCount(), 0U);
+
+  auto host1 = std::make_unique<MockRenderProcessHost>(browser_context());
+  EXPECT_EQ(RenderProcessHostImpl::GetLiveCount(), 0U);
+
+  host1->Init();
+  EXPECT_EQ(RenderProcessHostImpl::GetLiveCount(), 1U);
+
+  auto host2 = std::make_unique<MockRenderProcessHost>(browser_context());
+  host2->Init();
+  EXPECT_EQ(RenderProcessHostImpl::GetLiveCount(), 2U);
+
+  host1->SimulateRenderProcessExit(
+      base::TerminationStatus::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
+  EXPECT_EQ(RenderProcessHostImpl::GetLiveCount(), 1U);
+}
+
 // Tests that RenderProcessHost reuse considers navigations correctly.
 TEST_F(RenderProcessHostUnitTest, ReuseNavigationProcess) {
   const GURL kUrl1("http://foo.com");

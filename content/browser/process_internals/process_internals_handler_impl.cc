@@ -191,7 +191,9 @@ ProcessInternalsHandlerImpl::~ProcessInternalsHandlerImpl() = default;
 void ProcessInternalsHandlerImpl::GetProcessCountInfo(
     GetProcessCountInfoCallback callback) {
   ::mojom::ProcessCountInfoPtr info = ::mojom::ProcessCountInfo::New();
-  info->renderer_process_count_total = RenderProcessHostImpl::GetProcessCount();
+  info->renderer_process_count_total = RenderProcessHostImpl::GetCount();
+  info->live_renderer_processes_count_total =
+      RenderProcessHostImpl::GetLiveCount();
   info->renderer_process_count_for_limit =
       RenderProcessHostImpl::GetProcessCountForLimit();
   info->renderer_process_limit =

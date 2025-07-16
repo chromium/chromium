@@ -465,9 +465,20 @@ class CONTENT_EXPORT RenderProcessHostImpl
                                    bool empty_allowed,
                                    GURL* url);
 
-  // Returns the current count of renderer processes. For the count used when
-  // comparing against the process limit, see `GetProcessCountForLimit`.
-  static size_t GetProcessCount();
+  // Returns the current count of RenderProcessHost instances. Note that this is
+  // *not* the count of renderer processes, as a (potentially large) fraction of
+  // those can be either not initialized, or dead. For instance, on Android
+  // processes are frequently killed by the OS, and after session restore, not
+  // all tabs (and thus RenderProcessHost instances) are loaded (and thus the
+  // instances are not initialized).  To get the count of renderer processes,
+  // use `GetLiveCount()`. For the count used when comparing against the process
+  // limit, see `GetProcessCountForLimit`.
+  static size_t GetCount();
+
+  // Returns the current count of RPHs that have an "initialized and not dead"
+  // process. See the function comment for `GetCount()` to understand the
+  // difference.
+  static size_t GetLiveCount();
 
   // Returns the current process count for comparisons against
   // GetMaxRendererProcessCount, taking into account any processes the embedder

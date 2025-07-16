@@ -83,6 +83,12 @@ async function loadProcessCountInfo() {
   assert(processCountTotal);
   processCountTotal.innerText = String(info.rendererProcessCountTotal);
 
+  const liveProcessesCountTotal =
+      document.querySelector<HTMLElement>('#live-processes-count-total');
+  assert(liveProcessesCountTotal);
+  liveProcessesCountTotal.innerText =
+      String(info.liveRendererProcessesCountTotal);
+
   const processCountForLimit =
       document.querySelector<HTMLElement>('#process-count-for-limit');
   assert(processCountForLimit);

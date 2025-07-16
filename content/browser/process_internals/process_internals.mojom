@@ -14,6 +14,9 @@ struct ProcessCountInfo {
   // Total number of renderer processes.
   uint64 renderer_process_count_total;
 
+  // Total number of live renderer processes.
+  uint64 live_renderer_processes_count_total;
+
   // Total number of renderer processes that actually count towards the limit,
   // possibly ignoring some of the total (e.g., to prevent extensions from using
   // up the limit).

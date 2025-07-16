@@ -874,7 +874,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
     // There may be process hosts without sites. To ensure all process hosts are
     // represented, start by adding entries for all hosts.
-    rph_to_sites_map.reserve(RenderProcessHostImpl::GetProcessCount());
+    rph_to_sites_map.reserve(RenderProcessHostImpl::GetCount());
     for (auto iter(RenderProcessHost::AllHostsIterator()); !iter.IsAtEnd();
          iter.Advance()) {
       rph_to_sites_map[iter.GetCurrentValue()->GetID()];
@@ -934,7 +934,7 @@ std::string GetCurrentHostMapDebugString(
     const SiteProcessCountTracker* tracker) {
   std::string output =
       base::StringPrintf("There are now %zu RenderProcessHosts.",
-                         RenderProcessHostImpl::GetProcessCount());
+                         RenderProcessHostImpl::GetCount());
   if (tracker) {
     output += base::StringPrintf("\nThe mappings are:\n%s",
                                  tracker->GetDebugString().c_str());
@@ -1433,7 +1433,7 @@ void RenderProcessHost::SetMaxRendererProcessCount(size_t count) {
   MAYBEVLOG(1) << __func__ << ": Max override set to " << count;
   g_max_renderer_count_override = count;
 
-  if (RenderProcessHostImpl::GetProcessCount() > count) {
+  if (RenderProcessHostImpl::GetCount() > count) {
     // TODO(pmonette): Only cleanup n spares, where n is the count of processes
     // that is over the limit.
     SpareRenderProcessHostManagerImpl::Get().CleanupSpares(
@@ -1590,7 +1590,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
 void RenderProcessHostImpl::ShutDownInProcessRenderer() {
   DCHECK(g_run_renderer_in_process);
 
-  switch (RenderProcessHostImpl::GetProcessCount()) {
+  switch (RenderProcessHostImpl::GetCount()) {
     case 0:
       return;
     case 1: {
@@ -4699,8 +4699,23 @@ RenderProcessHost* RenderProcessHost::FromID(ChildProcessId render_process_id) {
 }
 
 // static
-size_t RenderProcessHostImpl::GetProcessCount() {
+size_t RenderProcessHostImpl::GetCount() {
   return GetAllHosts().size();
+}
+
+// static
+size_t RenderProcessHostImpl::GetLiveCount() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  size_t count = 0;
+  for (auto iter = RenderProcessHost::AllHostsIterator(); !iter.IsAtEnd();
+       iter.Advance()) {
+    RenderProcessHost& render_process_host = *iter.GetCurrentValue();
+    if (render_process_host.IsInitializedAndNotDead()) {
+      count++;
+    }
+  }
+  return count;
 }
 
 // static
@@ -4710,8 +4725,8 @@ size_t RenderProcessHostImpl::GetProcessCountForLimit() {
   // too soon.
   size_t process_count_to_ignore =
       GetContentClient()->browser()->GetProcessCountToIgnoreForLimit();
-  CHECK_LE(process_count_to_ignore, RenderProcessHostImpl::GetProcessCount());
-  return RenderProcessHostImpl::GetProcessCount() - process_count_to_ignore;
+  CHECK_LE(process_count_to_ignore, RenderProcessHostImpl::GetCount());
+  return RenderProcessHostImpl::GetCount() - process_count_to_ignore;
 }
 
 // static
@@ -4759,7 +4774,7 @@ RenderProcessHost* RenderProcessHostImpl::GetExistingProcessHost(
     SiteInstanceImpl* site_instance) {
   // First figure out which existing renderers we can use.
   std::vector<RenderProcessHost*> suitable_renderers;
-  suitable_renderers.reserve(RenderProcessHostImpl::GetProcessCount());
+  suitable_renderers.reserve(RenderProcessHostImpl::GetCount());
 
   for (iterator iter(AllHostsIterator()); !iter.IsAtEnd(); iter.Advance()) {
     // The spare RenderProcessHost will have been considered by this point.
@@ -4773,7 +4788,7 @@ RenderProcessHost* RenderProcessHostImpl::GetExistingProcessHost(
 
   MAYBEVLOG(4) << __func__ << ": Found " << suitable_renderers.size()
                << " suitable process hosts out of "
-               << RenderProcessHostImpl::GetProcessCount() << ".";
+               << RenderProcessHostImpl::GetCount() << ".";
 
   // Now pick a random suitable renderer, if we have any.
   if (!suitable_renderers.empty()) {
