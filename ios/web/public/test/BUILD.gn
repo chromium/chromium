@@ -147,6 +147,7 @@ source_set("util") {
     "//base",
     "//base/test:test_support",
     "//ios/net",
+    "//ios/web/common:features",
     "//ios/web/find_in_page",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",

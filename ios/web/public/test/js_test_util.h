@@ -18,6 +18,14 @@ class WebState;
 
 namespace test {
 
+// These functions synchronously execute `script` in `web_view` and wait for its
+// completion. Prefer these variants over those below returning `id` when
+// the caller is not interested in the return value.
+void ExecuteJavaScriptInWebView(WKWebView* web_view, NSString* script);
+void ExecuteJavaScriptInWebView(WKWebView* web_view,
+                                NSString* script,
+                                NSError* __autoreleasing* error);
+
 // These functions synchronously execute JavaScript and return result as id.
 // id will be backed up by different classes depending on resulting JS type:
 // NSString (string), NSNumber (number or boolean), NSDictionary (object),
