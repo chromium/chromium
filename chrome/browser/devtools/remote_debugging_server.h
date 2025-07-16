@@ -33,6 +33,12 @@ class RemoteDebuggingServer {
 
   static void EnableTetheringForDebug();
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Enables the default user data dir check even for non-Chrome branded builds,
+  // for testing.
+  static void EnableDefaultUserDataDirCheckForTesting();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   RemoteDebuggingServer(const RemoteDebuggingServer&) = delete;
   RemoteDebuggingServer& operator=(const RemoteDebuggingServer&) = delete;
 

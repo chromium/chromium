@@ -42,6 +42,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
+#include "chrome/browser/devtools/remote_debugging_server.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -2695,21 +2696,19 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, DiscoveryPage) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class RemoteDebuggingUserDataDirTest
     : public RemoteDebuggingTest,
-      public ::testing::WithParamInterface<
-          std::tuple</*default_user_dir*/ bool, /*enable_the_feature*/ bool>> {
+      public ::testing::WithParamInterface</*default_user_dir*/ bool> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kDevToolsDebuggingRestrictions, IsFeatureEnabled());
+    // Explicitly enable the checking, which is normally only enabled for
+    // GOOGLE_CHROME_BRANDING branded builds.
+    RemoteDebuggingServer::EnableDefaultUserDataDirCheckForTesting();
     chrome::SetUsingDefaultUserDataDirectoryForTesting(
         IsUsingStandardUserDataDir());
     RemoteDebuggingTest::SetUp();
   }
 
  protected:
-  static bool IsUsingStandardUserDataDir() { return std::get<0>(GetParam()); }
-
-  static bool IsFeatureEnabled() { return std::get<1>(GetParam()); }
+  static bool IsUsingStandardUserDataDir() { return GetParam(); }
 
   base::HistogramTester histograms_;
 
@@ -2725,23 +2724,20 @@ IN_PROC_BROWSER_TEST_P(RemoteDebuggingUserDataDirTest, AttemptDebugging) {
           : /*kDebuggingRequestedWithNonDefaultUserDataDir*/ 1,
       1);
 
-  if (IsUsingStandardUserDataDir() && IsFeatureEnabled()) {
+  if (IsUsingStandardUserDataDir()) {
     EXPECT_FALSE(RunExtensionTest("discovery_page"));
   } else {
     EXPECT_TRUE(RunExtensionTest("discovery_page"));
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    RemoteDebuggingUserDataDirTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
-    [](const auto& info) {
-      return base::StrCat({std::get<0>(info.param) ? "DefaultUserDataDir"
-                                                   : "NonDefaultUserDataDir",
-                           "AndFeature",
-                           std::get<1>(info.param) ? "Enabled" : "Disabled"});
-    });
+INSTANTIATE_TEST_SUITE_P(,
+                         RemoteDebuggingUserDataDirTest,
+                         testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "DefaultUserDataDir"
+                                             : "NonDefaultUserDataDir";
+                         });
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
