@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
@@ -134,8 +135,9 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                 mPersonalDataManager.getFacilitatedPaymentsEwalletPref();
         boolean isFacilitatedPaymentsPixEnabled =
                 mPersonalDataManager.getFacilitatedPaymentsPixPref();
-
-        if (mEwallets.length > 0) {
+        if (!ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM)
+                && mEwallets.length > 0) {
             ChromeSwitchPreference eWalletSwitch = new ChromeSwitchPreference(getStyledContext());
             eWalletSwitch.setChecked(isFacilitatedPaymentsEwalletEnabled);
             eWalletSwitch.setKey(PREFERENCE_KEY_EWALLET);
