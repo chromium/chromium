@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -87,9 +88,16 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
 
  protected:
   // This function is protected virtual to allow mocking in tests.
-  virtual bool ShouldAllowRequest(subresource_filter::LoadPolicy load_policy);
+  virtual bool ShouldAllowRequest();
 
   GURL GetCurrentURL() { return current_url_; }
+
+  subresource_filter::mojom::ActivationLevel GetCurrentActivation() {
+    if (activation_state_.has_value()) {
+      return activation_state_.value().activation_level;
+    }
+    return subresource_filter::mojom::ActivationLevel::kDisabled;
+  }
 
   // Only to be used to inject an agent in unittests in the absence of a
   // frame.
@@ -100,6 +108,9 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
     waiting_for_agent_ = true;
     renderer_agent_ = renderer_agent;
   }
+
+  // The `LoadPolicy` returned by the ruleset check, if any.
+  std::optional<subresource_filter::LoadPolicy> load_policy_;
 
  private:
   // Checks whether filtering is activated or not, and if so, whether the URL
@@ -127,6 +138,9 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
   std::optional<std::string> devtools_request_id_;
   bool deferred_ = false;
   std::optional<subresource_filter::mojom::ActivationState> activation_state_;
+
+  // Time tracking for metrics collection.
+  base::TimeTicks defer_timestamp_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
