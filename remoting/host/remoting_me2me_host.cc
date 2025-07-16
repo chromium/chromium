@@ -277,7 +277,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   void OnConfigWatcherError() override;
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelError() override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
@@ -964,10 +963,6 @@ void HostProcess::CreateAuthenticatorFactory() {
 }
 
 // IPC::Listener implementation.
-bool HostProcess::OnMessageReceived(const IPC::Message& message) {
-  NOTREACHED() << "Received unexpected IPC type: " << message.type();
-}
-
 void HostProcess::OnChannelError() {
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
 

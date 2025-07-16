@@ -41,7 +41,6 @@ class Location;
 
 namespace IPC {
 class ChannelProxy;
-class Message;
 }  // namespace IPC
 
 namespace remoting {
@@ -102,7 +101,6 @@ class DesktopSessionAgent
   DesktopSessionAgent& operator=(const DesktopSessionAgent&) = delete;
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(std::int32_t peer_pid) override;
   void OnChannelError() override;
   void OnAssociatedInterfaceRequest(

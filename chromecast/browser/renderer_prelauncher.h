@@ -40,9 +40,6 @@ class RendererPrelauncher : private IPC::Listener {
   }
 
  private:
-  // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& message) override;
-
   content::BrowserContext* const browser_context_;
   scoped_refptr<content::SiteInstance> site_instance_;
   const GURL gurl_;

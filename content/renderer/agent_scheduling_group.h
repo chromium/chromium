@@ -92,7 +92,6 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
  private:
   // IPC::Listener:
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnBadMessageReceived(const IPC::Message& message) override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,

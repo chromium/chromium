@@ -431,10 +431,6 @@ void GpuChannelHost::Listener::Close() {
   OnChannelError();
 }
 
-bool GpuChannelHost::Listener::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
 void GpuChannelHost::Listener::OnChannelError() {
   AutoLock lock(lock_);
   channel_ = nullptr;

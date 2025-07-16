@@ -853,10 +853,6 @@ void RenderViewHostImpl::AnimateDoubleTapZoom(const gfx::Point& point,
 ///////////////////////////////////////////////////////////////////////////////
 // RenderViewHostImpl, IPC message handlers:
 
-bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
-  return false;
-}
-
 std::string RenderViewHostImpl::ToDebugString() {
   return "RVHI:" + delegate_->GetCreatorLocation().ToString();
 }

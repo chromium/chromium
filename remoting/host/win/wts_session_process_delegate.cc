@@ -92,7 +92,6 @@ class WtsSessionProcessDelegate::Core
                      DWORD error) override;
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
   void OnAssociatedInterfaceRequest(
@@ -355,12 +354,6 @@ void WtsSessionProcessDelegate::Core::OnIOCompleted(
       break;
     }
   }
-}
-
-bool WtsSessionProcessDelegate::Core::OnMessageReceived(
-    const IPC::Message& message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  NOTREACHED() << "Received unexpected IPC type: " << message.type();
 }
 
 void WtsSessionProcessDelegate::Core::OnChannelConnected(int32_t peer_pid) {

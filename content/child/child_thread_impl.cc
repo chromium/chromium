@@ -843,10 +843,6 @@ void ChildThreadImpl::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
     child_process_host_->BindHostReceiver(std::move(receiver));
 }
 
-bool ChildThreadImpl::OnMessageReceived(const IPC::Message& msg) {
-  return false;
-}
-
 void ChildThreadImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {

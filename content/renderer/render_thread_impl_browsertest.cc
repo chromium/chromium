@@ -196,7 +196,6 @@ class RenderThreadImplBrowserTest : public testing::Test,
   }
 
   // ChildProcessHostDelegate implementation:
-  bool OnMessageReceived(const IPC::Message&) override { return true; }
   const base::Process& GetProcess() override { return null_process_; }
 
  protected:

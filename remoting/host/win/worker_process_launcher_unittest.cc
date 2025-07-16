@@ -103,7 +103,6 @@ class MockWorkerListener : public IPC::Listener,
               (override));
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
@@ -112,11 +111,6 @@ class MockWorkerListener : public IPC::Listener,
   mojo::AssociatedReceiver<mojom::WorkerProcessControl> worker_process_control_{
       this};
 };
-
-bool MockWorkerListener::OnMessageReceived(const IPC::Message& message) {
-  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
-  return false;
-}
 
 void MockWorkerListener::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
@@ -141,7 +135,6 @@ class WorkerProcessLauncherTest : public testing::Test, public IPC::Listener {
   void SetUp() override;
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
 
@@ -245,11 +238,6 @@ void WorkerProcessLauncherTest::SetUp() {
   EXPECT_CALL(*launcher_delegate_, KillProcess())
       .Times(AnyNumber())
       .WillRepeatedly(Invoke(this, &WorkerProcessLauncherTest::KillProcess));
-}
-
-bool WorkerProcessLauncherTest::OnMessageReceived(const IPC::Message& message) {
-  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
-  return false;
 }
 
 void WorkerProcessLauncherTest::OnChannelConnected(int32_t peer_pid) {

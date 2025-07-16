@@ -47,10 +47,4 @@ bool RendererPrelauncher::IsForURL(const GURL& gurl) const {
   return site_instance() == site_instance()->GetRelatedSiteInstance(gurl);
 }
 
-// We don't process any IPC messages, but we do register as an IPC receiver to
-// keep the RenderProcessHost alive.
-bool RendererPrelauncher::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
 }  // namespace chromecast

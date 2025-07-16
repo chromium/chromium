@@ -101,9 +101,6 @@ class BrowserIPCListener : public IPC::Listener {
   }
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& msg) override {
-    NOTREACHED() << "The browser should not receive messages";
-  }
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override {

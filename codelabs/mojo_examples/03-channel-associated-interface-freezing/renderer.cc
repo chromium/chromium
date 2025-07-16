@@ -89,10 +89,6 @@ class RendererIPCListener : public IPC::Listener {
 
  private:
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& msg) override {
-    LOG(WARNING) << "The renderer received a message";
-    return true;
-  }
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override {

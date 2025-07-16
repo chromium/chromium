@@ -140,7 +140,6 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   void ExposeInterfacesToBrowser(mojo::BinderMap binders);
 
   // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& msg) override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;

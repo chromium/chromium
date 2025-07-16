@@ -107,11 +107,6 @@ DesktopSessionAgent::DesktopSessionAgent(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 }
 
-bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  NOTREACHED() << "Received unexpected IPC type: " << message.type();
-}
-
 void DesktopSessionAgent::OnChannelConnected(std::int32_t peer_pid) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 

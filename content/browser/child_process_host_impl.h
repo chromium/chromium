@@ -99,7 +99,6 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
 
   // IPC::Listener methods:
-  bool OnMessageReceived(const IPC::Message& msg) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
   void OnBadMessageReceived(const IPC::Message& message) override;

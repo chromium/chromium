@@ -93,11 +93,6 @@ void DesktopProcess::LockWorkstation() {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-bool DesktopProcess::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  NOTREACHED() << "Received unexpected IPC type: " << message.type();
-}
-
 void DesktopProcess::OnChannelConnected(int32_t peer_pid) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 

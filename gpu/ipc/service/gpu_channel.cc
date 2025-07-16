@@ -801,11 +801,6 @@ base::WeakPtr<GpuChannel> GpuChannel::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool GpuChannel::OnMessageReceived(const IPC::Message& msg) {
-  // All messages should be pushed to channel_messages_ and handled separately.
-  NOTREACHED();
-}
-
 void GpuChannel::OnChannelError() {
   gpu_channel_manager_->RemoveChannel(client_id_);
 }

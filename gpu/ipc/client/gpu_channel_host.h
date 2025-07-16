@@ -247,7 +247,6 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
 
     // IPC::Listener implementation
     // (called on the IO thread):
-    bool OnMessageReceived(const IPC::Message& msg) override;
     void OnChannelError() override;
 
    private:

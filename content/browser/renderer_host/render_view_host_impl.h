@@ -372,7 +372,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderViewHostTest, RoutingIdSane);
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& msg) override;
   std::string ToDebugString() override;
 
   void RenderViewReady();

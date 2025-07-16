@@ -114,7 +114,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   bool is_gpu_host() const { return is_gpu_host_; }
 
   // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& msg) override;
   void OnChannelError() override;
 
   // gpu::IsolationKeyProvider:

@@ -162,10 +162,6 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
 
-bool AgentSchedulingGroup::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
 void AgentSchedulingGroup::OnBadMessageReceived(const IPC::Message& message) {
   // Not strictly required, since we don't currently do anything with bad
   // messages in the renderer, but if we ever do then this will "just work".

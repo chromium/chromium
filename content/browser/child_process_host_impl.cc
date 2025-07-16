@@ -283,10 +283,6 @@ void ChildProcessHostImpl::BindHostReceiver(
   delegate_->BindHostReceiver(std::move(receiver));
 }
 
-bool ChildProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
-  return false;
-}
-
 void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
   // Propagate the pseudonymization salt to all the child processes.
   //

@@ -216,10 +216,6 @@ bool RenderFrameProxyHost::Send(IPC::Message* msg) {
   return GetAgentSchedulingGroup().Send(msg);
 }
 
-bool RenderFrameProxyHost::OnMessageReceived(const IPC::Message& msg) {
-  return false;
-}
-
 std::string RenderFrameProxyHost::ToDebugString() {
   return "RFPH:" + frame_tree_node_->current_frame_host()->ToDebugString();
 }

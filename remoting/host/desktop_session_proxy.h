@@ -48,7 +48,6 @@ class SingleThreadTaskRunner;
 
 namespace IPC {
 class ChannelProxy;
-class Message;
 }  // namespace IPC
 
 namespace webrtc {
@@ -115,7 +114,6 @@ class DesktopSessionProxy
   void SetCapabilities(const std::string& capabilities);
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
   void OnAssociatedInterfaceRequest(
