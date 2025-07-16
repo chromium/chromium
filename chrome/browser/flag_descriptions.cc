@@ -1361,7 +1361,7 @@ const char kContextualSearchWithCredentialsForDebugDescription[] =
     "When this is enabled, if a user do the contextual search, the credentials "
     "mode will be include.";
 const char kFacilitatedPaymentsEnableA2APaymentName[] =
-    "Enable allowlist for Account to Account Payment";
+    "Enable Account to Account payments";
 const char kFacilitatedPaymentsEnableA2APaymentDescription[] =
     "When enabled, Chrome will offer an app list when a supported "
     "payment link is detected. Users can choose the payment app they want to "
