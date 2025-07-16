@@ -40,6 +40,10 @@ template("viz_source_set") {
     }
     configs -= viz_remove_configs
     configs += viz_add_configs
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -62,6 +66,10 @@ template("viz_static_library") {
     }
     configs -= viz_remove_configs
     configs += viz_add_configs
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
