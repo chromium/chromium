@@ -97,7 +97,7 @@ struct GL_EXPORT GLContextAttribs {
   GLContextAttribs& operator=(GLContextAttribs&& other);
 
   GpuPreference gpu_preference = GpuPreference::kLowPower;
-  bool bind_generates_resource = true;
+  bool bind_generates_resource = false;
   bool webgl_compatibility_context = false;
   bool global_texture_share_group = false;
   bool global_semaphore_share_group = false;

@@ -197,7 +197,8 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     context_attributes.push_back(attribs.bind_generates_resource ? EGL_TRUE
                                                                  : EGL_FALSE);
   } else {
-    DCHECK(attribs.bind_generates_resource);
+    // For a non-ANGLE EGL context we can't disable bind generates resource
+    // behavior but Chrome shouldn't rely on it.
   }
 
   if (gl_display_->ext->b_EGL_ANGLE_create_context_webgl_compatibility) {
