@@ -1273,6 +1273,10 @@ bool CSSMathExpressionNumericLiteral::IsComputationallyIndependent() const {
   return value_->IsComputationallyIndependent();
 }
 
+bool CSSMathExpressionNumericLiteral::MayHaveRelativeUnit() const {
+  return CSSPrimitiveValue::IsRelativeUnit(value_->GetType());
+}
+
 void CSSMathExpressionNumericLiteral::Trace(Visitor* visitor) const {
   visitor->Trace(value_);
   CSSMathExpressionNode::Trace(visitor);
@@ -2951,6 +2955,15 @@ bool CSSMathExpressionOperation::IsComputationallyIndependent() const {
 bool CSSMathExpressionOperation::IsElementDependent() const {
   for (const CSSMathExpressionNode* operand : operands_) {
     if (operand->IsElementDependent()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool CSSMathExpressionOperation::MayHaveRelativeUnit() const {
+  for (const CSSMathExpressionNode* operand : operands_) {
+    if (operand->MayHaveRelativeUnit()) {
       return true;
     }
   }

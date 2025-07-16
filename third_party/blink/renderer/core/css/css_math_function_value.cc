@@ -56,8 +56,7 @@ CSSMathFunctionValue* CSSMathFunctionValue::Create(const Length& length,
 }
 
 bool CSSMathFunctionValue::MayHaveRelativeUnit() const {
-  UnitType resolved_type = expression_->ResolvedUnitType();
-  return IsRelativeUnit(resolved_type) || resolved_type == UnitType::kUnknown;
+  return expression_->MayHaveRelativeUnit();
 }
 
 double CSSMathFunctionValue::ComputeDegrees(
