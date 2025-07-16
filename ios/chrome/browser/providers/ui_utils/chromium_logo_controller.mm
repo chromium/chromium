@@ -20,6 +20,8 @@
   return self;
 }
 
+#pragma mark - LogoVendor
+
 - (void)fetchDoodle {
   // Do nothing.
 }
@@ -34,6 +36,9 @@
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
   return nil;
+}
+
+- (void)disconnect {
 }
 
 @end

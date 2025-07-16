@@ -46,6 +46,9 @@ class WebState;
 // Updates the vendor's WebState.
 - (void)setWebState:(web::WebState*)webState;
 
+// Disconnect the instance.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_LOGO_VENDOR_H_

@@ -404,6 +404,9 @@
 
   [sceneState.profileState removeObserver:self];
 
+  [self.logoVendor disconnect];
+  self.logoVendor = nil;
+
   [_tabGroupIndicatorCoordinator stop];
   _tabGroupIndicatorCoordinator = nil;
 
