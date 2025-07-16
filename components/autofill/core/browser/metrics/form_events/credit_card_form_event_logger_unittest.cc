@@ -97,14 +97,6 @@ class CreditCardFormEventLoggerTestWithParsedFormLogging
         features::kAutofillEnableLogFormEventsToAllParsedFormTypes, GetParam());
   }
 
-  void SkipOnAutomotive() {
-#if BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-      GTEST_SKIP() << "This test should not run on automotive.";
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -840,7 +832,11 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 // Test that we log filled form events for credit cards.
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        CreditCardFilledFormEventsPreviewOnly) {
-  SkipOnAutomotive();
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -863,7 +859,11 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        CreditCardFilledFormEventsFill) {
-  SkipOnAutomotive();
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -886,7 +886,11 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        CreditCardFilledFormEventsFillVirtualCard) {
-  SkipOnAutomotive();
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -912,7 +916,11 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        CreditCardFilledFormEventsFillMaskedServerCard) {
-  SkipOnAutomotive();
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
@@ -938,7 +946,11 @@ TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
 
 TEST_P(CreditCardFormEventLoggerTestWithParsedFormLogging,
        CreditCardFilledFormEventsFillTwice) {
-  SkipOnAutomotive();
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   paydm().SetPaymentMethodsMandatoryReauthEnabled(false);
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/true,
