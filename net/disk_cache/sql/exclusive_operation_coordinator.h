@@ -9,6 +9,8 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <variant>
+#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
