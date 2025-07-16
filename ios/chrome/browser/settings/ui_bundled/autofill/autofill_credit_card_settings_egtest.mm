@@ -145,6 +145,24 @@ id<GREYMatcher> BottomToolbar() {
       performAction:grey_tap()];
 }
 
+// Asserts that the toolbar is visible. On iOS26 assert that buttons in the
+// toolbar are visible.
+- (void)assertToolbarIsVisible {
+  if (!iOS26_OR_ABOVE()) {
+    [[EarlGrey selectElementWithMatcher:BottomToolbar()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    // accessibilityIdentifier of toolbars is not working on iOS26, check
+    // instead that buttons in the toolbar are visible.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kSettingsToolbarEditDoneButtonId)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kSettingsToolbarDeleteButtonId)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+}
+
 // Close the settings.
 - (void)exitSettingsMenu {
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
@@ -509,19 +527,17 @@ id<GREYMatcher> BottomToolbar() {
   [AutofillAppInterface mockReauthenticationModuleExpectedResult:
                             ReauthenticationResult::kSuccess];
   [self openCreditCardListInEditMode];
+  [self assertToolbarIsVisible];
 
-  [[EarlGrey selectElementWithMatcher:BottomToolbar()]
-      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
                                           [self creditCardLabel:lastDigits])]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:BottomToolbar()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [self assertToolbarIsVisible];
+
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
                                           [self creditCardLabel:lastDigits])]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:BottomToolbar()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [self assertToolbarIsVisible];
 }
 
 // Checks the 'Delete' button is always visible.
