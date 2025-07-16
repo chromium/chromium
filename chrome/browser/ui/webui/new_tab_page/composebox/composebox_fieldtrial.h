@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_NTP_COMPOSEBOX_FIELDTRIAL_H_
-#define COMPONENTS_SEARCH_NTP_COMPOSEBOX_FIELDTRIAL_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_COMPOSEBOX_FIELDTRIAL_H_
+#define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_COMPOSEBOX_FIELDTRIAL_H_
 
 #include "base/metrics/field_trial_params.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
 
-namespace ntp_composebox_fieldtrial {
+namespace ntp_composebox {
 
 inline constexpr char kConfigParamParseSuccessHistogram[] =
     "NewTabPage.Composebox.ConfigParseSuccess";
@@ -53,6 +53,6 @@ struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
 using ScopedFeatureConfigForTesting =
     omnibox_feature_configs::ScopedConfigForTesting<FeatureConfig>;
 
-}  // namespace ntp_composebox_fieldtrial
+}  // namespace ntp_composebox
 
-#endif  // COMPONENTS_SEARCH_NTP_COMPOSEBOX_FIELDTRIAL_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_COMPOSEBOX_FIELDTRIAL_H_

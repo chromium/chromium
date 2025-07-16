@@ -107,6 +107,7 @@
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
@@ -141,7 +142,6 @@
 #include "components/commerce/core/mojom/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/search/ntp_features.h"
 #include "components/user_education/common/user_education_features.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -716,7 +716,7 @@ void PopulateChromeWebUIFrameBinders(
         file_suggestion::mojom::MicrosoftFilesPageHandler, NewTabPageUI>(map);
   }
 
-  if (ntp_composebox_fieldtrial::FeatureConfig::Get().enabled) {
+  if (ntp_composebox::FeatureConfig::Get().enabled) {
     RegisterWebUIControllerInterfaceBinder<
         composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
   }

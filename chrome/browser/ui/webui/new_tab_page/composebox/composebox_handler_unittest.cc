@@ -20,11 +20,11 @@
 #include "base/version_info/channel.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/variations/variations_client.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -168,7 +168,7 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
   MockQueryController& query_controller() { return *query_controller_; }
   TemplateURLService& template_url_service() { return *template_url_service_; }
 
-  ntp_composebox_fieldtrial::FeatureConfig& scoped_config() {
+  ntp_composebox::FeatureConfig& scoped_config() {
     return scoped_config_.Get();
   }
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -207,7 +207,7 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
   testing::NiceMock<MockPage> mock_page_;
 
  private:
-  ntp_composebox_fieldtrial::ScopedFeatureConfigForTesting scoped_config_;
+  ntp_composebox::ScopedFeatureConfigForTesting scoped_config_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   TestWebContentsDelegate delegate_;

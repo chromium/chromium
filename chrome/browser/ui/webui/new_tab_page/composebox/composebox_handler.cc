@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "content/public/browser/page_navigator.h"
 
 ComposeboxHandler::ComposeboxHandler(
@@ -75,7 +75,7 @@ void ComposeboxHandler::AddFile(
     file_info_metadata->mime_type_ = lens::MimeType::kPdf;
   } else if ((file_info_mojom->mime_type).find("image") != std::string::npos) {
     file_info_metadata->mime_type_ = lens::MimeType::kImage;
-    auto field_config = ntp_composebox_fieldtrial::FeatureConfig::Get();
+    auto field_config = ntp_composebox::FeatureConfig::Get();
     image_options = composebox::ImageEncodingOptions{
         .max_size = field_config.downscale_max_image_size,
         .max_height = field_config.downscale_max_image_height,

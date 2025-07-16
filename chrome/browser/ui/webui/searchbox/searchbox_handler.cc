@@ -22,6 +22,7 @@
 #include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -29,7 +30,6 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_client.h"
@@ -507,7 +507,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("searchboxShowComposeAnimation",
                      profile->GetPrefs()->GetInteger(
                          prefs::kNtpComposeButtonShownCountPrefName) <
-                         ntp_composebox_fieldtrial::FeatureConfig::Get()
+                         ntp_composebox::FeatureConfig::Get()
                              .config.entry_point()
                              .num_page_load_animations());
 }

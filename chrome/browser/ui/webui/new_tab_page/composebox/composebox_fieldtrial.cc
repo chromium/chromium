@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search/ntp_composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 
 #include <string>
 
@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace ntp_composebox_fieldtrial {
+namespace ntp_composebox {
 
 namespace {
 
@@ -117,4 +117,4 @@ FeatureConfig::FeatureConfig()
       downscale_max_image_height(kDownscaleMaxImageHeightParam.Get()),
       image_compression_quality(ImageCompressionQualityParam.Get()) {}
 
-}  // namespace ntp_composebox_fieldtrial
+}  // namespace ntp_composebox

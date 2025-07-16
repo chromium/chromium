@@ -8,15 +8,19 @@ assert(!is_android)
 
 source_set("composebox") {
   sources = [
+    "composebox_fieldtrial.cc",
+    "composebox_fieldtrial.h",
     "composebox_handler.cc",
     "composebox_handler.h",
   ]
   deps = [
     ":mojo_bindings",
     "//base",
+    "//components/omnibox/common",
     "//components/omnibox/composebox",
     "//components/search",
     "//content/public/browser",
+    "//third_party/omnibox_proto",
     "//ui/base:base",
   ]
 }
@@ -32,7 +36,10 @@ mojom("mojo_bindings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "composebox_handler_unittest.cc" ]
+  sources = [
+    "composebox_fieldtrial_unittest.cc",
+    "composebox_handler_unittest.cc",
+  ]
   deps = [
     ":composebox",
     "//base/test:test_support",

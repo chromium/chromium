@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/tabs/tab_group_home/constants.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
@@ -151,7 +152,6 @@
 #include "components/remote_cocoa/app_shim/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/saved_tab_groups/public/features.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -7323,12 +7323,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-compose-entrypoint",
      flag_descriptions::kNtpSearchboxComposeEntrypointName,
      flag_descriptions::kNtpSearchboxComposeEntrypointDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         ntp_composebox_fieldtrial::kNtpSearchboxComposeEntrypoint)},
+     FEATURE_VALUE_TYPE(ntp_composebox::kNtpSearchboxComposeEntrypoint)},
 
     {"ntp-composebox", flag_descriptions::kNtpComposeboxName,
      flag_descriptions::kNtpComposeboxDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_composebox_fieldtrial::kNtpComposebox)},
+     FEATURE_VALUE_TYPE(ntp_composebox::kNtpComposebox)},
 
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,

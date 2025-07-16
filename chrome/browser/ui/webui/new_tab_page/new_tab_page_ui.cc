@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
@@ -85,7 +86,6 @@
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/search/ntp_composebox_fieldtrial.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -504,20 +504,19 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddInteger("composeboxFileMaxSize", 1000000);
   source->AddInteger("composeboxFileMaxCount", 1);
 
-  source->AddBoolean(
-      "searchboxShowComposeEntrypoint",
-      ntp_composebox_fieldtrial::IsNtpSearchboxComposeEntrypointEnabled() &&
-          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
+  source->AddBoolean("searchboxShowComposeEntrypoint",
+                     ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled() &&
+                         omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
   source->AddBoolean("searchboxShowComposebox",
-                     ntp_composebox_fieldtrial::FeatureConfig::Get().enabled &&
+                     ntp_composebox::FeatureConfig::Get().enabled &&
                          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
 
   source->AddBoolean("composeboxCloseByEscape",
-                     ntp_composebox_fieldtrial::FeatureConfig::Get()
+                     ntp_composebox::FeatureConfig::Get()
                          .config.composebox()
                          .close_by_escape());
   source->AddBoolean("composeboxCloseByClickOutside",
-                     ntp_composebox_fieldtrial::FeatureConfig::Get()
+                     ntp_composebox::FeatureConfig::Get()
                          .config.composebox()
                          .close_by_click_outside());
 
