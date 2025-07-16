@@ -76,9 +76,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   static constexpr base::TimeDelta kControlHideDelayAfterMove =
       base::Milliseconds(100);
 
-  // The amount of time to display the title and top controls scrim.
-  static constexpr base::TimeDelta kTitleShowDuration = base::Seconds(5);
-
   // VideoOverlayWindow:
   void Close() override;
   void ShowInactive() override;
@@ -154,8 +151,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   content::PictureInPictureWindowController* GetController() const;
   views::View* GetWindowBackgroundView() const;
   views::View* GetControlsContainerView() const;
-  views::View* GetTitleView() const;
-  views::View* GetControlsTopScrimView() const;
 
   gfx::Size& GetNaturalSize();
 
@@ -221,9 +216,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   views::View* window_background_view_for_testing() const {
     return window_background_view_;
   }
-  views::View* title_view_for_testing() const;
-  views::View* controls_top_scrim_view_for_testing() const;
-  base::OneShotTimer& initial_title_hide_timer_for_testing();
 
   void ForceControlsVisibleForTesting(bool visible);
   void StopForcingControlsVisibleForTesting();
@@ -249,8 +241,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   }
 
   void FinishTuckAnimationForTesting();
-
-  bool AreTitleAndScrimVisibleForTesting() const;
 
  protected:
   explicit VideoOverlayWindowViews(
@@ -352,12 +342,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void OnFaviconReceived(const SkBitmap& image);
   void UpdateFavicon(const gfx::ImageSkia& favicon);
 
-  // Called when the timer to initially show the title view fires.
-  void OnInitialTitleTimerFired();
-
-  // Returns true if the title and top scrim are visible.
-  bool AreTitleAndScrimVisible() const;
-
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
 
@@ -387,10 +371,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // Automatically hides the controls a few seconds after user tap gesture.
   base::RetainingOneShotTimer hide_controls_timer_;
-
-  // Automatically hides the title view a few seconds after the window is first
-  // shown.
-  base::OneShotTimer initial_title_hide_timer_;
 
   // Used to track movement of the window. The mouse movement and the window
   // movement can cause the overlay to flicker, because mouse movement shows
@@ -449,7 +429,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<SimpleOverlayWindowImageButton> live_caption_button_ = nullptr;
   raw_ptr<OverlayWindowLiveCaptionDialog> live_caption_dialog_ = nullptr;
   raw_ptr<AutoPipSettingOverlayView> overlay_view_ = nullptr;
-  raw_ptr<views::View> title_view_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Generates a nine patch layer painted with a highlight border for ChromeOS
@@ -508,12 +487,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // Used for when the controls change visibility.
   std::unique_ptr<OverlayControlsFadeAnimation> fade_animation_;
-
-  // Used for when the title changes visibility. The title and controls top
-  // scrim must be animated together.
-  std::unique_ptr<OverlayControlsFadeAnimation> title_fade_animation_;
-  std::unique_ptr<OverlayControlsFadeAnimation>
-      controls_top_scrim_fade_animation_;
 
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.
