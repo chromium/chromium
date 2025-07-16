@@ -8,11 +8,11 @@ import android.content.ComponentName;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
@@ -30,6 +30,7 @@ import org.chromium.components.webapk.lib.client.WebApkValidator;
  *
  * <p>TODO(peconn): Add a README.md for Notification Delegation.
  */
+@NullMarked
 public class NotificationPermissionUpdater {
     private static final String TAG = "PermissionUpdater";
 
@@ -165,7 +166,8 @@ public class NotificationPermissionUpdater {
      * which may contain a path. An origin has no path and would not fall within such a scope. So,
      * you must pass a more complete URL into this method to get matches for those cases.
      */
-    private static void findWebApkPackageName(String url, Callback<String> packageNameCallback) {
+    private static void findWebApkPackageName(
+            String url, Callback<@Nullable String> packageNameCallback) {
         String webApkPackageName =
                 WebApkValidator.queryFirstWebApkPackage(ContextUtils.getApplicationContext(), url);
         if (webApkPackageName == null) {

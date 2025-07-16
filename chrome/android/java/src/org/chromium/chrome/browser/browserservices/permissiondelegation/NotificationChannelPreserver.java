@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -19,6 +20,7 @@ import org.chromium.components.embedder_support.util.Origin;
  * <p>Lifecycle: Singleton. Thread safety: Only call methods on a single thread. Native: Does not
  * require native.
  */
+@NullMarked
 public class NotificationChannelPreserver {
     private NotificationChannelPreserver() {}
 

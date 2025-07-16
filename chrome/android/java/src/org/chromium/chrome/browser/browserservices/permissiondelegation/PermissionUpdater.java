@@ -9,6 +9,7 @@ import android.net.Uri;
 
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.util.Origin;
 
 /**
@@ -16,6 +17,7 @@ import org.chromium.components.embedder_support.util.Origin;
  * in Android. It also reverts the permission back to that the Origin had before a TWA was installed
  * in the case of TWA uninstallation.
  */
+@NullMarked
 public class PermissionUpdater {
     private static final String TAG = "PermissionUpdater";
 

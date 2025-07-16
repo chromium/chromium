@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.jni_zero.CalledByNative;
@@ -16,6 +15,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.url.GURL;
 
@@ -29,6 +30,7 @@ import org.chromium.url.GURL;
  * created for each new geolocation request. This class should not be used after "stopAndDestroy" is
  * called.
  */
+@NullMarked
 public class InstalledWebappGeolocationBridge {
     static final String EXTRA_NEW_LOCATION_AVAILABLE_CALLBACK = "onNewLocationAvailable";
     public static final String EXTRA_NEW_LOCATION_ERROR_CALLBACK = "onNewLocationError";

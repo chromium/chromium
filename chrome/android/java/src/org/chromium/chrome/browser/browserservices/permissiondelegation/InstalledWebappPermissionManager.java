@@ -14,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.Token;
@@ -22,6 +21,8 @@ import androidx.browser.trusted.Token;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -40,6 +41,7 @@ import java.util.Set;
  * <p>Lifecycle: This is a singleton. Thread safety: Only call methods on the UI thread as this
  * class may call into native. Native: Does not require native.
  */
+@NullMarked
 public class InstalledWebappPermissionManager {
     private static final String TAG = "PermissionManager";
 
@@ -88,17 +90,18 @@ public class InstalledWebappPermissionManager {
     }
 
     @UiThread
-    @Nullable
-    public static Set<Token> getAllDelegateApps(Origin origin) {
+    public static @Nullable Set<Token> getAllDelegateApps(Origin origin) {
         return getStore().getAllDelegateApps(origin);
     }
 
     @UiThread
     public static void updatePermission(
             Origin origin,
-            String packageName,
+            @Nullable String packageName,
             @ContentSettingsType.EnumType int type,
             @ContentSettingValues int settingValue) {
+        if (packageName == null) return;
+
         String appName = getAppNameForPackage(packageName);
         if (appName == null) return;
 
@@ -226,7 +229,7 @@ public class InstalledWebappPermissionManager {
      * Returns whether the delegate application for the origin has Android location permission, or
      * {@code null} if it does not exist or did not request location permission.
      */
-    public static @Nullable Boolean hasAndroidLocationPermission(String packageName) {
+    public static @Nullable Boolean hasAndroidLocationPermission(@Nullable String packageName) {
         if (packageName == null) return null;
 
         try {
@@ -242,9 +245,10 @@ public class InstalledWebappPermissionManager {
                 for (int i = 0; i < requestedPermissions.length; ++i) {
                     if (ACCESS_COARSE_LOCATION.equals(requestedPermissions[i])
                             || ACCESS_FINE_LOCATION.equals(requestedPermissions[i])) {
-                        if ((requestedPermissionsFlags[i]
-                                        & PackageInfo.REQUESTED_PERMISSION_GRANTED)
-                                != 0) {
+                        if (requestedPermissionsFlags != null
+                                && ((requestedPermissionsFlags[i]
+                                                & PackageInfo.REQUESTED_PERMISSION_GRANTED)
+                                        != 0)) {
                             return true;
                         }
                         locationRequested = true;

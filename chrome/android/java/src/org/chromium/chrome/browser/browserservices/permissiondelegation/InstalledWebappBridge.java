@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -22,6 +23,7 @@ import org.chromium.components.embedder_support.util.Origin;
  * Thread safety: Methods will only be called on the UI thread.
  * Native: Requires native to be loaded.
  */
+@NullMarked
 public class InstalledWebappBridge {
     private static long sNativeInstalledWebappProvider;
 

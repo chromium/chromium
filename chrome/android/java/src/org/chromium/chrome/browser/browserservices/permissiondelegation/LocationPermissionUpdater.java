@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 import android.content.ComponentName;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -18,6 +19,7 @@ import org.chromium.components.embedder_support.util.Origin;
  *
  * <p>TODO(eirage): Add a README.md for Location Delegation.
  */
+@NullMarked
 public class LocationPermissionUpdater {
     private static final String TAG = "TWALocations";
 
