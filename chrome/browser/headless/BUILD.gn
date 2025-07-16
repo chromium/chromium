@@ -154,5 +154,9 @@ if (!is_android) {
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test.js",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/http-interceptor.js",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

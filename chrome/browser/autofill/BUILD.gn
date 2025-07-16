@@ -202,6 +202,10 @@ if (!is_android) {
       "//components/ukm:test_support",
       "//testing/data_driven_testing",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -230,6 +234,10 @@ if (!is_android) {
       "//chrome/test:test_support_ui",
       "//components/javascript_dialogs",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   source_set("interactive_ui_tests") {
@@ -291,6 +299,10 @@ if (!is_android) {
     if (use_aura) {
       deps += [ "//chrome/browser/ui/aura/accessibility" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 

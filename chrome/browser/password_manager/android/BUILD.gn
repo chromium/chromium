@@ -697,6 +697,10 @@ source_set("unit_tests") {
     "//ui/android:android",
     "//ui/base:base",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzable_proto_library("unified_password_manager_proto") {

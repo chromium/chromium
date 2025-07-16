@@ -412,6 +412,10 @@ source_set("unittests") {
       "providers/openscreen/network_service_quic_packet_writer_unittest.cc",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # TODO(issuetracker.google.com/236160471): CDDL compiler doesn't build
