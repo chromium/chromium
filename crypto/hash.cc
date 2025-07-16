@@ -16,6 +16,7 @@ namespace crypto::hash {
 
 namespace {
 
+// TODO(https://issues.chromium.org/issues/430635196): Deduplicate.
 const EVP_MD* EVPMDForHashKind(HashKind kind) {
   switch (kind) {
     case HashKind::kSha1:

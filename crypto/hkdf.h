@@ -20,12 +20,14 @@
 
 namespace crypto {
 
+// TODO(https://issues.chromium.org/issues/430616377): delete this.
 CRYPTO_EXPORT
 std::string HkdfSha256(std::string_view secret,
                        std::string_view salt,
                        std::string_view info,
                        size_t derived_key_size);
 
+// TODO(https://issues.chromium.org/issues/430616377): delete this.
 template <size_t KeySize>
 std::array<uint8_t, KeySize> HkdfSha256(base::span<const uint8_t> secret,
                                         base::span<const uint8_t> salt,

@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "crypto/crypto_export.h"
+#include "crypto/hash.h"
 #include "crypto/subtle_passkey.h"
 
 namespace crypto::kdf {
@@ -41,6 +42,7 @@ struct ScryptParams {
 
 // TODO(https://issues.chromium.org/issues/369653192): document constraints on
 // params.
+// TODO(https://issues.chromium.org/issues/430635195): rename this.
 CRYPTO_EXPORT void DeriveKeyPbkdf2HmacSha1(const Pbkdf2HmacSha1Params& params,
                                            base::span<const uint8_t> password,
                                            base::span<const uint8_t> salt,
@@ -49,6 +51,7 @@ CRYPTO_EXPORT void DeriveKeyPbkdf2HmacSha1(const Pbkdf2HmacSha1Params& params,
 
 // TODO(https://issues.chromium.org/issues/369653192): document constraints on
 // params.
+// TODO(https://issues.chromium.org/issues/430635195): rename this.
 //
 // Note: this function CHECKs that the passed-in ScryptParams are valid. If you
 // are not sure if your params will be valid, consult a //crypto OWNER - the
@@ -58,6 +61,34 @@ CRYPTO_EXPORT void DeriveKeyScrypt(const ScryptParams& params,
                                    base::span<const uint8_t> salt,
                                    base::span<uint8_t> result,
                                    crypto::SubtlePassKey);
+
+// Derive a key using HKDF with the specified hash kind, into the given out
+// buffer, which must be the right size for that hash kind. The secret, salt,
+// and info parameters have meanings as described in RFC 5869.
+//
+// Note that it's illegal to request more than 255 * the size of the output of
+// the specified hash function. If you need large amounts of data generated from
+// one key, you are better off using a keyed CSPRNG.
+//
+// TODO(https://issues.chromium.org/issues/431672006): recommend a specific
+// keyed CSPRNG.
+CRYPTO_EXPORT void Hkdf(crypto::hash::HashKind kind,
+                        base::span<const uint8_t> secret,
+                        base::span<const uint8_t> salt,
+                        base::span<const uint8_t> info,
+                        base::span<uint8_t> out);
+
+// Same, but return an array containing the derived value. Templated on the
+// array size.
+template <size_t N>
+std::array<uint8_t, N> Hkdf(crypto::hash::HashKind kind,
+                            base::span<const uint8_t> secret,
+                            base::span<const uint8_t> salt,
+                            base::span<const uint8_t> info) {
+  std::array<uint8_t, N> out;
+  Hkdf(kind, secret, salt, info, out);
+  return out;
+}
 
 }  // namespace crypto::kdf
 

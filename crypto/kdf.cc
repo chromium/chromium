@@ -7,8 +7,29 @@
 #include "base/check_op.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/hkdf.h"
 
 namespace crypto::kdf {
+
+namespace {
+
+// Duplicated from crypto/hash
+// TODO(https://issues.chromium.org/issues/430635196): Deduplicate.
+const EVP_MD* EVPMDForHashKind(crypto::hash::HashKind kind) {
+  switch (kind) {
+    case crypto::hash::HashKind::kSha1:
+      return EVP_sha1();
+    case crypto::hash::HashKind::kSha256:
+      return EVP_sha256();
+    case crypto::hash::HashKind::kSha384:
+      return EVP_sha384();
+    case crypto::hash::HashKind::kSha512:
+      return EVP_sha512();
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 void DeriveKeyPbkdf2HmacSha1(const Pbkdf2HmacSha1Params& params,
                              base::span<const uint8_t> password,
@@ -36,6 +57,20 @@ void DeriveKeyScrypt(const ScryptParams& params,
                      params.max_memory_bytes, result.data(), result.size());
 
   CHECK_EQ(rv, 1);
+}
+
+void Hkdf(crypto::hash::HashKind kind,
+          base::span<const uint8_t> secret,
+          base::span<const uint8_t> salt,
+          base::span<const uint8_t> info,
+          base::span<uint8_t> out) {
+  // Even though ::HKDF() will fail in this situation, check it explicitly here
+  // to give better error info:
+  CHECK_LT(out.size(), 255 * DigestSizeForHashKind(kind));
+  CHECK_EQ(
+      ::HKDF(out.data(), out.size(), EVPMDForHashKind(kind), secret.data(),
+             secret.size(), salt.data(), salt.size(), info.data(), info.size()),
+      1);
 }
 
 }  // namespace crypto::kdf
