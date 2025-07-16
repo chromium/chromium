@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -26,6 +27,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.widget.Toast;
 
 /** Utility class for Chrome drag and drop implementations. */
+@NullMarked
 public class ChromeDragDropUtils {
     private static final int MAX_TAB_OR_GROUP_TEARING_FAILURE_COUNT_PER_DAY = 10;
 
@@ -92,11 +94,12 @@ public class ChromeDragDropUtils {
      * @return The index where the tab should be inserted in the destination model.
      */
     public static int handleDropInDifferentModel(
-            Context context, boolean isSourceIncognito, TabModelSelector selector) {
+            @Nullable Context context, boolean isSourceIncognito, TabModelSelector selector) {
         assert selector != null;
 
         // get Current selected tab in destination window.
         Tab destTab = selector.getCurrentTab();
+        assumeNonNull(destTab);
 
         // Determine the destination index for drop. If the source and destination window belong to
         // different models, show toast place the dragged view at the end of destination model.
@@ -110,7 +113,10 @@ public class ChromeDragDropUtils {
                             + 1;
         } else {
             destIndex = selector.getModel(isSourceIncognito).getCount();
-            Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();
+            if (context != null) {
+                Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG)
+                        .show();
+            }
         }
         return destIndex;
     }
@@ -149,7 +155,7 @@ public class ChromeDragDropUtils {
      * @param globalState The {@link DragDropGlobalState} containing drag data.
      * @return {@code true} if the dragged tab is part of a tab group, {@code false} otherwise.
      */
-    public static boolean isTabInGroupFromGlobalState(@NonNull DragDropGlobalState globalState) {
+    public static boolean isTabInGroupFromGlobalState(DragDropGlobalState globalState) {
         // We should only attempt to access this while we know there's an active drag.
         assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
         if (globalState.getData() instanceof ChromeTabDropDataAndroid) {

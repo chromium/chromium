@@ -9,10 +9,10 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -32,13 +32,14 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
  * Define the default behavior when {@link ChromeTabbedActivity} receive drag events that's not
  * consumed by any children views.
  */
+@NullMarked
 public class ChromeTabbedOnDragListener implements OnDragListener {
 
     private final MultiInstanceManager mMultiInstanceManager;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;
     private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
-    private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * Drag and Drop listener defines the default behavior {@link ChromeTabbedActivity} receive drag

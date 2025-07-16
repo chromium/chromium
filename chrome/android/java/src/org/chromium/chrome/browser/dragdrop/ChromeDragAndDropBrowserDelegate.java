@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -14,13 +16,13 @@ import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -35,6 +37,7 @@ import org.chromium.ui.dragdrop.DropDataProviderUtils;
 import org.chromium.ui.util.XrUtils;
 
 /** Delegate for browser related functions used by Drag and Drop. */
+@NullMarked
 public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDelegate {
     private static final String TAG = "ChromeDnDDelegate";
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
@@ -43,10 +46,10 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     private static final int DRAG_DROP_PENDING_INTENT_REQUEST_CODE = 973451;
     @VisibleForTesting static final String PARAM_DROP_IN_CHROME = "DropInChrome";
 
-    private static Item sItemWithPendingIntentForTesting;
+    private static @Nullable Item sItemWithPendingIntentForTesting;
     private static boolean sDefinedItemWithPendingIntentForTesting;
     private static boolean sClipDataItemBuilderNotFound;
-    private final Supplier<Activity> mActivitySupplier;
+    private final Supplier<@Nullable Activity> mActivitySupplier;
     private final boolean mSupportDropInChrome;
     private final boolean mSupportAnimatedImageDragShadow;
 
@@ -84,7 +87,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     }
 
     @Override
-    public DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
+    public @Nullable DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
         assert mSupportDropInChrome : "Should only be accessed when drop in Chrome.";
 
         if (mActivitySupplier.get() == null) {
@@ -94,7 +97,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     }
 
     @Override
-    public Intent createUrlIntent(String urlString, @UrlIntentSource int intentSrc) {
+    public @Nullable Intent createUrlIntent(String urlString, @UrlIntentSource int intentSrc) {
         Intent intent = null;
         Activity activity = mActivitySupplier.get();
         if (activity != null && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
@@ -110,7 +113,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
 
     @SuppressWarnings("UnusedVariable")
     @Override
-    public ClipData buildClipData(@NonNull DropDataAndroid dropData) {
+    public ClipData buildClipData(DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
 
@@ -125,6 +128,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         }
 
         // Dragging to existing instances.
+        assertNonNull(mActivitySupplier.get());
         String text = chromeDropDataAndroid.buildTabClipDataText(mActivitySupplier.get());
         return new ClipData(null, chromeDropDataAndroid.getSupportedMimeTypes(), new Item(text));
     }
@@ -171,7 +175,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     }
 
     @SuppressWarnings("NewApi")
-    private static ClipData.Item buildClipDataItemWithPendingIntent(
+    private static ClipData.@Nullable Item buildClipDataItemWithPendingIntent(
             String clipDataText, PendingIntent pendingIntent) {
         if (sDefinedItemWithPendingIntentForTesting) return sItemWithPendingIntentForTesting;
         // This invocation is wrapped in a try-catch block to allow backporting of the

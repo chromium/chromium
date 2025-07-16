@@ -1335,7 +1335,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
+    public void moveTabToWindow(@Nullable Activity activity, Tab tab, int atIndex) {
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {
@@ -1347,7 +1347,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void moveTabGroupToWindow(
-            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
+            @Nullable Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
 
         // Get the current instance and move tab there.
@@ -1360,7 +1360,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @VisibleForTesting
-    InstanceInfo getInstanceInfoFor(Activity activity) {
+    InstanceInfo getInstanceInfoFor(@Nullable Activity activity) {
+        if (activity == null) return null;
+
         // Loop thru all instances to determine if the destination activity is present.
         int destinationWindowTaskId = INVALID_TASK_ID;
         for (int i : getAllPersistedInstanceIds()) {

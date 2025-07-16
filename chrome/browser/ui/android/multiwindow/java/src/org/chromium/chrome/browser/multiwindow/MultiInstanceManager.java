@@ -111,7 +111,7 @@ public abstract class MultiInstanceManager {
      * @param tab Tab that is to be moved to the current instance.
      * @param atIndex Tab position index in the destination window instance.
      */
-    public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
+    public void moveTabToWindow(@Nullable Activity activity, Tab tab, int atIndex) {
         // Not implemented
     }
 
@@ -123,7 +123,7 @@ public abstract class MultiInstanceManager {
      * @param atIndex Tab position index in the destination window instance.
      */
     public void moveTabGroupToWindow(
-            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
+            @Nullable Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
         // Not implemented
     }
 
