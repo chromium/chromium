@@ -129,7 +129,7 @@ public class LevelDBPersistedDataStorage implements PersistedDataStorage {
 
     @NativeMethods
     public interface Natives {
-        void init(LevelDBPersistedDataStorage caller, BrowserContextHandle handle);
+        void init(LevelDBPersistedDataStorage self, BrowserContextHandle handle);
 
         void destroy(long nativePersistedStateDB);
 

@@ -364,13 +364,12 @@ void InitializeBackendOnProfileCreated(Profile* profile) {
 
 OfflinePageDownloadBridge::OfflinePageDownloadBridge(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj)
+    const base::android::JavaParamRef<jobject>& obj)
     : weak_java_ref_(env, obj) {}
 
 OfflinePageDownloadBridge::~OfflinePageDownloadBridge() = default;
 
-void OfflinePageDownloadBridge::Destroy(JNIEnv* env,
-                                        const JavaParamRef<jobject>&) {
+void OfflinePageDownloadBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
@@ -400,7 +399,7 @@ void JNI_OfflinePageDownloadBridge_StartDownload(
 
 static jlong JNI_OfflinePageDownloadBridge_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const base::android::JavaParamRef<jobject>& obj) {
   ProfileKey* key = ::android::GetLastUsedRegularProfileKey();
   FullBrowserTransitionManager::Get()->RegisterCallbackOnProfileCreation(
       key, base::BindOnce(&InitializeBackendOnProfileCreated));

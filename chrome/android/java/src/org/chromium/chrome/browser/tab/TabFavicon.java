@@ -76,23 +76,22 @@ public class TabFavicon extends TabWebContentsUserData {
         mIdealFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
         mNavigationTransitionsIdealFaviconSize =
                 resources.getDimensionPixelSize(R.dimen.navigation_transitions_favicon_size);
-        mNativeTabFavicon =
-                TabFaviconJni.get().init(TabFavicon.this, mNavigationTransitionsIdealFaviconSize);
+        mNativeTabFavicon = TabFaviconJni.get().init(this, mNavigationTransitionsIdealFaviconSize);
     }
 
     @Override
     public void initWebContents(WebContents webContents) {
-        TabFaviconJni.get().setWebContents(mNativeTabFavicon, TabFavicon.this, webContents);
+        TabFaviconJni.get().setWebContents(mNativeTabFavicon, webContents);
     }
 
     @Override
     public void cleanupWebContents(@Nullable WebContents webContents) {
-        TabFaviconJni.get().resetWebContents(mNativeTabFavicon, TabFavicon.this);
+        TabFaviconJni.get().resetWebContents(mNativeTabFavicon);
     }
 
     @Override
     public void destroyInternal() {
-        TabFaviconJni.get().onDestroyed(mNativeTabFavicon, TabFavicon.this);
+        TabFaviconJni.get().onDestroyed(mNativeTabFavicon);
     }
 
     /**
@@ -108,7 +107,7 @@ public class TabFavicon extends TabWebContentsUserData {
             return mFavicon;
         }
 
-        return TabFaviconJni.get().getFavicon(mNativeTabFavicon, TabFavicon.this);
+        return TabFaviconJni.get().getFavicon(mNativeTabFavicon);
     }
 
     /**
@@ -201,14 +200,14 @@ public class TabFavicon extends TabWebContentsUserData {
 
     @NativeMethods
     interface Natives {
-        long init(TabFavicon caller, int navigaionTransitionFaviconSize);
+        long init(TabFavicon self, int navigaionTransitionFaviconSize);
 
-        void onDestroyed(long nativeTabFavicon, TabFavicon caller);
+        void onDestroyed(long nativeTabFavicon);
 
-        void setWebContents(long nativeTabFavicon, TabFavicon caller, WebContents webContents);
+        void setWebContents(long nativeTabFavicon, WebContents webContents);
 
-        void resetWebContents(long nativeTabFavicon, TabFavicon caller);
+        void resetWebContents(long nativeTabFavicon);
 
-        Bitmap getFavicon(long nativeTabFavicon, TabFavicon caller);
+        Bitmap getFavicon(long nativeTabFavicon);
     }
 }

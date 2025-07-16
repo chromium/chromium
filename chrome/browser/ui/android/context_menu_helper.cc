@@ -87,9 +87,7 @@ void ContextMenuHelper::DismissContextMenu() {
   Java_ContextMenuHelper_dismissContextMenu(env, java_obj_);
 }
 
-void ContextMenuHelper::OnContextMenuClosed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void ContextMenuHelper::OnContextMenuClosed(JNIEnv* env) {
   GetWebContents().NotifyContextMenuClosed(context_menu_params_.link_followed,
                                            context_menu_params_.impression);
 }

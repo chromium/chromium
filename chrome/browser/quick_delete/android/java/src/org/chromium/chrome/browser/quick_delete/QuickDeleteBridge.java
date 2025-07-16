@@ -33,19 +33,18 @@ class QuickDeleteBridge {
     }
 
     /**
-     * Creates a {@link QuickDeleteBridge} for accessing browsing history data for the current
-     * user.
+     * Creates a {@link QuickDeleteBridge} for accessing browsing history data for the current user.
      *
      * @param profile {@link Profile} The profile for which to fetch the browsing history.
      */
     public QuickDeleteBridge(Profile profile) {
-        mNativeQuickDeleteBridge = QuickDeleteBridgeJni.get().init(QuickDeleteBridge.this, profile);
+        mNativeQuickDeleteBridge = QuickDeleteBridgeJni.get().init(profile);
     }
 
     /** Destroys this instance so no further calls can be executed. */
     public void destroy() {
         if (mNativeQuickDeleteBridge != 0) {
-            QuickDeleteBridgeJni.get().destroy(mNativeQuickDeleteBridge, QuickDeleteBridge.this);
+            QuickDeleteBridgeJni.get().destroy(mNativeQuickDeleteBridge);
             mNativeQuickDeleteBridge = 0;
         }
     }
@@ -72,9 +71,9 @@ class QuickDeleteBridge {
 
     @NativeMethods
     interface Natives {
-        long init(QuickDeleteBridge caller, @JniType("Profile*") @Nullable Profile profile);
+        long init(@JniType("Profile*") @Nullable Profile profile);
 
-        void destroy(long nativeQuickDeleteBridge, QuickDeleteBridge caller);
+        void destroy(long nativeQuickDeleteBridge);
 
         void getLastVisitedDomainAndUniqueDomainCount(
                 long nativeQuickDeleteBridge, int timePeriod, DomainVisitsCallback callback);

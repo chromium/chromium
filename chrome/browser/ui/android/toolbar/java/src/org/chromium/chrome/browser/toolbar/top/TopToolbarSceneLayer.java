@@ -46,7 +46,6 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
         TopToolbarSceneLayerJni.get()
                 .updateToolbarLayer(
                         mNativePtr,
-                        TopToolbarSceneLayer.this,
                         mResourceManagerSupplier.get(),
                         model.get(TopToolbarOverlayProperties.RESOURCE_ID),
                         model.get(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR),
@@ -65,7 +64,6 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
         TopToolbarSceneLayerJni.get()
                 .updateProgressBar(
                         mNativePtr,
-                        TopToolbarSceneLayer.this,
                         progressInfo.progressBarRect.left,
                         progressInfo.progressBarRect.top,
                         progressInfo.progressBarRect.width(),
@@ -89,14 +87,13 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        TopToolbarSceneLayerJni.get()
-                .setContentTree(mNativePtr, TopToolbarSceneLayer.this, contentTree);
+        TopToolbarSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = TopToolbarSceneLayerJni.get().init(TopToolbarSceneLayer.this);
+            mNativePtr = TopToolbarSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
@@ -109,16 +106,12 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     interface Natives {
-        long init(TopToolbarSceneLayer caller);
+        long init(TopToolbarSceneLayer self);
 
-        void setContentTree(
-                long nativeTopToolbarSceneLayer,
-                TopToolbarSceneLayer caller,
-                SceneLayer contentTree);
+        void setContentTree(long nativeTopToolbarSceneLayer, SceneLayer contentTree);
 
         void updateToolbarLayer(
                 long nativeTopToolbarSceneLayer,
-                TopToolbarSceneLayer caller,
                 ResourceManager resourceManager,
                 int resourceId,
                 int toolbarBackgroundColor,
@@ -133,7 +126,6 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
 
         void updateProgressBar(
                 long nativeTopToolbarSceneLayer,
-                TopToolbarSceneLayer caller,
                 int progressBarX,
                 int progressBarY,
                 int progressBarWidth,

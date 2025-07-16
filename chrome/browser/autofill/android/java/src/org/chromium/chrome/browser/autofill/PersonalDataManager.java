@@ -1117,7 +1117,7 @@ public class PersonalDataManager implements Destroyable {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(PersonalDataManager caller, @JniType("Profile*") Profile profile);
+        long init(PersonalDataManager self, @JniType("Profile*") Profile profile);
 
         void destroy(long nativePersonalDataManagerAndroid);
 

@@ -58,7 +58,6 @@ class LayerTitleCache {
   // Called from Java, updates a native cc::slim::Layer based on the new texture
   // information.
   void UpdateLayer(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
                    jint tab_id,
                    jint title_resource_id,
                    jint icon_resource_id,
@@ -69,7 +68,6 @@ class LayerTitleCache {
   // Called from Java, updates a native cc::slim::Layer based on the new texture
   // information.
   void UpdateGroupLayer(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj,
                         const base::android::JavaParamRef<jobject>& group_token,
                         jint title_resource_id,
                         jint avatar_resource_id,
@@ -79,7 +77,6 @@ class LayerTitleCache {
 
   // Called from Java, updates icon.
   void UpdateIcon(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
                   jint tab_id,
                   jint icon_resource_id,
                   bool show_bubble);
@@ -87,7 +84,6 @@ class LayerTitleCache {
   // Called from Java, updates tab bubble if a shared tab is updated by
   // collaborators.
   void UpdateTabBubble(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
                        jint tab_id,
                        bool show_bubble);
 

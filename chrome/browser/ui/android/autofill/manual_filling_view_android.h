@@ -49,25 +49,19 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   // Called from Java via JNI:
   void OnFillingTriggered(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jint tab_type,
       const base::android::JavaParamRef<jobject>& j_user_info_field);
   void OnPasskeySelected(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
                          jint tab_type,
                          std::vector<uint8_t>& passkey);
   void OnOptionSelected(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj,
                         jint selected_action);
   void OnToggleChanged(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
                        jint selected_action,
                        jboolean enabled);
   void RequestAccessorySheet(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
                              jint tab_type);
-  void OnViewDestroyed(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj);
+  void OnViewDestroyed(JNIEnv* env);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();

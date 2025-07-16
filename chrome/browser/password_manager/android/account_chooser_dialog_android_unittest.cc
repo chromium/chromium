@@ -147,7 +147,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
   EXPECT_CALL(credential_callback_, Run(Pointee(*form.get())));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 1 /* credential_item */,
+                              1 /* credential_item */,
                               false /* signin_button_clicked */);
 }
 
@@ -167,7 +167,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
   EXPECT_CALL(credential_callback_, Run(Pointee(*form.get())));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 1 /* credential_item */,
+                              1 /* credential_item */,
                               false /* signin_button_clicked */);
 }
 
@@ -187,7 +187,7 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
   EXPECT_CALL(credential_callback_, Run(nullptr));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 1 /* credential_item */,
+                              1 /* credential_item */,
                               false /* signin_button_clicked */);
 }
 
@@ -203,7 +203,7 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 1 /* credential_item */,
+                              1 /* credential_item */,
                               false /* signin_button_clicked */);
 
   EXPECT_CALL(*authenticator_ptr, Cancel());

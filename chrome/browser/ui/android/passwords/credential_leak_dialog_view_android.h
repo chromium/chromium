@@ -35,13 +35,13 @@ class CredentialLeakDialogViewAndroid {
   void Show(ui::WindowAndroid* window_android);
 
   // Called from Java via JNI.
-  void Accepted(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Accepted(JNIEnv* env);
 
   // Called from Java via JNI.
-  void Cancelled(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Cancelled(JNIEnv* env);
 
   // Called from Java via JNI.
-  void Closed(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Closed(JNIEnv* env);
 
  private:
   // The controller which owns this dialog and handles the dialog events.

@@ -189,9 +189,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
         if (mNativeTabBrowserControlsConstraintsHelper != 0) {
             TabBrowserControlsConstraintsHelperJni.get()
-                    .onDestroyed(
-                            mNativeTabBrowserControlsConstraintsHelper,
-                            TabBrowserControlsConstraintsHelper.this);
+                    .onDestroyed(mNativeTabBrowserControlsConstraintsHelper);
         }
     }
 
@@ -305,7 +303,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         TabBrowserControlsConstraintsHelperJni.get()
                 .updateState(
                         mNativeTabBrowserControlsConstraintsHelper,
-                        TabBrowserControlsConstraintsHelper.this,
                         mTab.getWebContents(),
                         constraints,
                         current,
@@ -323,15 +320,12 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
     @NativeMethods
     interface Natives {
-        long init(TabBrowserControlsConstraintsHelper caller);
+        long init(TabBrowserControlsConstraintsHelper self);
 
-        void onDestroyed(
-                long nativeTabBrowserControlsConstraintsHelper,
-                TabBrowserControlsConstraintsHelper caller);
+        void onDestroyed(long nativeTabBrowserControlsConstraintsHelper);
 
         void updateState(
                 long nativeTabBrowserControlsConstraintsHelper,
-                TabBrowserControlsConstraintsHelper caller,
                 WebContents webContents,
                 int contraints,
                 int current,

@@ -99,13 +99,13 @@ public final class ToolbarSecurityIconTest {
         GURL exampleUrl = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(exampleUrl)
                 .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
         doReturn(exampleUrl.getSpec())
                 .when(mLocationBarModelJni)
-                .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
+                .getFormattedFullURL(Mockito.anyLong());
         doReturn(exampleUrl.getSpec())
                 .when(mLocationBarModelJni)
-                .getURLForDisplay(Mockito.anyLong(), Mockito.any());
+                .getURLForDisplay(Mockito.anyLong());
         doReturn(new Random().nextLong()).when(mLocationBarModelJni).init(Mockito.any());
 
         Context context =

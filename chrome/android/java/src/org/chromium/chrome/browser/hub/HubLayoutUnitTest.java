@@ -166,6 +166,8 @@ public class HubLayoutUnitTest {
     @Mock private HubContainerView mPaneHostViewMock;
     @Mock private HubLayoutAnimationRunner mCurrentAnimationRunner;
     @Captor private ArgumentCaptor<HubLayoutAnimationListener> mAnimationListenerCaptor;
+    private SceneLayer mStaticSceneLayer;
+    private SceneLayer mColorSceneLayer;
 
     private UserActionTester mActionTester;
 
@@ -210,34 +212,35 @@ public class HubLayoutUnitTest {
         when(mIncognitoTabSwitcherPane.createHideHubLayoutAnimatorProvider(any()))
                 .thenReturn(mHubLayoutAnimatorProviderMock);
 
-        when(mSceneLayerJni.init(any()))
-                .thenReturn(FAKE_NATIVE_ADDRESS_1)
-                .thenReturn(FAKE_NATIVE_ADDRESS_2);
-        // Fake proper cleanup of the native ptr.
-        doCallback(
-                        /* index= */ 1,
-                        (SceneLayer sceneLayer) -> {
-                            sceneLayer.setNativePtr(0L);
-                        })
-                .when(mSceneLayerJni)
-                .destroy(anyLong(), any());
         // Ensure each SceneLayer has a native ptr.
         doAnswer(
                         invocation -> {
-                            ((SceneLayer) invocation.getArguments()[0])
-                                    .setNativePtr(FAKE_NATIVE_ADDRESS_1);
+                            mStaticSceneLayer = (SceneLayer) invocation.getArguments()[0];
+                            mStaticSceneLayer.setNativePtr(FAKE_NATIVE_ADDRESS_1);
                             return FAKE_NATIVE_ADDRESS_1;
                         })
                 .when(mStaticTabSceneLayerJni)
                 .init(any());
         doAnswer(
                         invocation -> {
-                            ((SceneLayer) invocation.getArguments()[0])
-                                    .setNativePtr(FAKE_NATIVE_ADDRESS_2);
+                            mColorSceneLayer = (SceneLayer) invocation.getArguments()[0];
+                            mColorSceneLayer.setNativePtr(FAKE_NATIVE_ADDRESS_2);
                             return FAKE_NATIVE_ADDRESS_2;
                         })
                 .when(mSolidColorSceneLayerJni)
                 .init(any());
+        // Fake proper cleanup of the native ptr.
+        doCallback(
+                        /* index= */ 0,
+                        (Long nativePtr) -> {
+                            if (nativePtr == FAKE_NATIVE_ADDRESS_1) {
+                                mStaticSceneLayer.setNativePtr(0L);
+                            } else if (nativePtr == FAKE_NATIVE_ADDRESS_2) {
+                                mColorSceneLayer.setNativePtr(0L);
+                            }
+                        })
+                .when(mSceneLayerJni)
+                .destroy(anyLong());
 
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mPaneSupplier);
         doAnswer(

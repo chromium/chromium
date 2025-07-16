@@ -23,7 +23,7 @@ class ThumbnailGenerator {
 
   // Destroys the ThumbnailGenerator.  Any currently running ImageRequest will
   // delete itself when it has completed.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& jobj);
+  void Destroy(JNIEnv* env);
 
   ThumbnailGenerator(const ThumbnailGenerator&) = delete;
   ThumbnailGenerator& operator=(const ThumbnailGenerator&) = delete;
@@ -34,7 +34,6 @@ class ThumbnailGenerator {
   // when finished.
   void RetrieveThumbnail(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jcontent_id,
       const base::android::JavaParamRef<jstring>& jfile_path,
       const base::android::JavaParamRef<jstring>& jmime_type,

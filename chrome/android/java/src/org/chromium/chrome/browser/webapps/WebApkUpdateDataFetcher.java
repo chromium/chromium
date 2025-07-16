@@ -82,13 +82,12 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
         mNativePointer =
                 WebApkUpdateDataFetcherJni.get()
                         .initialize(
-                                WebApkUpdateDataFetcher.this,
+                                this,
                                 mOldInfo.manifestStartUrl(),
                                 mOldInfo.scopeUrl(),
                                 mOldInfo.manifestUrl(),
                                 mOldInfo.manifestId());
-        WebApkUpdateDataFetcherJni.get()
-                .start(mNativePointer, WebApkUpdateDataFetcher.this, mTab.getWebContents());
+        WebApkUpdateDataFetcherJni.get().start(mNativePointer, mTab.getWebContents());
         return true;
     }
 
@@ -96,7 +95,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     public void destroy() {
         if (mTab == null) return;
         mTab.removeObserver(this);
-        WebApkUpdateDataFetcherJni.get().destroy(mNativePointer, WebApkUpdateDataFetcher.this);
+        WebApkUpdateDataFetcherJni.get().destroy(mNativePointer);
         mNativePointer = 0;
     }
 
@@ -112,9 +111,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
 
     /** Updates which WebContents the native WebApkUpdateDataFetcher is monitoring. */
     private void updatePointers() {
-        WebApkUpdateDataFetcherJni.get()
-                .replaceWebContents(
-                        mNativePointer, WebApkUpdateDataFetcher.this, mTab.getWebContents());
+        WebApkUpdateDataFetcherJni.get().replaceWebContents(mNativePointer, mTab.getWebContents());
     }
 
     /** Called when the updated Web Manifest has been fetched. */
@@ -232,22 +229,16 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     @NativeMethods
     interface Natives {
         long initialize(
-                WebApkUpdateDataFetcher caller,
+                WebApkUpdateDataFetcher self,
                 @JniType("std::string") String startUrl,
                 @JniType("std::string") String scope,
                 @JniType("std::string") String webManifestUrl,
                 @Nullable String webManifestId);
 
-        void replaceWebContents(
-                long nativeWebApkUpdateDataFetcher,
-                WebApkUpdateDataFetcher caller,
-                WebContents webContents);
+        void replaceWebContents(long nativeWebApkUpdateDataFetcher, WebContents webContents);
 
-        void destroy(long nativeWebApkUpdateDataFetcher, WebApkUpdateDataFetcher caller);
+        void destroy(long nativeWebApkUpdateDataFetcher);
 
-        void start(
-                long nativeWebApkUpdateDataFetcher,
-                WebApkUpdateDataFetcher caller,
-                WebContents webContents);
+        void start(long nativeWebApkUpdateDataFetcher, WebContents webContents);
     }
 }

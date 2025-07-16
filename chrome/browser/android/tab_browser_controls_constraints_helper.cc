@@ -26,15 +26,12 @@ TabBrowserControlsConstraintsHelper::TabBrowserControlsConstraintsHelper(
 TabBrowserControlsConstraintsHelper::~TabBrowserControlsConstraintsHelper() =
     default;
 
-void TabBrowserControlsConstraintsHelper::OnDestroyed(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void TabBrowserControlsConstraintsHelper::OnDestroyed(JNIEnv* env) {
   delete this;
 }
 
 void TabBrowserControlsConstraintsHelper::UpdateState(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
     jint constraints,
     jint current,

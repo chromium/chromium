@@ -38,8 +38,7 @@ public class VariationsSession {
                 new Callback<>() {
                     @Override
                     public void onResult(String restrictMode) {
-                        VariationsSessionJni.get()
-                                .startVariationsSession(VariationsSession.this, mRestrictMode);
+                        VariationsSessionJni.get().startVariationsSession(mRestrictMode);
                     }
                 });
     }
@@ -82,15 +81,14 @@ public class VariationsSession {
      * @return The latest country according to the current variations state. Null if not known.
      */
     public String getLatestCountry() {
-        return VariationsSessionJni.get().getLatestCountry(this);
+        return VariationsSessionJni.get().getLatestCountry();
     }
 
     @NativeMethods
     interface Natives {
-        void startVariationsSession(
-                VariationsSession caller, @JniType("std::string") @Nullable String restrictMode);
+        void startVariationsSession(@JniType("std::string") @Nullable String restrictMode);
 
         @JniType("std::string")
-        String getLatestCountry(VariationsSession caller);
+        String getLatestCountry();
     }
 }

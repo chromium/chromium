@@ -60,7 +60,6 @@ void ContextualSearchTabHelper::OnShowUnhandledTapUIIfNeeded(int x_px,
 
 void ContextualSearchTabHelper::InstallUnhandledTapNotifierIfNeeded(
     JNIEnv* env,
-    jobject obj,
     const JavaParamRef<jobject>& j_base_web_contents,
     jfloat device_scale_factor) {
   DCHECK(j_base_web_contents);
@@ -85,8 +84,7 @@ void ContextualSearchTabHelper::InstallUnhandledTapNotifierIfNeeded(
   }
 }
 
-void ContextualSearchTabHelper::Destroy(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj) {
+void ContextualSearchTabHelper::Destroy(JNIEnv* env) {
   delete this;
 }
 

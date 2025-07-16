@@ -25,8 +25,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     private boolean mHasPendingRemoveRequest;
 
     public BrowsingHistoryBridge(Profile profile) {
-        mNativeHistoryBridge =
-                BrowsingHistoryBridgeJni.get().init(BrowsingHistoryBridge.this, profile);
+        mNativeHistoryBridge = BrowsingHistoryBridgeJni.get().init(this, profile);
     }
 
     @Override
@@ -37,8 +36,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     @Override
     public void destroy() {
         if (mNativeHistoryBridge != 0) {
-            BrowsingHistoryBridgeJni.get()
-                    .destroy(mNativeHistoryBridge, BrowsingHistoryBridge.this);
+            BrowsingHistoryBridgeJni.get().destroy(mNativeHistoryBridge);
             mNativeHistoryBridge = 0;
         }
     }
@@ -46,38 +44,24 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     @Override
     public void queryHistory(String query, String appId) {
         BrowsingHistoryBridgeJni.get()
-                .queryHistory(
-                        mNativeHistoryBridge,
-                        BrowsingHistoryBridge.this,
-                        new ArrayList<>(),
-                        query,
-                        appId,
-                        false);
+                .queryHistory(mNativeHistoryBridge, new ArrayList<>(), query, appId, false);
     }
 
     @Override
     public void queryHistoryForHost(String hostName) {
         BrowsingHistoryBridgeJni.get()
-                .queryHistory(
-                        mNativeHistoryBridge,
-                        BrowsingHistoryBridge.this,
-                        new ArrayList<>(),
-                        hostName,
-                        null,
-                        true);
+                .queryHistory(mNativeHistoryBridge, new ArrayList<>(), hostName, null, true);
     }
 
     @Override
     public void queryHistoryContinuation() {
         BrowsingHistoryBridgeJni.get()
-                .queryHistoryContinuation(
-                        mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<>());
+                .queryHistoryContinuation(mNativeHistoryBridge, new ArrayList<>());
     }
 
     @Override
     public void queryApps() {
-        BrowsingHistoryBridgeJni.get()
-                .getAllAppIds(mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<>());
+        BrowsingHistoryBridgeJni.get().getAllAppIds(mNativeHistoryBridge, new ArrayList<>());
     }
 
     @CalledByNative
@@ -90,7 +74,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
             String hostName, Callback<Long> callback) {
         BrowsingHistoryBridgeJni.get()
                 .getLastVisitToHostBeforeRecentNavigations(
-                        mNativeHistoryBridge, BrowsingHistoryBridge.this, hostName, callback);
+                        mNativeHistoryBridge, hostName, callback);
     }
 
     @Override
@@ -98,7 +82,6 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         BrowsingHistoryBridgeJni.get()
                 .markItemForRemoval(
                         mNativeHistoryBridge,
-                        BrowsingHistoryBridge.this,
                         item.getUrl(),
                         item.getAppId(),
                         item.getNativeTimestamps());
@@ -120,8 +103,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 DeleteBrowsingDataAction.HISTORY_PAGE_ENTRIES,
                 DeleteBrowsingDataAction.MAX_VALUE);
 
-        BrowsingHistoryBridgeJni.get()
-                .removeItems(mNativeHistoryBridge, BrowsingHistoryBridge.this);
+        BrowsingHistoryBridgeJni.get().removeItems(mNativeHistoryBridge);
     }
 
     @CalledByNative
@@ -182,41 +164,28 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
     @NativeMethods
     interface Natives {
-        long init(BrowsingHistoryBridge caller, @JniType("Profile*") Profile profile);
+        long init(BrowsingHistoryBridge self, @JniType("Profile*") Profile profile);
 
-        void destroy(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);
+        void destroy(long nativeBrowsingHistoryBridge);
 
         void queryHistory(
                 long nativeBrowsingHistoryBridge,
-                BrowsingHistoryBridge caller,
                 List<HistoryItem> historyItems,
                 String query,
                 String appId,
                 boolean hostOnly);
 
         void queryHistoryContinuation(
-                long nativeBrowsingHistoryBridge,
-                BrowsingHistoryBridge caller,
-                List<HistoryItem> historyItems);
+                long nativeBrowsingHistoryBridge, List<HistoryItem> historyItems);
 
         void getLastVisitToHostBeforeRecentNavigations(
-                long nativeBrowsingHistoryBridge,
-                BrowsingHistoryBridge caller,
-                String hostName,
-                Callback<Long> callback);
+                long nativeBrowsingHistoryBridge, String hostName, Callback<Long> callback);
 
         void markItemForRemoval(
-                long nativeBrowsingHistoryBridge,
-                BrowsingHistoryBridge caller,
-                GURL url,
-                String appId,
-                long[] nativeTimestamps);
+                long nativeBrowsingHistoryBridge, GURL url, String appId, long[] nativeTimestamps);
 
-        void removeItems(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);
+        void removeItems(long nativeBrowsingHistoryBridge);
 
-        void getAllAppIds(
-                long nativeBrowsingHistoryBridge,
-                BrowsingHistoryBridge caller,
-                List<String> appIds);
+        void getAllAppIds(long nativeBrowsingHistoryBridge, List<String> appIds);
     }
 }

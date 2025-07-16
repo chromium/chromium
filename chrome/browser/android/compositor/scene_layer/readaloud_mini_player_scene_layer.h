@@ -24,8 +24,7 @@ class ReadAloudMiniPlayerSceneLayer : public SceneLayer {
 
   ~ReadAloudMiniPlayerSceneLayer() override;
 
-  void Destroy(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& jobj) override;
+  void Destroy(JNIEnv* env) override;
 
   // Update the compositor version of the view.
   void UpdateReadAloudMiniPlayerLayer(JNIEnv* env,

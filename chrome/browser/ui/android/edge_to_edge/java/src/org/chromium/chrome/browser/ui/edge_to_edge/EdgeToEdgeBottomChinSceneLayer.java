@@ -126,17 +126,14 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr =
-                    EdgeToEdgeBottomChinSceneLayerJni.get()
-                            .init(EdgeToEdgeBottomChinSceneLayer.this);
+            mNativePtr = EdgeToEdgeBottomChinSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        EdgeToEdgeBottomChinSceneLayerJni.get()
-                .setContentTree(mNativePtr, EdgeToEdgeBottomChinSceneLayer.this, contentTree);
+        EdgeToEdgeBottomChinSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     @Override
@@ -195,12 +192,9 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
 
     @NativeMethods
     interface Natives {
-        long init(EdgeToEdgeBottomChinSceneLayer caller);
+        long init(EdgeToEdgeBottomChinSceneLayer self);
 
-        void setContentTree(
-                long nativeEdgeToEdgeBottomChinSceneLayer,
-                EdgeToEdgeBottomChinSceneLayer caller,
-                SceneLayer contentTree);
+        void setContentTree(long nativeEdgeToEdgeBottomChinSceneLayer, SceneLayer contentTree);
 
         void updateEdgeToEdgeBottomChinLayer(
                 long nativeEdgeToEdgeBottomChinSceneLayer,

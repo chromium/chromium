@@ -153,64 +153,49 @@ public class PlusAddressCreationViewBridge {
     public void onRefreshClicked() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
-                    .onRefreshClicked(
-                            mNativePlusAddressCreationPromptAndroid,
-                            PlusAddressCreationViewBridge.this);
+                    .onRefreshClicked(mNativePlusAddressCreationPromptAndroid);
         }
     }
 
     public void tryAgainToReservePlusAddress() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
-                    .tryAgainToReservePlusAddress(
-                            mNativePlusAddressCreationPromptAndroid,
-                            PlusAddressCreationViewBridge.this);
+                    .tryAgainToReservePlusAddress(mNativePlusAddressCreationPromptAndroid);
         }
     }
 
     public void onConfirmRequested() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
-                    .onConfirmRequested(
-                            mNativePlusAddressCreationPromptAndroid,
-                            PlusAddressCreationViewBridge.this);
+                    .onConfirmRequested(mNativePlusAddressCreationPromptAndroid);
         }
     }
 
     public void onCanceled() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
-                    .onCanceled(
-                            mNativePlusAddressCreationPromptAndroid,
-                            PlusAddressCreationViewBridge.this);
+                    .onCanceled(mNativePlusAddressCreationPromptAndroid);
         }
     }
 
     public void onPromptDismissed() {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
             PlusAddressCreationViewBridgeJni.get()
-                    .promptDismissed(
-                            mNativePlusAddressCreationPromptAndroid,
-                            PlusAddressCreationViewBridge.this);
+                    .promptDismissed(mNativePlusAddressCreationPromptAndroid);
             mNativePlusAddressCreationPromptAndroid = 0;
         }
     }
 
     @NativeMethods
     interface Natives {
-        void onRefreshClicked(
-                long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+        void onRefreshClicked(long nativePlusAddressCreationViewAndroid);
 
-        void tryAgainToReservePlusAddress(
-                long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+        void tryAgainToReservePlusAddress(long nativePlusAddressCreationViewAndroid);
 
-        void onConfirmRequested(
-                long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+        void onConfirmRequested(long nativePlusAddressCreationViewAndroid);
 
-        void onCanceled(
-                long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+        void onCanceled(long nativePlusAddressCreationViewAndroid);
 
-        void promptDismissed(
-                long nativePlusAddressCreationViewAndroid, PlusAddressCreationViewBridge caller);
+        void promptDismissed(long nativePlusAddressCreationViewAndroid);
     }
 }

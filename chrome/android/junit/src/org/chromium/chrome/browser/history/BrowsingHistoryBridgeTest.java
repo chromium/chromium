@@ -78,6 +78,6 @@ public class BrowsingHistoryBridgeTest {
         mBrowsingHistoryBridge.onQueryHistoryComplete(items, false);
 
         adapter.markItemForRemoval(items.get(0));
-        verify(mNativeMocks).markItemForRemoval(anyLong(), any(), any(), eq(appId), any());
+        verify(mNativeMocks).markItemForRemoval(anyLong(), any(), eq(appId), any());
     }
 }

@@ -32,7 +32,6 @@ class TopToolbarSceneLayer : public SceneLayer {
   // Update the compositor version of the toolbar.
   void UpdateToolbarLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jobject>& jresource_manager,
       jint toolbar_resource_id,
       jint toolbar_background_color,
@@ -47,7 +46,6 @@ class TopToolbarSceneLayer : public SceneLayer {
 
   // Update the progress bar.
   void UpdateProgressBar(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& object,
                          jint progress_bar_x,
                          jint progress_bar_y,
                          jint progress_bar_width,
@@ -70,7 +68,6 @@ class TopToolbarSceneLayer : public SceneLayer {
 
   void SetContentTree(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& jcontent_tree);
 
   SkColor GetBackgroundColor() override;

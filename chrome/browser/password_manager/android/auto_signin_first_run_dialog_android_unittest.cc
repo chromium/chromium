@@ -78,7 +78,7 @@ TEST_F(AutoSigninFirstRunDialogAndroidTest,
   prefs()->SetBoolean(
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
   AutoSigninFirstRunDialogAndroid* dialog = CreateDialog();
-  dialog->Destroy(base::android::AttachCurrentThread(), nullptr);
+  dialog->Destroy(base::android::AttachCurrentThread());
   EXPECT_FALSE(prefs()->GetBoolean(
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown));
 }
@@ -90,8 +90,8 @@ TEST_F(AutoSigninFirstRunDialogAndroidTest,
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
   EXPECT_CALL(*password_settings_service(), TurnOffAutoSignIn).Times(0);
   AutoSigninFirstRunDialogAndroid* dialog = CreateDialog();
-  dialog->OnOkClicked(base::android::AttachCurrentThread(), nullptr);
-  dialog->Destroy(base::android::AttachCurrentThread(), nullptr);
+  dialog->OnOkClicked(base::android::AttachCurrentThread());
+  dialog->Destroy(base::android::AttachCurrentThread());
   EXPECT_TRUE(prefs()->GetBoolean(
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown));
   histogram_tester.ExpectUniqueSample(
@@ -106,8 +106,8 @@ TEST_F(AutoSigninFirstRunDialogAndroidTest,
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
   EXPECT_CALL(*password_settings_service(), TurnOffAutoSignIn);
   AutoSigninFirstRunDialogAndroid* dialog = CreateDialog();
-  dialog->OnTurnOffClicked(base::android::AttachCurrentThread(), nullptr);
-  dialog->Destroy(base::android::AttachCurrentThread(), nullptr);
+  dialog->OnTurnOffClicked(base::android::AttachCurrentThread());
+  dialog->Destroy(base::android::AttachCurrentThread());
   EXPECT_TRUE(prefs()->GetBoolean(
       password_manager::prefs::kWasAutoSignInFirstRunExperienceShown));
   histogram_tester.ExpectUniqueSample(

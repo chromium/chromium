@@ -30,7 +30,7 @@ class OverscrollSceneLayer extends SceneOverlayLayer {
 
     OverscrollSceneLayer(WindowAndroid window, View parentView) {
         mParentView = parentView;
-        mNativePtr = OverscrollSceneLayerJni.get().init(OverscrollSceneLayer.this, window);
+        mNativePtr = OverscrollSceneLayerJni.get().init(this, window);
         assert mNativePtr != 0;
     }
 
@@ -40,7 +40,6 @@ class OverscrollSceneLayer extends SceneOverlayLayer {
         OverscrollSceneLayerJni.get()
                 .prepare(
                         mNativePtr,
-                        OverscrollSceneLayer.this,
                         startX,
                         startY,
                         mParentView.getWidth(),
@@ -63,29 +62,23 @@ class OverscrollSceneLayer extends SceneOverlayLayer {
         // to keep the animation going on.
         if (xDelta == 0.f) return true;
         return OverscrollSceneLayerJni.get()
-                .update(
-                        mNativePtr,
-                        OverscrollSceneLayer.this,
-                        resourceManager,
-                        mAccumulatedScroll,
-                        xDelta);
+                .update(mNativePtr, resourceManager, mAccumulatedScroll, xDelta);
     }
 
     /** Release the glow effect to recede slowly. */
     void release() {
-        OverscrollSceneLayerJni.get().update(mNativePtr, OverscrollSceneLayer.this, null, 0.f, 0.f);
+        OverscrollSceneLayerJni.get().update(mNativePtr, null, 0.f, 0.f);
         mAccumulatedScroll = 0.f;
     }
 
     /** Reset the glow effect. */
     void reset() {
-        OverscrollSceneLayerJni.get().onReset(mNativePtr, OverscrollSceneLayer.this);
+        OverscrollSceneLayerJni.get().onReset(mNativePtr);
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        OverscrollSceneLayerJni.get()
-                .setContentTree(mNativePtr, OverscrollSceneLayer.this, contentTree);
+        OverscrollSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     @Override
@@ -101,28 +94,19 @@ class OverscrollSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     interface Natives {
-        long init(OverscrollSceneLayer caller, WindowAndroid window);
+        long init(OverscrollSceneLayer self, WindowAndroid window);
 
         void prepare(
-                long nativeOverscrollSceneLayer,
-                OverscrollSceneLayer caller,
-                float startX,
-                float startY,
-                int width,
-                int height);
+                long nativeOverscrollSceneLayer, float startX, float startY, int width, int height);
 
-        void setContentTree(
-                long nativeOverscrollSceneLayer,
-                OverscrollSceneLayer caller,
-                SceneLayer contentTree);
+        void setContentTree(long nativeOverscrollSceneLayer, SceneLayer contentTree);
 
         boolean update(
                 long nativeOverscrollSceneLayer,
-                OverscrollSceneLayer caller,
                 @Nullable ResourceManager resourceManager,
                 float accumulatedScroll,
                 float delta);
 
-        void onReset(long nativeOverscrollSceneLayer, OverscrollSceneLayer caller);
+        void onReset(long nativeOverscrollSceneLayer);
     }
 }

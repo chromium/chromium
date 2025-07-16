@@ -73,12 +73,11 @@ TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
   }
 }
 
-void TabModelJniBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void TabModelJniBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
                                         TabAndroid* tab) {
   // Tab#initialize() should have been called by now otherwise we can't push
   // the window id.
@@ -94,7 +93,6 @@ void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
 }
 
 void TabModelJniBridge::DuplicateTabForTesting(JNIEnv* env,
-                                               const JavaParamRef<jobject>& obj,
                                                TabAndroid* tab) {
   DuplicateTab(tab);
 }
@@ -232,9 +230,7 @@ void TabModelJniBridge::RemoveObserver(TabModelObserver* observer) {
   }
 }
 
-void TabModelJniBridge::BroadcastSessionRestoreComplete(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void TabModelJniBridge::BroadcastSessionRestoreComplete(JNIEnv* env) {
   if (!is_archived_tab_model_) {
     TabModel::BroadcastSessionRestoreComplete();
   }

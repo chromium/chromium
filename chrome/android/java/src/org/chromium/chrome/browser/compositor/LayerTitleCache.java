@@ -119,7 +119,7 @@ public class LayerTitleCache {
         mNativeLayerTitleCache =
                 LayerTitleCacheJni.get()
                         .init(
-                                LayerTitleCache.this,
+                                this,
                                 fadeWidthPx,
                                 faviconStartPaddingPx,
                                 faviconEndPaddingPx,
@@ -169,8 +169,7 @@ public class LayerTitleCache {
         } else {
             mTabBubbles.remove(tabId);
         }
-        LayerTitleCacheJni.get()
-                .updateTabBubble(mNativeLayerTitleCache, LayerTitleCache.this, tabId, showBubble);
+        LayerTitleCacheJni.get().updateTabBubble(mNativeLayerTitleCache, tabId, showBubble);
     }
 
     public String getUpdatedTitle(Tab tab, String defaultTitle) {
@@ -216,7 +215,6 @@ public class LayerTitleCache {
             LayerTitleCacheJni.get()
                     .updateLayer(
                             mNativeLayerTitleCache,
-                            LayerTitleCache.this,
                             tabId,
                             title.getTitleResId(),
                             title.getFaviconResId(),
@@ -285,7 +283,6 @@ public class LayerTitleCache {
             LayerTitleCacheJni.get()
                     .updateGroupLayer(
                             mNativeLayerTitleCache,
-                            LayerTitleCache.this,
                             groupId,
                             title.getTitleResId(),
                             avatarResource == null ? Resources.ID_NULL : avatarResId,
@@ -402,12 +399,7 @@ public class LayerTitleCache {
 
         if (mNativeLayerTitleCache != 0) {
             LayerTitleCacheJni.get()
-                    .updateIcon(
-                            mNativeLayerTitleCache,
-                            LayerTitleCache.this,
-                            tabId,
-                            title.getFaviconResId(),
-                            showBubble);
+                    .updateIcon(mNativeLayerTitleCache, tabId, title.getFaviconResId(), showBubble);
         }
     }
 
@@ -420,7 +412,6 @@ public class LayerTitleCache {
         LayerTitleCacheJni.get()
                 .updateLayer(
                         mNativeLayerTitleCache,
-                        LayerTitleCache.this,
                         tabId,
                         Resources.ID_NULL,
                         Resources.ID_NULL,
@@ -438,7 +429,6 @@ public class LayerTitleCache {
         LayerTitleCacheJni.get()
                 .updateGroupLayer(
                         mNativeLayerTitleCache,
-                        LayerTitleCache.this,
                         groupId,
                         Resources.ID_NULL,
                         Resources.ID_NULL,
@@ -526,7 +516,7 @@ public class LayerTitleCache {
     @NativeMethods
     interface Natives {
         long init(
-                LayerTitleCache caller,
+                LayerTitleCache self,
                 int fadeWidth,
                 int faviconStartPadding,
                 int faviconEndPadding,
@@ -543,7 +533,6 @@ public class LayerTitleCache {
 
         void updateLayer(
                 long nativeLayerTitleCache,
-                LayerTitleCache caller,
                 int tabId,
                 int titleResId,
                 int faviconResId,
@@ -553,7 +542,6 @@ public class LayerTitleCache {
 
         void updateGroupLayer(
                 long nativeLayerTitleCache,
-                LayerTitleCache caller,
                 @Nullable Token groupId,
                 int titleResId,
                 int avatarResId,
@@ -562,13 +550,8 @@ public class LayerTitleCache {
                 boolean isRtl);
 
         void updateIcon(
-                long nativeLayerTitleCache,
-                LayerTitleCache caller,
-                int tabId,
-                int faviconResId,
-                boolean showBubble);
+                long nativeLayerTitleCache, int tabId, int faviconResId, boolean showBubble);
 
-        void updateTabBubble(
-                long nativeLayerTitleCache, LayerTitleCache caller, int tabId, boolean showBubble);
+        void updateTabBubble(long nativeLayerTitleCache, int tabId, boolean showBubble);
     }
 }

@@ -44,13 +44,12 @@ BrowsingHistoryBridge::BrowsingHistoryBridge(JNIEnv* env,
 
 BrowsingHistoryBridge::~BrowsingHistoryBridge() = default;
 
-void BrowsingHistoryBridge::Destroy(JNIEnv*, const JavaParamRef<jobject>&) {
+void BrowsingHistoryBridge::Destroy(JNIEnv*) {
   delete this;
 }
 
 void BrowsingHistoryBridge::QueryHistory(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj,
     jstring j_query,
     const JavaParamRef<jstring>& j_app_id,
@@ -71,7 +70,6 @@ void BrowsingHistoryBridge::QueryHistory(
 
 void BrowsingHistoryBridge::QueryHistoryContinuation(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj) {
   DCHECK(query_history_continuation_);
   j_query_result_obj_.Reset(env, j_result_obj);
@@ -80,7 +78,6 @@ void BrowsingHistoryBridge::QueryHistoryContinuation(
 
 void BrowsingHistoryBridge::GetAllAppIds(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj) {
   j_app_ids_result_obj_.Reset(env, j_result_obj);
   browsing_history_service_->GetAllAppIds();
@@ -100,7 +97,6 @@ void BrowsingHistoryBridge::OnGetAllAppIds(
 
 void BrowsingHistoryBridge::GetLastVisitToHostBeforeRecentNavigations(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jstring j_host_name,
     const JavaParamRef<jobject>& jcallback) {
   browsing_history_service_->GetLastVisitToHostBeforeRecentNavigations(
@@ -153,7 +149,6 @@ void BrowsingHistoryBridge::OnQueryComplete(
 
 void BrowsingHistoryBridge::MarkItemForRemoval(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_url,
     const JavaParamRef<jstring>& j_app_id,
     const JavaParamRef<jlongArray>& j_native_timestamps) {
@@ -173,8 +168,7 @@ void BrowsingHistoryBridge::MarkItemForRemoval(
   items_to_remove_.push_back(entry);
 }
 
-void BrowsingHistoryBridge::RemoveItems(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj) {
+void BrowsingHistoryBridge::RemoveItems(JNIEnv* env) {
   browsing_history_service_->RemoveVisits(items_to_remove_);
   items_to_remove_.clear();
 }

@@ -29,10 +29,9 @@ class SearchResumptionModuleBridge {
   SearchResumptionModuleBridge& operator=(const SearchResumptionModuleBridge&) =
       delete;
 
-  void Destroy(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   void FetchSuggestions(JNIEnv* env,
-                        const jni_zero::JavaParamRef<jobject>& obj,
                         const jni_zero::JavaParamRef<jstring>& j_page_url);
 
  private:

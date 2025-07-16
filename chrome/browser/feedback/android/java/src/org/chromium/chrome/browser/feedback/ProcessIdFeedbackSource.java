@@ -56,8 +56,7 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
         for (Map.Entry<String, Integer> entry : PROCESS_TYPES.entrySet()) {
             long[] pids =
                     ProcessIdFeedbackSourceJni.get()
-                            .getProcessIdsForType(
-                                    nativeSource, ProcessIdFeedbackSource.this, entry.getValue());
+                            .getProcessIdsForType(nativeSource, entry.getValue());
             if (pids.length == 0) continue;
             StringBuilder spids = new StringBuilder();
             for (long pid : pids) {
@@ -88,9 +87,6 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
 
         void start(ProcessIdFeedbackSource source);
 
-        long[] getProcessIdsForType(
-                long nativeProcessIdFeedbackSource,
-                ProcessIdFeedbackSource caller,
-                int processType);
+        long[] getProcessIdsForType(long nativeProcessIdFeedbackSource, int processType);
     }
 }

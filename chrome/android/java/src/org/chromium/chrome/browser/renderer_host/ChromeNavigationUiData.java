@@ -18,8 +18,7 @@ public class ChromeNavigationUiData {
      * pointer and transferring ownership to the calling function.
      */
     public long createUnownedNativeCopy() {
-        return ChromeNavigationUiDataJni.get()
-                .createUnownedNativeCopy(ChromeNavigationUiData.this, mBookmarkId);
+        return ChromeNavigationUiDataJni.get().createUnownedNativeCopy(mBookmarkId);
     }
 
     /** Set the bookmark id on this navigation. */
@@ -29,6 +28,6 @@ public class ChromeNavigationUiData {
 
     @NativeMethods
     interface Natives {
-        long createUnownedNativeCopy(ChromeNavigationUiData caller, long bookmarkId);
+        long createUnownedNativeCopy(long bookmarkId);
     }
 }

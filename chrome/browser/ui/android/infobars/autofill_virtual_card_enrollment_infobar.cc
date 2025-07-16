@@ -50,7 +50,6 @@ AutofillVirtualCardEnrollmentInfoBar::~AutofillVirtualCardEnrollmentInfoBar() =
 
 void AutofillVirtualCardEnrollmentInfoBar::OnInfobarLinkClicked(
     JNIEnv* env,
-    jobject obj,
     jstring url,
     jint link_type) {
   virtual_card_enrollment_delegate_->OnInfobarLinkClicked(

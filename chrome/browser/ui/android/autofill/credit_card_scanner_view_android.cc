@@ -50,15 +50,12 @@ CreditCardScannerViewAndroid::CreditCardScannerViewAndroid(
 
 CreditCardScannerViewAndroid::~CreditCardScannerViewAndroid() = default;
 
-void CreditCardScannerViewAndroid::ScanCancelled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& object) {
+void CreditCardScannerViewAndroid::ScanCancelled(JNIEnv* env) {
   delegate_->ScanCancelled();
 }
 
 void CreditCardScannerViewAndroid::ScanCompleted(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     const std::u16string& card_holder_name,
     const std::u16string& card_number,
     jint expiration_month,

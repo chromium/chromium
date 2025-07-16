@@ -111,16 +111,14 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr =
-                    ScrollingBottomViewSceneLayerJni.get().init(ScrollingBottomViewSceneLayer.this);
+            mNativePtr = ScrollingBottomViewSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        ScrollingBottomViewSceneLayerJni.get()
-                .setContentTree(mNativePtr, ScrollingBottomViewSceneLayer.this, contentTree);
+        ScrollingBottomViewSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     @Override
@@ -137,7 +135,6 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
         ScrollingBottomViewSceneLayerJni.get()
                 .updateScrollingBottomViewLayer(
                         mNativePtr,
-                        ScrollingBottomViewSceneLayer.this,
                         resourceManager,
                         mResourceId,
                         mTopShadowHeightPx,
@@ -189,16 +186,12 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
 
     @NativeMethods
     interface Natives {
-        long init(ScrollingBottomViewSceneLayer caller);
+        long init(ScrollingBottomViewSceneLayer self);
 
-        void setContentTree(
-                long nativeScrollingBottomViewSceneLayer,
-                ScrollingBottomViewSceneLayer caller,
-                SceneLayer contentTree);
+        void setContentTree(long nativeScrollingBottomViewSceneLayer, SceneLayer contentTree);
 
         void updateScrollingBottomViewLayer(
                 long nativeScrollingBottomViewSceneLayer,
-                ScrollingBottomViewSceneLayer caller,
                 ResourceManager resourceManager,
                 int viewResourceId,
                 int shadowHeightPx,

@@ -260,7 +260,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
 
         // Chromium's InfoBarContainer may add an InfoBar immediately during this initialization
         // call, so make sure everything in the InfoBarContainer is completely ready beforehand.
-        mNativeInfoBarContainer = InfoBarContainerJni.get().init(InfoBarContainer.this);
+        mNativeInfoBarContainer = InfoBarContainerJni.get().init(this);
     }
 
     private static Activity getActivity(Tab tab) {
@@ -389,7 +389,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         destroyContainerView();
         mTab.removeObserver(mTabObserver);
         if (mNativeInfoBarContainer != 0) {
-            InfoBarContainerJni.get().destroy(mNativeInfoBarContainer, InfoBarContainer.this);
+            InfoBarContainerJni.get().destroy(mNativeInfoBarContainer);
             mNativeInfoBarContainer = 0;
         }
         mDestroyed = true;
@@ -465,9 +465,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         if (webContents != null && webContents != mInfoBarContainerView.getWebContents()) {
             mInfoBarContainerView.setWebContents(webContents);
             if (mNativeInfoBarContainer != 0) {
-                InfoBarContainerJni.get()
-                        .setWebContents(
-                                mNativeInfoBarContainer, InfoBarContainer.this, webContents);
+                InfoBarContainerJni.get().setWebContents(mNativeInfoBarContainer, webContents);
             }
         }
 
@@ -550,8 +548,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         if (mInfoBarContainerView != null) {
             mInfoBarContainerView.setWebContents(null);
             if (mNativeInfoBarContainer != 0) {
-                InfoBarContainerJni.get()
-                        .setWebContents(mNativeInfoBarContainer, InfoBarContainer.this, null);
+                InfoBarContainerJni.get().setWebContents(mNativeInfoBarContainer, null);
             }
             mInfoBarContainerView.destroy();
             mInfoBarContainerView = null;
@@ -592,13 +589,10 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
 
     @NativeMethods
     interface Natives {
-        long init(InfoBarContainer caller);
+        long init(InfoBarContainer self);
 
-        void setWebContents(
-                long nativeInfoBarContainerAndroid,
-                InfoBarContainer caller,
-                WebContents webContents);
+        void setWebContents(long nativeInfoBarContainerAndroid, WebContents webContents);
 
-        void destroy(long nativeInfoBarContainerAndroid, InfoBarContainer caller);
+        void destroy(long nativeInfoBarContainerAndroid);
     }
 }

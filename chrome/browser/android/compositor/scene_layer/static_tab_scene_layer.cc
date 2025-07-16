@@ -64,7 +64,6 @@ SkColor StaticTabSceneLayer::GetBackgroundColor() {
 
 void StaticTabSceneLayer::UpdateTabLayer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     jint id,
     jboolean can_use_live_layer,
     jint default_background_color,
@@ -108,7 +107,6 @@ void StaticTabSceneLayer::UpdateTabLayer(
 
 void StaticTabSceneLayer::SetTabContentManager(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jobj,
     const base::android::JavaParamRef<jobject>& jtab_content_manager) {
   if (!tab_content_manager_) {
     tab_content_manager_ =

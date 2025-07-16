@@ -37,8 +37,7 @@ class ContextMenuHelper
 
   void DismissContextMenu();
 
-  void OnContextMenuClosed(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj);
+  void OnContextMenuClosed(JNIEnv* env);
 
   void SetPopulatorFactory(
       const base::android::JavaRef<jobject>& jpopulator_factory);

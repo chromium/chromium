@@ -34,12 +34,10 @@ class PartnerBookmarksReader {
 
   ~PartnerBookmarksReader();
 
-  // JNI methods
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void Reset(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
+  void Reset(JNIEnv* env);
   jlong AddPartnerBookmark(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jurl,
       const base::android::JavaParamRef<jstring>& jtitle,
       jboolean is_folder,
@@ -50,9 +48,7 @@ class PartnerBookmarksReader {
       jint desired_favicon_size_px,
       // Callback<FaviconFetchResult>
       const base::android::JavaParamRef<jobject>& j_callback);
-  void PartnerBookmarksCreationComplete(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void PartnerBookmarksCreationComplete(JNIEnv* env);
 
   static std::unique_ptr<bookmarks::BookmarkNode>
   CreatePartnerBookmarksRootForTesting();

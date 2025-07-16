@@ -35,7 +35,6 @@ TopToolbarSceneLayer::~TopToolbarSceneLayer() = default;
 
 void TopToolbarSceneLayer::UpdateToolbarLayer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     const JavaParamRef<jobject>& jresource_manager,
     jint toolbar_resource_id,
     jint toolbar_background_color,
@@ -70,7 +69,6 @@ void TopToolbarSceneLayer::UpdateToolbarLayer(
 
 void TopToolbarSceneLayer::UpdateProgressBar(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     jint progress_bar_x,
     jint progress_bar_y,
     jint progress_bar_width,
@@ -105,7 +103,6 @@ void TopToolbarSceneLayer::UpdateProgressBar(
 
 void TopToolbarSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer())

@@ -107,22 +107,18 @@ PartnerBookmarksReader::PartnerBookmarksReader(
 
 PartnerBookmarksReader::~PartnerBookmarksReader() = default;
 
-void PartnerBookmarksReader::PartnerBookmarksCreationComplete(
-    JNIEnv*,
-    const JavaParamRef<jobject>&) {
+void PartnerBookmarksReader::PartnerBookmarksCreationComplete(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   partner_bookmarks_shim_->SetPartnerBookmarksRoot(
       std::move(wip_partner_bookmarks_root_));
   wip_next_available_id_ = 0;
 }
 
-void PartnerBookmarksReader::Destroy(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj) {
+void PartnerBookmarksReader::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void PartnerBookmarksReader::Reset(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj) {
+void PartnerBookmarksReader::Reset(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   wip_partner_bookmarks_root_.reset();
   wip_next_available_id_ = 0;
@@ -130,7 +126,6 @@ void PartnerBookmarksReader::Reset(JNIEnv* env,
 
 jlong PartnerBookmarksReader::AddPartnerBookmark(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jurl,
     const JavaParamRef<jstring>& jtitle,
     jboolean is_folder,

@@ -26,21 +26,17 @@ class ProxyNativeTask {
   ~ProxyNativeTask();
 
   void StartBackgroundTaskInReducedMode(JNIEnv* env,
-                                        const JavaParamRef<jobject>& jcaller,
                                         const JavaParamRef<jobject>& jkey);
 
   void StartBackgroundTaskWithFullBrowser(JNIEnv* env,
-                                          const JavaParamRef<jobject>& jcaller,
                                           Profile* profile);
 
   void OnFullBrowserLoaded(JNIEnv* env,
-                           const JavaParamRef<jobject>& jcaller,
                            Profile* profile);
 
-  jboolean StopBackgroundTask(JNIEnv* env,
-                              const JavaParamRef<jobject>& jcaller);
+  jboolean StopBackgroundTask(JNIEnv* env);
 
-  void Destroy(JNIEnv* env, const JavaParamRef<jobject>& jcaller);
+  void Destroy(JNIEnv* env);
 
  private:
   std::unique_ptr<background_task::BackgroundTask> background_task_;

@@ -92,23 +92,20 @@ WebApkUpdateDataFetcher::~WebApkUpdateDataFetcher() = default;
 
 void WebApkUpdateDataFetcher::ReplaceWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   content::WebContentsObserver::Observe(web_contents);
 }
 
-void WebApkUpdateDataFetcher::Destroy(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void WebApkUpdateDataFetcher::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void WebApkUpdateDataFetcher::Start(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& java_web_contents) {
-  ReplaceWebContents(env, obj, java_web_contents);
+  ReplaceWebContents(env, java_web_contents);
   if (!web_contents()->IsLoading())
     FetchInstallableData();
 }

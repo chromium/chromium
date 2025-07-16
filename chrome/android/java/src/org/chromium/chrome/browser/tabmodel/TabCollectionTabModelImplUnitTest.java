@@ -80,7 +80,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
         when(mTabModelJniBridgeJni.init(
-                        any(),
+                        any(TabModelJniBridge.class),
                         eq(mProfile),
                         eq(ActivityType.TABBED),
                         /* isArchivedTabModel= */ eq(false)))
@@ -110,7 +110,7 @@ public class TabCollectionTabModelImplUnitTest {
     @After
     public void tearDown() {
         mTabModel.destroy();
-        verify(mTabModelJniBridgeJni).destroy(eq(TAB_MODEL_JNI_BRIDGE_PTR), any());
+        verify(mTabModelJniBridgeJni).destroy(eq(TAB_MODEL_JNI_BRIDGE_PTR));
         verify(mTabCollectionTabModelImplJni).destroy(eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR));
     }
 
@@ -133,8 +133,7 @@ public class TabCollectionTabModelImplUnitTest {
 
         mTabModel.broadcastSessionRestoreComplete();
 
-        verify(mTabModelJniBridgeJni)
-                .broadcastSessionRestoreComplete(eq(TAB_MODEL_JNI_BRIDGE_PTR), any());
+        verify(mTabModelJniBridgeJni).broadcastSessionRestoreComplete(eq(TAB_MODEL_JNI_BRIDGE_PTR));
     }
 
     @Test

@@ -20,10 +20,8 @@
 // The native part of java UmaSessionStats class. This is a singleton.
 class UmaSessionStats {
  public:
-  void UmaResumeSession(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
-  void UmaEndSession(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
+  void UmaResumeSession(JNIEnv* env);
+  void UmaEndSession(JNIEnv* env);
 
   // Called before an UMA log is completed to record associated metrics.
   void ProvideCurrentSessionData();

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.auxiliary_search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -56,7 +55,7 @@ public class AuxiliarySearchTopSiteProviderBridgeUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         AuxiliarySearchTopSiteProviderBridgeJni.setInstanceForTesting(
                 mMockAuxiliarySearchTopSiteProviderBridgeJni);
-        when(mMockAuxiliarySearchTopSiteProviderBridgeJni.init(any(), eq(mProfile)))
+        when(mMockAuxiliarySearchTopSiteProviderBridgeJni.init(eq(mProfile)))
                 .thenReturn(NATIVE_BRIDGE);
 
         mBridge = new AuxiliarySearchTopSiteProviderBridge(mProfile);

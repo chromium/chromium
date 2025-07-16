@@ -65,13 +65,11 @@ void CardUnmaskPromptViewAndroid::Dismiss() {
 
 bool CardUnmaskPromptViewAndroid::CheckUserInputValidity(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const std::u16string& response) {
   return controller_->InputCvcIsValid(response);
 }
 
 void CardUnmaskPromptViewAndroid::OnUserInput(JNIEnv* env,
-                                              const JavaParamRef<jobject>& obj,
                                               const std::u16string& cvc,
                                               const std::u16string& month,
                                               const std::u16string& year,
@@ -81,9 +79,7 @@ void CardUnmaskPromptViewAndroid::OnUserInput(JNIEnv* env,
                                       was_checkbox_visible);
 }
 
-void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(JNIEnv* env) {
   auto java_object = GetOrCreateJavaObject();
   if (!java_object) {
     return;
@@ -97,15 +93,11 @@ void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(
                                controller_->ShouldRequestExpirationDate());
 }
 
-int CardUnmaskPromptViewAndroid::GetExpectedCvcLength(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+int CardUnmaskPromptViewAndroid::GetExpectedCvcLength(JNIEnv* env) {
   return controller_->GetExpectedCvcLength();
 }
 
-void CardUnmaskPromptViewAndroid::PromptDismissed(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void CardUnmaskPromptViewAndroid::PromptDismissed(JNIEnv* env) {
   delete this;
 }
 

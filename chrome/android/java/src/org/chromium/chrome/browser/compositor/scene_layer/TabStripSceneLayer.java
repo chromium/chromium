@@ -63,7 +63,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = TabStripSceneLayerJni.get().init(TabStripSceneLayer.this);
+            mNativePtr = TabStripSceneLayerJni.get().init(this);
         }
         // Set flag for testing
         if (!sTestFlag) {
@@ -73,8 +73,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        TabStripSceneLayerJni.get()
-                .setContentTree(mNativePtr, TabStripSceneLayer.this, contentTree);
+        TabStripSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     /**
@@ -114,12 +113,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         // This will hide the tab strips if necessary.
         TabStripSceneLayerJni.get()
-                .beginBuildingFrame(
-                        mNativePtr,
-                        TabStripSceneLayer.this,
-                        visible,
-                        resourceManager,
-                        layerTitleCache);
+                .beginBuildingFrame(mNativePtr, visible, resourceManager, layerTitleCache);
         // When strip tabs are completely off screen, we don't need to update it.
         if (visible) {
             // Ceil the padding to avoid off-by-one issues similar to crbug/329722454. This is
@@ -139,11 +133,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache);
             pushStripTabs(layoutHelper, layerTitleCache, stripLayoutTabsToRender, selectedTabId);
         }
-        TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
+        TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr);
     }
 
     public void updateOffsetTag(OffsetTag offsetTag) {
-        TabStripSceneLayerJni.get().updateOffsetTag(mNativePtr, TabStripSceneLayer.this, offsetTag);
+        TabStripSceneLayerJni.get().updateOffsetTag(mNativePtr, offsetTag);
     }
 
     @VisibleForTesting
@@ -160,7 +154,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         TabStripSceneLayerJni.get()
                 .updateTabStripLayer(
                         mNativePtr,
-                        TabStripSceneLayer.this,
                         width,
                         height,
                         yOffset * mDpToPx,
@@ -176,7 +169,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         TabStripSceneLayerJni.get()
                 .updateNewTabButton(
                         mNativePtr,
-                        TabStripSceneLayer.this,
                         newTabButton.getResourceId(),
                         newTabButton.getBackgroundResourceId(),
                         newTabButton.getDrawX() * mDpToPx,
@@ -197,7 +189,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             TabStripSceneLayerJni.get()
                     .updateModelSelectorButton(
                             mNativePtr,
-                            TabStripSceneLayer.this,
                             modelSelectorButton.getResourceId(),
                             ((TintedCompositorButton) modelSelectorButton)
                                     .getBackgroundResourceId(),
@@ -216,7 +207,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         TabStripSceneLayerJni.get()
                 .updateTabStripLeftFade(
                         mNativePtr,
-                        TabStripSceneLayer.this,
                         layoutHelper.getLeftFadeDrawable(),
                         layoutHelper.getLeftFadeOpacity(),
                         layoutHelper.getBackgroundColor(),
@@ -225,7 +215,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         TabStripSceneLayerJni.get()
                 .updateTabStripRightFade(
                         mNativePtr,
-                        TabStripSceneLayer.this,
                         layoutHelper.getRightFadeDrawable(),
                         layoutHelper.getRightFadeOpacity(),
                         layoutHelper.getBackgroundColor(),
@@ -258,7 +247,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             TabStripSceneLayerJni.get()
                     .putStripTabLayer(
                             mNativePtr,
-                            TabStripSceneLayer.this,
                             st.getTabId(),
                             st.getCloseButton().getResourceId(),
                             st.getCloseButton().getBackgroundResourceId(),
@@ -313,7 +301,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             TabStripSceneLayerJni.get()
                     .putGroupIndicatorLayer(
                             mNativePtr,
-                            TabStripSceneLayer.this,
                             gt.isIncognito(),
                             gt.isForegrounded(),
                             gt.isCollapsed(),
@@ -349,7 +336,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     public interface Natives {
-        long init(TabStripSceneLayer caller);
+        long init(TabStripSceneLayer self);
 
         void setConstants(
                 long nativeTabStripSceneLayer,
@@ -361,19 +348,16 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer,
-                TabStripSceneLayer caller,
                 boolean visible,
                 ResourceManager resourceManager,
                 LayerTitleCache layerTitleCache);
 
-        void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);
+        void finishBuildingFrame(long nativeTabStripSceneLayer);
 
-        void updateOffsetTag(
-                long nativeTabStripSceneLayer, TabStripSceneLayer caller, OffsetTag offsetTag);
+        void updateOffsetTag(long nativeTabStripSceneLayer, OffsetTag offsetTag);
 
         void updateTabStripLayer(
                 long nativeTabStripSceneLayer,
-                TabStripSceneLayer caller,
                 int width,
                 int height,
                 float yOffset,
@@ -386,7 +370,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void updateNewTabButton(
                 long nativeTabStripSceneLayer,
-                TabStripSceneLayer caller,
                 int resourceId,
                 int backgroundResourceId,
                 float x,
@@ -403,7 +386,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void updateModelSelectorButton(
                 long nativeTabStripSceneLayer,
-                TabStripSceneLayer caller,
                 int resourceId,
                 int backgroundResourceId,
                 float x,
@@ -419,7 +401,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void updateTabStripLeftFade(
                 long nativeTabStripSceneLayer,
-                TabStripSceneLayer caller,
                 int resourceId,
                 float opacity,
                 @ColorInt int leftFadeColor,
@@ -427,7 +408,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void updateTabStripRightFade(
                 long nativeTabStripSceneLayer,
-                TabStripSceneLayer caller,
                 int resourceId,
                 float opacity,
                 @ColorInt int rightFadeColor,
@@ -435,7 +415,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void putStripTabLayer(
                 long nativeTabStripSceneLayer,
-                TabStripSceneLayer caller,
                 int id,
                 int closeResourceId,
                 int closeBackgroundResourceId,
@@ -479,7 +458,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
         void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,
-                TabStripSceneLayer caller,
                 boolean incognito,
                 boolean foreground,
                 boolean collapsed,
@@ -505,8 +483,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int keyboardFocusRingOffset,
                 int keyboardFocusRingWidth);
 
-        void setContentTree(
-                long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);
+        void setContentTree(long nativeTabStripSceneLayer, SceneLayer contentTree);
     }
 
     public void initializeNativeForTesting() {

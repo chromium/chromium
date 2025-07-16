@@ -74,19 +74,13 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
     @Override
     public void cancel() {
         if (mNativeChromeHttpAuthHandler == 0) return;
-        ChromeHttpAuthHandlerJni.get()
-                .cancelAuth(mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
+        ChromeHttpAuthHandlerJni.get().cancelAuth(mNativeChromeHttpAuthHandler);
     }
 
     @Override
     public void proceed(String username, String password) {
         if (mNativeChromeHttpAuthHandler == 0) return;
-        ChromeHttpAuthHandlerJni.get()
-                .setAuth(
-                        mNativeChromeHttpAuthHandler,
-                        ChromeHttpAuthHandler.this,
-                        username,
-                        password);
+        ChromeHttpAuthHandlerJni.get().setAuth(mNativeChromeHttpAuthHandler, username, password);
     }
 
     /** Return whether the auth dialog is being shown. */
@@ -112,8 +106,7 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
         mTab = tab;
         mTab.addObserver(this);
         String messageBody =
-                ChromeHttpAuthHandlerJni.get()
-                        .getMessageBody(mNativeChromeHttpAuthHandler, ChromeHttpAuthHandler.this);
+                ChromeHttpAuthHandlerJni.get().getMessageBody(mNativeChromeHttpAuthHandler);
         mLoginPrompt = new LoginPrompt(activity, messageBody, null, this);
         // In case the autofill data arrives before the prompt is created.
 
@@ -160,13 +153,12 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
     interface Natives {
         void setAuth(
                 long nativeChromeHttpAuthHandler,
-                ChromeHttpAuthHandler caller,
                 @JniType("std::u16string") String username,
                 @JniType("std::u16string") String password);
 
-        void cancelAuth(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller);
+        void cancelAuth(long nativeChromeHttpAuthHandler);
 
         @JniType("std::u16string")
-        String getMessageBody(long nativeChromeHttpAuthHandler, ChromeHttpAuthHandler caller);
+        String getMessageBody(long nativeChromeHttpAuthHandler);
     }
 }

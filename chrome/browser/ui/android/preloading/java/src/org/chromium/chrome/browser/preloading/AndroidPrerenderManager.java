@@ -69,7 +69,7 @@ public class AndroidPrerenderManager {
     }
 
     private AndroidPrerenderManager() {
-        mNativeAndroidPrerenderManager = AndroidPrerenderManagerJni.get().init(this);
+        mNativeAndroidPrerenderManager = AndroidPrerenderManagerJni.get().init();
     }
 
     /**
@@ -107,7 +107,7 @@ public class AndroidPrerenderManager {
 
     @NativeMethods
     public interface Natives {
-        long init(AndroidPrerenderManager caller);
+        long init();
 
         boolean startPrerendering(
                 long nativeAndroidPrerenderManager,

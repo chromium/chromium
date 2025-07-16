@@ -49,8 +49,7 @@ namespace {
 // std::unique_ptr.
 struct PasswordUiViewAndroidDestroyDeleter {
   inline void operator()(void* ptr) const {
-    (static_cast<PasswordUiViewAndroid*>(ptr)->Destroy(
-        nullptr, JavaParamRef<jobject>(nullptr)));
+    (static_cast<PasswordUiViewAndroid*>(ptr)->Destroy(nullptr));
   }
 };
 
@@ -130,7 +129,7 @@ TEST_F(PasswordUiViewAndroidTest, GetSerializedPasswords) {
   PasswordUiViewAndroid::SerializationResult serialized_passwords;
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
   password_ui_view->HandleSerializePasswords(
-      env(), nullptr, temp_dir().GetPath().AsUTF8Unsafe(), nullptr, nullptr);
+      env(), temp_dir().GetPath().AsUTF8Unsafe(), nullptr, nullptr);
 
   content::RunAllTasksUntilIdle();
   // The buffer for actual result is 1 byte longer than the expected data to be
@@ -164,7 +163,7 @@ TEST_F(PasswordUiViewAndroidTest, GetSerializedPasswords_Cancelled) {
   serialized_passwords.exported_file_path = "somepath";
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
   password_ui_view->HandleSerializePasswords(
-      env(), nullptr, temp_dir().GetPath().AsUTF8Unsafe(), nullptr, nullptr);
+      env(), temp_dir().GetPath().AsUTF8Unsafe(), nullptr, nullptr);
   // Register the PasswordUIView for deletion. It should not destruct itself
   // before the background tasks are run. The results of the background tasks
   // are waited for and then thrown out, so |serialized_passwords| should not be
@@ -190,7 +189,7 @@ TEST_F(PasswordUiViewAndroidTest, GetSerializedPasswords_WriteFailed) {
   PasswordUiViewAndroid::SerializationResult serialized_passwords;
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
   password_ui_view->HandleSerializePasswords(
-      env(), nullptr, "/This directory cannot be created", nullptr, nullptr);
+      env(), "/This directory cannot be created", nullptr, nullptr);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(0, serialized_passwords.entries_count);
   EXPECT_FALSE(serialized_passwords.error.empty());

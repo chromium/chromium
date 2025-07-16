@@ -63,14 +63,12 @@ ContextualSearchManager::~ContextualSearchManager() {
   Java_ContextualSearchManager_clearNativeManager(env, java_manager_);
 }
 
-void ContextualSearchManager::Destroy(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void ContextualSearchManager::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void ContextualSearchManager::StartSearchTermResolutionRequest(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_contextual_search_context,
     const JavaParamRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
@@ -89,7 +87,6 @@ void ContextualSearchManager::StartSearchTermResolutionRequest(
 
 void ContextualSearchManager::GatherSurroundingText(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_contextual_search_context,
     const JavaParamRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
@@ -107,7 +104,6 @@ void ContextualSearchManager::GatherSurroundingText(
 
 void ContextualSearchManager::RemoveLastHistoryEntry(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     std::string& search_url,
     jlong search_start_time_ms) {
   // The deletion window is from the time a search URL was put in history, up

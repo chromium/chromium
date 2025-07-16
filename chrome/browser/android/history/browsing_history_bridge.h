@@ -27,26 +27,22 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   BrowsingHistoryBridge(const BrowsingHistoryBridge&) = delete;
   BrowsingHistoryBridge& operator=(const BrowsingHistoryBridge&) = delete;
 
-  void Destroy(JNIEnv*, const JavaParamRef<jobject>&);
+  void Destroy(JNIEnv*);
 
   void QueryHistory(JNIEnv* env,
-                    const JavaParamRef<jobject>& obj,
                     const JavaParamRef<jobject>& j_result_obj,
                     jstring j_query,
                     const JavaParamRef<jstring>& j_app_id,
                     jboolean j_host_only);
 
   void QueryHistoryContinuation(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
                                 const JavaParamRef<jobject>& j_result_obj);
 
   void GetAllAppIds(JNIEnv* env,
-                    const JavaParamRef<jobject>& obj,
                     const JavaParamRef<jobject>& j_result_obj);
 
   void GetLastVisitToHostBeforeRecentNavigations(
       JNIEnv* env,
-      const JavaParamRef<jobject>& obj,
       jstring j_host_name,
       const JavaParamRef<jobject>& jcallback_);
 
@@ -54,15 +50,13 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   // of items being removed. The removal will not be committed until
   // ::removeItems() is called.
   void MarkItemForRemoval(JNIEnv* env,
-                          const JavaParamRef<jobject>& obj,
                           const JavaParamRef<jobject>& j_url,
                           const JavaParamRef<jstring>& j_app_id,
                           const JavaParamRef<jlongArray>& j_native_timestamps);
 
   // Removes all items that have been marked for removal through
   // ::markItemForRemoval().
-  void RemoveItems(JNIEnv* env,
-                   const JavaParamRef<jobject>& obj);
+  void RemoveItems(JNIEnv* env);
 
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(

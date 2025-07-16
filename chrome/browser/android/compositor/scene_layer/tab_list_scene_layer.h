@@ -33,12 +33,9 @@ class TabListSceneLayer : public SceneLayer {
 
   ~TabListSceneLayer() override;
 
-  void BeginBuildingFrame(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& jobj);
-  void FinishBuildingFrame(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& jobj);
+  void BeginBuildingFrame(JNIEnv* env);
+  void FinishBuildingFrame(JNIEnv* env);
   void UpdateLayer(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& jobj,
                    jint background_color,
                    jfloat viewport_x,
                    jfloat viewport_y,
@@ -48,7 +45,6 @@ class TabListSceneLayer : public SceneLayer {
   // used to indicate the currently selected tab for the TabLayer.
   // TODO(dtrainor): This method is ridiculous.  Break this apart?
   void PutTabLayer(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& jobj,
                    jint id,
                    jint toolbar_resource_id,
                    jint shadow_resource_id,
@@ -83,14 +79,12 @@ class TabListSceneLayer : public SceneLayer {
                    jfloat content_offset);
 
   void PutBackgroundLayer(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& jobj,
                           jint resource_id,
                           jfloat alpha,
                           jint top_offset);
 
   void SetDependencies(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& jtab_content_manager,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 

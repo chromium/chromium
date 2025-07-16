@@ -367,8 +367,7 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         Profile profile = mock(Profile.class);
         mProfileSupplier.set(profile);
-        verify(mPrerenderJni)
-                .initializeForProfile(123L, omniboxPrerenderCaptor.getValue(), profile);
+        verify(mPrerenderJni).initializeForProfile(123L, profile);
 
         doReturn(PreloadPagesState.NO_PRELOADING)
                 .when(mPreloadPagesSettingsJni)
@@ -380,8 +379,7 @@ public class LocationBarMediatorTest {
                         .setAllowedToBeDefaultMatch(true)
                         .build());
         verify(mPrerenderJni, never())
-                .prerenderMaybe(
-                        anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
+                .prerenderMaybe(anyLong(), anyString(), anyString(), anyLong(), any(), any());
         verify(mStatusCoordinator).onDefaultMatchClassified(true);
 
         doReturn(PreloadPagesState.STANDARD_PRELOADING)
@@ -406,14 +404,7 @@ public class LocationBarMediatorTest {
                         .setAllowedToBeDefaultMatch(true)
                         .build());
         verify(mPrerenderJni)
-                .prerenderMaybe(
-                        123L,
-                        omniboxPrerenderCaptor.getValue(),
-                        "text",
-                        JUnitTestGURLs.RED_1.getSpec(),
-                        456L,
-                        profile,
-                        mTab);
+                .prerenderMaybe(123L, "text", JUnitTestGURLs.RED_1.getSpec(), 456L, profile, mTab);
         verify(mStatusCoordinator).onDefaultMatchClassified(false);
         verify(mUrlCoordinator)
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText");

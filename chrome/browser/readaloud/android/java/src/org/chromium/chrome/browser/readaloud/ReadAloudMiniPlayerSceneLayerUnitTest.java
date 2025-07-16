@@ -76,7 +76,7 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
     public void testInitAndDestroy() {
         verify(mSceneLayerJni).init(eq(mSceneLayer));
         mSceneLayer.destroy();
-        verify(mSceneLayerJni).destroy(eq(123456789L), any());
+        verify(mSceneLayerJni).destroy(eq(123456789L));
     }
 
     @Test

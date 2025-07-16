@@ -56,7 +56,7 @@ class DownloadManagerServiceTest : public testing::Test {
     ProfileKeyAndroid profile_key_android(profile_.GetProfileKey());
 
     service_->ResumeDownload(
-        env, nullptr, download_guid,
+        env, download_guid,
         JavaParamRef<jobject>(env,
                               profile_key_android.GetJavaObject().Release()));
     EXPECT_FALSE(success_);

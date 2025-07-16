@@ -57,16 +57,11 @@ class PlusAddressCreationViewAndroid {
                 const std::u16string& origin_for_display,
                 bool refresh_supported,
                 bool has_accepted_notice);
-  void TryAgainToReservePlusAddress(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void OnRefreshClicked(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
-  void OnConfirmRequested(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
-  void OnCanceled(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void PromptDismissed(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj);
+  void TryAgainToReservePlusAddress(JNIEnv* env);
+  void OnRefreshClicked(JNIEnv* env);
+  void OnConfirmRequested(JNIEnv* env);
+  void OnCanceled(JNIEnv* env);
+  void PromptDismissed(JNIEnv* env);
 
   // Updates the bottomsheet to either show an error message or show the
   // plus address in the bottomsheet and enable the OK button.

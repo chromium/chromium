@@ -99,21 +99,14 @@ public class CredentialLeakDialogBridge {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 CredentialLeakDialogBridgeJni.get()
-                        .accepted(
-                                mNativeCredentialLeakDialogViewAndroid,
-                                CredentialLeakDialogBridge.this);
+                        .accepted(mNativeCredentialLeakDialogViewAndroid);
                 return;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 CredentialLeakDialogBridgeJni.get()
-                        .cancelled(
-                                mNativeCredentialLeakDialogViewAndroid,
-                                CredentialLeakDialogBridge.this);
+                        .cancelled(mNativeCredentialLeakDialogViewAndroid);
                 return;
             default:
-                CredentialLeakDialogBridgeJni.get()
-                        .closed(
-                                mNativeCredentialLeakDialogViewAndroid,
-                                CredentialLeakDialogBridge.this);
+                CredentialLeakDialogBridgeJni.get().closed(mNativeCredentialLeakDialogViewAndroid);
         }
     }
 
@@ -134,12 +127,10 @@ public class CredentialLeakDialogBridge {
 
     @NativeMethods
     interface Natives {
-        void accepted(
-                long nativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge caller);
+        void accepted(long nativeCredentialLeakDialogViewAndroid);
 
-        void cancelled(
-                long nativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge caller);
+        void cancelled(long nativeCredentialLeakDialogViewAndroid);
 
-        void closed(long nativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge caller);
+        void closed(long nativeCredentialLeakDialogViewAndroid);
     }
 }

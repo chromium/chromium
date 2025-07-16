@@ -46,12 +46,7 @@ public final class ConsentAuditorBridge {
         }
         ConsentAuditorBridgeJni.get()
                 .recordConsent(
-                        ConsentAuditorBridge.this,
-                        profile,
-                        gaiaId,
-                        feature,
-                        consentDescriptionArray,
-                        consentConfirmation);
+                        profile, gaiaId, feature, consentDescriptionArray, consentConfirmation);
     }
 
     private ConsentAuditorBridge() {}
@@ -66,7 +61,6 @@ public final class ConsentAuditorBridge {
     @NativeMethods
     interface Natives {
         void recordConsent(
-                ConsentAuditorBridge caller,
                 @JniType("Profile*") Profile profile,
                 @JniType("GaiaId") GaiaId gaiaId,
                 int feature,

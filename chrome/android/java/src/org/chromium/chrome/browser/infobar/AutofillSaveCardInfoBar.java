@@ -212,9 +212,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
                             public void onClick(View view) {
                                 AutofillSaveCardInfoBarJni.get()
                                         .onLegalMessageLinkClicked(
-                                                mNativeAutofillSaveCardInfoBar,
-                                                AutofillSaveCardInfoBar.this,
-                                                link.url);
+                                                mNativeAutofillSaveCardInfoBar, link.url);
                             }
                         },
                         link.start,
@@ -251,7 +249,6 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
 
     @NativeMethods
     interface Natives {
-        void onLegalMessageLinkClicked(
-                long nativeAutofillSaveCardInfoBar, AutofillSaveCardInfoBar caller, String url);
+        void onLegalMessageLinkClicked(long nativeAutofillSaveCardInfoBar, String url);
     }
 }

@@ -30,7 +30,6 @@ std::unique_ptr<ui::EdgeEffect> OverscrollSceneLayer::CreateEdgeEffect() {
 }
 
 void OverscrollSceneLayer::Prepare(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj,
                                    jfloat start_x,
                                    jfloat start_y,
                                    jint width,
@@ -52,7 +51,6 @@ void OverscrollSceneLayer::Prepare(JNIEnv* env,
 
 jboolean OverscrollSceneLayer::Update(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     const JavaParamRef<jobject>& jresource_manager,
     jfloat accumulated_overscroll_x,
     jfloat delta_x) {
@@ -90,7 +88,6 @@ void OverscrollSceneLayer::OnDetachCompositor() {
 
 void OverscrollSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer()) {
@@ -103,8 +100,7 @@ void OverscrollSceneLayer::SetContentTree(
   }
 }
 
-void OverscrollSceneLayer::OnReset(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj) {
+void OverscrollSceneLayer::OnReset(JNIEnv* env) {
   glow_effect_->Reset();
 }
 

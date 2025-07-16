@@ -42,13 +42,10 @@ class SceneLayer {
   virtual void OnDetach();
 
   // Remove this SceneLayer from its current parent.
-  virtual void RemoveFromParent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj);
+  virtual void RemoveFromParent(JNIEnv* env);
 
   // Java SceneLayer can use this method to destroy its native-side counterpart.
-  virtual void Destroy(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& jobj);
+  virtual void Destroy(JNIEnv* env);
 
   // Returns cc::slim::Layer object that this SceneLayer contains.
   scoped_refptr<cc::slim::Layer> layer() { return layer_; }

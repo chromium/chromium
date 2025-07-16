@@ -34,21 +34,20 @@ public class UsageStatsBridge {
      * @param profile {@link Profile} of the user for whom we are tracking usage stats.
      */
     public UsageStatsBridge(Profile profile, UsageStatsService usageStatsService) {
-        mNativeUsageStatsBridge = UsageStatsBridgeJni.get().init(UsageStatsBridge.this, profile);
+        mNativeUsageStatsBridge = UsageStatsBridgeJni.get().init(this, profile);
         mUsageStatsService = usageStatsService;
     }
 
     /** Cleans up native side of this bridge. */
     public void destroy() {
         assert mNativeUsageStatsBridge != 0;
-        UsageStatsBridgeJni.get().destroy(mNativeUsageStatsBridge, UsageStatsBridge.this);
+        UsageStatsBridgeJni.get().destroy(mNativeUsageStatsBridge);
         mNativeUsageStatsBridge = 0;
     }
 
     public void getAllEvents(Callback<List<WebsiteEvent>> callback) {
         assert mNativeUsageStatsBridge != 0;
-        UsageStatsBridgeJni.get()
-                .getAllEvents(mNativeUsageStatsBridge, UsageStatsBridge.this, callback);
+        UsageStatsBridgeJni.get().getAllEvents(mNativeUsageStatsBridge, callback);
     }
 
     public void queryEventsInRange(
@@ -57,12 +56,7 @@ public class UsageStatsBridge {
         long startSeconds = TimeUnit.MILLISECONDS.toSeconds(startMs);
         long endSeconds = TimeUnit.MILLISECONDS.toSeconds(endMs);
         UsageStatsBridgeJni.get()
-                .queryEventsInRange(
-                        mNativeUsageStatsBridge,
-                        UsageStatsBridge.this,
-                        startSeconds,
-                        endSeconds,
-                        callback);
+                .queryEventsInRange(mNativeUsageStatsBridge, startSeconds, endSeconds, callback);
     }
 
     public void addEvents(List<WebsiteEvent> events, Callback<Boolean> callback) {
@@ -75,15 +69,12 @@ public class UsageStatsBridge {
             serializedEvents[i] = event.toByteArray();
         }
 
-        UsageStatsBridgeJni.get()
-                .addEvents(
-                        mNativeUsageStatsBridge, UsageStatsBridge.this, serializedEvents, callback);
+        UsageStatsBridgeJni.get().addEvents(mNativeUsageStatsBridge, serializedEvents, callback);
     }
 
     public void deleteAllEvents(Callback<Boolean> callback) {
         assert mNativeUsageStatsBridge != 0;
-        UsageStatsBridgeJni.get()
-                .deleteAllEvents(mNativeUsageStatsBridge, UsageStatsBridge.this, callback);
+        UsageStatsBridgeJni.get().deleteAllEvents(mNativeUsageStatsBridge, callback);
     }
 
     public void deleteEventsInRange(long startMs, long endMs, Callback<Boolean> callback) {
@@ -91,19 +82,13 @@ public class UsageStatsBridge {
         long startSeconds = TimeUnit.MILLISECONDS.toSeconds(startMs);
         long endSeconds = TimeUnit.MILLISECONDS.toSeconds(endMs);
         UsageStatsBridgeJni.get()
-                .deleteEventsInRange(
-                        mNativeUsageStatsBridge,
-                        UsageStatsBridge.this,
-                        startSeconds,
-                        endSeconds,
-                        callback);
+                .deleteEventsInRange(mNativeUsageStatsBridge, startSeconds, endSeconds, callback);
     }
 
     public void deleteEventsWithMatchingDomains(String[] domains, Callback<Boolean> callback) {
         assert mNativeUsageStatsBridge != 0;
         UsageStatsBridgeJni.get()
-                .deleteEventsWithMatchingDomains(
-                        mNativeUsageStatsBridge, UsageStatsBridge.this, domains, callback);
+                .deleteEventsWithMatchingDomains(mNativeUsageStatsBridge, domains, callback);
     }
 
     public void getAllSuspensions(Callback<List<String>> callback) {
@@ -111,7 +96,6 @@ public class UsageStatsBridge {
         UsageStatsBridgeJni.get()
                 .getAllSuspensions(
                         mNativeUsageStatsBridge,
-                        UsageStatsBridge.this,
                         arr -> {
                             callback.onResult(new ArrayList<>(Arrays.asList(arr)));
                         });
@@ -119,14 +103,12 @@ public class UsageStatsBridge {
 
     public void setSuspensions(String[] domains, Callback<Boolean> callback) {
         assert mNativeUsageStatsBridge != 0;
-        UsageStatsBridgeJni.get()
-                .setSuspensions(mNativeUsageStatsBridge, UsageStatsBridge.this, domains, callback);
+        UsageStatsBridgeJni.get().setSuspensions(mNativeUsageStatsBridge, domains, callback);
     }
 
     public void getAllTokenMappings(Callback<Map<String, String>> callback) {
         assert mNativeUsageStatsBridge != 0;
-        UsageStatsBridgeJni.get()
-                .getAllTokenMappings(mNativeUsageStatsBridge, UsageStatsBridge.this, callback);
+        UsageStatsBridgeJni.get().getAllTokenMappings(mNativeUsageStatsBridge, callback);
     }
 
     public void setTokenMappings(Map<String, String> mappings, Callback<Boolean> callback) {
@@ -145,8 +127,7 @@ public class UsageStatsBridge {
         }
 
         UsageStatsBridgeJni.get()
-                .setTokenMappings(
-                        mNativeUsageStatsBridge, UsageStatsBridge.this, tokens, fqdns, callback);
+                .setTokenMappings(mNativeUsageStatsBridge, tokens, fqdns, callback);
     }
 
     @CalledByNative
@@ -195,61 +176,38 @@ public class UsageStatsBridge {
 
     @NativeMethods
     interface Natives {
-        long init(UsageStatsBridge caller, @JniType("Profile*") Profile profile);
+        long init(UsageStatsBridge self, @JniType("Profile*") Profile profile);
 
-        void destroy(long nativeUsageStatsBridge, UsageStatsBridge caller);
+        void destroy(long nativeUsageStatsBridge);
 
-        void getAllEvents(
-                long nativeUsageStatsBridge,
-                UsageStatsBridge caller,
-                Callback<List<WebsiteEvent>> callback);
+        void getAllEvents(long nativeUsageStatsBridge, Callback<List<WebsiteEvent>> callback);
 
         void queryEventsInRange(
                 long nativeUsageStatsBridge,
-                UsageStatsBridge caller,
                 long start,
                 long end,
                 Callback<List<WebsiteEvent>> callback);
 
-        void addEvents(
-                long nativeUsageStatsBridge,
-                UsageStatsBridge caller,
-                byte[][] events,
-                Callback<Boolean> callback);
+        void addEvents(long nativeUsageStatsBridge, byte[][] events, Callback<Boolean> callback);
 
-        void deleteAllEvents(
-                long nativeUsageStatsBridge, UsageStatsBridge caller, Callback<Boolean> callback);
+        void deleteAllEvents(long nativeUsageStatsBridge, Callback<Boolean> callback);
 
         void deleteEventsInRange(
-                long nativeUsageStatsBridge,
-                UsageStatsBridge caller,
-                long start,
-                long end,
-                Callback<Boolean> callback);
+                long nativeUsageStatsBridge, long start, long end, Callback<Boolean> callback);
 
         void deleteEventsWithMatchingDomains(
-                long nativeUsageStatsBridge,
-                UsageStatsBridge caller,
-                String[] domains,
-                Callback<Boolean> callback);
+                long nativeUsageStatsBridge, String[] domains, Callback<Boolean> callback);
 
-        void getAllSuspensions(
-                long nativeUsageStatsBridge, UsageStatsBridge caller, Callback<String[]> callback);
+        void getAllSuspensions(long nativeUsageStatsBridge, Callback<String[]> callback);
 
         void setSuspensions(
-                long nativeUsageStatsBridge,
-                UsageStatsBridge caller,
-                String[] domains,
-                Callback<Boolean> callback);
+                long nativeUsageStatsBridge, String[] domains, Callback<Boolean> callback);
 
         void getAllTokenMappings(
-                long nativeUsageStatsBridge,
-                UsageStatsBridge caller,
-                Callback<Map<String, String>> callback);
+                long nativeUsageStatsBridge, Callback<Map<String, String>> callback);
 
         void setTokenMappings(
                 long nativeUsageStatsBridge,
-                UsageStatsBridge caller,
                 String[] tokens,
                 String[] fqdns,
                 Callback<Boolean> callback);

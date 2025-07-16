@@ -32,29 +32,24 @@ LocationBarModelAndroid::LocationBarModelAndroid(JNIEnv* env,
 
 LocationBarModelAndroid::~LocationBarModelAndroid() = default;
 
-void LocationBarModelAndroid::Destroy(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void LocationBarModelAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
 ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetFormattedFullURL(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   return base::android::ConvertUTF16ToJavaString(
       env, location_bar_model_->GetFormattedFullURL());
 }
 
 ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetURLForDisplay(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   return base::android::ConvertUTF16ToJavaString(
       env, location_bar_model_->GetURLForDisplay());
 }
 
 ScopedJavaLocalRef<jobject>
-LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry(JNIEnv* env) {
   return url::GURLAndroid::FromNativeGURL(env, location_bar_model_->GetURL());
 }
 

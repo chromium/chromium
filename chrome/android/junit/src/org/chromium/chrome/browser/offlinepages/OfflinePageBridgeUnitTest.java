@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -298,11 +297,7 @@ public class OfflinePageBridgeUnitTest {
                 };
         doAnswer(answer)
                 .when(mOfflinePageBridgeJniMock)
-                .getAllPages(
-                        anyLong(),
-                        eq(mBridge),
-                        mResultArgument.capture(),
-                        mCallbackArgument.capture());
+                .getAllPages(anyLong(), mResultArgument.capture(), mCallbackArgument.capture());
     }
 
     private void answerGetPagesByClientIds(final int itemCount) {
@@ -331,7 +326,6 @@ public class OfflinePageBridgeUnitTest {
                 .when(mOfflinePageBridgeJniMock)
                 .getPagesByClientId(
                         anyLong(),
-                        eq(mBridge),
                         mResultArgument.capture(),
                         mNamespacesArgument.capture(),
                         mIdsArgument.capture(),
@@ -360,7 +354,6 @@ public class OfflinePageBridgeUnitTest {
                 .when(mOfflinePageBridgeJniMock)
                 .deletePagesByOfflineId(
                         anyLong(),
-                        eq(mBridge),
                         mOfflineIdsArgument.capture(),
                         mDeleteCallbackArgument.capture());
     }
@@ -386,7 +379,6 @@ public class OfflinePageBridgeUnitTest {
                 .when(mOfflinePageBridgeJniMock)
                 .deletePagesByClientId(
                         anyLong(),
-                        eq(mBridge),
                         mNamespacesArgument.capture(),
                         mIdsArgument.capture(),
                         mDeleteCallbackArgument.capture());

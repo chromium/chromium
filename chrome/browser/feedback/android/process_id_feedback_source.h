@@ -29,7 +29,6 @@ class ProcessIdFeedbackSource
 
   base::android::ScopedJavaLocalRef<jlongArray> GetProcessIdsForType(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jint process_type);
   void PrepareProcessIds();
 

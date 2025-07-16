@@ -25,30 +25,25 @@ class ContextMenuNativeDelegateImpl {
 
   void RetrieveImageForContextMenu(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jrender_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px);
   void RetrieveImageForShare(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jrender_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px,
       jint j_image_type);
   void StartDownload(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
                      const GURL& gurl,
                      jboolean jis_media);
   void SearchForImage(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jrender_frame_host);
   void InspectElement(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jrender_frame_host,
       jint x,
       jint y);

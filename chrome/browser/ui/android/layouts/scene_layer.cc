@@ -45,8 +45,7 @@ SceneLayer::~SceneLayer() {
       env, jobj, reinterpret_cast<intptr_t>(static_cast<SceneLayer*>(nullptr)));
 }
 
-void SceneLayer::RemoveFromParent(JNIEnv* env,
-                                  const JavaParamRef<jobject>& jobj) {
+void SceneLayer::RemoveFromParent(JNIEnv* env) {
   layer()->RemoveFromParent();
 }
 
@@ -56,7 +55,7 @@ void SceneLayer::OnDetach() {
   layer()->RemoveFromParent();
 }
 
-void SceneLayer::Destroy(JNIEnv* env, const JavaParamRef<jobject>& jobj) {
+void SceneLayer::Destroy(JNIEnv* env) {
   delete this;
 }
 

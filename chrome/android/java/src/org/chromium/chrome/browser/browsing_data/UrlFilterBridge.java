@@ -23,14 +23,13 @@ public class UrlFilterBridge implements UrlFilter {
     @Override
     public boolean matchesUrl(String url) {
         assert mNativeUrlFilterBridge != 0;
-        return UrlFilterBridgeJni.get()
-                .matchesUrl(mNativeUrlFilterBridge, UrlFilterBridge.this, url);
+        return UrlFilterBridgeJni.get().matchesUrl(mNativeUrlFilterBridge, url);
     }
 
     /** Destroys the native counterpart of this object. */
     public void destroy() {
         assert mNativeUrlFilterBridge != 0;
-        UrlFilterBridgeJni.get().destroy(mNativeUrlFilterBridge, UrlFilterBridge.this);
+        UrlFilterBridgeJni.get().destroy(mNativeUrlFilterBridge);
         mNativeUrlFilterBridge = 0;
     }
 
@@ -51,11 +50,8 @@ public class UrlFilterBridge implements UrlFilter {
 
     @NativeMethods
     interface Natives {
-        boolean matchesUrl(
-                long nativeUrlFilterBridge,
-                UrlFilterBridge caller,
-                @JniType("std::string") String url);
+        boolean matchesUrl(long nativeUrlFilterBridge, @JniType("std::string") String url);
 
-        void destroy(long nativeUrlFilterBridge, UrlFilterBridge caller);
+        void destroy(long nativeUrlFilterBridge);
     }
 }

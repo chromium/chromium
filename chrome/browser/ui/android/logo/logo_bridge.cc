@@ -117,7 +117,6 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
 }  // namespace
 
 static jlong JNI_LogoBridge_Init(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj,
                                  Profile* profile) {
   LogoBridge* logo_bridge = new LogoBridge(profile);
   return reinterpret_cast<intptr_t>(logo_bridge);
@@ -131,12 +130,11 @@ LogoBridge::LogoBridge(Profile* profile) : logo_service_(nullptr) {
 
 LogoBridge::~LogoBridge() = default;
 
-void LogoBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void LogoBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void LogoBridge::GetCurrentLogo(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
                                 const JavaParamRef<jobject>& j_logo_observer) {
   // |observer| is deleted in LogoObserverAndroid::OnObserverRemoved().
   LogoObserverAndroid* observer = new LogoObserverAndroid(

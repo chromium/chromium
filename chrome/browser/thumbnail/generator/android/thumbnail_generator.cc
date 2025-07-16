@@ -54,8 +54,7 @@ ThumbnailGenerator::ThumbnailGenerator(const JavaParamRef<jobject>& jobj)
 
 ThumbnailGenerator::~ThumbnailGenerator() = default;
 
-void ThumbnailGenerator::Destroy(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jobj) {
+void ThumbnailGenerator::Destroy(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   delete this;
 }
@@ -94,7 +93,6 @@ void ThumbnailGenerator::OnVideoThumbnailRetrieved(
 
 void ThumbnailGenerator::RetrieveThumbnail(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jstring>& jcontent_id,
     const JavaParamRef<jstring>& jfile_path,
     const JavaParamRef<jstring>& jmime_type,

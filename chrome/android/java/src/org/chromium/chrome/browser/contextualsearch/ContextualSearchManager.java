@@ -398,7 +398,7 @@ public class ContextualSearchManager
         hideContextualSearch(StateChangeReason.UNKNOWN);
         mFullscreenManager.removeObserver(mFullscreenObserver);
         mParentView.getViewTreeObserver().removeOnGlobalFocusChangeListener(mOnFocusChangeListener);
-        ContextualSearchManagerJni.get().destroy(mNativeContextualSearchManagerPtr, this);
+        ContextualSearchManagerJni.get().destroy(mNativeContextualSearchManagerPtr);
         stopListeningForHideNotifications();
         mRedirectHandler.clear();
         mInternalStateController.enter(InternalState.UNDEFINED);
@@ -587,7 +587,7 @@ public class ContextualSearchManager
             String selection, boolean isExactResolve, ContextualSearchContext searchContext) {
         ContextualSearchManagerJni.get()
                 .startSearchTermResolutionRequest(
-                        mNativeContextualSearchManagerPtr, this, mContext, getBaseWebContents());
+                        mNativeContextualSearchManagerPtr, mContext, getBaseWebContents());
         ContextualSearchUma.logResolveRequested(mSelectionController.isTapSelection());
     }
 
@@ -1202,7 +1202,6 @@ public class ContextualSearchManager
             ContextualSearchManagerJni.get()
                     .removeLastHistoryEntry(
                             mNativeContextualSearchManagerPtr,
-                            this,
                             mLastSearchRequestLoaded.getSearchUrl(),
                             mLoadedSearchUrlTimeMs);
         }
@@ -1689,10 +1688,7 @@ public class ContextualSearchManager
                             InternalState.GATHERING_SURROUNDINGS);
                     ContextualSearchManagerJni.get()
                             .gatherSurroundingText(
-                                    mNativeContextualSearchManagerPtr,
-                                    ContextualSearchManager.this,
-                                    mContext,
-                                    webContents);
+                                    mNativeContextualSearchManagerPtr, mContext, webContents);
                 } else {
                     mInternalStateController.reset(StateChangeReason.UNKNOWN);
                 }
@@ -2009,25 +2005,22 @@ public class ContextualSearchManager
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchManager caller, @JniType("Profile*") Profile profile);
+        long init(ContextualSearchManager self, @JniType("Profile*") Profile profile);
 
-        void destroy(long nativeContextualSearchManager, ContextualSearchManager caller);
+        void destroy(long nativeContextualSearchManager);
 
         void startSearchTermResolutionRequest(
                 long nativeContextualSearchManager,
-                ContextualSearchManager caller,
                 ContextualSearchContext contextualSearchContext,
                 WebContents baseWebContents);
 
         void gatherSurroundingText(
                 long nativeContextualSearchManager,
-                ContextualSearchManager caller,
                 ContextualSearchContext contextualSearchContext,
                 WebContents baseWebContents);
 
         void removeLastHistoryEntry(
                 long nativeContextualSearchManager,
-                ContextualSearchManager caller,
                 @JniType("std::string") String historyUrl,
                 long urlTimeMs);
     }

@@ -29,21 +29,16 @@ CardExpirationDateFixFlowViewAndroid::CardExpirationDateFixFlowViewAndroid(
 
 void CardExpirationDateFixFlowViewAndroid::OnUserAccept(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const std::u16string& month,
     const std::u16string& year) {
   controller_->OnAccepted(month, year);
 }
 
-void CardExpirationDateFixFlowViewAndroid::OnUserDismiss(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void CardExpirationDateFixFlowViewAndroid::OnUserDismiss(JNIEnv* env) {
   controller_->OnDismissed();
 }
 
-void CardExpirationDateFixFlowViewAndroid::PromptDismissed(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void CardExpirationDateFixFlowViewAndroid::PromptDismissed(JNIEnv* env) {
   delete this;
 }
 

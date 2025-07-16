@@ -36,7 +36,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   static OverlayWindowAndroid* OnActivityStart(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& token,
-      const base::android::JavaParamRef<jobject>& obj,
+
       const base::android::JavaParamRef<jobject>& jwindow_android);
   void DestroyStartedByJava(JNIEnv* env);
   void TogglePlayPause(JNIEnv* env, bool toggleOn);
@@ -88,7 +88,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
 
   void Initialize(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
+                  const base::android::JavaParamRef<jobject>& self,
                   const base::android::JavaParamRef<jobject>& jwindow_android);
 
  private:

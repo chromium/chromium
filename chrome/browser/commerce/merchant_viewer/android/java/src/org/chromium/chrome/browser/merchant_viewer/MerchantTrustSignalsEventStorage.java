@@ -121,7 +121,7 @@ public class MerchantTrustSignalsEventStorage {
 
     @NativeMethods
     interface Natives {
-        void init(MerchantTrustSignalsEventStorage caller, BrowserContextHandle handle);
+        void init(MerchantTrustSignalsEventStorage self, BrowserContextHandle handle);
 
         void save(
                 long nativeMerchantSignalDB,

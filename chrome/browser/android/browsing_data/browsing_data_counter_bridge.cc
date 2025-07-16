@@ -20,7 +20,7 @@ using base::android::ScopedJavaLocalRef;
 
 BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& obj,
     Profile* profile,
     jint selected_time_period,
     jint data_type)
@@ -58,7 +58,6 @@ BrowsingDataCounterBridge::~BrowsingDataCounterBridge() = default;
 
 void BrowsingDataCounterBridge::SetSelectedTimePeriod(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jint selected_time_period) {
   if (!counter_) {
     return;
@@ -68,8 +67,7 @@ void BrowsingDataCounterBridge::SetSelectedTimePeriod(
       static_cast<browsing_data::TimePeriod>(selected_time_period)));
 }
 
-void BrowsingDataCounterBridge::Destroy(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj) {
+void BrowsingDataCounterBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
@@ -84,7 +82,7 @@ void BrowsingDataCounterBridge::onCounterFinished(
 
 static jlong JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& obj,
     Profile* profile,
     jint selected_time_period,
     jint data_type) {

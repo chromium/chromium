@@ -46,8 +46,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     public void dismissed() {
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
-                .viewDismissed(
-                        mNativeAutofillKeyboardAccessory, AutofillKeyboardAccessoryViewBridge.this);
+                .viewDismissed(mNativeAutofillKeyboardAccessory);
     }
 
     @Override
@@ -55,20 +54,14 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         mManualFillingComponent.dismiss();
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
-                .suggestionSelected(
-                        mNativeAutofillKeyboardAccessory,
-                        AutofillKeyboardAccessoryViewBridge.this,
-                        listIndex);
+                .suggestionSelected(mNativeAutofillKeyboardAccessory, listIndex);
     }
 
     @Override
     public void deleteSuggestion(int listIndex) {
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
-                .deletionRequested(
-                        mNativeAutofillKeyboardAccessory,
-                        AutofillKeyboardAccessoryViewBridge.this,
-                        listIndex);
+                .deletionRequested(mNativeAutofillKeyboardAccessory, listIndex);
     }
 
     @Override
@@ -77,10 +70,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private void onDeletionDialogClosed(boolean confirmed) {
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
-                .onDeletionDialogClosed(
-                        mNativeAutofillKeyboardAccessory,
-                        AutofillKeyboardAccessoryViewBridge.this,
-                        confirmed);
+                .onDeletionDialogClosed(mNativeAutofillKeyboardAccessory, confirmed);
     }
 
     /**
@@ -204,23 +194,13 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
 
     @NativeMethods
     interface Natives {
-        void viewDismissed(
-                long nativeAutofillKeyboardAccessoryViewImpl,
-                AutofillKeyboardAccessoryViewBridge caller);
+        void viewDismissed(long nativeAutofillKeyboardAccessoryViewImpl);
 
-        void suggestionSelected(
-                long nativeAutofillKeyboardAccessoryViewImpl,
-                AutofillKeyboardAccessoryViewBridge caller,
-                int listIndex);
+        void suggestionSelected(long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
 
-        void deletionRequested(
-                long nativeAutofillKeyboardAccessoryViewImpl,
-                AutofillKeyboardAccessoryViewBridge caller,
-                int listIndex);
+        void deletionRequested(long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
 
         void onDeletionDialogClosed(
-                long nativeAutofillKeyboardAccessoryViewImpl,
-                AutofillKeyboardAccessoryViewBridge caller,
-                boolean confirmed);
+                long nativeAutofillKeyboardAccessoryViewImpl, boolean confirmed);
     }
 }

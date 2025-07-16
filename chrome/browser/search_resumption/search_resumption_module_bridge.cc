@@ -31,14 +31,12 @@ SearchResumptionModuleBridge::SearchResumptionModuleBridge(
       StartSuggestServiceFactory::GetInstance()->GetForBrowserContext(profile);
 }
 
-void SearchResumptionModuleBridge::Destroy(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj) {
+void SearchResumptionModuleBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void SearchResumptionModuleBridge::FetchSuggestions(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_page_url) {
   if (start_suggest_service_ == nullptr) {
     return;

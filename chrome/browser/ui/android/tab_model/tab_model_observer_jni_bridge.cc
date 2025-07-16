@@ -55,7 +55,6 @@ TabModelObserverJniBridge::~TabModelObserverJniBridge() {
 }
 
 void TabModelObserverJniBridge::DidSelectTab(JNIEnv* env,
-                                             const JavaParamRef<jobject>& jobj,
                                              const JavaParamRef<jobject>& jtab,
                                              int jtype,
                                              int last_id) {
@@ -69,7 +68,6 @@ void TabModelObserverJniBridge::DidSelectTab(JNIEnv* env,
 
 void TabModelObserverJniBridge::WillCloseTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   CHECK(tab);
@@ -80,7 +78,6 @@ void TabModelObserverJniBridge::WillCloseTab(
 
 void TabModelObserverJniBridge::OnFinishingTabClosure(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jtab,
     int jsource) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
@@ -93,7 +90,6 @@ void TabModelObserverJniBridge::OnFinishingTabClosure(
 
 void TabModelObserverJniBridge::OnFinishingMultipleTabClosure(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jobj,
     const base::android::JavaParamRef<jobjectArray>& jtabs,
     bool canRestore) {
   std::vector<raw_ptr<TabAndroid, VectorExperimental>> tabs =
@@ -105,7 +101,6 @@ void TabModelObserverJniBridge::OnFinishingMultipleTabClosure(
 }
 
 void TabModelObserverJniBridge::WillAddTab(JNIEnv* env,
-                                           const JavaParamRef<jobject>& jobj,
                                            const JavaParamRef<jobject>& jtab,
                                            int jtype) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
@@ -117,7 +112,6 @@ void TabModelObserverJniBridge::WillAddTab(JNIEnv* env,
 }
 
 void TabModelObserverJniBridge::DidAddTab(JNIEnv* env,
-                                          const JavaParamRef<jobject>& jobj,
                                           const JavaParamRef<jobject>& jtab,
                                           int jtype) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
@@ -129,7 +123,6 @@ void TabModelObserverJniBridge::DidAddTab(JNIEnv* env,
 }
 
 void TabModelObserverJniBridge::DidMoveTab(JNIEnv* env,
-                                           const JavaParamRef<jobject>& jobj,
                                            const JavaParamRef<jobject>& jtab,
                                            int new_index,
                                            int cur_index) {
@@ -142,7 +135,6 @@ void TabModelObserverJniBridge::DidMoveTab(JNIEnv* env,
 
 void TabModelObserverJniBridge::TabPendingClosure(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jtab,
     int jsource) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
@@ -155,7 +147,6 @@ void TabModelObserverJniBridge::TabPendingClosure(
 
 void TabModelObserverJniBridge::TabClosureUndone(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   CHECK(tab);
@@ -166,7 +157,6 @@ void TabModelObserverJniBridge::TabClosureUndone(
 
 void TabModelObserverJniBridge::OnTabCloseUndone(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobjectArray>& jtabs) {
   std::vector<raw_ptr<TabAndroid, VectorExperimental>> tabs =
       TabAndroid::GetAllNativeTabs(env,
@@ -178,7 +168,6 @@ void TabModelObserverJniBridge::OnTabCloseUndone(
 
 void TabModelObserverJniBridge::TabClosureCommitted(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   CHECK(tab);
@@ -189,7 +178,6 @@ void TabModelObserverJniBridge::TabClosureCommitted(
 
 void TabModelObserverJniBridge::AllTabsPendingClosure(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobjectArray>& jtabs) {
   std::vector<raw_ptr<TabAndroid, VectorExperimental>> tabs =
       TabAndroid::GetAllNativeTabs(env,
@@ -199,16 +187,13 @@ void TabModelObserverJniBridge::AllTabsPendingClosure(
   }
 }
 
-void TabModelObserverJniBridge::AllTabsClosureCommitted(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+void TabModelObserverJniBridge::AllTabsClosureCommitted(JNIEnv* env) {
   for (auto& observer : observers_) {
     observer.AllTabsClosureCommitted();
   }
 }
 
 void TabModelObserverJniBridge::TabRemoved(JNIEnv* env,
-                                           const JavaParamRef<jobject>& jobj,
                                            const JavaParamRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   CHECK(tab);

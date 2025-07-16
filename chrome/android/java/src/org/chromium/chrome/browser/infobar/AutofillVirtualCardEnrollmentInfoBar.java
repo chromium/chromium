@@ -191,7 +191,6 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
                                 AutofillVirtualCardEnrollmentInfoBarJni.get()
                                         .onInfobarLinkClicked(
                                                 mNativeAutofillVirtualCardEnrollmentInfoBar,
-                                                AutofillVirtualCardEnrollmentInfoBar.this,
                                                 url,
                                                 virtualCardEnrollmentLinkType));
         control.addDescription(
@@ -224,7 +223,6 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
                                 AutofillVirtualCardEnrollmentInfoBarJni.get()
                                         .onInfobarLinkClicked(
                                                 mNativeAutofillVirtualCardEnrollmentInfoBar,
-                                                AutofillVirtualCardEnrollmentInfoBar.this,
                                                 ChromeStringConstants
                                                         .AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
                                                 VirtualCardEnrollmentLinkType
@@ -291,7 +289,6 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
     interface Natives {
         void onInfobarLinkClicked(
                 long nativeAutofillVirtualCardEnrollmentInfoBar,
-                AutofillVirtualCardEnrollmentInfoBar caller,
                 String url,
                 @VirtualCardEnrollmentLinkType int virtualCardEnrollmentLinkType);
     }

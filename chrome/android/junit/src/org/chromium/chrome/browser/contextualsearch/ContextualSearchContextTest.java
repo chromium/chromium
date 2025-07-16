@@ -195,23 +195,23 @@ public class ContextualSearchContextTest {
         // Most common to least common
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq(""));
+                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq(""));
         mContext.setTranslationLanguages("en", "en", "en");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq(""));
+                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq(""));
         mContext.setTranslationLanguages("", "en", "en");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq("en"), eq("de"), eq(""));
+                .setTranslationLanguages(anyLong(), eq("en"), eq("de"), eq(""));
         mContext.setTranslationLanguages("en", "de", "de");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq("en"), eq("de"), eq("de,en"));
+                .setTranslationLanguages(anyLong(), eq("en"), eq("de"), eq("de,en"));
         mContext.setTranslationLanguages("en", "de", "de,en");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(mContext), eq(""), eq(""), eq("de,en"));
+                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq("de,en"));
         mContext.setTranslationLanguages("de", "de", "de,en");
     }
 }

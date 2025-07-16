@@ -67,8 +67,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected void initializeNative(@ActivityType int activityType, boolean isArchivedTabModel) {
         assert mNativeTabModelJniBridge == 0;
         mNativeTabModelJniBridge =
-                TabModelJniBridgeJni.get()
-                        .init(TabModelJniBridge.this, mProfile, activityType, isArchivedTabModel);
+                TabModelJniBridgeJni.get().init(this, mProfile, activityType, isArchivedTabModel);
     }
 
     /** Returns whether the native-side pointer has been initialized. */
@@ -81,7 +80,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     public void destroy() {
         if (isNativeInitialized()) {
             // This will invalidate all other native references to this object in child classes.
-            TabModelJniBridgeJni.get().destroy(mNativeTabModelJniBridge, TabModelJniBridge.this);
+            TabModelJniBridgeJni.get().destroy(mNativeTabModelJniBridge);
             mNativeTabModelJniBridge = 0;
         }
     }
@@ -135,25 +134,24 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     public void broadcastSessionRestoreComplete() {
         assert isNativeInitialized();
         assert isInitializationComplete();
-        TabModelJniBridgeJni.get()
-                .broadcastSessionRestoreComplete(mNativeTabModelJniBridge, TabModelJniBridge.this);
+        TabModelJniBridgeJni.get().broadcastSessionRestoreComplete(mNativeTabModelJniBridge);
     }
 
     /**
      * Called by subclasses when a Tab is added to the TabModel.
+     *
      * @param tab Tab being added to the model.
      */
     protected void tabAddedToModel(Tab tab) {
         if (isNativeInitialized()) {
-            TabModelJniBridgeJni.get()
-                    .tabAddedToModel(mNativeTabModelJniBridge, TabModelJniBridge.this, tab);
+            TabModelJniBridgeJni.get().tabAddedToModel(mNativeTabModelJniBridge, tab);
         }
     }
 
     protected void duplicateTabForTesting(Tab tab) {
         TabModelJniBridgeJni.get()
                 .duplicateTabForTesting( // IN-TEST
-                        mNativeTabModelJniBridge, TabModelJniBridge.this, tab);
+                        mNativeTabModelJniBridge, tab);
     }
 
     /**
@@ -484,24 +482,18 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long init(
-                TabModelJniBridge caller,
+                TabModelJniBridge self,
                 @JniType("Profile*") Profile profile,
                 @ActivityType int activityType,
                 boolean isArchivedTabModel);
 
-        void broadcastSessionRestoreComplete(
-                long nativeTabModelJniBridge, TabModelJniBridge caller);
+        void broadcastSessionRestoreComplete(long nativeTabModelJniBridge);
 
-        void destroy(long nativeTabModelJniBridge, TabModelJniBridge caller);
+        void destroy(long nativeTabModelJniBridge);
 
-        void tabAddedToModel(
-                long nativeTabModelJniBridge,
-                TabModelJniBridge caller,
-                @JniType("TabAndroid*") Tab tab);
+        void tabAddedToModel(long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);
 
         void duplicateTabForTesting( // IN-TEST
-                long nativeTabModelJniBridge,
-                TabModelJniBridge caller,
-                @JniType("TabAndroid*") Tab tab);
+                long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);
     }
 }

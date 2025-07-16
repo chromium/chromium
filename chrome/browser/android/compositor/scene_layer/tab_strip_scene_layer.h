@@ -48,25 +48,20 @@ class TabStripSceneLayer : public SceneLayer {
 
   void SetContentTree(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& jcontent_tree);
 
   void BeginBuildingFrame(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       jboolean visible,
       const base::android::JavaParamRef<jobject>& jresource_manager,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache);
 
-  void FinishBuildingFrame(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& jobj);
+  void FinishBuildingFrame(JNIEnv* env);
 
   void UpdateOffsetTag(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& jobj,
                        const base::android::JavaParamRef<jobject>& joffset_tag);
 
   void UpdateTabStripLayer(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& jobj,
                            jint width,
                            jint height,
                            jfloat y_offset,
@@ -78,7 +73,6 @@ class TabStripSceneLayer : public SceneLayer {
                            jfloat top_padding);
 
   void UpdateNewTabButton(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& jobj,
                           jint resource_id,
                           jint bg_resource_id,
                           jfloat x,
@@ -95,7 +89,6 @@ class TabStripSceneLayer : public SceneLayer {
 
   void UpdateModelSelectorButton(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       jint resource_id,
       jint bg_resource_id,
       jfloat x,
@@ -111,7 +104,6 @@ class TabStripSceneLayer : public SceneLayer {
 
   void UpdateTabStripLeftFade(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       jint resource_id,
       jfloat opacity,
       jint leftFadeColor,
@@ -119,14 +111,12 @@ class TabStripSceneLayer : public SceneLayer {
 
   void UpdateTabStripRightFade(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       jint resource_id,
       jfloat opacity,
       jint rightFadeColor,
       jfloat right_padding);
 
   void PutStripTabLayer(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& jobj,
                         jint id,
                         jint close_resource_id,
                         jint close_hover_bg_resource_id,
@@ -170,7 +160,6 @@ class TabStripSceneLayer : public SceneLayer {
 
   void PutGroupIndicatorLayer(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       jboolean incognito,
       jboolean foreground,
       jboolean collapsed,

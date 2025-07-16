@@ -246,7 +246,7 @@ public class OverlayPanelContent {
             @NonNull ViewGroup compositorViewHolder,
             @NonNull WindowAndroid windowAndroid,
             @NonNull Supplier<Tab> currentTabSupplier) {
-        mNativeOverlayPanelContentPtr = OverlayPanelContentJni.get().init(OverlayPanelContent.this);
+        mNativeOverlayPanelContentPtr = OverlayPanelContentJni.get().init(this);
         mContentDelegate = contentDelegate;
         mProgressObserver = progressObserver;
         mActivity = activity;
@@ -632,7 +632,7 @@ public class OverlayPanelContent {
     @NativeMethods
     interface Natives {
         // Native calls.
-        long init(OverlayPanelContent caller);
+        long init(OverlayPanelContent self);
 
         void destroy(long nativeOverlayPanelContent);
 

@@ -125,7 +125,7 @@ PasswordUiViewAndroid::~PasswordUiViewAndroid() {
   saved_passwords_presenter_.RemoveObserver(this);
 }
 
-void PasswordUiViewAndroid::Destroy(JNIEnv*, const JavaRef<jobject>&) {
+void PasswordUiViewAndroid::Destroy(JNIEnv* env) {
   switch (state_) {
     case State::ALIVE:
       delete this;
@@ -155,15 +155,13 @@ void PasswordUiViewAndroid::InsertPasswordEntryForTesting(
   profile_store_->AddLogin(form);
 }
 
-void PasswordUiViewAndroid::UpdatePasswordLists(JNIEnv* env,
-                                                const JavaRef<jobject>&) {
+void PasswordUiViewAndroid::UpdatePasswordLists(JNIEnv* env) {
   DCHECK_EQ(State::ALIVE, state_);
   UpdatePasswordLists();
 }
 
 ScopedJavaLocalRef<jobject> PasswordUiViewAndroid::GetSavedPasswordEntry(
     JNIEnv* env,
-    const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
   if (static_cast<size_t>(index) >= passwords_.size()) {
@@ -175,10 +173,8 @@ ScopedJavaLocalRef<jobject> PasswordUiViewAndroid::GetSavedPasswordEntry(
       passwords_[index].username, passwords_[index].password);
 }
 
-std::string PasswordUiViewAndroid::GetSavedPasswordException(
-    JNIEnv* env,
-    const JavaRef<jobject>&,
-    int index) {
+std::string PasswordUiViewAndroid::GetSavedPasswordException(JNIEnv* env,
+                                                             int index) {
   DCHECK_EQ(State::ALIVE, state_);
   if (static_cast<size_t>(index) >= blocked_sites_.size()) {
     return "";
@@ -186,10 +182,8 @@ std::string PasswordUiViewAndroid::GetSavedPasswordException(
   return password_manager::GetShownOrigin(blocked_sites_[index]);
 }
 
-void PasswordUiViewAndroid::HandleRemoveSavedPasswordEntry(
-    JNIEnv* env,
-    const JavaRef<jobject>&,
-    int index) {
+void PasswordUiViewAndroid::HandleRemoveSavedPasswordEntry(JNIEnv* env,
+                                                           int index) {
   DCHECK_EQ(State::ALIVE, state_);
   if (static_cast<size_t>(index) >= passwords_.size()) {
     return;
@@ -200,10 +194,8 @@ void PasswordUiViewAndroid::HandleRemoveSavedPasswordEntry(
   }
 }
 
-void PasswordUiViewAndroid::HandleRemoveSavedPasswordException(
-    JNIEnv* env,
-    const JavaRef<jobject>&,
-    int index) {
+void PasswordUiViewAndroid::HandleRemoveSavedPasswordException(JNIEnv* env,
+                                                               int index) {
   DCHECK_EQ(State::ALIVE, state_);
   if (static_cast<size_t>(index) >= passwords_.size()) {
     return;
@@ -216,7 +208,6 @@ void PasswordUiViewAndroid::HandleRemoveSavedPasswordException(
 
 void PasswordUiViewAndroid::HandleSerializePasswords(
     JNIEnv* env,
-    const JavaRef<jobject>&,
     const std::string& java_target_directory,
     const JavaRef<jobject>& success_callback,
     const JavaRef<jobject>& error_callback) {
@@ -259,9 +250,8 @@ void PasswordUiViewAndroid::HandleSerializePasswords(
 
 void PasswordUiViewAndroid::HandleShowPasswordEntryEditingView(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& context,
-    int index,
-    const JavaParamRef<jobject>& obj) {
+    const JavaParamRef<jobject>& context,
+    int index) {
   if (static_cast<size_t>(index) >= passwords_.size() ||
       credential_edit_bridge_) {
     return;
@@ -281,9 +271,8 @@ void PasswordUiViewAndroid::HandleShowPasswordEntryEditingView(
 
 void PasswordUiViewAndroid::HandleShowBlockedCredentialView(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& context,
-    int index,
-    const JavaParamRef<jobject>& obj) {
+    const JavaParamRef<jobject>& context,
+    int index) {
   if (static_cast<size_t>(index) >= blocked_sites_.size() ||
       credential_edit_bridge_) {
     return;
@@ -308,16 +297,15 @@ std::string JNI_PasswordUiView_GetTrustedVaultLearnMoreURL(JNIEnv* env) {
   return chrome::kSyncTrustedVaultLearnMoreURL;
 }
 
-jboolean PasswordUiViewAndroid::IsWaitingForPasswordStore(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>&) {
+jboolean PasswordUiViewAndroid::IsWaitingForPasswordStore(JNIEnv* env) {
   return saved_passwords_presenter_.IsWaitingForPasswordStore();
 }
 
 // static
-static jlong JNI_PasswordUiView_Init(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj,
-                                     Profile* profile) {
+static jlong JNI_PasswordUiView_Init(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    Profile* profile) {
   PasswordUiViewAndroid* controller =
       new PasswordUiViewAndroid(env, obj, profile);
   return reinterpret_cast<intptr_t>(controller);

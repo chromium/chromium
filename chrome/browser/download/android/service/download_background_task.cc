@@ -36,7 +36,6 @@ AutoResumptionHandler* GetAutoResumptionHandler() {
 // static
 void JNI_DownloadBackgroundTask_StartBackgroundTask(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jobject>& jkey,
     jint task_type,
     const JavaParamRef<jobject>& jcallback) {
@@ -64,7 +63,6 @@ void JNI_DownloadBackgroundTask_StartBackgroundTask(
 // static
 jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jobject>& jkey,
     jint task_type) {
   auto type = static_cast<DownloadTaskType>(task_type);

@@ -41,7 +41,6 @@ ScrollingBottomViewSceneLayer::~ScrollingBottomViewSceneLayer() = default;
 
 void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     const JavaParamRef<jobject>& jresource_manager,
     jint view_resource_id,
     jint shadow_height,
@@ -86,7 +85,6 @@ void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
 
 void ScrollingBottomViewSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer())

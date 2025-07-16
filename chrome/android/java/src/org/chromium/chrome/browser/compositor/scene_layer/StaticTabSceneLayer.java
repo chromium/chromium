@@ -9,8 +9,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -58,7 +58,6 @@ public class StaticTabSceneLayer extends SceneLayer {
         StaticTabSceneLayerJni.get()
                 .updateTabLayer(
                         mNativePtr,
-                        StaticTabSceneLayer.this,
                         model.get(LayoutTab.IS_ACTIVE_LAYOUT)
                                 ? model.get(LayoutTab.TAB_ID)
                                 : Tab.INVALID_TAB_ID,
@@ -75,14 +74,13 @@ public class StaticTabSceneLayer extends SceneLayer {
      * @param tabContentManager {@link TabContentManager} to set.
      */
     public void setTabContentManager(TabContentManager tabContentManager) {
-        StaticTabSceneLayerJni.get()
-                .setTabContentManager(mNativePtr, StaticTabSceneLayer.this, tabContentManager);
+        StaticTabSceneLayerJni.get().setTabContentManager(mNativePtr, tabContentManager);
     }
 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = StaticTabSceneLayerJni.get().init(StaticTabSceneLayer.this);
+            mNativePtr = StaticTabSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
@@ -96,11 +94,10 @@ public class StaticTabSceneLayer extends SceneLayer {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(StaticTabSceneLayer caller);
+        long init(StaticTabSceneLayer self);
 
         void updateTabLayer(
                 long nativeStaticTabSceneLayer,
-                StaticTabSceneLayer caller,
                 int id,
                 boolean canUseLiveLayer,
                 int backgroundColor,
@@ -109,8 +106,6 @@ public class StaticTabSceneLayer extends SceneLayer {
                 @Nullable OffsetTag contentLayerOffsetToken);
 
         void setTabContentManager(
-                long nativeStaticTabSceneLayer,
-                StaticTabSceneLayer caller,
-                TabContentManager tabContentManager);
+                long nativeStaticTabSceneLayer, TabContentManager tabContentManager);
     }
 }

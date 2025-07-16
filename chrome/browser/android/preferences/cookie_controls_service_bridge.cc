@@ -63,8 +63,7 @@ void CookieControlsServiceBridge::OnThirdPartyCookieBlockingPolicyChanged() {
   SendCookieControlsUIChanges();
 }
 
-void CookieControlsServiceBridge::Destroy(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+void CookieControlsServiceBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 

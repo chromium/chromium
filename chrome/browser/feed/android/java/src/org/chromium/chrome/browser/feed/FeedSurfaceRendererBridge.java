@@ -258,13 +258,13 @@ public class FeedSurfaceRendererBridge {
     public interface Natives {
         // Constructors.
         long init(
-                FeedSurfaceRendererBridge caller,
+                FeedSurfaceRendererBridge self,
                 @JniType("Profile*") Profile profile,
                 @StreamKind int streamKind,
                 long nativeFeedReliabilityLoggingBridge);
 
         long initWebFeed(
-                FeedSurfaceRendererBridge caller,
+                FeedSurfaceRendererBridge self,
                 @JniType("Profile*") Profile profile,
                 byte[] webFeedId,
                 long nativeFeedReliabilityLoggingBridge,

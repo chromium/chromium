@@ -445,8 +445,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         // Now check that the URL has been removed from history.
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
         Mockito.verify(mContextualSearchManagerNatives)
-                .removeLastHistoryEntry(
-                        Mockito.anyLong(), Mockito.any(), urlCaptor.capture(), Mockito.anyLong());
+                .removeLastHistoryEntry(Mockito.anyLong(), urlCaptor.capture(), Mockito.anyLong());
         Assert.assertEquals(url, urlCaptor.getValue());
     }
 
@@ -471,8 +470,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
 
         // Now check that the URL has not been removed from history, since the Content was seen.
         Mockito.verify(mContextualSearchManagerNatives, Mockito.never())
-                .removeLastHistoryEntry(
-                        Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.anyLong());
+                .removeLastHistoryEntry(Mockito.anyLong(), Mockito.any(), Mockito.anyLong());
     }
 
     /**
@@ -511,8 +509,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
         Mockito.verify(mContextualSearchManagerNatives, Mockito.times(3))
-                .removeLastHistoryEntry(
-                        Mockito.anyLong(), Mockito.any(), urlCaptor.capture(), Mockito.anyLong());
+                .removeLastHistoryEntry(Mockito.anyLong(), urlCaptor.capture(), Mockito.anyLong());
         MatcherAssert.assertThat(
                 urlCaptor.getAllValues(), Matchers.containsInAnyOrder(url1, url2, url3));
     }

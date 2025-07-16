@@ -64,16 +64,13 @@ public class OfflinePageDownloadBridge {
 
     private OfflinePageDownloadBridge() {
         mNativeOfflinePageDownloadBridge =
-                sIsTesting
-                        ? 0L
-                        : OfflinePageDownloadBridgeJni.get().init(OfflinePageDownloadBridge.this);
+                sIsTesting ? 0L : OfflinePageDownloadBridgeJni.get().init(this);
     }
 
     /** Destroys the native portion of the bridge. */
     public void destroy() {
         if (mNativeOfflinePageDownloadBridge != 0) {
-            OfflinePageDownloadBridgeJni.get()
-                    .destroy(mNativeOfflinePageDownloadBridge, OfflinePageDownloadBridge.this);
+            OfflinePageDownloadBridgeJni.get().destroy(mNativeOfflinePageDownloadBridge);
             mNativeOfflinePageDownloadBridge = 0;
         }
     }
@@ -221,9 +218,9 @@ public class OfflinePageDownloadBridge {
 
     @NativeMethods
     interface Natives {
-        long init(OfflinePageDownloadBridge caller);
+        long init(OfflinePageDownloadBridge self);
 
-        void destroy(long nativeOfflinePageDownloadBridge, OfflinePageDownloadBridge caller);
+        void destroy(long nativeOfflinePageDownloadBridge);
 
         void startDownload(Tab tab, @JniType("std::string") String origin);
     }

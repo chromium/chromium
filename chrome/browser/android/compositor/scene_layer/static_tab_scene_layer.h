@@ -33,7 +33,6 @@ class StaticTabSceneLayer : public SceneLayer {
 
   // Update StaticTabSceneLayer with the new parameters.
   void UpdateTabLayer(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& jobj,
                       jint id,
                       jboolean can_use_live_layer,
                       jint default_background_color,
@@ -43,7 +42,6 @@ class StaticTabSceneLayer : public SceneLayer {
 
   void SetTabContentManager(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& jtab_content_manager);
 
  private:

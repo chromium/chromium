@@ -255,7 +255,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = ContextualSearchSceneLayerJni.get().init(ContextualSearchSceneLayer.this);
+            mNativePtr = ContextualSearchSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
@@ -270,7 +270,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchSceneLayer caller);
+        long init(ContextualSearchSceneLayer self);
 
         void createContextualSearchLayer(
                 long nativeContextualSearchSceneLayer, ResourceManager resourceManager);

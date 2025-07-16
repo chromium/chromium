@@ -56,7 +56,7 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     @Override
     public void destroy() {
         if (mNativePtr != 0L) {
-            ReadAloudMiniPlayerSceneLayerJni.get().destroy(mNativePtr, this);
+            ReadAloudMiniPlayerSceneLayerJni.get().destroy(mNativePtr);
             mNativePtr = 0L;
         }
     }
@@ -92,8 +92,7 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr =
-                    ReadAloudMiniPlayerSceneLayerJni.get().init(ReadAloudMiniPlayerSceneLayer.this);
+            mNativePtr = ReadAloudMiniPlayerSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
@@ -161,10 +160,9 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
-        long init(ReadAloudMiniPlayerSceneLayer caller);
+        long init(ReadAloudMiniPlayerSceneLayer self);
 
-        void destroy(
-                long nativeReadAloudMiniPlayerSceneLayer, ReadAloudMiniPlayerSceneLayer caller);
+        void destroy(long nativeReadAloudMiniPlayerSceneLayer);
 
         void setContentTree(long nativeReadAloudMiniPlayerSceneLayer, SceneLayer contentTree);
 

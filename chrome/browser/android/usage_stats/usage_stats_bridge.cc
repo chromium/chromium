@@ -68,12 +68,11 @@ UsageStatsBridge::UsageStatsBridge(
 
 UsageStatsBridge::~UsageStatsBridge() = default;
 
-void UsageStatsBridge::Destroy(JNIEnv* env, const JavaRef<jobject>& j_this) {
+void UsageStatsBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
 void UsageStatsBridge::GetAllEvents(JNIEnv* j_env,
-                                    const JavaRef<jobject>& j_this,
                                     const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
 
@@ -83,7 +82,6 @@ void UsageStatsBridge::GetAllEvents(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::QueryEventsInRange(JNIEnv* j_env,
-                                          const JavaRef<jobject>& j_this,
                                           const jlong j_start,
                                           const jlong j_end,
                                           const JavaRef<jobject>& j_callback) {
@@ -97,7 +95,6 @@ void UsageStatsBridge::QueryEventsInRange(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::AddEvents(JNIEnv* j_env,
-                                 const JavaRef<jobject>& j_this,
                                  const JavaRef<jobjectArray>& j_events,
                                  const JavaRef<jobject>& j_callback) {
   // Deserialize events from byte arrays to proto messages.
@@ -121,7 +118,6 @@ void UsageStatsBridge::AddEvents(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::DeleteAllEvents(JNIEnv* j_env,
-                                       const JavaRef<jobject>& j_this,
                                        const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
 
@@ -131,7 +127,6 @@ void UsageStatsBridge::DeleteAllEvents(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::DeleteEventsInRange(JNIEnv* j_env,
-                                           const JavaRef<jobject>& j_this,
                                            const jlong j_start,
                                            const jlong j_end,
                                            const JavaRef<jobject>& j_callback) {
@@ -146,7 +141,6 @@ void UsageStatsBridge::DeleteEventsInRange(JNIEnv* j_env,
 
 void UsageStatsBridge::DeleteEventsWithMatchingDomains(
     JNIEnv* j_env,
-    const JavaRef<jobject>& j_this,
     const JavaRef<jobjectArray>& j_domains,
     const JavaRef<jobject>& j_callback) {
   std::vector<std::string> domains;
@@ -161,7 +155,6 @@ void UsageStatsBridge::DeleteEventsWithMatchingDomains(
 }
 
 void UsageStatsBridge::GetAllSuspensions(JNIEnv* j_env,
-                                         const JavaRef<jobject>& j_this,
                                          const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
 
@@ -171,7 +164,6 @@ void UsageStatsBridge::GetAllSuspensions(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::SetSuspensions(JNIEnv* j_env,
-                                      const JavaRef<jobject>& j_this,
                                       const JavaRef<jobjectArray>& j_domains,
                                       const JavaRef<jobject>& j_callback) {
   std::vector<std::string> domains;
@@ -185,7 +177,6 @@ void UsageStatsBridge::SetSuspensions(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::GetAllTokenMappings(JNIEnv* j_env,
-                                           const JavaRef<jobject>& j_this,
                                            const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
 
@@ -195,7 +186,6 @@ void UsageStatsBridge::GetAllTokenMappings(JNIEnv* j_env,
 }
 
 void UsageStatsBridge::SetTokenMappings(JNIEnv* j_env,
-                                        const JavaRef<jobject>& j_this,
                                         const JavaRef<jobjectArray>& j_tokens,
                                         const JavaRef<jobjectArray>& j_fqdns,
                                         const JavaRef<jobject>& j_callback) {

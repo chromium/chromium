@@ -201,7 +201,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     /** Handle any initialization that must occur after native has been initialized. */
     public void initializeWithNative() {
-        mNativeLocationBarModelAndroid = LocationBarModelJni.get().init(LocationBarModel.this);
+        mNativeLocationBarModelAndroid = LocationBarModelJni.get().init(this);
         mSpannableDisplayTextCache = new LruCache<>(LRU_CACHE_SIZE);
     }
 
@@ -224,7 +224,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             mChromeAutocompleteSchemeClassifier = null;
         }
         if (mNativeLocationBarModelAndroid == 0) return;
-        LocationBarModelJni.get().destroy(mNativeLocationBarModelAndroid, LocationBarModel.this);
+        LocationBarModelJni.get().destroy(mNativeLocationBarModelAndroid);
         mNativeLocationBarModelAndroid = 0;
     }
 
@@ -807,18 +807,20 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return mUrlForDisplay;
     }
 
-    /** @return The formatted URL suitable for editing. */
+    /**
+     * @return The formatted URL suitable for editing.
+     */
     protected String calculateFormattedFullUrl() {
         if (mNativeLocationBarModelAndroid == 0) return "";
-        return LocationBarModelJni.get()
-                .getFormattedFullURL(mNativeLocationBarModelAndroid, LocationBarModel.this);
+        return LocationBarModelJni.get().getFormattedFullURL(mNativeLocationBarModelAndroid);
     }
 
-    /** @return The formatted URL suitable for display only. */
+    /**
+     * @return The formatted URL suitable for display only.
+     */
     protected String calculateUrlForDisplay() {
         if (mNativeLocationBarModelAndroid == 0) return "";
-        return LocationBarModelJni.get()
-                .getURLForDisplay(mNativeLocationBarModelAndroid, LocationBarModel.this);
+        return LocationBarModelJni.get().getURLForDisplay(mNativeLocationBarModelAndroid);
     }
 
     @SuppressWarnings("NullAway")
@@ -829,8 +831,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         return LocationBarModelJni.get()
-                .getUrlOfVisibleNavigationEntry(
-                        mNativeLocationBarModelAndroid, LocationBarModel.this);
+                .getUrlOfVisibleNavigationEntry(mNativeLocationBarModelAndroid);
     }
 
     /** Notify changes for non static layout. */
@@ -873,16 +874,15 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @NativeMethods
     interface Natives {
-        long init(LocationBarModel caller);
+        long init(LocationBarModel self);
 
-        void destroy(long nativeLocationBarModelAndroid, LocationBarModel caller);
+        void destroy(long nativeLocationBarModelAndroid);
 
-        String getFormattedFullURL(long nativeLocationBarModelAndroid, LocationBarModel caller);
+        String getFormattedFullURL(long nativeLocationBarModelAndroid);
 
-        String getURLForDisplay(long nativeLocationBarModelAndroid, LocationBarModel caller);
+        String getURLForDisplay(long nativeLocationBarModelAndroid);
 
-        GURL getUrlOfVisibleNavigationEntry(
-                long nativeLocationBarModelAndroid, LocationBarModel caller);
+        GURL getUrlOfVisibleNavigationEntry(long nativeLocationBarModelAndroid);
 
         int getPageClassification(long nativeLocationBarModelAndroid, boolean isPrefetch);
     }

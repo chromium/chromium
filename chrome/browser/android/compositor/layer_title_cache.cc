@@ -68,7 +68,6 @@ void LayerTitleCache::Destroy(JNIEnv* env) {
 }
 
 void LayerTitleCache::UpdateLayer(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
                                   jint tab_id,
                                   jint title_resource_id,
                                   jint icon_resource_id,
@@ -99,7 +98,6 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
 
 void LayerTitleCache::UpdateGroupLayer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jgroup_token,
     jint title_resource_id,
     jint avatar_resource_id,
@@ -128,7 +126,6 @@ void LayerTitleCache::UpdateGroupLayer(
 }
 
 void LayerTitleCache::UpdateIcon(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj,
                                  jint tab_id,
                                  jint icon_resource_id,
                                  bool show_bubble) {
@@ -139,7 +136,6 @@ void LayerTitleCache::UpdateIcon(JNIEnv* env,
 }
 
 void LayerTitleCache::UpdateTabBubble(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj,
                                       jint tab_id,
                                       bool show_bubble) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);

@@ -31,8 +31,7 @@ ReadAloudMiniPlayerSceneLayer::ReadAloudMiniPlayerSceneLayer(
 
 ReadAloudMiniPlayerSceneLayer::~ReadAloudMiniPlayerSceneLayer() = default;
 
-void ReadAloudMiniPlayerSceneLayer::Destroy(JNIEnv* env,
-                                            const JavaParamRef<jobject>& jobj) {
+void ReadAloudMiniPlayerSceneLayer::Destroy(JNIEnv* env) {
   delete this;
 }
 

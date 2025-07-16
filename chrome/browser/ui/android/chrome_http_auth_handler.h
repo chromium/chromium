@@ -58,16 +58,14 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
 
   // Submits the username and password to the observer.
   void SetAuth(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>&,
                std::u16string& username,
                std::u16string& password);
 
   // Cancels the authentication attempt of the observer.
-  void CancelAuth(JNIEnv* env, const base::android::JavaParamRef<jobject>&);
+  void CancelAuth(JNIEnv* env);
 
   // These functions return the strings needed to display a login form.
-  std::u16string GetMessageBody(JNIEnv* env,
-                                const base::android::JavaParamRef<jobject>&);
+  std::u16string GetMessageBody(JNIEnv* env);
 
  private:
   void SetAuthSync(const std::u16string& username,

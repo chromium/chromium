@@ -158,7 +158,7 @@ public class UmaSessionStats {
                     };
         }
 
-        UmaSessionStatsJni.get().umaResumeSession(sNativeUmaSessionStats, UmaSessionStats.this);
+        UmaSessionStatsJni.get().umaResumeSession(sNativeUmaSessionStats);
         updatePreferences();
         updateMetricsServiceState();
         DefaultBrowserInfoUmaRecorder.logDefaultBrowserStats();
@@ -186,7 +186,7 @@ public class UmaSessionStats {
                     mTabbedSessionContainedGoogleSearch);
         }
 
-        UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats, UmaSessionStats.this);
+        UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats);
     }
 
     /**
@@ -312,9 +312,9 @@ public class UmaSessionStats {
 
         void updateMetricsServiceState(boolean mayUpload);
 
-        void umaResumeSession(long nativeUmaSessionStats, UmaSessionStats caller);
+        void umaResumeSession(long nativeUmaSessionStats);
 
-        void umaEndSession(long nativeUmaSessionStats, UmaSessionStats caller);
+        void umaEndSession(long nativeUmaSessionStats);
 
         void registerExternalExperiment(int[] experimentIds, boolean overrideExistingIds);
 

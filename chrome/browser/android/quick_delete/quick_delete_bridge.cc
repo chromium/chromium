@@ -53,7 +53,7 @@ QuickDeleteBridge::QuickDeleteBridge(Profile* profile) {
 
 QuickDeleteBridge::~QuickDeleteBridge() = default;
 
-void QuickDeleteBridge::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void QuickDeleteBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
@@ -92,7 +92,6 @@ void QuickDeleteBridge::OnGetLastVisitedDomainAndUniqueDomainCountComplete(
 }
 
 static jlong JNI_QuickDeleteBridge_Init(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
                                         Profile* profile) {
   QuickDeleteBridge* bridge = new QuickDeleteBridge(profile);
   return reinterpret_cast<intptr_t>(bridge);

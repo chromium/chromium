@@ -72,7 +72,6 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
         }
         DownloadBackgroundTaskJni.get()
                 .startBackgroundTask(
-                        DownloadBackgroundTask.this,
                         getProfileKey(),
                         mCurrentTaskType,
                         needsReschedule -> {
@@ -98,8 +97,7 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
         }
         @DownloadTaskType
         int taskType = taskParameters.getExtras().getInt(DownloadTaskScheduler.EXTRA_TASK_TYPE);
-        return DownloadBackgroundTaskJni.get()
-                .stopBackgroundTask(DownloadBackgroundTask.this, getProfileKey(), taskType);
+        return DownloadBackgroundTaskJni.get().stopBackgroundTask(getProfileKey(), taskType);
     }
 
     @VisibleForTesting
@@ -125,12 +123,8 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        void startBackgroundTask(
-                DownloadBackgroundTask caller,
-                ProfileKey key,
-                int taskType,
-                Callback<Boolean> callback);
+        void startBackgroundTask(ProfileKey key, int taskType, Callback<Boolean> callback);
 
-        boolean stopBackgroundTask(DownloadBackgroundTask caller, ProfileKey key, int taskType);
+        boolean stopBackgroundTask(ProfileKey key, int taskType);
     }
 }

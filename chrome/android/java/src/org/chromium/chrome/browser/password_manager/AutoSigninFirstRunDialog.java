@@ -101,12 +101,9 @@ public class AutoSigninFirstRunDialog
     @Override
     public void onClick(DialogInterface dialog, int whichButton) {
         if (whichButton == DialogInterface.BUTTON_NEGATIVE) {
-            AutoSigninFirstRunDialogJni.get()
-                    .onTurnOffClicked(
-                            mNativeAutoSigninFirstRunDialog, AutoSigninFirstRunDialog.this);
+            AutoSigninFirstRunDialogJni.get().onTurnOffClicked(mNativeAutoSigninFirstRunDialog);
         } else if (whichButton == DialogInterface.BUTTON_POSITIVE) {
-            AutoSigninFirstRunDialogJni.get()
-                    .onOkClicked(mNativeAutoSigninFirstRunDialog, AutoSigninFirstRunDialog.this);
+            AutoSigninFirstRunDialogJni.get().onOkClicked(mNativeAutoSigninFirstRunDialog);
         }
     }
 
@@ -117,8 +114,7 @@ public class AutoSigninFirstRunDialog
 
     private void destroy() {
         assert mNativeAutoSigninFirstRunDialog != 0;
-        AutoSigninFirstRunDialogJni.get()
-                .destroy(mNativeAutoSigninFirstRunDialog, AutoSigninFirstRunDialog.this);
+        AutoSigninFirstRunDialogJni.get().destroy(mNativeAutoSigninFirstRunDialog);
         mNativeAutoSigninFirstRunDialog = 0;
         mDialog = null;
     }
@@ -133,15 +129,12 @@ public class AutoSigninFirstRunDialog
 
     @NativeMethods
     interface Natives {
-        void onTurnOffClicked(
-                long nativeAutoSigninFirstRunDialogAndroid, AutoSigninFirstRunDialog caller);
+        void onTurnOffClicked(long nativeAutoSigninFirstRunDialogAndroid);
 
-        void onOkClicked(
-                long nativeAutoSigninFirstRunDialogAndroid, AutoSigninFirstRunDialog caller);
+        void onOkClicked(long nativeAutoSigninFirstRunDialogAndroid);
 
-        void destroy(long nativeAutoSigninFirstRunDialogAndroid, AutoSigninFirstRunDialog caller);
+        void destroy(long nativeAutoSigninFirstRunDialogAndroid);
 
-        void onLinkClicked(
-                long nativeAutoSigninFirstRunDialogAndroid, AutoSigninFirstRunDialog caller);
+        void onLinkClicked(long nativeAutoSigninFirstRunDialogAndroid);
     }
 }

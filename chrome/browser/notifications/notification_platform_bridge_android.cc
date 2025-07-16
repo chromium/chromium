@@ -166,7 +166,6 @@ NotificationPlatformBridgeAndroid::~NotificationPlatformBridgeAndroid() {
 
 void NotificationPlatformBridgeAndroid::OnNotificationClicked(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_object,
     std::string& notification_id,
     jint java_notification_type,
     std::string& java_origin_str,
@@ -210,7 +209,6 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
 void NotificationPlatformBridgeAndroid::
     StoreCachedWebApkPackageForNotificationId(
         JNIEnv* env,
-        const base::android::JavaParamRef<jobject>& java_object,
         std::string& notification_id,
         std::string& webapk_package) {
   const auto iterator = regenerated_notification_infos_.find(notification_id);
@@ -224,7 +222,6 @@ void NotificationPlatformBridgeAndroid::
 
 void NotificationPlatformBridgeAndroid::OnNotificationClosed(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_object,
     std::string& notification_id,
     jint java_notification_type,
     std::string& origin,
@@ -254,7 +251,6 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
 
 void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_object,
     std::string& notification_id,
     jint java_notification_type,
     std::string& origin,
@@ -277,7 +273,6 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
 
 void NotificationPlatformBridgeAndroid::SetIsSuspiciousParameterForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_object,
     bool is_suspicious) {
   should_use_test_is_suspicious_value_ = true;
   test_is_suspicious_value_ = is_suspicious;
@@ -285,7 +280,6 @@ void NotificationPlatformBridgeAndroid::SetIsSuspiciousParameterForTesting(
 
 void NotificationPlatformBridgeAndroid::OnReportNotificationAsSafe(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_object,
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
@@ -305,7 +299,6 @@ void NotificationPlatformBridgeAndroid::OnReportNotificationAsSafe(
 
 void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_object,
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
@@ -325,7 +318,6 @@ void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
 
 void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_object,
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
@@ -364,7 +356,6 @@ void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
 
 void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_object,
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,

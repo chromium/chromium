@@ -115,6 +115,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private ToggleTabStackButton mTabSwitcherButton;
     @Mock private View mToolbar;
     @Mock private NewTabPage mNtp;
+    private SceneLayer mSceneLayer;
 
     private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
@@ -134,21 +135,21 @@ public class NewTabAnimationLayoutUnitTest {
         when(mSceneLayerJni.init(any()))
                 .thenReturn(FAKE_NATIVE_ADDRESS_1)
                 .thenReturn(FAKE_NATIVE_ADDRESS_2);
-        doCallback(
-                        /* index= */ 1,
-                        (SceneLayer sceneLayer) -> {
-                            sceneLayer.setNativePtr(0L);
-                        })
-                .when(mSceneLayerJni)
-                .destroy(anyLong(), any());
         doAnswer(
                         invocation -> {
-                            ((SceneLayer) invocation.getArguments()[0])
-                                    .setNativePtr(FAKE_NATIVE_ADDRESS_1);
+                            mSceneLayer = (SceneLayer) invocation.getArguments()[0];
+                            mSceneLayer.setNativePtr(FAKE_NATIVE_ADDRESS_1);
                             return FAKE_NATIVE_ADDRESS_1;
                         })
                 .when(mStaticTabSceneLayerJni)
                 .init(any());
+        doCallback(
+                        /* index= */ 0,
+                        (Long nativePointer) -> {
+                            mSceneLayer.setNativePtr(0L);
+                        })
+                .when(mSceneLayerJni)
+                .destroy(anyLong());
 
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
         when(mTabModelSelector.getModelForTabId(anyInt())).thenReturn(mTabModel);

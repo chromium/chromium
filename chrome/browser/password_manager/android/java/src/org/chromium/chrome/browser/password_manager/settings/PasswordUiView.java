@@ -43,7 +43,7 @@ public final class PasswordUiView implements PasswordManagerHandler {
      * @param profile The {@link Profile} associated with these passwords.
      */
     public PasswordUiView(PasswordListObserver observer, Profile profile) {
-        mNativePasswordUiViewAndroid = PasswordUiViewJni.get().init(PasswordUiView.this, profile);
+        mNativePasswordUiViewAndroid = PasswordUiViewJni.get().init(this, profile);
         mObserver = observer;
     }
 
@@ -68,35 +68,29 @@ public final class PasswordUiView implements PasswordManagerHandler {
     // passwordListAvailable and passwordExceptionListAvailable.
     @Override
     public void updatePasswordLists() {
-        PasswordUiViewJni.get()
-                .updatePasswordLists(mNativePasswordUiViewAndroid, PasswordUiView.this);
+        PasswordUiViewJni.get().updatePasswordLists(mNativePasswordUiViewAndroid);
     }
 
     @Override
     public SavedPasswordEntry getSavedPasswordEntry(int index) {
-        return PasswordUiViewJni.get()
-                .getSavedPasswordEntry(mNativePasswordUiViewAndroid, PasswordUiView.this, index);
+        return PasswordUiViewJni.get().getSavedPasswordEntry(mNativePasswordUiViewAndroid, index);
     }
 
     @Override
     public String getSavedPasswordException(int index) {
         return PasswordUiViewJni.get()
-                .getSavedPasswordException(
-                        mNativePasswordUiViewAndroid, PasswordUiView.this, index);
+                .getSavedPasswordException(mNativePasswordUiViewAndroid, index);
     }
 
     @Override
     public void removeSavedPasswordEntry(int index) {
-        PasswordUiViewJni.get()
-                .handleRemoveSavedPasswordEntry(
-                        mNativePasswordUiViewAndroid, PasswordUiView.this, index);
+        PasswordUiViewJni.get().handleRemoveSavedPasswordEntry(mNativePasswordUiViewAndroid, index);
     }
 
     @Override
     public void removeSavedPasswordException(int index) {
         PasswordUiViewJni.get()
-                .handleRemoveSavedPasswordException(
-                        mNativePasswordUiViewAndroid, PasswordUiView.this, index);
+                .handleRemoveSavedPasswordException(mNativePasswordUiViewAndroid, index);
     }
 
     @Override
@@ -104,11 +98,7 @@ public final class PasswordUiView implements PasswordManagerHandler {
             String targetPath, IntStringCallback successCallback, Callback<String> errorCallback) {
         PasswordUiViewJni.get()
                 .handleSerializePasswords(
-                        mNativePasswordUiViewAndroid,
-                        PasswordUiView.this,
-                        targetPath,
-                        successCallback,
-                        errorCallback);
+                        mNativePasswordUiViewAndroid, targetPath, successCallback, errorCallback);
     }
 
     @Override
@@ -116,13 +106,11 @@ public final class PasswordUiView implements PasswordManagerHandler {
             Context context, int index, boolean isBlockedCredential) {
         if (isBlockedCredential) {
             PasswordUiViewJni.get()
-                    .handleShowBlockedCredentialView(
-                            mNativePasswordUiViewAndroid, context, index, PasswordUiView.this);
+                    .handleShowBlockedCredentialView(mNativePasswordUiViewAndroid, context, index);
             return;
         }
         PasswordUiViewJni.get()
-                .handleShowPasswordEntryEditingView(
-                        mNativePasswordUiViewAndroid, context, index, PasswordUiView.this);
+                .handleShowPasswordEntryEditingView(mNativePasswordUiViewAndroid, context, index);
     }
 
     /**
@@ -146,21 +134,20 @@ public final class PasswordUiView implements PasswordManagerHandler {
 
     @Override
     public boolean isWaitingForPasswordStore() {
-        return PasswordUiViewJni.get()
-                .isWaitingForPasswordStore(mNativePasswordUiViewAndroid, PasswordUiView.this);
+        return PasswordUiViewJni.get().isWaitingForPasswordStore(mNativePasswordUiViewAndroid);
     }
 
     /** Destroy the native object. */
     public void destroy() {
         if (mNativePasswordUiViewAndroid != 0) {
-            PasswordUiViewJni.get().destroy(mNativePasswordUiViewAndroid, PasswordUiView.this);
+            PasswordUiViewJni.get().destroy(mNativePasswordUiViewAndroid);
             mNativePasswordUiViewAndroid = 0;
         }
     }
 
     @NativeMethods
     interface Natives {
-        long init(PasswordUiView caller, @JniType("Profile*") Profile profile);
+        long init(PasswordUiView self, @JniType("Profile*") Profile profile);
 
         void insertPasswordEntryForTesting(
                 long nativePasswordUiViewAndroid,
@@ -168,20 +155,16 @@ public final class PasswordUiView implements PasswordManagerHandler {
                 @JniType("std::u16string") String username,
                 @JniType("std::u16string") String password);
 
-        void updatePasswordLists(long nativePasswordUiViewAndroid, PasswordUiView caller);
+        void updatePasswordLists(long nativePasswordUiViewAndroid);
 
-        SavedPasswordEntry getSavedPasswordEntry(
-                long nativePasswordUiViewAndroid, PasswordUiView caller, int index);
+        SavedPasswordEntry getSavedPasswordEntry(long nativePasswordUiViewAndroid, int index);
 
         @JniType("std::string")
-        String getSavedPasswordException(
-                long nativePasswordUiViewAndroid, PasswordUiView caller, int index);
+        String getSavedPasswordException(long nativePasswordUiViewAndroid, int index);
 
-        void handleRemoveSavedPasswordEntry(
-                long nativePasswordUiViewAndroid, PasswordUiView caller, int index);
+        void handleRemoveSavedPasswordEntry(long nativePasswordUiViewAndroid, int index);
 
-        void handleRemoveSavedPasswordException(
-                long nativePasswordUiViewAndroid, PasswordUiView caller, int index);
+        void handleRemoveSavedPasswordException(long nativePasswordUiViewAndroid, int index);
 
         @JniType("std::string")
         String getAccountDashboardURL();
@@ -189,27 +172,20 @@ public final class PasswordUiView implements PasswordManagerHandler {
         @JniType("std::string")
         String getTrustedVaultLearnMoreURL();
 
-        boolean isWaitingForPasswordStore(long nativePasswordUiViewAndroid, PasswordUiView caller);
+        boolean isWaitingForPasswordStore(long nativePasswordUiViewAndroid);
 
-        void destroy(long nativePasswordUiViewAndroid, PasswordUiView caller);
+        void destroy(long nativePasswordUiViewAndroid);
 
         void handleSerializePasswords(
                 long nativePasswordUiViewAndroid,
-                PasswordUiView caller,
                 @JniType("std::string") String targetPath,
                 IntStringCallback successCallback,
                 Callback<String> errorCallback);
 
         void handleShowPasswordEntryEditingView(
-                long nativePasswordUiViewAndroid,
-                Context context,
-                int index,
-                PasswordUiView caller);
+                long nativePasswordUiViewAndroid, Context context, int index);
 
         void handleShowBlockedCredentialView(
-                long nativePasswordUiViewAndroid,
-                Context context,
-                int index,
-                PasswordUiView caller);
+                long nativePasswordUiViewAndroid, Context context, int index);
     }
 }

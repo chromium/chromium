@@ -53,11 +53,10 @@ class DownloadDialogBridge {
       DialogCallback dialog_callback);
 
   void OnComplete(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& obj,
                   std::string& returned_path,
                   bool did_user_confirm);
 
-  void OnCanceled(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void OnCanceled(JNIEnv* env);
 
  private:
   // Called when the user finished the selections from download dialog.

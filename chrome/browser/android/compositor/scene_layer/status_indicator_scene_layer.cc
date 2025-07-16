@@ -34,7 +34,6 @@ StatusIndicatorSceneLayer::~StatusIndicatorSceneLayer() = default;
 
 void StatusIndicatorSceneLayer::UpdateStatusIndicatorLayer(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& object,
     const base::android::JavaParamRef<jobject>& jresource_manager,
     jint view_resource_id,
     jint y_offset) {
@@ -61,7 +60,6 @@ void StatusIndicatorSceneLayer::UpdateStatusIndicatorLayer(
 
 void StatusIndicatorSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer())

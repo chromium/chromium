@@ -21,7 +21,6 @@ bool g_on_app_enter_foreground_called = false;
 
 static void JNI_VariationsSession_StartVariationsSession(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     std::string& restrict_mode) {
   DCHECK(g_browser_process);
 
@@ -37,9 +36,7 @@ static void JNI_VariationsSession_StartVariationsSession(
   }
 }
 
-static std::string JNI_VariationsSession_GetLatestCountry(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+static std::string JNI_VariationsSession_GetLatestCountry(JNIEnv* env) {
   std::string latest_country;
 
   variations::VariationsService* variations_service =

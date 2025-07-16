@@ -39,25 +39,22 @@ public class DevToolsServer {
     }
 
     public DevToolsServer(String socketNamePrefix) {
-        mNativeDevToolsServer =
-                DevToolsServerJni.get().initRemoteDebugging(DevToolsServer.this, socketNamePrefix);
+        mNativeDevToolsServer = DevToolsServerJni.get().initRemoteDebugging(socketNamePrefix);
     }
 
     public void destroy() {
-        DevToolsServerJni.get().destroyRemoteDebugging(DevToolsServer.this, mNativeDevToolsServer);
+        DevToolsServerJni.get().destroyRemoteDebugging(mNativeDevToolsServer);
         mNativeDevToolsServer = 0;
     }
 
     public boolean isRemoteDebuggingEnabled() {
-        return DevToolsServerJni.get()
-                .isRemoteDebuggingEnabled(DevToolsServer.this, mNativeDevToolsServer);
+        return DevToolsServerJni.get().isRemoteDebuggingEnabled(mNativeDevToolsServer);
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled, @Security int security) {
         boolean allowDebugPermission = security == Security.ALLOW_DEBUG_PERMISSION;
         DevToolsServerJni.get()
-                .setRemoteDebuggingEnabled(
-                        DevToolsServer.this, mNativeDevToolsServer, enabled, allowDebugPermission);
+                .setRemoteDebuggingEnabled(mNativeDevToolsServer, enabled, allowDebugPermission);
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled) {
@@ -75,17 +72,13 @@ public class DevToolsServer {
 
     @NativeMethods
     interface Natives {
-        long initRemoteDebugging(
-                DevToolsServer caller, @JniType("std::string") String socketNamePrefix);
+        long initRemoteDebugging(@JniType("std::string") String socketNamePrefix);
 
-        void destroyRemoteDebugging(DevToolsServer caller, long devToolsServer);
+        void destroyRemoteDebugging(long devToolsServer);
 
-        boolean isRemoteDebuggingEnabled(DevToolsServer caller, long devToolsServer);
+        boolean isRemoteDebuggingEnabled(long devToolsServer);
 
         void setRemoteDebuggingEnabled(
-                DevToolsServer caller,
-                long devToolsServer,
-                boolean enabled,
-                boolean allowDebugPermission);
+                long devToolsServer, boolean enabled, boolean allowDebugPermission);
     }
 }

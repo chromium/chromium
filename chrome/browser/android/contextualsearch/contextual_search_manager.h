@@ -31,7 +31,7 @@ class ContextualSearchManager {
   ~ContextualSearchManager();
 
   // Called by the Java ContextualSearchManager when it is being destroyed.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Starts the request to get the search terms to use for the given selection,
   // by accessing our server with the content of the page (from the given
@@ -41,7 +41,6 @@ class ContextualSearchManager {
   // by calling OnSearchTermResolutionResponse().
   void StartSearchTermResolutionRequest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_contextual_search_context,
       const base::android::JavaParamRef<jobject>& j_base_web_contents);
 
@@ -49,14 +48,12 @@ class ContextualSearchManager {
   // Does not send a search term resolution request to the server.
   void GatherSurroundingText(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_contextual_search_context,
       const base::android::JavaParamRef<jobject>& j_base_web_contents);
 
   // Removes a search URL from history. |search_start_time_ms| represents the
   // time at which |search_url| was committed.
   void RemoveLastHistoryEntry(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
                               std::string& search_url,
                               jlong search_start_time_ms);
 

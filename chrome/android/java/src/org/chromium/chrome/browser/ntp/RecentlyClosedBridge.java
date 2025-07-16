@@ -120,7 +120,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
      *     TabGroupModelFilter}s.
      */
     public RecentlyClosedBridge(Profile profile, TabModelSelector tabModelSelector) {
-        mNativeBridge = RecentlyClosedBridgeJni.get().init(RecentlyClosedBridge.this, profile);
+        mNativeBridge = RecentlyClosedBridgeJni.get().init(this, profile);
         mTabModelSelector = tabModelSelector;
     }
 
@@ -182,7 +182,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(RecentlyClosedBridge caller, @JniType("Profile*") Profile profile);
+        long init(RecentlyClosedBridge self, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeRecentlyClosedTabsBridge);
 

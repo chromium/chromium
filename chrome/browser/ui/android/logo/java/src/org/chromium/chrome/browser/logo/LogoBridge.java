@@ -64,7 +64,7 @@ public class LogoBridge {
      * @param profile Profile of the tab that will show the logo.
      */
     public LogoBridge(Profile profile) {
-        mNativeLogoBridge = LogoBridgeJni.get().init(LogoBridge.this, profile);
+        mNativeLogoBridge = LogoBridgeJni.get().init(profile);
     }
 
     /**
@@ -73,7 +73,7 @@ public class LogoBridge {
      */
     void destroy() {
         assert mNativeLogoBridge != 0;
-        LogoBridgeJni.get().destroy(mNativeLogoBridge, LogoBridge.this);
+        LogoBridgeJni.get().destroy(mNativeLogoBridge);
         mNativeLogoBridge = 0;
     }
 
@@ -81,11 +81,11 @@ public class LogoBridge {
      * Gets the current logo for the default search provider.
      *
      * @param logoObserver The observer to receive the cached and/or fresh logos when they're
-     *                     available. logoObserver.onLogoAvailable() may be called synchronously if
-     *                     the cached logo is already available.
+     *     available. logoObserver.onLogoAvailable() may be called synchronously if the cached logo
+     *     is already available.
      */
     void getCurrentLogo(LogoObserver logoObserver) {
-        LogoBridgeJni.get().getCurrentLogo(mNativeLogoBridge, LogoBridge.this, logoObserver);
+        LogoBridgeJni.get().getCurrentLogo(mNativeLogoBridge, logoObserver);
     }
 
     @CalledByNative
@@ -95,10 +95,10 @@ public class LogoBridge {
 
     @NativeMethods
     public interface Natives {
-        long init(LogoBridge caller, @JniType("Profile*") Profile profile);
+        long init(@JniType("Profile*") Profile profile);
 
-        void getCurrentLogo(long nativeLogoBridge, LogoBridge caller, LogoObserver logoObserver);
+        void getCurrentLogo(long nativeLogoBridge, LogoObserver logoObserver);
 
-        void destroy(long nativeLogoBridge, LogoBridge caller);
+        void destroy(long nativeLogoBridge);
     }
 }

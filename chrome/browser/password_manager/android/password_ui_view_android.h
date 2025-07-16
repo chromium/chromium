@@ -60,43 +60,35 @@ class PasswordUiViewAndroid
   // Calls from Java.
   base::android::ScopedJavaLocalRef<jobject> GetSavedPasswordEntry(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>&,
       int index);
   std::string GetSavedPasswordException(JNIEnv* env,
-                                        const base::android::JavaRef<jobject>&,
                                         int index);
   void InsertPasswordEntryForTesting(JNIEnv* env,
                                      const std::u16string& origin,
                                      const std::u16string& username,
                                      const std::u16string& password);
-  void UpdatePasswordLists(JNIEnv* env, const base::android::JavaRef<jobject>&);
+  void UpdatePasswordLists(JNIEnv* env);
   void HandleRemoveSavedPasswordEntry(JNIEnv* env,
-                                      const base::android::JavaRef<jobject>&,
                                       int index);
   void HandleRemoveSavedPasswordException(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>&,
       int index);
   void HandleSerializePasswords(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>&,
       const std::string& java_target_directory,
       const base::android::JavaRef<jobject>& success_callback,
       const base::android::JavaRef<jobject>& error_callback);
   void HandleShowPasswordEntryEditingView(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& context,
-      int index,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaParamRef<jobject>& context,
+      int index);
   void HandleShowBlockedCredentialView(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& context,
-      int index,
-      const base::android::JavaParamRef<jobject>& obj);
-  jboolean IsWaitingForPasswordStore(JNIEnv* env,
-                                     const base::android::JavaRef<jobject>&);
+      const base::android::JavaParamRef<jobject>& context,
+      int index);
+  jboolean IsWaitingForPasswordStore(JNIEnv* env);
   // Destroy the native implementation.
-  void Destroy(JNIEnv*, const base::android::JavaRef<jobject>&);
+  void Destroy(JNIEnv*);
 
   void OnEditUIDismissed();
 

@@ -32,7 +32,6 @@ class OmniboxPrerender {
   // stops typing into the omnibox (e.g. when navigating away, closing the
   // keyboard or changing tabs).
   void Clear(JNIEnv* env,
-             const base::android::JavaParamRef<jobject>& obj,
              Profile* profile);
 
   // Initializes the underlying action predictor for a given profile instance.
@@ -40,7 +39,6 @@ class OmniboxPrerender {
   // for certain notifications to properly initialize before providing
   // predictions and updated its learning database.
   void InitializeForProfile(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj,
                             Profile* profile);
 
   // Potentailly invokes a pre-render or pre-connect given the url typed into
@@ -48,7 +46,6 @@ class OmniboxPrerender {
   // invoked everytime the omnibox changes (e.g. As the user types characters
   // this method should be invoked at least once per character).
   void PrerenderMaybe(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
                       const base::android::JavaParamRef<jstring>& j_url,
                       const base::android::JavaParamRef<jstring>& j_current_url,
                       jlong jsource_match,

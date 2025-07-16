@@ -14,7 +14,7 @@
 // can be shared by multiple tabs (WebContents).
 class AndroidPrerenderManager {
  public:
-  AndroidPrerenderManager(JNIEnv* env, jobject obj);
+  explicit AndroidPrerenderManager(JNIEnv* env);
 
   AndroidPrerenderManager(const AndroidPrerenderManager&) = delete;
   AndroidPrerenderManager& operator=(const AndroidPrerenderManager&) = delete;

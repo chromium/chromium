@@ -195,7 +195,6 @@ public class PartnerBookmarksReader {
         return PartnerBookmarksReaderJni.get()
                 .addPartnerBookmark(
                         mNativePartnerBookmarksReader,
-                        PartnerBookmarksReader.this,
                         url,
                         title,
                         isFolder,
@@ -231,8 +230,7 @@ public class PartnerBookmarksReader {
         }
         Log.i(TAG, "Partner bookmarks creation complete.");
         PartnerBookmarksReaderJni.get()
-                .partnerBookmarksCreationComplete(
-                        mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
+                .partnerBookmarksCreationComplete(mNativePartnerBookmarksReader);
     }
 
     @GuardedBy("mProgressLock")
@@ -260,8 +258,7 @@ public class PartnerBookmarksReader {
                 observer.onCompletedFaviconLoading();
             }
         }
-        PartnerBookmarksReaderJni.get()
-                .destroy(mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
+        PartnerBookmarksReaderJni.get().destroy(mNativePartnerBookmarksReader);
         mNativePartnerBookmarksReader = 0;
         mShutDown = true;
     }
@@ -416,13 +413,12 @@ public class PartnerBookmarksReader {
     interface Natives {
         long init(@JniType("Profile*") Profile profile);
 
-        void reset(long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
+        void reset(long nativePartnerBookmarksReader);
 
-        void destroy(long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
+        void destroy(long nativePartnerBookmarksReader);
 
         long addPartnerBookmark(
                 long nativePartnerBookmarksReader,
-                PartnerBookmarksReader caller,
                 @Nullable String url,
                 String title,
                 boolean isFolder,
@@ -433,8 +429,7 @@ public class PartnerBookmarksReader {
                 int desiredFaviconSizePx,
                 FetchFaviconCallback callback);
 
-        void partnerBookmarksCreationComplete(
-                long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
+        void partnerBookmarksCreationComplete(long nativePartnerBookmarksReader);
 
         @JniType("std::string")
         String getNativeUrlString(@JniType("std::string") String url);

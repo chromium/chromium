@@ -117,7 +117,7 @@ public class PartnerBookmarksReaderTest {
         reader.onBookmarksRead();
 
         Mockito.verify(mJniMock, Mockito.never())
-                .partnerBookmarksCreationComplete(Mockito.anyLong(), Mockito.any());
+                .partnerBookmarksCreationComplete(Mockito.anyLong());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class PartnerBookmarksReaderTest {
         mBrowserCustomizationsInitCallback.getValue().run();
 
         Mockito.verify(mJniMock, Mockito.never())
-                .partnerBookmarksCreationComplete(Mockito.anyLong(), Mockito.any());
+                .partnerBookmarksCreationComplete(Mockito.anyLong());
     }
 
     @Test
@@ -145,8 +145,7 @@ public class PartnerBookmarksReaderTest {
         mBrowserCustomizationsInitCallback.getValue().run();
         reader.onBookmarksRead();
 
-        Mockito.verify(mJniMock)
-                .partnerBookmarksCreationComplete(Mockito.anyLong(), Mockito.eq(reader));
+        Mockito.verify(mJniMock).partnerBookmarksCreationComplete(Mockito.anyLong());
     }
 
     @Test
@@ -160,7 +159,6 @@ public class PartnerBookmarksReaderTest {
         reader.onBookmarksRead();
         mBrowserCustomizationsInitCallback.getValue().run();
 
-        Mockito.verify(mJniMock)
-                .partnerBookmarksCreationComplete(Mockito.anyLong(), Mockito.eq(reader));
+        Mockito.verify(mJniMock).partnerBookmarksCreationComplete(Mockito.anyLong());
     }
 }

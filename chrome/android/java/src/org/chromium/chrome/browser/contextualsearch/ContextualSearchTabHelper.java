@@ -146,9 +146,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         // is initialized.
         Profile profile = tab.getProfile();
         if (mNativeHelper == 0 && tab.getWebContents() != null) {
-            mNativeHelper =
-                    ContextualSearchTabHelperJni.get()
-                            .init(ContextualSearchTabHelper.this, profile);
+            mNativeHelper = ContextualSearchTabHelperJni.get().init(this, profile);
         }
         if (profile != null && mTemplateUrlService == null) {
             mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
@@ -166,8 +164,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     @Override
     public void onDestroyed(Tab tab) {
         if (mNativeHelper != 0) {
-            ContextualSearchTabHelperJni.get()
-                    .destroy(mNativeHelper, ContextualSearchTabHelper.this);
+            ContextualSearchTabHelperJni.get().destroy(mNativeHelper);
             mNativeHelper = 0;
         }
         if (mTemplateUrlService != null) {
@@ -295,8 +292,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                     mSelectionClientManager.addContextualSearchSelectionClient(
                             contextualSearchManager.getContextualSearchSelectionClient()));
             ContextualSearchTabHelperJni.get()
-                    .installUnhandledTapNotifierIfNeeded(
-                            mNativeHelper, ContextualSearchTabHelper.this, webContents, mPxToDp);
+                    .installUnhandledTapNotifierIfNeeded(mNativeHelper, webContents, mPxToDp);
         }
     }
 
@@ -478,14 +474,13 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchTabHelper caller, @JniType("Profile*") Profile profile);
+        long init(ContextualSearchTabHelper self, @JniType("Profile*") Profile profile);
 
         void installUnhandledTapNotifierIfNeeded(
                 long nativeContextualSearchTabHelper,
-                ContextualSearchTabHelper caller,
                 WebContents webContents,
                 float pxToDpScaleFactor);
 
-        void destroy(long nativeContextualSearchTabHelper, ContextualSearchTabHelper caller);
+        void destroy(long nativeContextualSearchTabHelper);
     }
 }

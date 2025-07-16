@@ -123,10 +123,7 @@ public class SafeBrowsingPasswordReuseDialogBridge {
         // 0 indicates its C++ counterpart has already been destroyed.
         if (mNativePasswordReuseDialogViewAndroid == 0) return;
 
-        SafeBrowsingPasswordReuseDialogBridgeJni.get()
-                .close(
-                        mNativePasswordReuseDialogViewAndroid,
-                        SafeBrowsingPasswordReuseDialogBridge.this);
+        SafeBrowsingPasswordReuseDialogBridgeJni.get().close(mNativePasswordReuseDialogViewAndroid);
     }
 
     private void onClickWithNegativeButtonEnabled(@DialogDismissalCause int dismissalCause) {
@@ -136,36 +133,24 @@ public class SafeBrowsingPasswordReuseDialogBridge {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 SafeBrowsingPasswordReuseDialogBridgeJni.get()
-                        .checkPasswords(
-                                mNativePasswordReuseDialogViewAndroid,
-                                SafeBrowsingPasswordReuseDialogBridge.this);
+                        .checkPasswords(mNativePasswordReuseDialogViewAndroid);
                 return;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 SafeBrowsingPasswordReuseDialogBridgeJni.get()
-                        .ignore(
-                                mNativePasswordReuseDialogViewAndroid,
-                                SafeBrowsingPasswordReuseDialogBridge.this);
+                        .ignore(mNativePasswordReuseDialogViewAndroid);
                 return;
             default:
                 SafeBrowsingPasswordReuseDialogBridgeJni.get()
-                        .close(
-                                mNativePasswordReuseDialogViewAndroid,
-                                SafeBrowsingPasswordReuseDialogBridge.this);
+                        .close(mNativePasswordReuseDialogViewAndroid);
         }
     }
 
     @NativeMethods
     interface Natives {
-        void checkPasswords(
-                long nativePasswordReuseDialogViewAndroid,
-                SafeBrowsingPasswordReuseDialogBridge caller);
+        void checkPasswords(long nativePasswordReuseDialogViewAndroid);
 
-        void ignore(
-                long nativePasswordReuseDialogViewAndroid,
-                SafeBrowsingPasswordReuseDialogBridge caller);
+        void ignore(long nativePasswordReuseDialogViewAndroid);
 
-        void close(
-                long nativePasswordReuseDialogViewAndroid,
-                SafeBrowsingPasswordReuseDialogBridge caller);
+        void close(long nativePasswordReuseDialogViewAndroid);
     }
 }

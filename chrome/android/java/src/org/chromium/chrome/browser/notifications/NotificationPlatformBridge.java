@@ -858,7 +858,6 @@ public class NotificationPlatformBridge {
         NotificationPlatformBridgeJni.get()
                 .storeCachedWebApkPackageForNotificationId(
                         mNativeNotificationPlatformBridge,
-                        NotificationPlatformBridge.this,
                         identifyingAttributes.notificationId,
                         identifyingAttributes.webApkPackage);
         // Record whether it's known whether notifications can be shown to the user at all.
@@ -1496,7 +1495,6 @@ public class NotificationPlatformBridge {
         NotificationPlatformBridgeJni.get()
                 .onNotificationClicked(
                         mNativeNotificationPlatformBridge,
-                        NotificationPlatformBridge.this,
                         identifyingAttributes.notificationId,
                         identifyingAttributes.notificationType,
                         identifyingAttributes.origin,
@@ -1520,7 +1518,6 @@ public class NotificationPlatformBridge {
         NotificationPlatformBridgeJni.get()
                 .onNotificationClosed(
                         mNativeNotificationPlatformBridge,
-                        NotificationPlatformBridge.this,
                         identifyingAttributes.notificationId,
                         identifyingAttributes.notificationType,
                         identifyingAttributes.origin,
@@ -1694,7 +1691,6 @@ public class NotificationPlatformBridge {
         NotificationPlatformBridgeJni.get()
                 .onNotificationDisablePermission(
                         mNativeNotificationPlatformBridge,
-                        NotificationPlatformBridge.this,
                         identifyingAttributes.notificationId,
                         identifyingAttributes.notificationType,
                         identifyingAttributes.origin,
@@ -1727,7 +1723,6 @@ public class NotificationPlatformBridge {
                 NotificationPlatformBridgeJni.get()
                         .onReportNotificationAsSafe(
                                 mNativeNotificationPlatformBridge,
-                                NotificationPlatformBridge.this,
                                 originNotificationId,
                                 identifyingAttributes.origin,
                                 identifyingAttributes.profileId,
@@ -1737,7 +1732,6 @@ public class NotificationPlatformBridge {
                 NotificationPlatformBridgeJni.get()
                         .onReportWarnedNotificationAsSpam(
                                 mNativeNotificationPlatformBridge,
-                                NotificationPlatformBridge.this,
                                 originNotificationId,
                                 identifyingAttributes.origin,
                                 identifyingAttributes.profileId,
@@ -1747,7 +1741,6 @@ public class NotificationPlatformBridge {
                 NotificationPlatformBridgeJni.get()
                         .onReportUnwarnedNotificationAsSpam(
                                 mNativeNotificationPlatformBridge,
-                                NotificationPlatformBridge.this,
                                 originNotificationId,
                                 identifyingAttributes.origin,
                                 identifyingAttributes.profileId,
@@ -1780,7 +1773,6 @@ public class NotificationPlatformBridge {
         NotificationPlatformBridgeJni.get()
                 .onNotificationAlwaysAllowFromOrigin(
                         mNativeNotificationPlatformBridge,
-                        NotificationPlatformBridge.this,
                         identifyingAttributes.notificationId,
                         identifyingAttributes.origin,
                         identifyingAttributes.profileId,
@@ -1862,9 +1854,7 @@ public class NotificationPlatformBridge {
     public void setIsSuspiciousParameterForTesting(boolean isSuspicious) {
         NotificationPlatformBridgeJni.get()
                 .setIsSuspiciousParameterForTesting(
-                        mNativeNotificationPlatformBridge,
-                        NotificationPlatformBridge.this,
-                        isSuspicious);
+                        mNativeNotificationPlatformBridge, isSuspicious);
     }
 
     private TrustedWebActivityClient getTwaClient() {
@@ -1887,7 +1877,6 @@ public class NotificationPlatformBridge {
 
         void onNotificationClicked(
                 long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @NotificationType int notificationType,
                 @JniType("std::string") String origin,
@@ -1900,7 +1889,6 @@ public class NotificationPlatformBridge {
 
         void onNotificationClosed(
                 long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @NotificationType int notificationType,
                 @JniType("std::string") String origin,
@@ -1910,7 +1898,6 @@ public class NotificationPlatformBridge {
 
         void onNotificationDisablePermission(
                 long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @NotificationType int notificationType,
                 @JniType("std::string") String origin,
@@ -1926,7 +1913,6 @@ public class NotificationPlatformBridge {
 
         void onNotificationAlwaysAllowFromOrigin(
                 long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @JniType("std::string") String origin,
                 @JniType("std::string") String profileId,
@@ -1934,7 +1920,6 @@ public class NotificationPlatformBridge {
 
         void onReportNotificationAsSafe(
                 long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @JniType("std::string") String origin,
                 @JniType("std::string") String profileId,
@@ -1942,7 +1927,6 @@ public class NotificationPlatformBridge {
 
         void onReportWarnedNotificationAsSpam(
                 long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @JniType("std::string") String origin,
                 @JniType("std::string") String profileId,
@@ -1950,7 +1934,6 @@ public class NotificationPlatformBridge {
 
         void onReportUnwarnedNotificationAsSpam(
                 long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @JniType("std::string") String origin,
                 @JniType("std::string") String profileId,
@@ -1958,13 +1941,10 @@ public class NotificationPlatformBridge {
 
         void storeCachedWebApkPackageForNotificationId(
                 long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
                 @JniType("std::string") String notificationId,
                 @JniType("std::string") String webApkPackage);
 
         void setIsSuspiciousParameterForTesting(
-                long nativeNotificationPlatformBridgeAndroid,
-                NotificationPlatformBridge caller,
-                boolean incognito);
+                long nativeNotificationPlatformBridgeAndroid, boolean incognito);
     }
 }

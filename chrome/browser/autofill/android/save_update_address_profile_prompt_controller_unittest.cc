@@ -183,7 +183,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(decision_callback_,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
                   Property(&profile_ref::has_value, false)));
-  controller_->OnUserAccepted(env_, mock_caller_);
+  controller_->OnUserAccepted(env_);
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -194,7 +194,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(decision_callback_,
               Run(AutofillClient::AddressPromptUserDecision::kDeclined,
                   Property(&profile_ref::has_value, false)));
-  controller_->OnUserDeclined(env_, mock_caller_);
+  controller_->OnUserDeclined(env_);
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -206,7 +206,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(decision_callback_,
               Run(AutofillClient::AddressPromptUserDecision::kNever,
                   Property(&profile_ref::has_value, false)));
-  controller_->OnUserDeclined(env_, mock_caller_);
+  controller_->OnUserDeclined(env_);
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -223,9 +223,8 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       edited_profile.CreateJavaObject(
           g_browser_process->GetApplicationLocale());
 
-  controller_->OnUserEdited(
-      env_, mock_caller_,
-      base::android::JavaParamRef<jobject>(env_, edited_profile_java.obj()));
+  controller_->OnUserEdited(env_, base::android::JavaParamRef<jobject>(
+                                      env_, edited_profile_java.obj()));
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
@@ -234,7 +233,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   controller_->DisplayPrompt();
 
   EXPECT_CALL(dismissal_callback_, Run());
-  controller_->OnPromptDismissed(env_, mock_caller_);
+  controller_->OnPromptDismissed(env_);
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,

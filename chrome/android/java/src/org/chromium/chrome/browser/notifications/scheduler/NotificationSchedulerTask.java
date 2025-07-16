@@ -46,8 +46,7 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
                     }
                 };
 
-        NotificationSchedulerTaskJni.get()
-                .onStartTask(NotificationSchedulerTask.this, taskCallback);
+        NotificationSchedulerTaskJni.get().onStartTask(taskCallback);
     }
 
     @Override
@@ -59,7 +58,7 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
 
     @Override
     protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
-        return NotificationSchedulerTaskJni.get().onStopTask(NotificationSchedulerTask.this);
+        return NotificationSchedulerTaskJni.get().onStopTask();
     }
 
     /**
@@ -94,8 +93,8 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
 
     @NativeMethods
     interface Natives {
-        void onStartTask(NotificationSchedulerTask caller, Callback<Boolean> callback);
+        void onStartTask(Callback<Boolean> callback);
 
-        boolean onStopTask(NotificationSchedulerTask caller);
+        boolean onStopTask();
     }
 }

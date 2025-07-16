@@ -49,8 +49,7 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
 
     @Override
     public void onScanCancelled() {
-        CreditCardScannerBridgeJni.get()
-                .scanCancelled(mNativeScanner, CreditCardScannerBridge.this);
+        CreditCardScannerBridgeJni.get().scanCancelled(mNativeScanner);
     }
 
     @Override
@@ -59,7 +58,6 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
         CreditCardScannerBridgeJni.get()
                 .scanCompleted(
                         mNativeScanner,
-                        CreditCardScannerBridge.this,
                         cardHolderName,
                         cardNumber,
                         expirationMonth,
@@ -68,11 +66,10 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
 
     @NativeMethods
     interface Natives {
-        void scanCancelled(long nativeCreditCardScannerViewAndroid, CreditCardScannerBridge caller);
+        void scanCancelled(long nativeCreditCardScannerViewAndroid);
 
         void scanCompleted(
                 long nativeCreditCardScannerViewAndroid,
-                CreditCardScannerBridge caller,
                 @JniType("std::u16string") String cardHolderName,
                 @JniType("std::u16string") String cardNumber,
                 int expirationMonth,

@@ -27,16 +27,17 @@ using base::android::ScopedJavaLocalRef;
 
 namespace chrome::android {
 
-void JNI_FamilyInfoFeedbackSource_Start(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
-                                        Profile* profile) {
+void JNI_FamilyInfoFeedbackSource_Start(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    Profile* profile) {
   FamilyInfoFeedbackSource* feedback_source =
       new FamilyInfoFeedbackSource(obj, profile);
   feedback_source->GetFamilyMembers();
 }
 
 FamilyInfoFeedbackSource::FamilyInfoFeedbackSource(
-    const JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& obj,
     Profile* profile)
     : supervised_user_service_(
           SupervisedUserServiceFactory::GetForProfile(profile)),

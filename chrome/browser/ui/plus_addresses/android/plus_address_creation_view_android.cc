@@ -142,33 +142,23 @@ void PlusAddressCreationViewAndroid::ShowInit(
       refresh_supported);
 }
 
-void PlusAddressCreationViewAndroid::TryAgainToReservePlusAddress(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void PlusAddressCreationViewAndroid::TryAgainToReservePlusAddress(JNIEnv* env) {
   controller_->TryAgainToReservePlusAddress();
 }
 
-void PlusAddressCreationViewAndroid::OnRefreshClicked(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void PlusAddressCreationViewAndroid::OnRefreshClicked(JNIEnv* env) {
   controller_->OnRefreshClicked();
 }
 
-void PlusAddressCreationViewAndroid::OnConfirmRequested(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void PlusAddressCreationViewAndroid::OnConfirmRequested(JNIEnv* env) {
   controller_->OnConfirmed();
 }
 
-void PlusAddressCreationViewAndroid::OnCanceled(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void PlusAddressCreationViewAndroid::OnCanceled(JNIEnv* env) {
   controller_->OnCanceled();
 }
 
-void PlusAddressCreationViewAndroid::PromptDismissed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void PlusAddressCreationViewAndroid::PromptDismissed(JNIEnv* env) {
   controller_->OnDialogDestroyed();
 }
 

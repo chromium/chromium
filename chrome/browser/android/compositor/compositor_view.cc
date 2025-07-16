@@ -112,7 +112,7 @@ CompositorView::~CompositorView() {
   compositor_.reset();
 }
 
-void CompositorView::Destroy(JNIEnv* env, const JavaParamRef<jobject>& object) {
+void CompositorView::Destroy(JNIEnv* env) {
   delete this;
 }
 
@@ -121,8 +121,7 @@ ui::ResourceManager* CompositorView::GetResourceManager() {
 }
 
 base::android::ScopedJavaLocalRef<jobject> CompositorView::GetResourceManager(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+    JNIEnv* env) {
   return compositor_->GetResourceManager().GetJavaObject();
 }
 
@@ -172,14 +171,12 @@ void CompositorView::OnSurfaceControlFeatureStatusUpdate(bool available) {
   }
 }
 
-void CompositorView::SurfaceCreated(JNIEnv* env,
-                                    const JavaParamRef<jobject>& object) {
+void CompositorView::SurfaceCreated(JNIEnv* env) {
   compositor_->SetRootLayer(root_layer_);
   current_surface_format_ = 0;
 }
 
-void CompositorView::SurfaceDestroyed(JNIEnv* env,
-                                      const JavaParamRef<jobject>& object) {
+void CompositorView::SurfaceDestroyed(JNIEnv* env) {
   compositor_->SetSurface(nullptr, false, nullptr);
   current_surface_format_ = 0;
   tab_content_manager_->OnUIResourcesWereEvicted();
@@ -187,7 +184,6 @@ void CompositorView::SurfaceDestroyed(JNIEnv* env,
 
 std::optional<int> CompositorView::SurfaceChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     jint format,
     jint width,
     jint height,
@@ -223,7 +219,6 @@ std::optional<int> CompositorView::SurfaceChanged(
 
 void CompositorView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
     jint width,
     jint height) {
@@ -235,7 +230,6 @@ void CompositorView::OnPhysicalBackingSizeChanged(
 
 void CompositorView::OnControlsResizeViewChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
     jboolean controls_resize_view) {
   content::WebContents* web_contents =
@@ -246,7 +240,6 @@ void CompositorView::OnControlsResizeViewChanged(
 
 void CompositorView::NotifyVirtualKeyboardOverlayRect(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jweb_contents,
     jint x,
     jint y,
@@ -259,8 +252,7 @@ void CompositorView::NotifyVirtualKeyboardOverlayRect(
       keyboard_rect);
 }
 
-void CompositorView::SetLayoutBounds(JNIEnv* env,
-                                     const JavaParamRef<jobject>& object) {
+void CompositorView::SetLayoutBounds(JNIEnv* env) {
   root_layer_->SetBounds(gfx::Size(content_width_, content_height_));
 }
 
@@ -272,19 +264,17 @@ void CompositorView::SetBackground(bool visible, SkColor color) {
 }
 
 void CompositorView::SetOverlayVideoMode(JNIEnv* env,
-                                         const JavaParamRef<jobject>& object,
                                          bool enabled) {
   if (overlay_video_mode_ == enabled) {
     return;
   }
   overlay_video_mode_ = enabled;
   compositor_->SetRequiresAlphaChannel(enabled);
-  SetNeedsComposite(env, object);
+  SetNeedsComposite(env);
 }
 
 void CompositorView::SetOverlayImmersiveArMode(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     bool enabled) {
   DVLOG(1) << __func__ << ": enabled=" << enabled;
 
@@ -306,7 +296,6 @@ void CompositorView::SetOverlayImmersiveArMode(
 
 void CompositorView::SetOverlayXrFullScreenMode(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     bool enabled) {
   if (overlay_xr_full_screen_mode_ == enabled) {
     return;
@@ -321,7 +310,6 @@ void CompositorView::SetOverlayXrFullScreenMode(
 }
 
 void CompositorView::SetSceneLayer(JNIEnv* env,
-                                   const JavaParamRef<jobject>& object,
                                    const JavaParamRef<jobject>& jscene_layer) {
   SceneLayer* scene_layer = SceneLayer::FromJavaObject(env, jscene_layer);
 
@@ -369,8 +357,7 @@ void CompositorView::SetSceneLayer(JNIEnv* env,
   }
 }
 
-void CompositorView::FinalizeLayers(JNIEnv* env,
-                                    const JavaParamRef<jobject>& jobj) {
+void CompositorView::FinalizeLayers(JNIEnv* env) {
   if (GetResourceManager()) {
     GetResourceManager()->OnFrameUpdatesFinished();
   }
@@ -379,8 +366,7 @@ void CompositorView::FinalizeLayers(JNIEnv* env,
 #endif
 }
 
-void CompositorView::SetNeedsComposite(JNIEnv* env,
-                                       const JavaParamRef<jobject>& object) {
+void CompositorView::SetNeedsComposite(JNIEnv* env) {
   compositor_->SetNeedsComposite();
 }
 
@@ -403,28 +389,21 @@ void CompositorView::BrowserChildProcessKilled(
 
 void CompositorView::SetCompositorWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     const JavaParamRef<jobject>& window_android) {
   ui::WindowAndroid* wa =
       ui::WindowAndroid::FromJavaWindowAndroid(window_android);
   compositor_->SetRootWindow(wa);
 }
 
-void CompositorView::CacheBackBufferForCurrentSurface(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& object) {
+void CompositorView::CacheBackBufferForCurrentSurface(JNIEnv* env) {
   compositor_->CacheBackBufferForCurrentSurface();
 }
 
-void CompositorView::EvictCachedBackBuffer(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& object) {
+void CompositorView::EvictCachedBackBuffer(JNIEnv* env) {
   compositor_->EvictCachedBackBuffer();
 }
 
-void CompositorView::OnTabChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& object) {
+void CompositorView::OnTabChanged(JNIEnv* env) {
   if (!compositor_) {
     return;
   }
@@ -441,9 +420,7 @@ void CompositorView::OnTabChanged(
       std::move(tracker)));
 }
 
-void CompositorView::PreserveChildSurfaceControls(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& object) {
+void CompositorView::PreserveChildSurfaceControls(JNIEnv* env) {
   compositor_->PreserveChildSurfaceControls();
 }
 

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.metrics;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,12 +52,11 @@ public class VariationsSessionTest {
     @Test
     public void testStart() {
         mSession.start();
-        verify(mVariationsSessionJniMock, never())
-                .startVariationsSession(eq(mSession), any(String.class));
+        verify(mVariationsSessionJniMock, never()).startVariationsSession(any(String.class));
 
         String restrictValue = "test";
         mSession.runCallback(restrictValue);
-        verify(mVariationsSessionJniMock, times(1)).startVariationsSession(mSession, restrictValue);
+        verify(mVariationsSessionJniMock, times(1)).startVariationsSession(restrictValue);
     }
 
     @Test
@@ -70,10 +68,9 @@ public class VariationsSessionTest {
                 });
         String restrictValue = "test";
         mSession.runCallback(restrictValue);
-        verify(mVariationsSessionJniMock, never())
-                .startVariationsSession(eq(mSession), any(String.class));
+        verify(mVariationsSessionJniMock, never()).startVariationsSession(any(String.class));
 
         mSession.start();
-        verify(mVariationsSessionJniMock, times(1)).startVariationsSession(mSession, restrictValue);
+        verify(mVariationsSessionJniMock, times(1)).startVariationsSession(restrictValue);
     }
 }

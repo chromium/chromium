@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -130,7 +129,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testOnRefreshClicked_callsNativeOnRefreshClicked() {
         mPlusAddressCreationViewBridge.onRefreshClicked();
-        verify(mBridgeNatives).onRefreshClicked(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+        verify(mBridgeNatives).onRefreshClicked(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW));
     }
 
     @Test
@@ -145,8 +144,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testOnConfirmRequested_callsNativeOnConfirmRequested() {
         mPlusAddressCreationViewBridge.onConfirmRequested();
-        verify(mBridgeNatives, times(1))
-                .onConfirmRequested(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+        verify(mBridgeNatives, times(1)).onConfirmRequested(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW));
     }
 
     @Test
@@ -161,7 +159,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testOnCanceled_callsNativeOnCanceled() {
         mPlusAddressCreationViewBridge.onCanceled();
-        verify(mBridgeNatives, times(1)).onCanceled(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+        verify(mBridgeNatives, times(1)).onCanceled(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW));
     }
 
     @Test
@@ -176,8 +174,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testOnPromptDismissed_callsNativePromptDismissed() {
         mPlusAddressCreationViewBridge.onPromptDismissed();
-        verify(mBridgeNatives, times(1))
-                .promptDismissed(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+        verify(mBridgeNatives, times(1)).promptDismissed(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW));
     }
 
     @Test

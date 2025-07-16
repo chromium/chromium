@@ -114,22 +114,22 @@ public class TrustedCdn extends TabWebContentsUserData {
     private TrustedCdn(Tab tab) {
         super(tab);
         mTab = tab;
-        mNativeTrustedCdn = TrustedCdnJni.get().init(TrustedCdn.this);
+        mNativeTrustedCdn = TrustedCdnJni.get().init(this);
     }
 
     @Override
     public void initWebContents(WebContents webContents) {
-        TrustedCdnJni.get().setWebContents(mNativeTrustedCdn, TrustedCdn.this, webContents);
+        TrustedCdnJni.get().setWebContents(mNativeTrustedCdn, webContents);
     }
 
     @Override
     public void cleanupWebContents(@Nullable WebContents webContents) {
-        TrustedCdnJni.get().resetWebContents(mNativeTrustedCdn, TrustedCdn.this);
+        TrustedCdnJni.get().resetWebContents(mNativeTrustedCdn);
     }
 
     @Override
     public void destroyInternal() {
-        TrustedCdnJni.get().onDestroyed(mNativeTrustedCdn, TrustedCdn.this);
+        TrustedCdnJni.get().onDestroyed(mNativeTrustedCdn);
     }
 
     @VisibleForTesting
@@ -152,13 +152,13 @@ public class TrustedCdn extends TabWebContentsUserData {
 
     @NativeMethods
     public interface Natives {
-        long init(TrustedCdn caller);
+        long init(TrustedCdn self);
 
-        void onDestroyed(long nativeTrustedCdn, TrustedCdn caller);
+        void onDestroyed(long nativeTrustedCdn);
 
-        void setWebContents(long nativeTrustedCdn, TrustedCdn caller, WebContents webContents);
+        void setWebContents(long nativeTrustedCdn, WebContents webContents);
 
-        void resetWebContents(long nativeTrustedCdn, TrustedCdn caller);
+        void resetWebContents(long nativeTrustedCdn);
 
         GURL getPublisherUrl(long nativeTrustedCdn);
     }

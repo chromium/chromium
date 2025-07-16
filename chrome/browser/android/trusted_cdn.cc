@@ -29,17 +29,15 @@ TrustedCdn::TrustedCdn(JNIEnv* env, const JavaParamRef<jobject>& obj)
 TrustedCdn::~TrustedCdn() = default;
 
 void TrustedCdn::SetWebContents(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
                                 const JavaParamRef<jobject>& jweb_contents) {
   web_contents_ = WebContents::FromJavaWebContents(jweb_contents);
 }
 
-void TrustedCdn::ResetWebContents(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj) {
+void TrustedCdn::ResetWebContents(JNIEnv* env) {
   web_contents_ = nullptr;
 }
 
-void TrustedCdn::OnDestroyed(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void TrustedCdn::OnDestroyed(JNIEnv* env) {
   delete this;
 }
 

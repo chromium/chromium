@@ -134,9 +134,9 @@ static jlong JNI_PictureInPictureActivity_OnActivityStart(
 
 void OverlayWindowAndroid::Initialize(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& self,
     const base::android::JavaParamRef<jobject>& jwindow_android) {
-  java_ref_ = JavaObjectWeakGlobalRef(env, obj);
+  java_ref_ = JavaObjectWeakGlobalRef(env, self);
   window_android_ = ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   window_android_->AddObserver(this);
 

@@ -34,7 +34,7 @@ public class SolidColorSceneLayer extends SceneLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = SolidColorSceneLayerJni.get().init(SolidColorSceneLayer.this);
+            mNativePtr = SolidColorSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
@@ -48,7 +48,7 @@ public class SolidColorSceneLayer extends SceneLayer {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        long init(SolidColorSceneLayer caller);
+        long init(SolidColorSceneLayer self);
 
         void setBackgroundColor(long nativeSolidColorSceneLayer, int backgroundColor);
     }

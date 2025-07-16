@@ -219,9 +219,7 @@ public class AccountChooserDialog
                         public void onClick(View view) {
                             if (mNativeAccountChooserDialog != 0) {
                                 AccountChooserDialogJni.get()
-                                        .onLinkClicked(
-                                                mNativeAccountChooserDialog,
-                                                AccountChooserDialog.this);
+                                        .onLinkClicked(mNativeAccountChooserDialog);
                             }
                             assumeNonNull(mDialog);
                             mDialog.dismiss();
@@ -356,12 +354,10 @@ public class AccountChooserDialog
             AccountChooserDialogJni.get()
                     .onCredentialClicked(
                             mNativeAccountChooserDialog,
-                            AccountChooserDialog.this,
                             mCredential.getIndex(),
                             mSigninButtonClicked);
         } else {
-            AccountChooserDialogJni.get()
-                    .cancelDialog(mNativeAccountChooserDialog, AccountChooserDialog.this);
+            AccountChooserDialogJni.get().cancelDialog(mNativeAccountChooserDialog);
         }
     }
 
@@ -369,12 +365,11 @@ public class AccountChooserDialog
     interface Natives {
         void onCredentialClicked(
                 long nativeAccountChooserDialogAndroid,
-                AccountChooserDialog caller,
                 int credentialId,
                 boolean signinButtonClicked);
 
-        void cancelDialog(long nativeAccountChooserDialogAndroid, AccountChooserDialog caller);
+        void cancelDialog(long nativeAccountChooserDialogAndroid);
 
-        void onLinkClicked(long nativeAccountChooserDialogAndroid, AccountChooserDialog caller);
+        void onLinkClicked(long nativeAccountChooserDialogAndroid);
     }
 }

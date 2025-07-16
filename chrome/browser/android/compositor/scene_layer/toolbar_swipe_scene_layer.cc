@@ -28,7 +28,6 @@ ToolbarSwipeSceneLayer::~ToolbarSwipeSceneLayer() = default;
 
 void ToolbarSwipeSceneLayer::UpdateLayer(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jobj,
     jint id,
     jboolean left_tab,
     jboolean can_use_live_layer,
@@ -55,7 +54,6 @@ void ToolbarSwipeSceneLayer::UpdateLayer(
 
 void ToolbarSwipeSceneLayer::SetTabContentManager(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jobj,
     const base::android::JavaParamRef<jobject>& jtab_content_manager) {
   tab_content_manager_ =
       TabContentManager::FromJavaObject(jtab_content_manager);

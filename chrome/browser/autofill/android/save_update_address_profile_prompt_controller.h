@@ -65,18 +65,14 @@ class SaveUpdateAddressProfilePromptController {
   std::pair<std::u16string, std::u16string> GetDiffFromOldToNewProfile();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
-  void OnUserAccepted(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
-  void OnUserDeclined(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
+  void OnUserAccepted(JNIEnv* env);
+  void OnUserDeclined(JNIEnv* env);
   void OnUserEdited(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jobject>& jprofile);
   // Called whenever the prompt is dismissed (e.g. because the user already
   // accepted/declined/edited the profile (after OnUserAccepted/Declined/Edited
   // is called) or it was closed without interaction).
-  void OnPromptDismissed(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  void OnPromptDismissed(JNIEnv* env);
 
  private:
   void RunSaveAddressProfileCallback(

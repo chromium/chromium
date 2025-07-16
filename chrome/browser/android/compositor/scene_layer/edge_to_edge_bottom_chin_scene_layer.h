@@ -43,7 +43,6 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
 
   void SetContentTree(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobject>& jcontent_tree);
 
   SkColor GetBackgroundColor() override;

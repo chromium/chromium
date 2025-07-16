@@ -30,7 +30,7 @@ class QuickDeleteBridge {
   QuickDeleteBridge& operator=(const QuickDeleteBridge&) = delete;
   ~QuickDeleteBridge();
 
-  void Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Gets the most recently visited synced domain and count of unique domains
   // visited on all devices within the time period.

@@ -31,11 +31,9 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
       delete;
 
   void OnUserAccept(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
                     const std::u16string& name);
   void OnUserDismiss(JNIEnv* env);
-  void PromptDismissed(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj);
+  void PromptDismissed(JNIEnv* env);
 
   // CardNameFixFlowView implementation.
   void Show() override;

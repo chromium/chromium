@@ -147,8 +147,7 @@ public class ContextMenuHelper {
                         mChipDelegate.onMenuClosed();
                     }
                     if (mNativeContextMenuHelper == 0) return;
-                    ContextMenuHelperJni.get()
-                            .onContextMenuClosed(mNativeContextMenuHelper, ContextMenuHelper.this);
+                    ContextMenuHelperJni.get().onContextMenuClosed(mNativeContextMenuHelper);
                 };
 
         displayContextMenu(topContentOffsetPx);
@@ -237,6 +236,6 @@ public class ContextMenuHelper {
 
     @NativeMethods
     interface Natives {
-        void onContextMenuClosed(long nativeContextMenuHelper, ContextMenuHelper caller);
+        void onContextMenuClosed(long nativeContextMenuHelper);
     }
 }

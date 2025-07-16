@@ -113,7 +113,7 @@ public class DownloadDialogBridgeUnitTest {
                         eq(LOCATION_DIALOG_TYPE),
                         eq(SUGGESTED_PATH),
                         eq(mProfile));
-        verify(mNativeMock).onComplete(anyLong(), any(), eq(NEW_SUGGESTED_PATH), eq(true));
+        verify(mNativeMock).onComplete(anyLong(), eq(NEW_SUGGESTED_PATH), eq(true));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class DownloadDialogBridgeUnitTest {
                         eq(LOCATION_DIALOG_TYPE),
                         eq(SUGGESTED_PATH),
                         eq(mProfile));
-        verify(mNativeMock).onComplete(anyLong(), any(), eq(NEW_SUGGESTED_PATH), eq(false));
+        verify(mNativeMock).onComplete(anyLong(), eq(NEW_SUGGESTED_PATH), eq(false));
     }
 
     @Test
@@ -168,6 +168,6 @@ public class DownloadDialogBridgeUnitTest {
                         eq(mProfile));
 
         showDialog();
-        verify(mNativeMock).onCanceled(anyLong(), any());
+        verify(mNativeMock).onCanceled(anyLong());
     }
 }

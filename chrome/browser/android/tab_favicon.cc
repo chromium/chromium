@@ -47,7 +47,6 @@ TabFavicon::TabFavicon(JNIEnv* env,
 TabFavicon::~TabFavicon() = default;
 
 void TabFavicon::SetWebContents(JNIEnv* env,
-                                const JavaParamRef<jobject>& obj,
                                 const JavaParamRef<jobject>& jweb_contents) {
   active_web_contents_ =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -57,8 +56,7 @@ void TabFavicon::SetWebContents(JNIEnv* env,
     favicon_driver_->AddObserver(this);
 }
 
-void TabFavicon::ResetWebContents(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj) {
+void TabFavicon::ResetWebContents(JNIEnv* env) {
   active_web_contents_ = nullptr;
   if (favicon_driver_) {
     favicon_driver_->RemoveObserver(this);
@@ -66,13 +64,11 @@ void TabFavicon::ResetWebContents(JNIEnv* env,
   }
 }
 
-void TabFavicon::OnDestroyed(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void TabFavicon::OnDestroyed(JNIEnv* env) {
   delete this;
 }
 
-ScopedJavaLocalRef<jobject> TabFavicon::GetFavicon(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+ScopedJavaLocalRef<jobject> TabFavicon::GetFavicon(JNIEnv* env) {
   ScopedJavaLocalRef<jobject> bitmap;
 
   if (!favicon_driver_ || !favicon_driver_->FaviconIsValid()) {

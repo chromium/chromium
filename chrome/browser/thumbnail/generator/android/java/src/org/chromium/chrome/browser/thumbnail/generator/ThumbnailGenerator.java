@@ -30,7 +30,7 @@ public class ThumbnailGenerator {
 
     private long getNativeThumbnailGenerator() {
         if (mNativeThumbnailGenerator == 0) {
-            mNativeThumbnailGenerator = ThumbnailGeneratorJni.get().init(ThumbnailGenerator.this);
+            mNativeThumbnailGenerator = ThumbnailGeneratorJni.get().init(this);
         }
         return mNativeThumbnailGenerator;
     }
@@ -48,7 +48,6 @@ public class ThumbnailGenerator {
         ThumbnailGeneratorJni.get()
                 .retrieveThumbnail(
                         getNativeThumbnailGenerator(),
-                        ThumbnailGenerator.this,
                         request.getContentId(),
                         request.getFilePath(),
                         request.getMimeType(),
@@ -60,7 +59,7 @@ public class ThumbnailGenerator {
     public void destroy() {
         ThreadUtils.assertOnUiThread();
         if (mNativeThumbnailGenerator == 0) return;
-        ThumbnailGeneratorJni.get().destroy(mNativeThumbnailGenerator, ThumbnailGenerator.this);
+        ThumbnailGeneratorJni.get().destroy(mNativeThumbnailGenerator);
         mNativeThumbnailGenerator = 0;
     }
 
@@ -91,13 +90,12 @@ public class ThumbnailGenerator {
 
     @NativeMethods
     interface Natives {
-        long init(ThumbnailGenerator caller);
+        long init(ThumbnailGenerator self);
 
-        void destroy(long nativeThumbnailGenerator, ThumbnailGenerator caller);
+        void destroy(long nativeThumbnailGenerator);
 
         void retrieveThumbnail(
                 long nativeThumbnailGenerator,
-                ThumbnailGenerator caller,
                 @Nullable String contentId,
                 @Nullable String filePath,
                 @Nullable String mimeType,

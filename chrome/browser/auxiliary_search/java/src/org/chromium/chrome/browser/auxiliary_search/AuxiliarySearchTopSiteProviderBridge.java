@@ -49,7 +49,7 @@ public class AuxiliarySearchTopSiteProviderBridge {
                 || profile.isOffTheRecord()) {
             mNativeBridge = 0;
         } else {
-            mNativeBridge = AuxiliarySearchTopSiteProviderBridgeJni.get().init(this, profile);
+            mNativeBridge = AuxiliarySearchTopSiteProviderBridgeJni.get().init(profile);
         }
     }
 
@@ -121,7 +121,7 @@ public class AuxiliarySearchTopSiteProviderBridge {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(AuxiliarySearchTopSiteProviderBridge self, @JniType("Profile*") Profile profile);
+        long init(@JniType("Profile*") Profile profile);
 
         void setObserverAndTrigger(
                 long nativeAuxiliarySearchTopSiteProviderBridge,

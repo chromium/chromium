@@ -862,7 +862,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadManagerServiceJni.get()
                 .resumeDownload(
                         getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
                         item.getId(),
                         IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
     }
@@ -879,7 +878,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadManagerServiceJni.get()
                 .cancelDownload(
                         getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
                         id.id,
                         IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
         DownloadProgress progress = mDownloadProgressMap.get(id.id);
@@ -906,7 +904,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadManagerServiceJni.get()
                 .pauseDownload(
                         getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
                         id.id,
                         IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
         DownloadProgress progress = mDownloadProgressMap.get(id.id);
@@ -944,7 +941,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                     DownloadManagerServiceJni.get()
                             .removeDownload(
                                     getNativeDownloadManagerService(),
-                                    DownloadManagerService.this,
                                     downloadGuid,
                                     IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
                     removeDownloadProgress(downloadGuid);
@@ -978,8 +974,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         if (mNativeDownloadManagerService == 0) {
             boolean startupCompleted = ProfileManager.isInitialized();
             mNativeDownloadManagerService =
-                    DownloadManagerServiceJni.get()
-                            .init(DownloadManagerService.this, startupCompleted);
+                    DownloadManagerServiceJni.get().init(this, startupCompleted);
             if (!startupCompleted) ProfileManager.addObserver(this);
         }
         return mNativeDownloadManagerService;
@@ -988,9 +983,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     @Override
     public void onProfileAdded(Profile profile) {
         ProfileManager.removeObserver(this);
-        DownloadManagerServiceJni.get()
-                .onProfileAdded(
-                        mNativeDownloadManagerService, DownloadManagerService.this, profile);
+        DownloadManagerServiceJni.get().onProfileAdded(mNativeDownloadManagerService, profile);
     }
 
     @Override
@@ -1154,7 +1147,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadManagerServiceJni.get()
                 .getAllDownloads(
                         getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
                         IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
     }
 
@@ -1183,7 +1175,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadManagerServiceJni.get()
                 .renameDownload(
                         getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
                         id.id,
                         name,
                         callback,
@@ -1197,8 +1188,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      */
     public void checkForExternallyRemovedDownloads(ProfileKey profileKey) {
         DownloadManagerServiceJni.get()
-                .checkForExternallyRemovedDownloads(
-                        getNativeDownloadManagerService(), DownloadManagerService.this, profileKey);
+                .checkForExternallyRemovedDownloads(getNativeDownloadManagerService(), profileKey);
     }
 
     // Deprecated after new download backend.
@@ -1358,7 +1348,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadManagerServiceJni.get()
                 .openDownload(
                         getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
                         id.id,
                         IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId),
                         source);
@@ -1543,11 +1532,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     void createInterruptedDownloadForTest(String url, String guid, String targetPath) {
         DownloadManagerServiceJni.get()
                 .createInterruptedDownloadForTest(
-                        getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
-                        url,
-                        guid,
-                        targetPath);
+                        getNativeDownloadManagerService(), url, guid, targetPath);
     }
 
     /**
@@ -1563,7 +1548,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadManagerServiceJni.get()
                 .updateLastAccessTime(
                         getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
                         downloadGuid,
                         IncognitoUtils.getProfileKeyFromOtrProfileId(otrProfileId));
     }
@@ -1572,71 +1556,56 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     interface Natives {
         boolean isSupportedMimeType(@JniType("std::string") String mimeType);
 
-        long init(DownloadManagerService caller, boolean isProfileAdded);
+        long init(DownloadManagerService self, boolean isProfileAdded);
 
         void openDownload(
                 long nativeDownloadManagerService,
-                DownloadManagerService caller,
                 @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey,
                 int source);
 
         void resumeDownload(
                 long nativeDownloadManagerService,
-                DownloadManagerService caller,
                 @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void cancelDownload(
                 long nativeDownloadManagerService,
-                DownloadManagerService caller,
                 @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void pauseDownload(
                 long nativeDownloadManagerService,
-                DownloadManagerService caller,
                 @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void removeDownload(
                 long nativeDownloadManagerService,
-                DownloadManagerService caller,
                 @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void renameDownload(
                 long nativeDownloadManagerService,
-                DownloadManagerService caller,
                 @JniType("std::string") String downloadGuid,
                 @JniType("std::string") String targetName,
                 Callback</*RenameResult*/ Integer> callback,
                 ProfileKey profileKey);
 
-        void getAllDownloads(
-                long nativeDownloadManagerService,
-                DownloadManagerService caller,
-                ProfileKey profileKey);
+        void getAllDownloads(long nativeDownloadManagerService, ProfileKey profileKey);
 
         void checkForExternallyRemovedDownloads(
-                long nativeDownloadManagerService,
-                DownloadManagerService caller,
-                ProfileKey profileKey);
+                long nativeDownloadManagerService, ProfileKey profileKey);
 
         void updateLastAccessTime(
                 long nativeDownloadManagerService,
-                DownloadManagerService caller,
                 @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void onProfileAdded(
-                long nativeDownloadManagerService,
-                DownloadManagerService caller,
-                @JniType("Profile*") Profile profile);
+                long nativeDownloadManagerService, @JniType("Profile*") Profile profile);
 
         void createInterruptedDownloadForTest(
                 long nativeDownloadManagerService,
-                DownloadManagerService caller,
                 @JniType("std::string") String url,
                 @JniType("std::string") String guid,
                 @JniType("std::string") String targetPath);

@@ -41,57 +41,40 @@ final class SaveUpdateAddressProfilePromptController {
     public void onPromptDismissed() {
         if (mNativeSaveUpdateAddressProfilePromptController != 0) {
             SaveUpdateAddressProfilePromptControllerJni.get()
-                    .onPromptDismissed(
-                            mNativeSaveUpdateAddressProfilePromptController,
-                            SaveUpdateAddressProfilePromptController.this);
+                    .onPromptDismissed(mNativeSaveUpdateAddressProfilePromptController);
         }
     }
 
     public void onUserAccepted() {
         if (mNativeSaveUpdateAddressProfilePromptController != 0) {
             SaveUpdateAddressProfilePromptControllerJni.get()
-                    .onUserAccepted(
-                            mNativeSaveUpdateAddressProfilePromptController,
-                            SaveUpdateAddressProfilePromptController.this);
+                    .onUserAccepted(mNativeSaveUpdateAddressProfilePromptController);
         }
     }
 
     public void onUserDeclined() {
         if (mNativeSaveUpdateAddressProfilePromptController != 0) {
             SaveUpdateAddressProfilePromptControllerJni.get()
-                    .onUserDeclined(
-                            mNativeSaveUpdateAddressProfilePromptController,
-                            SaveUpdateAddressProfilePromptController.this);
+                    .onUserDeclined(mNativeSaveUpdateAddressProfilePromptController);
         }
     }
 
     public void onUserEdited(AutofillProfile profile) {
         if (mNativeSaveUpdateAddressProfilePromptController != 0) {
             SaveUpdateAddressProfilePromptControllerJni.get()
-                    .onUserEdited(
-                            mNativeSaveUpdateAddressProfilePromptController,
-                            SaveUpdateAddressProfilePromptController.this,
-                            profile);
+                    .onUserEdited(mNativeSaveUpdateAddressProfilePromptController, profile);
         }
     }
 
     @NativeMethods
     interface Natives {
-        void onPromptDismissed(
-                long nativeSaveUpdateAddressProfilePromptController,
-                SaveUpdateAddressProfilePromptController caller);
+        void onPromptDismissed(long nativeSaveUpdateAddressProfilePromptController);
 
-        void onUserAccepted(
-                long nativeSaveUpdateAddressProfilePromptController,
-                SaveUpdateAddressProfilePromptController caller);
+        void onUserAccepted(long nativeSaveUpdateAddressProfilePromptController);
 
-        void onUserDeclined(
-                long nativeSaveUpdateAddressProfilePromptController,
-                SaveUpdateAddressProfilePromptController caller);
+        void onUserDeclined(long nativeSaveUpdateAddressProfilePromptController);
 
         void onUserEdited(
-                long nativeSaveUpdateAddressProfilePromptController,
-                SaveUpdateAddressProfilePromptController caller,
-                AutofillProfile profile);
+                long nativeSaveUpdateAddressProfilePromptController, AutofillProfile profile);
     }
 }

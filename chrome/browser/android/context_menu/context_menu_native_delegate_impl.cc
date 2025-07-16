@@ -114,18 +114,15 @@ ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
     content::ContextMenuParams* const context_menu_params)
     : web_contents_(web_contents), context_menu_params_(context_menu_params) {}
 
-void ContextMenuNativeDelegateImpl::StartDownload(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const GURL& url,
-    jboolean jis_media) {
+void ContextMenuNativeDelegateImpl::StartDownload(JNIEnv* env,
+                                                  const GURL& url,
+                                                  jboolean jis_media) {
   DownloadControllerBase::Get()->StartContextMenuDownload(
       url, *context_menu_params_, web_contents_, jis_media);
 }
 
 void ContextMenuNativeDelegateImpl::SearchForImage(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jrender_frame_host) {
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
@@ -138,7 +135,6 @@ void ContextMenuNativeDelegateImpl::SearchForImage(
 
 void ContextMenuNativeDelegateImpl::InspectElement(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jrender_frame_host,
     jint x,
     jint y) {
@@ -156,7 +152,6 @@ void ContextMenuNativeDelegateImpl::InspectElement(
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForShare(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
@@ -169,7 +164,6 @@ void ContextMenuNativeDelegateImpl::RetrieveImageForShare(
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForContextMenu(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,

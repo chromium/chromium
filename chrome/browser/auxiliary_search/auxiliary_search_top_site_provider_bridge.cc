@@ -114,7 +114,6 @@ void AuxiliarySearchTopSiteProviderBridge::OnIconMadeAvailable(
 
 static jlong JNI_AuxiliarySearchTopSiteProviderBridge_Init(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& obj,
     Profile* profile) {
   DCHECK(profile);
 

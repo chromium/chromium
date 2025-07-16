@@ -323,7 +323,6 @@ void OfflinePageBridge::OfflinePageDeleted(const OfflinePageItem& item) {
 
 void OfflinePageBridge::GetAllPages(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj,
     const JavaParamRef<jobject>& j_callback_obj) {
   DCHECK(j_result_obj);
@@ -337,7 +336,6 @@ void OfflinePageBridge::GetAllPages(
 
 void OfflinePageBridge::GetPageByOfflineId(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jlong offline_id,
     const JavaParamRef<jobject>& j_callback_obj) {
   offline_page_model_->GetPageByOfflineId(
@@ -369,7 +367,6 @@ std::vector<ClientId> getClientIdsFromObjectArrays(
 
 void OfflinePageBridge::DeletePagesByClientId(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobjectArray>& j_namespaces_array,
     const JavaParamRef<jobjectArray>& j_ids_array,
     const JavaParamRef<jobject>& j_callback_obj) {
@@ -383,7 +380,6 @@ void OfflinePageBridge::DeletePagesByClientId(
 
 void OfflinePageBridge::DeletePagesByClientIdAndOrigin(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobjectArray>& j_namespaces_array,
     const base::android::JavaParamRef<jobjectArray>& j_ids_array,
     std::string& origin,
@@ -399,7 +395,6 @@ void OfflinePageBridge::DeletePagesByClientIdAndOrigin(
 
 void OfflinePageBridge::DeletePagesByOfflineId(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jlongArray>& j_offline_ids_array,
     const JavaParamRef<jobject>& j_callback_obj) {
   std::vector<int64_t> offline_ids;
@@ -415,7 +410,6 @@ void OfflinePageBridge::DeletePagesByOfflineId(
 
 void OfflinePageBridge::GetPagesByClientId(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj,
     const JavaParamRef<jobjectArray>& j_namespaces_array,
     const JavaParamRef<jobjectArray>& j_ids_array,
@@ -432,7 +426,6 @@ void OfflinePageBridge::GetPagesByClientId(
 
 void OfflinePageBridge::GetPagesByRequestOrigin(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj,
     std::string& request_origin,
     const JavaParamRef<jobject>& j_callback_obj) {
@@ -446,7 +439,6 @@ void OfflinePageBridge::GetPagesByRequestOrigin(
 
 void OfflinePageBridge::GetPagesByNamespace(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj,
     std::string& namespace_str,
     const JavaParamRef<jobject>& j_callback_obj) {
@@ -460,7 +452,6 @@ void OfflinePageBridge::GetPagesByNamespace(
 
 void OfflinePageBridge::SelectPageForOnlineUrl(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_online_url,
     int tab_id,
     const JavaParamRef<jobject>& j_callback_obj) {
@@ -473,7 +464,6 @@ void OfflinePageBridge::SelectPageForOnlineUrl(
 }
 
 void OfflinePageBridge::SavePage(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj,
                                  const JavaParamRef<jobject>& j_callback_obj,
                                  const JavaParamRef<jobject>& j_web_contents,
                                  std::string& namespace_str,
@@ -506,7 +496,6 @@ void OfflinePageBridge::SavePage(JNIEnv* env,
 
 void OfflinePageBridge::PublishInternalPageByOfflineId(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const jlong j_offline_id,
     const base::android::JavaParamRef<jobject>& j_published_callback) {
   OfflinePageModel* offline_page_model =
@@ -522,7 +511,6 @@ void OfflinePageBridge::PublishInternalPageByOfflineId(
 
 void OfflinePageBridge::PublishInternalPageByGuid(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     std::string& guid,
     const base::android::JavaParamRef<jobject>& j_published_callback) {
   OfflinePageModel* offline_page_model =
@@ -576,7 +564,6 @@ void OfflinePageBridge::PublishInternalArchive(
 
 ScopedJavaLocalRef<jstring> OfflinePageBridge::GetOfflinePageHeaderForReload(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
@@ -604,7 +591,6 @@ ScopedJavaLocalRef<jstring> OfflinePageBridge::GetOfflinePageHeaderForReload(
 
 jboolean OfflinePageBridge::IsShowingOfflinePreview(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
@@ -615,7 +601,6 @@ jboolean OfflinePageBridge::IsShowingOfflinePreview(
 
 jboolean OfflinePageBridge::IsShowingDownloadButtonInErrorPage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
@@ -627,7 +612,6 @@ jboolean OfflinePageBridge::IsShowingDownloadButtonInErrorPage(
 
 void OfflinePageBridge::WillCloseTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_web_contents) {
   DCHECK(j_web_contents);
   content::WebContents* web_contents =
@@ -643,7 +627,6 @@ void OfflinePageBridge::WillCloseTab(
 
 void OfflinePageBridge::ScheduleDownload(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_web_contents,
     std::string& namespace_str,
     std::string& url_spec,
@@ -658,7 +641,6 @@ void OfflinePageBridge::ScheduleDownload(
 
 jboolean OfflinePageBridge::IsOfflinePage(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
@@ -666,23 +648,18 @@ jboolean OfflinePageBridge::IsOfflinePage(
              web_contents) != nullptr;
 }
 
-jboolean OfflinePageBridge::IsInPrivateDirectory(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    std::string& file_path) {
+jboolean OfflinePageBridge::IsInPrivateDirectory(JNIEnv* env,
+                                                 std::string& file_path) {
   return offline_page_model_->IsArchiveInInternalDir(base::FilePath(file_path));
 }
 
-jboolean OfflinePageBridge::IsTemporaryNamespace(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    std::string& name_space) {
+jboolean OfflinePageBridge::IsTemporaryNamespace(JNIEnv* env,
+                                                 std::string& name_space) {
   return GetPolicy(name_space).lifetime_type == LifetimeType::TEMPORARY;
 }
 
 ScopedJavaLocalRef<jobject> OfflinePageBridge::GetOfflinePage(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_web_contents) {
   const offline_pages::OfflinePageItem* offline_page =
       offline_pages::OfflinePageUtils::GetOfflinePageFromWebContents(
@@ -696,7 +673,6 @@ ScopedJavaLocalRef<jobject> OfflinePageBridge::GetOfflinePage(
 
 void OfflinePageBridge::GetLoadUrlParamsByOfflineId(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jlong j_offline_id,
     jint launch_location,
     const base::android::JavaParamRef<jobject>& j_callback_obj) {
@@ -713,7 +689,6 @@ void OfflinePageBridge::GetLoadUrlParamsByOfflineId(
 
 void OfflinePageBridge::GetLoadUrlParamsForOpeningMhtmlFileOrContent(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     std::string& url_spec,
     const base::android::JavaParamRef<jobject>& j_callback_obj) {
   GURL url(url_spec);
@@ -737,7 +712,6 @@ void OfflinePageBridge::GetLoadUrlParamsForOpeningMhtmlFileOrContent(
 
 jboolean OfflinePageBridge::IsShowingTrustedOfflinePage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
@@ -817,7 +791,6 @@ void OfflinePageBridge::GetPageBySizeAndDigestDone(
 
 void OfflinePageBridge::AcquireFileAccessPermission(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_web_contents,
     const base::android::JavaParamRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);

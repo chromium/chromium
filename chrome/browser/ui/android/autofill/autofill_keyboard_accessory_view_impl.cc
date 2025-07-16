@@ -158,19 +158,15 @@ void AutofillKeyboardAccessoryViewImpl::ConfirmDeletion(
       env, java_object_, confirmation_title, confirmation_body);
 }
 
-void AutofillKeyboardAccessoryViewImpl::SuggestionSelected(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jint list_index) {
+void AutofillKeyboardAccessoryViewImpl::SuggestionSelected(JNIEnv* env,
+                                                           jint list_index) {
   if (controller_) {
     controller_->AcceptSuggestion(list_index);
   }
 }
 
-void AutofillKeyboardAccessoryViewImpl::DeletionRequested(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jint list_index) {
+void AutofillKeyboardAccessoryViewImpl::DeletionRequested(JNIEnv* env,
+                                                          jint list_index) {
   if (controller_) {
     controller_->RemoveSuggestion(
         list_index,
@@ -180,7 +176,6 @@ void AutofillKeyboardAccessoryViewImpl::DeletionRequested(
 
 void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean confirmed) {
   if (deletion_callback_.is_null()) {
     LOG(DFATAL) << "OnDeletionDialogClosed called but no deletion is pending!";
@@ -189,9 +184,7 @@ void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(
   std::move(deletion_callback_).Run(confirmed);
 }
 
-void AutofillKeyboardAccessoryViewImpl::ViewDismissed(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AutofillKeyboardAccessoryViewImpl::ViewDismissed(JNIEnv* env) {
   if (controller_) {
     controller_->ViewDestroyed();
   }

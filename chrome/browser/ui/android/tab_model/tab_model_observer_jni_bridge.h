@@ -26,75 +26,60 @@ class TabModelObserverJniBridge {
 
   ~TabModelObserverJniBridge();
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // The following functions are called by JNI.
 
   void DidSelectTab(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jobj,
                     const base::android::JavaParamRef<jobject>& jtab,
                     int type,
                     int last_id);
 
   void WillCloseTab(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jobj,
                     const base::android::JavaParamRef<jobject>& jtab);
 
   void OnFinishingTabClosure(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& jobj,
                              const base::android::JavaParamRef<jobject>& jtab,
                              int source);
 
   void OnFinishingMultipleTabClosure(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobjectArray>& jtabs,
       bool canRestore);
 
   void WillAddTab(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jobj,
                   const base::android::JavaParamRef<jobject>& jtab,
                   int type);
 
   void DidAddTab(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& jobj,
                  const base::android::JavaParamRef<jobject>& jtab,
                  int type);
 
   void DidMoveTab(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jobj,
                   const base::android::JavaParamRef<jobject>& jtab,
                   int new_index,
                   int cur_index);
 
   void TabPendingClosure(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& jobj,
                          const base::android::JavaParamRef<jobject>& jtab,
                          int source);
 
   void TabClosureUndone(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& jobj,
                         const base::android::JavaParamRef<jobject>& jtab);
 
   void OnTabCloseUndone(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& jobj,
                         const base::android::JavaParamRef<jobjectArray>& jtabs);
 
   void TabClosureCommitted(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& jobj,
                            const base::android::JavaParamRef<jobject>& jtab);
 
   void AllTabsPendingClosure(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jobjectArray>& jtabs);
 
-  void AllTabsClosureCommitted(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj);
+  void AllTabsClosureCommitted(JNIEnv* env);
 
   void TabRemoved(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& jobj,
                   const base::android::JavaParamRef<jobject>& jtab);
 
   void AddObserver(TabModelObserver* observer);

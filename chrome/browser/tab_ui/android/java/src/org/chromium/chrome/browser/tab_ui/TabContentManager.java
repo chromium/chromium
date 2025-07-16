@@ -190,7 +190,7 @@ public class TabContentManager {
         mNativeTabContentManager =
                 TabContentManagerJni.get()
                         .init(
-                                TabContentManager.this,
+                                this,
                                 mFullResThumbnailsMaxSize,
                                 compressionQueueMaxSize,
                                 writeQueueMaxSize,
@@ -710,7 +710,7 @@ public class TabContentManager {
     interface Natives {
         // Class Object Methods
         long init(
-                TabContentManager caller,
+                TabContentManager self,
                 int defaultCacheSize,
                 int compressionQueueMaxSize,
                 int writeQueueMaxSize,

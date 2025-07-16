@@ -40,14 +40,13 @@ OmniboxPrerender::OmniboxPrerender(JNIEnv* env,
 
 OmniboxPrerender::~OmniboxPrerender() = default;
 
-static jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
+                                const jni_zero::JavaParamRef<jobject>& obj) {
   OmniboxPrerender* omnibox = new OmniboxPrerender(env, obj);
   return reinterpret_cast<intptr_t>(omnibox);
 }
 
 void OmniboxPrerender::Clear(JNIEnv* env,
-                             const JavaParamRef<jobject>& obj,
                              Profile* profile) {
   DCHECK(profile);
   if (!profile)
@@ -58,7 +57,6 @@ void OmniboxPrerender::Clear(JNIEnv* env,
 }
 
 void OmniboxPrerender::InitializeForProfile(JNIEnv* env,
-                                            const JavaParamRef<jobject>& obj,
                                             Profile* profile) {
   // Initialize the AutocompleteActionPredictor for this profile.
   // It needs to register for notifications as part of its initialization.
@@ -67,7 +65,6 @@ void OmniboxPrerender::InitializeForProfile(JNIEnv* env,
 
 void OmniboxPrerender::PrerenderMaybe(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jstring>& j_current_url,
     jlong jsource_match,

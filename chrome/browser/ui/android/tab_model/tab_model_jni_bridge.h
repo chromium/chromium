@@ -37,7 +37,7 @@ class TabModelJniBridge : public TabModel {
                     Profile* profile,
                     chrome::android::ActivityType activity_type,
                     bool is_archived_tab_model);
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   TabModelJniBridge(const TabModelJniBridge&) = delete;
   TabModelJniBridge& operator=(const TabModelJniBridge&) = delete;
@@ -45,14 +45,10 @@ class TabModelJniBridge : public TabModel {
   ~TabModelJniBridge() override;
 
   // Called by JNI
-  void TabAddedToModel(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
-                       TabAndroid* tab);
+  void TabAddedToModel(JNIEnv* env, TabAndroid* tab);
 
   // Called by JNI
-  void DuplicateTabForTesting(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj,
-                              TabAndroid* tab);
+  void DuplicateTabForTesting(JNIEnv* env, TabAndroid* tab);
 
   // TabModel::
   int GetTabCount() const override;
@@ -87,9 +83,7 @@ class TabModelJniBridge : public TabModel {
 
   // Instructs the TabModel to broadcast a notification that all tabs are now
   // loaded from storage.
-  void BroadcastSessionRestoreComplete(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void BroadcastSessionRestoreComplete(JNIEnv* env);
 
   int GetTabCountNavigatedInTimeWindow(
       const base::Time& begin_time,
