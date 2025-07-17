@@ -1618,6 +1618,7 @@ inline constexpr char kDeviceNativeClientForceAllowed[] =
     "device_native_client_force_allowed";
 inline constexpr char kDeviceNativeClientForceAllowedCache[] =
     "device_native_client_force_allowed_cache";
+inline constexpr char kIsFirstBootForNacl[] = "is_first_boot_for_nacl";
 #endif
 
 // Profile avatar and name
