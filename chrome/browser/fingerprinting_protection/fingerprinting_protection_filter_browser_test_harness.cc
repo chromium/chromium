@@ -227,7 +227,8 @@ FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
       /*enabled_features=*/
       {{features::kEnableFingerprintingProtectionFilterInIncognito,
         {{"performance_measurement_rate", "0.0"}}}},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{
+          {features::kEnableFingerprintingProtectionFilter}});
 }
 
 FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::

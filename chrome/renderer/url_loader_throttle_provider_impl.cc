@@ -205,8 +205,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   }
 #endif
 
-  if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionFeatureEnabled()) {
+  if (chrome_content_renderer_client_
+          ->IsContentBasedFingerprintingProtectionEnabled()) {
     // Restrict the requests that we check as much as possible. This corresponds
     // to a request where:
     //   * The resource requested is not a frame.

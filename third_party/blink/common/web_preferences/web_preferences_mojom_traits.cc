@@ -243,6 +243,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->payment_request_enabled = data.payment_request_enabled();
   out->api_based_fingerprinting_interventions_enabled =
       data.api_based_fingerprinting_interventions_enabled();
+  out->content_based_fingerprinting_protection_enabled =
+      data.content_based_fingerprinting_protection_enabled();
   return true;
 }
 
