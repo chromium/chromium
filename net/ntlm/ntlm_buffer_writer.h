@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_NTLM_NTLM_BUFFER_WRITER_H_
 #define NET_NTLM_NTLM_BUFFER_WRITER_H_
 
@@ -168,10 +163,6 @@ class NET_EXPORT_PRIVATE NtlmBufferWriter {
   [[nodiscard]] bool WriteMessageHeader(MessageType message_type);
 
  private:
-  // Writes |sizeof(T)| bytes little-endian of an integer type to the buffer.
-  template <typename T>
-  bool WriteUInt(T value);
-
   // Sets the cursor position. The caller should use |GetLength| or
   // |CanWrite| to verify the bounds before calling this method.
   void SetCursor(size_t cursor);
@@ -180,15 +171,14 @@ class NET_EXPORT_PRIVATE NtlmBufferWriter {
   // |CanWrite| to verify the bounds before calling this method.
   void AdvanceCursor(size_t count) { SetCursor(GetCursor() + count); }
 
-  // Returns a pointer to the start of the buffer.
-  const uint8_t* GetBufferPtr() const { return buffer_.data(); }
-  uint8_t* GetBufferPtr() { return buffer_.data(); }
-
-  // Returns pointer into the buffer at the current cursor location.
-  const uint8_t* GetBufferPtrAtCursor() const {
-    return GetBufferPtr() + GetCursor();
+  // Returns a span of given length starting from the current cursor position.
+  base::span<const uint8_t> GetSubspanAtCursor(size_t length) const {
+    return base::span(buffer_).subspan(cursor_, length);
   }
-  uint8_t* GetBufferPtrAtCursor() { return GetBufferPtr() + GetCursor(); }
+
+  base::span<uint8_t> GetSubspanAtCursor(size_t length) {
+    return base::span(buffer_).subspan(cursor_, length);
+  }
 
   std::vector<uint8_t> buffer_;
   size_t cursor_ = 0;

@@ -57,7 +57,7 @@ bool NtlmBufferReader::ReadBytes(base::span<uint8_t> buffer) {
   if (buffer.empty())
     return true;
 
-  UNSAFE_TODO(memcpy(buffer.data(), GetBufferAtCursor(), buffer.size()));
+  buffer.copy_from(GetSubspanAtCursor(buffer.size()));
 
   AdvanceCursor(buffer.size());
   return true;
@@ -71,8 +71,7 @@ bool NtlmBufferReader::ReadBytesFrom(const SecurityBuffer& sec_buf,
   if (buffer.empty())
     return true;
 
-  UNSAFE_TODO(
-      memcpy(buffer.data(), GetBufferPtr() + sec_buf.offset, sec_buf.length));
+  buffer.copy_prefix_from(buffer_.subspan(sec_buf.offset, sec_buf.length));
 
   return true;
 }
@@ -82,8 +81,7 @@ bool NtlmBufferReader::ReadPayloadAsBufferReader(const SecurityBuffer& sec_buf,
   if (!CanReadFrom(sec_buf))
     return false;
 
-  *reader = NtlmBufferReader(
-      UNSAFE_TODO(base::span(GetBufferPtr() + sec_buf.offset, sec_buf.length)));
+  *reader = NtlmBufferReader(buffer_.subspan(sec_buf.offset, sec_buf.length));
   return true;
 }
 
@@ -135,8 +133,8 @@ bool NtlmBufferReader::ReadTargetInfo(size_t target_info_len,
       return false;
 
     // Take a copy of the payload in the AVPair.
-    pair.buffer.assign(GetBufferAtCursor(),
-                       UNSAFE_TODO(GetBufferAtCursor() + pair.avlen));
+    auto payload = GetSubspanAtCursor(pair.avlen);
+    pair.buffer.assign(payload.begin(), payload.end());
     if (pair.avid == TargetInfoAvId::kEol) {
       // Terminator must have zero length.
       if (pair.avlen != 0)
@@ -243,8 +241,7 @@ bool NtlmBufferReader::MatchSignature() {
   if (!CanRead(kSignatureLen))
     return false;
 
-  if (UNSAFE_TODO(memcmp(kSignature, GetBufferAtCursor(), kSignatureLen)) !=
-      0) {
+  if (GetSubspanAtCursor(kSignatureLen) != base::span(kSignature)) {
     return false;
   }
 
@@ -266,8 +263,9 @@ bool NtlmBufferReader::MatchZeros(size_t count) {
   if (!CanRead(count))
     return false;
 
+  auto to_check = GetSubspanAtCursor(count);
   for (size_t i = 0; i < count; i++) {
-    if (UNSAFE_TODO(GetBufferAtCursor()[i]) != 0) {
+    if (to_check[i] != 0) {
       return false;
     }
   }

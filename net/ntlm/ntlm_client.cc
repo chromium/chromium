@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -234,7 +236,7 @@ std::vector<uint8_t> NtlmClient::GenerateAuthenticateMessage(
         GenerateUpdatedTargetInfo(IsMicEnabled(), IsEpaEnabled(),
                                   channel_bindings, spn, av_pairs, &timestamp);
 
-    UNSAFE_TODO(memset(lm_response, 0, kResponseLenV1));
+    std::ranges::fill(base::span(lm_response), 0);
     if (timestamp == UINT64_MAX) {
       // If the server didn't send a time, then use the clients time.
       timestamp = client_time;

@@ -169,7 +169,7 @@ void Create3DesKeysFromNtlmHash(
   keys[16] = ntlm_hash[14];
   keys[17] = ntlm_hash[14] << 7 | ntlm_hash[15] >> 1;
   keys[18] = ntlm_hash[15] << 6;
-  UNSAFE_TODO(memset(keys.data() + 19, 0, 5));
+  std::ranges::fill(keys.subspan(19u, 5u), 0);
 }
 
 void GenerateNtlmHashV1(const std::u16string& password,
@@ -194,20 +194,24 @@ void GenerateResponseDesl(base::span<const uint8_t, kNtlmHashLen> hash,
   static_assert(kResponseLenV1 == block_count * block_size,
                 "kResponseLenV1 must equal block_count * block_size");
 
+  // Safety: Covers the same memory as `response`; DES_cblock contains an 8-char
+  // array so alignment should be fine, too.
+  base::span<DES_cblock> response_as_cblock =
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<DES_cblock*>(response.data()),
+                                response.size() / sizeof(DES_cblock)));
+
   const DES_cblock* challenge_block =
       reinterpret_cast<const DES_cblock*>(challenge.data());
-  std::array<uint8_t, block_count * block_size> keys;
+  std::array<DES_cblock, block_count> keys;
 
   // Map the NTLM hash to three 8 byte DES keys, with 7 bits of the key in each
   // byte and the least significant bit set with odd parity. Then encrypt the
   // 8 byte challenge with each of the three keys. This produces three 8 byte
   // encrypted blocks into |response|.
-  Create3DesKeysFromNtlmHash(hash, keys);
-  for (size_t ix = 0; ix < block_count * block_size; ix += block_size) {
-    DES_cblock* key_block = reinterpret_cast<DES_cblock*>(
-        base::span<uint8_t>(keys).subspan(ix).data());
-    DES_cblock* response_block =
-        reinterpret_cast<DES_cblock*>(UNSAFE_TODO(response.data() + ix));
+  Create3DesKeysFromNtlmHash(hash, base::as_writable_byte_span(keys));
+  for (size_t i = 0; i < block_count; ++i) {
+    DES_cblock* key_block = &keys[i];
+    DES_cblock* response_block = &response_as_cblock[i];
 
     DES_key_schedule key_schedule;
     DES_set_odd_parity(key_block);
@@ -235,7 +239,7 @@ void GenerateResponsesV1(
 
   // In NTLM v1 (with LMv1 disabled), the lm_response and ntlm_response are the
   // same. So just copy the ntlm_response into the lm_response.
-  UNSAFE_TODO(memcpy(lm_response.data(), ntlm_response.data(), kResponseLenV1));
+  lm_response.copy_from(ntlm_response);
 }
 
 void GenerateLMResponseV1WithSessionSecurity(
@@ -243,10 +247,9 @@ void GenerateLMResponseV1WithSessionSecurity(
     base::span<uint8_t, kResponseLenV1> lm_response) {
   // In NTLM v1 with Session Security (aka NTLM2) the lm_response is 8 bytes of
   // client challenge and 16 bytes of zeros. (See 3.3.1)
-  UNSAFE_TODO(
-      memcpy(lm_response.data(), client_challenge.data(), kChallengeLen));
-  UNSAFE_TODO(memset(lm_response.data() + kChallengeLen, 0,
-                     kResponseLenV1 - kChallengeLen));
+  auto [out_challenge, out_zeroes] = lm_response.split_at(kChallengeLen);
+  out_challenge.copy_from(client_challenge);
+  std::ranges::fill(out_zeroes, 0);
 }
 
 void GenerateSessionHashV1WithSessionSecurity(
