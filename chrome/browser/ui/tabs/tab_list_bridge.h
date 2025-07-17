@@ -43,6 +43,10 @@ class TabListBridge : public TabListInterface {
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
 
  private:
+  // Returns the index of the given `tab`, if it exists in the tab strip.
+  // Otherwise, returns -1.
+  int GetIndexOfTab(tabs::TabHandle tab);
+
   raw_ref<TabStripModel> tab_strip_;
   ui::ScopedUnownedUserData<TabListBridge> scoped_data_holder_;
 };

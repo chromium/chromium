@@ -55,9 +55,19 @@ std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
   return all_tabs;
 }
 
-void TabListBridge::PinTab(tabs::TabHandle tab) {}
+void TabListBridge::PinTab(tabs::TabHandle tab) {
+  int index = GetIndexOfTab(tab);
+  CHECK_NE(index, TabStripModel::kNoTab)
+      << "Trying to pin a tab that doesn't exist in this tab list.";
+  tab_strip_->SetTabPinned(index, true);
+}
 
-void TabListBridge::UnpinTab(tabs::TabHandle tab) {}
+void TabListBridge::UnpinTab(tabs::TabHandle tab) {
+  int index = GetIndexOfTab(tab);
+  CHECK_NE(index, TabStripModel::kNoTab)
+      << "Trying to unpin a tab that doesn't exist in this tab list.";
+  tab_strip_->SetTabPinned(index, false);
+}
 
 std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
@@ -68,6 +78,10 @@ std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
 void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {}
 
 void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {}
+
+int TabListBridge::GetIndexOfTab(tabs::TabHandle tab) {
+  return tab_strip_->GetIndexOfTab(tab.Get());
+}
 
 // static
 // From //chrome/browser/ui/tabs/tab_list_interface.h

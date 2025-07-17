@@ -137,3 +137,19 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetActiveTab) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_THAT(tab_list_interface->GetActiveTab(), MatchesTab(url3));
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, PinAndUnpin) {
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  tabs::TabInterface* tab = tab_list_interface->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  EXPECT_FALSE(tab->IsPinned());
+
+  tab_list_interface->PinTab(tab->GetHandle());
+  EXPECT_TRUE(tab->IsPinned());
+
+  tab_list_interface->UnpinTab(tab->GetHandle());
+  EXPECT_FALSE(tab->IsPinned());
+}
