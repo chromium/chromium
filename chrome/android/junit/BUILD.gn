@@ -550,6 +550,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/compositor/overlays/strip/MultiSelectedTabsContextMenuCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollDelegateUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollingStripStackerUnitTest.java",
+      "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutContextMenuCoordinatorTestUtils.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperManagerTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperTest.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutTabTest.java",

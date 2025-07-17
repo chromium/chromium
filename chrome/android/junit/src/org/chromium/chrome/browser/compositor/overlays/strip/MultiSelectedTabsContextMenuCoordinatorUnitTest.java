@@ -227,7 +227,32 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testListMenuItems_tabInGroup() {
+    public void testAnchorWidth() {
+        StripLayoutContextMenuCoordinatorTestUtils.testAnchorWidth(
+                mWeakReferenceActivity, mMultiSelectedTabsContextMenuCoordinator::getMenuWidth);
+    }
+
+    @Test
+    public void testAnchor_offset() {
+        StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset(
+                (rectProvider) ->
+                        mMultiSelectedTabsContextMenuCoordinator.showMenu(
+                                rectProvider, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1)),
+                mMultiSelectedTabsContextMenuCoordinator::destroyMenuForTesting);
+    }
+
+    @Test
+    public void testAnchor_offset_incognito() {
+        setupWithIncognito(/* incognito= */ true);
+        StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset_incognito(
+                (rectProvider) ->
+                        mMultiSelectedTabsContextMenuCoordinator.showMenu(
+                                rectProvider, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1)),
+                mMultiSelectedTabsContextMenuCoordinator::destroyMenuForTesting);
+    }
+
+    @Test
+    public void testListMenuItems_tabsInGroup() {
         var modelList = new ModelList();
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
                 modelList, List.of(TAB_1_ID, TAB_2_ID));
