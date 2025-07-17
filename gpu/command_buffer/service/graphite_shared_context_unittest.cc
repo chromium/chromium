@@ -30,6 +30,11 @@ class MockGpuProcessShmCount : public GpuProcessShmCount {
   MOCK_METHOD(void, Decrement, (), (override));
 };
 
+class MockBackendFlushCallback {
+ public:
+  MOCK_METHOD(void, Flush, ());
+};
+
 // Test fixture for GraphiteSharedContext with thread safety enabled.
 class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
  protected:
@@ -96,10 +101,13 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
     graphite_shared_context_ = std::make_unique<GraphiteSharedContext>(
         skgpu::graphite::ContextFactory::MakeDawn(backend_context,
                                                   context_options),
-        &use_shader_cache_shm_count_, is_thread_safe());
+        &use_shader_cache_shm_count_, is_thread_safe(),
+        base::BindRepeating(&MockBackendFlushCallback::Flush,
+                            base::Unretained(&backend_flush_callback_)));
   }
 
   MockGpuProcessShmCount use_shader_cache_shm_count_;
+  NiceMock<MockBackendFlushCallback> backend_flush_callback_;
   std::unique_ptr<GraphiteSharedContext> graphite_shared_context_;
   std::unique_ptr<base::Thread> secondary_thread_;
 };
@@ -214,6 +222,45 @@ TEST_P(GraphiteSharedContextTest, AddCommandsFailed) {
   EXPECT_CALL(use_shader_cache_shm_count_, Decrement()).Times(0);
 
   EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
+}
+
+TEST_P(GraphiteSharedContextTest, LowPendingRecordings) {
+  std::unique_ptr<skgpu::graphite::Recorder> recorder =
+      graphite_shared_context_->makeRecorder();
+  EXPECT_TRUE(recorder);
+
+  std::unique_ptr<skgpu::graphite::Recording> recording = recorder->snap();
+  EXPECT_TRUE(recording);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+
+  // No flush is expected if the number of pending recordings is low.
+  EXPECT_CALL(backend_flush_callback_, Flush()).Times(0);
+
+  for (size_t i = 0; i < GraphiteSharedContext::kMaxPendingRecordings - 1;
+       ++i) {
+    EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
+  }
+}
+
+TEST_P(GraphiteSharedContextTest, MaxPendingRecordings) {
+  std::unique_ptr<skgpu::graphite::Recorder> recorder =
+      graphite_shared_context_->makeRecorder();
+  EXPECT_TRUE(recorder);
+
+  std::unique_ptr<skgpu::graphite::Recording> recording = recorder->snap();
+  EXPECT_TRUE(recording);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+
+  // Expect a flush when the number of pending recordings reaches the max.
+  EXPECT_CALL(backend_flush_callback_, Flush()).Times(1);
+
+  for (size_t i = 0; i < GraphiteSharedContext::kMaxPendingRecordings; ++i) {
+    EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(, GraphiteSharedContextTest, testing::Bool());

@@ -37,6 +37,9 @@ class GpuProcessShmCount;
 // are equivalent to no-op.
 class GPU_GLES2_EXPORT GraphiteSharedContext {
  public:
+
+  // Max number of pending recordings before forcing submission.
+  static constexpr size_t kMaxPendingRecordings = 1000;
   using SkImageReadPixelsCallback = base::OnceCallback<
       void(void* ctx, std::unique_ptr<const SkSurface::AsyncReadResult>)>;
 

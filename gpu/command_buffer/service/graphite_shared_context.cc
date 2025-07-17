@@ -172,8 +172,6 @@ bool GraphiteSharedContext::insertRecording(
   num_pending_recordings_++;
 
   // Force submitting if there are too many pending recordings.
-  // TODO(407062399): Change this to reflect the common number in the wild.
-  static constexpr size_t kMaxPendingRecordings = 1000;
   if (num_pending_recordings_ >= kMaxPendingRecordings) {
     SubmitAndFlushBackendImpl(skgpu::graphite::SyncToCpu::kNo);
   }
