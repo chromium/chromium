@@ -477,6 +477,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool RecreateCanvasInGPURasterModeForCanvas2D();
 
+  void ChildrenChanged(const ChildrenChange&) override;
+
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;

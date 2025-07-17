@@ -6238,6 +6238,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5605" label="AnimatedImageUsedMoreThanOnce"/>
   <int value="5606" label="ClipboardPlatformPermissionDenied"/>
   <int value="5607" label="ValidPopoverAttribute"/>
+  <int value="5608" label="CanvasFallbackContent"/>
+  <int value="5609" label="CanvasFallbackElementContent"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

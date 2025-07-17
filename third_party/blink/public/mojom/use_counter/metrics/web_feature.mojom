@@ -4915,6 +4915,8 @@ enum WebFeature {
   kAnimatedImageUsedMoreThanOnce = 5605,
   kClipboardPlatformPermissionDenied = 5606,
   kValidPopoverAttribute = 5607,
+  kCanvasFallbackContent = 5608,
+  kCanvasFallbackElementContent = 5609,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
