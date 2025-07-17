@@ -6,14 +6,14 @@
 #define REMOTING_HOST_INPUT_INJECTOR_METADATA_H_
 
 #if defined(WEBRTC_USE_PIPEWIRE)
-#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/xdg_session_details.h"
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 
 namespace remoting {
 
 struct InputInjectorMetadata {
 #if defined(WEBRTC_USE_PIPEWIRE)
-  // Details of the XDG desktop portal session (required by the wayalnd input
+  // Details of the XDG desktop portal session (required by the wayland input
   // injector).
   webrtc::xdg_portal::SessionDetails session_details;
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
