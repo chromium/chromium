@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -162,6 +163,8 @@ void TipsNotificationPresenter::ShowLensPromo() {
 }
 
 void TipsNotificationPresenter::StartTrustedVaultKeyRetrievalFlow() {
+  const char* metric_name =
+      "IOS.PasswordManager.TrustedVaultNotification.Events";
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfileIfExists(browser_->GetProfile());
   if (sync_service == nullptr) {
@@ -178,7 +181,9 @@ void TipsNotificationPresenter::StartTrustedVaultKeyRetrievalFlow() {
     // service, we need to check if sync_service exists.
     //
     // We expect that the described scenario is rare.
-    // TODO(crbug.com/413671723): Publish a metric in this case.
+    base::UmaHistogramEnumeration(
+        metric_name,
+        TrustedVaultNotificationEvents::kSyncServiceDoesNotExistForProfile);
     return;
   }
   if (!sync_service->GetUserSettings()
@@ -197,13 +202,17 @@ void TipsNotificationPresenter::StartTrustedVaultKeyRetrievalFlow() {
     // perform the key retrieval anymore.
     //
     // We expect that the described scenario is rare.
-    // TODO(crbug.com/413671723): Publish a metric in this case.
+    base::UmaHistogramEnumeration(
+        metric_name,
+        TrustedVaultNotificationEvents::kTrustedVaultKeyAlreadyAvailable);
     return;
   }
   [HandlerForProtocol(browser_->GetCommandDispatcher(),
                       BrowserCoordinatorCommands)
       performReauthToRetrieveTrustedVaultKey:
           syncer::TrustedVaultUserActionTriggerForUMA::kNotification];
+  base::UmaHistogramEnumeration(
+      metric_name, TrustedVaultNotificationEvents::kKeyRetrievalFlowStarted);
 }
 
 void TipsNotificationPresenter::ShowEnhancedSafeBrowsingPromo() {

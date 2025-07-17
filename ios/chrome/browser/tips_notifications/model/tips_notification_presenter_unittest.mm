@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_presenter.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -75,6 +76,7 @@ class TipsNotificationPresenterTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   id application_handler_;
+  const base::HistogramTester histogram_tester_;
 };
 
 #pragma mark - Test Cases
@@ -188,6 +190,9 @@ TEST_F(TipsNotificationPresenterTest, TestStartTrustedVaultKeyRetrievalFlow) {
   TipsNotificationPresenter::Present(
       browser_->AsWeakPtr(), TipsNotificationType::kTrustedVaultKeyRetrieval);
   EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.PasswordManager.TrustedVaultNotification.Events",
+      TrustedVaultNotificationEvents::kKeyRetrievalFlowStarted, 1);
 }
 
 // Tests that the presenter doesn't start the trusted vault key retrieval flow
@@ -201,4 +206,7 @@ TEST_F(TipsNotificationPresenterTest,
   TipsNotificationPresenter::Present(
       browser_->AsWeakPtr(), TipsNotificationType::kTrustedVaultKeyRetrieval);
   EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.PasswordManager.TrustedVaultNotification.Events",
+      TrustedVaultNotificationEvents::kTrustedVaultKeyAlreadyAvailable, 1);
 }

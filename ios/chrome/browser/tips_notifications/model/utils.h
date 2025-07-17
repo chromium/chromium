@@ -78,6 +78,21 @@ enum class TipsNotificationUserType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
+// Enum for the IOS.PasswordManager.TrustedVaultNotification.Events
+// histogram.
+// LINT.IfChange(TrustedVaultNotificationEvents)
+enum class TrustedVaultNotificationEvents {
+  kKeyRetrievalFlowStarted = 0,  // Trusted Vault key retrieval flow started.
+  kTrustedVaultKeyAlreadyAvailable =
+      1,  // Key retrieval flow did not start. Trusted Vault key is already
+          // avialble.
+  kSyncServiceDoesNotExistForProfile =
+      2,  // Key retrieval flow did not start. Sync service does not exist for
+          // profile.
+  kMaxValue = kSyncServiceDoesNotExistForProfile,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:TrustedVaultNotificationEvents)
+
 // Returns true if the given `notification` is a Tips notification.
 bool IsTipsNotification(UNNotificationRequest* request);
 

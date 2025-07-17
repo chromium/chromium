@@ -1227,6 +1227,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Active Seeker"/>
 </enum>
 
+<!-- LINT.IfChange(TrustedVaultNotificationEvents) -->
+
+<enum name="IOSTipsTrustedVaultNotificationEvents">
+  <int value="0" label="Trusted Vault key retrieval flow started."/>
+  <int value="1"
+      label="Key retrieval flow did not start. Trusted Vault key is already
+             available."/>
+  <int value="2"
+      label="Key retrieval flow did not start. Sync service does not exist
+             for profile."/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/tips_notifications/model/utils.h:TrustedVaultNotificationEvents) -->
+
 <enum name="IOSUpgradeCenterFailureReason">
   <int value="0" label="Invalid URL"/>
   <int value="1" label="Invalid Version"/>
