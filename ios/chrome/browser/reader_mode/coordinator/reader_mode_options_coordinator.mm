@@ -36,6 +36,7 @@
       initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()
                     webStateList:self.browser->GetWebStateList()];
   _viewController.mutator = _mediator;
+  _viewController.controlsView.mutator = _mediator;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];

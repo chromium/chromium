@@ -15,13 +15,21 @@
 @interface ReaderModeOptionsViewController : UINavigationController
 
 // The view that contains the controls for the Reader Mode options.
-@property(nonatomic, strong, readonly)
-    ReaderModeOptionsControlsView* controlsView;
+@property(nonatomic, readonly) ReaderModeOptionsControlsView* controlsView;
 
 @property(nonatomic, weak) id<ReaderModeOptionsMutator> mutator;
 
 @property(nonatomic, weak) id<ReaderModeOptionsCommands>
     readerModeOptionsHandler;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNavigationBarClass:(Class)navigationBarClass
+                              toolbarClass:(Class)toolbarClass NS_UNAVAILABLE;
+- (instancetype)initWithRootViewController:(UIViewController*)rootViewController
+    NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 @end
 
