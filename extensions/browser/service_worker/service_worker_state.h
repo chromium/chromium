@@ -94,7 +94,8 @@ class ServiceWorkerState
 
   // Called when the render worker thread is preparing to terminate. It is
   // considered the "renderer-side" signal that the worker is stopping.
-  // NOTE: this can be called before or after `OnStopping` and `OnStopped`.
+  // NOTE: this can be called before or after `OnStoppingSync` and
+  // `OnStoppedSync`.
   void RendererDidStopServiceWorkerContext(const WorkerId& worker_id,
                                            const GURL& scope);
 
@@ -126,13 +127,13 @@ class ServiceWorkerState
   // It is considered the "browser-side" signal that the worker is stopping.
   // NOTE: this can be called before or after
   // `RendererDidStopServiceWorkerContext`.
-  void OnStopping(int64_t version_id, const GURL& scope) override;
+  void OnStoppingSync(int64_t version_id, const GURL& scope) override;
 
   // Called when an extension service worker has stopped.
   // It is considered the "browser-side" signal that the worker has stopped.
   // NOTE: this can be called before or after
   // `RendererDidStopServiceWorkerContext`.
-  void OnStopped(int64_t version_id, const GURL& scope) override;
+  void OnStoppedSync(int64_t version_id, const GURL& scope) override;
 
  private:
   void SetWorkerId(const WorkerId& worker_id);

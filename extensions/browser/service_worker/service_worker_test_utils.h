@@ -98,7 +98,8 @@ class TestServiceWorkerContextObserver
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   // ServiceWorkerContextObserverSynchronous:
-  void OnStartWorkerMessageSent(int64_t version_id, const GURL& scope) override;
+  void OnStartWorkerMessageSentSync(int64_t version_id,
+                                    const GURL& scope) override;
 
   using RegistrationsMap = std::map<GURL, int>;
 

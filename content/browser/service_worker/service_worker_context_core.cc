@@ -947,7 +947,7 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
       const std::optional<ServiceWorkerRunningInfo> running_info =
           wrapper_->GetRunningServiceWorkerInfo(id);
       if (running_info.has_value()) {
-        observer.OnStopped(id, version->scope());
+        observer.OnStoppedSync(id, version->scope());
       }
     }
   }
@@ -1020,7 +1020,8 @@ void ServiceWorkerContextCore::DeleteAndStartOver(StatusCallback callback) {
       const std::optional<ServiceWorkerRunningInfo> running_info =
           wrapper_->GetRunningServiceWorkerInfo(live_version->version_id());
       if (running_info.has_value()) {
-        observer.OnStopped(live_version->version_id(), live_version->scope());
+        observer.OnStoppedSync(live_version->version_id(),
+                               live_version->scope());
       }
     }
   }
@@ -1097,7 +1098,7 @@ void ServiceWorkerContextCore::NotifyWillCreateURLLoaderFactory(
     const GURL& scope) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (auto& observer : sync_observer_list_->observers) {
-    observer.OnWillCreateURLLoaderFactory(scope);
+    observer.OnWillCreateURLLoaderFactorySync(scope);
   }
 }
 
@@ -1131,6 +1132,10 @@ void ServiceWorkerContextCore::NotifyRegistrationStored(
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnRegistrationStored,
       registration_id, scope, key, std::move(service_worker_info));
+
+  for (auto& observer : sync_observer_list_->observers) {
+    observer.OnRegistrationStoredSync(registration_id, scope);
+  }
 }
 
 void ServiceWorkerContextCore::NotifyAllRegistrationsDeletedForStorageKey(
@@ -1220,7 +1225,8 @@ void ServiceWorkerContextCore::OnStartWorkerMessageSent(
   DCHECK_EQ(this, version->context().get());
 
   for (auto& observer : sync_observer_list_->observers) {
-    observer.OnStartWorkerMessageSent(version->version_id(), version->scope());
+    observer.OnStartWorkerMessageSentSync(version->version_id(),
+                                          version->scope());
   }
 }
 
@@ -1237,7 +1243,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
         const std::optional<ServiceWorkerRunningInfo> running_info =
             wrapper_->GetRunningServiceWorkerInfo(version->version_id());
         if (running_info.has_value()) {
-          observer.OnStopped(version->version_id(), version->scope());
+          observer.OnStoppedSync(version->version_id(), version->scope());
         }
       }
       break;
@@ -1261,7 +1267,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
         const std::optional<ServiceWorkerRunningInfo> running_info =
             wrapper_->GetRunningServiceWorkerInfo(version->version_id());
         if (running_info.has_value()) {
-          observer.OnStopping(version->version_id(), version->scope());
+          observer.OnStoppingSync(version->version_id(), version->scope());
         }
       }
       break;
@@ -1331,10 +1337,16 @@ void ServiceWorkerContextCore::OnReportConsoleMessage(
                     wrapper_->is_incognito(),
                     base::UTF8ToUTF16(source_url.spec()));
 
+  ConsoleMessage console_message(source, message_level, message, line_number,
+                                 source_url);
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnReportConsoleMessage,
-      version->version_id(), version->scope(), version->key(),
-      ConsoleMessage(source, message_level, message, line_number, source_url));
+      version->version_id(), version->scope(), version->key(), console_message);
+
+  for (auto& observer : sync_observer_list_->observers) {
+    observer.OnReportConsoleMessageSync(version->version_id(), version->scope(),
+                                        console_message);
+  }
 }
 
 mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&

@@ -74,7 +74,7 @@ ServiceWorkerTaskQueue::ServiceWorkerTaskQueue(BrowserContext* browser_context)
 
 ServiceWorkerTaskQueue::~ServiceWorkerTaskQueue() {
   for (const auto& entry : observing_worker_contexts_) {
-    entry.first->RemoveObserver(this);
+    entry.first->RemoveSyncObserver(this);
   }
 }
 
@@ -835,10 +835,8 @@ ServiceWorkerTaskQueue::GetCurrentActivationToken(
   return iter->second;
 }
 
-void ServiceWorkerTaskQueue::OnRegistrationStored(
-    int64_t registration_id,
-    const GURL& scope,
-    const content::ServiceWorkerRegistrationInformation& service_worker_info) {
+void ServiceWorkerTaskQueue::OnRegistrationStoredSync(int64_t registration_id,
+                                                      const GURL& scope) {
   const ExtensionId extension_id = scope.host();
   auto iter = pending_storage_registrations_.find(extension_id);
   if (iter == pending_storage_registrations_.end()) {
@@ -866,7 +864,7 @@ void ServiceWorkerTaskQueue::OnRegistrationStored(
   }
 }
 
-void ServiceWorkerTaskQueue::OnReportConsoleMessage(
+void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
     int64_t version_id,
     const GURL& scope,
     const content::ConsoleMessage& message) {
@@ -893,7 +891,7 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessage(
                                               std::move(error_instance));
 }
 
-void ServiceWorkerTaskQueue::OnDestruct(
+void ServiceWorkerTaskQueue::OnDestructSync(
     content::ServiceWorkerContext* context) {
   StopObserving(context);
 }
@@ -983,7 +981,7 @@ content::ServiceWorkerContext* ServiceWorkerTaskQueue::GetServiceWorkerContext(
 void ServiceWorkerTaskQueue::StartObserving(
     content::ServiceWorkerContext* service_worker_context) {
   if (++observing_worker_contexts_[service_worker_context] == 1) {
-    service_worker_context->AddObserver(this);
+    service_worker_context->AddSyncObserver(this);
   }
 }
 
@@ -995,7 +993,7 @@ void ServiceWorkerTaskQueue::StopObserving(
   }
   DCHECK(iter->second > 0);
   if (--iter->second == 0) {
-    service_worker_context->RemoveObserver(this);
+    service_worker_context->RemoveSyncObserver(this);
     observing_worker_contexts_.erase(iter);
   }
 }

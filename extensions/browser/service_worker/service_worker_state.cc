@@ -185,24 +185,24 @@ void ServiceWorkerState::RendererDidStopServiceWorkerContext(
 
   if (renderer_state() != RendererState::kActive) {
     // We can see `RendererDidStopServiceWorkerContext` before or after
-    // `OnStopping`.
+    // `OnStoppingSync`.
     return;
   }
 
   HandleStop(worker_id_->version_id, scope);
 }
 
-void ServiceWorkerState::OnStopping(int64_t version_id, const GURL& scope) {
+void ServiceWorkerState::OnStoppingSync(int64_t version_id, const GURL& scope) {
   // TODO(crbug.com/40936639): Confirming this is true in order to allow for
   // synchronous notification of this status change.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   HandleStop(version_id, scope);
 }
 
-void ServiceWorkerState::OnStopped(int64_t version_id, const GURL& scope) {
-  // If `OnStopping` was not called for some reason, try again here.
+void ServiceWorkerState::OnStoppedSync(int64_t version_id, const GURL& scope) {
+  // If `OnStoppingSync` was not called for some reason, try again here.
   if (browser_state_ != BrowserState::kNotActive) {
-    OnStopping(version_id, scope);
+    OnStoppingSync(version_id, scope);
   }
 }
 

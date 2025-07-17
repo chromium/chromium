@@ -78,8 +78,8 @@ class Extension;
 //
 // Stopping:
 //
-// TODO(crbug.com/40936639): update the below once `OnStopped()` is called to
-// track browser starting.
+// TODO(crbug.com/40936639): update the below once `OnStoppedSync()` is called
+// to track browser starting.
 //
 // `RendererDidStopServiceWorkerContext()` is called when the worker is stopped
 // to track renderer stopping. `RendererDidStopServiceWorkerContext()` is not
@@ -133,10 +133,11 @@ class Extension;
 // activation/deactivation and how the class uses it.
 //
 // TODO(lazyboy): Clean up queue when extension is unloaded/uninstalled.
-class ServiceWorkerTaskQueue : public KeyedService,
-                               public LazyContextTaskQueue,
-                               public content::ServiceWorkerContextObserver,
-                               public ServiceWorkerState::Observer {
+class ServiceWorkerTaskQueue
+    : public KeyedService,
+      public LazyContextTaskQueue,
+      public content::ServiceWorkerContextObserverSynchronous,
+      public ServiceWorkerState::Observer {
  public:
   explicit ServiceWorkerTaskQueue(content::BrowserContext* browser_context);
 
@@ -225,17 +226,14 @@ class ServiceWorkerTaskQueue : public KeyedService,
                          content::StatusCodeResponse status) override;
   void OnWorkerStop(int64_t version_id, const GURL& scope) override;
 
-  // TODO(crbug.com/334940006): Convert these completely to
-  // ServiceWorkerContextObserverSynchronous.
-  // content::ServiceWorkerContextObserver:
-  void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope,
-                            const content::ServiceWorkerRegistrationInformation&
-                                service_worker_info) override;
-  void OnReportConsoleMessage(int64_t version_id,
-                              const GURL& scope,
-                              const content::ConsoleMessage& message) override;
-  void OnDestruct(content::ServiceWorkerContext* context) override;
+  // content::ServiceWorkerContextObserverSynchronous:
+  void OnRegistrationStoredSync(int64_t registration_id,
+                                const GURL& scope) override;
+  void OnReportConsoleMessageSync(
+      int64_t version_id,
+      const GURL& scope,
+      const content::ConsoleMessage& message) override;
+  void OnDestructSync(content::ServiceWorkerContext* context) override;
 
   // Worker unregistrations can fail in expected and unexpected ways, this
   // determines if the unregistration can be accepted as successful from the
@@ -495,8 +493,8 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // These are registrations that succeeded in the first step (triggering
   // `DidRegisterServiceWorker`), but have not yet been stored.
   // They are cleared out (and the registration state is stored) in response to
-  // `OnRegistrationStored`. The key is the extension's ID and the value is the
-  // activation token expected for that registration.
+  // `OnRegistrationStoredSync`. The key is the extension's ID and the value is
+  // the activation token expected for that registration.
   std::map<ExtensionId, base::UnguessableToken> pending_storage_registrations_;
 
   // TODO(crbug.com/40276609): Do we need to track this by `SequencedContextId`

@@ -16,8 +16,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/service_worker_external_request_timeout_type.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/browser/service_worker_running_info.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
@@ -47,6 +49,7 @@ class GURL;
 
 namespace content {
 
+class ServiceWorkerContext;
 class ServiceWorkerContextObserver;
 
 struct ServiceWorkerRunningInfo;
@@ -93,20 +96,32 @@ using ServiceWorkerScriptExecutionCallback =
 // synchronously with changes in //content.
 class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
  public:
+  // Called after a service worker registration is persisted to storage with
+  // registration ID `registration_id` and scope `scope`.
+  virtual void OnRegistrationStoredSync(int64_t registration_id,
+                                        const GURL& scope) {}
+
   // Called after the message to start the service worker has been sent.
-  virtual void OnStartWorkerMessageSent(int64_t version_id, const GURL& scope) {
-  }
+  virtual void OnStartWorkerMessageSentSync(int64_t version_id,
+                                            const GURL& scope) {}
+
+  // Called when a console message is reported for the service worker with id
+  // |version_id|.
+  virtual void OnReportConsoleMessageSync(int64_t version_id,
+                                          const GURL& scope,
+                                          const ConsoleMessage& message) {}
+
   // Called when the service worker with id `version_id` will be stopped.
-  virtual void OnStopping(int64_t version_id, const GURL& scope) {}
+  virtual void OnStoppingSync(int64_t version_id, const GURL& scope) {}
   // Called when the service worker with id `version_id` has stopped running.
-  virtual void OnStopped(int64_t version_id, const GURL& scope) {}
+  virtual void OnStoppedSync(int64_t version_id, const GURL& scope) {}
+
+  // Called when `context` is destroyed. Observers must no longer use |context|.
+  virtual void OnDestructSync(ServiceWorkerContext* context) {}
+
   // Called before the URLLoaderFactory used to fetch the worker script is
   // constructed.
-  virtual void OnWillCreateURLLoaderFactory(const GURL& scope) {}
-
-  // TODO(crbug.com/334940006): Add the rest of the extensions methods
-  // (OnRegistrationStored(), OnReportConsoleMessage(), OnDestruct()) and adapt
-  // `ServiceWorkerTaskQueue` to use this observer exclusively.
+  virtual void OnWillCreateURLLoaderFactorySync(const GURL& scope) {}
 };
 
 // Represents the per-StoragePartition service worker data.

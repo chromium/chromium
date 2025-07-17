@@ -142,7 +142,7 @@ void TestServiceWorkerContextObserver::OnRegistrationStored(
   }
 }
 
-void TestServiceWorkerContextObserver::OnStartWorkerMessageSent(
+void TestServiceWorkerContextObserver::OnStartWorkerMessageSentSync(
     int64_t version_id,
     const GURL& scope) {
   if (extension_scope_ && extension_scope_ != scope) {

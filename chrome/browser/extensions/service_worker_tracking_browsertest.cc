@@ -297,7 +297,7 @@ class ServiceWorkerIdTrackingBrowserTest
 // ServiceWorkerVersionTest.StallInStopping_DetachThenStart to more closely
 // simulate a worker thread delayed in stopping. This will also allow testing
 // when the delay causes ProcessManager::RenderProcessExited() to be called
-// before ServiceWorkerState::OnStopped().
+// before ServiceWorkerState::OnStoppedSync().
 
 // Tests that when:
 //   1) something, other than a worker, keeps the extension renderer process
@@ -408,8 +408,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Run the browser stop notification after the renderer stop notification, and
   // it should do nothing.
-  worker_state->OnStopped(previous_service_worker_id->version_id,
-                          sw_info.scope);
+  worker_state->OnStoppedSync(previous_service_worker_id->version_id,
+                              sw_info.scope);
 
   // Confirm after the browser stop notification that we are still no longer
   // tracking the worker.
@@ -612,7 +612,8 @@ IN_PROC_BROWSER_TEST_P(
             ServiceWorkerState::RendererState::kNotActive);
 
   // Simulate browser stop notification after the render stop notification.
-  worker_state->OnStopped(stopped_service_worker_id->version_id, sw_info.scope);
+  worker_state->OnStoppedSync(stopped_service_worker_id->version_id,
+                              sw_info.scope);
 
   // Confirm the worker state still exists, and browser and renderer state
   // remain not ready.
