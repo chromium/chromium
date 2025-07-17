@@ -421,13 +421,31 @@ void SupervisedUserService::Shutdown() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+namespace {
+bool IsEligibleForContentFilters(const PrefService& user_prefs) {
+  bool subject_to_parental_controls = IsSubjectToParentalControls(user_prefs);
+  CHECK(!subject_to_parental_controls, base::NotFatalUntil::M150)
+      << "Content filters cannot be manipulated for Family Link users.";
+  return !subject_to_parental_controls;
+}
+}  // namespace
+
 void SupervisedUserService::EnableSearchContentFilters() {
+  if (!IsEligibleForContentFilters(user_prefs_.get())) {
+    return;
+  }
+
   ::supervised_user::EnableSearchContentFilters(user_prefs_.get());
   ::supervised_user::DisableIncognitoMode(user_prefs_.get());
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
+
 void SupervisedUserService::DisableSearchContentFilters() {
+  if (!IsEligibleForContentFilters(user_prefs_.get())) {
+    return;
+  }
+
   ::supervised_user::DisableSearchContentFilters(user_prefs_.get());
   if (!IsSupervisedLocally()) {
     // Restore incognito mode iff all of the local parental controls are
@@ -437,13 +455,23 @@ void SupervisedUserService::DisableSearchContentFilters() {
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
+
 void SupervisedUserService::EnableBrowserContentFilters() {
+  if (!IsEligibleForContentFilters(user_prefs_.get())) {
+    return;
+  }
+
   ::supervised_user::EnableBrowserContentFilters(user_prefs_.get());
   ::supervised_user::DisableIncognitoMode(user_prefs_.get());
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
 }
+
 void SupervisedUserService::DisableBrowserContentFilters() {
+  if (!IsEligibleForContentFilters(user_prefs_.get())) {
+    return;
+  }
+
   ::supervised_user::DisableBrowserContentFilters(user_prefs_.get());
   if (!IsSupervisedLocally()) {
     // Restore incognito mode iff all of the local parental controls are

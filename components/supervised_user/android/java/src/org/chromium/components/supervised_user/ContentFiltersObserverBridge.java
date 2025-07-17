@@ -17,7 +17,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * A {@link ContentFiltersObserverBridge} creates Android observer for the content filters settings
@@ -25,10 +24,9 @@ import org.chromium.build.annotations.Nullable;
  * storage, triggered either by asynchronous updates or by application state changes.
  *
  * <p>The native code creates and manages lifecycle of an instance of this class and is notified
- * when: 1. the value of settings is read synchronously for the first time, 2. when the secure
- * settings storage asynchronously delivers update and the value of the setting is different from
- * the previous value, or 3. when the application state changes and the value of the setting is
- * different from the previous value.
+ * when: 1. when the secure settings storage asynchronously delivers update and the value of the
+ * setting is different from the previous value, or 2. when the application state changes and the
+ * value of the setting is different from the previous value.
  */
 @NullMarked
 @JNINamespace("supervised_user")
@@ -42,15 +40,17 @@ class ContentFiltersObserverBridge {
     // Triggered when application state changes, to read the secure settings synchronously.
     private final ApplicationStatus.ApplicationStateListener mStateListener;
     // Caches the logical value of the setting to avoid calling the native code with the same value.
-    private @Nullable Boolean mIsEnabled;
+    private boolean mIsEnabled;
 
     /**
      * @param nativeContentFiltersObserverBridge The native bridge.
      * @param settingName The name of the setting to observe.
+     * @param initialValue Supplied from the owner of this instance, to ensure that both banks of
+     *     the bridge are in sync.
      */
     @CalledByNative
     private ContentFiltersObserverBridge(
-            long nativeContentFiltersObserverBridge, String settingName) {
+            long nativeContentFiltersObserverBridge, String settingName, boolean initialValue) {
         mObserver =
                 new ContentObserver(
                         new Handler(ContextUtils.getApplicationContext().getMainLooper())) {
@@ -70,6 +70,7 @@ class ContentFiltersObserverBridge {
                     }
                 };
 
+        mIsEnabled = initialValue;
         ContextUtils.getApplicationContext()
                 .getContentResolver()
                 .registerContentObserver(
@@ -89,13 +90,12 @@ class ContentFiltersObserverBridge {
             long nativeContentFiltersObserverBridge, String settingName) {
         boolean newEnabled = getValue(settingName);
 
-        if (mIsEnabled != null && mIsEnabled == newEnabled) {
+        if (mIsEnabled == newEnabled) {
             Log.i(TAG, "setting=%s discarding %s", settingName, newEnabled);
             return;
         }
 
         mIsEnabled = newEnabled;
-
         ContentFiltersObserverBridgeJni.get()
                 .onChange(nativeContentFiltersObserverBridge, mIsEnabled);
         Log.i(TAG, "setting=%s updating with %s", settingName, newEnabled);
