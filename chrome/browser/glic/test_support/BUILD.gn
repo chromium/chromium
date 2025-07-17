@@ -31,4 +31,8 @@ source_set("test_support") {
     "//ui/events:test_support",
   ]
   public_deps = [ "//chrome/test:test_support" ]
+
+  # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
