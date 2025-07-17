@@ -41,8 +41,8 @@ scoped_refptr<SyncHandleRegistry> SyncHandleRegistry::current() {
   static base::SequenceLocalStorageSlot<scoped_refptr<SyncHandleRegistry>>
       g_current_sync_handle_watcher;
 
-  // SyncMessageFilter can be used on threads without sequence-local storage
-  // being available. Those receive a unique, standalone SyncHandleRegistry.
+  // Threads without sequence-local storage receive a unique, standalone
+  // SyncHandleRegistry.
   if (!base::SequencedTaskRunner::HasCurrentDefault()) {
     return base::MakeRefCounted<SyncHandleRegistry>(
         base::PassKey<SyncHandleRegistry>());

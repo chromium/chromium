@@ -92,10 +92,6 @@ include_rules = [
   # This is the an exception.
   "+device/udev_linux",  # For udev utility and wrapper library.
 
-  # Explicitly disallow using SyncMessageFilter to prevent browser from
-  # sending synchronous IPC messages on non-UI threads.
-  "-ipc/ipc_sync_message_filter.h",
-
   # Other libraries.
   "+third_party/iaccessible2",
   "+third_party/isimpledom",

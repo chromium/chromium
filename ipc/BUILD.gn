@@ -55,8 +55,6 @@ component("ipc") {
       "ipc_sender.h",
       "ipc_sync_channel.cc",
       "ipc_sync_channel.h",
-      "ipc_sync_message_filter.cc",
-      "ipc_sync_message_filter.h",
       "message_filter.cc",
       "message_filter.h",
       "message_filter_router.cc",

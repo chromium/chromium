@@ -57,7 +57,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sync_channel.h"
-#include "ipc/ipc_sync_message_filter.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"

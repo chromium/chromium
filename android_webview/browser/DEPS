@@ -73,10 +73,6 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
 
-  # Explicitly disallow using SyncMessageFilter to prevent browser from
-  # sending synchronous IPC messages on non-UI threads.
-  "-ipc/ipc_sync_message_filter.h",
-
   "+media/base/android",
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/buildflags.h",
