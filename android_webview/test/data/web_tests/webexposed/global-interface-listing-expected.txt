@@ -6448,7 +6448,6 @@ interface Navigator
     getter geolocation
     getter gpu
     getter hardwareConcurrency
-    getter identity
     getter ink
     getter keyboard
     getter language

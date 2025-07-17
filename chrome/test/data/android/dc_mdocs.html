@@ -5,7 +5,7 @@
 </head>
 <script>
   async function request(fields) {
-    const mdoc = await navigator.identity.get({
+    const mdoc = await navigator.credentials.get({
       digital: {
         providers: [{
           protocol: "openid4vp",

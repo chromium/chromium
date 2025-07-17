@@ -6695,7 +6695,6 @@ interface Navigator
     getter gpu
     getter hardwareConcurrency
     getter hid
-    getter identity
     getter ink
     getter keyboard
     getter language

@@ -36,8 +36,6 @@ blink_modules_sources("credentialmanagement") {
     "identity_credential.h",
     "identity_credential_error.cc",
     "identity_credential_error.h",
-    "identity_credentials_container.cc",
-    "identity_credentials_container.h",
     "identity_provider.cc",
     "identity_provider.h",
     "json.cc",

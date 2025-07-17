@@ -1,5 +1,5 @@
-// Builds valid digital identity request for navigator.identity.get() API.
-export function buildValidNavigatorIdentityRequest() {
+// Builds valid digital identity request for navigator.credentials.get() API.
+export function buildValidNavigatorCredentialsRequest() {
   return {
       digital: {
         providers: [{
@@ -18,9 +18,9 @@ export function buildValidNavigatorIdentityRequest() {
   };
 }
 
-// Builds a valid navigator.identity.get() request where
+// Builds a valid navigator.credentials.get() request where
 // IdentityRequestProvider#request is an object.
-export function buildValidNavigatorIdentityRequestWithRequestObject() {
+export function buildValidNavigatorCredentialsRequestWithRequestObject() {
   return {
       digital: {
         providers: [{
@@ -42,7 +42,7 @@ export function buildValidNavigatorIdentityRequestWithRequestObject() {
 // Requests digital identity with user activation.
 export function requestIdentityWithActivation(test_driver, request) {
   return test_driver.bless("request identity with activation", async function() {
-    return await navigator.identity.get(request);
+    return await navigator.credentials.get(request);
   });
 }
 
@@ -58,9 +58,9 @@ export function requestIdentityWithActivation(test_driver, request) {
  */
 export async function check_digital_credential_api_availability() {
   try {
-    const request = buildValidNavigatorIdentityRequest();
+    const request = buildValidNavigatorCredentialsRequest();
     request.digital.providers = [];
-    await navigator.identity.get(request);
+    await navigator.credentials.get(request);
     return false;
   } catch (error) {
     // If digital credentials API is disabled, an error due to the API being
