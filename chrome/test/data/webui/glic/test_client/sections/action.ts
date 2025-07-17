@@ -5,6 +5,7 @@
 import {client, logMessage, readStream} from '../client.js';
 import {$} from '../page_element_types.js';
 
+
 $.executeAction.addEventListener('click', async () => {
   logMessage('Starting Execute Action');
 
@@ -43,5 +44,33 @@ $.executeAction.addEventListener('click', async () => {
         `Returned data: ${JSON.stringify(pageContent, null, 2)}`;
   } catch (error) {
     $.actionStatus.innerText = `Error in Execute Action: ${error}`;
+  }
+});
+
+$.createActorTask.addEventListener('click', async () => {
+  logMessage('Starting Create Actor Task');
+  try {
+    const taskId = await client!.browser!.createTask!();
+    $.actorTaskId.value = taskId.toString();
+    $.actionStatus.innerText = `Created task with ID: ${taskId}`;
+  } catch (error) {
+    $.actionStatus.innerText = `Error in Create Actor Task: ${error}`;
+  }
+});
+
+$.stopActorTask.addEventListener('click', () => {
+  logMessage('Starting Stop Actor Task');
+  const taskIdStr = $.actorTaskId.value;
+  if (taskIdStr) {
+    const taskId = parseInt(taskIdStr, 10);
+    if (isNaN(taskId)) {
+      $.actionStatus.innerText = `Invalid task ID: ${taskIdStr}`;
+      return;
+    }
+    client!.browser!.stopActorTask!(taskId);
+    $.actionStatus.innerText = `Stopped task with ID: ${taskId}`;
+  } else {
+    client!.browser!.stopActorTask!();
+    $.actionStatus.innerText = 'Stopped most recent task.';
   }
 });

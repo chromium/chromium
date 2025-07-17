@@ -487,10 +487,16 @@ found in the LICENSE file.
 <div class="section">
   <h1>Test actInFocusedTab()</h1>
   <div>
-    <button id="executeAction">Execute Action</button>
+    <label for="actorTaskId">Task ID</label>
+    <input id="actorTaskId" type="number" style="width: 8ch;" />
+    <button id="createActorTask">New</button>
+    <button id="stopActorTask">Stop</button>
+  </div>
+  <div>
     <label> <input type="text" id="actionProtoEncodedText" />
       Action Proto, base64-encoded from http://shortn/_Iyf96Pob5S
     </label>
+    <button id="executeAction">Execute Action</button>
   </div>
   <div id="actionUpdatedScreenshot">
     <img id="actionUpdatedScreenshotImg" />

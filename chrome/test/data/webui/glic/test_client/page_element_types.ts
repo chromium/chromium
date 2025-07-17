@@ -108,6 +108,9 @@ export interface PageElementTypes {
   getOsMicrophonePermissionButton: HTMLButtonElement;
   osMicrophonePermissionResult: HTMLSpanElement;
   osGlicHotkey: HTMLInputElement;
+  createActorTask: HTMLButtonElement;
+  stopActorTask: HTMLButtonElement;
+  actorTaskId: HTMLInputElement;
   executeAction: HTMLButtonElement;
   actionProtoEncodedText: HTMLInputElement;
   actionStatus: HTMLSpanElement;
