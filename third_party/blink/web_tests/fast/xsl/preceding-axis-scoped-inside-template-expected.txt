@@ -1,0 +1,3 @@
+This test checks that using the XPath preceding:: axis when instantiating a template (the content of a variable-binding element) does not match nodes outside the template.
+
+2
