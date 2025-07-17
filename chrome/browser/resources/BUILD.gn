@@ -32,6 +32,7 @@ group("resources") {
       ":dev_ui_paks",
       "about_sys:resources",
       "access_code_cast:resources",
+      "actor_overlay:resources",
       "app_service_internals:resources",
       "autofill_ml_internals:resources",
       "bookmarks:resources",

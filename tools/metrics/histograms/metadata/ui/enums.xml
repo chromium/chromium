@@ -780,6 +780,7 @@ chromium-metrics-reviews@google.com.
   <int value="187846858" label="chrome://lens-overlay/"/>
   <int value="232821835" label="chrome://optimization-guide-internals/"/>
   <int value="233807382" label="chrome://privacy-sandbox-base-dialog/"/>
+  <int value="248924104" label="chrome://actor-overlay/"/>
   <int value="253258497" label="chrome://components/"/>
   <int value="260253931" label="chrome://devices/"/>
   <int value="275260142" label="chrome://eoc-internals/"/>

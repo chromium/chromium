@@ -6,6 +6,8 @@ assert(!is_android)
 
 source_set("ui") {
   sources = [
+    "actor_overlay_ui.cc",
+    "actor_overlay_ui.h",
     "actor_ui_state_manager.cc",
     "actor_ui_state_manager.h",
     "actor_ui_state_manager_interface.h",
@@ -20,8 +22,13 @@ source_set("ui") {
     "//base",
     "//chrome/browser/actor:actor",
     "//chrome/browser/actor:variant_visitor",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/actor_overlay:resources",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
     "//content/public/browser",
+    "//ui/webui",
   ]
 }
 
@@ -136,6 +143,24 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/tabs:public",
     "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "actor_overlay_browsertest.cc" ]
+
+  deps = [
+    "//chrome/browser/ui:ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
