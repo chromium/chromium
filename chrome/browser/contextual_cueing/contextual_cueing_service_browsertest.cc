@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
         1);
   }
 
-  // Simulate fragment navigation. Should just return from cache.
+  // Simulate fragment navigation. Should re-request.
   {
     base::HistogramTester histogram_tester;
 
@@ -239,12 +239,15 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
     EXPECT_EQ(observer.last_navigation_url(), new_url);
     ASSERT_TRUE(future.Wait());
 
-    histogram_tester.ExpectTotalCount(
-        "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 0);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualCueing.ZeroStateSuggestions.ContentExtractionSameDocDelay",
+        true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
         "ZeroStateSuggestions",
-        0);
+        1);
   }
 
   // Simulate same-doc navigation in same web contents.

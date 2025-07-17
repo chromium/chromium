@@ -128,12 +128,6 @@ void ContextualCueingHelper::DidFinishNavigation(
     return;
   }
 
-  // Ignore fragment changes.
-  if (navigation_handle->GetPreviousPrimaryMainFrameURL().GetWithoutRef() ==
-      navigation_handle->GetURL().GetWithoutRef()) {
-    return;
-  }
-
   // Reset FCP state.
   has_first_contentful_paint_ = false;
 
@@ -143,6 +137,12 @@ void ContextualCueingHelper::DidFinishNavigation(
           web_contents()->GetPrimaryPage())) {
     ZeroStateSuggestionsPageData::DeleteForPage(
         web_contents()->GetPrimaryPage());
+  }
+
+  // Ignore fragment changes.
+  if (navigation_handle->GetPreviousPrimaryMainFrameURL().GetWithoutRef() ==
+      navigation_handle->GetURL().GetWithoutRef()) {
+    return;
   }
 
   if (!base::FeatureList::IsEnabled(kContextualCueing)) {
