@@ -164,6 +164,10 @@ source_set("tests") {
     deps += [ ":loader_lock_sampler_test_strings" ]
     data_deps += [ ":loader_lock_sampler_test_dll" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_android) {

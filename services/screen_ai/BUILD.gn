@@ -69,6 +69,10 @@ if (is_chromeos) {
       "//skia",
       "//ui/gfx/codec",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -92,6 +96,10 @@ if (is_linux || is_chromeos) {
     public_deps = [ "//sandbox/policy" ]
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
