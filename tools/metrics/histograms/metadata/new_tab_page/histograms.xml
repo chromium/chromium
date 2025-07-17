@@ -2252,7 +2252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.WallpaperSearch.SessionSetTheme"
-    enum="NtpWallpaperSearchThemeType" expires_after="2025-08-22">
+    enum="NtpWallpaperSearchThemeType" expires_after="2026-08-22">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
