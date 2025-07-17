@@ -53,6 +53,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
                 : SkColorSetRGB(0xE9, 0xEB, 0xF0)};
   mixer[kColorNewTabPageComposeboxSubmitButton] = {
       SkColorSetRGB(0x0B, 0x50, 0xD0)};
+  mixer[kColorNewTabPageComposeboxUploadButton] = {
+      dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
+                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
 
   mixer[kColorNewTabPageControlBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
