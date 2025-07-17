@@ -196,7 +196,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(
       color_utils::IsDark(most_visited->background_color);
   most_visited->is_dark = !color_utils::IsDark(text_color);
   theme->text_color = text_color;
-  theme->is_dark = !color_utils::IsDark(text_color);
+  theme->is_dark =
+      !color_utils::IsDark(color_provider.GetColor(kColorNewTabPageText));
   auto background_image = new_tab_page::mojom::BackgroundImage::New();
   if (theme_has_custom_image) {
     if (theme_service->UsingExtensionTheme()) {
