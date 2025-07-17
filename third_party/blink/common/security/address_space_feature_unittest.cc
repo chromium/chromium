@@ -64,7 +64,7 @@ std::ostream& operator<<(std::ostream& out, FetchType type) {
 constexpr AddressSpace kAllAddressSpaces[] = {
     AddressSpace::kUnknown,
     AddressSpace::kPublic,
-    AddressSpace::kPrivate,
+    AddressSpace::kLocal,
     AddressSpace::kLoopback,
 };
 
@@ -131,12 +131,12 @@ struct FeatureMapping {
 constexpr FeatureMapping kFeatureMappings[] = {
     {
         {FetchType::kSubresource, AddressSpace::kUnknown, false,
-         AddressSpace::kPrivate},
+         AddressSpace::kLocal},
         Feature::kAddressSpaceUnknownNonSecureContextEmbeddedLocalV2,
     },
     {
         {FetchType::kSubresource, AddressSpace::kUnknown, true,
-         AddressSpace::kPrivate},
+         AddressSpace::kLocal},
         Feature::kAddressSpaceUnknownSecureContextEmbeddedLocalV2,
     },
     {
@@ -151,12 +151,12 @@ constexpr FeatureMapping kFeatureMappings[] = {
     },
     {
         {FetchType::kSubresource, AddressSpace::kPublic, false,
-         AddressSpace::kPrivate},
+         AddressSpace::kLocal},
         Feature::kAddressSpacePublicNonSecureContextEmbeddedLocalV2,
     },
     {
         {FetchType::kSubresource, AddressSpace::kPublic, true,
-         AddressSpace::kPrivate},
+         AddressSpace::kLocal},
         Feature::kAddressSpacePublicSecureContextEmbeddedLocalV2,
     },
     {
@@ -170,23 +170,23 @@ constexpr FeatureMapping kFeatureMappings[] = {
         Feature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
     },
     {
-        {FetchType::kSubresource, AddressSpace::kPrivate, false,
+        {FetchType::kSubresource, AddressSpace::kLocal, false,
          AddressSpace::kLoopback},
         Feature::kAddressSpaceLocalNonSecureContextEmbeddedLoopbackV2,
     },
     {
-        {FetchType::kSubresource, AddressSpace::kPrivate, true,
+        {FetchType::kSubresource, AddressSpace::kLocal, true,
          AddressSpace::kLoopback},
         Feature::kAddressSpaceLocalSecureContextEmbeddedLoopbackV2,
     },
     {
         {FetchType::kNavigation, AddressSpace::kUnknown, false,
-         AddressSpace::kPrivate},
+         AddressSpace::kLocal},
         Feature::kAddressSpaceUnknownNonSecureContextNavigatedToLocalV2,
     },
     {
         {FetchType::kNavigation, AddressSpace::kUnknown, true,
-         AddressSpace::kPrivate},
+         AddressSpace::kLocal},
         Feature::kAddressSpaceUnknownSecureContextNavigatedToLocalV2,
     },
     {
@@ -201,12 +201,12 @@ constexpr FeatureMapping kFeatureMappings[] = {
     },
     {
         {FetchType::kNavigation, AddressSpace::kPublic, false,
-         AddressSpace::kPrivate},
+         AddressSpace::kLocal},
         Feature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
     },
     {
         {FetchType::kNavigation, AddressSpace::kPublic, true,
-         AddressSpace::kPrivate},
+         AddressSpace::kLocal},
         Feature::kAddressSpacePublicSecureContextNavigatedToLocalV2,
     },
     {
@@ -220,12 +220,12 @@ constexpr FeatureMapping kFeatureMappings[] = {
         Feature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
     },
     {
-        {FetchType::kNavigation, AddressSpace::kPrivate, false,
+        {FetchType::kNavigation, AddressSpace::kLocal, false,
          AddressSpace::kLoopback},
         Feature::kAddressSpaceLocalNonSecureContextNavigatedToLoopbackV2,
     },
     {
-        {FetchType::kNavigation, AddressSpace::kPrivate, true,
+        {FetchType::kNavigation, AddressSpace::kLocal, true,
          AddressSpace::kLoopback},
         Feature::kAddressSpaceLocalSecureContextNavigatedToLoopbackV2,
     },

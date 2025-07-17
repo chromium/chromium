@@ -272,11 +272,11 @@ TEST_F(PreflightCacheTest, PrivateNetworkAccess) {
   EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
                                         mojom::IPAddressSpace::kUnknown));
 
-  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kPrivate);
+  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kLocal);
   AppendEntry(origin, url, nik, mojom::IPAddressSpace::kLoopback);
   EXPECT_EQ(3u, CountEntries());
   EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
-                                        mojom::IPAddressSpace::kPrivate));
+                                        mojom::IPAddressSpace::kLocal));
   EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
                                         mojom::IPAddressSpace::kLoopback));
 

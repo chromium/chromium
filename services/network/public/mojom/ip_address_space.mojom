@@ -11,7 +11,7 @@ module network.mojom;
 enum IPAddressSpace {
   kLoopback, // contains the loopback device only.
 
-  kPrivate,  // contains addresses that have meaning only within the current
+  kLocal,    // contains addresses that have meaning only within the current
              // network. In other words, addresses whose target differs based
              // on network position.
 

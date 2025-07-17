@@ -294,12 +294,12 @@ class DocumentLoaderTest : public testing::Test,
         url_test_helpers::ToKURL("http://192.168.1.1/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
-        network::mojom::IPAddressSpace::kPrivate);
+        network::mojom::IPAddressSpace::kLocal);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("https://192.168.1.1/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
         URLLoaderMockFactory::GetSingletonInstance(),
-        network::mojom::IPAddressSpace::kPrivate);
+        network::mojom::IPAddressSpace::kLocal);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("http://somethinglocal/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
@@ -846,8 +846,8 @@ TEST_P(DocumentLoaderTest, PublicNonSecureNotCounted) {
       WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
-TEST_P(DocumentLoaderTest, PrivateSecureNotCounted) {
-  // Checking to make sure secure pages served in the private address space
+TEST_P(DocumentLoaderTest, LocalSecureNotCounted) {
+  // Checking to make sure secure pages served in the local address space
   // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("https://192.168.1.1/foo.html");
@@ -857,8 +857,8 @@ TEST_P(DocumentLoaderTest, PrivateSecureNotCounted) {
       WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
-TEST_P(DocumentLoaderTest, PrivateNonSecureIsCounted) {
-  // Checking to make sure non-secure pages served in the private address space
+TEST_P(DocumentLoaderTest, LocalNonSecureIsCounted) {
+  // Checking to make sure non-secure pages served in the local address space
   // are counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("http://192.168.1.1/foo.html");
@@ -868,8 +868,8 @@ TEST_P(DocumentLoaderTest, PrivateNonSecureIsCounted) {
       WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
-TEST_P(DocumentLoaderTest, LocalNonSecureIsCounted) {
-  // Checking to make sure non-secure pages served in the local address space
+TEST_P(DocumentLoaderTest, LoopbackNonSecureIsCounted) {
+  // Checking to make sure non-secure pages served in the loopback address space
   // are counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
   WebViewImpl* web_view_impl =
       web_view_helper_.InitializeAndLoad("http://somethinglocal/foo.html");
@@ -879,8 +879,8 @@ TEST_P(DocumentLoaderTest, LocalNonSecureIsCounted) {
       WebFeature::kMainFrameNonSecurePrivateAddressSpace));
 }
 
-TEST_F(DocumentLoaderSimTest, PrivateNonSecureChildFrameNotCounted) {
-  // Checking to make sure non-secure iframes served in the private address
+TEST_F(DocumentLoaderSimTest, LocalNonSecureChildFrameNotCounted) {
+  // Checking to make sure non-secure iframes served in the local address
   // space are not counted for
   // WebFeature::kMainFrameNonSecurePrivateAddressSpace
   SimRequest main_resource("http://example.com", "text/html");

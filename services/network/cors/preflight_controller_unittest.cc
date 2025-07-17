@@ -280,7 +280,7 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
                       PreflightType::kPrivateNetworkAccess}}) {
     request.target_ip_address_space =
         preflight_mode.Has(PreflightType::kPrivateNetworkAccess)
-            ? network::mojom::IPAddressSpace::kPrivate
+            ? network::mojom::IPAddressSpace::kLocal
             : network::mojom::IPAddressSpace::kUnknown;
     preflight_controller.PerformPreflightCheck(
         base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}),

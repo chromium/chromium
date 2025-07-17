@@ -334,7 +334,7 @@ TEST(MixedContentCheckerTest, LNABypassTest) {
   // forcing it to be a LNA request is not blocked
   EXPECT_FALSE(MixedContentChecker::ShouldBlockFetch(
       &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
-      network::mojom::blink::IPAddressSpace::kPrivate, http_favicon_url,
+      network::mojom::blink::IPAddressSpace::kLocal, http_favicon_url,
       ResourceRequest::RedirectStatus::kNoRedirect, http_favicon_url, String(),
       ReportingDisposition::kSuppressReporting, *notifier_remote));
 }
@@ -487,7 +487,7 @@ TEST(MixedContentCheckerTest,
 
 // Tests that requests are not autoupgraded if they are a priori known to be
 // local network request because the request's targetAddressSpace was set to
-// kPrivate.
+// kLocal.
 TEST(MixedContentCheckerTest,
      LocalNetworkAccessNotAutoupgradeMixedContentIfTargetAddressSpacePrivate) {
   base::test::ScopedFeatureList feature_list(
@@ -497,8 +497,7 @@ TEST(MixedContentCheckerTest,
   ResourceRequest request;
   request.SetUrl(KURL("http://example2.test/"));
   request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
-  request.SetTargetAddressSpace(
-      network::mojom::blink::IPAddressSpace::kPrivate);
+  request.SetTargetAddressSpace(network::mojom::blink::IPAddressSpace::kLocal);
   TestFetchClientSettingsObject* settings =
       MakeGarbageCollected<TestFetchClientSettingsObject>();
   settings->SetSecurityOrigin("https://example.test", "");

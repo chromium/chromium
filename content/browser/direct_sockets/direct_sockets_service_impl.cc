@@ -160,7 +160,7 @@ bool RequiresPrivateNetworkAccess(const net::AddressList& addresses) {
   return std::ranges::any_of(
       addresses.endpoints(), [](const net::IPEndPoint& ip_endpoint) {
         return network::IPAddressToIPAddressSpace(ip_endpoint.address()) ==
-               network::mojom::IPAddressSpace::kPrivate;
+               network::mojom::IPAddressSpace::kLocal;
       });
 }
 

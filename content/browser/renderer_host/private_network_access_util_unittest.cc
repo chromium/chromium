@@ -94,7 +94,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
           Policy::kWarn,
       },
       {
-          {kNonSecure, AddressSpace::kPrivate, RequestContext::kSubresource},
+          {kNonSecure, AddressSpace::kLocal, RequestContext::kSubresource},
           Policy::kWarn,
       },
       {
@@ -110,7 +110,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
           Policy::kAllow,
       },
       {
-          {kSecure, AddressSpace::kPrivate, RequestContext::kSubresource},
+          {kSecure, AddressSpace::kLocal, RequestContext::kSubresource},
           Policy::kAllow,
       },
       {
@@ -129,7 +129,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
           Policy::kWarn,
       },
       {
-          {kNonSecure, AddressSpace::kPrivate, RequestContext::kWorker},
+          {kNonSecure, AddressSpace::kLocal, RequestContext::kWorker},
           Policy::kWarn,
       },
       {
@@ -145,7 +145,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
           Policy::kAllow,
       },
       {
-          {kSecure, AddressSpace::kPrivate, RequestContext::kWorker},
+          {kSecure, AddressSpace::kLocal, RequestContext::kWorker},
           Policy::kAllow,
       },
       {
@@ -164,7 +164,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
           Policy::kAllow,
       },
       {
-          {kNonSecure, AddressSpace::kPrivate, RequestContext::kNavigation},
+          {kNonSecure, AddressSpace::kLocal, RequestContext::kNavigation},
           Policy::kAllow,
       },
       {
@@ -180,7 +180,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
           Policy::kAllow,
       },
       {
-          {kSecure, AddressSpace::kPrivate, RequestContext::kNavigation},
+          {kSecure, AddressSpace::kLocal, RequestContext::kNavigation},
           Policy::kAllow,
       },
       {

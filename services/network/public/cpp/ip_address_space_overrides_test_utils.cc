@@ -24,7 +24,7 @@ std::string_view IPAddressSpaceToStringPieceForOverride(
       return "unknown";
     case mojom::IPAddressSpace::kPublic:
       return "public";
-    case mojom::IPAddressSpace::kPrivate:
+    case mojom::IPAddressSpace::kLocal:
       return "local";
     case mojom::IPAddressSpace::kLoopback:
       return "loopback";

@@ -7711,7 +7711,7 @@ domain Network
   experimental type IPAddressSpace extends string
     enum
       Loopback
-      Private
+      Local
       Public
       Unknown
 

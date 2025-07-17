@@ -509,7 +509,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
         ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     PolicyContainerPolicies policies;
-    policies.ip_address_space = network::mojom::IPAddressSpace::kPrivate;
+    policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
     version_->SetPolicyContainerHost(
         base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
     registration_->SetActiveVersion(version_);
@@ -755,7 +755,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
         expected_info.was_fetched_via_service_worker;
     network::mojom::IPAddressSpace expected_client_address_space =
         expected_info.was_fetched_via_service_worker
-            ? network::mojom::IPAddressSpace::kPrivate
+            ? network::mojom::IPAddressSpace::kLocal
             : network::mojom::IPAddressSpace::kUnknown;
     if (expected_info.service_worker_router_info) {
       if (expected_info.service_worker_router_info->actual_source_type ==
@@ -1751,8 +1751,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingCache) {
   EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
   EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
   EXPECT_FALSE(info->load_timing.service_worker_cache_lookup_start.is_null());
-  EXPECT_EQ(info->client_address_space,
-            network::mojom::IPAddressSpace::kPrivate);
+  EXPECT_EQ(info->client_address_space, network::mojom::IPAddressSpace::kLocal);
   EXPECT_TRUE(info->was_fetched_via_service_worker);
   auto expected_info = CreateResponseInfoFromServiceWorker();
   expected_info->service_worker_response_source =
@@ -1957,8 +1956,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest,
   EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
   EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
   EXPECT_FALSE(info->load_timing.service_worker_cache_lookup_start.is_null());
-  EXPECT_EQ(info->client_address_space,
-            network::mojom::IPAddressSpace::kPrivate);
+  EXPECT_EQ(info->client_address_space, network::mojom::IPAddressSpace::kLocal);
   EXPECT_TRUE(info->was_fetched_via_service_worker);
   auto expected_info = CreateResponseInfoFromServiceWorker();
   expected_info->service_worker_response_source =
@@ -2017,8 +2015,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest,
   EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
   EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
   EXPECT_FALSE(info->load_timing.service_worker_cache_lookup_start.is_null());
-  EXPECT_EQ(info->client_address_space,
-            network::mojom::IPAddressSpace::kPrivate);
+  EXPECT_EQ(info->client_address_space, network::mojom::IPAddressSpace::kLocal);
   EXPECT_TRUE(info->was_fetched_via_service_worker);
   auto expected_info = CreateResponseInfoFromServiceWorker();
   expected_info->service_worker_response_source =

@@ -65,10 +65,10 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   mojom::IPAddressSpace resource_address_space =
       TransportInfoToIPAddressSpace(transport_info);
 
-  // If we are connecting to a private IP endpoint over HTTP without a target IP
+  // If we are connecting to a local IP endpoint over HTTP without a target IP
   // address space, record whether we could have successfully inferred the
   // target IP address space from the request URL.
-  if (resource_address_space == mojom::IPAddressSpace::kPrivate &&
+  if (resource_address_space == mojom::IPAddressSpace::kLocal &&
       is_request_url_scheme_http_ &&
       target_address_space_ == mojom::IPAddressSpace::kUnknown) {
     base::UmaHistogramBoolean(
@@ -264,7 +264,7 @@ bool PrivateNetworkAccessChecker::NeedPermission(
              network::features::kPrivateNetworkAccessPermissionPrompt) &&
          is_web_secure_context && !network::IsUrlPotentiallyTrustworthy(url) &&
          (target_address_space == mojom::IPAddressSpace::kLoopback ||
-          target_address_space == mojom::IPAddressSpace::kPrivate);
+          target_address_space == mojom::IPAddressSpace::kLocal);
 }
 
 }  // namespace network

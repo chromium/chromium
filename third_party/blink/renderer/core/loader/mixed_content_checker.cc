@@ -589,13 +589,6 @@ bool MixedContentChecker::ShouldBlockFetch(
   // (a) the request is actually an LNA request, and (b) the user has given
   // permission for the LNA request to go through.
   //
-  // Because we're still using a mix of PNA and LNA terminology:
-  //
-  //   * local = IPAddressSpace.kPrivate
-  //   * loopback = IPAddressSpace.kLoopback
-  //
-  // This will hopefully be renamed when we can remove PNA 1.0 code.
-  //
   // Reference:
   // https://github.com/explainers-by-googlers/local-network-access
   //
@@ -617,8 +610,7 @@ bool MixedContentChecker::ShouldBlockFetch(
     //
     // TODO(crbug.com/395895368): check the IP address space for initiator, only
     // skip when the initiator is more public.
-    if (target_address_space ==
-            network::mojom::blink::IPAddressSpace::kPrivate ||
+    if (target_address_space == network::mojom::blink::IPAddressSpace::kLocal ||
         target_address_space ==
             network::mojom::blink::IPAddressSpace::kLoopback ||
         network::ParsePrivateIpFromUrl(GURL(url)) ||
@@ -643,7 +635,7 @@ bool MixedContentChecker::ShouldBlockFetch(
              ->GetResponse()
              .WasFetchedViaServiceWorker() &&
         (target_address_space ==
-             network::mojom::blink::IPAddressSpace::kPrivate ||
+             network::mojom::blink::IPAddressSpace::kLocal ||
          target_address_space ==
              network::mojom::blink::IPAddressSpace::kLoopback)) {
       UseCounter::Count(frame->GetDocument(),
@@ -943,7 +935,7 @@ bool MixedContentChecker::ShouldAutoupgrade(
   // A request is a possible LNA request if one of the following is true:
   //
   // (1) The `targetAddressSpace` fetch option was set.
-  //     `target_address_space` here is private/loopback only when resource
+  //     `target_address_space` here is local/loopback only when resource
   //     request has explicitly set `targetAddressSpace` fetch option.
   // (2) The host is a private IP address literal (already exempted above)
   // (3) The hostname is a .local domain (per RFC 6762).
@@ -962,7 +954,7 @@ bool MixedContentChecker::ShouldAutoupgrade(
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks)) {
     if (resource_request.GetTargetAddressSpace() ==
-            network::mojom::blink::IPAddressSpace::kPrivate ||
+            network::mojom::blink::IPAddressSpace::kLocal ||
         resource_request.GetTargetAddressSpace() ==
             network::mojom::blink::IPAddressSpace::kLoopback ||
         network::IsRFC6762LocalDomain(GURL(request_url))) {

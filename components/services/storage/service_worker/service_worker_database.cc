@@ -2506,8 +2506,8 @@ network::mojom::IPAddressSpace ConvertIPAddressSpaceFromProtocolBufferToMojom(
   switch (value) {
     case ServiceWorkerRegistrationData::LOOPBACK:
       return network::mojom::IPAddressSpace::kLoopback;
-    case ServiceWorkerRegistrationData::PRIVATE:
-      return network::mojom::IPAddressSpace::kPrivate;
+    case ServiceWorkerRegistrationData::LOCAL:
+      return network::mojom::IPAddressSpace::kLocal;
     case ServiceWorkerRegistrationData::PUBLIC:
       return network::mojom::IPAddressSpace::kPublic;
     case ServiceWorkerRegistrationData::UNKNOWN:
@@ -2891,8 +2891,8 @@ ConvertIPAddressSpaceFromMojomToProtocolBuffer(
   switch (value) {
     case network::mojom::IPAddressSpace::kLoopback:
       return ServiceWorkerRegistrationData::LOOPBACK;
-    case network::mojom::IPAddressSpace::kPrivate:
-      return ServiceWorkerRegistrationData::PRIVATE;
+    case network::mojom::IPAddressSpace::kLocal:
+      return ServiceWorkerRegistrationData::LOCAL;
     case network::mojom::IPAddressSpace::kPublic:
       return ServiceWorkerRegistrationData::PUBLIC;
     case network::mojom::IPAddressSpace::kUnknown:

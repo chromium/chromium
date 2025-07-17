@@ -3853,8 +3853,8 @@ String NetworkHandler::BuildIpAddressSpace(
   switch (space) {
     case network::mojom::IPAddressSpace::kLoopback:
       return protocol::Network::IPAddressSpaceEnum::Loopback;
-    case network::mojom::IPAddressSpace::kPrivate:
-      return protocol::Network::IPAddressSpaceEnum::Private;
+    case network::mojom::IPAddressSpace::kLocal:
+      return protocol::Network::IPAddressSpaceEnum::Local;
     case network::mojom::IPAddressSpace::kPublic:
       return protocol::Network::IPAddressSpaceEnum::Public;
     case network::mojom::IPAddressSpace::kUnknown:

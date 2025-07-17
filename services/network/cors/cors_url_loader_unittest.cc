@@ -2403,8 +2403,8 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessTargetAddressSpaceCheck) {
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kCors;
-  request.required_ip_address_space = mojom::IPAddressSpace::kPrivate;
-  request.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
+  request.required_ip_address_space = mojom::IPAddressSpace::kLocal;
+  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
   request.url = GURL("http://foo.example/");
   request.request_initiator = initiator;
   request.trusted_params = ResourceRequest::TrustedParams();

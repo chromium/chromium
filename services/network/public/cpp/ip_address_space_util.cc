@@ -79,11 +79,11 @@ std::optional<IPAddressSpace> ParseIPAddressSpace(std::string_view str) {
   // TODO(crbug.com/418737577): remove private alias after Web Platform Test
   // code base moves to using "local"
   if (str == "private") {
-    return IPAddressSpace::kPrivate;
+    return IPAddressSpace::kLocal;
   }
 
   if (str == "local") {
-    return IPAddressSpace::kPrivate;
+    return IPAddressSpace::kLocal;
   }
 
   if (str == "loopback") {
@@ -248,23 +248,23 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
       Entry(IPAddress::IPv6Localhost(), 128, IPAddressSpace::kLoopback),
       // IPv6 Unique-local (RFC 4193, RFC 8190): fc00::/7
       Entry(IPAddress(0xfc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 7,
-            IPAddressSpace::kPrivate),
+            IPAddressSpace::kLocal),
       // IPv6 Link-local unicast (RFC 4291): fe80::/10
       Entry(IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
-            IPAddressSpace::kPrivate),
+            IPAddressSpace::kLocal),
       // IPv4 Loopback (RFC 1122): 127.0.0.0/8
       Entry(IPAddress(127, 0, 0, 0), 8, IPAddressSpace::kLoopback),
       // IPv4 Private use (RFC 1918): 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
-      Entry(IPAddress(10, 0, 0, 0), 8, IPAddressSpace::kPrivate),
-      Entry(IPAddress(172, 16, 0, 0), 12, IPAddressSpace::kPrivate),
-      Entry(IPAddress(192, 168, 0, 0), 16, IPAddressSpace::kPrivate),
+      Entry(IPAddress(10, 0, 0, 0), 8, IPAddressSpace::kLocal),
+      Entry(IPAddress(172, 16, 0, 0), 12, IPAddressSpace::kLocal),
+      Entry(IPAddress(192, 168, 0, 0), 16, IPAddressSpace::kLocal),
       // IPv4 Link-local (RFC 3927): 169.254.0.0/16
-      Entry(IPAddress(169, 254, 0, 0), 16, IPAddressSpace::kPrivate),
+      Entry(IPAddress(169, 254, 0, 0), 16, IPAddressSpace::kLocal),
       // IPv4 Null IP (RFC 5735): 0.0.0.0/32 is "this host on this network".
       // Other addresses in 0.0.0.0/8 may refer to "specified hosts on this
       // network". This is somewhat under-defined for the purposes of assigning
-      // local vs private address space but we assign 0.0.0.0/32 to "local" and
-      // the rest of the block to "private". Note that this mapping can be
+      // local vs loopback address space but we assign 0.0.0.0/32 to "loopback"
+      // and the rest of the block to "local". Note that this mapping can be
       // overridden by a killswitch feature flag in IPAddressToIPAddressSpace()
       // since these addresses were previously treated as public. See
       // https://crbug.com/40058874.
@@ -272,7 +272,7 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
       // TODO(https://crbug.com/40058874): decide if we should do the same for
       // the all-zero IPv6 address.
       Entry(IPAddress(0, 0, 0, 0), 32, IPAddressSpace::kLoopback),
-      Entry(IPAddress(0, 0, 0, 0), 8, IPAddressSpace::kPrivate),
+      Entry(IPAddress(0, 0, 0, 0), 8, IPAddressSpace::kLocal),
   }));
   return *kMap;
 }
@@ -318,8 +318,8 @@ std::string_view IPAddressSpaceToStringPiece(IPAddressSpace space) {
       return "unknown";
     case IPAddressSpace::kPublic:
       return "public";
-    case IPAddressSpace::kPrivate:
-      return "private";
+    case IPAddressSpace::kLocal:
+      return "local";
     case IPAddressSpace::kLoopback:
       return "loopback";
   }
@@ -346,11 +346,11 @@ IPAddressSpace CollapseUnknown(IPAddressSpace space) {
   return space;
 }
 
-// For comparison purposes, we treat kPrivate and kLoopback as equivalent
-// (kPrivate arbitrarily chosen over kLoopback).
-IPAddressSpace CollapsePrivateAndLocal(IPAddressSpace space) {
+// For comparison purposes, we treat kLocal and kLoopback as equivalent
+// (kLocal arbitrarily chosen over kLoopback).
+IPAddressSpace CollapseLocalAndLoopback(IPAddressSpace space) {
   if (space == IPAddressSpace::kLoopback) {
-    return IPAddressSpace::kPrivate;
+    return IPAddressSpace::kLocal;
   }
   return space;
 }
@@ -366,9 +366,9 @@ bool IsLessPublicAddressSpace(IPAddressSpace lhs, IPAddressSpace rhs) {
 
 bool IsLessPublicAddressSpaceLNA(IPAddressSpace lhs, IPAddressSpace rhs) {
   // Similar to IsLessPublicAddressSpace but with additional collapsing of
-  // kPrivate and kLoopback.
-  return CollapsePrivateAndLocal(CollapseUnknown(lhs)) <
-         CollapsePrivateAndLocal(CollapseUnknown(rhs));
+  // kLocal and kLoopback.
+  return CollapseLocalAndLoopback(CollapseUnknown(lhs)) <
+         CollapseLocalAndLoopback(CollapseUnknown(rhs));
 }
 
 CalculateClientAddressSpaceParams::~CalculateClientAddressSpaceParams() =
@@ -421,7 +421,7 @@ std::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
     return std::nullopt;
   }
 
-  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
+  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kLocal) {
     return std::nullopt;
   }
 

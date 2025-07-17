@@ -322,9 +322,9 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, kInvalidChildProcessUniqueId, nullptr, nullptr);
 
-  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kPrivate);
+  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLocal);
   PolicyContainerPolicies expected_policies;
-  expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPrivate;
+  expected_policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
 
   MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);
   builder.ComputePolicies(&navigation_handle, false,

@@ -149,7 +149,7 @@ PrivateNetworkAccessUrlLoaderInterceptor::DoCheck(
 
   if (url_loader_network_observer) {
     if (response_address_space == mojom::IPAddressSpace::kLoopback ||
-        response_address_space == mojom::IPAddressSpace::kPrivate) {
+        response_address_space == mojom::IPAddressSpace::kLocal) {
       url_loader_network_observer->OnUrlLoaderConnectedToPrivateNetwork(
           url, response_address_space, client_address_space,
           target_address_space);

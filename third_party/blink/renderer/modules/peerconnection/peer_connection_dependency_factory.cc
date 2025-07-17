@@ -140,7 +140,7 @@ network::mojom::IPAddressSpace FromSocketAddress(
     return network::mojom::IPAddressSpace::kLoopback;
   }
   if (socket_address.IsPrivateIP()) {
-    return network::mojom::IPAddressSpace::kPrivate;
+    return network::mojom::IPAddressSpace::kLocal;
   }
   return network::mojom::IPAddressSpace::kPublic;
 }

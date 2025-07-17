@@ -829,7 +829,7 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, ClientSecurityState) {
   is_for_seller_ = false;
 
   for (auto ip_address_space : {network::mojom::IPAddressSpace::kLoopback,
-                                network::mojom::IPAddressSpace::kPrivate,
+                                network::mojom::IPAddressSpace::kLocal,
                                 network::mojom::IPAddressSpace::kPublic,
                                 network::mojom::IPAddressSpace::kUnknown}) {
     client_security_state_->ip_address_space = ip_address_space;

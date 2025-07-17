@@ -91,8 +91,8 @@ Policy DerivePolicyForNonSecureContext(
                  features::kBlockInsecurePrivateNetworkRequestsFromUnknown)
                  ? Policy::kBlock
                  : Policy::kAllow;
-    case AddressSpace::kPrivate:
-      // Requests from the non secure contexts in the `private` address space
+    case AddressSpace::kLocal:
+      // Requests from the non secure contexts in the `local` address space
       // to localhost are blocked only if the right feature is enabled.
       // This is controlled separately because private network websites face
       // additional hurdles compared to public websites. See crbug.com/1234044.

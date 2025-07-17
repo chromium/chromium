@@ -58,7 +58,8 @@ using ::testing::IsEmpty;
 // embedded HTTPS server, which has certificates for these domains
 constexpr char kLoopbackHost[] = "a.test";
 constexpr char kOtherLoopbackHost[] = "d.test";
-constexpr char kPrivateHost[] = "b.test";
+// not localhost, but a host with IP address space = kLocal
+constexpr char kLocalHost[] = "b.test";
 constexpr char kPublicHost[] = "c.test";
 
 // Path to a default response served by all servers in this test.
@@ -361,7 +362,7 @@ class FakeAddressSpaceServer {
                          const base::FilePath& test_data_path)
       : server_(type, protocol), ip_address_space_(ip_address_space) {
     // Use a certificate valid for multiple domains, which we can use to
-    // distinguish `loopback`, `private` and `public` address spaces.
+    // distinguish `loopback`, `local` and `public` address spaces.
     server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
 
     server_.SetConnectionListener(&connection_counter_);
@@ -405,12 +406,12 @@ class FakeAddressSpaceServer {
 //  - and a few other odds and ends
 //
 // We use the `--ip-address-space-overrides` command-line switch to test against
-// `private` and `public` address spaces, even though all responses are actually
+// `local` and `public` address spaces, even though all responses are actually
 // served from localhost. Combined with host resolver rules, this lets us define
 // three different domains that map to the different address spaces:
 //
 //  - `a.test` is `loopback`
-//  - `b.test` is `private`
+//  - `b.test` is `local`
 //  - `c.test` is `public`
 //
 // We also have unit tests that test all possible combinations of source and
@@ -432,10 +433,10 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
             net::test_server::HttpConnection::Protocol::kHttp1,
             network::mojom::IPAddressSpace::kLoopback,
             GetTestDataFilePath()),
-        insecure_private_server_(
+        insecure_local_server_(
             net::EmbeddedTestServer::TYPE_HTTP,
             net::test_server::HttpConnection::Protocol::kHttp1,
-            network::mojom::IPAddressSpace::kPrivate,
+            network::mojom::IPAddressSpace::kLocal,
             GetTestDataFilePath()),
         insecure_public_server_(
             net::EmbeddedTestServer::TYPE_HTTP,
@@ -447,11 +448,10 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
             net::test_server::HttpConnection::Protocol::kHttp1,
             network::mojom::IPAddressSpace::kLoopback,
             GetTestDataFilePath()),
-        secure_private_server_(
-            net::EmbeddedTestServer::TYPE_HTTPS,
-            net::test_server::HttpConnection::Protocol::kHttp1,
-            network::mojom::IPAddressSpace::kPrivate,
-            GetTestDataFilePath()),
+        secure_local_server_(net::EmbeddedTestServer::TYPE_HTTPS,
+                             net::test_server::HttpConnection::Protocol::kHttp1,
+                             network::mojom::IPAddressSpace::kLocal,
+                             GetTestDataFilePath()),
         secure_public_server_(
             net::EmbeddedTestServer::TYPE_HTTPS,
             net::test_server::HttpConnection::Protocol::kHttp1,
@@ -466,7 +466,7 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     // Rules must be added on the main thread, otherwise `AddRule()` segfaults.
     host_resolver()->AddRule(kLoopbackHost, "127.0.0.1");
     host_resolver()->AddRule(kOtherLoopbackHost, "127.0.0.1");
-    host_resolver()->AddRule(kPrivateHost, "127.0.0.1");
+    host_resolver()->AddRule(kLocalHost, "127.0.0.1");
     host_resolver()->AddRule(kPublicHost, "127.0.0.1");
   }
 
@@ -475,10 +475,10 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     // Add correct ip address space overrides.
     network::AddIpAddressSpaceOverridesToCommandLine(
         {insecure_loopback_server_.GenerateCommandLineSwitchOverride(),
-         insecure_private_server_.GenerateCommandLineSwitchOverride(),
+         insecure_local_server_.GenerateCommandLineSwitchOverride(),
          insecure_public_server_.GenerateCommandLineSwitchOverride(),
          secure_loopback_server_.GenerateCommandLineSwitchOverride(),
-         secure_private_server_.GenerateCommandLineSwitchOverride(),
+         secure_local_server_.GenerateCommandLineSwitchOverride(),
          secure_public_server_.GenerateCommandLineSwitchOverride()},
         *command_line);
   }
@@ -487,8 +487,8 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     return insecure_loopback_server_;
   }
 
-  const FakeAddressSpaceServer& InsecurePrivateServer() const {
-    return insecure_private_server_;
+  const FakeAddressSpaceServer& InsecureLocalServer() const {
+    return insecure_local_server_;
   }
 
   const FakeAddressSpaceServer& InsecurePublicServer() const {
@@ -499,8 +499,8 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     return secure_loopback_server_;
   }
 
-  const FakeAddressSpaceServer& SecurePrivateServer() const {
-    return secure_private_server_;
+  const FakeAddressSpaceServer& SecureLocalServer() const {
+    return secure_local_server_;
   }
 
   const FakeAddressSpaceServer& SecurePublicServer() const {
@@ -511,8 +511,8 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     return insecure_loopback_server_.Get().GetURL(kLoopbackHost, path);
   }
 
-  GURL InsecurePrivateURL(const std::string& path) {
-    return insecure_private_server_.Get().GetURL(kPrivateHost, path);
+  GURL InsecureLocalURL(const std::string& path) {
+    return insecure_local_server_.Get().GetURL(kLocalHost, path);
   }
 
   GURL InsecurePublicURL(const std::string& path) {
@@ -527,8 +527,8 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
     return secure_loopback_server_.Get().GetURL(kOtherLoopbackHost, path);
   }
 
-  GURL SecurePrivateURL(const std::string& path) {
-    return secure_private_server_.Get().GetURL(kPrivateHost, path);
+  GURL SecureLocalURL(const std::string& path) {
+    return secure_local_server_.Get().GetURL(kLocalHost, path);
   }
 
   GURL SecurePublicURL(const std::string& path) {
@@ -543,10 +543,10 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 
   FakeAddressSpaceServer insecure_loopback_server_;
-  FakeAddressSpaceServer insecure_private_server_;
+  FakeAddressSpaceServer insecure_local_server_;
   FakeAddressSpaceServer insecure_public_server_;
   FakeAddressSpaceServer secure_loopback_server_;
-  FakeAddressSpaceServer secure_private_server_;
+  FakeAddressSpaceServer secure_local_server_;
   FakeAddressSpaceServer secure_public_server_;
 };
 
@@ -870,14 +870,14 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       ClientSecurityStateForInsecurePrivateAddress) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+                       ClientSecurityStateForInsecureLocalAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
 }
 
@@ -906,14 +906,14 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       ClientSecurityStateForSecurePrivateAddress) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
+                       ClientSecurityStateForSecureLocalAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
 }
 
@@ -1096,10 +1096,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
             security_state->ip_address_space);
 }
 
-// Variation of above test with a private address.
+// Variation of above test with a local address.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       ClientSecurityStateForSpecialSchemeViewSourcePrivate) {
-  const GURL url = SecurePrivateURL(kDefaultPath);
+                       ClientSecurityStateForSpecialSchemeViewSourceLocal) {
+  const GURL url = SecureLocalURL(kDefaultPath);
   EXPECT_TRUE(NavigateToURL(shell(), GURL("view-source:" + url.spec())));
 
   EXPECT_FALSE(
@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
 }
 
@@ -1132,10 +1132,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
             security_state->ip_address_space);
 }
 
-// Variation of above test with a private address.
+// Variation of above test with a local address.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       ClientSecurityStateForSpecialSchemeChromeErrorPrivate) {
-  EXPECT_FALSE(NavigateToURL(shell(), SecurePrivateURL("/empty404.html")));
+                       ClientSecurityStateForSpecialSchemeChromeErrorLocal) {
+  EXPECT_FALSE(NavigateToURL(shell(), SecureLocalURL("/empty404.html")));
 
   EXPECT_FALSE(
       root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeErrorScheme));
@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
 }
 
@@ -2537,17 +2537,17 @@ IN_PROC_BROWSER_TEST_P(
 
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from non-secure
-// contexts in the `private` address space with a warning.
+// contexts in the `local` address space with a warning.
 IN_PROC_BROWSER_TEST_P(
     PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
-    PrivateNetworkPolicyForInsecurePrivate) {
+    PrivateNetworkPolicyForInsecureLocal) {
   PolicyTestContentBrowserClient client;
   bool block_instead_of_warn = GetParam();
   if (block_instead_of_warn) {
     client.SetBlockInsteadOfWarn();
   }
 
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -2562,10 +2562,10 @@ IN_PROC_BROWSER_TEST_P(
 
 // This test verifies that when the right feature is enabled, the private
 // network request policy used by RenderFrameHostImpl for requests is set to
-// block requests from non-secure contexts in the private address space.
+// block requests from non-secure contexts in the local address space.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromPrivate,
-                       PrivateNetworkPolicyIsBlockForInsecurePrivate) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+                       PrivateNetworkPolicyIsBlockForInsecureLocal) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -2693,13 +2693,13 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 }
 
 // This test verifies that when enforcing preflights is enabled, the private
-// network request policy for non-secure contexts in the `kPrivate` address
+// network request policy for non-secure contexts in the `kLocal` address
 // space is `kPreflightBlock`.
 // This checks that as long as the "block from insecure private" feature flag
 // is not enabled, we will only show warnings for these requests.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
-                       PrivateNetworkPolicyIsWarnForInsecurePrivate) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+                       PrivateNetworkPolicyIsWarnForInsecureLocal) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -3150,12 +3150,12 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 }
 
 // This test verifies that when preflights are disabled, requests:
-//  - from a secure page served from a private IP address
+//  - from a secure page served from a local IP address
 //  - to a loopback IP address
 // are not blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
-                       FromSecurePrivateToLoopbackIsNotBlocked) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
+                       FromSecureLocalToLoopbackIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a loopback resource. We load it from a secure
   // origin to avoid running afoul of mixed content restrictions.
@@ -3164,13 +3164,13 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
 }
 
 // This test verifies that when preflights are sent but not enforced, requests:
-//  - from a secure page served from a private IP address
+//  - from a secure page served from a local IP address
 //  - to a loopback IP address
 //  - for which the target server does not respond OK to the preflight request
 // are not blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       FromSecurePrivateToLoopbackIsNotBlocked) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
+                       FromSecureLocalToLoopbackIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a loopback resource.
   //
@@ -3181,13 +3181,13 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 }
 
 // This test verifies that when preflights are sent and enforced, requests:
-//  - from a secure page served from a private IP address
+//  - from a secure page served from a local IP address
 //  - to a loopback IP address
 //  - for which the target server does not respond OK to the preflight request
 // are blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
-                       FromSecurePrivateToLoopbackIsBlocked) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
+                       FromSecureLocalToLoopbackIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
   // We load the resource from a secure origin to avoid running afoul of mixed
   // content restrictions.
@@ -3384,12 +3384,12 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 }
 
 // This test verifies that when the right feature is disabled, requests:
-//  - from an insecure page served by a private IP address
+//  - from an insecure page served by a local IP address
 //  - to loopback IP addresses
 //  are not blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       FromInsecurePrivateToLoopbackIsNotBlocked) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+                       FromInsecureLocalToLoopbackIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page can load a loopback resource.
   EXPECT_EQ(true,
@@ -3398,12 +3398,12 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 }
 
 // This test verifies that when the right feature is enabled, requests:
-//  - from an insecure page served by a private IP address
+//  - from an insecure page served by a local IP address
 //  - to loopback IP addresses
 //  are blocked.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromPrivate,
-                       FromInsecurePrivateToLoopbackIsBlocked) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+                       FromInsecureLocalToLoopbackIsBlocked) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
 
   // Check that the page cannot load a loopback resource.
   EXPECT_EQ(false,
@@ -3665,10 +3665,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 // not fail.
 // Regression test for https://crbug.com/1293891.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest, Redirect) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
-  GURL target = SecureLoopbackURL("/server-redirect?" +
-                                  SecurePrivateURL(kCorsPath).spec());
+  GURL target =
+      SecureLoopbackURL("/server-redirect?" + SecureLocalURL(kCorsPath).spec());
 
   EXPECT_EQ(true, EvalJs(root_frame_host(), FetchSubresourceScript(target)));
 }
