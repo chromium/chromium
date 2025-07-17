@@ -125,7 +125,7 @@
     Sign in to get your passwords and more on all your devices
   </message>
   <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION_WITH_BOOKMARKS" desc="Text for the sign-in promo in the profile menu when the used is signed out, describing the benefits of signing in, mentioning bookmarks.">
-    Sign in to get your bookmarks, passwords and more on all your devices
+    Sign in to get your passwords, bookmarks, and more on all your devices
   </message>
   <message name="IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_SEPARATOR" desc="The user name and profile name are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
     <ph name="USER_NAME">$1<ex>John</ex></ph> • <ph name="PROFILE_NAME">$2<ex>Work</ex></ph>
@@ -938,7 +938,7 @@
       desc="Profile picker profile type choice subtitle"> Sign in to get your passwords and more on all your devices
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO_BOOKMARKS"
-      desc="Profile picker profile type choice subtitle"> Sign in to get your bookmarks, passwords and more on all your devices
+      desc="Profile picker profile type choice subtitle"> Sign in to get your passwords, bookmarks, and more on all your devices
     </message>
 
     <!-- First Run Experience strings -->
