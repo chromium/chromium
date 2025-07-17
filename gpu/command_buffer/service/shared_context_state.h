@@ -314,7 +314,8 @@ class GPU_GLES2_EXPORT SharedContextState
       gl::ProgressReporter* progress_reporter = nullptr);
 
   bool InitializeGraphite(const GpuPreferences& gpu_preferences,
-                          const GpuDriverBugWorkarounds& workarounds);
+                          const GpuDriverBugWorkarounds& workarounds,
+                          GpuProcessShmCount* use_shader_cache_shm_count);
 
   void FlushGraphiteRecorder();
 

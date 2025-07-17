@@ -332,7 +332,7 @@ GpuChannelManager::GpuChannelManager(
     SharedImageManager* shared_image_manager,
     GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const GpuFeatureInfo& gpu_feature_info,
-    GpuProcessShmCount use_shader_cache_shm_count,
+    GpuProcessShmCount* use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
     ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     viz::VulkanContextProvider* vulkan_context_provider,
@@ -359,7 +359,7 @@ GpuChannelManager::GpuChannelManager(
       discardable_manager_(gpu_preferences_),
       passthrough_discardable_manager_(gpu_preferences_),
       image_decode_accelerator_worker_(image_decode_accelerator_worker),
-      use_shader_cache_shm_count_(std::move(use_shader_cache_shm_count)),
+      use_shader_cache_shm_count_(use_shader_cache_shm_count),
       memory_pressure_listener_(
           FROM_HERE,
           base::BindRepeating(&GpuChannelManager::HandleMemoryPressure,
@@ -439,7 +439,7 @@ gles2::ProgramCache* GpuChannelManager::program_cache() {
       program_cache_ = std::make_unique<gles2::MemoryProgramCache>(
           gpu_preferences_.gpu_program_cache_size, disable_disk_cache,
           workarounds.disable_program_caching_for_transform_feedback,
-          &use_shader_cache_shm_count_);
+          use_shader_cache_shm_count_);
     }
   }
   return program_cache_.get();
@@ -998,7 +998,7 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 
   if (!shared_context_state->InitializeSkia(
           gpu_preferences_, gpu_driver_bug_workarounds_, gr_shader_cache(),
-          &use_shader_cache_shm_count_, watchdog_)) {
+          use_shader_cache_shm_count_, watchdog_)) {
     LOG(ERROR) << "ContextResult::kFatalFailure: Failed to initialize Skia for "
                   "SharedContextState";
     *result = ContextResult::kFatalFailure;

@@ -354,10 +354,7 @@ bool WrappedGraphiteTextureBacking::InsertRecordingAndSubmit() {
     LOG(ERROR) << "Graphite insertRecording() failed";
     return false;
   }
-  if (!context_state_->graphite_shared_context()->submit()) {
-    LOG(ERROR) << "Graphite context submit() failed";
-    return false;
-  }
+  context_state_->graphite_shared_context()->submit();
   return true;
 }
 

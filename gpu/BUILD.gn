@@ -448,7 +448,6 @@ test("gpu_unittests") {
     "command_buffer/service/gpu_tracer_unittest.cc",
     "command_buffer/service/gr_cache_controller_unittest.cc",
     "command_buffer/service/gr_shader_cache_unittest.cc",
-    "command_buffer/service/graphite_shared_context_unittest.cc",
     "command_buffer/service/id_manager_unittest.cc",
     "command_buffer/service/indexed_buffer_binding_host_unittest.cc",
     "command_buffer/service/memory_program_cache_unittest.cc",
@@ -591,6 +590,10 @@ test("gpu_unittests") {
       "command_buffer/service/dawn_caching_interface_unittest.cc",
       "config/webgpu_blocklist_unittest.cc",
     ]
+  }
+
+  if (skia_use_dawn) {
+    sources += [ "command_buffer/service/graphite_shared_context_unittest.cc" ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]

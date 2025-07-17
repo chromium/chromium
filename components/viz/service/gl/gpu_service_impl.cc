@@ -497,6 +497,8 @@ void GpuServiceImpl::InitializeWithHostInternal(
   scheduler_ = scheduler;
   shutdown_event_ = shutdown_event;
 
+  use_shader_cache_shm_count_ = std::move(use_shader_cache_shm_count);
+
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
 
 #if BUILDFLAG(IS_LINUX)
@@ -515,8 +517,7 @@ void GpuServiceImpl::InitializeWithHostInternal(
       gpu_preferences_, this, watchdog_thread_.get(), main_runner_, io_runner_,
       scheduler_, sync_point_manager, shared_image_manager,
       gpu_memory_buffer_factory_.get(), gpu_feature_info_,
-      std::move(use_shader_cache_shm_count),
-      std::move(default_offscreen_surface),
+      &use_shader_cache_shm_count_, std::move(default_offscreen_surface),
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
       metal_context_provider(), dawn_context_provider(),
       dawn_caching_interface_factory(), gr_context_options_provider_);
@@ -541,6 +542,14 @@ void GpuServiceImpl::InitializeWithHostInternal(
                               : nullptr;
 #endif
 #if BUILDFLAG(SKIA_USE_DAWN)
+    // Initialize the thread-safe GraphiteSharedContext before starting the DrDC
+    // thread to prevent a race on accessing it via SharedContextState.
+    if (dawn_context_provider_ &&
+        dawn_context_provider_->use_thread_safe_shared_context()) {
+      dawn_context_provider_->InitializeThreadSafeGraphiteContext(
+          gpu::GetDefaultGraphiteContextOptions(gpu_driver_bug_workarounds_),
+          &use_shader_cache_shm_count_);
+    }
     params.dawn_context_provider = dawn_context_provider_.get();
 #endif
 

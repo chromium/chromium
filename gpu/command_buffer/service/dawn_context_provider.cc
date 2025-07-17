@@ -25,6 +25,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -433,7 +434,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   bool Initialize(wgpu::BackendType backend_type,
                   bool force_fallback_adapter,
                   const GpuPreferences& gpu_preferences,
-                  const GpuFeatureInfo& gpu_feature_info,
+                  const GpuDriverBugWorkarounds& workarounds,
                   DawnContextProvider::ValidateAdapterFn validate_adapter_fn);
   void SetCachingInterface(
       std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
@@ -480,11 +481,49 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   std::optional<error::ContextLostReason> GetResetStatus() const;
 
-  GraphiteSharedContext* GetGraphiteSharedContext() const {
-    return graphite_shared_context_.get();
+  std::unique_ptr<GraphiteSharedContext> CreateGraphiteSharedContext(
+      const skgpu::graphite::ContextOptions& options,
+      GpuProcessShmCount* use_shader_cache_shm_count,
+      bool is_thread_safe) {
+    if (!device_) {
+      return nullptr;
+    }
+
+    skgpu::graphite::DawnBackendContext backend_context;
+    backend_context.fInstance = GetInstance();
+    backend_context.fDevice = device_;
+    backend_context.fQueue = device_.GetQueue();
+
+    std::unique_ptr<skgpu::graphite::Context> graphite_context =
+        skgpu::graphite::ContextFactory::MakeDawn(backend_context, options);
+    if (!graphite_context) {
+      return nullptr;
+    }
+
+    return std::make_unique<GraphiteSharedContext>(std::move(graphite_context),
+                                                   use_shader_cache_shm_count,
+                                                   is_thread_safe);
   }
 
-  bool thread_safe_graphite_context() { return thread_safe_graphite_context_; }
+  bool use_thread_safe_graphite_context() const {
+    return use_thread_safe_graphite_context_;
+  }
+
+  GraphiteSharedContext* GetThreadSafeGraphiteSharedContext() const {
+    CHECK(use_thread_safe_graphite_context());
+    return thread_safe_graphite_shared_context_.get();
+  }
+
+  bool InitializeThreadSafeGraphiteContext(
+      const skgpu::graphite::ContextOptions& options,
+      GpuProcessShmCount* use_shader_cache_shm_count) {
+    DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+    CHECK(use_thread_safe_graphite_context());
+    CHECK(!thread_safe_graphite_shared_context_);
+    thread_safe_graphite_shared_context_ = CreateGraphiteSharedContext(
+        options, use_shader_cache_shm_count, /*is_thread_safe=*/true);
+    return !!thread_safe_graphite_shared_context_;
+  }
 
  private:
   friend class base::RefCountedThreadSafe<DawnSharedContext>;
@@ -584,24 +623,28 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   std::string init_warning_msgs_;
   bool is_vulkan_swiftshader_adapter_ = false;
   bool registered_memory_dump_provider_ = false;
-  std::unique_ptr<GraphiteSharedContext> graphite_shared_context_;
+
+  // If true, both GpuMain and CompositorGpuThread share the same
+  // GraphiteSharedContext which is created lazily. If false,
+  // DawnContextProvider owns GraphiteSharedContext and each DawnContextProvider
+  // (i.e. each thread) has its own GraphiteSharedContext.
+  const bool use_thread_safe_graphite_context_;
+  std::unique_ptr<GraphiteSharedContext> thread_safe_graphite_shared_context_;
 
   mutable base::Lock context_lost_lock_;
   std::optional<error::ContextLostReason> context_lost_reason_
       GUARDED_BY(context_lost_lock_);
 
-  // If true, both GpuMain and CompositorGpuThread share the same
-  // GraphiteSharedContext. GraphiteSharedContext was created during
-  // DawnSharedContext initialization. If false, DawnContextProvider owns
-  // GraphiteSharedContext and each DawnContextProvider (ie. each thread) has
-  // its own GraphiteSharedContext.
-  const bool thread_safe_graphite_context_;
+  THREAD_CHECKER(main_thread_checker_);
 };
 
-DawnSharedContext::DawnSharedContext(bool thread_safe_graphite_context)
-    : thread_safe_graphite_context_(thread_safe_graphite_context) {}
+DawnSharedContext::DawnSharedContext(bool use_thread_safe_graphite_context)
+    : use_thread_safe_graphite_context_(use_thread_safe_graphite_context) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+}
 
 DawnSharedContext::~DawnSharedContext() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   if (device_) {
     if (registered_memory_dump_provider_) {
       base::trace_event::MemoryDumpManager::GetInstance()
@@ -611,7 +654,7 @@ DawnSharedContext::~DawnSharedContext() {
 
     // Destroy GraphiteSharedContext and skgpu::graphite::Context before
     // device_, on which skgpu::graphite::Context is created.
-    graphite_shared_context_ = nullptr;
+    thread_safe_graphite_shared_context_ = nullptr;
 
     // Destroy the device now so that the lost callback, which references this
     // class, is fired now before we clean up the rest of this class.
@@ -656,7 +699,7 @@ bool DawnSharedContext::Initialize(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
-    const GpuFeatureInfo& gpu_feature_info,
+    const GpuDriverBugWorkarounds& workarounds,
     DawnContextProvider::ValidateAdapterFn validate_adapter_fn) {
   // Make Dawn experimental API and WGSL features available since access to this
   // instance doesn't exit the GPU process.
@@ -679,12 +722,10 @@ bool DawnSharedContext::Initialize(
   toggles_desc.enabledToggleCount = enabled_toggles.size();
   toggles_desc.disabledToggleCount = disabled_toggles.size();
 
-  const GpuDriverBugWorkarounds gpu_driver_workarounds(
-      gpu_feature_info.enabled_gpu_driver_bug_workarounds);
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = backend_type;
   adapter_options.forceFallbackAdapter = force_fallback_adapter;
-  if (gpu_driver_workarounds.force_high_performance_gpu) {
+  if (workarounds.force_high_performance_gpu) {
     adapter_options.powerPreference = wgpu::PowerPreference::HighPerformance;
   } else {
     adapter_options.powerPreference = wgpu::PowerPreference::LowPower;
@@ -868,29 +909,6 @@ bool DawnSharedContext::Initialize(
         this, "DawnSharedContext",
         base::SingleThreadTaskRunner::GetCurrentDefault());
     registered_memory_dump_provider_ = true;
-  }
-
-  if (thread_safe_graphite_context_) {
-    skgpu::graphite::DawnBackendContext backend_context;
-    backend_context.fInstance = GetInstance();
-    backend_context.fDevice = device_;
-    backend_context.fQueue = device_.GetQueue();
-
-    const skgpu::graphite::ContextOptions context_options =
-        GetDefaultGraphiteContextOptions(gpu_driver_workarounds);
-
-    std::unique_ptr<skgpu::graphite::Context> graphite_context =
-        skgpu::graphite::ContextFactory::MakeDawn(backend_context,
-                                                  context_options);
-    if (!graphite_context) {
-      // Let the client (SharedContextState) handle this fatal failure later
-      // when DawnContextProvider::InitializeGraphiteContext() is called.
-      LOG(ERROR) << "Fail to create Dawn skgpu::graphite::Context!";
-    }
-
-    graphite_shared_context_ =
-        std::make_unique<GraphiteSharedContext>(std::move(graphite_context),
-                                                /*is_thread_safe=*/true);
   }
 
   base::UmaHistogramEnumeration(
@@ -1079,17 +1097,18 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
     const GpuPreferences& gpu_preferences,
     const GpuFeatureInfo& gpu_feature_info,
     ValidateAdapterFn validate_adapter_fn) {
-  bool thread_safe_graphite_context =
+  bool use_thread_safe_graphite_context =
       features::IsDrDcEnabled(gpu_feature_info) &&
       features::IsGraphiteContextThreadSafe();
   auto dawn_shared_context =
-      base::MakeRefCounted<DawnSharedContext>(thread_safe_graphite_context);
+      base::MakeRefCounted<DawnSharedContext>(use_thread_safe_graphite_context);
+  GpuDriverBugWorkarounds workarounds(
+      gpu_feature_info.enabled_gpu_driver_bug_workarounds);
   if (!dawn_shared_context->Initialize(backend_type, force_fallback_adapter,
-                                       gpu_preferences, gpu_feature_info,
+                                       gpu_preferences, workarounds,
                                        validate_adapter_fn)) {
     return nullptr;
   }
-
   return base::WrapUnique(
       new DawnContextProvider(std::move(dawn_shared_context)));
 }
@@ -1131,28 +1150,26 @@ wgpu::Instance DawnContextProvider::GetInstance() const {
   return dawn_shared_context_->GetInstance();
 }
 
+bool DawnContextProvider::use_thread_safe_shared_context() const {
+  return dawn_shared_context_->use_thread_safe_graphite_context();
+}
+
+void DawnContextProvider::InitializeThreadSafeGraphiteContext(
+    const skgpu::graphite::ContextOptions& options,
+    GpuProcessShmCount* use_shader_cache_shm_count) {
+  dawn_shared_context_->InitializeThreadSafeGraphiteContext(
+      options, use_shader_cache_shm_count);
+}
+
 bool DawnContextProvider::InitializeGraphiteContext(
-    const skgpu::graphite::ContextOptions& context_options) {
-  if (dawn_shared_context_->thread_safe_graphite_context()) {
-    return dawn_shared_context_->GetGraphiteSharedContext();
+    const skgpu::graphite::ContextOptions& options,
+    GpuProcessShmCount* use_shader_cache_shm_count) {
+  if (dawn_shared_context_->use_thread_safe_graphite_context()) {
+    return !!dawn_shared_context_->GetThreadSafeGraphiteSharedContext();
   }
-
-  auto device = GetDevice();
-  if (!device) {
-    return false;
-  }
-
-  skgpu::graphite::DawnBackendContext backend_context;
-  backend_context.fInstance = GetInstance();
-  backend_context.fDevice = device;
-  backend_context.fQueue = device.GetQueue();
-  std::unique_ptr<skgpu::graphite::Context> graphite_context =
-      skgpu::graphite::ContextFactory::MakeDawn(backend_context,
-                                                context_options);
-  graphite_shared_context_ =
-      std::make_unique<GraphiteSharedContext>(std::move(graphite_context),
-                                              /*is_thread_safe=*/false);
-  return true;
+  graphite_shared_context_ = dawn_shared_context_->CreateGraphiteSharedContext(
+      options, use_shader_cache_shm_count, /*is_thread_safe=*/false);
+  return !!graphite_shared_context_;
 }
 
 void DawnContextProvider::SetCachingInterface(
@@ -1183,10 +1200,10 @@ std::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
 }
 
 GraphiteSharedContext* DawnContextProvider::GetGraphiteSharedContext() const {
-  if (dawn_shared_context_->thread_safe_graphite_context()) {
+  if (dawn_shared_context_->use_thread_safe_graphite_context()) {
     // Both threads shares the same GraphiteSharedContext. DawnSharedContext
     // owns GraphiteSharedContext
-    return dawn_shared_context_->GetGraphiteSharedContext();
+    return dawn_shared_context_->GetThreadSafeGraphiteSharedContext();
   } else {
     // Each DawnContextProvider owns its own GraphiteSharedContext and
     // skgpu::graphite::Context

@@ -43,7 +43,8 @@ std::unique_ptr<MetalContextProvider> MetalContextProvider::Create() {
 }
 
 bool MetalContextProvider::InitializeGraphiteContext(
-    const skgpu::graphite::ContextOptions& options) {
+    const skgpu::graphite::ContextOptions& options,
+    gpu::GpuProcessShmCount* use_shader_cache_shm_count) {
   CHECK(!objc_storage_->graphite_shared_context);
   CHECK(objc_storage_->device);
 
@@ -63,6 +64,7 @@ bool MetalContextProvider::InitializeGraphiteContext(
 
   objc_storage_->graphite_shared_context =
       std::make_unique<gpu::GraphiteSharedContext>(std::move(graphite_context),
+                                                   use_shader_cache_shm_count,
                                                    /*is_thread_safe=*/false);
   return true;
 }

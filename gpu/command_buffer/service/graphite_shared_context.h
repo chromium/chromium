@@ -27,6 +27,8 @@ struct RecorderOptions;
 
 namespace gpu {
 
+class GpuProcessShmCount;
+
 // This is a thread safe wrapper class to skgpu::graphite::Context. In order to
 // support multi-threading, locks are used to ensure thread safety in
 // skgpu::graphite::Context. All clients need to call the wrapper functions in
@@ -40,6 +42,7 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   GraphiteSharedContext(
       std::unique_ptr<skgpu::graphite::Context> graphite_context,
+      GpuProcessShmCount* use_shader_cache_shm_count,
       bool is_thread_safe);
 
   GraphiteSharedContext(const GraphiteSharedContext&) = delete;
@@ -59,8 +62,8 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   std::unique_ptr<skgpu::graphite::PrecompileContext> makePrecompileContext();
 
-  bool insertRecording(const skgpu::graphite::InsertRecordingInfo&);
-  bool submit(skgpu::graphite::SyncToCpu = skgpu::graphite::SyncToCpu::kNo);
+  bool insertRecording(const skgpu::graphite::InsertRecordingInfo& info);
+  void submit(skgpu::graphite::SyncToCpu = skgpu::graphite::SyncToCpu::kNo);
 
   bool hasUnfinishedGpuWork() const;
 
@@ -175,6 +178,8 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
       base::kInvalidThreadId};
 
   const std::unique_ptr<skgpu::graphite::Context> graphite_context_;
+
+  raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count_ = nullptr;
 };
 
 }  // namespace gpu

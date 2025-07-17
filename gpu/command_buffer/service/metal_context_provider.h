@@ -17,6 +17,7 @@
 
 namespace gpu {
 class GraphiteSharedContext;
+class GpuProcessShmCount;
 }  // namespace gpu
 
 namespace viz {
@@ -33,7 +34,8 @@ class GPU_GLES2_EXPORT MetalContextProvider {
   ~MetalContextProvider();
 
   bool InitializeGraphiteContext(
-      const skgpu::graphite::ContextOptions& options);
+      const skgpu::graphite::ContextOptions& options,
+      gpu::GpuProcessShmCount* use_shader_cache_shm_count);
 
   int32_t GetMaxTextureSize() const;
 

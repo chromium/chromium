@@ -5,176 +5,218 @@
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 
 #include "base/threading/thread.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "skia/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/dawn/include/dawn/dawn_proc.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/ContextOptions.h"
 #include "third_party/skia/include/gpu/graphite/PrecompileContext.h"
 #include "third_party/skia/include/gpu/graphite/Recording.h"
-
-#if BUILDFLAG(SKIA_USE_DAWN)
-#include "third_party/dawn/include/dawn/dawn_proc.h"
-#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
-#endif
 
 namespace gpu {
-#if BUILDFLAG(SKIA_USE_DAWN)
+namespace {
 
-std::unique_ptr<skgpu::graphite::Context> MakeGraphiteContext() {
-  static std::unique_ptr<dawn::native::Instance> instance;
-  DawnProcTable backend_procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&backend_procs);
-  wgpu::InstanceDescriptor instance_desc{};
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_FEATURES_LIMITS
-  static constexpr auto kTimedWaitAny = wgpu::InstanceFeatureName::TimedWaitAny;
-  instance_desc.requiredFeatureCount = 1;
-  instance_desc.requiredFeatures = &kTimedWaitAny;
-#else
-  instance_desc.capabilities.timedWaitAnyEnable = true;
-#endif
-  instance = std::make_unique<dawn::native::Instance>(&instance_desc);
+using testing::NiceMock;
 
-  wgpu::DawnTogglesDescriptor toggles_desc;
-  toggles_desc.enabledToggleCount = 0;
-
-#if BUILDFLAG(IS_MAC)
-  wgpu::BackendType backend = wgpu::BackendType::Metal;
-#elif BUILDFLAG(IS_WIN)
-  wgpu::BackendType backend = wgpu::BackendType::D3D11;
-#else
-  wgpu::BackendType backend = wgpu::BackendType::Vulkan;
-#endif
-  wgpu::RequestAdapterOptions options;
-  options.featureLevel = wgpu::FeatureLevel::Core;
-  options.nextInChain = &toggles_desc;
-
-  std::vector<dawn::native::Adapter> adapters =
-      instance->EnumerateAdapters(&options);
-  CHECK(!adapters.empty());
-
-  dawn::native::Adapter matched_adaptor;
-  for (const auto& adapter : adapters) {
-    wgpu::Adapter wgpuAdapter = adapter.Get();
-    wgpu::AdapterInfo props;
-    wgpuAdapter.GetInfo(&props);
-    if (backend == props.backendType) {
-      matched_adaptor = adapter;
-      break;
-    }
-  }
-
-  if (!matched_adaptor) {
-    return nullptr;
-  }
-
-  wgpu::DeviceDescriptor device_desc;
-  device_desc.requiredFeatureCount = 0;
-  device_desc.nextInChain = &toggles_desc;
-
-  wgpu::Device device =
-      wgpu::Device::Acquire(matched_adaptor.CreateDevice(&device_desc));
-  CHECK(device);
-
-  skgpu::graphite::DawnBackendContext backend_context;
-  backend_context.fInstance = wgpu::Instance(instance->Get());
-  backend_context.fDevice = device;
-  backend_context.fQueue = device.GetQueue();
-  skgpu::graphite::ContextOptions context_options = {};
-
-  return skgpu::graphite::ContextFactory::MakeDawn(backend_context,
-                                                   context_options);
-}
-
-// Test fixture for GraphiteSharedContext with thread safety enabled.
-class GraphiteSharedContextThreadSafeTest : public testing::Test {
+class MockGpuProcessShmCount : public GpuProcessShmCount {
  public:
-  void SetUp() override {
-    std::unique_ptr<skgpu::graphite::Context> graphite_context =
-        MakeGraphiteContext();
-
-    // Only test with a Dawn adapter that is thread-safe. Skip the test if this
-    // adapter is not available.
-    if (!graphite_context) {
-      GTEST_SKIP() << "Graphite context creation failed, skipping test.";
-    }
-
-    graphite_shared_context_ = std::make_unique<GraphiteSharedContext>(
-        std::move(graphite_context), /*is_thread_safe=*/true);
-
-    secondary_thread_.StartAndWaitForTesting();
-  }
-
-  void TearDown() override { secondary_thread_.Stop(); }
-
-  base::Thread* secondary_thread() { return &secondary_thread_; }
-
-  GraphiteSharedContext* graphite_shared_context() {
-    return graphite_shared_context_.get();
-  }
-
-  // Function to be executed by each thread.  This will call the methods on
-  // GraphiteSharedContext.
-  void RunGraphiteFunctions() {
-    // Call a method that acquires the lock
-    std::unique_ptr<skgpu::graphite::Recorder> recorder =
-        graphite_shared_context()->makeRecorder();
-    EXPECT_TRUE(recorder);
-
-    for (int i = 0; i < 2; ++i) {
-      for (int j = 0; j < 10; ++j) {
-        std::unique_ptr<skgpu::graphite::Recording> recording =
-            recorder->snap();
-        skgpu::graphite::InsertRecordingInfo info = {};
-        info.fRecording = recording.get();
-        EXPECT_TRUE(recording);
-
-        bool insert_success = graphite_shared_context()->insertRecording(info);
-        EXPECT_TRUE(insert_success);
-      }
-
-      bool submit_success = graphite_shared_context()->submit();
-      EXPECT_TRUE(submit_success);
-    }
-
-    EXPECT_FALSE(graphite_shared_context()->isDeviceLost());
-  }
-
- private:
-  std::unique_ptr<GraphiteSharedContext> graphite_shared_context_;
-  base::Thread secondary_thread_ = base::Thread("Secondary_Thread");
+  MOCK_METHOD(void, Increment, (), (override));
+  MOCK_METHOD(void, Decrement, (), (override));
 };
 
-TEST_F(GraphiteSharedContextThreadSafeTest, IsThreadSafe) {
+// Test fixture for GraphiteSharedContext with thread safety enabled.
+class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
+ protected:
+  GraphiteSharedContextTest() {
+    InitializeGraphiteDawn();
+
+    if (is_thread_safe()) {
+      secondary_thread_ = std::make_unique<base::Thread>("Secondary_Thread");
+      secondary_thread_->StartAndWaitForTesting();
+    }
+  }
+
+  ~GraphiteSharedContextTest() {
+    if (secondary_thread_) {
+      secondary_thread_->Stop();
+    }
+  }
+
+  bool is_thread_safe() const { return GetParam(); }
+
+  void InitializeGraphiteDawn() {
+    dawnProcSetProcs(&dawn::native::GetProcs());
+
+    wgpu::InstanceDescriptor instance_desc = {};
+#ifdef WGPU_BREAKING_CHANGE_INSTANCE_FEATURES_LIMITS
+    static constexpr auto kTimedWaitAny =
+        wgpu::InstanceFeatureName::TimedWaitAny;
+    instance_desc.requiredFeatureCount = 1;
+    instance_desc.requiredFeatures = &kTimedWaitAny;
+#else
+    instance_desc.capabilities.timedWaitAnyEnable = true;
+#endif
+    dawn::native::Instance dawn_instance(&instance_desc);
+
+    wgpu::RequestAdapterOptions options = {};
+#if BUILDFLAG(IS_MAC)
+    options.backendType = wgpu::BackendType::Metal;
+#elif BUILDFLAG(IS_WIN)
+    options.backendType = wgpu::BackendType::D3D11;
+#else
+    // Android, ChromeOS, Fuchsia, Linux all use Vulkan.
+    options.backendType = wgpu::BackendType::Vulkan;
+    // Force Swiftshader on Linux due to threading issues with native drivers.
+    options.forceFallbackAdapter = !!BUILDFLAG(IS_LINUX);
+#endif
+    options.featureLevel = wgpu::FeatureLevel::Core;
+
+    std::vector<dawn::native::Adapter> adapters =
+        dawn_instance.EnumerateAdapters(&options);
+    CHECK(!adapters.empty());
+
+    wgpu::DeviceDescriptor device_desc = {};
+
+    wgpu::Device device =
+        wgpu::Adapter(adapters[0].Get()).CreateDevice(&device_desc);
+    CHECK(device);
+
+    skgpu::graphite::DawnBackendContext backend_context = {};
+    backend_context.fInstance = wgpu::Instance(dawn_instance.Get());
+    backend_context.fDevice = device;
+    backend_context.fQueue = device.GetQueue();
+
+    skgpu::graphite::ContextOptions context_options = {};
+    graphite_shared_context_ = std::make_unique<GraphiteSharedContext>(
+        skgpu::graphite::ContextFactory::MakeDawn(backend_context,
+                                                  context_options),
+        &use_shader_cache_shm_count_, is_thread_safe());
+  }
+
+  MockGpuProcessShmCount use_shader_cache_shm_count_;
+  std::unique_ptr<GraphiteSharedContext> graphite_shared_context_;
+  std::unique_ptr<base::Thread> secondary_thread_;
+};
+
+TEST_P(GraphiteSharedContextTest, IsThreadSafe) {
   // GraphiteSharedContext graphite_shared_context_ is create with
   // |is_thread_safe| = true in  SetUp(). |lock_| should be allocated and
   // IsThreadSafe() is read back as true.
-  EXPECT_TRUE(graphite_shared_context()->IsThreadSafe());
+  EXPECT_EQ(graphite_shared_context_->IsThreadSafe(), is_thread_safe());
 }
 
 // Test that multiple threads can safely call methods on GraphiteSharedContext.
-TEST_F(GraphiteSharedContextThreadSafeTest, ConcurrentAccess) {
+TEST_P(GraphiteSharedContextTest, ConcurrentAccess) {
+  if (!is_thread_safe()) {
+    GTEST_SKIP() << "Concurrent access only supported with thread safe context";
+  }
+
   // Warming up the secondary thread with a no-op function.
-  secondary_thread()->task_runner()->PostTask(FROM_HERE, base::BindOnce([]() {
-                                                // Do nothing.
-                                              }));
+  secondary_thread_->task_runner()->PostTask(FROM_HERE, base::BindOnce([]() {
+                                               // Do nothing.
+                                             }));
   // Flush and wait until it completes
-  secondary_thread()->FlushForTesting();
+  secondary_thread_->FlushForTesting();
+
+  auto run_graphite_functions =
+      [](GraphiteSharedContext* graphite_shared_context) {
+        // Call a method that acquires the lock
+        std::unique_ptr<skgpu::graphite::Recorder> recorder =
+            graphite_shared_context->makeRecorder();
+        EXPECT_TRUE(recorder);
+
+        for (int i = 0; i < 2; ++i) {
+          for (int j = 0; j < 10; ++j) {
+            std::unique_ptr<skgpu::graphite::Recording> recording =
+                recorder->snap();
+            skgpu::graphite::InsertRecordingInfo info = {};
+            info.fRecording = recording.get();
+            EXPECT_TRUE(recording);
+
+            bool insert_success =
+                graphite_shared_context->insertRecording(info);
+            EXPECT_TRUE(insert_success);
+          }
+
+          graphite_shared_context->submit();
+        }
+
+        EXPECT_FALSE(graphite_shared_context->isDeviceLost());
+      };
 
   // Call graphite::context functions on the secondary thread.
-  secondary_thread()->task_runner()->PostTask(
+  secondary_thread_->task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&GraphiteSharedContextThreadSafeTest::RunGraphiteFunctions,
-                     base::Unretained(this)));
+      base::BindOnce(run_graphite_functions,
+                     base::Unretained(graphite_shared_context_.get())));
 
   // Call graphite::context functions at the same time on the main thread.
   // We should not encounter any failures or deadlocks on either threads.
-  RunGraphiteFunctions();
+  run_graphite_functions(graphite_shared_context_.get());
 
   // Just in case the secondary thread is slower, Wait until finished before
   // exit.
-  secondary_thread()->FlushForTesting();
+  secondary_thread_->FlushForTesting();
 }
 
-#endif  // #if BUILDFLAG(SKIA_USE_DAWN)
+TEST_P(GraphiteSharedContextTest, AsyncShaderCompilesFailed) {
+  std::unique_ptr<skgpu::graphite::Recorder> recorder =
+      graphite_shared_context_->makeRecorder();
+  EXPECT_TRUE(recorder);
+
+  auto ii = SkImageInfo::Make(64, 64, kN32_SkColorType, kPremul_SkAlphaType);
+  sk_sp<SkSurface> surface1 = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface1->getCanvas()->clear(SK_ColorRED);
+
+  sk_sp<SkSurface> surface2 = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface2->getCanvas()->drawImage(surface1->makeTemporaryImage(), 0, 0);
+
+  std::unique_ptr<skgpu::graphite::Recording> recording = recorder->snap();
+  EXPECT_TRUE(recording);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+  info.fSimulatedStatus =
+      skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed;
+
+  EXPECT_CALL(use_shader_cache_shm_count_, Increment()).Times(1);
+  EXPECT_CALL(use_shader_cache_shm_count_, Decrement()).Times(1);
+
+  EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
+}
+
+TEST_P(GraphiteSharedContextTest, AddCommandsFailed) {
+  std::unique_ptr<skgpu::graphite::Recorder> recorder =
+      graphite_shared_context_->makeRecorder();
+  EXPECT_TRUE(recorder);
+
+  auto ii = SkImageInfo::Make(64, 64, kN32_SkColorType, kPremul_SkAlphaType);
+  sk_sp<SkSurface> surface1 = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface1->getCanvas()->clear(SK_ColorRED);
+
+  sk_sp<SkSurface> surface2 = SkSurfaces::RenderTarget(recorder.get(), ii);
+  surface2->getCanvas()->drawImage(surface1->makeTemporaryImage(), 0, 0);
+
+  std::unique_ptr<skgpu::graphite::Recording> recording = recorder->snap();
+  EXPECT_TRUE(recording);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+  info.fSimulatedStatus = skgpu::graphite::InsertStatus::kAddCommandsFailed;
+
+  EXPECT_CALL(use_shader_cache_shm_count_, Increment()).Times(0);
+  EXPECT_CALL(use_shader_cache_shm_count_, Decrement()).Times(0);
+
+  EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
+}
+
+INSTANTIATE_TEST_SUITE_P(, GraphiteSharedContextTest, testing::Bool());
+
+}  // namespace
 }  // namespace gpu

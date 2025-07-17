@@ -489,6 +489,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // Information about the GPU process populated on creation.
   gfx::GpuExtraInfo gpu_extra_info_;
 
+  gpu::GpuProcessShmCount use_shader_cache_shm_count_;
+
   mojo::SharedRemote<mojom::GpuHost> gpu_host_;
   std::unique_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
   std::unique_ptr<media::MediaGpuChannelManager> media_gpu_channel_manager_;
