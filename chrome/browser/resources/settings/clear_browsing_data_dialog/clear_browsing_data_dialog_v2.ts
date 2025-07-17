@@ -161,6 +161,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
       deleteButtonLabel_: {
         type: String,
+        value: loadTimeData.getString('deleteDataFromDevice'),
         computed: 'computeDeleteButtonLabel_(syncStatus_.signedInState)',
       },
 
