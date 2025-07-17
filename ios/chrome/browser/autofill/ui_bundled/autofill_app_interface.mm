@@ -52,6 +52,7 @@ namespace {
 
 const char16_t kExampleUsername[] = u"concrete username";
 const char16_t kExamplePassword[] = u"concrete password";
+const char16_t kExampleBackupPassword[] = u"backup password";
 
 // Gets the current profile password store.
 scoped_refptr<password_manager::PasswordStoreInterface>
@@ -135,24 +136,36 @@ void SaveToPasswordProfileStore(const password_manager::PasswordForm& form) {
   }
 }
 
+// Creates an example form for the passed URL.
+password_manager::PasswordForm CreateExamplePasswordForm(
+    const GURL& url = GURL("https://example.com/")) {
+  password_manager::PasswordForm password_form;
+  password_form.username_value = kExampleUsername;
+  password_form.password_value = kExamplePassword;
+  password_form.url = url;
+  password_form.signon_realm =
+      password_manager_util::GetSignonRealm(password_form.url);
+  return password_form;
+}
+
 // Saves an example form in the profile store.
 void SaveExamplePasswordFormInProfileStore() {
-  password_manager::PasswordForm example;
-  example.username_value = kExampleUsername;
-  example.password_value = kExamplePassword;
-  example.url = GURL("https://example.com/");
-  example.signon_realm = password_manager_util::GetSignonRealm(example.url);
-  SaveToPasswordProfileStore(example);
+  password_manager::PasswordForm example = CreateExamplePasswordForm();
+  SaveToPasswordProfileStore(std::move(example));
 }
 
 // Saves an example form in the profile store for the passed URL.
 void SaveLocalPasswordForm(const GURL& url) {
-  password_manager::PasswordForm localForm;
-  localForm.username_value = kExampleUsername;
-  localForm.password_value = kExamplePassword;
-  localForm.url = url;
-  localForm.signon_realm = password_manager_util::GetSignonRealm(localForm.url);
-  SaveToPasswordProfileStore(localForm);
+  password_manager::PasswordForm local_form = CreateExamplePasswordForm(url);
+  SaveToPasswordProfileStore(std::move(local_form));
+}
+
+// Saves an example form with a backup password in the profile store for the
+// passed URL.
+void SavePasswordFormWithBackup(const GURL& url) {
+  password_manager::PasswordForm password_form = CreateExamplePasswordForm(url);
+  password_form.SetPasswordBackupNote(kExampleBackupPassword);
+  SaveToPasswordProfileStore(std::move(password_form));
 }
 
 // Removes all credentials from the profile store.
@@ -387,6 +400,10 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 
 + (void)savePasswordFormForURLSpec:(NSString*)URLSpec {
   SaveLocalPasswordForm(GURL(base::SysNSStringToUTF8(URLSpec)));
+}
+
++ (void)savePasswordFormWithBackupForURLSpec:(NSString*)URLSpec {
+  SavePasswordFormWithBackup(GURL(base::SysNSStringToUTF8(URLSpec)));
 }
 
 + (NSInteger)profilesCount {

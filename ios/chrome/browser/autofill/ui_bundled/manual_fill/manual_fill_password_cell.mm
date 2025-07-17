@@ -257,7 +257,12 @@ static const CGFloat kOffsetForConnectedCell = 16;
         ![credential.host isEqualToString:credential.siteName];
 
     NSAttributedString* attributedText =
-        CreateSiteNameLabelAttributedText(credential, shouldShowHost);
+        credential.isBackupCredential
+            ? CreateHeaderAttributedString(
+                  l10n_util::GetNSString(
+                      IDS_IOS_MANUAL_FALLBACK_RECOVERY_PASSWORD_SUGGESTION_TITLE),
+                  credential.host)
+            : CreateSiteNameLabelAttributedText(credential, shouldShowHost);
     self.siteNameLabel.attributedText = attributedText;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       self.siteNameLabel.numberOfLines = 0;

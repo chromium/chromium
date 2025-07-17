@@ -3644,6 +3644,9 @@ See your search engine’s instructions for deleting your search history, if app
              =1 {{position} of {count} payment method}
              other {{position} of {count} payment methods}}
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_RECOVERY_PASSWORD_SUGGESTION_TITLE" desc="The title for a recovery password suggestion shown in the password manual fallback screen.">
+        Recovery password
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE" desc="The contents of a dialog asking the user to confirm they trust the current site before selecting a saved password to fill.">
         If you trust <ph name="SITE">$1<ex>example.com</ex></ph>, you can use a saved password to sign in.
       </message>

@@ -343,6 +343,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/plus_addresses:features",
     "//components/plus_addresses:test_support",
