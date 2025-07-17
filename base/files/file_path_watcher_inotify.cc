@@ -778,13 +778,16 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
 bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
   DUMP_WILL_BE_CHECK_EQ(type_, Type::kRecursive);
   DUMP_WILL_BE_CHECK(!path.empty());
-  DUMP_WILL_BE_CHECK(DirectoryExists(path));
 
   // Note: SHOW_SYM_LINKS exposes symlinks as symlinks, so they are ignored
   // rather than followed. Following symlinks can easily lead to the undesirable
   // situation where the entire file system is being watched.
+  //
+  // Note: Even though callers have checked `path` exists, it still may
+  // disappear if there is a race with another process that is changing the file
+  // system.
   FileEnumerator enumerator(
-      path, true /* recursive enumeration */,
+      path, /*recursive=*/true,
       FileEnumerator::DIRECTORIES | FileEnumerator::SHOW_SYM_LINKS);
   for (FilePath current = enumerator.Next(); !current.empty();
        current = enumerator.Next()) {
