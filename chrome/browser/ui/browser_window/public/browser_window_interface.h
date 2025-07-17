@@ -56,7 +56,6 @@ class DesktopBrowserWindowCapabilities;
 class ExclusiveAccessManager;
 class GURL;
 class ImmersiveModeController;
-class Profile;
 class TabStripModel;
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -65,6 +64,7 @@ class BaseWindow;
 class UnownedUserDataHost;
 }  // namespace ui
 
+class Profile;
 class SessionID;
 
 #if !BUILDFLAG(IS_ANDROID)

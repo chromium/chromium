@@ -10,11 +10,17 @@ source_set("internal") {
   sources = []
   deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
+    "//ui/base/unowned_user_data",
   ]
 
   if (is_android) {
-    sources += [ "browser_window_interface_iterator_android.cc" ]
+    sources += [
+      "android/android_base_window.cc",
+      "android/android_browser_window.cc",
+      "browser_window_interface_iterator_android.cc",
+    ]
   } else {
     sources += [
       "browser_window_features.cc",
@@ -27,7 +33,6 @@ source_set("internal") {
       "//chrome/browser/extensions",
       "//chrome/browser/lens/region_search:region_search",
       "//chrome/browser/media/router:media_router_feature",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks:bookmarks",
       "//chrome/browser/ui/commerce",
@@ -54,7 +59,6 @@ source_set("internal") {
       "//components/profile_metrics",
       "//components/saved_tab_groups/public",
       "//components/search",
-      "//ui/base/unowned_user_data",
     ]
 
     if (is_win) {
@@ -73,5 +77,30 @@ source_set("internal") {
     if (use_aura) {
       deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]
     }
+  }
+}
+
+# Android targets need to be guarded by is_android because:
+# (1) Android GNI files may assert is_android, and
+# (2) The rest of this file can be included in non-Android builds.
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  android_library("java") {
+    visibility = [
+      ":*",
+      "//chrome/android:chrome_all_java",
+    ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImpl.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImpl.java",
+    ]
+    deps = [
+      "//build/android:build_java",
+      "//chrome/browser/ui/browser_window:java",
+    ]
   }
 }

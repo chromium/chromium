@@ -938,6 +938,10 @@ if (_is_default_toolchain) {
       "//components/segmentation_platform/internal:internal_java",
       "//components/visited_url_ranking/internal:internal_java",
     ]
+
+    if (is_desktop_android) {
+      deps += [ "//chrome/browser/ui/browser_window/internal:java" ]
+    }
   }
 
   action_with_pydeps("chrome_android_java_google_api_keys_srcjar") {

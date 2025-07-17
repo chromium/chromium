@@ -31,3 +31,27 @@ source_set("browser_window") {
     ]
   }
 }
+
+# Android targets need to be guarded by is_android because:
+# (1) Android GNI files may assert is_android, and
+# (2) The rest of this file can be included in non-Android builds.
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+  # Public Java interfaces
+  android_library("java") {
+    sources = [
+      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTask.java",
+      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeature.java",
+      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTracker.java",
+    ]
+    deps = [ "//build/android:build_java" ]
+  }
+
+  # Public Java factory
+  android_library_factory("factory_java") {
+    deps = [ ":java" ]
+    sources = [ "internal/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java" ]
+  }
+}
