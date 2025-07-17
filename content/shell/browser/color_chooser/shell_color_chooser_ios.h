@@ -5,6 +5,8 @@
 #ifndef CONTENT_SHELL_BROWSER_COLOR_CHOOSER_SHELL_COLOR_CHOOSER_IOS_H_
 #define CONTENT_SHELL_BROWSER_COLOR_CHOOSER_SHELL_COLOR_CHOOSER_IOS_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/color_chooser.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-forward.h"
