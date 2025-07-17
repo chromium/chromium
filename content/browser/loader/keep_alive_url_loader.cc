@@ -214,6 +214,41 @@ bool IsRedirectAllowedByCSP(
       .IsAllowed();
 }
 
+bool IsNetErrorEligibleForRetry(int net_error) {
+  // Check if the error we encountered is likely transient / can succeed with
+  // another attempt.
+  return  // Generic transient errors.
+      net_error == net::ERR_TIMED_OUT ||
+      net_error == net::ERR_CONNECTION_TIMED_OUT ||
+      net_error == net::ERR_CONNECTION_CLOSED ||
+      net_error == net::ERR_CONNECTION_REFUSED ||
+      net_error == net::ERR_CONNECTION_RESET ||
+      net_error == net::ERR_CONNECTION_FAILED ||
+      net_error == net::ERR_ADDRESS_UNREACHABLE ||
+      net_error == net::ERR_NETWORK_CHANGED ||
+      // Proxy/tunnel-specific connection issues.
+      net_error == net::ERR_TUNNEL_CONNECTION_FAILED ||
+      net_error == net::ERR_PROXY_CONNECTION_FAILED ||
+      net_error == net::ERR_SOCKS_CONNECTION_FAILED ||
+      net_error == net::ERR_HTTP2_PING_FAILED ||
+      net_error == net::ERR_HTTP2_PROTOCOL_ERROR ||
+      net_error == net::ERR_QUIC_PROTOCOL_ERROR ||
+      // DNS failures.
+      net_error == net::ERR_NAME_NOT_RESOLVED ||
+      net_error == net::ERR_INTERNET_DISCONNECTED ||
+      net_error == net::ERR_NAME_RESOLUTION_FAILED;
+}
+
+bool IsServerGuaranteedToBeNotReachedYet(int net_error) {
+  return net_error == net::ERR_CONNECTION_REFUSED ||
+         net_error == net::ERR_ADDRESS_UNREACHABLE ||
+         net_error == net::ERR_TUNNEL_CONNECTION_FAILED ||
+         net_error == net::ERR_PROXY_CONNECTION_FAILED ||
+         net_error == net::ERR_SOCKS_CONNECTION_FAILED ||
+         net_error == net::ERR_NAME_NOT_RESOLVED ||
+         net_error == net::ERR_NAME_RESOLUTION_FAILED;
+}
+
 }  // namespace
 
 // A wrapper class around the target URLLoaderClient connected to Renderer,
@@ -445,6 +480,9 @@ void KeepAliveURLLoader::StartInternal(bool is_retry) {
   TRACE_EVENT("loading", "KeepAliveURLLoader::Start", "request_id",
               request_id_);
   is_started_ = true;
+  if (!is_retry) {
+    first_request_start_time_ = base::TimeTicks::Now();
+  }
 
   LogFetchKeepAliveRequestMetric(is_retry ? "Retried" : "Started");
   if (request_tracker_) {
@@ -522,8 +560,9 @@ bool KeepAliveURLLoader::IsStarted() const {
   return is_started_;
 }
 
-bool KeepAliveURLLoader::IsAttemptingRetry() const {
-  return retry_state_ != RetryState::kNotAttemptingRetry;
+bool KeepAliveURLLoader::IsAttemptingRetry(bool include_failed_retry) const {
+  return retry_state_ != RetryState::kNotAttemptingRetry &&
+         (include_failed_retry || retry_state_ != RetryState::kRetryFailed);
 }
 
 RenderFrameHostImpl* KeepAliveURLLoader::GetInitiator() const {
@@ -754,6 +793,9 @@ void KeepAliveURLLoader::OnComplete(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnComplete", "request_id",
               request_id_);
+  if (IsAttemptingRetry(/*include_failed_retry=*/false)) {
+    retry_state_ = RetryState::kRetryFailed;
+  }
 
   if (request_tracker_) {
     request_tracker_->AdvanceToNextStage(
@@ -765,21 +807,32 @@ void KeepAliveURLLoader::OnComplete(
     // If the request succeeds, it should've been logged in `OnReceiveResponse`.
     LogFetchKeepAliveRequestMetric("Failed");
 
-    if (MaybeScheduleRetry(completion_status)) {
-      // Retry is scheduled. Don't process the completion, but still forward the
-      // error to test observers and DevTools.
+    if (RetryOrDelayErrorIfNeeded(
+            completion_status,
+            base::BindOnce(&KeepAliveURLLoader::OnCompleteInternal,
+                           // `this` owns `max_age_handler_timer_`.
+                           base::Unretained(this), completion_status))) {
+      // Retry or delayed error processing is scheduled. Don't process the
+      // cancellation at this time, but still notify test observers and
+      // devtools.
       NotifyOnCompleteForTestAndDevTools(completion_status);
       return;
     }
+  }
 
-    // Note that we don't need to reset the attribution helper if we retry.
+  NotifyOnCompleteForTestAndDevTools(completion_status);
+  OnCompleteInternal(completion_status);
+}
+
+void KeepAliveURLLoader::OnCompleteInternal(
+    const network::URLLoaderCompletionStatus& completion_status) {
+  // Note that we don't need to reset the attribution helper if we retry.
+  if (completion_status.error_code != net::OK) {
     if (attribution_request_helper_) {
       attribution_request_helper_->OnError();
       attribution_request_helper_.reset();
     }
   }
-
-  NotifyOnCompleteForTestAndDevTools(completion_status);
 
   // In case the renderer is alive, the stored status will be forwarded
   // at the end of `ForwardURLLoad()`.
@@ -869,8 +922,8 @@ bool KeepAliveURLLoader::IsEligibleForRetry(
       retry_state_ == RetryState::kRetryScheduled ||
       retry_state_ == RetryState::kWaitingForSameNetworkIsolationKeyDocument ||
       retry_count_ >= GetMaxAttemptsForRetry() ||
-      (first_retry_initiated_time_ != base::TimeTicks() &&
-       base::TimeTicks::Now() - first_retry_initiated_time_ >
+      (first_request_start_time_ != base::TimeTicks() &&
+       base::TimeTicks::Now() - first_request_start_time_ >
            GetMaxAgeForRetry())) {
     return false;
   }
@@ -901,14 +954,31 @@ bool KeepAliveURLLoader::IsEligibleForRetry(
   if (!completion_status.has_value()) {
     // No completion status. This can only happen when we hit the renderer
     // disconnect timeout before getting any results. The request should be
-    // eligible to retry.
-    return true;
+    // eligible to retry, except if explicitly opting in to retry only if the
+    // server is guaranteed to be not reached yet. We can't guarantee that in
+    // this case, because we don't know if the server has been reached yet or
+    // not.
+    return !retry_options->retry_only_if_server_unreached;
   }
 
-  CHECK_NE(completion_status->error_code, net::OK);
-  // All errors should be retried, to prevent the fetch callers inferring
-  // anything about the error code.
-  return true;
+  if (completion_status->resolve_error_info.is_secure_network_error) {
+    // Don't retry if the error was a secure DNS network error,
+    // since the retry may interfere with the captive portal probe state.
+    // TODO(crbug.com/40104002): Explore how to allow retries for secure
+    // DNS network errors without interfering with the captive portal
+    // probe state.
+    return false;
+  }
+
+  if (retry_options->retry_only_if_server_unreached) {
+    // Only retry in this case if we've never encountered redirect yet (since if
+    // we've been redirected, we must have reached the redirector server
+    // before), and the error indicates that the server is not reached yet.
+    return !did_encounter_redirect_ &&
+           IsServerGuaranteedToBeNotReachedYet(completion_status->error_code);
+  }
+
+  return IsNetErrorEligibleForRetry(completion_status->error_code);
 }
 
 bool KeepAliveURLLoader::MaybeScheduleRetry(
@@ -922,18 +992,28 @@ bool KeepAliveURLLoader::MaybeScheduleRetry(
   // happened, then the disconnection triggers CancelWithStatus).
   url_loader_.reset();
 
+  // Set a timer to delete self when the max age has been reached. Note that
+  // we check if the timer is already set here, because it could've been set
+  // already by a previous retry attempt (so there's no use to set it again),
+  // or it was already set to process an error we encountered in a past attempt
+  // (which should still be kept, in case this retry attempt went past max
+  // age, at which point we should still send that latest error).
+  if (!max_age_handler_timer_.IsRunning()) {
+    base::TimeDelta current_age =
+        (base::TimeTicks::Now() - first_request_start_time_);
+    max_age_handler_timer_.Start(
+        FROM_HERE, GetMaxAgeForRetry() - current_age,
+        base::BindOnce(&KeepAliveURLLoader::DeleteSelf,
+                       // `this` owns `max_age_handler_timer_`.
+                       base::Unretained(this)));
+  }
+
   // Update the retry-tracking states. Note that there's no need to reset any
   // of the actual request-related state, since the retry is attempted from the
   // last request attempt, and no state has been updated in response of the
   // failed result yet. All states relating to previous attempts (e.g. stored
   // loads storing previous redirects) only contain results from successful
   // redirects/responses so there's no need to reset.
-  if (retry_count_ == 0) {
-    first_retry_initiated_time_ = base::TimeTicks::Now();
-    self_deletion_timer_.Start(FROM_HERE, GetMaxAgeForRetry(),
-                               base::BindOnce(&KeepAliveURLLoader::DeleteSelf,
-                                              base::Unretained(this)));
-  }
   retry_count_++;
   CHECK_LE(retry_count_, GetMaxAttemptsForRetry());
   retry_state_ = RetryState::kRetryScheduled;
@@ -950,6 +1030,9 @@ bool KeepAliveURLLoader::MaybeScheduleRetry(
 }
 
 void KeepAliveURLLoader::AttemptRetryIfAllowed() {
+  if (retry_state_ == RetryState::kRetryFailed) {
+    return;
+  }
   CHECK(retry_state_ == RetryState::kRetryScheduled ||
         retry_state_ == RetryState::kWaitingForSameNetworkIsolationKeyDocument);
   // Don't retry when there's no active document with a same network isolation
@@ -1011,6 +1094,11 @@ void KeepAliveURLLoader::ForwardURLLoad() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(IsRendererConnected());
   CHECK(stored_url_load_);
+
+  // Don't delete self if we need to forward response to the renderer. This is
+  // ok since it's either not an error, or we've already reached max age and are
+  // forwarding the errors.
+  max_age_handler_timer_.Stop();
 
   // Forwards the redirects/response/completion in the exact sequence.
   stored_url_load_->forwarding = true;
@@ -1119,25 +1207,78 @@ net::Error KeepAliveURLLoader::WillFollowRedirect(
   return net::OK;
 }
 
+bool KeepAliveURLLoader::RetryOrDelayErrorIfNeeded(
+    const network::URLLoaderCompletionStatus& status,
+    base::OnceClosure closure) {
+  auto retry_options = resource_request_.fetch_retry_options;
+  if (!retry_options.has_value()) {
+    // Ignore fetches that do not opt-in to retry.
+    return false;
+  }
+
+  // Schedule retry if needed.
+  if (MaybeScheduleRetry(status)) {
+    return true;
+  }
+
+  base::TimeDelta current_age =
+      (base::TimeTicks::Now() - first_request_start_time_);
+  if (IsRendererConnected() && current_age < GetMaxAgeForRetry()) {
+    // A retry is not attempted, but we can only notify the renderer about the
+    // error when we reach the max age, to avoid exposing information about the
+    // error through timing. Note that we only do this when the renderer is
+    // still connected and waiting for the error info. If the renderer is
+    // already disconnected, we can just continue processing the error and free
+    // up resources by deleting ourself. Note also that this will replace the
+    // previous action set in the timer (which is either to send the error from
+    // a previous attempt, or to delete self, which should not take precedent
+    // over this).
+    max_age_handler_timer_.Start(FROM_HERE, GetMaxAgeForRetry() - current_age,
+                                 std::move(closure));
+
+    // Reset the URLLoader to avoid receiving another error signal after this
+    // (e.g. OnComplete with error happened, then the disconnection triggers
+    // CancelWithStatus).
+    url_loader_.reset();
+    return true;
+  }
+
+  return false;
+}
+
 void KeepAliveURLLoader::CancelWithStatus(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::CancelWithStatus", "request_id",
               request_id_);
+  if (IsAttemptingRetry(/*include_failed_retry=*/false)) {
+    retry_state_ = RetryState::kRetryFailed;
+  }
+
   if (!stored_url_load_->completion_status.has_value()) {
     // Only logs if there is no error logged by `OnComplete()` yet.
     LogFetchKeepAliveRequestMetric("Failed");
   }
+
   if (request_tracker_) {
     request_tracker_->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::kRequestFailed, status);
   }
 
-  if (MaybeScheduleRetry(status)) {
-    // Retry is scheduled. Don't process the cancellation.
+  if (RetryOrDelayErrorIfNeeded(
+          status, base::BindOnce(&KeepAliveURLLoader::CancelWithStatusInternal,
+                                 // `this` owns `max_age_handler_timer_`.
+                                 base::Unretained(this), status))) {
+    // Retry or delayed error processing is scheduled. Don't process the
+    // cancellation at this time.
     return;
   }
 
+  CancelWithStatusInternal(status);
+}
+
+void KeepAliveURLLoader::CancelWithStatusInternal(
+    const network::URLLoaderCompletionStatus& status) {
   // This method can be triggered when one of the followings happen:
   // 1. Network -> `url_loader_` gets disconnected.
   // 2. `url_loader_` gets cancelled by throttles.
@@ -1215,9 +1356,12 @@ void KeepAliveURLLoader::OnURLLoaderDisconnected() {
 }
 
 void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
+  if (IsAttemptingRetry(/*include_failed_retry=*/false)) {
+    retry_state_ = RetryState::kRetryFailed;
+  }
   if (resource_request_.fetch_retry_options.has_value() &&
       resource_request_.fetch_retry_options->retry_after_unload &&
-      (IsAttemptingRetry() ||
+      (IsAttemptingRetry(/*include_failed_retry=*/false) ||
        MaybeScheduleRetry(/*completion_status=*/std::nullopt))) {
     // A retry is already pending or we just scheduled a retry. Don't delete
     // the loader, and instead keep it around for the retry.
