@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -13,7 +14,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
 
@@ -21,20 +21,7 @@ using ::testing::ElementsAre;
 
 class AddressFormattingTest : public ::testing::Test {
  public:
-  void SetUp() override {
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        GetLocale(), /*delegate=*/nullptr,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-  }
-
-  void TearDown() override {
-    ui::ResourceBundle::CleanupSharedInstance();
-  }
-
-  std::string GetLocale() { return "en-US"; }
-
- private:
-  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
+  static std::string GetLocale() { return base::i18n::GetConfiguredLocale(); }
 };
 
 // This is a regression test from crbug.com/1259928. Address formats of
