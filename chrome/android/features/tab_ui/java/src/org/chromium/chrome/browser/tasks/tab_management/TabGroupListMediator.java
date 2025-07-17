@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
@@ -266,7 +267,16 @@ public class TabGroupListMediator {
         List<SavedTabGroup> sortedTabGroups =
                 sortUtil.getSortedGroupList(
                         this::shouldShowGroupByState,
-                        (a, b) -> Long.compare(b.creationTimeMs, a.creationTimeMs));
+                        (a, b) -> {
+                            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups
+                                    .isEnabled()) {
+                                return Long.compare(
+                                        TabUiUtils.getGroupLastUpdatedTimestamp(b),
+                                        TabUiUtils.getGroupLastUpdatedTimestamp(a));
+                            } else {
+                                return Long.compare(b.creationTimeMs, a.creationTimeMs);
+                            }
+                        });
         for (SavedTabGroup savedTabGroup : sortedTabGroups) {
             TabGroupRowMediator rowMediator =
                     new TabGroupRowMediator(
@@ -294,4 +304,3 @@ public class TabGroupListMediator {
         return groupWindowState != GroupWindowState.IN_ANOTHER;
     }
 }
-

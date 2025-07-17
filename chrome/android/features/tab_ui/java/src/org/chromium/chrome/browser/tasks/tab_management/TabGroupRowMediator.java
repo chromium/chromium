@@ -22,6 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -120,10 +121,9 @@ class TabGroupRowMediator {
                 new TabGroupRowViewTitleData(
                         userTitle, numberOfTabs, R.plurals.tab_group_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
-
         builder.with(
                 TabGroupRowProperties.TIMESTAMP_EVENT,
-                new TabGroupTimeAgo(savedTabGroup.creationTimeMs, TimestampEvent.CREATED));
+                getTabGroupTimeAgoTimestampEvent(savedTabGroup));
         builder.with(TabGroupRowProperties.OPEN_RUNNABLE, this::openGroup);
         builder.with(TabGroupRowProperties.ROW_CLICK_RUNNABLE, this::openGroup);
         builder.with(TabGroupRowProperties.DESTROYABLE, this::destroy);
@@ -334,6 +334,16 @@ class TabGroupRowMediator {
         } else {
             assert !allowDialog : "A dialog should have already been shown.";
             mTabGroupSyncService.removeGroup(assumeNonNull(mSavedTabGroup.syncId));
+        }
+    }
+
+    /** Determine the last used timestamp from {@link SavedTabGroupTab} update times. */
+    private TabGroupTimeAgo getTabGroupTimeAgoTimestampEvent(SavedTabGroup savedTabGroup) {
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
+            return new TabGroupTimeAgo(
+                    TabUiUtils.getGroupLastUpdatedTimestamp(savedTabGroup), TimestampEvent.UPDATED);
+        } else {
+            return new TabGroupTimeAgo(savedTabGroup.creationTimeMs, TimestampEvent.CREATED);
         }
     }
 }

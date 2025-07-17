@@ -856,6 +856,59 @@ public class TabGroupListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.DATA_SHARING,
+        ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS
+    })
+    public void testTabGroupRemovedMessageCardsAndTabGroupsOrdering_ByRecency() {
+        List<PersistentMessage> messageList =
+                List.of(
+                        makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1),
+                        makeTabGroupRemovedMessage(MESSAGE_ID2, GROUP_NAME2));
+        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+
+        SavedTabGroup fooGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
+        fooGroup.title = "Foo";
+        fooGroup.color = TabGroupColorId.BLUE;
+        fooGroup.savedTabs = SyncedGroupTestHelper.tabsFromCount(2);
+        fooGroup.creationTimeMs = 1;
+        fooGroup.savedTabs.get(0).updateTimeMs = 3;
+        fooGroup.savedTabs.get(1).updateTimeMs = 2;
+
+        SavedTabGroup barGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID2);
+        barGroup.title = "Bar";
+        barGroup.color = TabGroupColorId.RED;
+        barGroup.savedTabs = SyncedGroupTestHelper.tabsFromCount(3);
+        barGroup.creationTimeMs = 2;
+        barGroup.savedTabs.get(0).updateTimeMs = 2;
+        barGroup.savedTabs.get(1).updateTimeMs = 1;
+        barGroup.savedTabs.get(2).updateTimeMs = 0;
+
+        createMediator();
+
+        assertEquals(3, mModelList.size());
+
+        PropertyModel model1 = mModelList.get(0).model;
+        assertEquals(
+                "\"Shopping\" and \"Travel\" tab groups no longer available",
+                model1.get(DESCRIPTION_TEXT));
+        assertEquals(MESSAGE, model1.get(CARD_TYPE));
+
+        // Ensure the tab groups are sorted by update time and NOT creation time.
+        PropertyModel fooModel = mModelList.get(1).model;
+        assertEquals(
+                new TabGroupRowViewTitleData("Foo", 2, R.plurals.tab_group_row_accessibility_text),
+                fooModel.get(TITLE_DATA));
+        assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
+
+        PropertyModel barModel = mModelList.get(2).model;
+        assertEquals(
+                new TabGroupRowViewTitleData("Bar", 3, R.plurals.tab_group_row_accessibility_text),
+                barModel.get(TITLE_DATA));
+        assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testTabGroupRemovedMessageCardDismissed() {
         List<PersistentMessage> messageList =

@@ -156,7 +156,7 @@ public class CollaborationIntegrationTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_GROUPS)
-                    .setRevision(0)
+                    .setRevision(1)
                     .build();
 
     private FakeDataSharingUIDelegateImpl mDataSharingUIDelegate;
