@@ -11111,6 +11111,8 @@ from previous Chrome versions.
   <int value="-1065227777" label="CrOSAutoSelect:disabled"/>
   <int value="-1064733740" label="ui-show-composited-layer-borders"/>
   <int value="-1064729659" label="LauncherFuzzyMatchAcrossProviders:enabled"/>
+  <int value="-1064371103"
+      label="kAccessibilityPopulateSupplementalDescriptionApi:enabled"/>
   <int value="-1064302126"
       label="OmniboxAlternateMatchDescriptionSeparator:enabled"/>
   <int value="-1062534902" label="SyncingCompromisedCredentials:disabled"/>
@@ -12681,6 +12683,8 @@ from previous Chrome versions.
   <int value="-467792766" label="ReengagementNotification:enabled"/>
   <int value="-466925718" label="CCTEphemeralMode:disabled"/>
   <int value="-466704882" label="webview-log-js-console-messages"/>
+  <int value="-466398214"
+      label="kAccessibilityPopulateSupplementalDescriptionApi:disabled"/>
   <int value="-466164593"
       label="CacheControlNoStoreEnterBackForwardCache:disabled"/>
   <int value="-466047052" label="EnableRuntimeCountersTelemetry:disabled"/>

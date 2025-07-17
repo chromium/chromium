@@ -1364,6 +1364,12 @@ BASE_FEATURE(kAccessibilityPageZoomV2,
              "AccessibilityPageZoomV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables populating the supplemental description information via the
+// Android supplemental description API.
+BASE_FEATURE(kAccessibilityPopulateSupplementalDescriptionApi,
+             "kAccessibilityPopulateSupplementalDescriptionApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of a unified code path for AXTree snapshots.
 BASE_FEATURE(kAccessibilityUnifiedSnapshots,
              "AccessibilityUnifiedSnapshots",

@@ -2599,6 +2599,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-accessibility-populate-supplemental-description-api",
+    "owners": [ "zhangwenyu@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "enable-accessibility-reduced-animations",
     "owners": [ "zork@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142

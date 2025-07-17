@@ -2685,6 +2685,8 @@ extern const char kAccessibilityDeprecateTypeAnnounceName[];
 extern const char kAccessibilityDeprecateTypeAnnounceDescription[];
 extern const char kAccessibilityIncludeLongClickActionName[];
 extern const char kAccessibilityIncludeLongClickActionDescription[];
+extern const char kAccessibilityPopulateSupplementalDescriptionApiName[];
+extern const char kAccessibilityPopulateSupplementalDescriptionApiDescription[];
 extern const char kAccessibilityTextFormattingName[];
 extern const char kAccessibilityTextFormattingDescription[];
 extern const char kAccessibilityUnifiedSnapshotsName[];
