@@ -24,6 +24,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Coordinator for the autofill options settings screen. Connects the settings fragment with ...
  *   ... a model keeping track of the settings state, and
@@ -122,25 +125,43 @@ public class AutofillOptionsCoordinator {
     }
 
     private PropertyModel buildRestartConfirmationDialog() {
-        return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                .with(
-                        ModalDialogProperties.TITLE,
-                        getString(R.string.autofill_options_restart_prompt_title))
-                .with(
-                        ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                        getString(R.string.autofill_options_restart_prompt_text))
-                .with(
-                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                        getString(R.string.autofill_options_confirm_restart))
-                .with(
-                        ModalDialogProperties.BUTTON_STYLES,
-                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
-                .with(
-                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                        getString(R.string.autofill_options_undo_toggle_change))
-                .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                .with(ModalDialogProperties.CONTROLLER, mMediator)
-                .build();
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                getString(R.string.autofill_options_confirm_restart))
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                getString(R.string.autofill_options_undo_toggle_change))
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.CONTROLLER, mMediator);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN)) {
+            builder.with(
+                            ModalDialogProperties.TITLE,
+                            getString(R.string.autofill_options_change_autofill_service_title))
+                    .with(
+                            ModalDialogProperties.MESSAGE_PARAGRAPHS,
+                            new ArrayList<>(
+                                    Arrays.asList(
+                                            getString(
+                                                    R.string
+                                                            .autofill_options_restart_prompt_paragraph_1_text),
+                                            getString(
+                                                    R.string
+                                                            .autofill_options_restart_prompt_paragraph_2_text))));
+        } else {
+            builder.with(
+                            ModalDialogProperties.TITLE,
+                            getString(R.string.autofill_options_restart_prompt_title))
+                    .with(
+                            ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                            getString(R.string.autofill_options_restart_prompt_text));
+        }
+        return builder.build();
     }
 
     @VisibleForTesting
