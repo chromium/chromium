@@ -719,6 +719,10 @@ if (!is_cronet_build) {
     if (is_win || is_linux) {
       sources += [ "motherboard_metrics_provider_unittest.cc" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   # Convenience testing target
