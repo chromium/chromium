@@ -9,7 +9,8 @@ import {getPromotionBannerHtml} from './promotion_banner.html.js';
 
 export function getHtml(this: ManagementUiElement) {
   // clang-format off
-  return html`<cr-toolbar page-name="$i18n{toolbarTitle}" role="banner" autofocus
+  return html`<!--_html_template_start_-->
+<cr-toolbar page-name="$i18n{toolbarTitle}" role="banner" autofocus
     @search-changed="${this.onSearchChanged_}" clear-label="$i18n{clearSearch}"
     search-prompt="$i18n{searchPrompt}">
 </cr-toolbar>
@@ -260,6 +261,6 @@ export function getHtml(this: ManagementUiElement) {
     </div>
   </div>
 </main>
-`;
+<!--_html_template_end_-->`;
   // clang-format on
 }
