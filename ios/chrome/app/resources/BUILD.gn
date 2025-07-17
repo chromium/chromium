@@ -141,13 +141,13 @@ repack("repack_unscaled_resources") {
   }
 }
 
-bundle_data_xcassets("chromium_icons") {
-  catalog = "ChromiumIcons.xcassets"
+bundle_data_xcassets("chromium_icons_legacy") {
+  catalog = "ChromiumIconsLegacy.xcassets"
   sources = [
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Contents.json",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024Dark.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024Tinted.png",
+    "ChromiumIconsLegacy.xcassets/AppIcon.appiconset/Contents.json",
+    "ChromiumIconsLegacy.xcassets/AppIcon.appiconset/Icon-1024.png",
+    "ChromiumIconsLegacy.xcassets/AppIcon.appiconset/Icon-1024Dark.png",
+    "ChromiumIconsLegacy.xcassets/AppIcon.appiconset/Icon-1024Tinted.png",
   ]
 }
 
