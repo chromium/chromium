@@ -156,6 +156,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".GoogleSearch" summary="SRP navigations"/>
 </variants>
 
+<variants name="PageActionVisualState">
+  <variant name="Chip"/>
+  <variant name="Icon"/>
+</variants>
+
 <variants name="PageLoadType">
   <variant name="" summary="regular"/>
   <variant name=".AfterBackForwardCacheRestore" summary="bfcache restoration"/>
@@ -276,12 +281,26 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.ActionTypeShown2"
     enum="PageActionIconType" expires_after="2025-11-30">
   <owner>emshack@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The type of Page Action currently shown. Logged once per ephemeral page
     action the first time it becomes visible on a given page. Tab switches will
     only trigger logging for any page actions that have not already been logged
     as visible on this page.
+  </summary>
+</histogram>
+
+<histogram name="PageActionController.ChipTypeShown" enum="PageActionIconType"
+    expires_after="2025-11-30">
+  <owner>emshack@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The type of Page Action currently shown as a chip. Logged once per ephemeral
+    page action the first time it becomes visible on a given page. Tab switches
+    will only trigger logging for any page actions that have not already been
+    logged as visible on this page.
   </summary>
 </histogram>
 
@@ -300,35 +319,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageActionController.Icon.CTR2" enum="PageActionCTREvent"
-    expires_after="2025-12-14">
-  <owner>emshack@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records events related to overall ephemeral page action icon click through
-    rate (CTR) calculation.
-
-    The CTR can be calculated by computing &quot;Clicked&quot; /
-    &quot;Shown&quot;. &quot;Clicked&quot; means the page action icon was
-    clicked. &quot;Shown&quot; means that the page action icon was displayed.
-    &quot;Shown&quot; is logged once per page action the first time it becomes
-    visible on a given page, and &quot;Clicked&quot; is logged once per click.
-  </summary>
-</histogram>
-
-<histogram name="PageActionController.Icon.NumberActionsShownWhenClicked"
-    units="actions" expires_after="2025-12-14">
-  <owner>emshack@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    The number of ephemeral Page Actions currently shown. Measured each time a
-    page action icon is clicked.
-  </summary>
-</histogram>
-
 <histogram name="PageActionController.NumberActionsShown2" units="actions"
     expires_after="2025-12-14">
   <owner>emshack@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of ephemeral Page Actions currently shown. Measured each time a
@@ -388,17 +382,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageActionController.{PageActionType}.Icon.CTR2"
+<histogram name="PageActionController.{PageActionType}.{State}.CTR2"
     enum="PageActionCTREvent" expires_after="2025-12-14">
+  <owner>koretadaniel@chromium.org</owner>
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
-    Records events related to {PageActionType} page action icon click through
-    rate (CTR) calculation.
+    Records events related to {PageActionType} page action click through rate
+    (CTR) calculation.
 
     The CTR can be calculated by computing &quot;Clicked&quot; /
-    &quot;Shown&quot;. &quot;Clicked&quot; means the page action icon was
-    clicked. &quot;Shown&quot; means that the page action icon was displayed.
+    &quot;Shown&quot;. &quot;Clicked&quot; means the page action was clicked.
+    &quot;Shown&quot; means that the page action was displayed.
     &quot;Shown&quot; is logged once per page action the first time it becomes
     visible on a given page, and &quot;Clicked&quot; is logged once per click.
   </summary>
@@ -437,6 +432,37 @@ chromium-metrics-reviews@google.com.
     <variant name="VirtualCardManualFeedback"/>
     <variant name="Zoom"/>
   </token>
+  <token key="State" variants="PageActionVisualState"/>
+</histogram>
+
+<histogram name="PageActionController.{State}.CTR2" enum="PageActionCTREvent"
+    expires_after="2025-12-14">
+  <owner>emshack@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records events related to overall ephemeral page action click through rate
+    (CTR) calculation.
+
+    The CTR can be calculated by computing &quot;Clicked&quot; /
+    &quot;Shown&quot;. &quot;Clicked&quot; means the page action was clicked.
+    &quot;Shown&quot; means that the page action was displayed.
+    &quot;Shown&quot; is logged once per page action the first time it becomes
+    visible on a given page, and &quot;Clicked&quot; is logged once per click.
+  </summary>
+  <token key="State" variants="PageActionVisualState"/>
+</histogram>
+
+<histogram name="PageActionController.{State}.NumberActionsShownWhenClicked"
+    units="actions" expires_after="2025-12-14">
+  <owner>emshack@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The number of ephemeral Page Actions currently shown. Measured each time a
+    page action is clicked.
+  </summary>
+  <token key="State" variants="PageActionVisualState"/>
 </histogram>
 
 <histogram name="PageLoad.BackForwardCache.Event"

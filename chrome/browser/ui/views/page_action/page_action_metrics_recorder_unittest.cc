@@ -24,6 +24,19 @@ namespace page_actions {
 
 namespace {
 
+constexpr char kFirstUrlStr[] = "https://url-1.test";
+constexpr char kSecondUrlStr[] = "https://url-2.test";
+
+constexpr char kIconActionTypeShow[] = "PageActionController.ActionTypeShown2";
+constexpr char kIconCTRHistogram[] = "PageActionController.Icon.CTR2";
+constexpr char kIconCountHistogram[] =
+    "PageActionController.Icon.NumberActionsShownWhenClicked";
+
+constexpr char kChipTypeShowHistogram[] = "PageActionController.ChipTypeShown";
+constexpr char kChipCTRHistogram[] = "PageActionController.Chip.CTR2";
+constexpr char kChipCountHistogram[] =
+    "PageActionController.Chip.NumberActionsShownWhenClicked";
+
 using ::testing::_;
 using ::testing::Return;
 
@@ -81,9 +94,9 @@ TEST_F(PageActionMetricsRecorderTest, NoRecordIfNotEphemeral) {
   ON_CALL(mock_model_, IsEphemeral()).WillByDefault(Return(false));
 
   FireModelChanged();
-  // Because is_ephemeral=false, "PageActionController.ActionTypeShown2" is not
+  // Because is_ephemeral=false, `kIconActionTypeShow` is not
   // recorded.
-  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 0);
+  histogram_tester.ExpectTotalCount(kIconActionTypeShow, 0);
 }
 
 TEST_F(PageActionMetricsRecorderTest, RecordOnlyOncePerUrlIfEphemeral) {
@@ -91,30 +104,34 @@ TEST_F(PageActionMetricsRecorderTest, RecordOnlyOncePerUrlIfEphemeral) {
   CreateRecorder();
 
   // Make the model "visible" and simulate the user visiting a particular URL.
-  GURL url1("https://www.example.com/");
+  GURL url1(kFirstUrlStr);
   content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url1);
-  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
-                                      properties_.type, 0);
+  histogram_tester.ExpectUniqueSample(kIconActionTypeShow, properties_.type, 0);
 
   ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
 
   // First time with url1 => record metric once.
   FireModelChanged();
-  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
-                                      properties_.type, 1);
+  histogram_tester.ExpectUniqueSample(kIconActionTypeShow, properties_.type, 1);
 
   // If we call again, and it's the same URL, we expect no additional record.
   FireModelChanged();
-  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
-                                      properties_.type, 1);
+  histogram_tester.ExpectUniqueSample(kIconActionTypeShow, properties_.type, 1);
 
   // Now simulate a second distinct URL. We should get a second record.
-  GURL url2("https://www.another-site.org/");
+  GURL url2(kSecondUrlStr);
   content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url2);
+
+  // Real navigation briefly hides the action; reproduce that so the recorder
+  // sees a Hidden → IconOnly transition.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
   FireModelChanged();
-  // 2 total samples now (one for url1, one for url2).
-  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
-                                      properties_.type, 2);
+
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  // We now have two samples (one per distinct URL).
+  histogram_tester.ExpectUniqueSample(kIconActionTypeShow, properties_.type, 2);
 }
 
 TEST_F(PageActionMetricsRecorderTest, NoRecordIfPageActionIsNotVisible) {
@@ -126,26 +143,25 @@ TEST_F(PageActionMetricsRecorderTest, NoRecordIfPageActionIsNotVisible) {
   // Even if we call the model-changed event, because !GetVisible(),
   // we do nothing.
   FireModelChanged();
-  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 0);
+  histogram_tester.ExpectTotalCount(kIconActionTypeShow, 0);
 }
 
 TEST_F(PageActionMetricsRecorderTest, RecordShownMetricsGeneralAndSpecific) {
   base::HistogramTester histogram_tester;
   CreateRecorder();
 
-  const std::string general_histogram = "PageActionController.Icon.CTR2";
   const std::string specific_histogram = base::StrCat(
       {"PageActionController.", properties_.histogram_name, ".Icon.CTR2"});
 
   // First navigation.
-  GURL url1("https://www.example.com/");
+  GURL url1(kFirstUrlStr);
   content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url1);
   ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
 
   // First visibility → record once for each histogram with kShown.
   FireModelChanged();
-  histogram_tester.ExpectTotalCount(general_histogram, 1);
-  histogram_tester.ExpectUniqueSample(general_histogram,
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 1);
+  histogram_tester.ExpectUniqueSample(kIconCTRHistogram,
                                       PageActionCTREvent::kShown, 1);
   histogram_tester.ExpectTotalCount(specific_histogram, 1);
   histogram_tester.ExpectUniqueSample(specific_histogram,
@@ -153,18 +169,24 @@ TEST_F(PageActionMetricsRecorderTest, RecordShownMetricsGeneralAndSpecific) {
 
   // Same URL, second visibility → no additional records.
   FireModelChanged();
-  histogram_tester.ExpectTotalCount(general_histogram, 1);
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 1);
   histogram_tester.ExpectTotalCount(specific_histogram, 1);
 
   // New navigation.
-  GURL url2("https://www.another-site.org/");
+  GURL url2(kSecondUrlStr);
   content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url2);
+  // Real pages become invisible for a moment during navigation; reproduce that
+  // so the recorder observes Hidden → IconOnly.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+  FireModelChanged();
+
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
   FireModelChanged();
 
   // Should now have two kShown samples (one per distinct URL) in both
   // histograms.
-  histogram_tester.ExpectTotalCount(general_histogram, 2);
-  histogram_tester.ExpectBucketCount(general_histogram,
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 2);
+  histogram_tester.ExpectBucketCount(kIconCTRHistogram,
                                      PageActionCTREvent::kShown, 2);
   histogram_tester.ExpectTotalCount(specific_histogram, 2);
   histogram_tester.ExpectBucketCount(specific_histogram,
@@ -177,17 +199,16 @@ TEST_F(PageActionMetricsRecorderTest, NoShownMetricsWhenNotEphemeral) {
 
   ON_CALL(mock_model_, IsEphemeral()).WillByDefault(Return(false));
 
-  const std::string general_histogram = "PageActionController.Icon.CTR2";
   const std::string specific_histogram = base::StrCat(
       {"PageActionController.", properties_.histogram_name, ".Icon.CTR2"});
 
-  GURL url("https://www.example.com/");
+  GURL url(kFirstUrlStr);
   content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url);
 
   FireModelChanged();
 
   // Because the page action is *not* ephemeral, no kShown samples are recorded.
-  histogram_tester.ExpectTotalCount(general_histogram, 0);
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 0);
   histogram_tester.ExpectTotalCount(specific_histogram, 0);
 }
 
@@ -195,68 +216,79 @@ TEST_F(PageActionMetricsRecorderTest, RecordClickMetric) {
   base::HistogramTester histogram_tester;
   CreateRecorder();
 
-  const std::string general_histogram = "PageActionController.Icon.CTR2";
+  // Prep the model so the recorder’s display-state becomes IconOnly.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+
   const std::string specific_histogram = base::StrCat(
       {"PageActionController.", properties_.histogram_name, ".Icon.CTR2"});
 
-  histogram_tester.ExpectTotalCount(general_histogram, 0);
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 0);
   histogram_tester.ExpectTotalCount(specific_histogram, 0);
+
+  FireModelChanged();
+
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 1);
 
   SimulateClick(PageActionTrigger::kMouse);
 
   // Verify both histograms logged once with kClicked value.
-  histogram_tester.ExpectTotalCount(general_histogram, 1);
-  histogram_tester.ExpectUniqueSample(general_histogram,
-                                      PageActionCTREvent::kClicked, 1);
-  histogram_tester.ExpectTotalCount(specific_histogram, 1);
-  histogram_tester.ExpectUniqueSample(specific_histogram,
-                                      PageActionCTREvent::kClicked, 1);
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 2);
+  histogram_tester.ExpectBucketCount(kIconCTRHistogram,
+                                     PageActionCTREvent::kClicked, 1);
+  histogram_tester.ExpectTotalCount(specific_histogram, 2);
+  histogram_tester.ExpectBucketCount(specific_histogram,
+                                     PageActionCTREvent::kClicked, 1);
 
   SimulateClick(PageActionTrigger::kKeyboard);
 
   // Verify both histograms logged again (total 2), check bucket count.
-  histogram_tester.ExpectTotalCount(general_histogram, 2);
-  histogram_tester.ExpectBucketCount(general_histogram,
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 3);
+  histogram_tester.ExpectBucketCount(kIconCTRHistogram,
                                      PageActionCTREvent::kClicked, 2);
-  histogram_tester.ExpectTotalCount(specific_histogram, 2);
+  histogram_tester.ExpectTotalCount(specific_histogram, 3);
   histogram_tester.ExpectBucketCount(specific_histogram,
                                      PageActionCTREvent::kClicked, 2);
 
   SimulateClick(PageActionTrigger::kGesture);
 
   // Verify both histograms logged again (total 3), check bucket count.
-  histogram_tester.ExpectTotalCount(general_histogram, 3);
-  histogram_tester.ExpectBucketCount(general_histogram,
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 4);
+  histogram_tester.ExpectBucketCount(kIconCTRHistogram,
                                      PageActionCTREvent::kClicked, 3);
-  histogram_tester.ExpectTotalCount(specific_histogram, 3);
+  histogram_tester.ExpectTotalCount(specific_histogram, 4);
   histogram_tester.ExpectBucketCount(specific_histogram,
                                      PageActionCTREvent::kClicked, 3);
 }
 
 TEST_F(PageActionMetricsRecorderTest,
-       NumberActionsShownWhenClicked_OneVisibleAction) {
+       NumberActionsShownWhenClickedOneVisibleAction) {
   base::HistogramTester histogram_tester;
   CreateRecorder();
 
-  constexpr char kHistogram[] =
-      "PageActionController.Icon.NumberActionsShownWhenClicked";
+  // Make the action visible so the recorder’s state is IconOnly.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+  FireModelChanged();
 
   // Simulate a click when exactly one ephemeral page action is visible.
   visible_count_ = 1;
   recorder_->RecordClick(PageActionTrigger::kMouse);
 
-  histogram_tester.ExpectTotalCount(kHistogram, 1);
-  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/1,
+  histogram_tester.ExpectTotalCount(kIconCountHistogram, 1);
+  histogram_tester.ExpectBucketCount(kIconCountHistogram, /*sample=*/1,
                                      /*expected_count=*/1);
 }
 
 TEST_F(PageActionMetricsRecorderTest,
-       NumberActionsShownWhenClicked_VariousVisibleCounts) {
+       NumberActionsShownWhenClickedVariousVisibleCounts) {
   base::HistogramTester histogram_tester;
   CreateRecorder();
 
-  constexpr char kHistogram[] =
-      "PageActionController.Icon.NumberActionsShownWhenClicked";
+  // Make the action visible so the recorder’s state is IconOnly.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+  FireModelChanged();
 
   // First click with 2 visible actions.
   visible_count_ = 2;
@@ -270,10 +302,10 @@ TEST_F(PageActionMetricsRecorderTest,
   visible_count_ = 2;
   recorder_->RecordClick(PageActionTrigger::kGesture);
 
-  histogram_tester.ExpectTotalCount(kHistogram, 3);
-  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/2,
+  histogram_tester.ExpectTotalCount(kIconCountHistogram, 3);
+  histogram_tester.ExpectBucketCount(kIconCountHistogram, /*sample=*/2,
                                      /*expected_count=*/2);
-  histogram_tester.ExpectBucketCount(kHistogram, /*sample=*/5,
+  histogram_tester.ExpectBucketCount(kIconCountHistogram, /*sample=*/5,
                                      /*expected_count=*/1);
 
   // No other buckets should be populated.
@@ -281,9 +313,190 @@ TEST_F(PageActionMetricsRecorderTest,
     if (bucket == 2 || bucket == 5) {
       continue;
     }
-    histogram_tester.ExpectBucketCount(kHistogram, bucket,
+    histogram_tester.ExpectBucketCount(kIconCountHistogram, bucket,
                                        /*expected_count=*/0);
   }
+}
+
+TEST_F(PageActionMetricsRecorderTest, ChipTypeShownRecordedOncePerNavigation) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder();
+
+  GURL url1(kFirstUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url1);
+
+  // Hidden → IconOnly (no chip yet, so nothing logged).
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+  FireModelChanged();
+
+  // IconOnly → Chip (chip appears → should log kChipTypeShowHistogram once).
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  histogram_tester.ExpectTotalCount(kChipTypeShowHistogram, 1);
+  histogram_tester.ExpectUniqueSample(kChipTypeShowHistogram, properties_.type,
+                                      1);
+
+  // Repeat visibility on the same URL → still only 1 sample.
+  FireModelChanged();
+  histogram_tester.ExpectTotalCount(kChipTypeShowHistogram, 1);
+
+  GURL url2(kSecondUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url2);
+
+  // Real pages go Hidden for a moment; reproduce.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+  FireModelChanged();  // IconOnly → Hidden
+
+  // Hidden → IconOnly.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  // IconOnly → Chip again.
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  // Expect a second sample (one per distinct navigation).
+  histogram_tester.ExpectTotalCount(kChipTypeShowHistogram, 2);
+  histogram_tester.ExpectBucketCount(kChipTypeShowHistogram, properties_.type,
+                                     2);
+}
+
+TEST_F(PageActionMetricsRecorderTest, ChipIconOnlyToChipRecordsChipShownOnly) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder();
+
+  GURL url(kFirstUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url);
+
+  // Hidden → IconOnly first.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+  FireModelChanged();
+
+  // IconOnly → Chip.
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  histogram_tester.ExpectTotalCount(kIconCTRHistogram, 1);
+  histogram_tester.ExpectTotalCount(kChipCTRHistogram, 1);
+}
+
+TEST_F(PageActionMetricsRecorderTest, ChipShownOnlyOncePerNavigation) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder();
+
+  GURL url1(kFirstUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url1);
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  // Repeat visibility on same URL → no new sample.
+  FireModelChanged();
+  histogram_tester.ExpectTotalCount(kChipCTRHistogram, 1);
+
+  GURL url2(kSecondUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url2);
+
+  // Simulate the brief "hidden" phase that occurs during real navigation.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+  FireModelChanged();
+
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  histogram_tester.ExpectTotalCount(kChipCTRHistogram, 2);
+}
+
+TEST_F(PageActionMetricsRecorderTest, ChipClickLogsClickedAndVisibleCount) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder();
+
+  // Make recorder think Chip is showing.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  visible_count_ = 1;
+  recorder_->RecordClick(PageActionTrigger::kMouse);
+
+  // Two samples in `kChipCTRHistogram`: one kShown + one kClicked.
+  histogram_tester.ExpectTotalCount(kChipCTRHistogram, 2);
+  histogram_tester.ExpectBucketCount(kChipCTRHistogram,
+                                     PageActionCTREvent::kShown, 1);
+  histogram_tester.ExpectBucketCount(kChipCTRHistogram,
+                                     PageActionCTREvent::kClicked, 1);
+  histogram_tester.ExpectTotalCount(kChipCountHistogram, 1);
+  histogram_tester.ExpectBucketCount(kChipCountHistogram, 1, 1);
+}
+
+TEST_F(PageActionMetricsRecorderTest, ChipClickVariousVisibleCounts) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder();
+
+  // Ensure state = kChip.
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  // 1st click (2 visible).
+  visible_count_ = 2;
+  recorder_->RecordClick(PageActionTrigger::kMouse);
+
+  // 2nd click (5 visible).
+  visible_count_ = 5;
+  recorder_->RecordClick(PageActionTrigger::kKeyboard);
+
+  // 3rd click (2 visible again).
+  visible_count_ = 2;
+  recorder_->RecordClick(PageActionTrigger::kGesture);
+
+  histogram_tester.ExpectTotalCount(kChipCountHistogram, 3);
+  histogram_tester.ExpectBucketCount(kChipCountHistogram, 2, 2);
+  histogram_tester.ExpectBucketCount(kChipCountHistogram, 5, 1);
+}
+
+TEST_F(PageActionMetricsRecorderTest, ChipToIconOnlyDoesNotLogExtraShown) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder();
+
+  const std::string specific_chip_histogram = base::StrCat(
+      {"PageActionController.", properties_.histogram_name, ".Chip.CTR2"});
+
+  // Navigate to a URL and reach the IconOnly state first.
+  GURL url(kFirstUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url);
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+  FireModelChanged();
+
+  // IconOnly → Chip: should log `kShown` once for both generic & specific
+  // histograms.
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  histogram_tester.ExpectTotalCount(kChipCTRHistogram, 1);
+  histogram_tester.ExpectBucketCount(kChipCTRHistogram,
+                                     PageActionCTREvent::kShown, 1);
+  histogram_tester.ExpectTotalCount(specific_chip_histogram, 1);
+  histogram_tester.ExpectBucketCount(specific_chip_histogram,
+                                     PageActionCTREvent::kShown, 1);
+
+  // Chip → IconOnly: no new `kShown` samples should be recorded.
+  ON_CALL(mock_model_, IsChipShowing()).WillByDefault(Return(false));
+  FireModelChanged();
+
+  histogram_tester.ExpectTotalCount(kChipCTRHistogram, 1);
+  histogram_tester.ExpectTotalCount(specific_chip_histogram, 1);
 }
 
 }  // namespace

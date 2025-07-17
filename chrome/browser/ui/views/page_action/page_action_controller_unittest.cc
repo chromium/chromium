@@ -390,8 +390,14 @@ TEST_F(PageActionControllerTest, ClearOverrideText) {
 TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
   base::HistogramTester histogram_tester;
 
+  auto observer = PageActionTestObserver();
+  TestPageActionModelObservation observation(&observer);
   controller()->Initialize(*tab_interface(), {kFirstActionItemId},
                            properties_provider_);
+  auto action_item = BuildActionItem(kFirstActionItemId);
+  base::CallbackListSubscription subscription =
+      controller()->CreateActionItemSubscription(action_item.get());
+  controller()->AddObserver(0, observation);
 
   const std::string general_histogram = "PageActionController.Icon.CTR2";
   const std::string specific_histogram = base::StrCat(
@@ -402,27 +408,31 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
   histogram_tester.ExpectTotalCount(general_histogram, 0);
   histogram_tester.ExpectTotalCount(specific_histogram, 0);
 
+  // Show the page icon first: Hidden → IconOnly transition (logs one kShown
+  // sample).
+  controller()->Show(kFirstActionItemId);
+
   controller()
       ->GetClickCallback(PageActionView::PassKeyForTesting(),
                          kFirstActionItemId)
       .Run(PageActionTrigger::kMouse);
 
-  histogram_tester.ExpectTotalCount(general_histogram, 1);
-  histogram_tester.ExpectUniqueSample(general_histogram,
-                                      PageActionCTREvent::kClicked, 1);
-  histogram_tester.ExpectTotalCount(specific_histogram, 1);
-  histogram_tester.ExpectUniqueSample(specific_histogram,
-                                      PageActionCTREvent::kClicked, 1);
+  histogram_tester.ExpectTotalCount(general_histogram, 2);
+  histogram_tester.ExpectBucketCount(general_histogram,
+                                     PageActionCTREvent::kClicked, 1);
+  histogram_tester.ExpectTotalCount(specific_histogram, 2);
+  histogram_tester.ExpectBucketCount(specific_histogram,
+                                     PageActionCTREvent::kClicked, 1);
 
   controller()
       ->GetClickCallback(PageActionView::PassKeyForTesting(),
                          kFirstActionItemId)
       .Run(PageActionTrigger::kKeyboard);
 
-  histogram_tester.ExpectTotalCount(general_histogram, 2);
+  histogram_tester.ExpectTotalCount(general_histogram, 3);
   histogram_tester.ExpectBucketCount(general_histogram,
                                      PageActionCTREvent::kClicked, 2);
-  histogram_tester.ExpectTotalCount(specific_histogram, 2);
+  histogram_tester.ExpectTotalCount(specific_histogram, 3);
   histogram_tester.ExpectBucketCount(specific_histogram,
                                      PageActionCTREvent::kClicked, 2);
 }

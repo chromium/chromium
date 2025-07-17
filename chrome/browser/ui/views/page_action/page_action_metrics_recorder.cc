@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
@@ -23,10 +24,10 @@ PageActionPerActionMetricsRecorder::PageActionPerActionMetricsRecorder(
     PageActionModelInterface& model,
     VisibleEphemeralPageActionsCountCallback
         visible_ephemeral_page_actions_count_callback)
-    : page_action_type_(properties.type),
-      histogram_name_(properties.histogram_name),
-      visible_ephemeral_page_actions_count_callback_(
+    : visible_ephemeral_page_actions_count_callback_(
           std::move(visible_ephemeral_page_actions_count_callback)),
+      page_action_type_(properties.type),
+      histogram_name_(properties.histogram_name),
       tab_interface_(tab_interface) {
   scoped_observation_.Observe(&model);
 }
@@ -36,21 +37,17 @@ PageActionPerActionMetricsRecorder::~PageActionPerActionMetricsRecorder() =
 
 void PageActionPerActionMetricsRecorder::OnPageActionModelChanged(
     const PageActionModelInterface& model) {
-  if (!model.GetVisible() || !model.IsEphemeral()) {
+  // Only record metrics for ephemeral page actions.
+  if (!model.IsEphemeral()) {
     return;
   }
 
-  content::WebContents* contents = tab_interface_->GetContents();
-  CHECK(contents);
-
-  // Detect main-frame navigation by URL change.
-  const GURL current_url = contents->GetURL();
-  if (current_url != last_committed_url_) {
-    last_committed_url_ = current_url;
-    page_action_recorded_urls_.clear();
+  if (IsNewNavigation()) {
+    current_navigation_metrics_.icon_shown_recorded = false;
+    current_navigation_metrics_.chip_shown_recorded = false;
   }
 
-  OnPageActionVisible();
+  UpdateDisplayState(model);
 }
 
 void PageActionPerActionMetricsRecorder::OnPageActionModelWillBeDeleted(
@@ -58,19 +55,67 @@ void PageActionPerActionMetricsRecorder::OnPageActionModelWillBeDeleted(
   scoped_observation_.Reset();
 }
 
-void PageActionPerActionMetricsRecorder::OnPageActionVisible() {
-  CHECK(tab_interface_->GetContents());
+PageActionPerActionMetricsRecorder::DisplayState
+PageActionPerActionMetricsRecorder::DetermineDisplayState(
+    const PageActionModelInterface& model) {
+  if (!model.GetVisible()) {
+    return DisplayState::kHidden;
+  }
 
-  // Only record the "Shown" metric the first time the icon appears on a "page".
-  const GURL current_url = tab_interface_->GetContents()->GetURL();
+  if (model.IsChipShowing()) {
+    return DisplayState::kChip;
+  }
 
-  // TODO(crbug.com/407974430): [Metric] Record per-navigation metric for
-  // ...ActionTypeShown
-  if (page_action_recorded_urls_.contains(current_url)) {
+  return DisplayState::kIconOnly;
+}
+
+void PageActionPerActionMetricsRecorder::UpdateDisplayState(
+    const PageActionModelInterface& model) {
+  DisplayState previous_display_state = current_display_state_;
+  current_display_state_ = DetermineDisplayState(model);
+
+  // The model updates may trigger this method. This check will prevent multiple
+  // metrics record for the same state.
+  if (previous_display_state == current_display_state_) {
     return;
   }
 
-  page_action_recorded_urls_.insert(current_url);
+  // Always record icon shown when transitioning from hidden.
+  if (previous_display_state == DisplayState::kHidden) {
+    RecordIconShown();
+  }
+
+  // Always record chip when transitioning to chip.
+  if (current_display_state_ == DisplayState::kChip) {
+    RecordChipShown();
+  }
+
+  // TODO(https://crbug.com/376285067): Record chip contention metrics.
+}
+
+bool PageActionPerActionMetricsRecorder::IsNewNavigation() {
+  content::WebContents* contents = tab_interface_->GetContents();
+  if (!contents) {
+    return false;
+  }
+
+  // TODO(crbug.com/407974430): [Metric] Record per-navigation metric for
+  // ...ActionTypeShown
+  const GURL current_url = contents->GetURL();
+  if (current_url != current_navigation_metrics_.url) {
+    current_navigation_metrics_.url = current_url;
+    return true;
+  }
+
+  return false;
+}
+
+void PageActionPerActionMetricsRecorder::RecordIconShown() {
+  if (current_navigation_metrics_.icon_shown_recorded) {
+    return;
+  }
+
+  current_navigation_metrics_.icon_shown_recorded = true;
 
   base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
                                 PageActionCTREvent::kShown);
@@ -81,8 +126,39 @@ void PageActionPerActionMetricsRecorder::OnPageActionVisible() {
                                 page_action_type_);
 }
 
+void PageActionPerActionMetricsRecorder::RecordChipShown() {
+  if (current_navigation_metrics_.chip_shown_recorded) {
+    return;
+  }
+
+  current_navigation_metrics_.chip_shown_recorded = true;
+
+  base::UmaHistogramEnumeration("PageActionController.Chip.CTR2",
+                                PageActionCTREvent::kShown);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PageActionController.", histogram_name_, ".Chip.CTR2"}),
+      PageActionCTREvent::kShown);
+  base::UmaHistogramEnumeration("PageActionController.ChipTypeShown",
+                                page_action_type_);
+}
+
 void PageActionPerActionMetricsRecorder::RecordClick(
-    PageActionTrigger /*trigger_source*/) {
+    PageActionTrigger trigger_source) {
+  switch (current_display_state_) {
+    case DisplayState::kChip:
+      RecordChipClick();
+      break;
+    case DisplayState::kIconOnly:
+      RecordIconClick();
+      break;
+    case DisplayState::kHidden:
+    default:
+      // If hidden, we shouldn't get clicks event.
+      NOTREACHED();
+  }
+}
+
+void PageActionPerActionMetricsRecorder::RecordIconClick() {
   base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
                                 PageActionCTREvent::kClicked);
   base::UmaHistogramEnumeration(
@@ -90,6 +166,17 @@ void PageActionPerActionMetricsRecorder::RecordClick(
       PageActionCTREvent::kClicked);
   base::UmaHistogramExactLinear(
       "PageActionController.Icon.NumberActionsShownWhenClicked",
+      visible_ephemeral_page_actions_count_callback_.Run(), 20);
+}
+
+void PageActionPerActionMetricsRecorder::RecordChipClick() {
+  base::UmaHistogramEnumeration("PageActionController.Chip.CTR2",
+                                PageActionCTREvent::kClicked);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PageActionController.", histogram_name_, ".Chip.CTR2"}),
+      PageActionCTREvent::kClicked);
+  base::UmaHistogramExactLinear(
+      "PageActionController.Chip.NumberActionsShownWhenClicked",
       visible_ephemeral_page_actions_count_callback_.Run(), 20);
 }
 
