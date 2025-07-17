@@ -92,8 +92,8 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
 
 void PageStabilityMonitor::DidFailProvisionalLoad() {
   if (state_ == State::kWaitForNavigation) {
-    journal_entry_->Log("DidFailProvisionalLoad"),
-        MoveToState(State::kInvokeCallback);
+    journal_entry_->Log("DidFailProvisionalLoad");
+    MoveToState(State::kInvokeCallback);
   }
 }
 
