@@ -57,6 +57,9 @@ mention a few items that may be worth using in the FFI layer:
   [here](https://source.chromium.org/chromium/chromium/src/+/main:components/user_data_importer/utility/zip_ffi_glue.rs;l=297;drc=33f81e080c4c06d18880ec04832511bda3929972)
   and
   [here](https://source.chromium.org/chromium/chromium/src/+/main:components/user_data_importer/utility/zip_ffi_glue.rs;l=421-427;drc=33f81e080c4c06d18880ec04832511bda3929972).
+  Additional example
+  [here](https://chromium-review.googlesource.com/c/chromium/src/+/6733098/18/components/user_data_importer/utility/zip_ffi_glue.rs#484)
+  avoids having to come up with a separate name by using an anonymous function.
 
 * [`let Ok(foo) = ... else { ... }`](https://doc.rust-lang.org/rust-by-example/flow_control/let_else.html)
   is another ergonomic way for checking errors.  See
