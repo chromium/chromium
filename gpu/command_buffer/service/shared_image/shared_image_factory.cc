@@ -12,6 +12,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_split.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -890,13 +891,6 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                                              gfx::GpuMemoryBufferType gmb_type,
                                              const gfx::Size& size,
                                              const std::string& debug_label) {
-  SCOPED_CRASH_KEY_STRING32("SIFactory", "DebugLabel", debug_label);
-  SCOPED_CRASH_KEY_STRING64("SIFactory", "Format", format.ToString());
-  SCOPED_CRASH_KEY_NUMBER("SIFactory", "Usage", usage);
-  SCOPED_CRASH_KEY_STRING64("SIFactory", "GMBType", GmbTypeToString(gmb_type));
-  SCOPED_CRASH_KEY_STRING64("SIFactory", "Size", size.ToString());
-  SCOPED_CRASH_KEY_BOOL("SIFactory", "SharedBwThreads",
-                        IsSharedBetweenThreads(usage));
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
              << CreateLabelForSharedImageUsage(usage)
              << ", format: " << format.ToString()
@@ -904,6 +898,30 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
              << ", gmb_type: " << GmbTypeToString(gmb_type)
              << ", size: " << size.ToString()
              << ", debug_label: " << debug_label;
+
+  std::string new_debug_label = debug_label;
+  // Get the debug label with Process Id for filtering crash reports by label as
+  // key.
+  if (debug_label.find("_Pid") != std::string::npos) {
+    auto parts = base::RSplitStringOnce(debug_label, '_');
+    new_debug_label = parts->first;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/423037052): Handle offscreen canvas case for WebView where
+  // we fail to find a shared image factory.
+  // Suppress crashes due to this client for now.
+  if (new_debug_label == "CanvasResourceRasterGmb") {
+    return;
+  }
+#endif
+  SCOPED_CRASH_KEY_STRING32("SIFactory", "DebugLabel", new_debug_label);
+  SCOPED_CRASH_KEY_STRING64("SIFactory", "Format", format.ToString());
+  SCOPED_CRASH_KEY_NUMBER("SIFactory", "Usage", usage);
+  SCOPED_CRASH_KEY_STRING64("SIFactory", "GMBType", GmbTypeToString(gmb_type));
+  SCOPED_CRASH_KEY_STRING64("SIFactory", "Size", size.ToString());
+  SCOPED_CRASH_KEY_BOOL("SIFactory", "SharedBwThreads",
+                        IsSharedBetweenThreads(usage));
   // DumpWithoutCrashing to get crash reports for failure to find a shared image
   // backing factory.
   base::debug::DumpWithoutCrashing();
