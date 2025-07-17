@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto3";
+edition = "2023";
+
+package optimization_guide.proto;
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "OnDeviceTailSuggestModelMetadataProto";
 
-package optimization_guide.proto;
-
 // Params needed to run the LSTM model.
 message LstmModelParams {
-  int32 state_size = 1;
-  int32 num_layer = 2;
-  int32 embedding_dimension = 3;
-  int32 max_num_steps = 4;
-  float probability_threshold = 5;
+  int32 state_size = 1 [features.field_presence = IMPLICIT];
+  int32 num_layer = 2 [features.field_presence = IMPLICIT];
+  int32 embedding_dimension = 3 [features.field_presence = IMPLICIT];
+  int32 max_num_steps = 4 [features.field_presence = IMPLICIT];
+  float probability_threshold = 5 [features.field_presence = IMPLICIT];
 }
 
 // The message contains a set of params to run a specific on device tail suggest
 // model.
 message OnDeviceTailSuggestModelMetadata {
-  optional LstmModelParams lstm_model_params = 1;
+  LstmModelParams lstm_model_params = 1;
 }

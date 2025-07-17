@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto3";
+edition = "2023";
+
+package optimization_guide.proto;
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "ClientSidePhishingModelMetadataProto";
 
-package optimization_guide.proto;
-
 // The message contains an integer to pair with a client side phishing image
 // embedding model which will also have an integer to match.
 message ClientSidePhishingModelMetadata {
-  optional int32 image_embedding_model_version = 1;
+  int32 image_embedding_model_version = 1;
 }
