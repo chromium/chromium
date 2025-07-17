@@ -6795,6 +6795,14 @@ class SSLUIDynamicInterstitialTest : public CertVerifierBrowserTest {
     return config_proto;
   }
 
+  // Returns a valid sha256 hashvalue string which does not match
+  // kMatchingDynamicInterstitialCert.
+  static std::string MakeSha256String(uint8_t i) {
+    net::SHA256HashValue value;
+    value.fill(i);
+    return net::HashValue(value).ToString();
+  }
+
   // Adds a dynamic interstitial to |config_proto|. All of the dynamic
   // interstitial's fields mismatch with |https_server_|'s SSL info.
   void AddMismatchDynamicInterstitial(
@@ -6806,8 +6814,8 @@ class SSLUIDynamicInterstitialTest : public CertVerifierBrowserTest {
     filter->set_cert_error(
         chrome_browser_ssl::DynamicInterstitial::ERR_CERT_DATE_INVALID);
 
-    filter->add_sha256_hash("sha256/killdeer");
-    filter->add_sha256_hash("sha256/thickkne");
+    filter->add_sha256_hash(MakeSha256String(1));
+    filter->add_sha256_hash(MakeSha256String(2));
 
     filter->set_issuer_common_name_regex("beeeater");
     filter->set_issuer_organization_regex("honeycreeper");
@@ -6828,9 +6836,9 @@ class SSLUIDynamicInterstitialTest : public CertVerifierBrowserTest {
     filter->set_cert_error(
         chrome_browser_ssl::DynamicInterstitial::ERR_CERT_COMMON_NAME_INVALID);
 
-    filter->add_sha256_hash("sha256/kingfisher");
+    filter->add_sha256_hash(MakeSha256String(3));
     filter->add_sha256_hash(kMatchingDynamicInterstitialCert);
-    filter->add_sha256_hash("sha256/flycatcher");
+    filter->add_sha256_hash(MakeSha256String(4));
 
     scoped_refptr<net::X509Certificate> cert = https_server_.GetCertificate();
     filter->set_issuer_common_name_regex(cert.get()->issuer().common_name);
@@ -7023,8 +7031,8 @@ IN_PROC_BROWSER_TEST_F(SSLUIDynamicInterstitialTest, MismatchHash) {
     chrome_browser_ssl::DynamicInterstitial* match =
         AddMatchingDynamicInterstitial(config_proto.get());
     match->clear_sha256_hash();
-    match->add_sha256_hash("sha256/sapsucker");
-    match->add_sha256_hash("sha256/flowerpiercer");
+    match->add_sha256_hash(MakeSha256String(5));
+    match->add_sha256_hash(MakeSha256String(6));
 
     SSLErrorHandler::SetErrorAssistantProto(std::move(config_proto));
     ASSERT_EQ(SSLErrorHandler::GetErrorAssistantProtoVersionIdForTesting(),
