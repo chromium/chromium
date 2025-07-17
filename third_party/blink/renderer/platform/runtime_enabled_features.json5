@@ -5161,7 +5161,7 @@
     },
     {
       name: "ViewTransitionAnimationDelayInherit",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
