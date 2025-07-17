@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -402,7 +403,9 @@ TEST_F(FocusControllerTestWithIframes,
                 password, mojom::blink::FocusType::kForward));
 }
 
-TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
+TEST_F(FocusControllerTest, FullCarouselFocusOrderPreScrollMarkerGroupMode) {
+  ScopedCSSScrollMarkerGroupModesForTest feature(false);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 50px; height: 100px; }
@@ -552,7 +555,9 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   EXPECT_TRUE(after_last_child->IsFocused());
 }
 
-TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
+TEST_F(FocusControllerTest,
+       CarouselWithOnlyButtonsFocusOrderPreScrollMarkerGroupMode) {
+  ScopedCSSScrollMarkerGroupModesForTest feature(false);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 50px; height: 100px; }
@@ -652,7 +657,10 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
   EXPECT_EQ(0.5, style->Opacity());
 }
 
-TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
+TEST_F(FocusControllerTest,
+       CarouselWithOnlyScrollMarkersFocusOrderPreScrollMarkerGroupMode) {
+  ScopedCSSScrollMarkerGroupModesForTest feature(false);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -714,8 +722,11 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
   }
 }
 
-TEST_F(FocusControllerTest,
-       CarouselWithOnlyScrollMarkersAndChildrenFocusOrder) {
+TEST_F(
+    FocusControllerTest,
+    CarouselWithOnlyScrollMarkersAndChildrenFocusOrderPreScrollMarkerGroupMode) {
+  ScopedCSSScrollMarkerGroupModesForTest feature(false);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -768,7 +779,10 @@ TEST_F(FocusControllerTest,
   }
 }
 
-TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkerGroupFocusOrder) {
+TEST_F(FocusControllerTest,
+       CarouselWithOnlyScrollMarkerGroupFocusOrderPreScrollMarkerGroupMode) {
+  ScopedCSSScrollMarkerGroupModesForTest feature(false);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -802,7 +816,10 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkerGroupFocusOrder) {
   }
 }
 
-TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
+TEST_F(FocusControllerTest,
+       FullCarouselWithExtraPseudoElementsFocusOrderPreScrollMarkerGroupMode) {
+  ScopedCSSScrollMarkerGroupModesForTest feature(false);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 50px; height: 100px; }
