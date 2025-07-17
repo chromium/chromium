@@ -19,11 +19,9 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 namespace signin {
 class BoundSessionOAuthMultiLoginDelegate;
 }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class PrefService;
 
@@ -136,10 +134,8 @@ class SigninClient : public KeyedService {
   virtual void OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent event_details) = 0;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   virtual std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
-  CreateBoundSessionOAuthMultiloginDelegate() const = 0;
-#endif
+  CreateBoundSessionOAuthMultiloginDelegate() const;
 
  protected:
   std::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;

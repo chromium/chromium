@@ -475,18 +475,18 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
   }
 }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
 ChromeSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
           BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
       bound_session_cookie_refresh_service) {
     return std::make_unique<BoundSessionOAuthMultiLoginDelegateImpl>(
         bound_session_cookie_refresh_service->GetWeakPtr());
   }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   return nullptr;
 }
-#endif
 
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     bool has_sync_account,

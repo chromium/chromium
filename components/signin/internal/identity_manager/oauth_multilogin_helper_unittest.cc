@@ -38,10 +38,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace signin {
 
@@ -154,7 +154,7 @@ const char kMultiloginInvalidTokenResponse[] =
        }
       )";
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kMultiloginRetryWithTokenBindingAssertionResponseFormat[] =
     R"()]}'
        {
@@ -190,7 +190,7 @@ const char kMultiloginSuccessWithEncryptedCookieResponseFormat[] =
          ]
        }
       )";
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // GMock matcher that checks that the cookie has the expected parameters.
 MATCHER_P3(CookieMatcher, name, value, domain, "") {
@@ -271,7 +271,7 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
   }
 };
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class MockBoundSessionOAuthMultiLoginDelegate
     : public ::testing::StrictMock<BoundSessionOAuthMultiLoginDelegate> {
  public:
@@ -286,7 +286,7 @@ std::string CreateMultiOAuthAuthorizationHeader(
     const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts) {
   return base::StrCat({"MultiOAuth ", gaia::CreateMultiOAuthHeader(accounts)});
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }  // namespace
 
 class OAuthMultiloginHelperTest
@@ -299,12 +299,12 @@ class OAuthMultiloginHelperTest
         test_signin_client_(&pref_service_),
         mock_token_service_(
             std::make_unique<MockTokenService>(&pref_service_)) {
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     test_signin_client_.SetBoundSessionOauthMultiloginDelegateFactory(
         base::BindRepeating(&OAuthMultiloginHelperTest::
                                 CreateMockBoundSessionOAuthMultiLoginDelegate,
                             base::Unretained(this)));
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 
   ~OAuthMultiloginHelperTest() override = default;
@@ -312,11 +312,11 @@ class OAuthMultiloginHelperTest
   OAuthMultiloginHelper* CreateHelper(
       const std::vector<OAuthMultiloginHelper::AccountIdGaiaIdPair> accounts,
       bool set_external_cc_result = false) {
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // `bound_session_delegate_` is owned by `OAuthMultiloginHelper`, ensures it
     // resets before creating a new helper to avoid dangling pointers.
     bound_session_delegate_ = nullptr;
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
     helper_ = std::make_unique<OAuthMultiloginHelper>(
         &test_signin_client_, this, token_service(),
         gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
@@ -327,7 +327,7 @@ class OAuthMultiloginHelperTest
     return helper_.get();
   }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<BoundSessionOAuthMultiLoginDelegate>
   CreateMockBoundSessionOAuthMultiLoginDelegate() {
     auto delegate = std::make_unique<MockBoundSessionOAuthMultiLoginDelegate>();
@@ -338,7 +338,7 @@ class OAuthMultiloginHelperTest
   MockBoundSessionOAuthMultiLoginDelegate* bound_session_delegate() {
     return bound_session_delegate_;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   network::TestURLLoaderFactory* url_loader() {
     return test_signin_client_.GetTestURLLoaderFactory();
@@ -398,10 +398,10 @@ class OAuthMultiloginHelperTest
   TestSigninClient test_signin_client_;
   std::unique_ptr<MockTokenService> mock_token_service_;
   std::unique_ptr<OAuthMultiloginHelper> helper_;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   raw_ptr<MockBoundSessionOAuthMultiLoginDelegate> bound_session_delegate_ =
       nullptr;
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 
 // Everything succeeds.
@@ -431,10 +431,10 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
             CreateMultiBearerAuthorizationHeader(
                 {gaia::MultiloginAccountAuthCredentials(kGaiaId, kAccessToken,
                                                         kNoAssertion)}));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_TRUE(callback_called_);
@@ -463,10 +463,10 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithRefreshToken) {
             CreateMultiBearerAuthorizationHeader(
                 {gaia::MultiloginAccountAuthCredentials(
                     kGaiaId, "refresh_token", kNoAssertion)}));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_TRUE(callback_called_);
@@ -508,10 +508,10 @@ TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
                 gaia::MultiloginAccountAuthCredentials(kGaiaId, kAccessToken,
                                                        kNoAssertion),
             }));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_TRUE(callback_called_);
@@ -545,10 +545,10 @@ TEST_F(OAuthMultiloginHelperTest, MultipleCookies) {
   // Multilogin call.
   EXPECT_FALSE(callback_called_);
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(),
                             kMultiloginSuccessResponseTwoCookies);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
@@ -585,10 +585,10 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
   EXPECT_FALSE(callback_called_);
   EXPECT_TRUE(
       url_loader()->IsPending(multilogin_url_with_external_cc_result()));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url_with_external_cc_result(),
                             kMultiloginSuccessResponseWithSecondaryDomain);
   EXPECT_FALSE(
@@ -638,10 +638,10 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountTransientMultiloginError) {
   token_service()->IssueAllTokensForAccount(kAccountId, success_response);
   EXPECT_FALSE(callback_called_);
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_TRUE(callback_called_);
@@ -723,10 +723,10 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenError) {
   // Multilogin succeeds the second time.
   EXPECT_FALSE(callback_called_);
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Configure mock cookie manager: check that the cookie is the expected one.
   EXPECT_CALL(*cookie_manager(),
               SetCanonicalCookie(
@@ -803,7 +803,7 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorMaxRetries) {
   EXPECT_EQ(SetAccountsInCookieResult::kTransientError, result_);
 }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
   ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
   std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
@@ -1033,5 +1033,5 @@ TEST_F(OAuthMultiloginHelperTest, BoundSessionHelperCalled) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }  // namespace signin

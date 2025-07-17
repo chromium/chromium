@@ -215,12 +215,8 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       const CoreAccountId& account_id,
       const std::string& refresh_token,
       signin_metrics::SourceForRefreshTokenOperation source =
-          signin_metrics::SourceForRefreshTokenOperation::kUnknown
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>());
 
   void RevokeCredentials(
       const CoreAccountId& account_id,
@@ -289,14 +285,14 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   void UpdateAuthErrorForTesting(const CoreAccountId& account_id,
                                  const GoogleServiceAuthError& error);
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Returns the wrapped binding key of a refresh token associated with
   // `account_id`, if any.
   // Returns a non-empty vector iff (a) a refresh token exists for `account_id`,
   // and (b) the refresh token is bound to a device.
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const;
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   void set_max_authorization_token_fetch_retries_for_testing(int max_retries);
 

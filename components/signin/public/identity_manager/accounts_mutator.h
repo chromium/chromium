@@ -43,12 +43,9 @@ class AccountsMutator {
       const std::string& refresh_token,
       bool is_under_advanced_protection,
       signin_metrics::AccessPoint access_point,
-      signin_metrics::SourceForRefreshTokenOperation source
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          ) = 0;
+      signin_metrics::SourceForRefreshTokenOperation source,
+      const std::vector<uint8_t>& wrapped_binding_key =
+          std::vector<uint8_t>()) = 0;
 
   // Updates the information about account identified by |account_id|.
   // If kUnknown is passed, the attribute is not updated.

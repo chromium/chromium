@@ -5072,6 +5072,9 @@ extern const char kProfilesReorderingDescription[];
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+extern const char kEnableChromeRefreshTokenBindingName[];
+extern const char kEnableChromeRefreshTokenBindingDescription[];
+
 extern const char kEnableHistorySyncOptinExpansionPillName[];
 extern const char kEnableHistorySyncOptinExpansionPillDescription[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -5089,9 +5092,6 @@ extern const char
     kEnableBoundSessionCredentialsSoftwareKeysForManualTestingName[];
 extern const char
     kEnableBoundSessionCredentialsSoftwareKeysForManualTestingDescription[];
-
-extern const char kEnableChromeRefreshTokenBindingName[];
-extern const char kEnableChromeRefreshTokenBindingDescription[];
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 extern const char kEnableStandardBoundSessionCredentialsName[];

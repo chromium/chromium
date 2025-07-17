@@ -21,11 +21,9 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h"
-#include "components/signin/public/webdata/token_web_data.h"
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
-#include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/public/webdata/token_web_data.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -76,9 +74,7 @@ CreateMutableProfileOAuthDelegate(
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
     SigninClient* signin_client,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     unexportable_keys::UnexportableKeyService* unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #if BUILDFLAG(IS_WIN)
     MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback
         reauth_callback,
@@ -92,21 +88,17 @@ CreateMutableProfileOAuthDelegate(
           ? RevokeAllTokensOnLoad::kDeleteSiteDataOnExit
           : RevokeAllTokensOnLoad::kNo;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::unique_ptr<TokenBindingHelper> token_binding_helper;
   if (unexportable_key_service &&
       switches::IsChromeRefreshTokenBindingEnabled(signin_client->GetPrefs())) {
     token_binding_helper =
         std::make_unique<TokenBindingHelper>(*unexportable_key_service);
   }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   return std::make_unique<MutableProfileOAuth2TokenServiceDelegate>(
       signin_client, account_tracker_service, network_connection_tracker,
       token_web_data, account_consistency, revoke_all_tokens_on_load,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       std::move(token_binding_helper),
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #if BUILDFLAG(IS_WIN)
       reauth_callback
 #else
@@ -130,9 +122,7 @@ CreateOAuth2TokenServiceDelegate(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     scoped_refptr<TokenWebData> token_web_data,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     unexportable_keys::UnexportableKeyService* unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
 #if BUILDFLAG(IS_IOS)
     std::unique_ptr<DeviceAccountsProvider> device_accounts_provider,
@@ -158,9 +148,7 @@ CreateOAuth2TokenServiceDelegate(
   return CreateMutableProfileOAuthDelegate(
       account_tracker_service, account_consistency,
       delete_signin_cookies_on_exit, token_web_data, signin_client,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #if BUILDFLAG(IS_WIN)
       reauth_callback,
 #endif  // BUILDFLAG(IS_WIN)
@@ -184,9 +172,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     unexportable_keys::UnexportableKeyService* unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(IS_IOS)
     std::unique_ptr<DeviceAccountsProvider> device_accounts_provider,
@@ -216,10 +202,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
           delete_signin_cookies_on_exit,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-          token_web_data,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          unexportable_key_service,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+          token_web_data, unexportable_key_service,
 #endif
 #if BUILDFLAG(IS_IOS)
           std::move(device_accounts_provider),

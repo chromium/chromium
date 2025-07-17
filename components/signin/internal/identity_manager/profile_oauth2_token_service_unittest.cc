@@ -549,9 +549,9 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     EXPECT_EQ(future.Get<0>(), &request);
     ASSERT_TRUE(future.Get<1>().has_value());
     EXPECT_EQ(future.Get<1>()->oauth_token(), "refreshToken");
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     EXPECT_EQ(future.Get<1>()->token_binding_assertion(), std::string());
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 
   {
@@ -586,7 +586,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
   }
 }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(ProfileOAuth2TokenServiceTest,
        StartRequestForMultiloginDesktopBoundToken) {
   ProfileOAuth2TokenService token_service(
@@ -700,7 +700,7 @@ TEST_F(ProfileOAuth2TokenServiceTest,
   EXPECT_EQ(future.Get<1>()->oauth_token(), "refreshToken");
   EXPECT_EQ(future.Get<1>()->token_binding_assertion(), "SIGNATURE_FAILED");
 }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginMobile) {
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,

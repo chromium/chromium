@@ -16,6 +16,9 @@
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -25,12 +28,6 @@
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
-#include "components/signin/public/base/hybrid_encryption_key.h"
-#include "components/signin/public/base/session_binding_utils.h"
-#endif
 
 namespace signin {
 
@@ -79,10 +76,8 @@ OAuthMultiloginHelper::OAuthMultiloginHelper(
   DCHECK(!accounts_.empty());
   DCHECK(callback_);
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   bound_session_delegate_ =
       signin_client_->CreateBoundSessionOAuthMultiloginDelegate();
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #ifndef NDEBUG
   // Check that there is no duplicate accounts.
@@ -96,12 +91,10 @@ OAuthMultiloginHelper::OAuthMultiloginHelper(
 
 OAuthMultiloginHelper::~OAuthMultiloginHelper() = default;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 void OAuthMultiloginHelper::SetEphemeralKeyForTesting(
     HybridEncryptionKey ephemeral_key) {
   ephemeral_key_ = std::move(ephemeral_key);
 }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 void OAuthMultiloginHelper::StartFetchingTokens() {
   DCHECK(!token_fetcher_);
@@ -109,21 +102,14 @@ void OAuthMultiloginHelper::StartFetchingTokens() {
   std::vector<OAuthMultiloginTokenFetcher::AccountParams> account_params;
   for (const auto& account : accounts_) {
     const CoreAccountId& account_id = account.first;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     auto challenge_it = token_binding_challenges_.find(account_id);
     bool has_challenge = challenge_it != token_binding_challenges_.end();
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     account_params.push_back(
-        {.account_id = account_id
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-         ,
+        {.account_id = account_id,
          .token_binding_challenge =
-             has_challenge ? challenge_it->second : std::string()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-        });
+             has_challenge ? challenge_it->second : std::string()});
   }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::string ephemeral_public_key;
   if (!token_binding_challenges_.empty()) {
     // Create a new key if we don't have one.
@@ -132,13 +118,10 @@ void OAuthMultiloginHelper::StartFetchingTokens() {
     }
     ephemeral_public_key = ephemeral_key_->ExportPublicKey();
   }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   token_fetcher_ = std::make_unique<OAuthMultiloginTokenFetcher>(
       signin_client_, token_service_, std::move(account_params),
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       std::move(ephemeral_public_key),
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       base::BindOnce(&OAuthMultiloginHelper::OnMultiloginTokensSuccess,
                      base::Unretained(this)),
       base::BindOnce(&OAuthMultiloginHelper::OnMultiloginTokensFailure,
@@ -173,9 +156,7 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
     auto token_it = tokens_.find(account.first);
     CHECK(token_it != tokens_.end());
     std::string token_binding_assertion;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     token_binding_assertion = token_it->second.token_binding_assertion();
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
     multilogin_credentials.emplace_back(account.second,
                                         token_it->second.oauth_token(),
@@ -183,7 +164,6 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
   }
 
   OAuthMultiloginResult::CookieDecryptor decryptor;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (ephemeral_key_.has_value()) {
     decryptor = base::BindRepeating(&DecryptValueWithEphemeralKey,
                                     std::move(ephemeral_key_).value());
@@ -191,7 +171,6 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
     // explicitly.
     ephemeral_key_.reset();
   }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   gaia_auth_fetcher_ = partition_delegate_->CreateGaiaAuthFetcherForPartition(
       this, gaia_source_);
@@ -210,11 +189,9 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
       VLOG(1) << "Multilogin successful accounts="
               << base::JoinString(account_ids, " ");
     }
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     if (bound_session_delegate_) {
       bound_session_delegate_->BeforeSetCookies(result);
     }
-#endif
 
     StartSettingCookies(result);
     return;
@@ -235,7 +212,6 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
                    << failed_account.gaia_id;
         continue;
       }
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       if (!failed_account.token_binding_challenge.empty()) {
         auto [_, inserted] = token_binding_challenges_.insert(
             {failed_account_id, failed_account.token_binding_challenge});
@@ -245,16 +221,13 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
           continue;
         }
       }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
       std::string failed_token =
           FindTokenForAccountId(tokens_, failed_account_id);
       CHECK(!failed_token.empty());
       token_service_->InvalidateTokenForMultilogin(failed_account_id,
                                                    failed_token);
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       token_binding_challenges_.erase(failed_account_id);
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     }
   }
 
@@ -324,11 +297,9 @@ void OAuthMultiloginHelper::OnCookieSet(const std::string& cookie_name,
   }
   UMA_HISTOGRAM_BOOLEAN("Signin.SetCookieSuccess", success);
   if (cookies_to_set_.empty()) {
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     if (bound_session_delegate_) {
       bound_session_delegate_->OnCookiesSet();
     }
-#endif
     std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
   }
   // Do not add anything below this line, because this may be deleted.

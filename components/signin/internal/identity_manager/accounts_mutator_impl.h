@@ -44,12 +44,9 @@ class AccountsMutatorImpl : public AccountsMutator {
       const std::string& refresh_token,
       bool is_under_advanced_protection,
       signin_metrics::AccessPoint access_point,
-      signin_metrics::SourceForRefreshTokenOperation source
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          ) override;
+      signin_metrics::SourceForRefreshTokenOperation source,
+      const std::vector<uint8_t>& wrapped_binding_key =
+          std::vector<uint8_t>()) override;
   void UpdateAccountInfo(const CoreAccountId& account_id,
                          Tribool is_child_account,
                          Tribool is_under_advanced_protection) override;

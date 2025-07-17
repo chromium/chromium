@@ -28,3 +28,8 @@ bool SigninClient::is_clear_primary_account_allowed_for_testing() const {
   return is_clear_primary_account_allowed_for_testing_ ==
          SignoutDecision::ALLOW;
 }
+
+std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+SigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
+  return nullptr;
+}

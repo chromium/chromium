@@ -46,15 +46,11 @@ MATCHER(HasTheSameAccountIdTokenPair, "") {
              testing::AllOf(
                  testing::Property("oauth_token()",
                                    &OAuthMultiloginTokenResponse::oauth_token,
-                                   token_pair.second)
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                     ,
+                                   token_pair.second),
                  testing::Property(
                      "token_binding_assertion()",
                      &OAuthMultiloginTokenResponse::token_binding_assertion,
-                     testing::IsEmpty())
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                     ),
+                     testing::IsEmpty())),
              response_pair.second, result_listener);
 }
 
@@ -71,17 +67,11 @@ class OAuthMultiloginTokenFetcherTest : public testing::Test {
   ~OAuthMultiloginTokenFetcherTest() override = default;
 
   std::unique_ptr<OAuthMultiloginTokenFetcher> CreateFetcher(
-      const std::vector<AccountParams>& account_params
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::string& ephemeral_public_key = std::string()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  ) {
+      const std::vector<AccountParams>& account_params,
+      const std::string& ephemeral_public_key = std::string()) {
     return std::make_unique<OAuthMultiloginTokenFetcher>(
         &test_signin_client_, &token_service_, account_params,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
         ephemeral_public_key,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
         base::BindOnce(&OAuthMultiloginTokenFetcherTest::OnSuccess,
                        base::Unretained(this)),
         base::BindOnce(&OAuthMultiloginTokenFetcherTest::OnFailure,
@@ -297,7 +287,6 @@ TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsPersistentError) {
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS, error().state());
 }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 TEST_F(OAuthMultiloginTokenFetcherTest,
        OneAccountWithTokenBindingChallengeSuccess) {
   // `OAuthMultiloginHelperTest` provides a better coverage for the challenge
@@ -319,6 +308,5 @@ TEST_F(OAuthMultiloginTokenFetcherTest,
               UnorderedPointwise(HasTheSameAccountIdTokenPair(),
                                  {std::make_pair(kAccountId, kAccessToken)}));
 }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 }  // namespace signin

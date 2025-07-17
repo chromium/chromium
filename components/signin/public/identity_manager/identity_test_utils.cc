@@ -57,9 +57,7 @@ void UpdateRefreshTokenForAccount(
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     const std::string& new_token,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     const std::vector<uint8_t> wrapped_binding_key,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     signin_metrics::SourceForRefreshTokenOperation source =
         signin_metrics::SourceForRefreshTokenOperation::kUnknown) {
   DCHECK_EQ(account_tracker_service->GetAccountInfo(account_id).account_id,
@@ -87,12 +85,8 @@ void UpdateRefreshTokenForAccount(
   GetAccountManagerFacade(identity_manager)
       ->UpsertAccountForTesting(account, new_token);
 #else
-  token_service->UpdateCredentials(account_id, new_token, source
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                                   ,
-                                   wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+  token_service->UpdateCredentials(account_id, new_token, source,
+                                   wrapped_binding_key);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   run_loop.Run();
@@ -127,18 +121,14 @@ AccountAvailabilityOptions::AccountAvailabilityOptions(
     const GaiaId& gaia_id,
     std::optional<ConsentLevel> consent_level,
     std::optional<std::string> refresh_token,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     const std::vector<uint8_t>& wrapped_binding_key,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
     signin_metrics::AccessPoint access_point)
     : email(email),
       gaia_id(gaia_id),
       consent_level(consent_level),
       refresh_token(refresh_token),
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       wrapped_binding_key(wrapped_binding_key),
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       url_loader_factory_for_cookies(url_loader_factory_for_cookies),
       access_point(access_point) {
   CHECK(!email.empty());
@@ -195,7 +185,6 @@ AccountAvailabilityOptionsBuilder::WithRefreshToken(
   return *this;
 }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 AccountAvailabilityOptionsBuilder&
 AccountAvailabilityOptionsBuilder::WithRefreshTokenBindingKey(
     const std::vector<uint8_t>& wrapped_binding_key) {
@@ -203,13 +192,10 @@ AccountAvailabilityOptionsBuilder::WithRefreshTokenBindingKey(
   wrapped_binding_key_ = wrapped_binding_key;
   return *this;
 }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 AccountAvailabilityOptionsBuilder&
 AccountAvailabilityOptionsBuilder::WithoutRefreshToken() {
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   CHECK(wrapped_binding_key_.empty()) << "Binding key requires a refresh token";
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   refresh_token_ = std::nullopt;
   return *this;
 }
@@ -225,9 +211,7 @@ AccountAvailabilityOptions AccountAvailabilityOptionsBuilder::Build(
     std::string_view email) {
   return AccountAvailabilityOptions(
       email, gaia_id_, primary_account_consent_level_, refresh_token_,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       wrapped_binding_key_,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       with_cookie_ ? url_loader_factory_for_cookies_ : nullptr, access_point_);
 }
 
@@ -452,12 +436,8 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
 
   if (options.refresh_token.has_value()) {
     SetRefreshTokenForAccount(identity_manager, account_info.account_id,
-                              options.refresh_token.value()
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                                  ,
-                              options.wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    );
+                              options.refresh_token.value(),
+                              options.wrapped_binding_key);
   }
 
   if (options.url_loader_factory_for_cookies) {
@@ -474,14 +454,11 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
                               AccountAvailabilityOptionsBuilder().Build(email));
 }
 
-void SetRefreshTokenForAccount(IdentityManager* identity_manager,
-                               const CoreAccountId& account_id,
-                               const std::string& token_value
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                               ,
-                               const std::vector<uint8_t>& wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-) {
+void SetRefreshTokenForAccount(
+    IdentityManager* identity_manager,
+    const CoreAccountId& account_id,
+    const std::string& token_value,
+    const std::vector<uint8_t>& wrapped_binding_key) {
   UpdateRefreshTokenForAccount(
       identity_manager->GetTokenService(),
       identity_manager->GetAccountTrackerService(), identity_manager,
@@ -489,12 +466,8 @@ void SetRefreshTokenForAccount(IdentityManager* identity_manager,
       token_value.empty()
           ? "refresh_token_for_" + account_id.ToString() + "_" +
                 base::Uuid::GenerateRandomV4().AsLowercaseString()
-          : token_value
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+          : token_value,
+      wrapped_binding_key);
 }
 
 void SetInvalidRefreshTokenForAccount(
@@ -505,10 +478,7 @@ void SetInvalidRefreshTokenForAccount(
                                identity_manager->GetAccountTrackerService(),
                                identity_manager, account_id,
                                GaiaConstants::kInvalidRefreshToken,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                               /*wrapped_binding_key=*/{},
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                               source);
+                               /*wrapped_binding_key=*/{}, source);
 }
 
 void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,

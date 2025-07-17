@@ -66,6 +66,7 @@ source_set("identity_manager") {
     "//components/signin/public/identity_manager:tribool",
     "//components/signin/public/webdata",
     "//components/supervised_user/core/common:features",
+    "//components/unexportable_keys",
     "//components/version_info",
     "//crypto",
     "//services/network/public/cpp",
@@ -95,6 +96,10 @@ source_set("identity_manager") {
     sources += [
       "mutable_profile_oauth2_token_service_delegate.cc",
       "mutable_profile_oauth2_token_service_delegate.h",
+      "token_binding_helper.cc",
+      "token_binding_helper.h",
+      "token_binding_oauth2_access_token_fetcher.cc",
+      "token_binding_oauth2_access_token_fetcher.h",
     ]
   }
 
@@ -107,16 +112,6 @@ source_set("identity_manager") {
       "//ash/constants",
       "//components/account_manager_core",
     ]
-  }
-
-  if (enable_bound_session_credentials) {
-    sources += [
-      "token_binding_helper.cc",
-      "token_binding_helper.h",
-      "token_binding_oauth2_access_token_fetcher.cc",
-      "token_binding_oauth2_access_token_fetcher.h",
-    ]
-    deps += [ "//components/unexportable_keys" ]
   }
 
   if (!is_android && !is_ios) {
@@ -216,18 +211,14 @@ source_set("unit_tests") {
   }
 
   if (enable_dice_support) {
-    sources += [ "mutable_profile_oauth2_token_service_delegate_unittest.cc" ]
-
-    deps += [ "//components/os_crypt/async/browser:test_support" ]
-  }
-
-  if (enable_bound_session_credentials) {
     sources += [
+      "mutable_profile_oauth2_token_service_delegate_unittest.cc",
       "token_binding_helper_unittest.cc",
       "token_binding_oauth2_access_token_fetcher_unittest.cc",
     ]
 
     deps += [
+      "//components/os_crypt/async/browser:test_support",
       "//components/unexportable_keys",
       "//components/unexportable_keys:test_support",
       "//crypto:test_support",

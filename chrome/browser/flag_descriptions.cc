@@ -8606,6 +8606,11 @@ const char kProfilesReorderingDescription[] =
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const char kEnableChromeRefreshTokenBindingName[] =
+    "Chrome Refresh Token Binding";
+const char kEnableChromeRefreshTokenBindingDescription[] =
+    "Enables binding of Chrome refresh tokens to cryptographic keys.";
+
 const char kEnableHistorySyncOptinExpansionPillName[] =
     "History Sync Opt-in Expansion Pill";
 const char kEnableHistorySyncOptinExpansionPillDescription[] =
@@ -8634,11 +8639,6 @@ const char
         "Enables mock software-backed cryptographic keys for Google session "
         "credentials binding and Chrome refresh tokens binding (not secure). "
         "This is intended to be used for manual testing only.";
-
-const char kEnableChromeRefreshTokenBindingName[] =
-    "Chrome Refresh Token Binding";
-const char kEnableChromeRefreshTokenBindingDescription[] =
-    "Enables binding of Chrome refresh tokens to cryptographic keys.";
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 const char kEnableStandardBoundSessionCredentialsName[] =

@@ -16,12 +16,8 @@ namespace signin {
 class OAuthMultiloginTokenResponse {
  public:
   explicit OAuthMultiloginTokenResponse(
-      std::string oauth_token
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      std::string token_binding_assertion = std::string()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+      std::string oauth_token,
+      std::string token_binding_assertion = std::string());
 
   // Move-able but not copy-able.
   OAuthMultiloginTokenResponse(const OAuthMultiloginTokenResponse&) = delete;
@@ -36,19 +32,15 @@ class OAuthMultiloginTokenResponse {
   // Access or refresh OAuth token.
   const std::string& oauth_token() const { return oauth_token_; }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   // An assertion proving possession of a private key if `oauth_token` is bound.
   // May be empty.
   const std::string& token_binding_assertion() const {
     return token_binding_assertion_;
   }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
  private:
   std::string oauth_token_;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::string token_binding_assertion_;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 };
 
 }  // namespace signin

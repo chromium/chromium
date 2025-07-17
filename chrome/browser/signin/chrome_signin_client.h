@@ -79,10 +79,8 @@ class ChromeSigninClient : public SigninClient {
   void OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent event_details) override;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
   CreateBoundSessionOAuthMultiloginDelegate() const override;
-#endif
 
   // Adds the users to a synthetic field trial for user that were shown the
   // Bookmarks Bubble sign in/sync promo. Only adds user that are part of the

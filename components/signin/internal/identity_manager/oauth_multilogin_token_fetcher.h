@@ -40,17 +40,13 @@ class OAuthMultiloginTokenFetcher {
 
   struct AccountParams {
     CoreAccountId account_id;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     std::string token_binding_challenge;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   };
 
   OAuthMultiloginTokenFetcher(SigninClient* signin_client,
                               ProfileOAuth2TokenService* token_service,
                               std::vector<AccountParams> account_params,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                               std::string ephemeral_public_key,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                               SuccessCallback success_callback,
                               FailureCallback failure_callback);
 
@@ -74,9 +70,7 @@ class OAuthMultiloginTokenFetcher {
   raw_ptr<SigninClient> signin_client_;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
   const std::vector<AccountParams> account_params_;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   const std::string ephemeral_public_key_;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   SuccessCallback success_callback_;
   FailureCallback failure_callback_;

@@ -162,10 +162,8 @@ struct AccountAvailabilityOptions {
   // used as the token.
   const std::optional<std::string> refresh_token = std::string();
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   // If non-empty, a refresh token will be bound to device with this key.
   const std::vector<uint8_t> wrapped_binding_key;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   // If non-null, the account to be created will be marked as present in the
   // Gaia cookie, by using `url_loader_factory_for_cookies` to mock the
@@ -188,9 +186,7 @@ struct AccountAvailabilityOptions {
       const GaiaId& gaia_id,
       std::optional<ConsentLevel> consent_level,
       std::optional<std::string> refresh_token,
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       const std::vector<uint8_t>& wrapped_binding_key,
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
       signin_metrics::AccessPoint access_point);
 };
@@ -231,12 +227,10 @@ class AccountAvailabilityOptionsBuilder {
   AccountAvailabilityOptionsBuilder& WithRefreshToken(
       std::string_view refresh_token);
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   // Request a refresh token that is bound to a `wrapped_binding_key`.
   // `WithoutRefreshToken()` must not be called if this option is set.
   AccountAvailabilityOptionsBuilder& WithRefreshTokenBindingKey(
       const std::vector<uint8_t>& wrapped_binding_key);
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   // Request that we should not attempt to set a refresh token for the account.
   AccountAvailabilityOptionsBuilder& WithoutRefreshToken();
@@ -253,9 +247,7 @@ class AccountAvailabilityOptionsBuilder {
   GaiaId gaia_id_;
   std::optional<ConsentLevel> primary_account_consent_level_;
   std::optional<std::string> refresh_token_ = std::string();
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::vector<uint8_t> wrapped_binding_key_;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   bool with_cookie_ = false;
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::kSettings;
@@ -289,12 +281,8 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
 void SetRefreshTokenForAccount(
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,
-    const std::string& token_value = std::string()
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-        ,
-    const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-);
+    const std::string& token_value = std::string(),
+    const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>());
 
 // Sets a special invalid refresh token for the given account (which must
 // already be available). Blocks until the refresh token is set.

@@ -264,13 +264,13 @@ bool IdentityManager::HasAccountWithRefreshTokenInPersistentErrorState(
   return GetErrorStateOfRefreshTokenForAccount(account_id).IsPersistentError();
 }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::vector<uint8_t>
 IdentityManager::GetWrappedBindingKeyOfRefreshTokenForAccount(
     const CoreAccountId& account_id) const {
   return token_service_->GetWrappedBindingKey(account_id);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 GoogleServiceAuthError IdentityManager::GetErrorStateOfRefreshTokenForAccount(
     const CoreAccountId& account_id) const {

@@ -7,19 +7,10 @@
 namespace signin {
 
 OAuthMultiloginTokenResponse::OAuthMultiloginTokenResponse(
-    std::string oauth_token
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    ,
-    std::string token_binding_assertion
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    )
-    : oauth_token_(std::move(oauth_token))
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      token_binding_assertion_(std::move(token_binding_assertion))
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-{
-}
+    std::string oauth_token,
+    std::string token_binding_assertion)
+    : oauth_token_(std::move(oauth_token)),
+      token_binding_assertion_(std::move(token_binding_assertion)) {}
 
 OAuthMultiloginTokenResponse::OAuthMultiloginTokenResponse(
     OAuthMultiloginTokenResponse&& other) noexcept = default;

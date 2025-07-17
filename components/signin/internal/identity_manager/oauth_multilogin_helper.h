@@ -31,10 +31,7 @@ namespace signin {
 
 enum class SetAccountsInCookieResult;
 class OAuthMultiloginTokenResponse;
-
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 class BoundSessionOAuthMultiLoginDelegate;
-#endif
 
 // This is a helper class that drives the OAuth multilogin process.
 // The main steps are:
@@ -61,9 +58,7 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
 
   ~OAuthMultiloginHelper() override;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   void SetEphemeralKeyForTesting(HybridEncryptionKey ephemeral_key);
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
  private:
   // Starts fetching tokens with OAuthMultiloginTokenFetcher.
@@ -92,9 +87,7 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   raw_ptr<AccountsCookieMutator::PartitionDelegate> partition_delegate_;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::unique_ptr<BoundSessionOAuthMultiLoginDelegate> bound_session_delegate_;
-#endif
 
   int fetcher_retries_ = 0;
 
@@ -109,14 +102,12 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   // OAuth tokens for each account ID in `accounts_`, or empty if is not
   // populated yet.
   base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse> tokens_;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   // Token binding challenges received from Gaia. Chrome should try to sign over
   // each challenge no more than once.
   base::flat_map<CoreAccountId, std::string> token_binding_challenges_;
   // Ephemeral key that could be used for cookie encryption. Reset at every
   // request retry.
   std::optional<HybridEncryptionKey> ephemeral_key_;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   base::OnceCallback<void(SetAccountsInCookieResult)> callback_;
   std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;

@@ -827,7 +827,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
           "hasAuthError",
           identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
               account_info.account_id));
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       if (switches::IsChromeRefreshTokenBindingEnabled(
               signin_client->GetPrefs())) {
         entry.Set("isBound",
@@ -836,7 +836,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
                            account_info.account_id)
                        .empty());
       }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
       account_info_section.Append(std::move(entry));
     }
   }

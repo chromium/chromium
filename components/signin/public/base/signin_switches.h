@@ -103,17 +103,19 @@ extern const base::FeatureParam<std::string>
     kEnableBoundSessionCredentialsExclusiveRegistrationPath;
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kBoundSessionCredentialsKillSwitch);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableChromeRefreshTokenBinding);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kBoundSessionCredentialsKillSwitch);
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUseIssueTokenToFetchAccessTokens);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Enables a separate account-scoped storage for preferences.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

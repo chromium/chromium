@@ -161,6 +161,13 @@ const base::FeatureParam<std::string>
     kEnableBoundSessionCredentialsExclusiveRegistrationPath{
         &kEnableBoundSessionCredentials, "exclusive-registration-path", ""};
 
+// Allows to disable the bound session credentials code in case of emergency.
+BASE_FEATURE(kBoundSessionCredentialsKillSwitch,
+             "BoundSessionCredentialsKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Enables Chrome refresh tokens binding to a device.
 BASE_FEATURE(kEnableChromeRefreshTokenBinding,
              "EnableChromeRefreshTokenBinding",
@@ -175,17 +182,12 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
   return base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
 }
 
-// Allows to disable the bound session credentials code in case of emergency.
-BASE_FEATURE(kBoundSessionCredentialsKillSwitch,
-             "BoundSessionCredentialsKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, Chrome will always use the /IssueToken endpoint to fetch access
 // tokens, no matter if a refresh token is bound or not.
 BASE_FEATURE(kUseIssueTokenToFetchAccessTokens,
              "UseIssueTokenToFetchAccessTokens",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",

@@ -29,9 +29,9 @@
 #include "base/android/jni_android.h"
 #endif
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_IOS)
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -107,7 +107,7 @@ class ProfileOAuth2TokenServiceDelegate {
                                const GoogleServiceAuthError& error,
                                bool fire_auth_error_changed = true);
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Returns true iff (a) a refresh token exists for `account_id`, and (b) the
   // refresh token is bound to a device.
   virtual bool IsRefreshTokenBound(const CoreAccountId& account_id) const = 0;
@@ -129,7 +129,7 @@ class ProfileOAuth2TokenServiceDelegate {
       std::string_view challenge,
       std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) = 0;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns a list of accounts for which a refresh token is maintained by
   // |this| instance, i.e. the accounts available in this profile, in the order
@@ -193,12 +193,8 @@ class ProfileOAuth2TokenServiceDelegate {
       const CoreAccountId& account_id,
       const std::string& refresh_token,
       signin_metrics::SourceForRefreshTokenOperation source =
-          signin_metrics::SourceForRefreshTokenOperation::kUnknown
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  );
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>());
 
   // Redirects to `RevokeCredentialsInternal()` which can be overridden by
   // subclasses. Sets the source for the refresh token operation.
@@ -339,13 +335,8 @@ class ProfileOAuth2TokenServiceDelegate {
 
   virtual void UpdateCredentialsInternal(
       const CoreAccountId& account_id,
-      const std::string& refresh_token
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  ) {
-  }
+      const std::string& refresh_token,
+      const std::vector<uint8_t>& wrapped_binding_key) {}
 
   virtual void RevokeCredentialsInternal(const CoreAccountId& account_id) {}
 

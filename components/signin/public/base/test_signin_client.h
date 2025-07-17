@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
@@ -22,10 +23,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
-
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
-#endif
 
 class PrefService;
 
@@ -54,7 +51,7 @@ class TestWaitForNetworkCallbackHelper : public WaitForNetworkCallbackHelper {
 // part of its interface.
 class TestSigninClient : public SigninClient {
  public:
-  TestSigninClient(
+  explicit TestSigninClient(
       PrefService* pref_service,
       network::TestURLLoaderFactory* test_url_loader_factory = nullptr);
 
@@ -120,7 +117,6 @@ class TestSigninClient : public SigninClient {
   void OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent event_details) override;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
   CreateBoundSessionOAuthMultiloginDelegate() const override;
 
@@ -128,13 +124,10 @@ class TestSigninClient : public SigninClient {
       base::RepeatingCallback<
           std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>()>
           factory);
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
  private:
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   using BoundSessionOauthMultiloginDelegateFactory = base::RepeatingCallback<
       std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>()>;
-#endif  //  BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   std::unique_ptr<TestWaitForNetworkCallbackHelper>
       test_wait_for_network_callback_helper_;
@@ -148,9 +141,7 @@ class TestSigninClient : public SigninClient {
   bool are_signin_cookies_allowed_;
   bool are_signin_cookies_deleted_on_exit_ = false;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   BoundSessionOauthMultiloginDelegateFactory bound_session_delegate_factory_;
-#endif  //  BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_TEST_SIGNIN_CLIENT_H_
