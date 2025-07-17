@@ -5,6 +5,7 @@
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -102,6 +103,7 @@ using password_manager::TestPasswordStore;
 using plus_addresses::FakePlusAddressService;
 using plus_addresses::PlusProfile;
 using testing::_;
+using testing::AtMost;
 using testing::ByMove;
 using testing::Eq;
 using testing::Mock;
@@ -402,6 +404,14 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
             IsAccountStorageEnabled)
         .WillByDefault(Return(false));
     window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
+
+    // Make StrictMock ignore calls to hide the trusted vault key retrieval
+    // action.
+    EXPECT_CALL(mock_manual_filling_controller_,
+                OnAccessoryActionAvailabilityChanged(
+                    ShouldShowAction(false),
+                    autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY))
+        .Times(AtMost(1));
   }
 
   webauthn::WebAuthnCredManDelegate* cred_man_delegate() {
@@ -2104,11 +2114,20 @@ TEST_F(PasswordAccessoryControllerTest, SelectPlusAddressItemFromMenu) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
+  base::test::ScopedFeatureList features{
+      password_manager::features::
+          kRetrieveTrustedVaultKeyKeyboardAccessoryAction};
+
   CreateSheetController();
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {}, CredentialCache::IsOriginBlocklisted(false),
       password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired,
       url::Origin::Create(GURL(kExampleSite)));
+
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(true),
+                  autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY));
 
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -2134,6 +2153,89 @@ TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
 
   controller()->OnOptionSelected(
       autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       ShowAndHideRetrieveTrustedVaultKeyAction) {
+  base::test::ScopedFeatureList features{
+      password_manager::features::
+          kRetrieveTrustedVaultKeyKeyboardAccessoryAction};
+
+  CreateSheetController();
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
+      password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+      url::Origin::Create(GURL(kExampleSite)));
+
+  // Trusted vault error key retrieval required on a username field should show
+  // the action.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(true),
+                  autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
+
+  // The action should not be shown on other field types.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(false),
+                  autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableSearchField,
+      /*is_field_eligible_for_manual_generation=*/false);
+
+  // Trusted vault error key retrieval required on a password field should show
+  // the action.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(true),
+                  autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/false);
+
+  // No trusted vault error key retrieval required on a password field should
+  // hide the action.
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
+      url::Origin::Create(GURL(kExampleSite)));
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(false),
+                  autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/false);
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       ShowAndHideRetrieveTrustedVaultKeyActionFeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      password_manager::features::
+          kRetrieveTrustedVaultKeyKeyboardAccessoryAction);
+
+  CreateSheetController();
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
+      password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+      url::Origin::Create(GURL(kExampleSite)));
+
+  // Trusted vault error key retrieval required on a username or password field
+  // should not show the action.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(true),
+                  autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY))
+      .Times(0);
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_field_eligible_for_manual_generation=*/false);
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/false);
 }
 
 class PasswordAccessoryControllerWithTestStoreTest

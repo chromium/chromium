@@ -183,6 +183,9 @@ public class KeyboardAccessoryData {
                 case AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY:
                     typeName = "CREDMAN_CONDITIONAL_UI_REENTRY";
                     break;
+                case AccessoryAction.RETRIEVE_TRUSTED_VAULT_KEY:
+                    typeName = "RETRIEVE_TRUSTED_VAULT_KEY";
+                    break;
             }
             return typeName;
         }

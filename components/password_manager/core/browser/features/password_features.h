@@ -189,6 +189,10 @@ BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
 // The feature flag for reloading passwords when the trusted vault encryption
 // state changes.
 BASE_DECLARE_FEATURE(kReloadPasswordsOnTrustedVaultEncryptionChange);
+
+// The feature flag for showing an action to unlock passwords in case of a
+// trusted vault error in the keyboard accessory.
+BASE_DECLARE_FEATURE(kRetrieveTrustedVaultKeyKeyboardAccessoryAction);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 inline constexpr base::FeatureParam<std::string>

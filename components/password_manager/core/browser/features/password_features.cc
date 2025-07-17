@@ -203,6 +203,10 @@ BASE_FEATURE(kImprovedPasswordChangeService,
 BASE_FEATURE(kReloadPasswordsOnTrustedVaultEncryptionChange,
              "ReloadPasswordsOnTrustedVaultEncryptionChange",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRetrieveTrustedVaultKeyKeyboardAccessoryAction,
+             "RetrieveTrustedVaultKeyKeyboardAccessoryAction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager::features
