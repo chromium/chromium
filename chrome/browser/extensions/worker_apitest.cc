@@ -18,7 +18,8 @@ class WorkerTest : public ExtensionApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WorkerTest, WorkerInBackgroundPage) {
+// TODO(crbug.com/431290255): Disable the test due to flakiness.
+IN_PROC_BROWSER_TEST_F(WorkerTest, DISABLED_WorkerInBackgroundPage) {
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir_);
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("worker")) << message_;
