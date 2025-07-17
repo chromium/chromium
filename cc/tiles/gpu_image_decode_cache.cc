@@ -633,7 +633,7 @@ class GpuImageDecodeTaskImpl : public TileTask {
   ~GpuImageDecodeTaskImpl() override = default;
 
  private:
-  raw_ptr<GpuImageDecodeCache, DanglingUntriaged> cache_;
+  raw_ptr<GpuImageDecodeCache> cache_;
   DrawImage image_;
   const ImageDecodeCache::TracingInfo tracing_info_;
   const ImageDecodeCache::TaskType task_type_;
@@ -687,7 +687,7 @@ class ImageUploadTaskImpl : public TileTask {
   ~ImageUploadTaskImpl() override = default;
 
  private:
-  raw_ptr<GpuImageDecodeCache, DanglingUntriaged> cache_;
+  raw_ptr<GpuImageDecodeCache> cache_;
   DrawImage image_;
   const ImageDecodeCache::TracingInfo tracing_info_;
   const ImageDecodeCache::ClientId client_id_;
