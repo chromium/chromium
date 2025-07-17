@@ -9,6 +9,12 @@ config("gemmlowp_include") {
     # for this component on Windows on Arm due to compilation errors.
     defines = [ "GEMMLOWP_ALLOW_INLINE_ASM" ]
   }
+
+  if (is_clang) {
+    # Gemmlowp doesn't have the annotations to support this analysis, so
+    # building with this flag enabled results in spurious warnings.
+    cflags_cc = [ "-Wno-thread-safety" ]
+  }
 }
 source_set("gemmlowp") {
   public = [
