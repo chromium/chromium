@@ -214,11 +214,10 @@ export class SettingsCreditCardListEntryElement extends
   }
 
   /**
-   * Returns expiration date if applicable.
+   * Returns expiration date.
    */
   private getExpirationlabel_(): string {
-    return this.isVirtualCardEnrolled_() ? '' :
-                                           ' · ' + this.getCardExpiryDate_();
+    return ' · ' + this.getCardExpiryDate_();
   }
 
   /**
