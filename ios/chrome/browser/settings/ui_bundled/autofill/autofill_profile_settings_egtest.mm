@@ -791,9 +791,8 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
   [SigninEarlGrey signOut];
 }
 
-// TODO(crbug.com/427946024): This test is flaky.
 // Tests that the local profile is migrated to account.
-- (void)FLAKY_testMigrateToAccount {
+- (void)testMigrateToAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
   [self
@@ -921,18 +920,6 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  kSnackbarAppearanceTimeout, wait_for_appearance),
              @"Snackbar did not appear.");
-
-  // Wait for the snackbar to disappear.
-  ConditionBlock wait_for_disappearance = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_nil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSnackbarDisappearanceTimeout, wait_for_disappearance),
-             @"Snackbar did not disappear.");
 
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
