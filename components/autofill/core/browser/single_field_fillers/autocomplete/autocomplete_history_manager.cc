@@ -119,18 +119,6 @@ void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
   base::TimeDelta time_delta =
       base::Time::Now() - last_entries_iter->second.date_last_used();
   AutofillMetrics::LogAutocompleteDaysSinceLastUse(time_delta.InDays());
-
-  // Log metric to give details on how likely users are to ignore an
-  // autocomplete suggestion based on when it was last used.
-  for (const auto& entry : last_entries_) {
-    if (entry.first == suggestion.main_text.value) {
-      continue;
-    }
-    base::TimeDelta unaccepted_suggestion_time_delta =
-        base::Time::Now() - entry.second.date_last_used();
-    AutofillMetrics::LogUnacceptedAutocompleteSuggestionDaysSinceLastUse(
-        unaccepted_suggestion_time_delta.InDays());
-  }
 }
 
 void AutocompleteHistoryManager::Init(

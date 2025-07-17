@@ -738,10 +738,6 @@ class AutofillMetrics {
   // used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
 
-  // Logs the number of days since an unaccepted Autocomplete suggestion was
-  // last used.
-  static void LogUnacceptedAutocompleteSuggestionDaysSinceLastUse(size_t days);
-
   // Logs the fact that an autocomplete popup was shown.
   static void OnAutocompleteSuggestionsShown();
 

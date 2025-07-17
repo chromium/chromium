@@ -704,7 +704,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 }
 
 TEST_F(AutocompleteHistoryManagerTest,
-       OnSingleFieldSuggestionSelected_AcceptedAndUnaccepted_ShouldLogDays) {
+       OnSingleFieldSuggestionSelected_ShouldLogDays) {
   // Setting up by simulating that there was a query for autocomplete
   // suggestions, and that two values were found.
   int mocked_db_query_id = 100;
@@ -755,11 +755,6 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   histogram_tester.ExpectBucketCount("Autocomplete.DaysSinceLastUse",
                                      days_since_last_use_accepted_suggestion,
-                                     1);
-
-  // Also log metrics for the unaccepted entries.
-  histogram_tester.ExpectBucketCount("Autocomplete.Unaccepted.DaysSinceLastUse",
-                                     days_since_last_use_unaccepted_suggestion,
                                      1);
 }
 
