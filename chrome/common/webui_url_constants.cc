@@ -83,6 +83,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIChromeURLsHost,
       kChromeUIComponentsHost,
       commerce::kChromeUICommerceInternalsHost,
+      kChromeUIConnectorsInternalsHost,
       kChromeUICrashesHost,
       kChromeUICreditsHost,
 #if BUILDFLAG(IS_CHROMEOS) && !defined(OFFICIAL_BUILD)
@@ -191,10 +192,6 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUIInternetConfigDialogHost,
       kChromeUIInternetDetailDialogHost,
       kChromeUIAssistantOptInHost,
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-      kChromeUIConnectorsInternalsHost,
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)

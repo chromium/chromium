@@ -18,6 +18,7 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 group("resources") {
   public_deps = [
+    "connectors_internals:resources",
     "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
   ]
@@ -107,10 +108,6 @@ group("resources") {
       "//chrome/browser/resources/media/mei_preload:component",
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
     ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    public_deps += [ "connectors_internals:resources" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {

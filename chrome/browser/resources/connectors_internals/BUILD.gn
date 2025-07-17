@@ -12,10 +12,15 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "connectors_tabs.ts",
-    "device_trust_connector.ts",
-    "managed_client_certificate.ts",
     "signals_reporting.ts",
   ]
+
+  if (!is_android) {
+    web_component_files += [
+      "device_trust_connector.ts",
+      "managed_client_certificate.ts",
+    ]
+  }
 
   ts_files = [
     "browser_proxy.ts",

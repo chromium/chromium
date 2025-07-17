@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/chrome_urls/chrome_urls_ui.h"
 #include "chrome/browser/ui/webui/commerce/commerce_internals_ui_config.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
+#include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/crashes/crashes_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
@@ -163,12 +164,6 @@
         // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -233,6 +228,8 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ComponentsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<security_interstitials::ConnectionHelpUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<enterprise_connectors::ConnectorsInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ConstrainedWebDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<CreditsUIConfig>());
   map.AddWebUIConfig(std::make_unique<DataSharingInternalsUIConfig>());
@@ -389,13 +386,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<SandboxInternalsUIConfig>());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  map.AddWebUIConfig(
-      std::make_unique<enterprise_connectors::ConnectorsInternalsUIConfig>());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)

@@ -76,6 +76,8 @@ inline constexpr char kChromeUIColorPipelineInternalsURL[] =
 inline constexpr char kChromeUIComponentsHost[] = "components";
 inline constexpr char kChromeUIComponentsUrl[] = "chrome://components";
 inline constexpr char kChromeUIConflictsHost[] = "conflicts";
+inline constexpr char kChromeUIConnectorsInternalsHost[] =
+    "connectors-internals";
 inline constexpr char kChromeUIConstrainedHTMLTestURL[] =
     "chrome://constrained-test/";
 inline constexpr char kChromeUIContentSettingsURL[] =
@@ -551,12 +553,6 @@ inline constexpr char kChromeUIOSSettingsHost[] = "os-settings";
 inline constexpr char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
 inline constexpr char kChromeUIOsUrlAppURL[] = "chrome://internal/";
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-inline constexpr char kChromeUIConnectorsInternalsHost[] =
-    "connectors-internals";
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)

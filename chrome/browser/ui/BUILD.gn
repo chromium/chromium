@@ -119,6 +119,12 @@ static_library("ui") {
     "webui/components/components_handler.h",
     "webui/components/components_ui.cc",
     "webui/components/components_ui.h",
+    "webui/connectors_internals/connectors_internals_page_handler.cc",
+    "webui/connectors_internals/connectors_internals_page_handler.h",
+    "webui/connectors_internals/connectors_internals_ui.cc",
+    "webui/connectors_internals/connectors_internals_ui.h",
+    "webui/connectors_internals/device_trust_utils.cc",
+    "webui/connectors_internals/device_trust_utils.h",
     "webui/crashes/crashes_ui.cc",
     "webui/crashes/crashes_ui.h",
     "webui/data_sharing_internals/data_sharing_internals_ui.cc",
@@ -442,6 +448,7 @@ static_library("ui") {
     "//components/data_sharing/public",
     "//components/device_event_log",
     "//components/device_reauth",
+    "//components/device_signals/core/browser",
     "//components/dom_distiller/content/browser",
     "//components/domain_reliability",
     "//components/download/content/factory",
@@ -3096,21 +3103,12 @@ static_library("ui") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [
-      "passwords/password_cross_domain_confirmation_popup_view.h",
-      "webui/connectors_internals/connectors_internals_page_handler.cc",
-      "webui/connectors_internals/connectors_internals_page_handler.h",
-      "webui/connectors_internals/connectors_internals_ui.cc",
-      "webui/connectors_internals/connectors_internals_ui.h",
-      "webui/connectors_internals/device_trust_utils.cc",
-      "webui/connectors_internals/device_trust_utils.h",
-    ]
+    sources += [ "passwords/password_cross_domain_confirmation_popup_view.h" ]
 
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
       "//chrome/browser/enterprise/connectors/device_trust/common",
-      "//components/device_signals/core/browser",
     ]
 
     if (enterprise_client_certificates) {

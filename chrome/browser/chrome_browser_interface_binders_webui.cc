@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/browser/ui/webui/chrome_urls/chrome_urls_ui.h"
+#include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
+#include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/location_internals/location_internals.mojom.h"
@@ -50,8 +52,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
-#include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #endif
 
@@ -455,6 +455,10 @@ void PopulateChromeWebUIFrameBinders(
       data_sharing_internals::mojom::PageHandlerFactory,
       DataSharingInternalsUI>(map);
 
+  RegisterWebUIControllerInterfaceBinder<
+      connectors_internals::mojom::PageHandler,
+      enterprise_connectors::ConnectorsInternalsUI>(map);
+
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext()))) {
@@ -466,13 +470,6 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,
                                            glic::GlicUI>(map);
   }
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  RegisterWebUIControllerInterfaceBinder<
-      connectors_internals::mojom::PageHandler,
-      enterprise_connectors::ConnectorsInternalsUI>(map);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

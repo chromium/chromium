@@ -8662,6 +8662,7 @@ static_library("browser_generated_files") {
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
+    "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
     "//chrome/browser/ui/webui/location_internals:mojo_bindings",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
@@ -8792,10 +8793,8 @@ static_library("browser_generated_files") {
     ]
   }
   if (is_win || is_mac || is_linux || is_chromeos) {
-    public_deps += [
-      "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
-      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
-    ]
+    public_deps +=
+        [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings" ]
   }
   if (safe_browsing_mode == 1) {
     public_deps += [ "//chrome/browser/ui/webui/reset_password:mojo_bindings" ]

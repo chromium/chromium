@@ -123,6 +123,7 @@ template("chrome_extra_paks") {
       "$root_gen_dir/chrome/browser_resources.pak",
       "$root_gen_dir/chrome/chrome_unscaled_resources.pak",
       "$root_gen_dir/chrome/common_resources.pak",
+      "$root_gen_dir/chrome/connectors_internals_resources.pak",
       "$root_gen_dir/chrome/saved_tab_groups_unsupported_resources.pak",
       "$root_gen_dir/chrome/segmentation_internals_resources.pak",
       "$root_gen_dir/components/autofill/core/browser/geo/autofill_address_rewriter_resources.pak",
@@ -152,11 +153,13 @@ template("chrome_extra_paks") {
       "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.pak",
       "$root_gen_dir/ui/webui/resources/webui_resources.pak",
     ]
+
     deps = [
       "//base/tracing/protos:chrome_track_event_resources",
       "//chrome/app/theme:chrome_unscaled_resources",
       "//chrome/browser:resources",
       "//chrome/browser/resources:resources",
+      "//chrome/browser/resources/connectors_internals:resources",
       "//chrome/browser/resources/saved_tab_groups_unsupported:resources",
       "//chrome/common:resources",
       "//components/autofill/core/browser:autofill_address_rewriter_resources",
@@ -478,11 +481,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/on_device_translation_internals_resources.pak",
       ]
       deps += [ "//chrome/browser/resources/app_settings:resources" ]
-    }
-
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "$root_gen_dir/chrome/connectors_internals_resources.pak" ]
-      deps += [ "//chrome/browser/resources/connectors_internals:resources" ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {

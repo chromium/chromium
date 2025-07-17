@@ -40,9 +40,11 @@ class ConnectorsInternalsPageHandler
   void GetSignalsReportingState(
       GetSignalsReportingStateCallback callback) override;
 
+#if !BUILDFLAG(IS_ANDROID)
   void OnSignalsCollected(GetDeviceTrustStateCallback callback,
                           bool is_device_trust_enabled,
                           const base::Value::Dict signals);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;
