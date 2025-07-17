@@ -40,6 +40,9 @@ COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(
     kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations);
 
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kOnDeviceCategoryClassifier);
+
 // Returns whether page content annotations should be enabled.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 bool ShouldEnablePageContentAnnotations();

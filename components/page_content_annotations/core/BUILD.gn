@@ -34,6 +34,10 @@ static_library("core") {
   ]
   if (build_with_tflite_lib) {
     sources += [
+      "edu_classifier_model_executor.cc",
+      "edu_classifier_model_executor.h",
+      "edu_classifier_model_handler.cc",
+      "edu_classifier_model_handler.h",
       "page_content_annotation_job_executor.cc",
       "page_content_annotation_job_executor.h",
       "page_content_annotations_model_manager.cc",
@@ -93,6 +97,7 @@ source_set("unit_tests") {
   ]
   if (build_with_tflite_lib) {
     sources += [
+      "edu_classifier_model_handler_unittest.cc",
       "page_content_annotation_job_executor_unittest.cc",
       "page_visibility_model_handler_unittest.cc",
     ]

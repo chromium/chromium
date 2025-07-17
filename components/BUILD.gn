@@ -131,6 +131,7 @@ test("components_unittests") {
       "test/data/offline_pages/",
       "test/data/omnibox/",
       "test/data/optimization_guide/",
+      "test/data/page_content_annotations/",
       "test/data/paint_preview/",
       "test/data/password_manager/",
       "test/data/patch_service/",

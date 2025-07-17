@@ -169,6 +169,10 @@ BASE_FEATURE(kAnnotatedPageContentExtraction,
              "AnnotatedPageContentExtraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceCategoryClassifier,
+             "OnDeviceCategoryClassifier",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kPageContentAnnotations,
@@ -182,7 +186,8 @@ bool ShouldEnablePageContentAnnotations() {
          base::FeatureList::IsEnabled(page_content_annotations::features::
                                           kPageContentAnnotationsValidation) ||
          base::FeatureList::IsEnabled(
-             page_content_annotations::features::kRemotePageMetadata);
+             page_content_annotations::features::kRemotePageMetadata) ||
+         base::FeatureList::IsEnabled(kOnDeviceCategoryClassifier);
 }
 
 bool ShouldWriteContentAnnotationsToHistoryService() {
