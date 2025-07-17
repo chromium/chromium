@@ -135,7 +135,7 @@ class ChildFrameRegistrationJavascriptTest : public web::JavascriptTest {
          "}"
          "window.addEventListener('message', () => "
          "++registrationAttemptsCount);";
-    web::test::ExecuteJavaScript(web_view(), script);
+    web::test::ExecuteJavaScriptInWebView(web_view(), script);
   }
 
   // Returns the number of attempts performed so far.
@@ -403,7 +403,7 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
                               "    oldTimeoutFn(fn, d, ...args);"
                               "  }"
                               "};";
-    web::test::ExecuteJavaScript(web_view(), script);
+    web::test::ExecuteJavaScriptInWebView(web_view(), script);
   }
 
   // Set registration counter and mutate the command sent to frames to
@@ -426,7 +426,7 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
          "    }"
          "  }"
          "}";
-    web::test::ExecuteJavaScript(web_view(), script);
+    web::test::ExecuteJavaScriptInWebView(web_view(), script);
   }
 
   const int base_delay_us = 2500;
