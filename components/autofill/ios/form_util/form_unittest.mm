@@ -12,6 +12,7 @@
 #import "testing/gtest_mac.h"
 
 using web::test::ExecuteJavaScript;
+using web::test::ExecuteJavaScriptInWebView;
 
 NSString* const kMessageHandlerName = @"TestHandler";
 
@@ -94,18 +95,19 @@ TEST_F(FormJsTest, FormSubmitted_Deduping) {
        " function newFn(...args) { ++gMsgCount; return oldFn.apply(this, "
        "args); }; "
        "UserMessageHandler.prototype.postMessage = newFn";
-  ExecuteJavaScript(web_view(), swizzleScript);
+  ExecuteJavaScriptInWebView(web_view(), swizzleScript);
 
   // Enable form submission deduping.
-  ExecuteJavaScript(web_view(), @"__gCrWeb.autofill_form_features."
-                                 "setAutofillDedupeFormSubmission(true);");
+  ExecuteJavaScriptInWebView(web_view(),
+                             @"__gCrWeb.autofill_form_features."
+                              "setAutofillDedupeFormSubmission(true);");
 
   // == Submit first form ==
 
   // Submit the first form for the first time.
-  ExecuteJavaScript(web_view(),
-                    @"__gCrWeb.form.formSubmitted("
-                     "document.forms[0], 'TestHandler', false, false)");
+  ExecuteJavaScriptInWebView(
+      web_view(), @"__gCrWeb.form.formSubmitted("
+                   "document.forms[0], 'TestHandler', false, false)");
 
   // Wait for the submission message for the first form to be received from the
   // renderer. This verifies that the submission is at least reported once.
@@ -126,9 +128,9 @@ TEST_F(FormJsTest, FormSubmitted_Deduping) {
   // Attempt other submissions on the same form, where it should be deduped
   // this time, hence ignored.
   for (size_t i = 0; i < 4; ++i) {
-    ExecuteJavaScript(web_view(),
-                      @"__gCrWeb.form.formSubmitted("
-                       "document.forms[0], 'TestHandler', false, false)");
+    ExecuteJavaScriptInWebView(
+        web_view(), @"__gCrWeb.form.formSubmitted("
+                     "document.forms[0], 'TestHandler', false, false)");
   }
 
   // Verify that the submission message was only sent over once despite
@@ -143,9 +145,9 @@ TEST_F(FormJsTest, FormSubmitted_Deduping) {
   // == Submit other form ==
 
   // Submit the other form that wasn't submitted yet.
-  ExecuteJavaScript(web_view(),
-                    @"__gCrWeb.form.formSubmitted("
-                     "document.forms[1], 'TestHandler', false, false)");
+  ExecuteJavaScriptInWebView(
+      web_view(), @"__gCrWeb.form.formSubmitted("
+                   "document.forms[1], 'TestHandler', false, false)");
 
   // Wait for the submission message for the other form to be received from the
   // renderer. This verifies that the submission is at least reported once per
@@ -168,9 +170,9 @@ TEST_F(FormJsTest, FormSubmitted_Deduping) {
   // this time, hence ignored. Verify that the submission message count remains
   // 2, one message for each form.
   for (size_t i = 0; i < 4; ++i) {
-    ExecuteJavaScript(web_view(),
-                      @"__gCrWeb.form.formSubmitted("
-                       "document.forms[1], 'TestHandler', false, false)");
+    ExecuteJavaScriptInWebView(
+        web_view(), @"__gCrWeb.form.formSubmitted("
+                     "document.forms[1], 'TestHandler', false, false)");
   }
   EXPECT_TRUE(ExecuteJavaScript(web_view(), @"gMsgCount == 2"));
 }
@@ -182,15 +184,16 @@ TEST_F(FormJsTest, FormSubmitted_NoDeduping) {
   LoadHtml(@"<form></form>");
 
   // Enable deduping.
-  ExecuteJavaScript(web_view(), @"__gCrWeb.autofill_form_features."
-                                 "setAutofillDedupeFormSubmission(false);");
+  ExecuteJavaScriptInWebView(web_view(),
+                             @"__gCrWeb.autofill_form_features."
+                              "setAutofillDedupeFormSubmission(false);");
 
   // Submit the form 4 times where each event should be reported (messaged over)
   // because there is no deduping.
   for (size_t i = 0; i < 4; ++i) {
-    ExecuteJavaScript(web_view(),
-                      @"__gCrWeb.form.formSubmitted("
-                       "document.forms[0], 'TestHandler', false, false)");
+    ExecuteJavaScriptInWebView(
+        web_view(), @"__gCrWeb.form.formSubmitted("
+                     "document.forms[0], 'TestHandler', false, false)");
   }
 
   // Wait for all submission messages to be sent over.

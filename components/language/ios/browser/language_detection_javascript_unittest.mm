@@ -75,7 +75,7 @@ class LanguageDetectionJavascriptTest : public web::JavascriptTest {
     // Reset value to ensure wait below stops at correct time.
     handler_.lastReceivedMessage = nil;
 
-    web::test::ExecuteJavaScript(
+    web::test::ExecuteJavaScriptInWebView(
         web_view(), @"__gCrWeb.languageDetection.detectLanguage()");
     // Wait until `detectLanguage` completes.
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
