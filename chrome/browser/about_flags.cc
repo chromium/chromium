@@ -10167,6 +10167,14 @@ const FeatureEntry kFeatureEntries[] = {
          kGroupSuggestionVariations,
          "GroupPromoPrototype")},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"group-promo-prototype-cpa",
+     flag_descriptions::kGroupPromoPrototypeCpaName,
+     flag_descriptions::kGroupPromoPrototypeCpaDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kContextualPageActionTabGrouping)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
      flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,
      FEATURE_VALUE_TYPE(::features::kUseDMSAAForTiles)},

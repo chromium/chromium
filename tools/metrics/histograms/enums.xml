@@ -14917,6 +14917,7 @@ from previous Chrome versions.
   <int value="319578317" label="PasswordFormGroupedAffiliations:disabled"/>
   <int value="319683583" label="ContentSuggestionsDebugLog:enabled"/>
   <int value="320121752" label="DelegateOverscrollSwipes:disabled"/>
+  <int value="320614166" label="ContextualPageActionTabGrouping:disabled"/>
   <int value="321023965" label="IPH_LauncherSearchHelpUi:disabled"/>
   <int value="321366101" label="WebXRARDOMOverlay:enabled"/>
   <int value="321616293" label="DrawWebEdgeToEdge:disabled"/>
@@ -19926,6 +19927,7 @@ from previous Chrome versions.
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
   <int value="2139164626"
       label="TimeOfDayWallpaperForcedAutoSchedule:disabled"/>
+  <int value="2139325088" label="ContextualPageActionTabGrouping:enabled"/>
   <int value="2139520082" label="EnableRestrictedWebApis:disabled"/>
   <int value="2140205372" label="ScreenAI"/>
   <int value="2140453427"
