@@ -16,8 +16,12 @@ class WebState;
 // Protected interface of the AdaptiveToolbarCoordinator.
 @interface AdaptiveToolbarCoordinator (Subclassing)
 
-// Returns a button factory
+// Returns a button factory.
 - (ToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type;
+
+// Whether the toolbar shows the tab grid button. Base class implementation
+// returns NO. Subclasses can override this value.
+- (BOOL)hasTabGridButton;
 
 @end
 

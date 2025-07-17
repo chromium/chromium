@@ -64,15 +64,21 @@
   [super stop];
 }
 
+#pragma mark - Subclassing
+
+- (BOOL)hasTabGridButton {
+  return IsSplitToolbarMode(self.viewController);
+}
+
 #pragma mark - GuidedTourCommands
 
 - (void)highlightViewInStep:(GuidedTourStep)step {
-  if (IsSplitToolbarMode(self.viewController) && step == GuidedTourStep::kNTP) {
+  if ([self hasTabGridButton] && step == GuidedTourStep::kNTP) {
     [self.viewController IPHHighlightTabGridButton:YES];
   }
 }
 - (void)stepCompleted:(GuidedTourStep)step {
-  if (IsSplitToolbarMode(self.viewController) && step == GuidedTourStep::kNTP) {
+  if ([self hasTabGridButton] && step == GuidedTourStep::kNTP) {
     [self.viewController IPHHighlightTabGridButton:NO];
   }
 }
