@@ -11,13 +11,26 @@ depend on `//content/public/renderer/`, `//content/public/common/`).
 
 ## In-process renderer
 
-On Lollipop (API 21) through Nougat MR1 (API 25) WebView has only a single
-renderer, which runs in the browser process (so there's no sandboxing). The
-renderer runs on a separate thread, which we would call the "renderer thread."
+WebView used to run in "single process" mode, which is when the renderer code
+runs inside the browser process on a separate thread called the renderer thread.
+Because this runs inside the browser process, there is no sandboxing (a
+compromised renderer
+has permission to access the disk or do anything else which the
+browser process is capable of).
 
-*** promo
-Android Nougat has a [developer option][1] to enable an out-of-process renderer,
-but the renderer is in-process by default.
+*** note
+**Note:** this is largely obsolete and irrelevant. The in-process renderer was
+the default on Lollipop (API 21) through Nougat MR1/MR2 (API 25), however modern
+WebView releases have [dropped support for these versions][1].
+
+Devices running Oreo (Api 26) through Q (API 29) will generally use an
+out-of-process renderer (see next section), however it's possible these will use
+in-process renderer on low-memory devices. However memory optimizations in
+Android R (API 30) mean that WebView **always** uses out-of-process renderer on
+Android R and above.
+
+As of M139, the [only supported configuration][2] using single process mode is
+Android Q low-memory devices.
 ***
 
 ## Out-of-process renderer
@@ -28,9 +41,14 @@ devices, for 32-bit devices with high memory, and for all devices starting in
 Android 11 (API 31). Low memory 32-bit devices running API26-30 still use an
 in-process renderer as before.
 
-The out-of-process renderer is enabled by a new Android API
-(`android:externalService`), to create sandboxed processes which run in the
-_embedding app's context_ rather than the WebView provider's context.
+The out-of-process renderer is enabled by new Android APIs
+(`android:externalService` and [Content.bindIsolatedService][3]), to create sandboxed processes which run in the
+_embedding app's context_ rather than the WebView provider's context. These
+processes will be named something like
+`com.google.android.webview:sandboxed_process0` and it will run an
+Android service named `org.chromium.content.app.SandboxedProcessService0`. The
+package name will match the current WebView provider and the number suffix will
+usually be a `0` or a `1`.
 
 Without this API, we could only declare a **fixed** number of renderer processes
 to run in the WebView provider's context, and WebView (running in the app's
@@ -55,43 +73,41 @@ isolated, aligning with the Android security model.
 ### Recovering from renderer crashes
 
 Starting with Oreo, Android apps have the opportunity to recover from renderer
-crashes by overriding [`WebViewClient#onRenderProcessGone()`][2]. However, for
+crashes by overriding [`WebViewClient#onRenderProcessGone()`][4]. However, for
 backwards compatibility, WebView crashes the browser process if the app has not
 overridden this callback. Therefore, unlike in Chrome, renderer crashes are
 often non-recoverable.
 
-### Toggling multiprocess for debugging
+## Writing automated tests for either single process or multiprocess mode
 
-On Android Oreo and above, you can toggle WebView multiprocess mode via adb:
+You can annotate WebView javatests with `@OnlyRunIn`. See [test instructions][5]
+for details about how to use this annotation.
 
-```shell
-# To disable:
-$ adb shell cmd webviewupdate disable-multiprocess
-
-# To re-enable:
-$ adb shell cmd webviewupdate enable-multiprocess
-```
-
-Then you can check the multiprocess state by running:
-
-```shell
-$ adb shell dumpsys webviewupdate | grep 'Multiprocess'
-  Multiprocess enabled: false
-```
-
-*** note
-**Warning:** this setting is persistent! Remember to re-enable multiprocess mode
-after you're done testing.
-
-Changing this setting will immediately kill all WebView-based apps running on
-the device (similar to what happens when you install a WebView update or change
-the system's WebView provider).
-***
+The default behavior (if no annotation is specified) is that the test will run
+in both modes.
 
 ## Multiple renderers
 
-WebView does not support multiple renderer processes, but this may be supported
-in the future.
+Apps can create multiple WebView Profiles, in which case each Profile gets its
+own renderer process. Please see [WebViewCompat.setProfile][6] if you would like
+to use multiple Profiles for different WebView instances.
 
-[1]: https://developer.android.com/studio/debug/dev-options
-[2]: https://developer.android.com/reference/android/webkit/WebViewClient.html#onRenderProcessGone(android.webkit.WebView,%20android.webkit.RenderProcessGoneDetail)
+WebView does not generally support multiple renderer processes in a single
+profile, however this may be supported in the future. The only exception today
+is that WebView can create a separate renderer process for showing builtin error
+pages (known as `webui` in Chromium architecture), such as Safe Browsing
+interstitial warnings.
+
+## See also
+
+Learn about [Chrome Android Sandbox Design][7] to understand how WebView's
+renderer process is sandboxed to mitigate the security impact of a compromised
+renderer.
+
+[1]: https://groups.google.com/a/chromium.org/g/chromium-dev/c/B9AYI3WAvRo/m/tpWwhw4KBQAJ
+[2]: https://groups.google.com/a/chromium.org/g/chromium-dev/c/vEZz0721rUY/m/pUIgqXxNBQAJ
+[3]: https://developer.android.com/reference/android/content/Context#bindIsolatedService(android.content.Intent,%20int,%20java.lang.String,%20java.util.concurrent.Executor,%20android.content.ServiceConnection)
+[4]: https://developer.android.com/reference/android/webkit/WebViewClient.html#onRenderProcessGone(android.webkit.WebView,%20android.webkit.RenderProcessGoneDetail)
+[5]: /android_webview/docs/test-instructions.md#instrumentation-test-process-modes
+[6]: https://developer.android.com/reference/androidx/webkit/WebViewCompat#setProfile(android.webkit.WebView,java.lang.String)
+[7]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/android-sandbox.md
