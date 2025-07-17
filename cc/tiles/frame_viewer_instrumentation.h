@@ -20,18 +20,6 @@ constexpr const char* CategoryLayerTree() {
       "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers");
 }
 
-class ScopedAnalyzeTask {
- public:
-  ScopedAnalyzeTask(viz::TracedValue::Id tile_id,
-                    TileResolution tile_resolution,
-                    int source_frame_number,
-                    int layer_id);
-  ScopedAnalyzeTask(const ScopedAnalyzeTask&) = delete;
-  ~ScopedAnalyzeTask();
-
-  ScopedAnalyzeTask& operator=(const ScopedAnalyzeTask&) = delete;
-};
-
 class ScopedRasterTask {
  public:
   ScopedRasterTask(viz::TracedValue::Id tile_id,
