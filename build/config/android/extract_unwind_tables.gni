@@ -1,0 +1,48 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+unwind_table_asset_v1_filename = "unwind_cfi_32"
+
+_dump_syms_target =
+    "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)"
+_dump_syms = get_label_info(_dump_syms_target, "root_out_dir") + "/dump_syms"
+
+template("unwind_table_v1") {
+  action(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    _output_path =
+        "$target_out_dir/$target_name/$unwind_table_asset_v1_filename"
+
+    # Strip the "lib" prefix, if present. Add and then remove a space because
+    # our ownly tool is "replace all".
+    _library_name = get_label_info(invoker.library_target, "name")
+    _library_name =
+        string_replace(string_replace(" $_library_name", " $shlib_prefix", ""),
+                       " ",
+                       "")
+    _library_path = "$root_out_dir/lib.unstripped/$shlib_prefix$_library_name$shlib_extension"
+
+    script = "//build/android/gyp/extract_unwind_tables.py"
+    outputs = [ _output_path ]
+    inputs = [
+      _dump_syms,
+      _library_path,
+    ]
+    deps = [
+      _dump_syms_target,
+      invoker.library_target,
+    ]
+
+    args = [
+      "--input_path",
+      rebase_path(_library_path, root_build_dir),
+      "--output_path",
+      rebase_path(_output_path, root_build_dir),
+      "--dump_syms_path",
+      rebase_path(_dump_syms, root_build_dir),
+    ]
+  }
+}

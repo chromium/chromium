@@ -3532,9 +3532,13 @@ if (_is_default_toolchain && add_unwind_tables_in_chrome_32bit_apk) {
     android_assets(target_name) {
       forward_variables_from(invoker, [ "testonly" ])
       _libname = invoker.libname
+      deps = [ ":${_libname}_unwind_table_v1($_toolchain)" ]
+      sources = [ "$_toolchain_out_dir/${_libname}_unwind_table_v1/$unwind_table_asset_v1_filename" ]
       disable_compression = true
-      sources += [ "$_toolchain_out_dir/${_libname}_unwind_table_v2/$unwind_table_asset_v2_filename" ]
-      deps += [ ":${_libname}_unwind_table_v2($_toolchain)" ]
+      if (use_android_unwinder_v2) {
+        sources += [ "$_toolchain_out_dir/${_libname}_unwind_table_v2/$unwind_table_asset_v2_filename" ]
+        deps += [ ":${_libname}_unwind_table_v2($_toolchain)" ]
+      }
     }
   }
   chrome_unwind_assets("libmonochrome_unwind_table_assets") {
