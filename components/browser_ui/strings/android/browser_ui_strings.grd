@@ -380,7 +380,7 @@
 
       <!-- Settings UI -->
       <message name="IDS_MANAGED_BY_YOUR_ORGANIZATION" desc="Popup message when the user clicks a UI element that has been disabled by enterprise policy.">
-        This setting is enforced by your administrator.
+        Managed by your organization
       </message>
       <message name="IDS_MANAGED_BY_YOUR_PARENTS" desc="Popup message when the user clicks a UI element that has been disabled by their parents.">
         Managed by your parents
