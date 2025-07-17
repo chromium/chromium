@@ -378,6 +378,15 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
             submit_info.events_metrics.raster_event_metrics.end()));
   }
 
+  // Set the normalized invalidated area (used to calculate paint metric) on the
+  // main reporter, when impl reporter is missing.
+  if (!impl_reporter && submit_info.normalized_invalidated_area) {
+    DCHECK(main_reporter);
+    DCHECK_EQ(main_reporter->frame_id(), current_frame_id);
+    main_reporter->set_normalized_invalidated_area(
+        submit_info.normalized_invalidated_area);
+  }
+
   if (main_reporter) {
     main_reporter->StartStage(
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame,

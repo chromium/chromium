@@ -5,6 +5,7 @@
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -741,11 +742,16 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
+
   SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
+  submit_info.normalized_invalidated_area = 10;
+
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_1,
                                                  current_id_1);
   reporting_controller_.DidPresentCompositorFrame(1, details);
 
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Paint.UI.NormalizedInvalidatedArea", 1);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency2.BeginImplFrameToSendBeginMainFrame", 1);
   histogram_tester.ExpectTotalCount(
@@ -768,12 +774,16 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
   reporting_controller_.OnFinishImplFrame(current_id_2,
                                           /*waiting_for_main=*/true);
   SubmitInfo submit_info2 = {2u, AdvanceNowByMs(10)};
+  submit_info2.normalized_invalidated_area = 10;
+
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_2,
                                                  current_id_1);
   reporting_controller_.DidPresentCompositorFrame(2, details);
 
   // The reporting for the second frame is delayed until the main-thread
   // responds back.
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Paint.UI.NormalizedInvalidatedArea", 1);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency2.BeginImplFrameToSendBeginMainFrame", 1);
   histogram_tester.ExpectTotalCount(
@@ -798,12 +808,16 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
   SubmitInfo submit_info3 = {3u, AdvanceNowByMs(10)};
+  submit_info3.normalized_invalidated_area = 10;
+
   reporting_controller_.DidSubmitCompositorFrame(submit_info3, current_id_3,
                                                  current_id_2);
   reporting_controller_.DidPresentCompositorFrame(3, details);
 
   // The main-thread responded, so the metrics for |args_2| should now be
   // reported.
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Paint.UI.NormalizedInvalidatedArea", 3);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency2.BeginImplFrameToSendBeginMainFrame", 4);
   histogram_tester.ExpectTotalCount(
@@ -838,11 +852,16 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
+
   SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
+  submit_info.normalized_invalidated_area = 10;
+
   reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_1,
                                                  current_id_1);
   reporting_controller_.DidPresentCompositorFrame(1, details);
 
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Paint.UI.NormalizedInvalidatedArea", 1);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency2.BeginImplFrameToSendBeginMainFrame", 1);
   histogram_tester.ExpectTotalCount(
@@ -866,11 +885,16 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   reporting_controller_.DidCommit();
   reporting_controller_.OnFinishImplFrame(current_id_2,
                                           /*waiting_for_main=*/true);
+
   SubmitInfo submit_info2 = {2u, AdvanceNowByMs(10)};
+  submit_info2.normalized_invalidated_area = 10;
+
   reporting_controller_.DidSubmitCompositorFrame(submit_info2, current_id_2,
                                                  current_id_1);
   reporting_controller_.DidPresentCompositorFrame(2, details);
 
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Paint.UI.NormalizedInvalidatedArea", 1);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency2.BeginImplFrameToSendBeginMainFrame", 1);
   histogram_tester.ExpectTotalCount(
@@ -897,9 +921,13 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   reporting_controller_.OnFinishImplFrame(current_id_3,
                                           /*waiting_for_main=*/true);
   SubmitInfo submit_info3 = {3u, AdvanceNowByMs(10)};
+  submit_info3.normalized_invalidated_area = 10;
   reporting_controller_.DidSubmitCompositorFrame(submit_info3, current_id_3,
                                                  current_id_2);
   reporting_controller_.DidPresentCompositorFrame(3, details);
+
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Paint.UI.NormalizedInvalidatedArea", 3);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency2.BeginImplFrameToSendBeginMainFrame", 4);
   histogram_tester.ExpectTotalCount(
