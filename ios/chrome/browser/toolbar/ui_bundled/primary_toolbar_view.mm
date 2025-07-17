@@ -243,7 +243,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   }
   self.tabGroupIndicatorView.showSeparator = !isTopOmnibox;
 
-  BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.superview);
+  BOOL canShowTabStrip = CanShowTabStrip(self.superview);
   BOOL isAvailable = !IsCompactHeight(self.superview) && !canShowTabStrip;
   self.tabGroupIndicatorView.available = isAvailable;
 }

@@ -242,7 +242,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   _alertScreenTopAnchorConstraint.active = NO;
 
   CGFloat topOffset = 0;
-  if (IsRegularXRegularSizeClass(_alertScreen)) {
+  if (CanShowTabStrip(_alertScreen)) {
     topOffset = kCustomTopOffsetForRegularSizeClass;
   }
 

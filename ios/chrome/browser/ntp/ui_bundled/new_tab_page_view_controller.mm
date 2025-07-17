@@ -1703,7 +1703,7 @@ CGFloat SpaceBetweenModules() {
   // to the top of the screen. Also computes the total NTP scrolling height
   // for Discover infinite feed.
   CGFloat minimumHeight = collectionViewHeight + headerHeight;
-  if (!IsRegularXRegularSizeClass(self.collectionView)) {
+  if (!CanShowTabStrip(self.collectionView)) {
     minimumHeight -= self.collectionView.contentInset.bottom;
     if (IsSplitToolbarMode(self)) {
       minimumHeight -= [self stickyOmniboxHeight];
@@ -1868,7 +1868,7 @@ CGFloat SpaceBetweenModules() {
 // toolbar. The former is for narrower devices like portait iPhones, and the
 // latter is for wider devices like iPads and landscape iPhones.
 - (BOOL)shouldPinFakeOmnibox {
-  return !IsRegularXRegularSizeClass(self) && IsSplitToolbarMode(self);
+  return !CanShowTabStrip(self) && IsSplitToolbarMode(self);
 }
 
 // Modifies the view controller depending on which UITrait was changed.

@@ -274,8 +274,8 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
   if (!loading) {
     [self stopProgressBar];
-  } else if (self.view.progressBar.hidden &&
-             !IsRegularXRegularSizeClass(self) && !self.isNTP) {
+  } else if (self.view.progressBar.hidden && !CanShowTabStrip(self) &&
+             !self.isNTP) {
     [self.view.progressBar setProgress:0];
     [self updateProgressBarVisibility];
     // Layout if needed the progress bar to avoid having the progress bar
@@ -296,8 +296,8 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   CGFloat scaleSign = tabCount > self.view.tabGridButton.tabCount ? 1 : -1;
   self.view.tabGridButton.tabCount = tabCount;
 
-  if (IsRegularXRegularSizeClass(self)) {
-    // No animation on Regular x Regular.
+  if (CanShowTabStrip(self)) {
+    // No animation on iPad.
     return;
   }
 
@@ -587,7 +587,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 - (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
   // Progress bar and buttons visibility.
   [self updateAllButtonsVisibility];
-  if (IsRegularXRegularSizeClass(self)) {
+  if (CanShowTabStrip(self)) {
     [self.view.progressBar setHidden:YES animated:NO completion:nil];
   } else if (self.loading && self.hasOmnibox) {
     [self.view.progressBar setHidden:NO animated:NO completion:nil];

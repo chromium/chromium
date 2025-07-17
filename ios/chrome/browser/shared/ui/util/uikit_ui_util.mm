@@ -238,6 +238,22 @@ bool IsLandscape(UIWindow* window) {
   return UIInterfaceOrientationIsLandscape(GetInterfaceOrientation(window));
 }
 
+bool CanShowTabStrip(UITraitCollection* traitCollection) {
+  if (IsRegularXRegularSizeClass(traitCollection)) {
+    return true;
+  }
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  }
+#endif
+  return false;
+}
+
+bool CanShowTabStrip(id<UITraitEnvironment> environment) {
+  return CanShowTabStrip(environment.traitCollection);
+}
+
 bool IsCompactWidth(id<UITraitEnvironment> environment) {
   return IsCompactWidth(environment.traitCollection);
 }

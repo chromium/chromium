@@ -273,12 +273,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   if (self.isShowing) {
     [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
     CGFloat progress =
-        self.logoIsShowing || !IsRegularXRegularSizeClass(self)
+        self.logoIsShowing || !CanShowTabStrip(self)
             ? [self.headerView searchFieldProgressForOffset:offset]
             // RxR with no logo hides the fakebox, so always show the omnibox.
             : 1;
     [self updateLogoForOffset:offset];
-    if (!IsSplitToolbarMode(self)) {
+    if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
       [self.toolbarDelegate setScrollProgressForTabletOmnibox:progress];
     } else {
       // Ensure omnibox is reset when not a regular tablet.
@@ -709,8 +709,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       setConstant:content_suggestions::DoodleHeight(
                       self.logoVendor.showingLogo,
                       self.logoVendor.isShowingDoodle, self.traitCollection)];
-  self.fakeOmnibox.hidden =
-      IsRegularXRegularSizeClass(self) && !self.logoIsShowing;
+  self.fakeOmnibox.hidden = CanShowTabStrip(self) && !self.logoIsShowing;
   [self.headerView layoutIfNeeded];
   self.headerViewHeightConstraint.constant =
       content_suggestions::HeightForLogoHeader(self.logoIsShowing,

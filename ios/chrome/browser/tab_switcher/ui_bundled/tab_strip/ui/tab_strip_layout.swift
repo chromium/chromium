@@ -729,7 +729,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     var itemWidth: CGFloat =
       (collectionViewWidth - itemSpacingSum - groupCellWidthSum) / tabCellCount
-    itemWidth = max(itemWidth, TabStripConstants.TabItem.minWidth)
+
+    let minWidth =
+      collectionView.traitCollection.horizontalSizeClass == .compact
+      ? TabStripConstants.TabItem.minCompactWidth : TabStripConstants.TabItem.minExtendedWidth
+    itemWidth = max(itemWidth, minWidth)
     itemWidth = min(itemWidth, TabStripConstants.TabItem.maxWidth)
 
     tabCellSize = CGSize(width: itemWidth, height: TabStripConstants.TabItem.height)

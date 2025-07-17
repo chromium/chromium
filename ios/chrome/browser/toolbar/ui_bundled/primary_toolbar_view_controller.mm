@@ -238,7 +238,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   }
   [super setIsNTP:isNTP];
   _isNTP = isNTP;
-  if (IsSplitToolbarMode(self) || !self.shouldHideOmniboxOnNTP) {
+  if (!CanShowTabStrip(self) || !self.shouldHideOmniboxOnNTP) {
     return;
   }
 

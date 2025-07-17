@@ -135,6 +135,11 @@ bool IsLandscape(UIWindow* window);
 
 // C does not support function overloading.
 #ifdef __cplusplus
+// Whether tab strip can be shown with the current `traitCollection` or
+// `environment`.
+bool CanShowTabStrip(UITraitCollection* traitCollection);
+bool CanShowTabStrip(id<UITraitEnvironment> environment);
+
 // Whether the `environment` has a compact horizontal size class.
 bool IsCompactWidth(id<UITraitEnvironment> environment);
 

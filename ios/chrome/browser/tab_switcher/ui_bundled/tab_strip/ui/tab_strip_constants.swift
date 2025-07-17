@@ -23,7 +23,8 @@ public struct TabStripConstants {
   /// Tab item constants.
   public struct TabItem {
     public static let height: CGFloat = 40
-    public static let minWidth: CGFloat = 132
+    public static let minExtendedWidth: CGFloat = 132
+    public static let minCompactWidth: CGFloat = 98
     public static let maxWidth: CGFloat = 233
     public static let horizontalSpacing: CGFloat = 6
     public static let leadingSeparatorMinInset: CGFloat = 8

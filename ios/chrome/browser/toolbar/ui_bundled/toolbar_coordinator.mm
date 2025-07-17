@@ -284,7 +284,7 @@
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   BOOL isNTP = NTPHelper && NTPHelper->IsActive();
   BOOL isOffTheRecord = self.isOffTheRecord;
-  BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.traitEnvironment);
+  BOOL canShowTabStrip = CanShowTabStrip(self.traitEnvironment);
 
   // Hide the toolbar when displaying content suggestions without the tab
   // strip, without the focused omnibox, only when in split toolbar mode.
@@ -326,8 +326,7 @@
                            _steadyStateOmniboxPosition == ToolbarType::kPrimary;
 
   __weak __typeof(self) weakSelf = self;
-  BOOL toolbarExpanded =
-      focused && !IsRegularXRegularSizeClass(self.traitEnvironment);
+  BOOL toolbarExpanded = focused && !CanShowTabStrip(self.traitEnvironment);
   [self.orchestrator
       transitionToStateOmniboxFocused:focused
                       toolbarExpanded:toolbarExpanded
@@ -365,8 +364,9 @@
 - (CGFloat)expandedPrimaryToolbarHeight {
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;
-  if (!IsSplitToolbarMode(self.traitEnvironment)) {
-    // When the adaptive toolbar is unsplit, add a margin.
+  if (CanShowTabStrip(self.traitEnvironment)) {
+    // When the adaptive toolbar is unsplit or the tab strip is visible, add a
+    // margin.
     height += kTopToolbarUnsplitMargin;
   }
   return height;
@@ -650,8 +650,7 @@
   [self.orchestrator
       transitionToStateOmniboxFocused:omniboxFocused
                       toolbarExpanded:omniboxFocused &&
-                                      !IsRegularXRegularSizeClass(
-                                          self.traitEnvironment)
+                                      !CanShowTabStrip(self.traitEnvironment)
                               trigger:[self omniboxFocusTrigger]
                              animated:NO
                            completion:nil];

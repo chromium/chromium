@@ -565,7 +565,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     percent = std::clamp<CGFloat>(
         animatingOffset / ntp_header::kAnimationDistance, 0, 1);
   }
-  if (!IsSplitToolbarMode(self)) {
+  if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
     // For ipad and landscape iphone, this makes the animation start slowly
     // and accelerate especially towards the end.
     percent = percent * percent;
@@ -627,7 +627,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
   CGFloat locationBarHeight = content_suggestions::PinnedFakeOmniboxHeight();
 
-  if (!IsSplitToolbarMode(self)) {
+  if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
     // When Voiceover is running, if the header's alpha is set to 0, voiceover
     // can't scroll back to it, and it will never come back into view. To
     // prevent that, set the alpha to non-zero when the header is fully
@@ -815,7 +815,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (void)updateTabGroupIndicatorAvailabilityWithOffset:(CGFloat)offset {
-  BOOL canShowTabStrip = IsRegularXRegularSizeClass(self);
+  BOOL canShowTabStrip = CanShowTabStrip(self);
   BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
   _tabGroupIndicatorView.available = isAvailable;
 
@@ -1089,12 +1089,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       self.frame.size.height - content_suggestions::FakeToolbarHeight();
 
   // For non-split toolbar, the fake omnibox goes beneath the toolbar.
-  if (!IsSplitToolbarMode(self)) {
+  if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
     // The animation should start when the primary toolbar is met.
     offset += content_suggestions::FakeOmniboxHeight();
 
     // iPads pin slightly earlier than landscape iPhones.
-    if (IsRegularXRegularSizeClass(self)) {
+    if (CanShowTabStrip(self)) {
       offset -= content_suggestions::SearchFieldTopMargin();
     }
   }
