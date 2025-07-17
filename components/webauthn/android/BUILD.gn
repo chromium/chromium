@@ -33,8 +33,8 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/webauthn/AuthenticationContextProvider.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorConstants.java",
-    "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorErrorResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
     "java/src/org/chromium/components/webauthn/Barrier.java",
     "java/src/org/chromium/components/webauthn/CreateConfirmationUiDelegate.java",
@@ -55,6 +55,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/RecordOutcomeCallback.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebauthnCredentialDetails.java",
+    "java/src/org/chromium/components/webauthn/WebauthnLogger.java",
     "java/src/org/chromium/components/webauthn/WebauthnModeProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/AppCredManRequestDecorator.java",
     "java/src/org/chromium/components/webauthn/cred_man/BrowserCredManRequestDecorator.java",

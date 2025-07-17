@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.components.webauthn.WebauthnLogger.log;
+
 import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
@@ -25,6 +27,7 @@ import java.util.List;
  */
 @NullMarked
 public class GmsCoreGetCredentialsHelper {
+    private static final String TAG = "GmsCoreGetCredentialsHelper";
     private static @Nullable GmsCoreGetCredentialsHelper sInstance;
 
     private static final String GET_CREDENTIALS_RESULT_HISTOGRAM =
@@ -98,6 +101,7 @@ public class GmsCoreGetCredentialsHelper {
             Reason reason,
             GetCredentialsCallback successCallback,
             OnFailureListener failureCallback) {
+        log(TAG, "getCredentials with reason: " + reason);
         final long startTimeMs = SystemClock.elapsedRealtime();
         if (reason == Reason.GET_ASSERTION_NON_GOOGLE
                 && GmsCoreUtils.isPasskeyCacheSupported()
@@ -115,18 +119,22 @@ public class GmsCoreGetCredentialsHelper {
                                         startTimeMs);
                                 successCallback.onCredentialsReceived(credentials);
                             },
-                            (e) ->
-                                    getCredentialsFromFido2Api(
-                                            authenticationContextProvider,
-                                            relyingPartyId,
-                                            reason,
-                                            successCallback,
-                                            failureCallback,
-                                            GmsCoreGetCredentialsResult
-                                                    .CACHE_FAILURE_FALLBACK_SUCCESS,
-                                            GmsCoreGetCredentialsResult
-                                                    .CACHE_FAILURE_FALLBACK_FAILURE,
-                                            startTimeMs));
+                            (e) -> {
+                                log(
+                                        TAG,
+                                        "invokePasskeyCacheGetCredentials() failed. Falling back to"
+                                                + " FIDO2. ",
+                                        e);
+                                getCredentialsFromFido2Api(
+                                        authenticationContextProvider,
+                                        relyingPartyId,
+                                        reason,
+                                        successCallback,
+                                        failureCallback,
+                                        GmsCoreGetCredentialsResult.CACHE_FAILURE_FALLBACK_SUCCESS,
+                                        GmsCoreGetCredentialsResult.CACHE_FAILURE_FALLBACK_FAILURE,
+                                        startTimeMs);
+                            });
         } else {
             getCredentialsFromFido2Api(
                     authenticationContextProvider,
@@ -149,6 +157,7 @@ public class GmsCoreGetCredentialsHelper {
             @GmsCoreGetCredentialsResult int successMetric,
             @GmsCoreGetCredentialsResult int failureMetric,
             long startTimeMs) {
+        log(TAG, "getCredentialsFromFido2Api");
         Fido2ApiCallHelper.getInstance()
                 .invokeFido2GetCredentials(
                         authenticationContextProvider,
@@ -158,6 +167,7 @@ public class GmsCoreGetCredentialsHelper {
                             successCallback.onCredentialsReceived(credentials);
                         },
                         (e) -> {
+                            log(TAG, "invokeFido2GetCredentials() failed. ", e);
                             RecordHistogram.recordEnumeratedHistogram(
                                     GET_CREDENTIALS_RESULT_HISTOGRAM,
                                     failureMetric,
@@ -171,6 +181,7 @@ public class GmsCoreGetCredentialsHelper {
             Reason reason,
             @GmsCoreGetCredentialsResult int result,
             long startTimeMs) {
+        log(TAG, "recordSuccessMetrics with result: " + result);
         RecordHistogram.recordEnumeratedHistogram(
                 GET_CREDENTIALS_RESULT_HISTOGRAM, result, GmsCoreGetCredentialsResult.NUM_ENTRIES);
         if ((reason == Reason.GET_ASSERTION_NON_GOOGLE || reason == Reason.GET_ASSERTION_GOOGLE_RP)

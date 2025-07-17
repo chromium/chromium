@@ -5,6 +5,8 @@
 package org.chromium.components.webauthn;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.webauthn.WebauthnLogger.log;
+import static org.chromium.components.webauthn.WebauthnLogger.logError;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -20,7 +22,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Log;
 import org.chromium.blink.mojom.AttestationConveyancePreference;
 import org.chromium.blink.mojom.AuthenticationExtensionsClientOutputs;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
@@ -90,6 +91,8 @@ import java.util.concurrent.TimeUnit;
 @JNINamespace("webauthn")
 @NullMarked
 public final class Fido2Api {
+    private static final String TAG = "Fido2Api";
+
     public interface Calls {
         /**
          * Serialize a browser's or an app's makeCredential request to a {@link Parcel}. Apps should
@@ -153,7 +156,6 @@ public final class Fido2Api {
     private static final double MIN_TIMEOUT_SECONDS = 10;
     private static final double MAX_TIMEOUT_SECONDS = 600;
 
-    private static final String TAG = "Fido2Api";
     private static final int ECDSA_COSE_IDENTIFIER = -7;
 
     // OBJECT_MAGIC is a magic value used to indicate the start of an object when encoding with
@@ -200,6 +202,7 @@ public final class Fido2Api {
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel)
             throws NoSuchAlgorithmException {
+        log(TAG, "appendBrowserMakeCredentialOptionsToParcel");
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: PublicKeyCredentialCreationOptions
@@ -243,6 +246,7 @@ public final class Fido2Api {
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel)
             throws NoSuchAlgorithmException {
+        log(TAG, "appendMakeCredentialOptionsToParcel");
 
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
@@ -469,6 +473,7 @@ public final class Fido2Api {
             byte @Nullable [] tunnelId,
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel) {
+        log(TAG, "appendBrowserGetAssertionOptionsToParcel");
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: PublicKeyCredentialRequestOptions
@@ -503,6 +508,7 @@ public final class Fido2Api {
             byte @Nullable [] tunnelId,
             @Nullable ResultReceiver resultReceiver,
             Parcel parcel) {
+        log(TAG, "appendGetAssertionOptionsToParcel");
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: challenge
@@ -868,15 +874,16 @@ public final class Fido2Api {
      */
     public static @Nullable Object parseIntentResponse(Intent data)
             throws IllegalArgumentException {
+        log(TAG, "parseIntentResponse");
         byte[] responseBytes = data.getByteArrayExtra(CREDENTIAL_EXTRA);
         if (responseBytes == null) {
-            Log.e(TAG, "FIDO2 PendingIntent missing response");
+            logError(TAG, "FIDO2 PendingIntent missing response");
             throw new IllegalArgumentException();
         }
 
         final Object response = parseResponse(responseBytes);
         if (response == null) {
-            Log.e(TAG, "Failed to parse FIDO2 API response");
+            logError(TAG, "Failed to parse FIDO2 API response");
             throw new IllegalArgumentException();
         }
 
@@ -893,6 +900,7 @@ public final class Fido2Api {
      * @throws IllegalArgumentException if there was a parse error.
      */
     static Object parseResponse(byte[] responseBytes) throws IllegalArgumentException {
+        log(TAG, "parseResponse");
         Parcel parcel = Parcel.obtain();
         parcel.unmarshall(responseBytes, 0, responseBytes.length);
         parcel.setDataPosition(0);
@@ -966,7 +974,7 @@ public final class Fido2Api {
                 byte[] responseSerialized =
                         Fido2CredentialRequestJni.get().makeCredentialResponseFromJson(jsonString);
                 if (responseSerialized == null) {
-                    Log.e(
+                    logError(
                             TAG,
                             "Failed to convert response from JSON to Mojo object: %s",
                             jsonString);
@@ -1008,7 +1016,7 @@ public final class Fido2Api {
                 byte[] responseSerialized =
                         Fido2CredentialRequestJni.get().getCredentialResponseFromJson(jsonString);
                 if (responseSerialized == null) {
-                    Log.e(
+                    logError(
                             TAG,
                             "Failed to convert response from JSON to Mojo object: %s",
                             jsonString);
@@ -1506,6 +1514,7 @@ public final class Fido2Api {
      */
     public static ArrayList<WebauthnCredentialDetails> parseCredentialList(Parcel parcel)
             throws IllegalArgumentException {
+        log(TAG, "parseCredentialList");
         int numCredentials = parcel.readInt();
         ArrayList<WebauthnCredentialDetails> credentials = new ArrayList<>();
         for (int i = 0; i < numCredentials; i++) {

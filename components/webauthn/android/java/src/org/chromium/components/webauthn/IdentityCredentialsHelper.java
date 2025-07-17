@@ -5,6 +5,8 @@
 package org.chromium.components.webauthn;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.components.webauthn.WebauthnLogger.log;
+import static org.chromium.components.webauthn.WebauthnLogger.logError;
 
 import android.os.Bundle;
 
@@ -17,7 +19,6 @@ import com.google.android.gms.identitycredentials.IdentityCredentialManager;
 
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -29,8 +30,7 @@ import org.chromium.components.webauthn.cred_man.CredManHelper;
 @JNINamespace("webauthn")
 @NullMarked
 public class IdentityCredentialsHelper {
-    private static final String TAG = "IdentityCredHelper";
-
+    private static final String TAG = "IdentityCredentialsHelper";
     private static final String CRED_MAN_PREFIX = "androidx.credentials.";
 
     private final AuthenticationContextProvider mAuthenticationContextProvider;
@@ -53,6 +53,7 @@ public class IdentityCredentialsHelper {
             byte @Nullable [] clientDataHash,
             MakeCredentialResponseCallback responseCallback,
             ErrorCallback errorCallback) {
+        log(TAG, "handleConditionalCreateRequest");
         try {
             IdentityCredentialClient client =
                     IdentityCredentialManager.Companion.getClient(
@@ -69,7 +70,7 @@ public class IdentityCredentialsHelper {
                     .addOnFailureListener(
                             (exception) -> onConditionalCreateFailure(errorCallback, exception));
         } catch (Exception e) {
-            Log.d(TAG, "CreateCredential failed ", e);
+            logError(TAG, "CreateCredential failed ", e);
             errorCallback.onResult(
                     AuthenticatorStatus.NOT_ALLOWED_ERROR, MakeCredentialOutcome.OTHER_FAILURE);
             return;
@@ -82,11 +83,12 @@ public class IdentityCredentialsHelper {
             MakeCredentialResponseCallback responseCallback,
             ErrorCallback errorCallback,
             CreateCredentialHandle handle) {
+        log(TAG, "onConditionalCreateSuccess");
         Bundle data = assertNonNull(handle.getCreateCredentialResponse()).getData();
         MakeCredentialAuthenticatorResponse response =
                 CredManHelper.parseCreateCredentialResponseData(data);
         if (response == null) {
-            Log.d(TAG, "parseCreateCredentialResponseData() failed");
+            log(TAG, "parseCreateCredentialResponseData() failed");
             errorCallback.onResult(
                     AuthenticatorStatus.NOT_ALLOWED_ERROR, MakeCredentialOutcome.OTHER_FAILURE);
             return;
@@ -99,7 +101,7 @@ public class IdentityCredentialsHelper {
     }
 
     private void onConditionalCreateFailure(ErrorCallback errorCallback, Exception e) {
-        Log.d(TAG, "CreateCredential request failed ", e);
+        log(TAG, "CreateCredential request failed ", e);
         errorCallback.onResult(
                 AuthenticatorStatus.NOT_ALLOWED_ERROR,
                 MakeCredentialOutcome.CONDITIONAL_CREATE_FAILURE);

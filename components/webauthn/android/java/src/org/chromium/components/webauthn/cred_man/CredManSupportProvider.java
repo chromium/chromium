@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn.cred_man;
 
+import static org.chromium.components.webauthn.WebauthnLogger.log;
+
 import android.content.Context;
 import android.os.Build;
 
@@ -23,6 +25,7 @@ import org.chromium.components.webauthn.WebauthnModeProvider;
 
 @NullMarked
 public class CredManSupportProvider {
+    private static final String TAG = "CredManSupportProvider";
     private static final int GMSCORE_MIN_VERSION_CANARY_DEV = 241900000;
     private static final int GMSCORE_MIN_VERSION_BETA_STABLE = 242300000;
 
@@ -54,10 +57,12 @@ public class CredManSupportProvider {
         }
         if (getAndroidVersion() < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             sCredManSupport = CredManSupport.DISABLED;
+            log(TAG, "Disabled because of Android version.");
             return sCredManSupport;
         }
         if (notSkippedBecauseInTests() && hasOldGmsVersion()) {
             sCredManSupport = CredManSupport.DISABLED;
+            log(TAG, "Disabled because of old GMS version.");
             return sCredManSupport;
         }
         if (notSkippedBecauseInTests()
@@ -65,6 +70,7 @@ public class CredManSupportProvider {
                         == null) {
             sCredManSupport = CredManSupport.DISABLED;
             recordCredManAvailability(/*available*/ false);
+            log(TAG, "Disabled because CredentialManager is not available.");
             return sCredManSupport;
         }
         recordCredManAvailability(/*available*/ true);
@@ -83,6 +89,7 @@ public class CredManSupportProvider {
                 gpmInCredMan || isChrome3pPwmMode
                         ? CredManSupport.FULL_UNLESS_INAPPLICABLE
                         : CredManSupport.PARALLEL_WITH_FIDO_2;
+        log(TAG, "Support is %d", sCredManSupport);
         return sCredManSupport;
     }
 

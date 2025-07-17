@@ -6,6 +6,8 @@ package org.chromium.components.webauthn.cred_man;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.webauthn.WebauthnLogger.log;
+import static org.chromium.components.webauthn.WebauthnLogger.logError;
 import static org.chromium.components.webauthn.WebauthnModeProvider.is;
 
 import android.content.Context;
@@ -25,7 +27,6 @@ import android.os.SystemClock;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.CredentialType;
@@ -58,6 +59,8 @@ import java.nio.ByteBuffer;
 
 @NullMarked
 public class CredManHelper {
+    private static final String TAG = "CredManHelper";
+
     // These two values are formed differently because they come from the
     // Jetpack library, not the framework.
     @VisibleForTesting
@@ -68,8 +71,6 @@ public class CredManHelper {
     protected static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
     protected static final String BUNDLE_KEY_REGISTRATION_RESPONSE_JSON =
             CRED_MAN_PREFIX + "BUNDLE_KEY_REGISTRATION_RESPONSE_JSON";
-
-    private static final String TAG = "CredManHelper";
 
     private @Nullable Barrier mBarrier;
     private final boolean mPlayServicesAvailable;
@@ -110,6 +111,7 @@ public class CredManHelper {
             byte @Nullable [] clientDataHash,
             @Nullable MakeCredentialResponseCallback makeCallback,
             ErrorCallback errorCallback) {
+        log(TAG, "startMakeRequest");
         mClientDataJson = clientDataJson;
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize());
@@ -119,10 +121,13 @@ public class CredManHelper {
                     @Override
                     public void onError(CreateCredentialException exception) {
                         String errorType = exception.getType();
-                        Log.e(
+                        logError(
                                 TAG,
-                                "CredMan CreateCredential call failed: %s",
-                                errorType + " (" + exception.getMessage() + ")");
+                                "CredMan CreateCredential call failed with "
+                                        + errorType
+                                        + " ("
+                                        + exception.getMessage()
+                                        + ")");
                         if (errorType.equals(CreateCredentialException.TYPE_USER_CANCELED)) {
                             errorCallback.onResult(
                                     AuthenticatorStatus.NOT_ALLOWED_ERROR,
@@ -150,6 +155,7 @@ public class CredManHelper {
 
                     @Override
                     public void onResult(CreateCredentialResponse createCredentialResponse) {
+                        log(TAG, "startMakeRequest.onResult");
                         Bundle data = createCredentialResponse.getData();
                         MakeCredentialAuthenticatorResponse response =
                                 parseCreateCredentialResponseData(data);
@@ -197,6 +203,7 @@ public class CredManHelper {
             ErrorCallback errorCallback,
             Barrier barrier,
             boolean ignoreGpm) {
+        log(TAG, "startPrefetchRequest");
         long startTimeMs = SystemClock.elapsedRealtime();
         mBarrier = barrier; // Store this for any cancellation requests.
         final ErrorCallback localErrorCallback = errorCallback;
@@ -211,10 +218,13 @@ public class CredManHelper {
                         assert mConditionalUiState != ConditionalUiState.WAITING_FOR_SELECTION;
                         // prepareGetCredential uses getCredentialException, but it cannot be user
                         // cancelled so all errors map to UNKNOWN_ERROR.
-                        Log.e(
+                        logError(
                                 TAG,
-                                "CredMan prepareGetCredential call failed: %s",
-                                e.getType() + " (" + e.getMessage() + ")");
+                                "CredMan prepareGetCredential call failed with "
+                                        + e.getType()
+                                        + " ("
+                                        + e.getMessage()
+                                        + ")");
                         mConditionalUiState = ConditionalUiState.NONE;
                         localBarrier.onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
                         mMetricsHelper.recordCredmanPrepareRequestHistogram(
@@ -224,6 +234,7 @@ public class CredManHelper {
                     @Override
                     public void onResult(
                             PrepareGetCredentialResponse prepareGetCredentialResponse) {
+                        log(TAG, "startPrefetchRequest.onResult");
                         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                             // The request was completed synchronously when the cancellation was
                             // received.
@@ -232,10 +243,10 @@ public class CredManHelper {
                             return;
                         }
                         if (mConditionalUiState != ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST) {
-                            Log.e(
+                            logError(
                                     TAG,
-                                    "CredMan prepareGetCredential request received a response while"
-                                            + " the state is "
+                                    "prepareGetCredential request received a"
+                                            + " response while the state is "
                                             + mConditionalUiState
                                             + ". Ignoring the response.");
                             return;
@@ -244,6 +255,13 @@ public class CredManHelper {
                                 prepareGetCredentialResponse.hasCredentialResults(TYPE_PASSKEY);
                         boolean hasAuthenticationResults =
                                 prepareGetCredentialResponse.hasAuthenticationResults();
+                        log(
+                                TAG,
+                                "startPrefetchRequest.onResult with"
+                                        + " hasPublicKeyCredentials: "
+                                        + hasPublicKeyCredentials
+                                        + " and hasAuthenticationResults: "
+                                        + hasAuthenticationResults);
 
                         mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
 
@@ -314,6 +332,7 @@ public class CredManHelper {
             @Nullable GetCredentialResponseCallback getCallback,
             ErrorCallback errorCallback,
             boolean ignoreGpm) {
+        log(TAG, "startGetRequest");
         mClientDataJson = clientDataJson;
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         final ErrorCallback localErrorCallback = errorCallback;
@@ -327,10 +346,13 @@ public class CredManHelper {
                     @Override
                     public void onError(GetCredentialException getCredentialException) {
                         String errorType = getCredentialException.getType();
-                        Log.e(
+                        logError(
                                 TAG,
-                                "CredMan getCredential call failed: %s",
-                                errorType + " (" + getCredentialException.getMessage() + ")");
+                                "CredMan getCredential call failed with "
+                                        + errorType
+                                        + " ("
+                                        + getCredentialException.getMessage()
+                                        + ")");
                         notifyBrowserOnCredManClosed(false);
                         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                             mConditionalUiState = ConditionalUiState.NONE;
@@ -382,6 +404,7 @@ public class CredManHelper {
 
                     @Override
                     public void onResult(GetCredentialResponse getCredentialResponse) {
+                        log(TAG, "startGetRequest.onResult");
                         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                             notifyBrowserOnCredManClosed(false);
                             mConditionalUiState = ConditionalUiState.NONE;
@@ -428,9 +451,10 @@ public class CredManHelper {
                         byte[] responseSerialized =
                                 Fido2CredentialRequestJni.get().getCredentialResponseFromJson(json);
                         if (responseSerialized == null) {
-                            Log.e(
+                            logError(
                                     TAG,
-                                    "Failed to convert response from CredMan to Mojo object: %s",
+                                    "Failed to convert response from CredMan to Mojo"
+                                            + " object: %s",
                                     json);
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.FAILURE, mConditionalUiState);
@@ -480,7 +504,9 @@ public class CredManHelper {
                 };
 
         if (mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST) {
-            Log.e(TAG, "Received a second credential selection while the first still in progress.");
+            logError(
+                    TAG,
+                    "Received a second credential selection while the first still in progress.");
             mMetricsHelper.reportGetCredentialMetrics(
                     CredManGetRequestEnum.COULD_NOT_SEND_REQUEST, mConditionalUiState);
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
@@ -524,6 +550,7 @@ public class CredManHelper {
     }
 
     public void cancelConditionalGetAssertion() {
+        log(TAG, "cancelConditionalGetAssertion");
         switch (mConditionalUiState) {
             case WAITING_FOR_CREDENTIAL_LIST:
                 mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
@@ -613,7 +640,7 @@ public class CredManHelper {
     }
 
     private static void logDeserializationException(Throwable e) {
-        Log.e(
+        logError(
                 TAG,
                 "Failed to parse Mojo object. If this is happening in a test, and"
                     + " authenticator.mojom was updated, then you'll need to update the fake Mojo"
@@ -648,7 +675,7 @@ public class CredManHelper {
         byte[] responseSerialized =
                 Fido2CredentialRequestJni.get().makeCredentialResponseFromJson(json);
         if (responseSerialized == null) {
-            Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
+            logError(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
             return null;
         }
         try {

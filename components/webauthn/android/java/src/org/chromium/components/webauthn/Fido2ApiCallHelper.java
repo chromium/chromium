@@ -6,6 +6,7 @@ package org.chromium.components.webauthn;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.webauthn.WebauthnLogger.log;
 
 import android.app.PendingIntent;
 import android.net.Uri;
@@ -35,6 +36,7 @@ import java.util.List;
  */
 @NullMarked
 public class Fido2ApiCallHelper {
+    private static final String TAG = "Fido2ApiCallHelper";
     private static @Nullable Fido2ApiCallHelper sInstance;
 
     public static void overrideInstanceForTesting(Fido2ApiCallHelper instance) {
@@ -61,6 +63,7 @@ public class Fido2ApiCallHelper {
             String relyingPartyId,
             OnSuccessListener<List<WebauthnCredentialDetails>> successCallback,
             OnFailureListener failureCallback) {
+        log(TAG, "invokeFido2GetCredentials");
         Fido2ApiCallParams params =
                 WebauthnModeProvider.getInstance()
                         .getFido2ApiCallParams(authenticationContextProvider.getWebContents());
@@ -87,6 +90,7 @@ public class Fido2ApiCallHelper {
             String relyingParty,
             OnSuccessListener<List<WebauthnCredentialDetails>> successListener,
             OnFailureListener failureListener) {
+        log(TAG, "invokePasskeyCacheGetCredentials");
         assertNonNull(authenticationContextProvider.getContext());
         Fido2ApiCall call =
                 new Fido2ApiCall(
@@ -117,6 +121,7 @@ public class Fido2ApiCallHelper {
             OnSuccessListener<PendingIntent> successCallback,
             OnFailureListener failureCallback)
             throws NoSuchAlgorithmException {
+        log(TAG, "invokeFido2MakeCredential");
         Fido2ApiCallParams params =
                 WebauthnModeProvider.getInstance()
                         .getFido2ApiCallParams(authenticationContextProvider.getWebContents());
@@ -147,6 +152,7 @@ public class Fido2ApiCallHelper {
             @Nullable ResultReceiver resultReceiver,
             OnSuccessListener<PendingIntent> successCallback,
             OnFailureListener failureCallback) {
+        log(TAG, "invokeFido2GetAssertion");
         Fido2ApiCallParams params =
                 WebauthnModeProvider.getInstance()
                         .getFido2ApiCallParams(authenticationContextProvider.getWebContents());
