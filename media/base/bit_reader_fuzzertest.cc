@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
@@ -18,11 +14,12 @@
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::BufferIterator<const uint8_t> iterator(data, size);
+  UNSAFE_TODO(base::BufferIterator<const uint8_t> iterator(data, size));
 
   const uint32_t* random_seed = iterator.Object<uint32_t>();
-  if (!random_seed)
+  if (!random_seed) {
     return 0;
+  }
 
   // Need a simple random number generator to generate the number of bits to
   // read/skip in a reproducible way (given the same |data|).
@@ -31,8 +28,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::span<const uint8_t> remaining =
       iterator.Span<uint8_t>(iterator.total_size() - iterator.position());
 
-  media::BitReader reader(remaining.data(),
-                          base::checked_cast<int>(remaining.size()));
+  media::BitReader reader(remaining);
 
   // Read and skip through the data in |reader|.
   while (reader.bits_available() > 0) {
@@ -40,12 +36,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       // Read up to 64 bits. This may fail if there is not enough bits
       // remaining, but it doesn't matter (testing for failures is also good).
       uint64_t value;
-      if (!reader.ReadBits(rnd.Rand() % 64 + 1, &value))
+      if (!reader.ReadBits(rnd.Rand() % 64 + 1, &value)) {
         break;
+      }
     } else {
       // Skip up to 128 bits. As above, this may fail.
-      if (!reader.SkipBits(rnd.Rand() % 128 + 1))
+      if (!reader.SkipBits(rnd.Rand() % 128 + 1)) {
         break;
+      }
     }
   }
   return 0;

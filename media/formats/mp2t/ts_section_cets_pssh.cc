@@ -19,8 +19,9 @@ TsSectionCetsPssh::~TsSectionCetsPssh() {}
 bool TsSectionCetsPssh::Parse(bool payload_unit_start_indicator,
                               base::span<const uint8_t> buf) {
   // Ignore if doesn't contain PUSI.
-  if (!payload_unit_start_indicator)
+  if (!payload_unit_start_indicator) {
     return false;
+  }
   // TODO(dougsteed). This initial implementation requires the entire CETS-PSSH
   // to fit in one TS packet, so we know that the box length will fit in one
   // byte.
@@ -28,7 +29,7 @@ bool TsSectionCetsPssh::Parse(bool payload_unit_start_indicator,
   bool md5_flag;
   RCHECK(bit_reader.ReadFlag(&md5_flag) && !md5_flag);
   RCHECK(bit_reader.SkipBits(31));
-  int box_length_bits = bit_reader.bits_available();
+  const size_t box_length_bits = bit_reader.bits_available();
   std::string pssh;
   if (!box_length_bits) {
     // Ignore if there are no bits to read.

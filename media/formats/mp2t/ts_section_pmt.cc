@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/check.h"
+#include "base/numerics/checked_math.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
@@ -25,7 +26,7 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   int section_syntax_indicator;
   int dummy_zero;
   int reserved;
-  int section_length;
+  size_t section_length;
   int program_number;
   int version_number;
   int current_next_indicator;
@@ -36,7 +37,7 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(1, &dummy_zero));
   RCHECK(bit_reader->ReadBits(2, &reserved));
   RCHECK(bit_reader->ReadBits(12, &section_length));
-  int section_start_marker = bit_reader->bits_available() / 8;
+  const size_t section_start_marker = bit_reader->bits_available() / 8;
 
   RCHECK(bit_reader->ReadBits(16, &program_number));
   RCHECK(bit_reader->ReadBits(2, &reserved));
@@ -77,7 +78,9 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // Read the ES description table.
   // The end of the PID map if 4 bytes away from the end of the section
   // (4 bytes = size of the CRC).
-  int pid_map_end_marker = section_start_marker - section_length + 4;
+  const size_t pid_map_end_marker =
+      base::CheckAdd(base::CheckSub(section_start_marker, section_length), 4u)
+          .ValueOrDie();
   using PidMapValue = std::pair<int, Descriptors>;
   std::map<int, PidMapValue> pid_map;
   while (bit_reader->bits_available() > 8 * pid_map_end_marker) {
@@ -101,7 +104,7 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   }
 
   // Read the CRC.
-  int crc32;
+  size_t crc32;
   RCHECK(bit_reader->ReadBits(32, &crc32));
 
   // Once the PMT has been proved to be correct, register the PIDs.

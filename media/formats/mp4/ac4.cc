@@ -5,7 +5,9 @@
 #include "media/formats/mp4/ac4.h"
 
 #include <algorithm>
+
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp4/rcheck.h"
 
@@ -158,7 +160,7 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
                                     int& consumed_pres_bytes,
                                     uint8_t bitstream_version,
                                     uint8_t presentation_version) {
-  int bits_read = reader.bits_read();
+  const size_t initial_bits_read = reader.bits_read();
 
   int presentation_config_v1;
   // presentation_config_v1, 5 bits
@@ -298,7 +300,8 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
 
   RCHECK(Ac4ByteAlign(reader));
 
-  if ((reader.bits_read() - bits_read) <= (pres_bytes - 1) * 8) {
+  if ((reader.bits_read() - initial_bits_read) <=
+      base::checked_cast<size_t>(pres_bytes - 1) * 8) {
     // Skip de_indicator, 1 bit
     RCHECK(reader.SkipBits(1));
     // Skip dolby_atmos_indicator, 1 bit
@@ -317,7 +320,7 @@ bool AC4::ParseAc4PresentationV1Dsi(BitReader& reader,
     }
   }
 
-  consumed_pres_bytes = (reader.bits_read() - bits_read) / 8;
+  consumed_pres_bytes = (reader.bits_read() - initial_bits_read) / 8;
   return true;
 }
 

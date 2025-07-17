@@ -68,7 +68,7 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
     RCHECK(bit_reader->ReadBits(3, &reserved));
     RCHECK(bit_reader->ReadBits(13, &pmt_pid_array[k]));
   }
-  int crc32;
+  size_t crc32;
   RCHECK(bit_reader->ReadBits(32, &crc32));
 
   // Just ignore the PAT if not applicable yet.

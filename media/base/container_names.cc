@@ -82,7 +82,7 @@ static bool StartsWith(const uint8_t* buffer,
 // TODO(chcunningham): Delete this helper and replace with direct calls to
 // reader that handle read failure. As-is, we hide failure because returning 0
 // is valid for both a successful and failed read.
-static uint64_t ReadBits(BitReader* reader, int num_bits) {
+static uint64_t ReadBits(BitReader* reader, size_t num_bits) {
   DCHECK_GE(reader->bits_available(), num_bits);
   DCHECK((num_bits > 0) && (num_bits <= 64));
   uint64_t value = 0;
@@ -92,7 +92,6 @@ static uint64_t ReadBits(BitReader* reader, int num_bits) {
 
   return value;
 }
-
 
 // Checks for an ADTS AAC container.
 static bool CheckAac(const uint8_t* buffer, int buffer_size) {
@@ -1226,7 +1225,7 @@ static int GetElementId(BitReader* reader) {
   // If it is an invalid encoding or the end of the buffer is reached,
   // return -1 as a tag that won't be expected.
   if (reader->bits_available() >= 8) {
-    int num_bits_to_read = 0;
+    size_t num_bits_to_read = 0;
     static auto prefix =
         std::to_array<int>({0x80, 0x4000, 0x200000, 0x10000000});
     for (int i = 0; i < 4; ++i) {
@@ -1249,7 +1248,7 @@ static uint64_t GetVint(BitReader* reader) {
   // If it is an invalid coding or the end of the buffer is reached,
   // return something that will go off the end of the buffer.
   if (reader->bits_available() >= 8) {
-    int num_bits_to_read = 0;
+    size_t num_bits_to_read = 0;
     for (int i = 0; i < 8; ++i) {
       num_bits_to_read += 7;
       if (ReadBits(reader, 1) == 1) {
@@ -1278,13 +1277,13 @@ static bool CheckWebm(const uint8_t* buffer, int buffer_size) {
   // Get the header size, and ensure there are enough bits to check.
   // Using saturated_cast<> in case the size read is really large
   // (in which case the bits_available() check will fail).
-  int header_size = base::saturated_cast<int>(GetVint(&reader));
+  size_t header_size = GetVint(&reader);
   RCHECK(reader.bits_available() / 8 >= header_size);
 
   // Loop through the header.
   while (reader.bits_available() > 0) {
     int tag = GetElementId(&reader);
-    int tagsize = base::saturated_cast<int>(GetVint(&reader));
+    size_t tagsize = GetVint(&reader);
     switch (tag) {
       case 0x4286:  // EBMLVersion
       case 0x42f7:  // EBMLReadVersion

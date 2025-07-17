@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include <map>
-#include <string>
+#include <vector>
 
 #include "media/base/decrypt_config.h"
 
@@ -37,14 +37,14 @@ class Descriptors {
   // |format_identifier| and |additional_info| values are populated with the
   // contents of the descriptor.
   bool HasRegistrationDescriptor(int64_t* format_identifier,
-                                 std::string* additional_info) const;
+                                 std::vector<uint8_t>* additional_info) const;
 
   // Indicates whether a CA descriptor is present. If so, the |system_id|,
   // |pid|, and |private_data| values are populated with the contents of the
   // descriptor.
   bool HasCADescriptor(int* system_id,
                        int* pid,
-                       std::string* private_data) const;
+                       std::vector<uint8_t>* private_data) const;
 
   // Indicates whether a CA descriptor is present, and if so, whether it is
   // of the type defined by ISO/IEC 23001-9:2014 (i.e. with a specific
@@ -59,8 +59,8 @@ class Descriptors {
   bool HasPrivateDataIndicator(int64_t value) const;
 
  private:
-  using Descriptor = std::pair<int, std::string>;
-  std::map<int, std::string> descriptors_;
+  using Descriptor = std::pair<int, std::vector<uint8_t>>;
+  std::map<int, std::vector<uint8_t>> descriptors_;
 
   // Allow copy and assign so that it can be used in a std C++ container.
 };
