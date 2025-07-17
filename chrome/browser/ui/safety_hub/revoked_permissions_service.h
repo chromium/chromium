@@ -134,18 +134,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   using UnusedPermissionMap = RevokedPermissionsResult::UnusedPermissionMap;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(RevokedPermissionsServiceTest,
-                           UpdateIntegerValuesToGroupName_AllContentSettings);
-  FRIEND_TEST_ALL_PREFIXES(
-      RevokedPermissionsServiceTest,
-      UpdateIntegerValuesToGroupName_SubsetOfContentSettings);
-  FRIEND_TEST_ALL_PREFIXES(
-      RevokedPermissionsServiceTest,
-      UpdateIntegerValuesToGroupName_UnknownContentSettings);
-  FRIEND_TEST_ALL_PREFIXES(RevokedPermissionsServiceTest,
-                           UpdateIntegerValuesToGroupName_OnStartUp);
-  FRIEND_TEST_ALL_PREFIXES(RevokedPermissionsServiceTest,
-                           UpdateIntegerValuesToGroupName_MixedKeys);
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
 
@@ -205,10 +193,6 @@ class RevokedPermissionsService final : public SafetyHubService,
   // from the set if it is in there.
   const std::set<ContentSettingsType> GetRevokedUnusedSitePermissionTypes(
       const std::set<ContentSettingsType> permissions);
-
-  // Convert all integer permission values to string, if there is any permission
-  // represented by integer.
-  void UpdateIntegerValuesToGroupName();
 
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;

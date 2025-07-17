@@ -230,6 +230,7 @@ source_set("unit_tests") {
     "safe_browsing_result_unittest.cc",
     "safety_hub_result_unittest.cc",
     "safety_hub_service_unittest.cc",
+    "unused_site_permissions_manager_unittest.cc",
   ]
 
   deps = [

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -59,8 +61,6 @@ constexpr base::TimeDelta kRevocationThresholdWithDelayForTesting =
 
 namespace {
 
-constexpr char kUnknownContentSettingsType[] = "unknown";
-
 // Reflects the maximum number of days between a permissions being revoked and
 // the time when the user regrants the permission through the unused site
 // permission module of Safete Check. The maximum number of days is determined
@@ -101,52 +101,6 @@ bool IsChooserPermissionSupported() {
   return base::FeatureList::IsEnabled(
       content_settings::features::
           kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);
-}
-
-base::Value::List ConvertContentSettingsIntValuesToString(
-    const base::Value::List& content_settings_values_list,
-    bool* successful_migration) {
-  base::Value::List string_value_list;
-  for (const base::Value& setting_value : content_settings_values_list) {
-    if (setting_value.is_int()) {
-      int setting_int = setting_value.GetInt();
-      auto setting_name =
-          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
-              static_cast<ContentSettingsType>(setting_int));
-      if (setting_name == kUnknownContentSettingsType) {
-        *successful_migration = false;
-        string_value_list.Append(setting_value.GetInt());
-      } else {
-        string_value_list.Append(setting_name);
-      }
-    } else {
-      DCHECK(setting_value.is_string());
-      // Store string group name values.
-      string_value_list.Append(setting_value.GetString());
-    }
-  }
-  return string_value_list;
-}
-
-base::Value::Dict ConvertChooserContentSettingsIntValuesToString(
-    const base::Value::Dict& chooser_content_settings_values_dict) {
-  base::Value::Dict string_keyed_dict;
-  for (const auto [key, value] : chooser_content_settings_values_dict) {
-    int number = -1;
-    base::StringToInt(key, &number);
-    // If number conversion fails it returns 0 which is not a chooser permission
-    // enum value so it will not clash with the conversion.
-    if (number == 0) {
-      // Store string keyed values as is.
-      string_keyed_dict.Set(key, value.GetDict().Clone());
-    } else {
-      string_keyed_dict.Set(
-          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
-              static_cast<ContentSettingsType>(number)),
-          value.GetDict().Clone());
-    }
-  }
-  return string_keyed_dict;
 }
 
 content_settings::ContentSettingConstraints GetConstraintFromInfo(
@@ -282,16 +236,7 @@ RevokedPermissionsService::RevokedPermissionsService(
   }
 
   unused_site_permissions_manager_ =
-      std::make_unique<UnusedSitePermissionsManager>(browser_context);
-
-  bool migration_completed = pref_change_registrar_->prefs()->GetBoolean(
-      safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted);
-  if (!migration_completed) {
-    // Convert all integer permission values to string, if there is any
-    // permission represented by integer stored in disk.
-    // TODO(crbug.com/41495119): Clean up this migration after some milestones.
-    UpdateIntegerValuesToGroupName();
-  }
+      std::make_unique<UnusedSitePermissionsManager>(browser_context, prefs);
 
   InitializeLatestResult();
 
@@ -1073,57 +1018,4 @@ RevokedPermissionsService::GetRevokedUnusedSitePermissionTypes(
         ContentSettingsType::NOTIFICATIONS);
   }
   return permissions_without_revoked_abusive_notification_manager;
-}
-
-void RevokedPermissionsService::UpdateIntegerValuesToGroupName() {
-  ContentSettingsForOneType settings = hcsm()->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
-
-  bool successful_migration = true;
-  for (const auto& revoked_permissions : settings) {
-    const base::Value& stored_value = revoked_permissions.setting_value;
-    DCHECK(stored_value.is_dict());
-    base::Value updated_dict(stored_value.Clone());
-
-    const base::Value::List* permission_value_list =
-        stored_value.GetDict().FindList(permissions::kRevokedKey);
-    if (permission_value_list) {
-      base::Value::List updated_permission_value_list =
-          ConvertContentSettingsIntValuesToString(
-              permission_value_list->Clone(), &successful_migration);
-      updated_dict.GetDict().Set(permissions::kRevokedKey,
-                                 std::move(updated_permission_value_list));
-    }
-
-    const base::Value::Dict* chooser_permission_value_dict =
-        stored_value.GetDict().FindDict(
-            permissions::kRevokedChooserPermissionsKey);
-    if (chooser_permission_value_dict) {
-      base::Value::Dict updated_chooser_permission_value_dict =
-          ConvertChooserContentSettingsIntValuesToString(
-              chooser_permission_value_dict->Clone());
-      updated_dict.GetDict().Set(
-          permissions::kRevokedChooserPermissionsKey,
-          std::move(updated_chooser_permission_value_dict));
-    }
-
-    // Create a new constraint with the old creation time of the original
-    // exception.
-    base::Time creation_time = revoked_permissions.metadata.expiration() -
-                               revoked_permissions.metadata.lifetime();
-    content_settings::ContentSettingConstraints constraints(creation_time);
-    constraints.set_lifetime(revoked_permissions.metadata.lifetime());
-
-    hcsm()->SetWebsiteSettingCustomScope(
-        revoked_permissions.primary_pattern,
-        revoked_permissions.secondary_pattern,
-        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-        std::move(updated_dict), constraints);
-  }
-
-  if (successful_migration) {
-    pref_change_registrar_->prefs()->SetBoolean(
-        safety_hub_prefs::kUnusedSitePermissionsRevocationMigrationCompleted,
-        true);
-  }
 }

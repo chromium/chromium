@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MANAGER_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MANAGER_H_
 
+#include <memory>
 #include <string>
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -12,6 +13,9 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
+
+class PrefChangeRegistrar;
+class PrefService;
 
 namespace url {
 class Origin;
@@ -22,7 +26,8 @@ class Origin;
 class UnusedSitePermissionsManager {
  public:
   explicit UnusedSitePermissionsManager(
-      content::BrowserContext* browser_context);
+      content::BrowserContext* browser_context,
+      PrefService* prefs);
 
   UnusedSitePermissionsManager(const UnusedSitePermissionsManager&) = delete;
   UnusedSitePermissionsManager& operator=(const UnusedSitePermissionsManager&) =
@@ -46,6 +51,19 @@ class UnusedSitePermissionsManager {
       const ContentSettingsPattern& primary_pattern);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsManagerTest,
+                           UpdateIntegerValuesToGroupName_AllContentSettings);
+  FRIEND_TEST_ALL_PREFIXES(
+      UnusedSitePermissionsManagerTest,
+      UpdateIntegerValuesToGroupName_SubsetOfContentSettings);
+  FRIEND_TEST_ALL_PREFIXES(
+      UnusedSitePermissionsManagerTest,
+      UpdateIntegerValuesToGroupName_UnknownContentSettings);
+
+  // Convert all integer permission values to string, if there is any
+  // permission represented by integer.
+  void UpdateIntegerValuesToGroupName();
+
   // Pointer to an object that allows us to manage site permissions.
   HostContentSettingsMap* hcsm() {
     return HostContentSettingsMapFactory::GetForProfile(browser_context_.get());
@@ -53,6 +71,9 @@ class UnusedSitePermissionsManager {
 
   // Pointer to a browser context whose permissions are being updated.
   raw_ptr<content::BrowserContext> browser_context_;
+
+  // Observes user profile prefs.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MANAGER_H_
