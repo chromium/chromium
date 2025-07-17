@@ -39,7 +39,6 @@ class InternalRefCountedPool;
 class FrameResources {
  public:
   FrameResources(scoped_refptr<InternalRefCountedPool> pool,
-                 VideoPixelFormat format,
                  const gfx::Size& coded_size);
   ~FrameResources();
   FrameResources(const FrameResources& other) = delete;
@@ -47,7 +46,7 @@ class FrameResources {
 
   // Allocate GpuMemoryBuffer and create SharedImage. Returns false on failure
   // to do so.
-  bool Initialize(const gfx::ColorSpace& color_space);
+  bool Initialize(VideoPixelFormat format, const gfx::ColorSpace& color_space);
 
   // Return true if these resources can be reused for a frame with the specified
   // parameters.
@@ -67,7 +66,6 @@ class FrameResources {
   // SharedImage) will not be destroyed until after `this` is destroyed.
   const scoped_refptr<InternalRefCountedPool> pool_;
 
-  const VideoPixelFormat format_;
   const gfx::Size coded_size_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken sync_token_;
@@ -145,13 +143,8 @@ class RenderableGpuMemoryBufferVideoFramePoolImpl
 // FrameResources
 
 FrameResources::FrameResources(scoped_refptr<InternalRefCountedPool> pool,
-                               const VideoPixelFormat format,
                                const gfx::Size& coded_size)
-    : pool_(std::move(pool)), format_(format), coded_size_(coded_size) {
-  // Currently only support ARGB, ABGR and NV12.
-  CHECK(format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR ||
-        format == PIXEL_FORMAT_NV12);
-}
+    : pool_(std::move(pool)), coded_size_(coded_size) {}
 
 FrameResources::~FrameResources() {
   if (shared_image_) {
@@ -180,7 +173,13 @@ gfx::Size GetBufferSizeInPixelsForVideoPixelFormat(
   }
 }
 
-bool FrameResources::Initialize(const gfx::ColorSpace& color_space) {
+bool FrameResources::Initialize(VideoPixelFormat format,
+                                const gfx::ColorSpace& color_space) {
+  // Currently only support ARGB, ABGR and NV12.
+  CHECK(format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR ||
+        format == PIXEL_FORMAT_NV12)
+      << format;
+
   auto* context = pool_->GetContext();
 
   constexpr gfx::BufferUsage kBufferUsage =
@@ -191,11 +190,8 @@ bool FrameResources::Initialize(const gfx::ColorSpace& color_space) {
 #endif
       ;
 
-  const gfx::BufferFormat buffer_format =
-      VideoPixelFormatToGfxBufferFormat(format_).value();
-
   const gfx::Size buffer_size_in_pixels =
-      GetBufferSizeInPixelsForVideoPixelFormat(format_, coded_size_);
+      GetBufferSizeInPixelsForVideoPixelFormat(format, coded_size_);
 
   gpu::SharedImageUsageSet usage =
 #if BUILDFLAG(IS_MAC)
@@ -230,11 +226,8 @@ bool FrameResources::Initialize(const gfx::ColorSpace& color_space) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  CHECK(format_ == PIXEL_FORMAT_NV12 || format_ == PIXEL_FORMAT_ABGR ||
-        format_ == PIXEL_FORMAT_ARGB)
-      << format_;
   const viz::SharedImageFormat si_format =
-      viz::GetSharedImageFormat(buffer_format);
+      VideoPixelFormatToSharedImageFormat(format).value();
 
   shared_image_ =
       context->CreateSharedImage(buffer_size_in_pixels, kBufferUsage, si_format,
@@ -305,9 +298,8 @@ scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
     }
   }
   if (!frame_resources) {
-    frame_resources =
-        std::make_unique<FrameResources>(this, format_, coded_size);
-    if (!frame_resources->Initialize(color_space)) {
+    frame_resources = std::make_unique<FrameResources>(this, coded_size);
+    if (!frame_resources->Initialize(format_, color_space)) {
       DLOG(ERROR) << "Failed to initialize frame resources.";
       return nullptr;
     }

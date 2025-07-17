@@ -86,4 +86,43 @@ std::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
   }
 }
 
+std::optional<viz::SharedImageFormat> VideoPixelFormatToSharedImageFormat(
+    VideoPixelFormat pixel_format) {
+  switch (pixel_format) {
+    case PIXEL_FORMAT_ARGB:
+      return viz::SinglePlaneFormat::kBGRA_8888;
+    case PIXEL_FORMAT_XRGB:
+      return viz::SinglePlaneFormat::kBGRX_8888;
+    case PIXEL_FORMAT_ABGR:
+      return viz::SinglePlaneFormat::kRGBA_8888;
+    case PIXEL_FORMAT_XBGR:
+      return viz::SinglePlaneFormat::kRGBX_8888;
+    case PIXEL_FORMAT_XR30:
+      return viz::SinglePlaneFormat::kRGBA_1010102;
+    case PIXEL_FORMAT_YV12:
+      return viz::MultiPlaneFormat::kYV12;
+    case PIXEL_FORMAT_NV12:
+      return viz::MultiPlaneFormat::kNV12;
+    case PIXEL_FORMAT_NV16:
+      return viz::MultiPlaneFormat::kNV16;
+    case PIXEL_FORMAT_NV24:
+      return viz::MultiPlaneFormat::kNV24;
+    case PIXEL_FORMAT_NV12A:
+      return viz::MultiPlaneFormat::kNV12A;
+    case PIXEL_FORMAT_P010LE:
+      return viz::MultiPlaneFormat::kP010;
+    case PIXEL_FORMAT_P210LE:
+      return viz::MultiPlaneFormat::kP210;
+    case PIXEL_FORMAT_P410LE:
+      return viz::MultiPlaneFormat::kP410;
+    case PIXEL_FORMAT_I420:
+      return viz::MultiPlaneFormat::kI420;
+    case PIXEL_FORMAT_I420A:
+      return viz::MultiPlaneFormat::kI420A;
+    default:
+      DLOG(WARNING) << "Unsupported VideoPixelFormat: " << pixel_format;
+      return std::nullopt;
+  }
+}
+
 }  // namespace media
