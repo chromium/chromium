@@ -570,14 +570,24 @@ export declare interface GlicBrowserHost {
 
   /**
    * Returns an observable that emits a ranked list of pin tab candidates per
-   * the given options. The list is currently only returned once. The results
-   * are sorted by string match and then last active time.
+   * the given options. The list is returned once, and then again whenever the
+   * list of candidates changes. The results are sorted by string match and then
+   * last active time.
    *
    * If a query is provided, it currently returns all top sorted results, even
    * if entries don't match the query.
    *
-   * @todo Actually implement dynamic updates based on tab changes.
-   * crbug.com/429022523
+   * Calling this function will invalidate any previously returned
+   * `ObservableValue` instances. So if a previous one existed, it will stop
+   * receiving updates when a new one is obtained.
+   *
+   * Dynamic updates can be a costly operation so the observable value should be
+   * released/destroyed as soon as it's not useful anymore.
+   *
+   * TODO(b/432258121): A race condition can occur when a consumer
+   * unsubscribes and a new one subscribes. An update from the first
+   * subscription that is already in-flight may be delivered to the second
+   * consumer.
    */
   getPinCandidates?
       (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]>;

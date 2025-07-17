@@ -414,6 +414,18 @@ struct ZeroStateSuggestionsOptions {
   array<string> supported_tools;
 };
 
+// A candidate for pinning.
+struct PinCandidate {
+  // The tab that is a candidate for pinning.
+  TabData tab_data;
+};
+
+// Observes changes to pin candidates.
+interface PinCandidatesObserver {
+  // Called when the list of pin candidates has changed.
+  OnPinCandidatesChanged(array<PinCandidate> candidates);
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -498,10 +510,11 @@ interface WebClientHandler {
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   UnpinAllTabs();
 
-  // Requests candidates for pinning.
+  // Subscribes to receive updates on pin candidates.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
-  GetPinCandidates(GetPinCandidatesOptions options)
-      => (array<TabData> candidates);
+  SubscribeToPinCandidates(
+      GetPinCandidatesOptions options,
+      pending_remote<PinCandidatesObserver> observer);
 
   // Creates a new task in the actor framework and returns the new task's ID.
   CreateTask() => result<int32, CreateTaskErrorReason>;

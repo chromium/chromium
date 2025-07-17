@@ -64,6 +64,11 @@ class GlicSharingManager {
 
   // Queries whether the given tab has been explicitly pinned.
   virtual bool IsTabPinned(tabs::TabHandle tab_handle) const = 0;
+
+  // True if the immutable attributes of `browser` are valid for Glic focus.
+  // or pinning. Invalid browsers are never observed.
+  virtual bool IsBrowserValidForSharing(
+      BrowserWindowInterface* browser_interface) = 0;
 };
 
 }  // namespace glic

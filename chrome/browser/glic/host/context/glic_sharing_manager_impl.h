@@ -92,7 +92,8 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   // True if the immutable attributes of `browser` are valid for Glic focus.
   // or pinning. Invalid browsers are never observed.
-  bool IsBrowserValidForSharing(BrowserWindowInterface* browser_interface);
+  bool IsBrowserValidForSharing(
+      BrowserWindowInterface* browser_interface) override;
 
   // True if the given contents are a candidate for sharing. Performs a number
   // of checks, but sharing may still fail for other reasons.
@@ -101,10 +102,10 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   // Fetches the current list of pinned tabs.
   std::vector<content::WebContents*> GetPinnedTabs() const;
 
-  // Fetches pinning candidates based on the given options.
-  void GetPinCandidates(
-      const mojom::GetPinCandidatesOptions& options,
-      base::OnceCallback<void(std::vector<mojom::TabDataPtr>)> callback);
+  // Subscribes to changes in pin candidates.
+  void SubscribeToPinCandidates(
+      mojom::GetPinCandidatesOptionsPtr options,
+      mojo::PendingRemote<mojom::PinCandidatesObserver> observer);
 
  private:
   GlicFocusedTabManager focused_tab_manager_;

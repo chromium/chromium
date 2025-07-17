@@ -77,7 +77,6 @@ chromium-metrics-reviews@google.com.
     <variant name="GetContextFromFocusedTab"/>
     <variant name="GetContextFromTab"/>
     <variant name="GetOsMicrophonePermissionStatus"/>
-    <variant name="GetPinCandidates"/>
     <variant name="GetUserProfileInfo"/>
     <variant name="GetZeroStateSuggestions"/>
     <variant name="GetZeroStateSuggestionsForFocusedTab"/>
@@ -117,8 +116,10 @@ chromium-metrics-reviews@google.com.
     <variant name="SetWindowDraggableAreas"/>
     <variant name="ShowProfilePicker"/>
     <variant name="StopActorTask"/>
+    <variant name="SubscribeToPinCandidates"/>
     <variant name="UnpinAllTabs"/>
     <variant name="UnpinTabs"/>
+    <variant name="UnsubscribeFromPinCandidates"/>
     <variant name="WebClientCreated"/>
     <variant name="WebClientInitialized"/>
   </token>

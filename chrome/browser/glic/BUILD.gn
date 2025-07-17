@@ -282,6 +282,7 @@ source_set("browser_tests") {
     "glic_policy_browsertest.cc",
     "glic_profile_manager_browsertest.cc",
     "glic_user_status_browsertest.cc",
+    "host/context/glic_pinned_tab_manager_browsertest.cc",
     "host/glic_api_browsertest.cc",
     "host/guest_util_browsertest.cc",
     "widget/application_hotkey_delegate_browsertest.cc",
@@ -310,6 +311,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//extensions/browser",
     "//extensions/browser/api:extensions_api_client",
+    "//net:test_support",
     "//ui/base:ozone_buildflags",
     "//ui/events:test_support",
   ]

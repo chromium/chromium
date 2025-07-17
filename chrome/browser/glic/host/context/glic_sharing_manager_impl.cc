@@ -170,10 +170,11 @@ std::vector<content::WebContents*> GlicSharingManagerImpl::GetPinnedTabs()
   return pinned_tab_manager_.GetPinnedTabs();
 }
 
-void GlicSharingManagerImpl::GetPinCandidates(
-    const mojom::GetPinCandidatesOptions& options,
-    base::OnceCallback<void(std::vector<mojom::TabDataPtr>)> callback) {
-  pinned_tab_manager_.GetPinCandidates(options, std::move(callback));
+void GlicSharingManagerImpl::SubscribeToPinCandidates(
+    mojom::GetPinCandidatesOptionsPtr options,
+    mojo::PendingRemote<mojom::PinCandidatesObserver> observer) {
+  pinned_tab_manager_.SubscribeToPinCandidates(std::move(options),
+                                               std::move(observer));
 }
 
 }  // namespace glic

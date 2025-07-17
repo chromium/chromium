@@ -1046,6 +1046,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         ContentSettingsType::MEDIASTREAM_MIC));
   }
 
+  void SubscribeToPinCandidates(
+      mojom::GetPinCandidatesOptionsPtr options,
+      mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override {
+    if (ShouldDoApiActivationGating()) {
+      return;
+    }
+    glic_sharing_manager_->SubscribeToPinCandidates(std::move(options),
+                                                    std::move(observer));
+  }
+
   // GlicWindowController::StateObserver implementation.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state,
                          Browser* attached_browser) override {
@@ -1109,16 +1119,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (web_client_) {
       web_client_->NotifyBrowserIsOpenChanged(is_open);
     }
-  }
-
-  void GetPinCandidates(glic::mojom::GetPinCandidatesOptionsPtr options,
-                        GetPinCandidatesCallback callback) override {
-    if (ShouldDoApiActivationGating()) {
-      std::vector<glic::mojom::TabDataPtr> no_results;
-      std::move(callback).Run(std::move(no_results));
-      return;
-    }
-    glic_sharing_manager_->GetPinCandidates(*options, std::move(callback));
   }
 
   void GetZeroStateSuggestionsForFocusedTab(

@@ -8,7 +8,7 @@ import {ObservableValue as ObservableValueImpl} from '../observable.js';
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {ResponseExtras} from './post_message_transport.js';
-import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
+import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType, newTransferableException} from './request_types.js';
 
 
@@ -155,6 +155,17 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.getOsHotkeyState().assignAndSignal(payload);
   }
 
+  // TODO(crbug.com/432258121): A race condition can occur when a consumer
+  // unsubscribes and a new one subscribes. An update from the first
+  // subscription that is already in-flight may be delivered to the second
+  // consumer.
+  glicWebClientPinCandidatesChanged(payload: {
+    candidates: PinCandidatePrivate[],
+  }): void {
+    this.host.pinCandidates.assignAndSignal(payload.candidates.map(
+        c => ({tabData: convertTabDataFromPrivate(c.tabData)})));
+  }
+
   glicWebClientNotifyPinnedTabsChanged(payload: {tabData: TabDataPrivate[]}):
       void {
     this.cachedPinnedTabs =
@@ -203,6 +214,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
   pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
+  pinCandidates = ObservableValueImpl.withNoValue<PinCandidate[]>();
   private currentZeroStateSuggestionOptions: ZeroStateSuggestionsOptions = {
     isFirstRun: false,
     supportedTools: [],
@@ -613,15 +625,17 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getPinCandidates?
       (options: GetPinCandidatesOptions): ObservableValue<PinCandidate[]> {
-    const observable =
-        ObservableValueImpl.withNoValue<PinCandidate[]>(async () => {
-          const candidates = (await this.sender.requestWithResponse(
-                                  'glicBrowserGetPinCandidates', {options}))
-                                 .candidates;
-          observable.assignAndSignal(
-              candidates.map((x) => ({tabData: convertTabDataFromPrivate(x)})));
+    this.pinCandidates =
+        ObservableValueImpl.withNoValue<PinCandidate[]>((isActive: boolean) => {
+          if (isActive) {
+            this.sender.requestNoResponse(
+                'glicBrowserSubscribeToPinCandidates', {options});
+          } else {
+            this.sender.requestNoResponse(
+                'glicBrowserUnsubscribeFromPinCandidates', undefined);
+          }
         });
-    return observable;
+    return this.pinCandidates;
   }
 
   async getZeroStateSuggestionsForFocusedTab?
