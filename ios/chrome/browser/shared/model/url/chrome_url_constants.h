@@ -154,4 +154,7 @@ extern const char kMyActivityURL[];
 // "Learn more" URL for the Lens Overlay.
 extern const char kLearnMoreLensURL[];
 
+// URL for the BWG App Activity Settings row.
+extern const char kBWGAppActivityURL[];
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_CHROME_URL_CONSTANTS_H_

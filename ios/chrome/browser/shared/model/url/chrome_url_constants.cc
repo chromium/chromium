@@ -169,3 +169,6 @@ const char kMyActivityURL[] = "https://myactivity.google.com/myactivity";
 
 const char kLearnMoreLensURL[] =
     "https://support.google.com/chrome/?p=google_lens_ios";
+
+const char kBWGAppActivityURL[] =
+    "https://myactivity.google.com/product/gemini?utm_source=gemini&pli=1";

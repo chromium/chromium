@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -48,10 +50,12 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 }  // namespace
 
 @implementation BWGSettingsViewController {
-  // Location item.
+  // Precise location item.
   TableViewMultiDetailTextItem* _preciseLocationItem;
   // Switch item for toggling page content sharing.
   TableViewSwitchItem* _pageContentSharingItem;
+  // BWG Apps activity item. Uses `accessoryView` to create a tappable icon.
+  TableViewDetailTextItem* _BWGAppsActivityItem;
   // Precise location preference value.
   BOOL _preciseLocationEnabled;
   // Page content sharing preference value.
@@ -73,6 +77,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierBrowsingData];
+  [model addSectionWithIdentifier:SectionIdentifierActivity];
 
   _preciseLocationItem =
       [self detailItemWithType:ItemTypeLocation
@@ -96,6 +101,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
       toSectionWithIdentifier:SectionIdentifierBrowsingData];
   [model addItem:_pageContentSharingItem
       toSectionWithIdentifier:SectionIdentifierBrowsingData];
+  [model addItem:[self BWGAppActivityItem]
+      toSectionWithIdentifier:SectionIdentifierActivity];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -110,8 +117,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 #pragma mark - Private
 
-// TODO(crbug.com/427226904): Convert to different TableViewItem that uses
-// attributed text.
+// Creates a multi detail item with multiple options.
 - (TableViewMultiDetailTextItem*)detailItemWithType:(NSInteger)type
                                                text:(NSString*)text
                                          detailText:(NSString*)detailText
@@ -129,8 +135,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   return detailItem;
 }
 
-// TODO(crbug.com/427226904): Convert to different TableViewItem that uses
-// attributed text.
+// Creates a switch item with multiple options.
 - (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
                                       text:(NSString*)title
                                 detailText:(NSString*)detailText
@@ -160,6 +165,30 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   }
 
   return l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+}
+
+// Creates the BWG app activity item.
+- (TableViewDetailTextItem*)BWGAppActivityItem {
+  TableViewDetailTextItem* BWGAppActivityItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeAppActivity];
+  BWGAppActivityItem.text =
+      l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_TITLE);
+  BWGAppActivityItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
+  return BWGAppActivityItem;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeAppActivity) {
+    base::RecordAction(
+        base::UserMetricsAction("Settings.BWGSettings.BWGAppActivity"));
+    [self.mutator openNewTabWithURL:GURL(kBWGAppActivityURL)];
+  }
+  [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - UITableViewDataSource

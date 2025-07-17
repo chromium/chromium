@@ -36334,6 +36334,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.BWGSettings.BWGAppActivity">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    Reported when user tap BWG App Activity row in Settings. iOS only.
+  </description>
+</action>
+
 <action name="Settings.ContentSettings">
   <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

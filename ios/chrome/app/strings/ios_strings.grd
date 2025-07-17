@@ -1119,6 +1119,9 @@
       <message name="IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE" desc="Second box title text for the Gemini Promo page.">
           Summarize
       </message>
+      <message name="IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_TITLE" desc="The title text of app activity row in BWG settings page.">
+        Gemini App Activity
+      </message>
       <message name="IDS_IOS_BWG_SETTINGS_LOCATION_DESCRIPTION" desc="The description text of location row in BWG settings page.">
         Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. Learn more
       </message>
