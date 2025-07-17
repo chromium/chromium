@@ -6,6 +6,7 @@
 #define COMPONENTS_TABS_PUBLIC_TAB_HANDLE_FACTORY_H_
 
 #include <map>
+#include <optional>
 
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
@@ -29,6 +30,8 @@ class SessionMappedTabHandleFactory final
   static SessionMappedTabHandleFactory& GetInstance();
 
   int32_t GetHandleForSessionId(int32_t session_id) const;
+  std::optional<int32_t> GetSessionIdForHandle(int32_t handle) const;
+
   void SetSessionIdForHandle(base::PassKey<SupportsTabHandles>,
                              int32_t handle,
                              int32_t session_id);

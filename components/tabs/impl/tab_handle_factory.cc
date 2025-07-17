@@ -53,8 +53,18 @@ int32_t SessionMappedTabHandleFactory::GetHandleForSessionId(
              : SupportsTabHandles::Handle::NullValue;
 }
 
+std::optional<int32_t> SessionMappedTabHandleFactory::GetSessionIdForHandle(
+    int32_t handle) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence());
+  const auto it = handle_value_to_session_id_.find(handle);
+  return it != handle_value_to_session_id_.end()
+             ? std::make_optional(it->second)
+             : std::nullopt;
+}
+
 void SessionMappedTabHandleFactory::OnHandleFreed(int32_t handle_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence());
+
   if (auto it = handle_value_to_session_id_.find(handle_value);
       it != handle_value_to_session_id_.end()) {
     session_id_to_handle_value_.erase(it->second);

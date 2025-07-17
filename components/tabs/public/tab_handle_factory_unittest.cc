@@ -91,5 +91,17 @@ TEST_F(SessionMappedTabHandleFactoryTest, RemapHandleToNewSessionId) {
   EXPECT_EQ(TestHandle::NullValue, factory->GetHandleForSessionId(session_id1));
 }
 
+TEST_F(SessionMappedTabHandleFactoryTest, GetSessionIdForHandle) {
+  TestSupportsTabHandles tab;
+  const int32_t session_id = 1;
+  tab.SetSessionId(session_id);
+
+  auto* const factory = &SessionMappedTabHandleFactory::GetInstance();
+  TestHandle handle = tab.GetHandle();
+
+  EXPECT_NE(handle.raw_value(), TestHandle::NullValue);
+  EXPECT_EQ(session_id, factory->GetSessionIdForHandle(handle.raw_value()));
+}
+
 }  // namespace
 }  // namespace tabs
