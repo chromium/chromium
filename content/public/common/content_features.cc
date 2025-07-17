@@ -1569,7 +1569,7 @@ const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
 #if BUILDFLAG(IS_CHROMEOS)
     CapturingState::kReimplDefaultOff,
 #else
-    CapturingState::kReimplOnViaClientMode,
+    CapturingState::kReimplDefaultOn,
 #endif
     &kNavigationCapturingParams};
 
