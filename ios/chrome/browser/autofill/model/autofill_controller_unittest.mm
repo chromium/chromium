@@ -521,9 +521,6 @@ TEST_F(AutofillControllerTest, ReadForm) {
 // Checks that when autofill across iframes is enabled the child frames are
 // carried over for their parent form.
 TEST_F(AutofillControllerTest, ReadForm_WithChildFrames) {
-  ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAutofillAcrossIframesIos);
-
   // A form with iframes and inputs where some of the iframes have predecessors.
   NSString* const test_page =
       @"<form id='form1'>"
@@ -559,9 +556,6 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames) {
 // Checks that when autofill across iframes is enabled the child frames are
 // carried over for their synthetic form.
 TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Synthetic) {
-  ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAutofillAcrossIframesIos);
-
   // A syntethic form with iframes and inputs where some of the iframes have
   // predecessors.
   NSString* const test_page =
@@ -600,12 +594,6 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Synthetic) {
 // reached.
 TEST_F(AutofillControllerTest,
        ReadForm_WithChildFrames_Throttling_AcrossForms) {
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
-                            features::kAutofillAcrossIframesIosThrottling},
-      /*disabled_features=*/{});
-
   // A form with iframes and inputs where some of the iframes have predecessors.
   NSString* const test_page =
       @"<form id='form1'>"
@@ -677,12 +665,6 @@ TEST_F(AutofillControllerTest,
 // reached.
 TEST_F(AutofillControllerTest,
        ReadForm_WithChildFrames_Throttling_AcrossForms_Synthetic) {
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
-                            features::kAutofillAcrossIframesIosThrottling},
-      /*disabled_features=*/{});
-
   // A form with iframes and inputs where some of the iframes have predecessors.
   NSString* const test_page =
       @"<form id='form1'>"
@@ -743,12 +725,6 @@ TEST_F(AutofillControllerTest,
 // frames will not be extracted on a form that exceeds the limit of child
 // frames.
 TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Throttling_SingleForm) {
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
-                            features::kAutofillAcrossIframesIosThrottling},
-      /*disabled_features=*/{});
-
   // A form with iframes and inputs where some of the iframes have predecessors.
   NSString* const test_page =
       @"<form id='form1'>"
@@ -800,12 +776,6 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Throttling_SingleForm) {
 // child frames.
 TEST_F(AutofillControllerTest,
        ReadForm_WithChildFrames_Throttling_SingleForm_Synthetic) {
-  ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
-                            features::kAutofillAcrossIframesIosThrottling},
-      /*disabled_features=*/{});
-
   // A synthetic form with too many child frames exceeding the limit.
   NSString* const test_page =
       @"<html><body><div id='div'>"

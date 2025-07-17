@@ -909,7 +909,6 @@ TEST_P(FormSubmittedHookTest, TestFormSubmittedHook) {
 // Validate that programmatic form submissions are detected and sent to
 // observers of the tab helper.
 TEST_P(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
-  base::test::ScopedFeatureList feature(features::kAutofillAcrossIframesIos);
 
   LoadHtml(kTestHTMLFormWithIframes);
 

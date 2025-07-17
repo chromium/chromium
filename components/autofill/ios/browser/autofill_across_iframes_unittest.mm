@@ -414,8 +414,7 @@ class MockRegistrarObserver : public autofill::ChildFrameRegistrarObserver {
 class AutofillAcrossIframesTest : public AutofillTestWithWebState {
  public:
   AutofillAcrossIframesTest()
-      : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_list_(features::kAutofillAcrossIframesIos) {}
+      : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()) {}
 
   void SetUp() override {
     AutofillTestWithWebState::SetUp();
@@ -676,7 +675,6 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   AutofillAgent* autofill_agent_;
   autofill::MockPasswordAutofillAgentDelegate delegate_mock_;
-  base::test::ScopedFeatureList feature_list_;
 
   EmbeddedTestServer test_server_;
   std::string main_frame_html_;
@@ -939,6 +937,9 @@ TEST_F(AutofillAcrossIframesTest, SetAndGetParent) {
 }
 
 TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAcrossIframesIosTriggerFormExtraction};
+
   AddInput("text", "name");
   AddIframe("cf1", "<form><input id='address'></form>");
   StartTestServerAndLoad();
@@ -1228,14 +1229,6 @@ TEST_F(AutofillAcrossIframesTest, SubmitMultiFrameForm) {
 // Tests that that XHR submission can be detected when it happens in a child
 // frame.
 TEST_F(AutofillAcrossIframesTest, SubmitMultiFrameForm_XHR) {
-  // Enable the feature for fixing XHR with autofill across iframes. Disable
-  // the form scans triggered by the forest to test the feature in the same
-  // state autofill across iframes is currently in production.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kAutofillFixXhrForXframe},
-      {features::kAutofillAcrossIframesIosTriggerFormExtraction});
-
   const std::u16string kNamePlaceholder = u"Name";
   const std::u16string kFakeName = u"Bob Bobbertson";
   const std::u16string kPhonePlaceholder = u"Phone";
@@ -1824,6 +1817,8 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Unregister) {
 // Tests that forms aren't parsed when their host frame ID differs from the ID
 // of the frame on which forms extraction was requested.
 TEST_F(AutofillAcrossIframesTest, FrameAndFormIdsDontMatch) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAcrossIframesIosTriggerFormExtraction};
   // Serve form on main frame.
   AddInput("text", "name");
   AddInput("text", "address");
@@ -1863,31 +1858,7 @@ TEST_F(AutofillAcrossIframesTest, FrameAndFormIdsDontMatch) {
   ASSERT_EQ(main_frame_manager().seen_forms().size(), 0u);
 }
 
-// Ensure that disabling the feature actually disables the feature.
-TEST_F(AutofillAcrossIframesTest, FeatureDisabled) {
-  base::test::ScopedFeatureList disable;
-  disable.InitAndDisableFeature(features::kAutofillAcrossIframesIos);
 
-  AddIframe("cf1", "child frame 1");
-  AddInput("text", "name");
-  AddIframe("cf2", "child frame 2");
-  AddInput("text", "address");
-  StartTestServerAndLoad();
-
-  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
-  ASSERT_EQ(main_frame_manager().seen_forms().size(), 1u);
-
-  const FormData& form = main_frame_manager().seen_forms()[0];
-  EXPECT_EQ(form.child_frames().size(), 0u);
-  {
-    // Disable isolated autofill which uses the registrar as well.
-    base::test::ScopedFeatureList disable_isolated_autofill;
-    disable_isolated_autofill.InitAndDisableFeature(
-        kAutofillIsolatedWorldForJavascriptIos);
-    EXPECT_FALSE(
-        autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state()));
-  }
-}
 
 // Suite of tests that focuses on testing the security of xframe filling.
 //
@@ -1973,6 +1944,8 @@ TEST_F(AutofillAcrossIframesFillSecurityTest, XoriginTrigger) {
 //       Input: cvc [filled]
 // =======================================
 TEST_F(AutofillAcrossIframesFillSecurityTest, XoriginTrigger_NestedFrame) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAcrossIframesIosTriggerFormExtraction};
   EmbeddedTestServer test_server1;
   EmbeddedTestServer test_server2;
 

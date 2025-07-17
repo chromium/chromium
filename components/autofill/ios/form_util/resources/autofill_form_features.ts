@@ -15,13 +15,13 @@ import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  * Whether or not to register and return child frame IDs when extracting forms.
  * Corresponds to autofill::feature::AutofillAcrossIframesIos.
  */
-let autofillAcrossIframes: boolean = false;
+let autofillAcrossIframes: boolean = true;
 
 /**
  * True if the throttling of child frames for autofill across iframes is
  * enabled.
  */
-let autofillAcrossIframesThrottling: boolean = false;
+let autofillAcrossIframesThrottling: boolean = true;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_across_iframes_ios)
 
 // LINT.IfChange(autofill_ignore_checkable_elements)

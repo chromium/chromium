@@ -12131,26 +12131,6 @@
             ]
         }
     ],
-    "IOSAutofillAcrossIframes": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_XhrPatch_20250320",
-                    "enable_features": [
-                        "AutofillAcrossIframesIos",
-                        "AutofillAcrossIframesIosThrottling",
-                        "AutofillFixXhrForXframe"
-                    ],
-                    "disable_features": [
-                        "AutofillAcrossIframesIosTriggerFormExtraction"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillAllowDefaultPreventedSubmission": [
         {
             "platforms": [

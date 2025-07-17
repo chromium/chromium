@@ -74,6 +74,8 @@ namespace {
 using autofill::AutofillDriverIOS;
 using autofill::AutofillDriverIOSFactory;
 
+constexpr char kTestFrameId[] = "11111111111111111111111111111111";
+
 // Returns the minimal FormData content for testing filling.
 std::vector<autofill::FormFieldData::FillData>
 MinimalFormFieldDataForFilling() {
@@ -148,7 +150,7 @@ class AutofillAgentTests : public web::WebTest {
 
     GURL url("https://example.com");
     fake_web_state_.SetCurrentURL(url);
-    auto main_frame = web::FakeWebFrame::Create("frameID", true, url);
+    auto main_frame = web::FakeWebFrame::Create(kTestFrameId, true, url);
     main_frame->set_browser_state(GetBrowserState());
     fake_main_frame_ = main_frame.get();
     AddWebFrame(std::move(main_frame));
@@ -359,6 +361,15 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
   AutofillDriverIOS* main_frame_driver =
       AutofillDriverIOS::FromWebStateAndWebFrame(
           &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
+  field.set_host_frame(main_frame_driver->GetFrameToken());
+
+  autofill::FormData form;
+  form.set_host_frame(main_frame_driver->GetFrameToken());
+  form.set_renderer_id(autofill::FormRendererId(1));
+  field.set_host_form_id(form.renderer_id());
+  form.set_fields({field});
+  main_frame_driver->FormsSeen({form}, {});
+
   main_frame_driver->ApplyFieldAction(
       autofill::mojom::FieldActionType::kReplaceAll,
       autofill::mojom::ActionPersistence::kFill, field.global_id(),
@@ -387,6 +398,15 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
   AutofillDriverIOS* main_frame_driver =
       AutofillDriverIOS::FromWebStateAndWebFrame(
           &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
+  field.set_host_frame(main_frame_driver->GetFrameToken());
+
+  autofill::FormData form;
+  form.set_host_frame(main_frame_driver->GetFrameToken());
+  form.set_renderer_id(autofill::FormRendererId(1));
+  field.set_host_form_id(form.renderer_id());
+  form.set_fields({field});
+  main_frame_driver->FormsSeen({form}, {});
+
   // Preview is not currently supported; no JS should be run.
   main_frame_driver->ApplyFieldAction(
       autofill::mojom::FieldActionType::kReplaceAll,
@@ -405,16 +425,16 @@ TEST_F(AutofillAgentTests,
   __block BOOL completion_handler_success = NO;
   __block BOOL completion_handler_called = NO;
 
-  FormSuggestionProviderQuery* form_query =
-      [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                             formRendererID:FormRendererId(1)
-                                            fieldIdentifier:@"address"
-                                            fieldRendererID:FieldRendererId(2)
-                                                  fieldType:@"text"
-                                                       type:@"focus"
-                                                 typedValue:@""
-                                                    frameID:@"frameID"
-                                               onlyPassword:NO];
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:FormRendererId(1)
+       fieldIdentifier:@"address"
+       fieldRendererID:FieldRendererId(2)
+             fieldType:@"text"
+                  type:@"focus"
+            typedValue:@""
+               frameID:base::SysUTF8ToNSString(kTestFrameId)
+          onlyPassword:NO];
   [autofill_agent_ checkIfSuggestionsAvailableForForm:form_query
                                        hasUserGesture:NO
                                              webState:&fake_web_state_
@@ -694,16 +714,16 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
     completion_handler_suggestions = [suggestions copy];
     completion_handler_called = YES;
   };
-  FormSuggestionProviderQuery* form_query =
-      [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                             formRendererID:FormRendererId(1)
-                                            fieldIdentifier:@"address"
-                                            fieldRendererID:FieldRendererId(2)
-                                                  fieldType:@"text"
-                                                       type:@"focus"
-                                                 typedValue:@""
-                                                    frameID:@"frameID"
-                                               onlyPassword:NO];
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:FormRendererId(1)
+       fieldIdentifier:@"address"
+       fieldRendererID:FieldRendererId(2)
+             fieldType:@"text"
+                  type:@"focus"
+            typedValue:@""
+               frameID:base::SysUTF8ToNSString(kTestFrameId)
+          onlyPassword:NO];
   [autofill_agent_ retrieveSuggestionsForForm:form_query
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -753,16 +773,16 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
     completion_handler_suggestions = [suggestions copy];
     completion_handler_called = YES;
   };
-  FormSuggestionProviderQuery* form_query =
-      [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                             formRendererID:FormRendererId(1)
-                                            fieldIdentifier:@"address"
-                                            fieldRendererID:FieldRendererId(2)
-                                                  fieldType:@"text"
-                                                       type:@"focus"
-                                                 typedValue:@""
-                                                    frameID:@"frameID"
-                                               onlyPassword:NO];
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:FormRendererId(1)
+       fieldIdentifier:@"address"
+       fieldRendererID:FieldRendererId(2)
+             fieldType:@"text"
+                  type:@"focus"
+            typedValue:@""
+               frameID:base::SysUTF8ToNSString(kTestFrameId)
+          onlyPassword:NO];
   [autofill_agent_ retrieveSuggestionsForForm:form_query
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
@@ -1014,8 +1034,7 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
                         formRendererID:form_id
                        fieldIdentifier:@"username-field-1"
                        fieldRendererID:field1_id
-                               frameID:base::SysUTF8ToNSString(
-                                           fake_main_frame_->GetFrameId())
+                               frameID:base::SysUTF8ToNSString(kTestFrameId)
                      completionHandler:^() {
                        completion_handler_called = YES;
                      }];
@@ -1068,8 +1087,7 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
                         formRendererID:form_id
                        fieldIdentifier:@"username-field-1"
                        fieldRendererID:field1_id
-                               frameID:base::SysUTF8ToNSString(
-                                           fake_main_frame_->GetFrameId())
+                               frameID:base::SysUTF8ToNSString(kTestFrameId)
                      completionHandler:^() {
                        completion_handler_called = YES;
                      }];

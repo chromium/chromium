@@ -94,7 +94,7 @@ using ::testing::_;
 using ::testing::Return;
 
 const std::string kTestURL = "https://www.chromium.org/";
-NSString* kTestFrameID = @"dummy-frame-id";
+NSString* kTestFrameID = @"11111111111111111111111111111111";
 constexpr uint64_t kMaxPasswordLength = 10;
 constexpr char16_t kGeneratedPassword[] = u"testpassword";
 
@@ -280,45 +280,18 @@ TEST_F(SharedPasswordControllerTest,
       autofill_manager_injector_->GetForFrame(frame);
   ASSERT_TRUE(manager);
   FormData test_form = autofill::test::CreateTestPersonalInformationFormData();
+  test_form.set_host_frame(
+      AutofillDriverIOS::FromWebStateAndWebFrame(&web_state_, frame)
+          ->GetFrameToken());
   // `OnFormsSeen` emits a `OnFieldTypesDetermined` event, but with source
   // heuristics - this should be ignored by the `SharedPasswordController`.
   manager->OnFormsSeen(/*updated_forms=*/{test_form}, /*removed_forms=*/{});
-}
-
-// Tests that the password manager of a single main frame is notified about
-// server predictions for a form.
-TEST_F(SharedPasswordControllerTest,
-       PasswordManagerIsNotifiedAboutServerPredictions_SingleFrame) {
-  auto web_frame =
-      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
-                                /*is_main_frame=*/true, GURL(kTestURL));
-  web::WebFrame* frame = web_frame.get();
-  AddWebFrame(std::move(web_frame));
-
-  EXPECT_CALL(password_manager_, ProcessAutofillPredictions);
-
-  // Simulate seeing a form.
-  TestBrowserAutofillManager* manager =
-      autofill_manager_injector_->GetForFrame(frame);
-  ASSERT_TRUE(manager);
-  FormData test_form = autofill::test::CreateTestPersonalInformationFormData();
-  manager->OnFormsSeen(/*updated_forms=*/{test_form}, /*removed_forms=*/{});
-
-  // Trigger `OnFieldTypesDetetermined` with source `kAutofillServer` explicitly
-  // to simulate receiving server predictions.
-  using Observer = autofill::AutofillManager::Observer;
-  manager->NotifyObservers(&Observer::OnFieldTypesDetermined,
-                           test_form.global_id(),
-                           Observer::FieldTypeSource::kAutofillServer);
 }
 
 // Tests that the password manager of each frame is notified about server
 // predictions when a form streches across multiple frames.
 TEST_F(SharedPasswordControllerTest,
        PasswordManagerIsNotifiedAboutServerPredictions_AcrossFrames) {
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillAcrossIframesIos);
-
   const LocalFrameToken main_frame_local_frame_token(MakeLocalFrameToken());
   const LocalFrameToken child_frame_local_token(MakeLocalFrameToken());
   const RemoteFrameToken child_frame_remote_token(MakeRemoteFrameToken());
@@ -430,26 +403,34 @@ TEST_F(SharedPasswordControllerTest,
        PasswordManagerIsNotifiedAboutModelPredictions) {
   base::test::ScopedFeatureList features(
       password_manager::features::kPasswordFormClientsideClassifier);
-  auto web_frame =
-      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
-                                /*is_main_frame=*/true, GURL(kTestURL));
-  web::WebFrame* frame = web_frame.get();
-  AddWebFrame(std::move(web_frame));
 
-  // Simulate seeing a form and expect that PasswordManager gets notified once
-  // the parsing is complete,
-  TestBrowserAutofillManager* manager =
-      autofill_manager_injector_->GetForFrame(frame);
-  ASSERT_TRUE(manager);
-  FormData test_form = autofill::test::CreateTestPersonalInformationFormData();
+  const LocalFrameToken main_frame_local_frame_token(MakeLocalFrameToken());
+
+  GURL url(kTestURL);
+
+  auto main_frame =
+      web::FakeWebFrame::Create(main_frame_local_frame_token.ToString(),
+                                /*is_main_frame=*/true, url);
+  web::WebFrame* main_frame_ptr = main_frame.get();
+  AddWebFrame(std::move(main_frame));
+
+  FormData main_form = CreateFormDataForRenderFrameHost(
+      main_frame_ptr, url, main_frame_local_frame_token,
+      {CreateTestFormField("Search", "search", "",
+                           autofill::FormControlType::kInputText)});
+
   auto* password_driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(&web_state_,
-                                                               frame);
+                                                               main_frame_ptr);
   EXPECT_CALL(password_manager_,
               ProcessClassificationModelPredictions(
-                  password_driver, test_form,
-                  ::testing::SizeIs(test_form.fields().size())));
-  manager->OnFormsSeen(/*updated_forms=*/{test_form}, /*removed_forms=*/{});
+                  password_driver, main_form,
+                  ::testing::SizeIs(main_form.fields().size())));
+
+  auto* driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&web_state_, main_frame_ptr);
+  driver->FormsSeen(/*updated_forms=*/{main_form},
+                    /*removed_forms=*/{});
 }
 
 // Test that PasswordManager is notified of main frame navigation.

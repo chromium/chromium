@@ -60,7 +60,6 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
   features.InitWithFeatures(
       /* enabled_features= */
       {kAutofillIsolatedWorldForJavascriptIos,
-       autofill::features::kAutofillAcrossIframesIos,
        autofill::features::kAutofillAcrossIframesIosThrottling,
        autofill::features::kAutofillIgnoreCheckableElements,
        kAutofillCorrectUserEditedBitInParsedField,

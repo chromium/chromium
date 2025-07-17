@@ -46,7 +46,7 @@ BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
 
 BASE_FEATURE(kAutofillFixXhrForXframe,
              "AutofillFixXhrForXframe",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode,
              "AutofillFormSubmissionEventsInCaptureMode",

@@ -175,9 +175,6 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm) {
 // form that is part of a bigger browser form that stretches across multiple
 // frames. Also tests that non-login renderer forms aren't classified as such.
 TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm_AcrossFrames) {
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillAcrossIframesIos);
-
   // Render a xframe form composed of one password form and one address form.
   NSString* html =
       @"<form>"
@@ -216,9 +213,6 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm_AcrossFrames) {
 // Tests that `ClassifyAsPasswordForm()` doesn't classify non-login forms.
 TEST_F(ChromeAutofillClientIOSTest,
        ClassifyAsPasswordForm_AcrossFrames_NonLoginForm) {
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillAcrossIframesIos);
-
   // Render a xframe form composed of one password form and one address form.
   NSString* html =
       @"<form>"
