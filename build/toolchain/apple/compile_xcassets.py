@@ -41,16 +41,16 @@ ACTOOL_FLAG_FOR_ASSET_TYPE = {
 }
 
 def FixAbsolutePathInLine(line, relative_paths):
-  """Fix absolute paths present in |line| to relative paths."""
-  absolute_path = line.split(':')[0]
-  relative_path = relative_paths.get(absolute_path, absolute_path)
-  if absolute_path == relative_path:
-    return line
-  return relative_path + line[len(absolute_path):]
+    """Fix absolute paths present in |line| to relative paths."""
+    absolute_path = line.split(':')[0]
+    relative_path = relative_paths.get(absolute_path, absolute_path)
+    if absolute_path == relative_path:
+        return line
+    return relative_path + line[len(absolute_path):]
 
 
 def FilterCompilerOutput(compiler_output, relative_paths):
-  """Filers actool compilation output.
+    """Filers actool compilation output.
 
   The compiler output is composed of multiple sections for each different
   level of output (error, warning, notices, ...). Each section starts with
@@ -77,31 +77,31 @@ def FilterCompilerOutput(compiler_output, relative_paths):
     relative path and omit any irrelevant output.
   """
 
-  filtered_output = []
-  current_section = None
-  data_in_section = False
-  for line in compiler_output.splitlines():
-    match = SECTION_HEADER.search(line)
-    if match is not None:
-      data_in_section = False
-      current_section = match.group(1)
-      continue
-    if current_section and current_section != NOTICE_SECTION:
-      if not data_in_section:
-        data_in_section = True
-        filtered_output.append('/* %s */\n' % current_section)
+    filtered_output = []
+    current_section = None
+    data_in_section = False
+    for line in compiler_output.splitlines():
+        match = SECTION_HEADER.search(line)
+        if match is not None:
+            data_in_section = False
+            current_section = match.group(1)
+            continue
+        if current_section and current_section != NOTICE_SECTION:
+            if not data_in_section:
+                data_in_section = True
+                filtered_output.append('/* %s */\n' % current_section)
 
-      fixed_line = FixAbsolutePathInLine(line, relative_paths)
-      filtered_output.append(fixed_line + '\n')
+            fixed_line = FixAbsolutePathInLine(line, relative_paths)
+            filtered_output.append(fixed_line + '\n')
 
-  return ''.join(filtered_output)
+    return ''.join(filtered_output)
 
 
 def CompileAssetCatalog(output, target_os, target_environment, product_type,
                         min_deployment_target, possibly_zipped_inputs,
                         compress_pngs, target_platform, partial_info_plist,
                         app_icon, include_all_app_icons, temporary_dir):
-  """Compile the .xcassets bundles to an asset catalog using actool.
+    """Compile the .xcassets bundles to an asset catalog using actool.
 
   Args:
     output: absolute path to the containing bundle
@@ -114,280 +114,290 @@ def CompileAssetCatalog(output, target_os, target_environment, product_type,
     partial_info_plist: path to partial Info.plist to generate
     temporary_dir: path to directory for storing temp data
   """
-  command = [
-      'xcrun',
-      'actool',
-      '--output-format=human-readable-text',
-      '--notices',
-      '--warnings',
-      '--errors',
-      '--minimum-deployment-target',
-      min_deployment_target,
-  ]
+    command = [
+        'xcrun',
+        'actool',
+        '--output-format=human-readable-text',
+        '--notices',
+        '--warnings',
+        '--errors',
+        '--minimum-deployment-target',
+        min_deployment_target,
+    ]
 
-  if compress_pngs:
-    command.extend(['--compress-pngs'])
+    if compress_pngs:
+        command.extend(['--compress-pngs'])
 
-  if product_type != '':
-    command.extend(['--product-type', product_type])
+    if product_type != '':
+        command.extend(['--product-type', product_type])
 
-  if target_os == 'mac':
-    command.extend([
-        '--platform',
-        'macosx',
-        '--target-device',
-        'mac',
-    ])
-  elif target_os == 'ios':
-    if target_platform == 'tvos':
-      if target_environment == 'simulator':
-        command.extend([
-            '--platform',
-            'appletvsimulator',
-            '--target-device',
-            'tv',
-        ])
-      elif target_environment == 'device':
-        command.extend([
-            '--platform',
-            'appletvos',
-            '--target-device',
-            'tv',
-        ])
-      else:
-        sys.stderr.write(
-          'Unsupported tvos environment: %s' % target_environment)
-        sys.exit(1)
-    else:
-      if target_environment == 'simulator':
-        command.extend([
-            '--platform',
-            'iphonesimulator',
-            '--target-device',
-            'iphone',
-            '--target-device',
-            'ipad',
-        ])
-      elif target_environment == 'device':
-        command.extend([
-            '--platform',
-            'iphoneos',
-            '--target-device',
-            'iphone',
-            '--target-device',
-            'ipad',
-        ])
-      elif target_environment == 'catalyst':
+    if target_os == 'mac':
         command.extend([
             '--platform',
             'macosx',
             '--target-device',
-            'ipad',
-            '--ui-framework-family',
-            'uikit',
+            'mac',
         ])
-      else:
-        sys.stderr.write(
-          'Unsupported iphoneos environment: %s' % target_environment)
-        sys.exit(1)
-  elif target_os == 'watchos':
-    if target_environment == 'simulator':
-      command.extend([
-          '--platform',
-          'watchsimulator',
-          '--target-device',
-          'watch',
-      ])
-    elif target_environment == 'device':
-      command.extend([
-          '--platform',
-          'watchos',
-          '--target-device',
-          'watch',
-      ])
-    else:
-      sys.stderr.write(
-        'Unsupported watchos environment: %s' % target_environment)
-      sys.exit(1)
-
-  # Unzip any input zipfiles to a temporary directory.
-  inputs = []
-  for relative_path in possibly_zipped_inputs:
-    if os.path.isfile(relative_path) and zipfile.is_zipfile(relative_path):
-      catalog_name = os.path.basename(relative_path)
-      unzip_path = os.path.join(temporary_dir, os.path.dirname(relative_path))
-      with zipfile.ZipFile(relative_path) as z:
-        invalid_files = [
-            x for x in z.namelist()
-            if '..' in x or not x.startswith(catalog_name)
-        ]
-        if invalid_files:
-          sys.stderr.write('Invalid files in zip: %s' % invalid_files)
-          sys.exit(1)
-        z.extractall(unzip_path)
-      inputs.append(os.path.join(unzip_path, catalog_name))
-    else:
-      inputs.append(relative_path)
-
-  # Scan the input directories for the presence of asset catalog types that
-  # require special treatment, and if so, add them to the actool command-line.
-  for relative_path in inputs:
-
-    if not os.path.isdir(relative_path):
-      continue
-
-    for file_or_dir_name in os.listdir(relative_path):
-      if not os.path.isdir(os.path.join(relative_path, file_or_dir_name)):
-        continue
-
-      asset_name, asset_type = os.path.splitext(file_or_dir_name)
-
-      # If the asset is an app icon, and the caller has specified an app icon
-      # to use, then skip this asset as it will be included in the app icon
-      # set. Otherwise, add the asset to the command-line.
-      if asset_type == APP_ICON_ASSET_TYPE:
-        if app_icon:
-          continue
+    elif target_os == 'ios':
+        if target_platform == 'tvos':
+            if target_environment == 'simulator':
+                command.extend([
+                    '--platform',
+                    'appletvsimulator',
+                    '--target-device',
+                    'tv',
+                ])
+            elif target_environment == 'device':
+                command.extend([
+                    '--platform',
+                    'appletvos',
+                    '--target-device',
+                    'tv',
+                ])
+            else:
+                sys.stderr.write('Unsupported tvos environment: %s' %
+                                 target_environment)
+                sys.exit(1)
         else:
-          command.extend(['--app-icon', asset_name])
+            if target_environment == 'simulator':
+                command.extend([
+                    '--platform',
+                    'iphonesimulator',
+                    '--target-device',
+                    'iphone',
+                    '--target-device',
+                    'ipad',
+                ])
+            elif target_environment == 'device':
+                command.extend([
+                    '--platform',
+                    'iphoneos',
+                    '--target-device',
+                    'iphone',
+                    '--target-device',
+                    'ipad',
+                ])
+            elif target_environment == 'catalyst':
+                command.extend([
+                    '--platform',
+                    'macosx',
+                    '--target-device',
+                    'ipad',
+                    '--ui-framework-family',
+                    'uikit',
+                ])
+            else:
+                sys.stderr.write('Unsupported iphoneos environment: %s' %
+                                 target_environment)
+                sys.exit(1)
+    elif target_os == 'watchos':
+        if target_environment == 'simulator':
+            command.extend([
+                '--platform',
+                'watchsimulator',
+                '--target-device',
+                'watch',
+            ])
+        elif target_environment == 'device':
+            command.extend([
+                '--platform',
+                'watchos',
+                '--target-device',
+                'watch',
+            ])
+        else:
+            sys.stderr.write('Unsupported watchos environment: %s' %
+                             target_environment)
+            sys.exit(1)
 
-      if asset_type not in ACTOOL_FLAG_FOR_ASSET_TYPE:
-        continue
+    # Unzip any input zipfiles to a temporary directory.
+    inputs = []
+    for relative_path in possibly_zipped_inputs:
+        if os.path.isfile(relative_path) and zipfile.is_zipfile(relative_path):
+            catalog_name = os.path.basename(relative_path)
+            unzip_path = os.path.join(temporary_dir,
+                                      os.path.dirname(relative_path))
+            with zipfile.ZipFile(relative_path) as z:
+                invalid_files = [
+                    x for x in z.namelist()
+                    if '..' in x or not x.startswith(catalog_name)
+                ]
+                if invalid_files:
+                    sys.stderr.write('Invalid files in zip: %s' %
+                                     invalid_files)
+                    sys.exit(1)
+                z.extractall(unzip_path)
+            inputs.append(os.path.join(unzip_path, catalog_name))
+        else:
+            inputs.append(relative_path)
 
-      command.extend([ACTOOL_FLAG_FOR_ASSET_TYPE[asset_type], asset_name])
+    # Scan the input directories for the presence of asset catalog types that
+    # require special treatment, and if so, add them to the actool command-line.
+    for relative_path in inputs:
 
-  if app_icon:
-    command.extend(['--app-icon', app_icon])
+        if not os.path.isdir(relative_path):
+            continue
 
-  if include_all_app_icons:
-    command.extend(['--include-all-app-icons'])
+        for file_or_dir_name in os.listdir(relative_path):
+            if not os.path.isdir(os.path.join(relative_path,
+                                              file_or_dir_name)):
+                continue
 
-  # Always ask actool to generate a partial Info.plist file. If no path
-  # has been given by the caller, use a temporary file name.
-  temporary_file = None
-  if not partial_info_plist:
-    temporary_file = tempfile.NamedTemporaryFile(suffix='.plist')
-    partial_info_plist = temporary_file.name
+            asset_name, asset_type = os.path.splitext(file_or_dir_name)
 
-  command.extend(['--output-partial-info-plist', partial_info_plist])
+            # If the asset is an app icon, and the caller has specified an app
+            # icon to use, then skip this asset as it will be included in the
+            # app icon set. Otherwise, add the asset to the command-line.
+            if asset_type == APP_ICON_ASSET_TYPE:
+                if app_icon:
+                    continue
+                else:
+                    command.extend(['--app-icon', asset_name])
 
-  # Dictionary used to convert absolute paths back to their relative form
-  # in the output of actool.
-  relative_paths = {}
+            if asset_type not in ACTOOL_FLAG_FOR_ASSET_TYPE:
+                continue
 
-  # actool crashes if paths are relative, so convert input and output paths
-  # to absolute paths, and record the relative paths to fix them back when
-  # filtering the output.
-  absolute_output = os.path.abspath(output)
-  relative_paths[output] = absolute_output
-  relative_paths[os.path.dirname(output)] = os.path.dirname(absolute_output)
-  command.extend(['--compile', os.path.dirname(os.path.abspath(output))])
+            command.extend(
+                [ACTOOL_FLAG_FOR_ASSET_TYPE[asset_type], asset_name])
 
-  for relative_path in inputs:
-    absolute_path = os.path.abspath(relative_path)
-    relative_paths[absolute_path] = relative_path
-    command.append(absolute_path)
+    if app_icon:
+        command.extend(['--app-icon', app_icon])
 
-  try:
-    # Run actool and redirect stdout and stderr to the same pipe (as actool
-    # is confused about what should go to stderr/stdout).
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT)
-    stdout = process.communicate()[0].decode('utf-8')
+    if include_all_app_icons:
+        command.extend(['--include-all-app-icons'])
 
-    # If the invocation of `actool` failed, copy all the compiler output to
-    # the standard error stream and exit. See https://crbug.com/1205775 for
-    # example of compilation that failed with no error message due to filter.
-    if process.returncode:
-      for line in stdout.splitlines():
-        fixed_line = FixAbsolutePathInLine(line, relative_paths)
-        sys.stderr.write(fixed_line + '\n')
-      sys.exit(1)
+    # Always ask actool to generate a partial Info.plist file. If no path
+    # has been given by the caller, use a temporary file name.
+    temporary_file = None
+    if not partial_info_plist:
+        temporary_file = tempfile.NamedTemporaryFile(suffix='.plist')
+        partial_info_plist = temporary_file.name
 
-    # Filter the output to remove all garbage and to fix the paths. If the
-    # output is not empty after filtering, then report the compilation as a
-    # failure (as some version of `actool` report error to stdout, yet exit
-    # with an return code of zero).
-    stdout = FilterCompilerOutput(stdout, relative_paths)
-    if stdout:
-      sys.stderr.write(stdout)
-      sys.exit(1)
+    command.extend(['--output-partial-info-plist', partial_info_plist])
 
-  finally:
-    if temporary_file:
-      temporary_file.close()
+    # Dictionary used to convert absolute paths back to their relative form
+    # in the output of actool.
+    relative_paths = {}
+
+    # actool crashes if paths are relative, so convert input and output paths
+    # to absolute paths, and record the relative paths to fix them back when
+    # filtering the output.
+    absolute_output = os.path.abspath(output)
+    relative_paths[output] = absolute_output
+    relative_paths[os.path.dirname(output)] = os.path.dirname(absolute_output)
+    command.extend(['--compile', os.path.dirname(os.path.abspath(output))])
+
+    for relative_path in inputs:
+        absolute_path = os.path.abspath(relative_path)
+        relative_paths[absolute_path] = relative_path
+        command.append(absolute_path)
+
+    try:
+        # Run actool and redirect stdout and stderr to the same pipe (as actool
+        # is confused about what should go to stderr/stdout).
+        process = subprocess.Popen(command,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT)
+        stdout = process.communicate()[0].decode('utf-8')
+
+        # If the invocation of `actool` failed, copy all the compiler output to
+        # the standard error stream and exit. See https://crbug.com/1205775 for
+        # example of compilation that failed with no error message due to
+        # filter.
+        if process.returncode:
+            for line in stdout.splitlines():
+                fixed_line = FixAbsolutePathInLine(line, relative_paths)
+                sys.stderr.write(fixed_line + '\n')
+            sys.exit(1)
+
+        # Filter the output to remove all garbage and to fix the paths. If the
+        # output is not empty after filtering, then report the compilation as a
+        # failure (as some version of `actool` report error to stdout, yet exit
+        # with an return code of zero).
+        stdout = FilterCompilerOutput(stdout, relative_paths)
+        if stdout:
+            sys.stderr.write(stdout)
+            sys.exit(1)
+
+    finally:
+        if temporary_file:
+            temporary_file.close()
 
 
 def Main():
-  parser = argparse.ArgumentParser(
-      description='compile assets catalog for a bundle')
-  parser.add_argument('--target_os',
-                      '-O',
-                      required=True,
-                      choices=('mac', 'ios', 'watchos'),
-                      help='target os for the compiled assets catalog')
-  parser.add_argument('--target-platform',
-                      '-p',
-                      default='',
-                      choices=('iphoneos', 'tvos'),
-                      help='target platform for the compiled assets catalog')
-  parser.add_argument('--target-environment',
-                      '-e',
-                      default='',
-                      choices=('simulator', 'device', 'catalyst'),
-                      help='target environment for the compiled assets catalog')
-  parser.add_argument(
-      '--minimum-deployment-target',
-      '-t',
-      required=True,
-      help='minimum deployment target for the compiled assets catalog')
-  parser.add_argument('--output',
-                      '-o',
-                      required=True,
-                      help='path to the compiled assets catalog')
-  parser.add_argument('--compress-pngs',
-                      '-c',
-                      action='store_true',
-                      default=False,
-                      help='recompress PNGs while compiling assets catalog')
-  parser.add_argument('--product-type',
-                      '-T',
-                      help='type of the containing bundle')
-  parser.add_argument('--partial-info-plist',
-                      '-P',
-                      help='path to partial info plist to create')
-  parser.add_argument('--app-icon',
-                      '-A',
-                      help='name of an app icon set for the target’s default app icon')
-  parser.add_argument('--include-all-app-icons',
-                      '-I',
-                      action='store_true',
-                      default=False,
-                      help='include all app icons in the compiled assets catalog')
-  parser.add_argument('inputs',
-                      nargs='+',
-                      help='path to input assets catalog sources')
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser(
+        description='compile assets catalog for a bundle')
+    parser.add_argument('--target_os',
+                        '-O',
+                        required=True,
+                        choices=('mac', 'ios', 'watchos'),
+                        help='target os for the compiled assets catalog')
+    parser.add_argument('--target-platform',
+                        '-p',
+                        default='',
+                        choices=('iphoneos', 'tvos'),
+                        help='target platform for the compiled assets catalog')
+    parser.add_argument(
+        '--target-environment',
+        '-e',
+        default='',
+        choices=('simulator', 'device', 'catalyst'),
+        help='target environment for the compiled assets catalog')
+    parser.add_argument(
+        '--minimum-deployment-target',
+        '-t',
+        required=True,
+        help='minimum deployment target for the compiled assets catalog')
+    parser.add_argument('--output',
+                        '-o',
+                        required=True,
+                        help='path to the compiled assets catalog')
+    parser.add_argument('--compress-pngs',
+                        '-c',
+                        action='store_true',
+                        default=False,
+                        help='recompress PNGs while compiling assets catalog')
+    parser.add_argument('--product-type',
+                        '-T',
+                        help='type of the containing bundle')
+    parser.add_argument('--partial-info-plist',
+                        '-P',
+                        help='path to partial info plist to create')
+    parser.add_argument(
+        '--app-icon',
+        '-A',
+        help='name of an app icon set for the target’s default app icon')
+    parser.add_argument(
+        '--include-all-app-icons',
+        '-I',
+        action='store_true',
+        default=False,
+        help='include all app icons in the compiled assets catalog')
+    parser.add_argument('inputs',
+                        nargs='+',
+                        help='path to input assets catalog sources')
+    args = parser.parse_args()
 
-  if os.path.basename(args.output) != 'Assets.car':
-    sys.stderr.write('output should be path to compiled asset catalog, not '
-                     'to the containing bundle: %s\n' % (args.output, ))
-    sys.exit(1)
+    if os.path.basename(args.output) != 'Assets.car':
+        sys.stderr.write(
+            'output should be path to compiled asset catalog, not '
+            'to the containing bundle: %s\n' % (args.output, ))
+        sys.exit(1)
 
-  if os.path.exists(args.output):
-    if os.path.isfile(args.output):
-      os.unlink(args.output)
-    else:
-      shutil.rmtree(args.output)
+    if os.path.exists(args.output):
+        if os.path.isfile(args.output):
+            os.unlink(args.output)
+        else:
+            shutil.rmtree(args.output)
 
-  with tempfile.TemporaryDirectory() as temporary_dir:
-    CompileAssetCatalog(args.output, args.target_os, args.target_environment,
-                        args.product_type, args.minimum_deployment_target,
-                        args.inputs, args.compress_pngs, args.target_platform,
-                        args.partial_info_plist, args.app_icon,
-                        args.include_all_app_icons, temporary_dir)
+    with tempfile.TemporaryDirectory() as temporary_dir:
+        CompileAssetCatalog(args.output, args.target_os,
+                            args.target_environment, args.product_type,
+                            args.minimum_deployment_target, args.inputs,
+                            args.compress_pngs, args.target_platform,
+                            args.partial_info_plist, args.app_icon,
+                            args.include_all_app_icons, temporary_dir)
 
 
 if __name__ == '__main__':
-  sys.exit(Main())
+    sys.exit(Main())
