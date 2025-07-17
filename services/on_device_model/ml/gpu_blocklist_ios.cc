@@ -7,7 +7,7 @@
 namespace ml {
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
-bool IsGpuBlocked(const ChromeMLAPI& api) {
+bool IsGpuBlocked(const ChromeMLAPI& api, bool log_histogram) {
   return false;
 }
 
