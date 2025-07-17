@@ -6,11 +6,13 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_paths.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -66,8 +68,9 @@ void ActorInternalsUIHandler::StartLogging() {
     return;  // Currently running, wait for existing save to complete.
   }
 
-  base::FilePath default_file =
-      base::FilePath().AppendASCII("actor_trace.pftrace");
+  base::FilePath default_file;
+  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &default_file);
+  default_file = default_file.AppendASCII("actor_trace.pftrace");
   select_file_dialog_ = ui::SelectFileDialog::Create(this, /*policy=*/nullptr);
   select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
                                   std::u16string(), default_file, nullptr, 0,
