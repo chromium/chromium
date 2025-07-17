@@ -189,8 +189,6 @@ bool PageActionView::ShouldUpdateInkDropOnClickCanceled() const {
 }
 
 void PageActionView::NotifyClick(const ui::Event& event) {
-  IconLabelBubbleView::NotifyClick(event);
-
   PageActionTrigger trigger_source;
   if (event.IsMouseEvent()) {
     trigger_source = PageActionTrigger::kMouse;
@@ -200,15 +198,20 @@ void PageActionView::NotifyClick(const ui::Event& event) {
     CHECK(event.IsGestureEvent());
     trigger_source = PageActionTrigger::kGesture;
   }
+
+  // Click is expected to only happen when the page action is visible.
+  // Therefore, the click metric should be recorded before executing the click
+  // callback since that may change the page action visibility.
+  CHECK(click_callback_);
+  click_callback_.Run(trigger_source);
+
+  IconLabelBubbleView::NotifyClick(event);
   action_item_->InvokeAction(
       actions::ActionInvocationContext::Builder()
           .SetProperty(kPageActionTriggerKey,
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
                            trigger_source))
           .Build());
-
-  CHECK(click_callback_);
-  click_callback_.Run(trigger_source);
 }
 
 void PageActionView::AnimationEnded(const gfx::Animation* animation) {
