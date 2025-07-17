@@ -472,6 +472,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return {
       actInFocusedTabResult: {
         tabContextResult: tabContextResult,
+        actionResult: actInFocusedTabResponse.actionResult,
       },
     };
   }

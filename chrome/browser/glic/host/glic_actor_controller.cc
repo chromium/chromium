@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -73,6 +74,7 @@ void OnFetchPageContext(
     const GURL& url,
     mojo_base::ProtoWrapperBytes::PassKey proto_pass_key,
     std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry,
+    actor::mojom::ActionResultCode result_code,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     base::WeakPtr<actor::ExecutionEngine> execution_engine,
     mojom::GetContextResultPtr tab_context_result) {
@@ -112,7 +114,8 @@ void OnFetchPageContext(
   mojom::ActInFocusedTabResultPtr result =
       mojom::ActInFocusedTabResult::NewActInFocusedTabResponse(
           mojom::ActInFocusedTabResponse::New(
-              std::move(tab_context_result->get_tab_context())));
+              std::move(tab_context_result->get_tab_context()),
+              base::to_underlying(result_code)));
 
   std::move(callback).Run(std::move(result));
 }
@@ -125,6 +128,10 @@ void LogAddTabError(actor::mojom::ActionResultPtr result) {
         << actor::ToDebugString(*result);
   }
 }
+
+BASE_FEATURE(kGlicProvideObservationOnActionFailure,
+             "GlicProvideObservationOnActionFailure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -294,7 +301,8 @@ void GlicActorController::OnActionFinished(
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     actor::mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action) const {
-  if (!actor::IsOk(result_code)) {
+  if (!actor::IsOk(result_code) &&
+      !ProvideObservationOnActionFailureEnabled()) {
     PostTaskForActCallback(std::move(callback),
                            mojom::ActInFocusedTabErrorReason::kTargetNotFound);
     return;
@@ -325,17 +333,22 @@ void GlicActorController::OnActionFinished(
     auto journal_entry =
         journal.CreatePendingAsyncEntry(url, task_id, "FetchPageContext", "");
 
-    FetchPageContext(
-        tab, *ActionableOptions(options),
-        base::BindOnce(OnFetchPageContext, url,
-                       mojo_base::ProtoWrapperBytes::GetPassKey(),
-                       std::move(journal_entry), std::move(callback),
-                       GetExecutionEngine()->GetWeakPtr()));
+    FetchPageContext(tab, *ActionableOptions(options),
+                     base::BindOnce(OnFetchPageContext, url,
+                                    mojo_base::ProtoWrapperBytes::GetPassKey(),
+                                    std::move(journal_entry), result_code,
+                                    std::move(callback),
+                                    task->GetExecutionEngine()->GetWeakPtr()));
   } else {
     journal.Log(GURL::EmptyGURL(), task_id, "FetchPageContext", "Tab is gone");
     PostTaskForActCallback(std::move(callback),
                            mojom::ActInFocusedTabErrorReason::kTargetNotFound);
   }
+}
+
+// static
+bool GlicActorController::ProvideObservationOnActionFailureEnabled() {
+  return base::FeatureList::IsEnabled(kGlicProvideObservationOnActionFailure);
 }
 
 base::WeakPtr<const GlicActorController> GlicActorController::GetWeakPtr()
@@ -345,14 +358,6 @@ base::WeakPtr<const GlicActorController> GlicActorController::GetWeakPtr()
 
 base::WeakPtr<GlicActorController> GlicActorController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-actor::ExecutionEngine* GlicActorController::GetExecutionEngine() const {
-  actor::ActorTask* task = GetCurrentTask();
-  if (!task) {
-    return nullptr;
-  }
-  return task->GetExecutionEngine();
 }
 
 actor::ActorTask* GlicActorController::GetCurrentTask() const {

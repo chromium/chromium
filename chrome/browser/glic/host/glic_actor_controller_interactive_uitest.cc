@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -20,9 +21,11 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -33,6 +36,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace glic::test {
@@ -73,6 +77,9 @@ std::string EncodeActionProto(const BrowserAction& action) {
 class GlicActorControllerUiTest : public test::InteractiveGlicTest {
  public:
   using ActionProtoProvider = base::OnceCallback<std::string()>;
+  using ExpectedErrorResult = std::variant<std::monostate,
+                                           actor::mojom::ActionResultPtr,
+                                           mojom::ActInFocusedTabErrorReason>;
 
   GlicActorControllerUiTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -107,12 +114,30 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   // NavigateAction, etc.
   auto ExecuteAction(ActionProtoProvider proto_provider,
                      base::Value::Dict context_options,
-                     std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                         expected_error = std::nullopt) {
-    constexpr int kResultSuccess = -1;
-    constexpr std::string kSuccessString = "<Success>";
-    CHECK_LT(kResultSuccess,
-             static_cast<int>(mojom::ActInFocusedTabErrorReason::kMinValue));
+                     ExpectedErrorResult expected_result = {}) {
+    static constexpr int kResultSuccess =
+        base::to_underlying(actor::mojom::ActionResultCode::kOk);
+    static constexpr std::string_view kSuccessString = "<Success>";
+
+    const std::string expected_result_string = std::visit(
+        absl::Overload{
+            [](std::monostate) { return std::string(kSuccessString); },
+            [](const actor::mojom::ActionResultPtr& r) {
+              EXPECT_FALSE(actor::IsOk(*r));
+              if (!GlicActorController::
+                      ProvideObservationOnActionFailureEnabled()) {
+                // Until we provide observations on failure, every
+                // tool failure is reported as target not found.
+                return base::ToString(
+                    mojom::ActInFocusedTabErrorReason::kTargetNotFound);
+              }
+              return base::ToString(r->code);
+            },
+            [](mojom::ActInFocusedTabErrorReason r) {
+              return base::ToString(r);
+            },
+        },
+        expected_result);
 
     auto result_buffer = std::make_unique<std::optional<int>>();
     std::optional<int>* buffer_raw = result_buffer.get();
@@ -121,46 +146,50 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
             kGlicContentsElementId,
             [result_out = buffer_raw,
              proto_provider = std::move(proto_provider),
-             context_options = std::move(context_options),
-             kResultSuccess](ui::TrackedElement* el) mutable {
+             context_options =
+                 std::move(context_options)](ui::TrackedElement* el) mutable {
               content::WebContents* glic_contents =
                   AsInstrumentedWebContents(el)->web_contents();
+              // Distinguish errors from the action and errors from rejecting
+              // actInFocusedTab by making the latter negative.
               std::string script = content::JsReplace(
                   R"js(
                         (async () => {
                           try {
-                            await client.browser.actInFocusedTab({
+                            const res = await client.browser.actInFocusedTab({
                               actionProto: Uint8Array.fromBase64($1).buffer,
                               tabContextOptions: $2
                             });
-                            // Return success.
-                            return $3;
+                            return res.actionResult;
                           } catch (err) {
-                            return err.reason;
+                            return -err.reason;
                           }
                         })();
                       )js",
-                  std::move(proto_provider).Run(), std::move(context_options),
-                  kResultSuccess);
+                  std::move(proto_provider).Run(), std::move(context_options));
               *result_out = content::EvalJs(glic_contents, std::move(script))
                                 .ExtractInt();
             })),
         CheckResult(
-            [result_in = std::move(result_buffer), &kSuccessString]() {
+            [result_in = std::move(result_buffer)]() {
               CHECK(result_in->has_value());
 
               int result = result_in->value();
               if (result == kResultSuccess) {
-                return kSuccessString;
+                return std::string(kSuccessString);
+              }
+              if (result < 0) {
+                auto result_enum =
+                    static_cast<mojom::ActInFocusedTabErrorReason>(-result);
+                EXPECT_TRUE(mojom::IsKnownEnumValue(result_enum));
+                return base::ToString(result_enum);
               }
               auto result_enum =
-                  static_cast<mojom::ActInFocusedTabErrorReason>(result);
-              EXPECT_TRUE(mojom::IsKnownEnumValue(result_enum));
+                  static_cast<actor::mojom::ActionResultCode>(result);
+              EXPECT_TRUE(actor::mojom::IsKnownEnumValue(result_enum));
               return base::ToString(result_enum);
             },
-            expected_error.has_value() ? base::ToString(expected_error.value())
-                                       : kSuccessString,
-            "ExecuteAction"));
+            expected_result_string, "ExecuteAction"));
   }
 
   auto CreateTask(actor::TaskId& out_task) {
@@ -185,8 +214,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
                        SessionID window_id,
                        bool foreground,
                        base::Value::Dict context_options,
-                       std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                           expected_error = std::nullopt) {
+                       ExpectedErrorResult expected_result = {}) {
     // Window_id is passed by value since tests currently only use one window so
     // this allows using browser()->session_id(). Once tests are exercising
     // window creation though this will likely need to become a test-step
@@ -199,15 +227,15 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
           return EncodeActionProto(create_tab);
         });
     return ExecuteAction(std::move(create_tab_provider),
-                         std::move(context_options), expected_error);
+                         std::move(context_options),
+                         std::move(expected_result));
   }
 
   auto ClickAction(std::string_view label,
                    actor::TaskId& task_id,
                    TabHandle& tab_handle,
                    base::Value::Dict context_options,
-                   std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                       expected_error = std::nullopt) {
+                   ExpectedErrorResult expected_result = {}) {
     auto click_provider =
         base::BindLambdaForTesting([this, &task_id, &tab_handle, label]() {
           int32_t node_id = SearchAnnotatedPageContent(label);
@@ -218,22 +246,21 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
           return EncodeActionProto(action);
         });
     return ExecuteAction(std::move(click_provider), std::move(context_options),
-                         expected_error);
+                         std::move(expected_result));
   }
 
   auto ClickAction(std::string_view label,
-                   std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                       expected_error = std::nullopt) {
+                   ExpectedErrorResult expected_result = {}) {
     return ClickAction(label, task_id_, tab_handle_,
-                       AnnotationsOnlyContextOptions(), expected_error);
+                       AnnotationsOnlyContextOptions(),
+                       std::move(expected_result));
   }
 
   auto ClickAction(const gfx::Point& coordinate,
                    actor::TaskId& task_id,
                    TabHandle& tab_handle,
                    base::Value::Dict context_options,
-                   std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                       expected_error = std::nullopt) {
+                   ExpectedErrorResult expected_result = {}) {
     auto click_provider =
         base::BindLambdaForTesting([&task_id, &tab_handle, coordinate]() {
           BrowserAction action = actor::MakeClick(tab_handle, coordinate);
@@ -241,22 +268,21 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
           return EncodeActionProto(action);
         });
     return ExecuteAction(std::move(click_provider), std::move(context_options),
-                         expected_error);
+                         std::move(expected_result));
   }
 
   auto ClickAction(const gfx::Point& coordinate,
-                   std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                       expected_error = std::nullopt) {
+                   ExpectedErrorResult expected_result = {}) {
     return ClickAction(coordinate, task_id_, tab_handle_,
-                       AnnotationsOnlyContextOptions(), expected_error);
+                       AnnotationsOnlyContextOptions(),
+                       std::move(expected_result));
   }
 
   auto NavigateAction(GURL url,
                       actor::TaskId& task_id,
                       TabHandle& tab_handle,
                       base::Value::Dict context_options,
-                      std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                          expected_error = std::nullopt) {
+                      ExpectedErrorResult expected_result = {}) {
     auto navigate_provider =
         base::BindLambdaForTesting([&task_id, &tab_handle, url]() {
           BrowserAction action = actor::MakeNavigate(tab_handle, url.spec());
@@ -264,22 +290,21 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
           return EncodeActionProto(action);
         });
     return ExecuteAction(std::move(navigate_provider),
-                         std::move(context_options), expected_error);
+                         std::move(context_options),
+                         std::move(expected_result));
   }
 
-  auto NavigateAction(GURL url,
-                      std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                          expected_error = std::nullopt) {
+  auto NavigateAction(GURL url, ExpectedErrorResult expected_result = {}) {
     return NavigateAction(url, task_id_, tab_handle_,
-                          AnnotationsOnlyContextOptions(), expected_error);
+                          AnnotationsOnlyContextOptions(),
+                          std::move(expected_result));
   }
 
   auto HistoryAction(HistoryDirection direction,
                      actor::TaskId& task_id,
                      TabHandle& tab_handle,
                      base::Value::Dict context_options,
-                     std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                         expected_error = std::nullopt) {
+                     ExpectedErrorResult expected_result = {}) {
     auto navigate_provider =
         base::BindLambdaForTesting([&task_id, &tab_handle, direction]() {
           BrowserAction action = direction == HistoryDirection::kBack
@@ -289,33 +314,32 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
           return EncodeActionProto(action);
         });
     return ExecuteAction(std::move(navigate_provider),
-                         std::move(context_options), expected_error);
+                         std::move(context_options),
+                         std::move(expected_result));
   }
 
   auto HistoryAction(HistoryDirection direction,
-                     std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                         expected_error = std::nullopt) {
+                     ExpectedErrorResult expected_result = {}) {
     return HistoryAction(direction, task_id_, tab_handle_,
-                         AnnotationsOnlyContextOptions(), expected_error);
+                         AnnotationsOnlyContextOptions(),
+                         std::move(expected_result));
   }
 
   auto WaitAction(actor::TaskId& task_id,
                   base::Value::Dict context_options,
-                  std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                      expected_error = std::nullopt) {
+                  ExpectedErrorResult expected_result = {}) {
     auto wait_provider = base::BindLambdaForTesting([&task_id]() {
       BrowserAction action = actor::MakeWait();
       action.set_task_id(task_id.value());
       return EncodeActionProto(action);
     });
     return ExecuteAction(std::move(wait_provider), std::move(context_options),
-                         expected_error);
+                         std::move(expected_result));
   }
 
-  auto WaitAction(std::optional<glic::mojom::ActInFocusedTabErrorReason>
-                      expected_error = std::nullopt) {
+  auto WaitAction(ExpectedErrorResult expected_result = {}) {
     return WaitAction(task_id_, AnnotationsOnlyContextOptions(),
-                      expected_error);
+                      std::move(expected_result));
   }
 
   // Starts a new task by executing an initial navigate action to `task_url` to
@@ -634,8 +658,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     // the last page context had the removed frame there.
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('topframe').remove();}"),
-    ClickAction(gfx::Point(10, 10),
-                glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound)
+    ClickAction(gfx::Point(10, 10), actor::MakeResult(
+        actor::mojom::ActionResultCode::kFrameLocationChangedSinceObservation))
       // clang-format on
   );
 }
@@ -671,8 +695,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     // the last page context had the removed frame there.
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('topframe').remove();}"),
-    ClickAction(gfx::Point(10, 10),
-                glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound)
+    ClickAction(gfx::Point(10, 10), actor::MakeResult(
+        actor::mojom::ActionResultCode::kFrameLocationChangedSinceObservation))
       // clang-format on
   );
 }
@@ -693,7 +717,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('clickable').remove();}"),
     ClickAction(kClickableButtonLabel,
-                glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound)
+                actor::MakeResult(
+                    actor::mojom::ActionResultCode::kElementOffscreen))
       // clang-format on
   );
 }
@@ -717,8 +742,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
     ExecuteJs(kNewActorTabId,
               "()=>{const forcelayout = "
               "document.getElementById('clickable').offsetHeight;}"),
-    ClickAction(kClickableButtonLabel,
-                glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound)
+    ClickAction(
+        kClickableButtonLabel,
+        actor::MakeResult(
+            actor::mojom::ActionResultCode::kObservedTargetElementChanged))
       // clang-format on
   );
 }
@@ -757,9 +784,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionProtoInvalid) {
   std::string encodedProto = base::Base64Encode("invalid serialized bytes");
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
-      ExecuteAction(
-          ArbitraryStringProvider(encodedProto), UpdatedContextOptions(),
-          glic::mojom::ActInFocusedTabErrorReason::kInvalidActionProto));
+      ExecuteAction(ArbitraryStringProvider(encodedProto),
+                    UpdatedContextOptions(),
+                    mojom::ActInFocusedTabErrorReason::kInvalidActionProto));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
@@ -781,7 +808,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       ExecuteAction(std::move(click_provider), UpdatedContextOptions(),
-                    glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
+                    actor::MakeResult(
+                        actor::mojom::ActionResultCode::kInvalidDomNodeId)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, HistoryTool) {
@@ -818,11 +846,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StopActorTask) {
     WaitForJsResult(kNewActorTabId, "() => button_clicked"),
     CheckIsActingOnTab(kNewActorTabId, true),
     StopActorTask(),
-    // TODO(crbug.com/409558980): Expect kTargetNotFound since that's
-    // currently the error returned anytime a tool fails but in the future we
-    // should add an error code for "NoActiveTask".
-    ClickAction(kClickableButtonLabel,
-                glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound),
+    ClickAction(kClickableButtonLabel, actor::MakeResult(
+        actor::mojom::ActionResultCode::kTaskWentAway)),
     CheckIsActingOnTab(kNewActorTabId, false));
   // clang-format on
 }
@@ -880,11 +905,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, PauseActorTask) {
     CheckIsActingOnTab(kNewActorTabId, true),
 
     PauseActorTask(),
-    // TODO(crbug.com/409558980): Expect kTargetNotFound since that's
-    // currently the error returned anytime a tool fails but in the future we
-    // should add an error code for "NoActiveTask".
     ClickAction(kClickableButtonLabel,
-                glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound),
+                actor::MakeResult(actor::mojom::ActionResultCode::kTaskPaused)),
 
     // Unlike stopping, pausing keeps the task.
     CheckIsActingOnTab(kNewActorTabId, true)

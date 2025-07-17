@@ -18,7 +18,6 @@
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 
 namespace actor {
-class ExecutionEngine;
 class ActorTask;
 }  // namespace actor
 
@@ -55,6 +54,10 @@ class GlicActorController {
   void OnResponseStarted();
   void OnResponseStopped();
 
+  // TODO(crbug.com/418280472): This temporarily gates providing observations
+  // after action failure, to avoid confusing the client before it's updated.
+  static bool ProvideObservationOnActionFailureEnabled();
+
  private:
   // Handles the result of the action, returning new page context if necessary.
   void OnActionFinished(
@@ -64,7 +67,6 @@ class GlicActorController {
       actor::mojom::ActionResultCode result,
       std::optional<size_t> index_of_failed_action) const;
 
-  actor::ExecutionEngine* GetExecutionEngine() const;
   actor::ActorTask* GetCurrentTask() const;
 
   base::WeakPtr<const GlicActorController> GetWeakPtr() const;

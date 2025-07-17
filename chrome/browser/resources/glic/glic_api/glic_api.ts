@@ -1223,6 +1223,11 @@ export enum CaptureScreenshotErrorReason {
 export declare interface ActInFocusedTabResult {
   // The tab context result after acting and gathering new context.
   tabContextResult?: TabContextResult;
+  // The outcome of the action.
+  // Note that this is an enum ActionResultCode from chrome/common/actor.mojom.
+  // It is expected that the client has an equivalent enum definition. See
+  // http://shortn/_gLyPxrRm6p
+  actionResult?: number;
 }
 
 export declare interface ActInFocusedTabParams {

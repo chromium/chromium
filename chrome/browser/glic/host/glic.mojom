@@ -915,6 +915,12 @@ struct TabContext {
 struct ActInFocusedTabResponse {
   // The context of the focused tab after the action was completed.
   TabContext tab_context;
+  // The outcome of the action.
+  // Note that this is an enum ActionResultCode from chrome/common/actor.mojom.
+  // It would be tedious to import the actual enum here and the renderer doesn't
+  // need the type, so we just use an int here. It is expected that the client
+  // has an equivalent enum definition. See http://shortn/_gLyPxrRm6p
+  int32 action_result;
 };
 
 // Information about a web page being rendered in a tab.
