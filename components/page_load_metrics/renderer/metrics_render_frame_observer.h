@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
@@ -192,6 +193,8 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
 
   // Will be null when we're not actively sending metrics.
   std::unique_ptr<PageTimingMetricsSender> page_timing_metrics_sender_;
+
+  base::WeakPtrFactory<MetricsRenderFrameObserver> weak_factory_{this};
 };
 
 }  // namespace page_load_metrics

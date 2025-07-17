@@ -241,6 +241,9 @@ class CONTENT_EXPORT RenderFrameObserver {
 
   // Notification when the renderer observes a new use counter usage during a
   // page load. This is used for UseCounter metrics.
+  //
+  // TODO(crbug.com/404425954): `DidObserveNewFeatureUsage()` is going to be
+  // deprecated. Use `SetNewFeatureUsageCallback()` in `RenderFrame` instead.
   virtual void DidObserveNewFeatureUsage(
       const blink::UseCounterFeature& feature) {}
 

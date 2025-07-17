@@ -17,6 +17,7 @@
 #include "content/common/content_export.h"
 #include "content/public/common/bindings_policy.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -216,6 +217,12 @@ class CONTENT_EXPORT RenderFrame :
   // this RenderFrame.
   virtual blink::scheduler::WebAgentGroupScheduler&
   GetAgentGroupScheduler() = 0;
+
+  // Sets the callback which is called when the renderer observes a new use
+  // counter usage. This is used for UseCounter metrics.
+  using NewFeatureUsageCallback =
+      base::RepeatingCallback<void(const blink::UseCounterFeature&)>;
+  virtual void SetNewFeatureUsageCallback(NewFeatureUsageCallback callback) = 0;
 
  protected:
   ~RenderFrame() override {}

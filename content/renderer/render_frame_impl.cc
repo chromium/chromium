@@ -4609,14 +4609,24 @@ void RenderFrameImpl::DidObserveSubresourceLoad(
     observer.DidObserveSubresourceLoad(subresource_load_metrics);
 }
 
+void RenderFrameImpl::SetNewFeatureUsageCallback(
+    NewFeatureUsageCallback callback) {
+  new_feature_usage_callback_ = std::move(callback);
+}
+
 void RenderFrameImpl::DidObserveNewFeatureUsage(
     const blink::UseCounterFeature& feature) {
   TRACE_EVENT_WITH_FLOW0("navigation",
                          "RenderFrameImpl::DidObserveNewFeatureUsage",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  for (auto& observer : observers_)
-    observer.DidObserveNewFeatureUsage(feature);
+  if (new_feature_usage_callback_) {
+    new_feature_usage_callback_.Run(feature);
+  } else {
+    for (auto& observer : observers_) {
+      observer.DidObserveNewFeatureUsage(feature);
+    }
+  }
 }
 
 void RenderFrameImpl::DidObserveSoftNavigation(

@@ -4,6 +4,8 @@
 
 source_set("renderer") {
   sources = [
+    "features.cc",
+    "features.h",
     "metrics_render_frame_observer.cc",
     "metrics_render_frame_observer.h",
     "page_resource_data_use.cc",

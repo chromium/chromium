@@ -777,6 +777,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // document) it may be inherited from the parent or opener.
   blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override;
 
+  void SetNewFeatureUsageCallback(NewFeatureUsageCallback callback) override;
+
  protected:
   explicit RenderFrameImpl(CreateParams params);
 
@@ -1245,6 +1247,10 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // All the registered observers.
   base::ObserverList<RenderFrameObserver>::Unchecked observers_;
+
+  // The callback to send the feature usage to the browser process through
+  // PageLoadMetrics.
+  NewFeatureUsageCallback new_feature_usage_callback_;
 
   // The text selection the last time DidChangeSelection got called. May contain
   // additional characters before and after the selected text, for IMEs. The
