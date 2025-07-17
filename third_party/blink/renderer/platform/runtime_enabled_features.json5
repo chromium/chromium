@@ -2140,8 +2140,20 @@
       status: "stable",
     },
     {
+      // The retry ability for Fetch keepalive requests.
+      // https://chromestatus.com/feature/5181984581877760
       name: "FetchRetry",
+      origin_trial_feature_name: "FetchRetry",
+      origin_trial_allows_third_party: true,
       status: "experimental",
+      base_feature: "FetchRetry",
+      // base_feature is meant as kill-switch. This runtime-enabled feature
+      // should follow the Origin Trial unless explicitly overriden by Finch or
+      // commandline flags.
+      base_feature_status: "enabled",
+      // Enables the Blink feature only when the base::Feature is overridden by
+      // field trial or command line.
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "FetchUploadStreaming",
