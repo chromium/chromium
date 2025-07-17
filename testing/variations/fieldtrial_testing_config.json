@@ -23157,25 +23157,6 @@
             ]
         }
     ],
-    "SidePanelResizing": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SidePanelResizing"
-                    ]
-                }
-            ]
-        }
-    ],
     "SideSearchInProductHelp": [
         {
             "platforms": [
