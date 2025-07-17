@@ -1582,7 +1582,7 @@
           "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 45
+          "shards": 25
         },
         "test": "performance_test_suite",
         "trigger_script": {
