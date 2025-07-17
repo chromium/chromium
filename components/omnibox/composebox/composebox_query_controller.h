@@ -247,6 +247,10 @@ class ComposeboxQueryController {
   // from tests.
   lens::LensOverlayClientContext CreateClientContext() const;
 
+  // Resets the request cluster info state. Protected to allow tests to
+  // override.
+  virtual void ResetRequestClusterInfoState();
+
   // The internal state of the query controller. Protected to allow tests to
   // access the state. Do not modify this state directly, use
   // SetQueryControllerState() instead.
@@ -268,9 +272,6 @@ class ComposeboxQueryController {
   // making the request so it can be kept alive.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
   CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
-
-  // Resets the request cluster info state.
-  void ResetRequestClusterInfoState();
 
   // Gets an OAuth token for the cluster info request and proceeds with sending
   // a LensOverlayServerClusterInfoRequest to get the cluster info.
@@ -384,8 +385,8 @@ class ComposeboxQueryController {
   const raw_ptr<variations::VariationsClient> variations_client_;
 
   // Whether or not to send the lns_surface parameter.
-// TODO(crbug.com/430070871): Remove this once the server supports the
-// `lns_surface` parameter.
+  // TODO(crbug.com/430070871): Remove this once the server supports the
+  // `lns_surface` parameter.
   bool send_lns_surface_ = false;
 
   base::WeakPtrFactory<ComposeboxQueryController> weak_ptr_factory_{this};

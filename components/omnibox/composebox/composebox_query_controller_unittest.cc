@@ -569,6 +569,9 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestSuccessWithOAuth) {
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadFileAndWaitForClusterInfoExpire) {
+  // Enable cluster info TTL.
+  controller().set_enable_cluster_info_ttl(true);
+
   // Act: Start the session.
   controller().NotifySessionStarted();
 

@@ -113,3 +113,10 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   response->disable_responding_ = disable_response;
   return response;
 }
+
+void TestComposeboxQueryController::ResetRequestClusterInfoState() {
+  if (!enable_cluster_info_ttl_) {
+    return;
+  }
+  ComposeboxQueryController::ResetRequestClusterInfoState();
+}

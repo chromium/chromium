@@ -35,8 +35,7 @@ class FakeEndpointFetcher : public endpoint_fetcher::EndpointFetcher {
 };
 
 // Fake VariationsClient for testing.
-class FakeVariationsClient
-    : public variations::VariationsClient {
+class FakeVariationsClient : public variations::VariationsClient {
  public:
   ~FakeVariationsClient() override = default;
 
@@ -76,6 +75,10 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       bool set_next_file_upload_request_should_return_error) {
     next_file_upload_request_should_return_error_ =
         set_next_file_upload_request_should_return_error;
+  }
+
+  void set_enable_cluster_info_ttl(bool enable_cluster_info_ttl) {
+    enable_cluster_info_ttl_ = enable_cluster_info_ttl;
   }
 
   void set_on_query_controller_state_changed_callback(
@@ -134,6 +137,8 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       const std::vector<std::string>& cors_exempt_headers,
       UploadProgressCallback upload_progress_callback) override;
 
+  void ResetRequestClusterInfoState() override;
+
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
 
@@ -148,6 +153,11 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   // If true, the next file upload request will return an error.
   bool next_file_upload_request_should_return_error_ = false;
+
+  // If true, the cluster info will expire when the TTL expires as normal.
+  // Set to false by default to prevent flakiness in tests that expect the
+  // cluster info to be available.
+  bool enable_cluster_info_ttl_ = false;
 
   // The last url for which a fetch request was sent by the query controller.
   GURL last_sent_fetch_url_;
