@@ -23,7 +23,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -36,14 +38,16 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedPaintPreviewAccessibilityTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 
+    private WebPageStation mPage;
+
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(
-                mActivityTestRule.getTestServer().getURL(TEST_URL));
+        mPage = mActivityTestRule.startOnTestServerUrl(TEST_URL);
         PaintPreviewTabService.setAccessibilityEnabledForTesting(true);
     }
 
@@ -51,7 +55,7 @@ public class TabbedPaintPreviewAccessibilityTest {
     @Test
     @MediumTest
     public void smokeTest() throws ExecutionException, TimeoutException {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         TabbedPaintPreview tabbedPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
 

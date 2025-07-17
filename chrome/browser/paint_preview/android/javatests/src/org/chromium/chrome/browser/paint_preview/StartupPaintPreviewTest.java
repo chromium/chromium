@@ -21,7 +21,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +35,9 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.paintpreview.player.PlayerManager;
 
 import java.util.concurrent.ExecutionException;
@@ -46,15 +46,12 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(PER_CLASS)
 public class StartupPaintPreviewTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, true);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
+    private WebPageStation mPage;
 
     @BeforeClass
     public static void setUp() {
@@ -73,7 +70,9 @@ public class StartupPaintPreviewTest {
 
     @Before
     public void setup() {
-        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TEST_URL));
+        mPage =
+                mActivityTestRule.startOnWebPage(
+                        mActivityTestRule.getTestServer().getURL(TEST_URL));
     }
 
     /**
@@ -83,7 +82,7 @@ public class StartupPaintPreviewTest {
     @Test
     @MediumTest
     public void testDisplayedCorrectly() throws ExecutionException {
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         StartupPaintPreview startupPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new StartupPaintPreview(tab, null, null, null));
@@ -95,7 +94,7 @@ public class StartupPaintPreviewTest {
     @Test
     @MediumTest
     public void testSnackbarShow() throws ExecutionException, InterruptedException {
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         StartupPaintPreview startupPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new StartupPaintPreview(tab, null, null, null));
@@ -105,7 +104,7 @@ public class StartupPaintPreviewTest {
 
         // Snackbar should appear on user frustration. It currently happens when users taps 3 times,
         // or when users longpress.
-        SnackbarManager snackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
+        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         assertSnackbarVisibility(snackbarManager, false);
         View view = tabbedPaintPreview.getViewForTesting();
 
@@ -131,7 +130,7 @@ public class StartupPaintPreviewTest {
     @Test
     @MediumTest
     public void testRemoveOnFirstMeaningfulPaint() throws ExecutionException {
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         StartupPaintPreview startupPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new StartupPaintPreview(tab, null, null, null));
@@ -152,7 +151,7 @@ public class StartupPaintPreviewTest {
     @Test
     @MediumTest
     public void testRemoveOnOfflinePage() throws ExecutionException {
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         StartupPaintPreview startupPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new StartupPaintPreview(tab, null, null, null));
@@ -178,7 +177,7 @@ public class StartupPaintPreviewTest {
     @Test
     @MediumTest
     public void testRemoveOnSnackbarClick() throws ExecutionException, InterruptedException {
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         StartupPaintPreview startupPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new StartupPaintPreview(tab, null, null, null));
@@ -188,7 +187,7 @@ public class StartupPaintPreviewTest {
 
         // Should be removed on SnackBar click.
         showAndWaitForInflation(startupPaintPreview, tabbedPaintPreview, dismissCallback);
-        SnackbarManager snackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
+        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         View view = tabbedPaintPreview.getViewForTesting();
         onView(Matchers.is(view)).perform(longClick());
         assertSnackbarVisibility(snackbarManager, true);
@@ -205,7 +204,7 @@ public class StartupPaintPreviewTest {
     @Test
     @MediumTest
     public void testRemoveOnNavigation() throws ExecutionException {
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         StartupPaintPreview startupPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new StartupPaintPreview(tab, null, null, null));

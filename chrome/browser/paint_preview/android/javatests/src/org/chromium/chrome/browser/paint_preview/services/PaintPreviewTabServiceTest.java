@@ -32,7 +32,9 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -46,11 +48,12 @@ public class PaintPreviewTabServiceTest {
     private static final long POLLING_INTERVAL_MS = 500;
 
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
+    private WebPageStation mPage;
     private TabModelSelector mTabModelSelector;
     private TabModel mTabModel;
     private Tab mTab;
@@ -58,10 +61,10 @@ public class PaintPreviewTabServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mTab = mActivityTestRule.getActivity().getActivityTab();
-        mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
-        mTabModel = mTabModelSelector.getModel(/* incognito= */ false);
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabModelSelector = mPage.getTabModelSelector();
+        mTabModel = mPage.getTabModel();
+        mTab = mPage.getTab();
     }
 
     /** Verifies that a Tab's contents are captured when the activity is stopped. */

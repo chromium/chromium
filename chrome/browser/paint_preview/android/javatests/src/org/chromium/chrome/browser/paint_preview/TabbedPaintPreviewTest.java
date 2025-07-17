@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerManager;
@@ -49,9 +51,12 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedPaintPreviewTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
+
+    private WebPageStation mPage;
 
     /** Implementation of {@link PlayerCompositorDelegate.Factory} for tests. */
     public static class TestCompositorDelegateFactory implements PlayerCompositorDelegate.Factory {
@@ -94,8 +99,7 @@ public class TabbedPaintPreviewTest {
         TabbedPaintPreview.overridePaintPreviewTabServiceForTesting(mockService);
         PlayerManager.overrideCompositorDelegateFactoryForTesting(
                 new TestCompositorDelegateFactory());
-        mActivityTestRule.startMainActivityWithURL(
-                mActivityTestRule.getTestServer().getURL(TEST_URL));
+        mPage = mActivityTestRule.startOnTestServerUrl(TEST_URL);
     }
 
     @After
@@ -111,7 +115,7 @@ public class TabbedPaintPreviewTest {
     @Test
     @MediumTest
     public void testDisplayedCorrectly() throws ExecutionException, TimeoutException {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         TabbedPaintPreview tabbedPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
         CallbackHelper viewReadyCallback = new CallbackHelper();
@@ -156,7 +160,7 @@ public class TabbedPaintPreviewTest {
     public void testBrowserControlsPersistent() throws ExecutionException {
         TestControlsVisibilityDelegate visibilityDelegate =
                 ThreadUtils.runOnUiThreadBlocking(TestControlsVisibilityDelegate::new);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         TabbedPaintPreview tabbedPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
         tabbedPaintPreview.setBrowserVisibilityDelegate(visibilityDelegate);
@@ -204,7 +208,7 @@ public class TabbedPaintPreviewTest {
     @Test
     @MediumTest
     public void testProgressbar() throws ExecutionException {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         TabbedPaintPreview tabbedPaintPreview =
                 ThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
 
