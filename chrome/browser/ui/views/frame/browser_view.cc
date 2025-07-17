@@ -2511,6 +2511,18 @@ void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
 #endif
 }
 
+TabDragDelegate* BrowserView::GetTabDragDelegate(
+    const gfx::Point& point_in_screen) {
+  if (!multi_contents_view_ || multi_contents_view_->IsInSplitView() ||
+      !multi_contents_view_->is_drag_and_drop_enabled()) {
+    return nullptr;
+  }
+  if (!multi_contents_view_->GetBoundsInScreen().Contains(point_in_screen)) {
+    return nullptr;
+  }
+  return &multi_contents_view_->drop_target_controller();
+}
+
 base::CallbackListSubscription BrowserView::AddOnLinkOpeningFromGestureCallback(
     OnLinkOpeningFromGestureCallback callback) {
   return link_opened_from_gesture_callbacks_.Add(callback);

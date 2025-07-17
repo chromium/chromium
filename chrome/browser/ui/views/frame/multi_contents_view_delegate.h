@@ -24,6 +24,9 @@ class MultiContentsViewDelegate
   virtual void ReverseWebContents() = 0;
 };
 
+// Executes browser and tabstrip dependent behaviors on behalf of a
+// `MultiContentsView`, such as handling drag and drop entrypoints, and general
+// tabstrip operations.
 class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
  public:
   explicit MultiContentsViewDelegateImpl(Browser& browser);
@@ -32,11 +35,24 @@ class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
       const MultiContentsViewDelegateImpl&) = delete;
   ~MultiContentsViewDelegateImpl() override = default;
 
+  // Activates the focused contents.
   void WebContentsFocused(content::WebContents* contents) override;
+
+  // Updates the split sizing ratio.
+  // Must already be in a split.
   void ResizeWebContents(double ratio, bool done_resizing) override;
+
+  // Reverses the order of split tabs.
+  // Must already be in a split.
   void ReverseWebContents() override;
+
+  // Creates a new tab for the first URL in `urls` and creates a split with it
+  // and the active tab.
   void HandleLinkDrop(MultiContentsDropTargetView::DropSide side,
                       const std::vector<GURL>& urls) override;
+
+  // Detaches a dragged tab from its current tabstrip and inserts it into a
+  // split view in this delegate's tab strip.
   void HandleTabDrop(MultiContentsDropTargetView::DropSide side,
                      TabDragDelegate::DragController& drag_controller) override;
 

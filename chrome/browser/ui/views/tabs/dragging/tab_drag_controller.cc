@@ -212,7 +212,7 @@ class DefaultTabDragPointResolver : public TabDragPointResolver {
 
   TabDragDelegate* GetDragTarget(BrowserView& browser_view,
                                  const gfx::Point& point_in_screen) override {
-    return nullptr;
+    return browser_view.GetTabDragDelegate(point_in_screen);
   }
 };
 

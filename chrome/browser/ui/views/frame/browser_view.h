@@ -82,6 +82,7 @@ class LocationBarView;
 class MultiContentsView;
 class ScrimView;
 class SidePanel;
+class TabDragDelegate;
 class TabSearchBubbleHost;
 class TabStrip;
 class TabStripRegionView;
@@ -875,6 +876,9 @@ class BrowserView : public BrowserWindow,
   void Cut();
   void Copy();
   void Paste();
+
+  // Returns a `TabDragHandler`, if any available, to handle a tab drag.
+  TabDragDelegate* GetTabDragDelegate(const gfx::Point& point_in_screen);
 
  protected:
   // Enumerates where the devtools are docked relative to the browser's main

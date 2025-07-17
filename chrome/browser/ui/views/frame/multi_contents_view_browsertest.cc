@@ -9,17 +9,22 @@
 #include "base/notreached.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/split_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -34,6 +39,27 @@
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+using testing::Return;
+using testing::ReturnRef;
+
+namespace {
+
+class MockDragController : public TabDragDelegate::DragController {
+ public:
+  MockDragController() = default;
+  MockDragController(const MockDragController&) = delete;
+  MockDragController& operator=(const MockDragController&) = delete;
+  ~MockDragController() override = default;
+
+  MOCK_METHOD(std::unique_ptr<tabs::TabModel>,
+              DetachTabAtForInsertion,
+              (int),
+              (override));
+  MOCK_METHOD(const DragSessionData&, GetSessionData, (), (const, override));
+};
+
+}  // namespace
 
 class MultiContentsViewBrowserTest : public InProcessBrowserTest {
  protected:
@@ -131,6 +157,93 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
             browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
+                       HandleTabDrop_EndDropTarget) {
+  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return;
+  }
+#endif
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  EXPECT_FALSE(multi_contents_view().IsInSplitView());
+
+  // Show the drop target on the end side.
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::END);
+
+  // Create a second browser with a tab to be dragged.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  content::WebContents* contents_to_drop =
+      browser2->GetTabStripModel()->GetActiveWebContents();
+
+  // Mock the drag controller to simulate a tab drop.
+  MockDragController controller;
+  DragSessionData session_data;
+  session_data.source_view_index_ = 0;
+  EXPECT_CALL(controller, GetSessionData).WillOnce(ReturnRef(session_data));
+  EXPECT_CALL(controller, DetachTabAtForInsertion(0))
+      .WillOnce(
+          Return(browser2->GetTabStripModel()->DetachTabAtForInsertion(0)));
+
+  // Handle the tab drop.
+  multi_contents_view().drop_target_controller().HandleTabDrop(controller);
+
+  // Verify the state after the drop.
+  EXPECT_TRUE(multi_contents_view().IsInSplitView());
+  ASSERT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(contents_to_drop, tab_strip_model->GetWebContentsAt(1));
+  EXPECT_EQ(1, tab_strip_model->active_index());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
+                       HandleTabDrop_StartDropTarget) {
+  // TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_split_view_drag_and_drop) {
+    return;
+  }
+#endif
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  content::WebContents* original_contents =
+      tab_strip_model->GetActiveWebContents();
+  ASSERT_EQ(1, tab_strip_model->count());
+  EXPECT_FALSE(multi_contents_view().IsInSplitView());
+
+  // Show the drop target on the start side.
+  drop_target_view().Show(MultiContentsDropTargetView::DropSide::START);
+
+  // Create a second browser with a tab to be dragged.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  content::WebContents* contents_to_drop =
+      browser2->GetTabStripModel()->GetActiveWebContents();
+
+  // Mock the drag controller to simulate a tab drop.
+  MockDragController controller;
+  DragSessionData session_data;
+  session_data.source_view_index_ = 0;
+  EXPECT_CALL(controller, GetSessionData).WillOnce(ReturnRef(session_data));
+  EXPECT_CALL(controller, DetachTabAtForInsertion(0))
+      .WillOnce(
+          Return(browser2->GetTabStripModel()->DetachTabAtForInsertion(0)));
+
+  // Handle the tab drop.
+  multi_contents_view().drop_target_controller().HandleTabDrop(controller);
+
+  // Verify the state after the drop.
+  EXPECT_TRUE(multi_contents_view().IsInSplitView());
+  ASSERT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(contents_to_drop, tab_strip_model->GetWebContentsAt(0));
+  EXPECT_EQ(original_contents, tab_strip_model->GetWebContentsAt(1));
+  EXPECT_EQ(0, tab_strip_model->active_index());
 }
 
 // Test class for WebContents ReLayout.

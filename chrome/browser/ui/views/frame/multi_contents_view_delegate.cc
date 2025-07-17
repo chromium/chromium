@@ -72,21 +72,45 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
       tab_strip_model_->active_index() +
       (side == MultiContentsDropTargetView::DropSide::START ? 0 : 1);
 
-  // TODO(crbug.com/406792273): Support entrypoint for vertical splits.
+  // TODO(crbug.com/406792273): Support entrypoint for horizontal splits.
   const split_tabs::SplitTabVisualData split_data(
       split_tabs::SplitTabLayout::kVertical);
 
   // We currently only support creating a split with one link; i.e., the first
   // link in the provided list.
-  tab_strip_model_->delegate()->AddTabAt(urls.front(), new_tab_idx, false);
-
+  tab_strip_model_->delegate()->AddTabAt(urls.front(), new_tab_idx,
+                                         /*foreground=*/true);
+  // Create a split with the previously active tab, which should be before or
+  // after the newly created tab.
   tab_strip_model_->AddToNewSplit(
-      {new_tab_idx}, split_data,
-      split_tabs::SplitTabCreatedSource::kDragAndDropLink);
+      {new_tab_idx +
+       (side == MultiContentsDropTargetView::DropSide::START ? 1 : -1)},
+      split_data, split_tabs::SplitTabCreatedSource::kDragAndDropLink);
 }
 
 void MultiContentsViewDelegateImpl::HandleTabDrop(
     MultiContentsDropTargetView::DropSide side,
     TabDragDelegate::DragController& drag_controller) {
-  // TODO(crbug.com/394370034): Implement this.
+  CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
+
+  // TODO(crbug.com/406792273): Support entrypoint for horizontal splits.
+  const split_tabs::SplitTabVisualData split_data(
+      split_tabs::SplitTabLayout::kVertical);
+
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      drag_controller.DetachTabAtForInsertion(
+          drag_controller.GetSessionData().source_view_index_);
+
+  // Insert the tab next to the currently active tab, add it to a split,
+  // then activate it.
+  const int new_tab_idx =
+      tab_strip_model_->active_index() +
+      (side == MultiContentsDropTargetView::DropSide::START ? 0 : 1);
+  const int inserted_tab_idx = tab_strip_model_->InsertDetachedTabAt(
+      new_tab_idx, std::move(detached_tab), AddTabTypes::ADD_NONE,
+      std::nullopt);
+  tab_strip_model_->AddToNewSplit(
+      {inserted_tab_idx}, split_data,
+      split_tabs::SplitTabCreatedSource::kDragAndDropTab);
+  tab_strip_model_->ActivateTabAt(inserted_tab_idx);
 }
