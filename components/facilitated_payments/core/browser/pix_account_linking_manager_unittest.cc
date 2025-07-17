@@ -283,6 +283,18 @@ TEST_F(PixAccountLinkingManagerTest,
   std::move(on_return_to_chrome_callback).Run();
 }
 
+TEST_F(PixAccountLinkingManagerTest, PromptAcceptedLogged) {
+  base::HistogramTester histogram_tester;
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+  test_api().OnAccepted();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.PromptAccepted",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(PixAccountLinkingManagerTest, ScreenShown_PromptShownLogged) {
   base::HistogramTester histogram_tester;
 

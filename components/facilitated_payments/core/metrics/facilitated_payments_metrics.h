@@ -19,6 +19,9 @@ class TimeDelta;
 
 namespace payments::facilitated {
 
+static constexpr std::string_view kPixAccountLinkingHistogramPrefix =
+    "FacilitatedPayments.Pix.AccountLinking.";
+
 // A payment system that is currently running.
 enum class FacilitatedPaymentsType {
   kEwallet = 0,
@@ -279,6 +282,9 @@ void LogFopSelectorShownLatency(
 
 // Logs that the Pix account linking prompt was shown.
 void LogPixAccountLinkingPromptShown();
+
+// Logs that the Pix account linking prompt was accepted by user.
+void LogPixAccountLinkingPromptAccepted();
 
 // Logs the result and latency for GetDetailsForCreatePaymentInstrument
 // endpoint.

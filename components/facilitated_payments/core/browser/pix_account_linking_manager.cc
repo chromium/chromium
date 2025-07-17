@@ -120,7 +120,7 @@ void PixAccountLinkingManager::DismissPrompt() {
 }
 
 void PixAccountLinkingManager::OnAccepted() {
-  // TODO(crbug.com/419108993): Add metrics.
+  LogPixAccountLinkingPromptAccepted();
   DismissPrompt();
   client_->GetDeviceDelegate()->LaunchPixAccountLinkingPage();
 }

@@ -197,6 +197,17 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixAccountLinkingPromptShown) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixAccountLinkingPromptAccepted) {
+  base::HistogramTester histogram_tester;
+
+  LogPixAccountLinkingPromptAccepted();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.PromptAccepted",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest,
      LogGetDetailsForCreatePaymentInstrumentResultAndLatency) {
   base::HistogramTester histogram_tester;

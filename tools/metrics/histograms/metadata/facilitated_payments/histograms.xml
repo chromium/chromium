@@ -323,6 +323,19 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.AccountLinking.PromptAccepted"
+    enum="BooleanAccepted" expires_after="2026-06-01">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The count for the number of times user accepted the Pix account linking
+    prompt. 'Accepted' is logged when the prompt is accpeted and `Not accepted`
+    is not logged. [Frequency] Logged once per Pix account linking flow.
+    [Trigger] User clicks the Accept button on Pix account linking prompt.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.AccountLinkingPromptShown"
     enum="BooleanShown" expires_after="2026-06-01">
   <owner>longsheng@google.com</owner>

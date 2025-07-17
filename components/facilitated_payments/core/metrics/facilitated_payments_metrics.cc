@@ -385,6 +385,12 @@ void LogFopSelectorShownLatency(
   }
 }
 
+void LogPixAccountLinkingPromptAccepted() {
+  base::UmaHistogramBoolean(
+      base::StrCat({kPixAccountLinkingHistogramPrefix, "PromptAccepted"}),
+      /*sample=*/true);
+}
+
 void LogPixAccountLinkingPromptShown() {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.AccountLinkingPromptShown",
                             /*sample=*/true);
