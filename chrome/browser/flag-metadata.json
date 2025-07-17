@@ -613,10 +613,10 @@
   {
     "name": "ash-split-keyboard-refactor",
     "owners": [
-      "dpad@google.com",
+      "jimmyxgong@chromium.org",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "assistant-iph",
@@ -4565,9 +4565,10 @@
     "name": "enable-welcome-experience-test-unsupported-devices",
     "owners": [
       "michaelcheco@google.com",
+      "jimmyxgong@chromium.org",
       "cros-device-enablement@google.com"
     ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "enable-welcome-tour",
@@ -9162,8 +9163,11 @@
   },
   {
     "name": "support-f11-and-f12-shortcuts",
-    "owners": [ "michaelcheco@chromium.org", "cros-device-enablement@google.com"],
-    "expiry_milestone": 140
+    "owners": [
+      "michaelcheco@chromium.org",
+      "jimmyxgong@chromium.org",
+      "cros-device-enablement@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "support-multiple-server-requests-for-pix-payments",
