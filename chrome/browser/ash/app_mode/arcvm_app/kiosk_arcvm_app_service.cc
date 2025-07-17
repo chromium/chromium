@@ -6,13 +6,15 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <unordered_set>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_data.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
@@ -231,17 +233,17 @@ void KioskArcvmAppService::PreconditionsChanged() {
   }
 }
 
-std::string_view KioskArcvmAppService::GetAppId() {
+std::string KioskArcvmAppService::GetAppId() {
   // TODO(crbug.com/418871771): Refactor to ash::AnnotatedAccountId::Get
   AccountId account_id = multi_user_util::GetAccountIdFromProfile(profile_);
   const KioskArcvmAppData* app = app_manager_->GetAppByAccountId(account_id);
   if (!app) {
-    return std::string_view();
+    return std::string();
   }
   std::unordered_set<std::string> app_ids =
       ArcAppListPrefs::Get(profile_)->GetAppsForPackage(app->package_name());
   if (app_ids.empty()) {
-    return std::string_view();
+    return std::string();
   }
   // If `activity` and `intent` are not specified, return any app from the
   // package.
@@ -249,7 +251,7 @@ std::string_view KioskArcvmAppService::GetAppId() {
     return *app_ids.begin();
   }
   // Check that the app is registered for given package.
-  return app_ids.count(app->app_id()) ? app->app_id() : std::string_view();
+  return app_ids.count(app->app_id()) ? app->app_id() : std::string();
 }
 
 void KioskArcvmAppService::ResetAppLauncher() {

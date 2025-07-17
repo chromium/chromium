@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -98,7 +97,7 @@ class KioskArcvmAppService : public KeyedService,
   KioskArcvmAppLauncher* GetLauncherForTesting() { return app_launcher_.get(); }
 
  private:
-  std::string_view GetAppId();
+  std::string GetAppId();
   // Called when app should be started or stopped.
   void PreconditionsChanged();
   // Updates local cache with proper icon.
