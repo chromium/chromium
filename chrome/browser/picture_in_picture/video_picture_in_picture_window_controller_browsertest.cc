@@ -442,8 +442,7 @@ class PictureInPicturePixelComparisonBrowserTest
     return gfx::PNGCodec::Decode(png_data.value());
   }
 
-  void TakeOverlayWindowScreenshot(const gfx::Size& window_size,
-                                   bool controls_visible) {
+  void TakeOverlayWindowScreenshot(const gfx::Size& window_size) {
     for (int i = 0; i < 2; ++i) {
       WidgetSizeChangeWaiter bounds_change_waiter(GetOverlayWindow(),
                                                   window_size);
@@ -454,8 +453,9 @@ class PictureInPicturePixelComparisonBrowserTest
       const auto initial_count = bounds_change_waiter.bounds_change_count();
 
       // Make sure native widget events won't unexpectedly hide or show the
-      // controls.
-      GetOverlayWindow()->ForceControlsVisibleForTesting(controls_visible);
+      // controls nor the title and scrim.
+      GetOverlayWindow()->ForceControlsVisibleForTesting(
+          /*controls_visible=*/false, /*title_and_scrim_visible=*/false);
 
       ui::Layer* const layer = GetOverlayWindow()->GetRootView()->layer();
       layer->CompleteAllAnimations();
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest, VideoPlay) {
 
   ASSERT_EQ(true, EvalJs(active_web_contents, "play();"));
 
-  TakeOverlayWindowScreenshot({402, 268}, /*controls_visible=*/false);
+  TakeOverlayWindowScreenshot({402, 268});
 
   base::FilePath expected_image_path =
       GetFilePath(FILE_PATH_LITERAL("pixel_expected_video_play.png"));
