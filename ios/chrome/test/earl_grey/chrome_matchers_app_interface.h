@@ -493,8 +493,11 @@
 // Matcher for the Mark as Unread option on the Reading List's context menus.
 + (id<GREYMatcher>)readingListMarkAsUnreadButton;
 
-// Matcher for the Share option on the updated context menus.
+// Matcher for the Delete option on the updated context menus.
 + (id<GREYMatcher>)deleteButton;
+
+// Matcher for the swipe action Delete button.
++ (id<GREYMatcher>)swipeActionDeleteButton;
 
 // Returns matcher for the Copy item on the old-style context menu.
 + (id<GREYMatcher>)contextMenuCopyButton;

@@ -643,6 +643,10 @@ id<GREYMatcher> DeleteButton() {
   return [ChromeMatchersAppInterface deleteButton];
 }
 
+id<GREYMatcher> SwipeActionDeleteButton() {
+  return [ChromeMatchersAppInterface swipeActionDeleteButton];
+}
+
 id<GREYMatcher> ContextMenuCopyButton() {
   return [ChromeMatchersAppInterface contextMenuCopyButton];
 }

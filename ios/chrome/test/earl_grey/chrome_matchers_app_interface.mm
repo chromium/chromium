@@ -1167,6 +1167,19 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       contextMenuItemWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE];
 }
 
++ (id<GREYMatcher>)swipeActionDeleteButton {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  NSString* buttonClass = @"_UISwipeActionDynamicButton";
+#else
+  NSString* buttonClass = @"UISwipeActionStandardButton";
+#endif
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          buttonWithAccessibilityLabelID:IDS_IOS_DELETE_ACTION_TITLE],
+      grey_accessibilityTrait(UIAccessibilityTraitButton),
+      grey_kindOfClassName(buttonClass), grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)contextMenuCopyButton {
   return [ChromeMatchersAppInterface
       contextMenuItemWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_COPY)];

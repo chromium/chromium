@@ -530,6 +530,9 @@ id<GREYMatcher> ReadingListMarkAsUnreadButton();
 // Returns a matcher for the Delete option on the updated context menus.
 id<GREYMatcher> DeleteButton();
 
+// Returns a matcher for the swipe action Delete button.
+id<GREYMatcher> SwipeActionDeleteButton();
+
 // Returns a matcher for the Copy item on the old-style context menu.
 id<GREYMatcher> ContextMenuCopyButton();
 

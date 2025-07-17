@@ -58,6 +58,7 @@ using chrome_test_util::DeleteButton;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::ReadingListMarkAsReadButton;
 using chrome_test_util::ReadingListMarkAsUnreadButton;
+using chrome_test_util::SwipeActionDeleteButton;
 using reading_list_test_utils::AddedToLocalReadingListSnackbar;
 using reading_list_test_utils::OpenReadingList;
 using reading_list_test_utils::VisibleReadingListItem;
@@ -817,9 +818,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
-  id<GREYMatcher> deleteButtonMatcher =
-      grey_allOf(grey_accessibilityLabel(@"Delete"),
-                 grey_kindOfClassName(@"UISwipeActionStandardButton"), nil);
+  id<GREYMatcher> deleteButtonMatcher = SwipeActionDeleteButton();
   // Depending on the device, the swipe may have deleted the element or just
   // displayed the "Delete" button. Check if the delete button is still on
   // screen and tap it if it is the case.

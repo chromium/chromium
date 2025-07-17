@@ -68,6 +68,7 @@ using chrome_test_util::PasswordsTableViewMatcher;
 using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsNavigationBar;
+using chrome_test_util::SwipeActionDeleteButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
 using chrome_test_util::TurnTableViewSwitchOn;
 using password_manager::kPasswordManagerSurfaceVisitHistogramName;
@@ -4072,8 +4073,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Assert that "Delete" button is displayed.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(
-                                          @"UISwipeActionStandardButton")]
+  [[EarlGrey selectElementWithMatcher:SwipeActionDeleteButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Swipe the next affiliated group until the "Delete" button is revealed.
@@ -4085,8 +4085,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Assert that "Delete" button is displayed for the second affiliated group.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(
-                                          @"UISwipeActionStandardButton")]
+  [[EarlGrey selectElementWithMatcher:SwipeActionDeleteButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

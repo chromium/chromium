@@ -30,6 +30,8 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using chrome_test_util::SwipeActionDeleteButton;
+
 namespace {
 
 /// Returns the popup row containing the `url` as suggestion.
@@ -235,20 +237,18 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   if ([ChromeEarlGrey isIPadIdiom]) {
     [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
         performAction:GREYSwipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
-                                                             0.09, 0.5)];
+                                                             0.09, 0.3)];
   } else {
     [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
         performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
   }
 
   // Delete button is displayed.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(
-                                          @"UISwipeActionStandardButton")]
+  [[EarlGrey selectElementWithMatcher:SwipeActionDeleteButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on the delete button.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(
-                                          @"UISwipeActionStandardButton")]
+  [[EarlGrey selectElementWithMatcher:SwipeActionDeleteButton()]
       performAction:grey_tap()];
 
   // Historical suggestion with URL1 is now deleted.
