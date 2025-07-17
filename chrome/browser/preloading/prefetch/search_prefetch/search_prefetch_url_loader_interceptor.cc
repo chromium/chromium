@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -127,12 +126,6 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   auto handler =
       service->TakePrefetchResponseFromMemoryCache(tentative_resource_request);
   if (handler) {
-    // Track whether the prefetch response is served to a warm-up request.
-    base::UmaHistogramBoolean(
-        "Omnibox.SearchPrefetch.ServedToOnlyFromCacheRequest",
-        tentative_resource_request.load_flags & net::LOAD_ONLY_FROM_CACHE
-            ? true
-            : false);
     return handler;
   }
   if (IsNoVarySearchDiskCacheEnabled()) {
