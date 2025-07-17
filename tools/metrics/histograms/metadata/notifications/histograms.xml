@@ -461,12 +461,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Cros.Actions.{NotificationAction}.GroupedByCatalog"
-    enum="NotificationCatalogName" expires_after="2025-03-10">
+    enum="NotificationCatalogName" expires_after="2026-07-14">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the notification catalog name when a notification interaction
-    occurs: {NotificationAction}. ChromeOS only.
+    occurs: {NotificationAction}. ChromeOS only. Note that this histogram is
+    expired from March 10 to mid-July 2025.
   </summary>
   <token key="NotificationAction" variants="NotificationAction"/>
 </histogram>
