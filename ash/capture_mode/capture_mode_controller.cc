@@ -718,6 +718,15 @@ CaptureModeController::~CaptureModeController() {
 }
 
 // static
+bool CaptureModeController::HasInstance() {
+  if (g_instance) {
+    return true;
+  }
+
+  return false;
+}
+
+// static
 CaptureModeController* CaptureModeController::Get() {
   DCHECK(g_instance);
   return g_instance;

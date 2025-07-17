@@ -56,6 +56,12 @@ bool CanShowSunfishUi() {
     return false;
   }
 
+  // The controller may have already been reset while the shell is shutting
+  // down.
+  if (!CaptureModeController::HasInstance()) {
+    return false;
+  }
+
   auto* controller = CaptureModeController::Get();
   if (!controller->ActiveUserDefaultSearchProviderIsGoogle()) {
     return false;

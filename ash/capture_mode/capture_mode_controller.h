@@ -110,6 +110,11 @@ class ASH_EXPORT CaptureModeController
   // owned by Shell.
   static CaptureModeController* Get();
 
+  // Returns true if the controller instance (owned by the Shell) is non-null,
+  // returns false otherwise. Used to check the validity of `Get()` during
+  // Shell shutdown.
+  static bool HasInstance();
+
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   CaptureModeCameraController* camera_controller() {
