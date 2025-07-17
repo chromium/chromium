@@ -320,6 +320,11 @@ bool DoWebViewScriptsMatch(const Extension& extension,
     return false;
   }
 
+  if (!guest->owner_rfh()) {
+    // If the owner RenderFrameHost is no longer around, the URL can't match.
+    return false;
+  }
+
   // Return true if `extension` is an owner of `guest` and it registered
   // content scripts using the `webview.addContentScripts` API.
   GURL owner_site_url = guest->GetOwnerSiteURL();
