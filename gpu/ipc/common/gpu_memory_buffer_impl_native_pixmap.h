@@ -53,7 +53,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
       gfx::BufferUsage usage,
       gfx::GpuMemoryBufferHandle* handle);
 
-  // Overridden from gfx::GpuMemoryBuffer:
+  // Overridden from GpuMemoryBufferImpl:
   bool Map() override;
   void* memory(size_t plane) override;
   void Unmap() override;

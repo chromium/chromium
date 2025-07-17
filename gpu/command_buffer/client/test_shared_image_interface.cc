@@ -93,7 +93,7 @@ class FakeGpuMemoryBufferImpl : public GpuMemoryBufferImpl {
 
   ~FakeGpuMemoryBufferImpl() override = default;
 
-  // Overridden from gfx::GpuMemoryBuffer:
+  // Overridden from GpuMemoryBufferImpl:
   bool Map() override {
     DCHECK(!mapped_);
     DCHECK_EQ(stride_,
