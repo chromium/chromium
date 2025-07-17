@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg//ui/bwg_settings_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -47,9 +49,13 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 @implementation BWGSettingsViewController {
   // Location item.
-  TableViewMultiDetailTextItem* _locationDetailItem;
+  TableViewMultiDetailTextItem* _preciseLocationItem;
   // Switch item for toggling page content sharing.
   TableViewSwitchItem* _pageContentSharingItem;
+  // Precise location preference value.
+  BOOL _preciseLocationEnabled;
+  // Page content sharing preference value.
+  BOOL _pageContentSharingEnabled;
 }
 
 #pragma mark - UIViewController
@@ -68,13 +74,13 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierBrowsingData];
 
-  _locationDetailItem =
+  _preciseLocationItem =
       [self detailItemWithType:ItemTypeLocation
                              text:l10n_util::GetNSString(
                                       IDS_IOS_BWG_SETTINGS_LOCATION_TITLE)
                        detailText:l10n_util::GetNSString(
                                       IDS_IOS_BWG_SETTINGS_LOCATION_DESCRIPTION)
-               trailingDetailText:l10n_util::GetNSString(IDS_IOS_SETTING_OFF)
+               trailingDetailText:[self preciseLocationTrailingDetailText]
           accessibilityIdentifier:kLocationCellId];
   _pageContentSharingItem = [self
            switchItemWithType:ItemTypePageContentSharing
@@ -84,8 +90,9 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                    detailText:
                        l10n_util::GetNSString(
                            IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_SHARING_DESCRIPTION)
+                  switchValue:_pageContentSharingEnabled
       accessibilityIdentifier:kPageContentSharingCellId];
-  [model addItem:_locationDetailItem
+  [model addItem:_preciseLocationItem
       toSectionWithIdentifier:SectionIdentifierBrowsingData];
   [model addItem:_pageContentSharingItem
       toSectionWithIdentifier:SectionIdentifierBrowsingData];
@@ -115,7 +122,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
       [[TableViewMultiDetailTextItem alloc] initWithType:type];
   detailItem.text = text;
   detailItem.leadingDetailText = detailText;
-  // TODO(crbug.com/427226904): Update text based on a pref.
   detailItem.trailingDetailText = trailingText;
   detailItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -128,14 +134,73 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 - (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
                                       text:(NSString*)title
                                 detailText:(NSString*)detailText
+                               switchValue:(BOOL)isOn
                    accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   TableViewSwitchItem* switchItem =
       [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = title;
   switchItem.detailText = detailText;
+  switchItem.on = isOn;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
 
   return switchItem;
+}
+
+// Called from the PageContentSharing setting's UIControlEventTouchUpInside.
+// Updates underlying page content sharing pref.
+- (void)pageContentSharingSwitchTapped:(UISwitch*)switchView {
+  [self.mutator setPageContentSharingPref:switchView.isOn];
+}
+
+// Returns precise Location trailing detail text which depends on the related
+// pref value.
+- (NSString*)preciseLocationTrailingDetailText {
+  if (_preciseLocationEnabled) {
+    return l10n_util::GetNSString(IDS_IOS_SETTING_ON);
+  }
+
+  return l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+
+  ItemType itemType = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
+
+  if (itemType == ItemTypePageContentSharing) {
+    TableViewSwitchCell* switchCell =
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(pageContentSharingSwitchTapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
+  }
+  return cell;
+}
+
+#pragma mark - BWGSettingsConsumer
+
+- (void)setPreciseLocationEnabled:(BOOL)enabled {
+  _preciseLocationEnabled = enabled;
+
+  if ([self isViewLoaded]) {
+    _preciseLocationItem.trailingDetailText =
+        [self preciseLocationTrailingDetailText];
+    [self reconfigureCellsForItems:@[ _preciseLocationItem ]];
+  }
+}
+
+- (void)setPageContentSharingEnabled:(BOOL)enabled {
+  _pageContentSharingEnabled = enabled;
+
+  if ([self isViewLoaded]) {
+    _pageContentSharingItem.on = _pageContentSharingEnabled;
+    [self reconfigureCellsForItems:@[ _pageContentSharingItem ]];
+  }
 }
 
 @end

@@ -4,14 +4,18 @@
 
 source_set("ui") {
   sources = [
-    "bwg_settings_mutator.h",
+    "bwg_settings_consumer.h",
     "bwg_settings_view_controller.h",
     "bwg_settings_view_controller.mm",
   ]
   deps = [
     "//base",
+    "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/bwg/coordinator:protocols",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
