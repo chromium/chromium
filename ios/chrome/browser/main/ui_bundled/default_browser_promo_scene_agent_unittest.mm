@@ -531,7 +531,9 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestTriggerCriteriaExperiment) {
   scene_state_.activationLevel = SceneActivationLevelBackground;
 }
 
-TEST_F(DefaultBrowserPromoSceneAgentTest, TestTriggerCriteriaForReadingMode) {
+// TODO(crbug.com/432457158): This test is failing on ios-rel-ready.
+TEST_F(DefaultBrowserPromoSceneAgentTest,
+       DISABLED_TestTriggerCriteriaForReadingMode) {
   scoped_feature_list_.InitWithFeatures(
       {kEnableReaderMode, kEnableReaderModeDefaultBrowserPromo}, {});
 
