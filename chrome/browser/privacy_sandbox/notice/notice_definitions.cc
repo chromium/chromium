@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/privacy_sandbox/notice/notice_features.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 
 #include "base/feature_list.h"
 

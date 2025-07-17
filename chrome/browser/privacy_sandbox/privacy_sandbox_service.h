@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -343,6 +344,12 @@ class PrivacySandboxService : public KeyedService {
   virtual void UpdateTopicsApiResult(bool value) = 0;
   virtual void UpdateProtectedAudienceApiResult(bool value) = 0;
   virtual void UpdateMeasurementApiResult(bool value) = 0;
+  // Notice Framework Eligibility Callbacks.
+  virtual privacy_sandbox::EligibilityLevel GetTopicsApiEligibility() = 0;
+  virtual privacy_sandbox::EligibilityLevel
+  GetProtectedAudienceApiEligibility() = 0;
+  virtual privacy_sandbox::EligibilityLevel
+  GetAdMeasurementApiEligibility() = 0;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_

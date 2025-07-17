@@ -132,6 +132,18 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MOCK_METHOD(void, UpdateTopicsApiResult, (bool), (override));
   MOCK_METHOD(void, UpdateProtectedAudienceApiResult, (bool), (override));
   MOCK_METHOD(void, UpdateMeasurementApiResult, (bool), (override));
+  MOCK_METHOD(privacy_sandbox::EligibilityLevel,
+              GetTopicsApiEligibility,
+              (),
+              (override));
+  MOCK_METHOD(privacy_sandbox::EligibilityLevel,
+              GetProtectedAudienceApiEligibility,
+              (),
+              (override));
+  MOCK_METHOD(privacy_sandbox::EligibilityLevel,
+              GetAdMeasurementApiEligibility,
+              (),
+              (override));
 
  private:
   std::unique_ptr<privacy_sandbox::MockPrivacySandboxQueueManager>

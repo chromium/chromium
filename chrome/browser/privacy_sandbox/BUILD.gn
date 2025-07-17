@@ -11,6 +11,7 @@ source_set("headers") {
 
   public_deps = [
     ":countries",
+    "notice:notice_definitions",
     "//base",
     "//chrome/browser/first_party_sets",
     "//components/content_settings/core/browser",

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 
 namespace privacy_sandbox {
 class NoticeApi;
@@ -19,20 +20,6 @@ enum class NoticeType {
   kConsent,  // This type of notice requires an explicit choice to be made.
 };
 
-// The different surface types a notice can be shown on.
-enum class SurfaceType {
-  kDesktopNewTab,
-  kClankBrApp,      // Clank Browser App.
-  kClankCustomTab,  // Clank CCT.
-};
-
-// Levels of eligibility required for a notice.
-enum class EligibilityLevel {
-  kNotEligible,
-  kEligibleNotice,
-  kEligibleConsent,
-};
-
 // Notice view groups. Defining the notices that can be grouped together.
 enum class NoticeViewGroup {
   kNotSet,
@@ -42,7 +29,6 @@ enum class NoticeViewGroup {
 using NoticeId = std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType>;
 
 class Notice {
-  // TODO(crbug.com/392612108): Include view group information.
  public:
   explicit Notice(NoticeId notice_id);
   // Delete copy constructor and copy assignment operator

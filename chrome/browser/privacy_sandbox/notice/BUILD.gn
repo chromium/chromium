@@ -12,20 +12,25 @@ mojom("notice_mojom") {
   generate_java = true
 }
 
+source_set("notice_definitions") {
+  sources = [ "notice_definitions.cc" ]
+  public = [ "notice_definitions.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("core") {
   sources = [
     "notice_catalog.cc",
-    "notice_features.cc",
     "notice_model.cc",
     "notice_storage.cc",
   ]
   public = [
     "notice_catalog.h",
-    "notice_features.h",
     "notice_model.h",
     "notice_storage.h",
   ]
   deps = [
+    ":notice_definitions",
     ":notice_mojom",
     "//base",
     "//base/version_info:version_info",

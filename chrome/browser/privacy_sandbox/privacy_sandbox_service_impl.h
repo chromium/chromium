@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_IMPL_H_
 
 // clang-format off
+#include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 // clang-format on
@@ -120,6 +121,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   void UpdateTopicsApiResult(bool value) override;
   void UpdateProtectedAudienceApiResult(bool value) override;
   void UpdateMeasurementApiResult(bool value) override;
+  privacy_sandbox::EligibilityLevel GetTopicsApiEligibility() override;
+  privacy_sandbox::EligibilityLevel GetProtectedAudienceApiEligibility()
+      override;
+  privacy_sandbox::EligibilityLevel GetAdMeasurementApiEligibility() override;
 
  protected:
   friend class PrivacySandboxServiceTest;

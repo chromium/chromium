@@ -4,10 +4,24 @@
 
 #include "base/feature_list.h"
 
-#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FEATURES_H_
-#define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FEATURES_H_
+#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_DEFINITIONS_H_
+#define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_DEFINITIONS_H_
 
 namespace privacy_sandbox {
+
+// The different surface types a notice can be shown on.
+enum class SurfaceType {
+  kDesktopNewTab,
+  kClankBrApp,      // Clank Browser App.
+  kClankCustomTab,  // Clank CCT.
+};
+
+// Levels of eligibility required for a notice.
+enum class EligibilityLevel {
+  kNotEligible,
+  kEligibleNotice,
+  kEligibleConsent,
+};
 
 // Api Features
 BASE_DECLARE_FEATURE(kNoticeFrameworkTopicsApiFeature);
@@ -36,4 +50,4 @@ BASE_DECLARE_FEATURE(kMeasurementNoticeModalClankCCTFeature);
 
 }  // namespace privacy_sandbox
 
-#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FEATURES_H_
+#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_DEFINITIONS_H_

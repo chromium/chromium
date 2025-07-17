@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_features.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
 namespace privacy_sandbox {

@@ -81,12 +81,14 @@ using SurfaceType = ::PrivacySandboxService::SurfaceType;
 using PromptType = ::PrivacySandboxService::PromptType;
 using NoticeSurfaceType = ::privacy_sandbox::SurfaceType;
 using PromptStartupState = ::PrivacySandboxService::PromptStartupState;
+using ::privacy_sandbox::EligibilityLevel;
 using ::privacy_sandbox::NoticeId;
 using ::privacy_sandbox::PrivacySandboxNoticeServiceInterface;
 using ::privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 using ::privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 
 using enum PrivacySandboxService::PromptAction;
+using enum privacy_sandbox::EligibilityLevel;
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
@@ -1562,4 +1564,17 @@ bool PrivacySandboxServiceImpl::IsNoticeRequired() {
 bool PrivacySandboxServiceImpl::IsRestrictedNoticeRequired() {
   return privacy_sandbox::IsRestrictedNoticeRequired(
       privacy_sandbox_countries_);
+}
+
+EligibilityLevel PrivacySandboxServiceImpl::GetTopicsApiEligibility() {
+  return kNotEligible;
+}
+
+EligibilityLevel
+PrivacySandboxServiceImpl::GetProtectedAudienceApiEligibility() {
+  return kNotEligible;
+}
+
+EligibilityLevel PrivacySandboxServiceImpl::GetAdMeasurementApiEligibility() {
+  return kNotEligible;
 }
