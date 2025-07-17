@@ -3,13 +3,19 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Fixes Chromium Updater's generated LICENSE file to exclude licenses for
+"""Fixes Chromium Updater's generated LICENSE file to remove licenses for
 components not shipped as part of a compiled binary (for example, licenses
-that apply only to build configuration scripts).
+that apply only to build configuration scripts), and verify that restrictive
+licenses imposing conditions we don't want the updater to be subjected to
+are not present in the file. This is not a comprehensive check -- items are
+manually added here after other automation discovers a problem, and we add
+the check up at this earlier stage to catch it sooner.
 """
 
 import argparse
 
+# Text of licenses to be removed, matched exactly. All text to remove must
+# be present in the string constants.
 REMOVE_THESE_LICENSES = [
     """
 ----------------------------------------------------------------------
@@ -98,6 +104,11 @@ without express or implied warranty.
 """,
 ]
 
+# When banning a license, we don't need to include the entire text, only enough
+# to uniquely identify the license, since we aren't using it to trim the file.
+BANNED_LICENSES = [
+    "Alliance for Open Media Patent License",
+]
 
 def _Main():
     cmd_parser = argparse.ArgumentParser(
@@ -119,6 +130,10 @@ def _Main():
 
     for s in REMOVE_THESE_LICENSES:
         license_content = license_content.replace(s, "")
+
+    for s in BANNED_LICENSES:
+        if s in license_content:
+            raise ValueError(f"Found banned license! Matched text:\n{s}")
 
     with open(flags.dest, "wt", encoding="utf-8") as f:
         f.write(license_content)
