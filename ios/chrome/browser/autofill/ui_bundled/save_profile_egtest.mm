@@ -36,6 +36,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -128,17 +129,9 @@ id<GREYMatcher> CountryEntry(NSString* label) {
 
 // Matcher for the search bar.
 id<GREYMatcher> SearchBar() {
-  return grey_allOf(grey_accessibilityID(kAutofillCountrySelectionTableViewId),
+  // Match using the accessibility trait for a search field.
+  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitSearchField),
                     grey_sufficientlyVisible(), nil);
-}
-
-// Matcher for the search bar's cancel button.
-id<GREYMatcher> SearchBarCancelButton() {
-  return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabelId(IDS_APP_CANCEL),
-      grey_kindOfClass([UIButton class]),
-      grey_ancestor(grey_kindOfClass([UISearchBar class])),
-      grey_sufficientlyVisible(), nil);
 }
 
 // Matcher for the search bar's scrim.
@@ -703,10 +696,10 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
       assertWithMatcher:grey_notNil()];
 
   // Verify the cancel button is visible and unfocuses search bar when tapped.
-  [[EarlGrey selectElementWithMatcher:SearchBarCancelButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
 
-  // Verify countries are searchable using their name in the current locale.
+  // Verify countries are searchable using their name in the current
+  // locale.
   [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:SearchBar()]
