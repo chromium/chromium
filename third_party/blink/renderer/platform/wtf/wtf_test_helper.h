@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
-namespace WTF {
+namespace blink {
 
 class DestructCounter {
   USING_FAST_MALLOC(DestructCounter);
@@ -86,12 +86,6 @@ class MoveOnlyHashValue {
   int id_;
 };
 
-}  // namespace WTF
-
-namespace blink {
-
-using WTF::MoveOnlyHashValue;
-
 struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
   // This is actually true, but we pretend that it's false to disable the
   // optimization.
@@ -118,10 +112,6 @@ struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
 template <>
 struct HashTraits<MoveOnlyHashValue> : MoveOnlyHashTraits {};
 
-}  // namespace blink
-
-namespace WTF {
-
 class CountCopy final {
  public:
   static int* const kDeletedValue;
@@ -146,9 +136,6 @@ class CountCopy final {
   int* counter_;
 };
 
-}  // namespace WTF
-namespace blink {
-using WTF::CountCopy;
 struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
   static const bool kEmptyValueIsZero = false;
   static bool IsEmptyValue(const CountCopy& value) { return !value.Counter(); }
@@ -169,15 +156,13 @@ struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
 template <>
 struct HashTraits<CountCopy> : CountCopyHashTraits {};
 
-}  // namespace blink
-
-namespace WTF {
+struct ValueInstanceCountBase {
+  static int* const kDeletedValue;
+};
 
 template <typename T>
-class ValueInstanceCount final {
+class ValueInstanceCount final : public ValueInstanceCountBase {
  public:
-  static int* const kDeletedValue;
-
   ValueInstanceCount() : counter_(nullptr), value_(T()) {}
   explicit ValueInstanceCount(int* counter, T value = T())
       : counter_(counter), value_(value) {
@@ -211,12 +196,6 @@ class ValueInstanceCount final {
   T value_;
 };
 
-}  // namespace WTF
-
-namespace blink {
-
-using WTF::ValueInstanceCount;
-
 template <typename T>
 struct ValueInstanceCountHashTraits
     : public GenericHashTraits<ValueInstanceCount<T>> {
@@ -242,10 +221,6 @@ struct ValueInstanceCountHashTraits
 template <typename T>
 struct HashTraits<ValueInstanceCount<T>>
     : public ValueInstanceCountHashTraits<T> {};
-
-}  // namespace blink
-
-namespace WTF {
 
 class DummyRefCounted : public RefCounted<DummyRefCounted> {
  public:
@@ -320,6 +295,6 @@ class LivenessCounter {
   static unsigned live_;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_TEST_HELPER_H_

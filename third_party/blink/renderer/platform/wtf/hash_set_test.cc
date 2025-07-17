@@ -35,16 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
-namespace WTF {
-
-int* const CountCopy::kDeletedValue =
-    reinterpret_cast<int*>(static_cast<uintptr_t>(-1));
-
-}  // namespace WTF
 namespace blink {
-
-using WTF::Dummy;
-using WTF::DummyRefCounted;
 
 namespace {
 

@@ -32,11 +32,6 @@
 
 namespace blink {
 
-using WTF::DestructCounter;
-using WTF::LivenessCounter;
-using WTF::MoveOnly;
-using WTF::WrappedInt;
-
 namespace {
 
 TEST(DequeTest, Basic) {

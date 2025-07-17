@@ -12,8 +12,6 @@
 
 namespace blink {
 
-using WTF::Dummy;
-
 TEST(VectorBackedLinkedListTest, Insert) {
   using List = VectorBackedLinkedList<int>;
   List list;

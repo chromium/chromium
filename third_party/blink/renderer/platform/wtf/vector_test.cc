@@ -41,19 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
-namespace WTF {
-
-HashSet<void*> g_constructed_wrapped_ints;
-unsigned LivenessCounter::live_ = 0;
-
-}  // namespace WTF
-
 namespace blink {
-
-using WTF::DestructCounter;
-using WTF::LivenessCounter;
-using WTF::MoveOnly;
-using WTF::WrappedInt;
 
 namespace {
 

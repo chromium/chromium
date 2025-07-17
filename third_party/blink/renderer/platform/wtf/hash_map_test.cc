@@ -42,15 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
-namespace WTF {
-
-int DummyRefCounted::ref_invokes_count_ = 0;
-
-}
 namespace blink {
-
-using WTF::DestructCounter;
-using WTF::DummyRefCounted;
 
 namespace {
 
