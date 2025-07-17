@@ -246,6 +246,114 @@ public class InstanceSwitcherCoordinatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testRestoreButtonDisabledWhenSelectedInstanceClosed_InstanceSwitcherV2()
+            throws Exception {
+        // Initialize instance list with 1 active instance and 3 inactive instances.
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 1, /* numInactiveInstances= */ 3);
+        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
+        final CallbackHelper closeCallbackHelper = new CallbackHelper();
+        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            openCallback,
+                            closeCallback,
+                            null,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+        onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Switch to inactive list.
+        onView(allOf(withText("Inactive (3)"), isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        // Verify "Restore" button is disabled before a selection is made.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Select the first item.
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(0, click()));
+
+        // Verify "Restore" button is now enabled.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(isEnabled()));
+
+        // Close the selected instance.
+        closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
+
+        // Verify "Restore" button is now disabled.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testRestoreButtonEnabledWhenOtherInstanceClosed_InstanceSwitcherV2()
+            throws Exception {
+        // Initialize instance list with 1 active instance and 3 inactive instances.
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 1, /* numInactiveInstances= */ 3);
+        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
+        final CallbackHelper closeCallbackHelper = new CallbackHelper();
+        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            openCallback,
+                            closeCallback,
+                            null,
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+        onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Switch to inactive list.
+        onView(allOf(withText("Inactive (3)"), isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        // Verify "Restore" button is disabled before a selection is made.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(not(isEnabled())));
+
+        // Select the second item.
+        onView(withId(R.id.inactive_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()));
+
+        // Verify "Restore" button is now enabled.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(isEnabled()));
+
+        // Close the first instance.
+        closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
+
+        // Verify "Restore" button is still enabled.
+        onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
+                .inRoot(isDialog())
+                .check(matches(isEnabled()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
     public void testBlockInstanceRestorationAtLimit_InstanceSwitcherV2() throws Exception {
         // Initialize instance list with MAX_INSTANCE_COUNT active instances, 1 inactive instance.
         InstanceInfo[] instances =

@@ -550,6 +550,10 @@ public class InstanceSwitcherCoordinator {
         int instanceId = item.instanceId;
 
         if (UiUtils.isInstanceSwitcherV2Enabled()) {
+            if (mSelectedItem != null && mSelectedItem.instanceId == item.instanceId) {
+                assert mDialog != null;
+                mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
+            }
             removeItemFromModelList(
                     instanceId,
                     item.taskId == INVALID_TASK_ID ? mInactiveModelList : mActiveModelList);
