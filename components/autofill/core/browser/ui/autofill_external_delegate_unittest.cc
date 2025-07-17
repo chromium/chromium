@@ -2337,7 +2337,27 @@ TEST_F(AutofillExternalDelegateTest,
   IssueOnQuery();
 
   EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
-              OnDidAcceptCreditCardSaveAndFillSuggestion());
+              OnDidAcceptCreditCardSaveAndFillSuggestion(_));
+  external_delegate().DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(
+          SuggestionType::kSaveAndFillCreditCardEntry),
+      SuggestionPosition{.row = 0});
+}
+
+TEST_F(AutofillExternalDelegateTest, AcceptedSaveAndFillEntry_FillForm) {
+  IssueOnQuery();
+  CreditCard card = test::GetCreditCard();
+
+  EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
+              OnDidAcceptCreditCardSaveAndFillSuggestion)
+      .WillOnce([&](MockSaveAndFillManager::FillCardCallback callback) {
+        std::move(callback).Run(card);
+      });
+  EXPECT_CALL(manager(),
+              FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                HasQueriedFormId(), IsQueriedFieldId(), _,
+                                AutofillTriggerSource::kCreditCardSaveAndFill));
+
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(
           SuggestionType::kSaveAndFillCreditCardEntry),

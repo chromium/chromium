@@ -1889,6 +1889,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kScanCreditCard:
       case AutofillTriggerSource::kDevtools:
       case AutofillTriggerSource::kFastCheckout:
+      case AutofillTriggerSource::kCreditCardSaveAndFill:
         return false;
       case AutofillTriggerSource::kFormsSeen:
       case AutofillTriggerSource::kSelectOptionsChanged:

@@ -24,19 +24,17 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   ~SaveAndFillManagerImpl() override;
 
   // SaveAndFillManager:
-  void OnDidAcceptCreditCardSaveAndFillSuggestion() override;
+  void OnDidAcceptCreditCardSaveAndFillSuggestion(
+      FillCardCallback fill_card_callback) override;
   void OfferLocalSaveAndFill() override;
   void OnUserDidDecideOnLocalSave(
-      payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision
-          user_decision,
-      const payments::PaymentsAutofillClient::
-          UserProvidedCardSaveAndFillDetails&
-              user_provided_card_save_and_fill_details) override;
+      PaymentsAutofillClient::CardSaveAndFillDialogUserDecision user_decision,
+      const PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails&
+          user_provided_card_save_and_fill_details) override;
   void PopulateCreditCardInfo(
-      autofill::CreditCard& card,
-      const payments::PaymentsAutofillClient::
-          UserProvidedCardSaveAndFillDetails&
-              user_provided_card_save_and_fill_details) override;
+      CreditCard& card,
+      const PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails&
+          user_provided_card_save_and_fill_details) override;
 
   PaymentsAutofillClient* payments_autofill_client() const {
     return autofill_client_->GetPaymentsAutofillClient();
@@ -66,6 +64,8 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   // Struct that contains necessary information for uploading the card to
   // server.
   payments::UploadCardRequestDetails upload_details_;
+
+  FillCardCallback fill_card_callback_;
 
   base::WeakPtrFactory<SaveAndFillManagerImpl> weak_ptr_factory_{this};
 };

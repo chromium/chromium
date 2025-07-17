@@ -1391,7 +1391,18 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
               ->GetSaveAndFillManager();
       CHECK(save_and_fill_manager);
 
-      save_and_fill_manager->OnDidAcceptCreditCardSaveAndFillSuggestion();
+      save_and_fill_manager->OnDidAcceptCreditCardSaveAndFillSuggestion(
+          base::BindOnce(
+              [](base::WeakPtr<AutofillExternalDelegate> delegate,
+                 const CreditCard& card) {
+                if (delegate) {
+                  delegate->manager_->FillOrPreviewForm(
+                      mojom::ActionPersistence::kFill, delegate->query_form_,
+                      delegate->query_field_.global_id(), &card,
+                      AutofillTriggerSource::kCreditCardSaveAndFill);
+                }
+              },
+              GetWeakPtr()));
       break;
     }
     case SuggestionType::kScanCreditCard:

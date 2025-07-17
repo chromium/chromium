@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/save_and_fill_manager_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -76,6 +77,8 @@ class SaveAndFillManagerImplTest : public testing::Test {
   raw_ptr<TestPaymentsAutofillClientMock> payments_autofill_client_;
   std::unique_ptr<SaveAndFillManagerImpl> save_and_fill_manager_impl_;
   raw_ptr<MockMultipleRequestPaymentsNetworkInterface> mock_network_interface_;
+  base::MockCallback<SaveAndFillManagerImpl::FillCardCallback>
+      fill_card_callback_;
 };
 
 UserProvidedCardSaveAndFillDetails CreateUserProvidedCardDetails(
@@ -101,10 +104,22 @@ TEST_F(SaveAndFillManagerImplTest, OfferLocalSaveAndFill_ShowsLocalDialog) {
       ShowCreditCardLocalSaveAndFillDialog(
           testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
 
-  save_and_fill_manager_impl_->OfferLocalSaveAndFill();
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
+  EXPECT_CALL(
+      *payments_autofill_client_,
+      ShowCreditCardLocalSaveAndFillDialog(
+          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+
+  CreditCard card_to_fill;
+  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
+      .WillOnce(testing::SaveArg<0>(&card_to_fill));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
   save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
@@ -128,9 +143,23 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
             saved_card->GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(ASCIIToUTF16(test::NextYear()),
             saved_card->GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+
+  EXPECT_EQ(u"4444333322221111", card_to_fill.GetRawInfo(CREDIT_CARD_NUMBER));
+  EXPECT_EQ(u"John Doe", card_to_fill.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(ASCIIToUTF16(test::NextMonth()),
+            card_to_fill.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(ASCIIToUTF16(test::NextYear()),
+            card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Declined) {
+  EXPECT_CALL(
+      *payments_autofill_client_,
+      ShowCreditCardLocalSaveAndFillDialog(
+          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
   save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kDeclined,
       UserProvidedCardSaveAndFillDetails());
@@ -144,6 +173,17 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Declined) {
 TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOn) {
   prefs::SetPaymentCvcStorage(autofill_client_->GetPrefs(), true);
 
+  EXPECT_CALL(
+      *payments_autofill_client_,
+      ShowCreditCardLocalSaveAndFillDialog(
+          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+
+  CreditCard card_to_fill;
+  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
+      .WillOnce(testing::SaveArg<0>(&card_to_fill));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
   save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
@@ -161,11 +201,23 @@ TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOn) {
                   .front()
                   ->cvc(),
               u"123");
+  EXPECT_THAT(card_to_fill.cvc(), u"123");
 }
 
 TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOff) {
   prefs::SetPaymentCvcStorage(autofill_client_->GetPrefs(), false);
 
+  EXPECT_CALL(
+      *payments_autofill_client_,
+      ShowCreditCardLocalSaveAndFillDialog(
+          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+
+  CreditCard card_to_fill;
+  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
+      .WillOnce(testing::SaveArg<0>(&card_to_fill));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
   save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
@@ -183,6 +235,8 @@ TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOff) {
                   .front()
                   ->cvc(),
               u"");
+  // The CVC value should still be filled as long as the user provided it.
+  EXPECT_THAT(card_to_fill.cvc(), u"123");
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -197,7 +251,8 @@ TEST_F(SaveAndFillManagerImplTest,
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
                                testing::Return(RequestId("11223344"))));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion();
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
 
   EXPECT_EQ(details.upload_card_source,
             UploadCardSource::UPSTREAM_SAVE_AND_FILL);

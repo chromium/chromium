@@ -16,7 +16,10 @@ class MockSaveAndFillManager : public payments::SaveAndFillManager {
   MockSaveAndFillManager();
   ~MockSaveAndFillManager() override;
 
-  MOCK_METHOD(void, OnDidAcceptCreditCardSaveAndFillSuggestion, (), (override));
+  MOCK_METHOD(void,
+              OnDidAcceptCreditCardSaveAndFillSuggestion,
+              (FillCardCallback fill_card_callback),
+              (override));
   MOCK_METHOD(void, OfferLocalSaveAndFill, (), (override));
   MOCK_METHOD(
       void,

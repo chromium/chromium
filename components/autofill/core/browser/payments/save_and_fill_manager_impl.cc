@@ -35,7 +35,10 @@ SaveAndFillManagerImpl::SaveAndFillManagerImpl(AutofillClient* autofill_client)
 
 SaveAndFillManagerImpl::~SaveAndFillManagerImpl() = default;
 
-void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion() {
+void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
+    FillCardCallback fill_card_callback) {
+  fill_card_callback_ = std::move(fill_card_callback);
+
   if (IsCreditCardUploadEnabled()) {
     PopulateInitialUploadDetails();
 
@@ -61,13 +64,18 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
     CardSaveAndFillDialogUserDecision user_decision,
     const UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
-  autofill::CreditCard card_save_candidate;
   switch (user_decision) {
-    case CardSaveAndFillDialogUserDecision::kAccepted:
+    case CardSaveAndFillDialogUserDecision::kAccepted: {
+      CreditCard card_save_candidate;
       PopulateCreditCardInfo(card_save_candidate,
                              user_provided_card_save_and_fill_details);
-      // Clear the CVC value from the `card_save_candidate` if CVC storage
-      // isn't enabled.
+
+      // The CVC value should still be filled as long as the user provided it
+      // even if CVC storage isn't enabled.
+      if (fill_card_callback_) {
+        std::move(fill_card_callback_).Run(card_save_candidate);
+      }
+
       if (!card_save_candidate.cvc().empty() &&
           !payments_autofill_client()
                ->GetPaymentsDataManager()
@@ -78,13 +86,15 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
           ->GetPaymentsDataManager()
           .OnAcceptedLocalCreditCardSave(card_save_candidate);
       break;
+    }
     case CardSaveAndFillDialogUserDecision::kDeclined:
       break;
   }
+  fill_card_callback_.Reset();
 }
 
 void SaveAndFillManagerImpl::PopulateCreditCardInfo(
-    autofill::CreditCard& card,
+    CreditCard& card,
     const UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
   const std::string app_locale =

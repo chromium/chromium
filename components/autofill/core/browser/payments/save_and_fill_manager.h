@@ -10,6 +10,8 @@ namespace autofill::payments {
 // Interface for managing the Save and Fill dialog flow.
 class SaveAndFillManager {
  public:
+  using FillCardCallback = base::OnceCallback<void(const CreditCard&)>;
+
   SaveAndFillManager() = default;
   SaveAndFillManager(const SaveAndFillManager& other) = delete;
   SaveAndFillManager& operator=(const SaveAndFillManager& other) = delete;
@@ -17,7 +19,8 @@ class SaveAndFillManager {
 
   // Initiates the Save and Fill flow after the user accepts the Save and Fill
   // suggestion.
-  virtual void OnDidAcceptCreditCardSaveAndFillSuggestion() = 0;
+  virtual void OnDidAcceptCreditCardSaveAndFillSuggestion(
+      FillCardCallback fill_card_callback) = 0;
   // Begins the process to show the local Save and Fill dialog.
   virtual void OfferLocalSaveAndFill() = 0;
   // Called when the user makes a decision on the local Save and Fill dialog.
