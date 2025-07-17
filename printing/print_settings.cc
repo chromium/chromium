@@ -481,6 +481,15 @@ void PrintSettings::SetPrinterPrintableArea(
       margins.right = 0;
       break;
     }
+#if BUILDFLAG(IS_CHROMEOS)
+    case mojom::MarginType::kPrecomputedMarginsForBackend: {
+      // Do not setup page setup device units for custom margins for backend,
+      // which doesn't use `page_setup_device_units` either. These margins are
+      // used to send to print jobs in the print backend instead. See details in
+      // print.mojom at the definition of the `MarginType` enum.
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
     case mojom::MarginType::kCustomMargins: {
       margins.header = 0;
       margins.footer = 0;
@@ -545,6 +554,14 @@ void PrintSettings::SetCustomMargins(
   requested_custom_margins_in_microns_ = requested_margins_in_microns;
   margin_type_ = mojom::MarginType::kCustomMargins;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void PrintSettings::SetCustomMarginsForBackend(
+    const PageMargins& requested_margins_in_microns) {
+  requested_custom_margins_in_microns_ = requested_margins_in_microns;
+  margin_type_ = mojom::MarginType::kPrecomputedMarginsForBackend;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 int PrintSettings::NewCookie() {

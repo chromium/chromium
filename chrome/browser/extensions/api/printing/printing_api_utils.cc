@@ -318,7 +318,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       LOG(ERROR) << "Loaded invalid margins from print ticket.";
       return nullptr;
     } else {
-      settings->SetCustomMargins(
+      settings->SetCustomMarginsForBackend(
           {/*header=*/0, /*footer=*/0, margin_ticket.value().left_um,
            margin_ticket.value().right_um, margin_ticket.value().top_um,
            margin_ticket.value().bottom_um});
@@ -328,6 +328,9 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
           margin_ticket.value().bottom_um == 0) {
         settings->set_margin_type(printing::mojom::MarginType::kNoMargins);
         settings->set_borderless(true);
+      } else {
+        CHECK_EQ(settings->margin_type(),
+                 printing::mojom::MarginType::kPrecomputedMarginsForBackend);
       }
     }
   }
@@ -398,6 +401,8 @@ bool CheckSettingsAndCapabilitiesCompatibility(
 
     if (settings.margin_type() !=
         printing::mojom::MarginType::kDefaultMargins) {
+      CHECK_NE(settings.margin_type(),
+               printing::mojom::MarginType::kCustomMargins);
       const auto& requested_margins_um =
           settings.requested_custom_margins_in_microns();
       bool margins_value_supported = std::ranges::any_of(

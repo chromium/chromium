@@ -52,15 +52,6 @@ bool IsUriSecure(std::string_view uri) {
          base::StartsWith(uri, "usb:") || base::StartsWith(uri, "ippusb:");
 }
 
-// TODO(crbug.com/316999874): Remove this once sending custom margins to the
-// backend is fixed.
-bool AreMarginsUMConvertibleToPWG(const PageMargins& margins_microns) {
-  return margins_microns.bottom % kMicronsPerPwgUnit == 0 &&
-         margins_microns.left % kMicronsPerPwgUnit == 0 &&
-         margins_microns.right % kMicronsPerPwgUnit == 0 &&
-         margins_microns.top % kMicronsPerPwgUnit == 0;
-}
-
 // Populates the 'client-info' attribute of the IPP collection `options`. Each
 // item in `client_infos` represents one collection in 'client-info'.
 // Invalid 'client-info' items will be dropped.
@@ -132,40 +123,19 @@ void EncodeMediaCol(ipp_t* options,
   int right_margin = 0;
   int top_margin = 0;
   if (!settings.borderless()) {
-    if (base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale)) {
-      CHECK_NE(settings.margin_type(), mojom::MarginType::kNoMargins);
-      // There are 2 ways how print settings are setup -
-      //   1) via print preview dialog, which allows to set any margins, but it
-      //      involves preprocessing the document as one cannot use any
-      //      arbitrary value for margins. Then, default printer margins must be
-      //      used to setup the print job. These custom margins are not
-      //      backwards convertible to PWG units.
-      //   2) via chrome.printing API, which allows to set only supported
-      //   margins,
-      //      meaning that this custom margins are backwards convertible to PWG
-      //      units.
-      //
-      // It's unknown if the custom margins here are the ones that were
-      // announced by the printer. Thus, first try to convert the custom margins
-      // to PWG units and if that fails, use the default margins. This preserves
-      // the original behaviour for the print preview dialog and usage of custom
-      // margins.
-      bool uses_custom_margins = false;
-      if (settings.margin_type() == mojom::MarginType::kCustomMargins) {
-        uses_custom_margins = AreMarginsUMConvertibleToPWG(
-            settings.requested_custom_margins_in_microns());
-        if (uses_custom_margins) {
-          bottom_margin = settings.requested_custom_margins_in_microns().bottom;
-          left_margin = settings.requested_custom_margins_in_microns().left;
-          right_margin = settings.requested_custom_margins_in_microns().right;
-          top_margin = settings.requested_custom_margins_in_microns().top;
-        }
-      }
-      if (!uses_custom_margins) {
-        MarginsMicronsFromSizeAndPrintableArea(size_um, printable_area_um,
-                                               &bottom_margin, &left_margin,
-                                               &right_margin, &top_margin);
-      }
+    // Custom margins can only be setup as a property of the print job iff the
+    // print settings are not part of the print preview logics, etc. Otherwise,
+    // the margins will be applied not only to the prerendered document, but
+    // also to the actual print job, which is not what is required.
+    const bool use_requested_custom_margins =
+        base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale) &&
+        settings.margin_type() ==
+            mojom::MarginType::kPrecomputedMarginsForBackend;
+    if (use_requested_custom_margins) {
+      bottom_margin = settings.requested_custom_margins_in_microns().bottom;
+      left_margin = settings.requested_custom_margins_in_microns().left;
+      right_margin = settings.requested_custom_margins_in_microns().right;
+      top_margin = settings.requested_custom_margins_in_microns().top;
     } else {
       MarginsMicronsFromSizeAndPrintableArea(size_um, printable_area_um,
                                              &bottom_margin, &left_margin,

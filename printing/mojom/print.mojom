@@ -147,7 +147,22 @@ enum MarginType {
   kDefaultMargins,
   kNoMargins,
   kPrintableAreaMargins,
+  // Margins that are only used for document pre-rendering.
   kCustomMargins,
+  // This margin type must only be set when the margins are not part of print
+  // preview logic (as `kCustomMargins` is), since normally margins are ONLY
+  // applied to the pre-rendered document. By default, when a document is sent
+  // to the printing backend, it uses the default margins based on the printer's
+  // capabilities. For example, if US letter size is selected, the backend will
+  // determine the printable area and supported margins for that specific
+  // printer. However, there is a special case that ONLY applies to the
+  // chrome.printing API. This API allows extensions to send documents to the
+  // printer while maximizing the use of the printer's capabilities. In this
+  // case, the supplied margins must be used for the actual print job (i.e.,
+  // sent to the backend). All other use cases should not use this type if they
+  // are using margins for document pre-rendering.
+  [EnableIf=is_chromeos]
+  kPrecomputedMarginsForBackend,
 };
 
 // Allowed printing modes as a bitmask.

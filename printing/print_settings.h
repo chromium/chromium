@@ -33,6 +33,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "printing/printing_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace printing {
@@ -116,10 +117,23 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
   void Clear();
 
   void SetCustomMargins(const PageMargins& requested_margins_in_microns);
+#if BUILDFLAG(IS_CHROMEOS)
+  // This sets margins and sets `margin_type` to `kPrecomputedMarginsForBackend`
+  // For more details, see the documentation for `kPrecomputedMarginsForBackend`
+  // in `print.mojom`.
+  void SetCustomMarginsForBackend(
+      const PageMargins& requested_margins_in_microns);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   const PageMargins& requested_custom_margins_in_microns() const {
     return requested_custom_margins_in_microns_;
   }
   void set_margin_type(mojom::MarginType margin_type) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(features::kApiPrintingMarginsAndScale)) {
+      CHECK_NE(margin_type,
+               printing::mojom::MarginType::kPrecomputedMarginsForBackend);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
     margin_type_ = margin_type;
   }
   mojom::MarginType margin_type() const { return margin_type_; }
