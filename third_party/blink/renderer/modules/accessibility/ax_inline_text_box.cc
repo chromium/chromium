@@ -517,7 +517,7 @@ bool AXInlineTextBox::IsPartOfAListItem() const {
   // An AXInlineTextBox that is part of a list item needs special handling, as
   // the list marker content is rendered in a separate box than the list item
   // content, but accessibility still wants to connect the two in the same line.
-  if (ParentObject()->ParentObject()->RoleValue() ==
+  if (ParentObjectIncludedInTree()->ParentObjectIncludedInTree()->RoleValue() ==
       ax::mojom::blink::Role::kListItem) {
     return true;
   }

@@ -1,0 +1,47 @@
+<!--
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:next*
+@BLINK-ALLOW:previous*
+-->
+<!DOCTYPE html>
+<html>
+<!-- This test ensures that inline text boxes, even when they are empty and
+contain only a new line, still point back to the list marker node of the list
+item. This guarantees that screen readers can parse the list marker plus the new
+line as being on the same line, thus producing the utterance 'bullet'. Without
+this, they would simply say 'new line', which is incorrect because an empty text
+box would still have the bullet marker of the list item. -->
+
+<body>
+  <div contenteditable="true">
+    <p>
+      <span>Fruits</span>
+    </p>
+    <ul>
+      <li aria-level="1">
+        <p role="presentation">
+          <span>Apple</span>
+        </p>
+      </li>
+      <li dir="ltr" aria-level="1">
+        <p role="presentation">
+          <span>Orange</span>
+        </p>
+      </li>
+      <li aria-level="1">
+        <p role="presentation">
+          <span>Peach</span>
+        </p>
+      </li>
+      <li aria-level="1">
+        <p role="presentation">
+          <span>
+            <br>
+          </span>
+        </p>
+      </li>
+    </ul>
+  </div>
+</body>
+
+</html>

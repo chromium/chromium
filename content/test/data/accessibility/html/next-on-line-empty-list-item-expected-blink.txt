@@ -1,0 +1,28 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer multiline value='Fruits<newline>%E2%80%A2 Apple<newline>%E2%80%A2 Orange<newline>%E2%80%A2 Peach<newline>%E2%80%A2 <newline>'
+++++++++paragraph
+++++++++++staticText name='Fruits' nameFrom=contents
+++++++++++++inlineTextBox name='Fruits' nameFrom=contents
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 ' nameFrom=contents nextOnLineId=inlineTextBox:"Apple"
+++++++++++++++staticText ignored
+++++++++++++staticText name='Apple' nameFrom=contents previousOnLineId=staticText
+++++++++++++++inlineTextBox name='Apple' nameFrom=contents previousOnLineId=staticText
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 ' nameFrom=contents nextOnLineId=inlineTextBox:"Orange"
+++++++++++++++staticText ignored
+++++++++++++staticText name='Orange' nameFrom=contents previousOnLineId=staticText
+++++++++++++++inlineTextBox name='Orange' nameFrom=contents previousOnLineId=staticText
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 ' nameFrom=contents nextOnLineId=inlineTextBox:"Peach"
+++++++++++++++staticText ignored
+++++++++++++staticText name='Peach' nameFrom=contents previousOnLineId=staticText
+++++++++++++++inlineTextBox name='Peach' nameFrom=contents previousOnLineId=staticText
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 ' nameFrom=contents nextOnLineId=inlineTextBox:"<newline>"
+++++++++++++++staticText ignored
+++++++++++++lineBreak name='<newline>' nameFrom=contents previousOnLineId=staticText
+++++++++++++++inlineTextBox name='<newline>' nameFrom=contents previousOnLineId=staticText
