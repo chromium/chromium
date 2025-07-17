@@ -892,8 +892,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // be updated to the latest value when this method is called.
   void MaybeRecordPrefetchStatusToUMA(PrefetchStatus prefetch_status);
 
-  // Records `Prefetch.PrefetchContainer.DurationAdded*` UMAs.
-  void RecordDurationFromAdded();
+  // Records UMAs tracking some certain durations during prefetch addition to
+  // prefetch completion (e.g. `Prefetch.PrefetchContainer.AddedTo*`).
+  void RecordPrefetchDurationHistogram();
   // Records `Prefetch.PrefetchMatchingBlockedNavigationWithPrefetch.*` UMAs.
   void RecordPrefetchMatchingBlockedNavigationHistogram(bool blocked_until_head,
                                                         bool is_nav_prerender);

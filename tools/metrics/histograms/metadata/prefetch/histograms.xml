@@ -214,6 +214,84 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.InitialEligibilityToPrefetchStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-01-11">
+  <owner>taiyo@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records the duration from when `PrefetchContainer` receives initial
+    eligibility` to when `PrefetchService` starts its loading process (i.e.,
+    `PrefetchService::StartSinglePrefetch` is called), which typically
+    represents the duration the prefetch waits on the scheduler's queue.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    started the load.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.PrefetchStartedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-01-11">
+  <owner>taiyo@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records the duration from when `PrefetchService` starts its loading process
+    (i.e., `PrefetchService::StartSinglePrefetch` is called) to when
+    `PrefetchContainer` received non-redirect header.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    received non-redirect header.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.PrefetchStartedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-01-11">
+  <owner>taiyo@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records the duration from when `PrefetchService` starts its loading process
+    (i.e., `PrefetchService::StartSinglePrefetch` is called) to when
+    `PrefetchContainer` finished load successfully.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    completed the load successfully.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.PrefetchStartedToURLRequestStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-01-11">
+  <owner>taiyo@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records the duration from when `PrefetchService` starts its loading process
+    (i.e., `PrefetchService::StartSinglePrefetch` is called) to when its
+    URLRequest is started in //net layer (i.e., when `URLRequest::Start()` is
+    called).
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    received a non-redirect header.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.{PrerenderOrNonPrerender}.{TriggerTypeAndEagerness}"
     enum="Boolean" expires_after="2025-12-14">
   <owner>kouhei@chromium.org</owner>
