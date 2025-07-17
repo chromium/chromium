@@ -932,7 +932,6 @@ TEST_F(PageInfoTest, HTTPSConnection) {
 // Define some dummy constants for Android-only resources.
 #if !BUILDFLAG(IS_ANDROID)
 #define IDR_PAGEINFO_BAD 0
-#define IDR_PAGEINFO_GOOD 0
 #endif
 
 TEST_F(PageInfoTest, InsecureContent) {
@@ -946,7 +945,6 @@ TEST_F(PageInfoTest, InsecureContent) {
     bool displayed_content_with_cert_errors;
     PageInfo::SiteConnectionStatus expected_site_connection_status;
     PageInfo::SiteIdentityStatus expected_site_identity_status;
-    int expected_connection_icon_id;
   };
 
   const TestCase kTestCases[] = {
@@ -956,7 +954,7 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Passive mixed content with a nonsecure form. The nonsecure form is the
       // more severe problem.
       {security_state::NONE, 0, false /* ran_mixed_content */,
@@ -964,35 +962,35 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Only nonsecure form.
       {security_state::NONE, 0, false /* ran_mixed_content */,
        false /* displayed_mixed_content */, true,
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Passive mixed content with a cert error on the main resource.
       {security_state::DANGEROUS, net::CERT_STATUS_DATE_INVALID,
        false /* ran_mixed_content */, true /* displayed_mixed_content */, false,
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR},
       // Active and passive mixed content.
       {security_state::DANGEROUS, 0, true /* ran_mixed_content */,
        true /* displayed_mixed_content */, false,
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Active mixed content and nonsecure form.
       {security_state::DANGEROUS, 0, true /* ran_mixed_content */,
        true /* displayed_mixed_content */, true,
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Active and passive mixed content with a cert error on the main
       // resource.
       {security_state::DANGEROUS, net::CERT_STATUS_DATE_INVALID,
@@ -1000,21 +998,21 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR},
       // Active mixed content.
       {security_state::DANGEROUS, 0, true /* ran_mixed_content */,
        false /* displayed_mixed_content */, false,
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Active mixed content with a cert error on the main resource.
       {security_state::DANGEROUS, net::CERT_STATUS_DATE_INVALID,
        true /* ran_mixed_content */, false /* displayed_mixed_content */, false,
        false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR},
 
       // Passive subresources with cert errors.
       {security_state::NONE, 0, false /* ran_mixed_content */,
@@ -1022,7 +1020,7 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Passive subresources with cert errors, with a cert error on the
       // main resource also. In this case, the subresources with
       // certificate errors are ignored: if the main resource had a cert
@@ -1033,14 +1031,14 @@ TEST_F(PageInfoTest, InsecureContent) {
        false, false /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_GOOD},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR},
       // Passive and active subresources with cert errors.
       {security_state::DANGEROUS, 0, false /* ran_mixed_content */,
        false /* displayed_mixed_content */, false,
        true /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Passive and active subresources with cert errors, with a cert
       // error on the main resource also.
       {security_state::DANGEROUS, net::CERT_STATUS_DATE_INVALID,
@@ -1048,13 +1046,13 @@ TEST_F(PageInfoTest, InsecureContent) {
        false, true /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_GOOD},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR},
       // Active subresources with cert errors.
       {security_state::DANGEROUS, 0, false /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */, false,
        true /* ran_mixed_content */, false /* displayed_mixed_content */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Active subresources with cert errors, with a cert error on the main
       // resource also.
       {security_state::DANGEROUS, net::CERT_STATUS_DATE_INVALID,
@@ -1062,14 +1060,14 @@ TEST_F(PageInfoTest, InsecureContent) {
        false, true /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_GOOD},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR},
 
       // Passive mixed content and subresources with cert errors.
       {security_state::NONE, 0, false /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */, false,
        false /* ran_mixed_content */, true /* displayed_mixed_content */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Passive mixed content, a nonsecure form, and subresources with cert
       // errors.
       {security_state::NONE, 0, false /* ran_mixed_content */,
@@ -1077,21 +1075,21 @@ TEST_F(PageInfoTest, InsecureContent) {
        false /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Passive mixed content and active subresources with cert errors.
       {security_state::DANGEROUS, 0, false /* ran_mixed_content */,
        true /* displayed_mixed_content */, false,
        true /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Active mixed content and passive subresources with cert errors.
       {security_state::DANGEROUS, 0, true /* ran_mixed_content */,
        false /* displayed_mixed_content */, false,
        false /* ran_content_with_cert_errors */,
        true /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_CERT, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_CERT},
       // Passive mixed content, active subresources with cert errors, and a cert
       // error on the main resource.
       {security_state::DANGEROUS, net::CERT_STATUS_DATE_INVALID,
@@ -1099,7 +1097,7 @@ TEST_F(PageInfoTest, InsecureContent) {
        true /* ran_content_with_cert_errors */,
        false /* displayed_content_with_cert_errors */,
        PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE,
-       PageInfo::SITE_IDENTITY_STATUS_ERROR, IDR_PAGEINFO_BAD},
+       PageInfo::SITE_IDENTITY_STATUS_ERROR},
   };
 
   for (const auto& test : kTestCases) {
@@ -1129,11 +1127,6 @@ TEST_F(PageInfoTest, InsecureContent) {
               page_info()->site_connection_status());
     EXPECT_EQ(test.expected_site_identity_status,
               page_info()->site_identity_status());
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_EQ(
-        test.expected_connection_icon_id,
-        PageInfoUI::GetConnectionIconID(page_info()->site_connection_status()));
-#endif
   }
 }
 

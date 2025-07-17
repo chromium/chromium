@@ -1022,25 +1022,6 @@ int PageInfoUI::GetIdentityIconID(PageInfo::SiteIdentityStatus status) {
   return 0;
 }
 
-// static
-int PageInfoUI::GetConnectionIconID(PageInfo::SiteConnectionStatus status) {
-  switch (status) {
-    case PageInfo::SITE_CONNECTION_STATUS_UNKNOWN:
-    case PageInfo::SITE_CONNECTION_STATUS_INTERNAL_PAGE:
-    case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED:
-    case PageInfo::SITE_CONNECTION_STATUS_ISOLATED_WEB_APP:
-      return IDR_PAGEINFO_GOOD;
-    case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
-    case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:
-    case PageInfo::SITE_CONNECTION_STATUS_UNENCRYPTED:
-    case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
-    case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED_ERROR:
-      return IDR_PAGEINFO_BAD;
-  }
-
-  return 0;
-}
-
 int PageInfoUI::GetIdentityIconColorID(PageInfo::SiteIdentityStatus status) {
   switch (status) {
     case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:

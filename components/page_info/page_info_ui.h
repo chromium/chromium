@@ -261,9 +261,6 @@ class PageInfoUI {
   // Returns the identity icon ID for the given identity |status|.
   static int GetIdentityIconID(PageInfo::SiteIdentityStatus status);
 
-  // Returns the connection icon ID for the given connection |status|.
-  static int GetConnectionIconID(PageInfo::SiteConnectionStatus status);
-
   // Returns the identity icon color ID for the given identity |status|.
   static int GetIdentityIconColorID(PageInfo::SiteIdentityStatus status);
 
