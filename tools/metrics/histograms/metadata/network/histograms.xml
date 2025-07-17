@@ -5789,7 +5789,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="QueueName">
     <variant name="Default"/>
-    <variant name="HighPriority"/>
+    <variant name="High"/>
   </token>
 </histogram>
 
@@ -5805,7 +5805,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="QueueName">
     <variant name="Default"/>
-    <variant name="HighPriority"/>
+    <variant name="High"/>
   </token>
 </histogram>
 

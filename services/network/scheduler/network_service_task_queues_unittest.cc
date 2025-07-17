@@ -68,7 +68,7 @@ TEST_F(NetworkServiceTaskQueuesTest, PostingToMultipleQueues) {
   scoped_refptr<base::SingleThreadTaskRunner> tq1 =
       queues_.GetDefaultTaskRunner();
   scoped_refptr<base::SingleThreadTaskRunner> tq2 =
-      queues_.GetTaskRunner(QueueType::kHighPriority);
+      queues_.GetTaskRunner(QueueType::kHigh);
 
   StrictMockTask task_1;
   StrictMockTask task_2;

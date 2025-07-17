@@ -37,8 +37,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
   // Defines the types of task queues available.
   enum class QueueType {
     kDefault,
-    kHighPriority,
-    kMaxValue = kHighPriority,
+    kHigh,
+    kMaxValue = kHigh,
   };
 
   // Creates task queues and task runners using the provided `sequence_manager`.

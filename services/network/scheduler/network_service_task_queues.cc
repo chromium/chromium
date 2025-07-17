@@ -58,7 +58,7 @@ QueueName GetTaskQueueName(NetworkServiceTaskQueues::QueueType queue_type) {
   switch (queue_type) {
     case NetworkServiceTaskQueues::QueueType::kDefault:
       return QueueName::NETWORK_SERVICE_THREAD_DEFAULT_TQ;
-    case NetworkServiceTaskQueues::QueueType::kHighPriority:
+    case NetworkServiceTaskQueues::QueueType::kHigh:
       return QueueName::NETWORK_SERVICE_THREAD_HIGH_TQ;
     default:
       NOTREACHED();
@@ -69,7 +69,7 @@ const char* QueueTypeToString(QueueType type) {
   switch (type) {
     case QueueType::kDefault:
       return "Default";
-    case QueueType::kHighPriority:
+    case QueueType::kHigh:
       return "High";
   }
   NOTREACHED();
@@ -101,7 +101,7 @@ void NetworkServiceTaskQueues::CreateTaskQueues(
       ->SetQueuePriority(NetworkServiceTaskPriority::kDefaultPriority);
 
   // High Priority queue
-  GetTaskQueue(QueueType::kHighPriority)
+  GetTaskQueue(QueueType::kHigh)
       ->SetQueuePriority(NetworkServiceTaskPriority::kHighPriority);
 }
 

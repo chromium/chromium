@@ -59,7 +59,7 @@ TEST_F(NetworkServiceTaskSchedulerTest,
   scoped_refptr<base::SingleThreadTaskRunner> tq1 =
       scheduler->GetTaskRunner(QueueType::kDefault);
   scoped_refptr<base::SingleThreadTaskRunner> tq2 =
-      scheduler->GetTaskRunner(QueueType::kHighPriority);
+      scheduler->GetTaskRunner(QueueType::kHigh);
 
   StrictMockTask task_1;
   StrictMockTask task_2;
@@ -134,7 +134,7 @@ TEST_F(NetworkServiceTaskSchedulerTest,
   scoped_refptr<base::SingleThreadTaskRunner> tq_default =
       scheduler->GetTaskRunner(QueueType::kDefault);
   scoped_refptr<base::SingleThreadTaskRunner> tq_high =
-      scheduler->GetTaskRunner(QueueType::kHighPriority);
+      scheduler->GetTaskRunner(QueueType::kHigh);
   tq_default->PostTask(FROM_HERE, task_3.Get());
   tq_high->PostTask(FROM_HERE, task_4.Get());
   tq_default->PostTask(FROM_HERE, run_loop.QuitClosure());
@@ -150,7 +150,7 @@ TEST_F(NetworkServiceTaskSchedulerTest,
   scheduler->SetUpNetTaskRunnersForTesting();
 
   auto scheduler_high_priority_runner =
-      scheduler->GetTaskRunner(QueueType::kHighPriority);
+      scheduler->GetTaskRunner(QueueType::kHigh);
   auto net_highest_priority_runner = net::GetTaskRunner(net::HIGHEST);
 
   EXPECT_EQ(net_highest_priority_runner.get(),

@@ -122,7 +122,7 @@ void NetworkServiceTaskScheduler::OnTaskCompleted(
 void NetworkServiceTaskScheduler::SetUpNetTaskRunners() {
   net::internal::TaskRunnerGlobals& globals =
       net::internal::GetTaskRunnerGlobals();
-  globals.high_priority_task_runner = GetTaskRunner(QueueType::kHighPriority);
+  globals.high_priority_task_runner = GetTaskRunner(QueueType::kHigh);
 }
 
 void NetworkServiceTaskScheduler::SetUpNetTaskRunnersForTesting() {
