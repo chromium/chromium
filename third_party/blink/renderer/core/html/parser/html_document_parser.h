@@ -307,9 +307,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // Set to true if PumpTokenizer() was called at least once.
   bool did_pump_tokenizer_ = false;
 
-  // Cached result of ShouldSkipPreloadScan()
-  bool should_skip_preload_scan_ = false;
-
   // Counts how many CSP meta tags have been seen (but not necessarily processed
   // yet). This is used to compare the number of seen tags with the number of
   // processed CSP tags in order to decide if resources can be preloaded.
