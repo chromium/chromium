@@ -500,7 +500,7 @@ void OnDeviceModelService::GetDevicePerformanceInfo(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
-          [](base::WeakPtr<OnDeviceModelService> service) {
+          [](OnDeviceModelService* service) {
             if (!service) {
               return on_device_model::mojom::DevicePerformanceInfo::New();
             }
@@ -511,7 +511,11 @@ void OnDeviceModelService::GetDevicePerformanceInfo(
                                     timer.Elapsed());
             return perf_info;
           },
-          weak_factory_.GetWeakPtr()),
+          // WeakPtr won't work here because they're not thread-safe.
+          // Raw pointers are ok because OnDeviceModelService will always live
+          // as long as the ODML process does, so if this code is running the
+          // service must be alive.
+          base::Unretained(this)),
       std::move(callback));
 #endif
 }
