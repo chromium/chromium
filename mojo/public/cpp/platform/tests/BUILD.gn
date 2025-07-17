@@ -20,4 +20,8 @@ source_set("tests") {
     sources += [ "platform_channel_server_unittest.cc" ]
     deps += [ "//mojo/core/embedder" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

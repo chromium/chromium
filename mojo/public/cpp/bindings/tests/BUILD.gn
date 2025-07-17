@@ -120,6 +120,10 @@ source_set("tests") {
   if (enable_nocompile_tests) {
     deps += [ ":bindings_nocompile_tests" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (enable_nocompile_tests) {
@@ -164,6 +168,10 @@ if (use_blink) {
       "//mojo/public/interfaces/bindings/tests:test_wtf_types_blink",
       "//testing/gtest",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
