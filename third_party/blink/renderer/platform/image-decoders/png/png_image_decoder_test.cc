@@ -764,10 +764,7 @@ TEST_P(AnimatedPNGTests, IdatSizeMismatch) {
     // (like the legacy, `libpng`-based decoder does) to avoid the risk of using
     // different dimensions at different layers of the stack (as happened in
     // https://crbug.com/428205250).
-    //
-    // TODO(https://crbug.com/428205250): Enable the test assertion below after
-    // https://review.skia.org/1019977 lands and gets rolled into Chromium.
-    // EXPECT_TRUE(decoder->Failed());
+    EXPECT_TRUE(decoder->Failed());
   } else {
     ExpectStatic(decoder.get());
   }
