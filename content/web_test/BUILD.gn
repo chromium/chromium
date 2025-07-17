@@ -389,4 +389,8 @@ static_library("web_test_renderer") {
   if (enable_printing || enable_printing_tests) {
     deps += [ "//printing" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
