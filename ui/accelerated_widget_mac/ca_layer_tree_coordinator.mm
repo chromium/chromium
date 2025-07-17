@@ -211,7 +211,7 @@ void CALayerTreeCoordinator::SetMaxCALayerTrees(int max_ca_layer_trees) {
   presented_ca_layer_trees_max_length_ = max_ca_layer_trees;
 }
 
-int CALayerTreeCoordinator::NumPendingSwaps() {
+int CALayerTreeCoordinator::NumPendingSwaps() const {
   int num = presented_frames_.size();
   if (num > 0 && presented_frames_.front()->has_committed) {
     num--;

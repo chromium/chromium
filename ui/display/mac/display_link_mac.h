@@ -12,6 +12,10 @@
 #include "base/time/time.h"
 #include "ui/display/display_export.h"
 
+namespace gpu {
+class ImageTransportSurfaceOverlayMacTest;
+}
+
 namespace ui {
 
 // VSync parameters parsed from CVDisplayLinkOutputCallback's parameters.
@@ -43,6 +47,8 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   friend struct ObjCState;
   friend class CVDisplayLinkMac;
   friend class DisplayLinkMacSharedState;
+  friend class gpu::ImageTransportSurfaceOverlayMacTest;
+
   using UnregisterCallback = base::OnceCallback<void(VSyncCallbackMac*)>;
 
   explicit VSyncCallbackMac(UnregisterCallback unregister_callback,

@@ -70,7 +70,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
   CALayerTreeCoordinator(const CALayerTreeCoordinator&) = delete;
   CALayerTreeCoordinator& operator=(const CALayerTreeCoordinator&) = delete;
 
-  ~CALayerTreeCoordinator();
+  virtual ~CALayerTreeCoordinator();
 
   // Set the composited frame's size.
   void Resize(const gfx::Size& pixel_size, float scale_factor);
@@ -82,20 +82,21 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
   // the CALayer tree for the CoreAnimation renderer.
   CARendererLayerTree* GetPendingCARendererLayerTree();
 
-  void Present(gl::Presenter::SwapCompletionCallback completion_callback,
-               gl::Presenter::PresentationCallback presentation_callback);
+  virtual void Present(
+      gl::Presenter::SwapCompletionCallback completion_callback,
+      gl::Presenter::PresentationCallback presentation_callback);
 
   //  Do a GL fence for flush to apply back-pressure on the committed frame.
   void ApplyBackpressure();
 
   // Commit the presented frame's OpenGL backbuffer or CALayer tree to be
   // attached to the root CALayer.
-  void CommitPresentedFrameToCA(base::TimeDelta frame_interval,
-                                base::TimeTicks display_time);
+  virtual void CommitPresentedFrameToCA(base::TimeDelta frame_interval,
+                                        base::TimeTicks display_time);
 
   void SetMaxCALayerTrees(int cap_max_ca_layer_trees);
 
-  int NumPendingSwaps();
+  virtual int NumPendingSwaps() const;
 
   CALayer* root_ca_layer() { return root_ca_layer_; }
 

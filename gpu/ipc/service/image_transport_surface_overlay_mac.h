@@ -43,6 +43,15 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
       scoped_refptr<SharedContextState> context_state,
       SurfaceHandle surface_handle);
 
+  // For testing
+  ImageTransportSurfaceOverlayMacEGL(
+      std::unique_ptr<ui::CALayerTreeCoordinator> ca_layer_tree_coordinator
+#if BUILDFLAG(IS_MAC)
+      ,
+      std::unique_ptr<ui::VSyncCallbackMac> vsync_callback_mac
+#endif
+  );
+
   // Presenter implementation
   bool Resize(const gfx::Size& size,
               float scale_factor,

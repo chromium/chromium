@@ -545,6 +545,14 @@ test("gpu_unittests") {
     ]
   }
 
+  if (is_apple) {
+    sources += [
+      "ipc/service/image_transport_surface_overlay_mac.h",
+      "ipc/service/image_transport_surface_overlay_mac.mm",
+      "ipc/service/image_transport_surface_overlay_mac_unittest.mm",
+    ]
+  }
+
   if (is_linux || is_chromeos || use_ozone) {
     sources += [
       "ipc/common/gpu_memory_buffer_impl_native_pixmap_unittest.cc",
@@ -663,6 +671,10 @@ test("gpu_unittests") {
   if (is_ios) {
     bundle_deps =
         [ "//testing/buildbot/filters:gpu_unittests_filters_bundle_data" ]
+  }
+
+  if (is_apple) {
+    deps += [ "//ui/accelerated_widget_mac:accelerated_widget_mac" ]
   }
 }
 
