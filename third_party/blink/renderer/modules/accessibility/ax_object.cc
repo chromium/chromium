@@ -156,52 +156,6 @@ using mojom::blink::FormControlType;
 namespace {
 
 #if AX_FAIL_FAST_BUILD()
-// TODO(accessibility) Move this out of DEBUG by having a new enum in
-// ax_enums.mojom, and a matching ToString() in ax_enum_utils, as well as move
-// out duplicate code of String IgnoredReasonName(AXIgnoredReason reason) in
-// inspector_type_builder_helper.cc.
-String IgnoredReasonName(AXIgnoredReason reason) {
-  switch (reason) {
-    case kAXActiveFullscreenElement:
-      return "activeFullscreenElement";
-    case kAXActiveModalDialog:
-      return "activeModalDialog";
-    case kAXAriaModalDialog:
-      return "activeAriaModalDialog";
-    case kAXAriaHiddenElement:
-      return "ariaHiddenElement";
-    case kAXAriaHiddenSubtree:
-      return "ariaHiddenSubtree";
-    case kAXEmptyAlt:
-      return "emptyAlt";
-    case kAXEmptyText:
-      return "emptyText";
-    case kAXInertElement:
-      return "inertElement";
-    case kAXInertSubtree:
-      return "inertSubtree";
-    case kAXInertStyle:
-      return "inertStyle";
-    case kAXLabelContainer:
-      return "labelContainer";
-    case kAXLabelFor:
-      return "labelFor";
-    case kAXNotRendered:
-      return "notRendered";
-    case kAXNotVisible:
-      return "notVisible";
-    case kAXPresentational:
-      return "presentationalRole";
-    case kAXProbablyPresentational:
-      return "probablyPresentational";
-    case kAXInactiveCarouselTabContent:
-      return "inactiveCarouselTabContent";
-    case kAXUninteresting:
-      return "uninteresting";
-  }
-  NOTREACHED();
-}
-
 String GetIgnoredReasonsDebugString(AXObject::IgnoredReasons& reasons) {
   if (reasons.size() == 0)
     return "";
@@ -215,7 +169,6 @@ String GetIgnoredReasonsDebugString(AXObject::IgnoredReasons& reasons) {
   string_builder.Append(")");
   return string_builder.ReleaseString();
 }
-
 #endif
 
 #if DCHECK_IS_ON()

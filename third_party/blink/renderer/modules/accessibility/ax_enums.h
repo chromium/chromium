@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_ENUMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_ENUMS_H_
 
-#include <stdint.h>
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
@@ -124,6 +125,9 @@ enum AXIgnoredReason {
   kAXInactiveCarouselTabContent,
   kAXUninteresting
 };
+
+// Returns a string representation of the given ignored reason.
+MODULES_EXPORT String IgnoredReasonName(AXIgnoredReason reason);
 
 // The following represent functions that could be used as callbacks for
 // DeferTreeUpdate. Every enum value represents a function that would be
