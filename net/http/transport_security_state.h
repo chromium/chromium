@@ -31,6 +31,7 @@
 #include "net/http/transport_security_state_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -160,12 +161,12 @@ class NET_EXPORT TransportSecurityState {
     base::Time expiry;
 
     // Optional; hashes of pinned SubjectPublicKeyInfos.
-    HashValueVector spki_hashes;
+    absl::flat_hash_set<SHA256HashValue> spki_hashes;
 
     // Optional; hashes of static known-bad SubjectPublicKeyInfos which MUST
     // NOT intersect with the set of SPKIs in the TLS server's certificate
     // chain.
-    HashValueVector bad_spki_hashes;
+    absl::flat_hash_set<SHA256HashValue> bad_spki_hashes;
 
     // Are subdomains subject to this policy state?
     bool include_subdomains = false;
@@ -216,6 +217,8 @@ class NET_EXPORT TransportSecurityState {
 
    private:
     std::string name_;
+    // TODO(crbug.com/41286522): Change these to use SHA256HashValue to
+    // simpilify/remove the AddHash helper.
     std::vector<std::vector<uint8_t>> static_spki_hashes_;
     std::vector<std::vector<uint8_t>> bad_static_spki_hashes_;
   };
