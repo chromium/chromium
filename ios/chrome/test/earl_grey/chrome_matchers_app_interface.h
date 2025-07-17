@@ -117,6 +117,9 @@
 // Returns matcher for a cancel button.
 + (id<GREYMatcher>)cancelButton;
 
+// Returns matcher for a cancel button in an action sheet.
++ (id<GREYMatcher>)actionSheetCancelButton;
+
 // Returns matcher for a close button.
 + (id<GREYMatcher>)closeButton;
 

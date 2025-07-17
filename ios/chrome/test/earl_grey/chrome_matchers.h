@@ -127,6 +127,9 @@ id<GREYMatcher> PrimaryToolbar();
 // Returns a matcher for a cancel button.
 id<GREYMatcher> CancelButton();
 
+// Returns a matcher for a cancel button in an action sheet.
+id<GREYMatcher> ActionSheetCancelButton();
+
 // Returns a matcher for a close button.
 id<GREYMatcher> CloseButton();
 

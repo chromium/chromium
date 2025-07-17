@@ -33,6 +33,8 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ActionSheetCancelButton;
+using chrome_test_util::ActionSheetItemWithAccessibilityLabelId;
 using chrome_test_util::Omnibox;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsCollectionView;
@@ -187,11 +189,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
                                    fakeIdentity.userEmail)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
-                                l10n_util::GetNSString(
-                                    IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)),
-                            grey_sufficientlyVisible(), nil)]
+  [[EarlGrey
+      selectElementWithMatcher:ActionSheetItemWithAccessibilityLabelId(
+                                   IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -228,7 +228,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGreyUI
       openRemoveAccountConfirmationDialogWithFakeIdentity:fakeIdentity2];
   // Cancel it.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+  [[EarlGrey selectElementWithMatcher:ActionSheetCancelButton()]
       performAction:grey_tap()];
   // Open it a second time, confirmal removal.
   [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity2];
@@ -270,11 +270,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                      fakeIdentity.userEmail)]
         performAction:grey_tap()];
     [[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
-                           l10n_util::GetNSString(
-                               IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)),
-                       grey_sufficientlyVisible(), nil)]
+        selectElementWithMatcher:ActionSheetItemWithAccessibilityLabelId(
+                                     IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)]
         performAction:grey_tap()];
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                             kFakeAccountDetailsViewIdentifier)]

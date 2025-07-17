@@ -436,6 +436,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(IDS_CANCEL)];
 }
 
++ (id<GREYMatcher>)actionSheetCancelButton {
+  return [ChromeMatchersAppInterface
+      actionSheetItemWithAccessibilityLabelID:IDS_CANCEL];
+}
+
 + (id<GREYMatcher>)closeButton {
   return
       [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(IDS_CLOSE)];

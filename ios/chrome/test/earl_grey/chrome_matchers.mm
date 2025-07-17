@@ -157,6 +157,10 @@ id<GREYMatcher> CancelButton() {
   return [ChromeMatchersAppInterface cancelButton];
 }
 
+id<GREYMatcher> ActionSheetCancelButton() {
+  return [ChromeMatchersAppInterface actionSheetCancelButton];
+}
+
 id<GREYMatcher> CloseButton() {
   return [ChromeMatchersAppInterface closeButton];
 }
