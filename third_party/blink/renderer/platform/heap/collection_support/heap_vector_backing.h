@@ -39,7 +39,7 @@ inline bool VTableInitialized(const void* object_payload) {
 
 }  // namespace internal
 
-template <typename T, typename Traits = WTF::VectorTraits<T>>
+template <typename T, typename Traits = VectorTraits<T>>
 class HeapVectorBacking final
     : public GarbageCollected<HeapVectorBacking<T, Traits>> {
  public:

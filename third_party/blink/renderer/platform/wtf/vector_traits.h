@@ -217,9 +217,4 @@ struct VectorTraits<std::pair<First, Second>> {
   };                                                                        \
   }
 
-// TODO(crbug.com/422768753): Remove this `using` directive.
-namespace WTF {
-using blink::VectorTraits;
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_VECTOR_TRAITS_H_
