@@ -22,9 +22,9 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "clobber",
                   "mb",
-                  "msan"
+                  "msan",
+                  "clobber"
                 ],
                 "build_config": "Release",
                 "config": "chromium_clang",
