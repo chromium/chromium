@@ -83,7 +83,7 @@ def main():
                    "`config.toml` changes. " \
                    "Check if `vet_config.toml.hbs` needs to be updated.")
 
-    if not success:
+    if not retcode:
         is_presubmit = '--locked' in unrecognized_args and \
                        '--frozen' in unrecognized_args
         assert not is_presubmit
