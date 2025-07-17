@@ -485,16 +485,18 @@ bool SandboxLinux::seccomp_bpf_with_tsync_supported() const {
 rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
 #if defined(ARCH_CPU_64_BITS)
   if (sandbox_type == sandbox::mojom::Sandbox::kGpu ||
+      sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution ||
       sandbox_type == sandbox::mojom::Sandbox::kRenderer) {
-    // Allow the GPU/RENDERER process's sandbox to access more physical memory
-    // if it's available on the system.
+    // Allow the GPU/ODML/RENDERER process's sandbox to access more physical
+    // memory if it's available on the system.
     //
-    // Renderer processes are allowed to access 32 GB; the GPU process, up
-    // to 64 GB.
+    // Renderer processes are allowed to access 32 GB; the GPU/ODML processes,
+    // up to 64 GB.
     constexpr rlim_t GB = 1024 * 1024 * 1024;
     const rlim_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
     rlim_t limit;
-    if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
+    if ((sandbox_type == sandbox::mojom::Sandbox::kGpu ||
+         sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution) &&
         physical_memory > 64 * GB) {
       limit = 64 * GB;
     } else if (physical_memory > 32 * GB) {
