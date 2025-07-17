@@ -101,6 +101,8 @@ const char* ViewTransition::StateToString(State state) {
       return "AnimateRequestPending";
     case State::kAnimating:
       return "Animating";
+    case State::kPendingDone:
+      return "PendingDone";
     case State::kFinished:
       return "Finished";
     case State::kAborted:
@@ -372,6 +374,8 @@ bool ViewTransition::CanAdvanceTo(State state) const {
     case State::kAnimateRequestPending:
       return state == State::kAnimating || state == State::kAborted;
     case State::kAnimating:
+      return state == State::kPendingDone || state == State::kAborted;
+    case State::kPendingDone:
       return state == State::kFinished || state == State::kAborted;
     case State::kAborted:
       // We allow aborted to move to timed out state, so that time out can call
@@ -403,6 +407,8 @@ bool ViewTransition::StateRunsInViewTransitionStepsDuringMainFrame(
       return false;
     case State::kAnimating:
       return true;
+    case State::kPendingDone:
+      return !RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled();
     case State::kFinished:
     case State::kAborted:
     case State::kTimedOut:
@@ -416,7 +422,9 @@ bool ViewTransition::StateRunsInViewTransitionStepsDuringMainFrame(
 bool ViewTransition::WaitsForNotification(State state) {
   return state == State::kCapturing || state == State::kDOMCallbackRunning ||
          state == State::kWaitForRenderBlock ||
-         state == State::kTransitionStateCallbackDispatched;
+         state == State::kTransitionStateCallbackDispatched ||
+         (RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled() &&
+          state == State::kPendingDone);
 }
 
 // static
@@ -629,11 +637,29 @@ void ViewTransition::ProcessCurrentState() {
         if (style_tracker_->HasActiveAnimations())
           break;
 
-        style_tracker_->StartFinished();
-
         CHECK_NE(creation_type_, CreationType::kForSnapshot);
         CHECK(script_delegate_);
         script_delegate_->DidFinishAnimating();
+
+        // Post a task to run the next state (cleanup) outside of the current
+        // lifecycle update.
+        document_->GetTaskRunner(TaskType::kMiscPlatformAPI)
+            ->PostTask(FROM_HERE,
+                       WTF::BindOnce(&ViewTransition::ProcessCurrentState,
+                                     WrapWeakPersistent(this)));
+
+        // Advance to the pending state. This will stop processing for the
+        // current lifecycle update since WaitsForNotification(kPendingDone)
+        // is true.
+        process_next_state = AdvanceTo(State::kPendingDone);
+        DCHECK(RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled() ==
+               !process_next_state);
+        break;
+      }
+      case State::kPendingDone:
+        DCHECK(!RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled() ||
+               !in_main_lifecycle_update_);
+        style_tracker_->StartFinished();
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
             transition_token_, MaybeCrossFrameSink()));
@@ -642,9 +668,8 @@ void ViewTransition::ProcessCurrentState() {
 
         style_tracker_ = nullptr;
         process_next_state = AdvanceTo(State::kFinished);
-        DCHECK(!process_next_state);
+        DCHECK(IsTerminalState(state_));
         break;
-      }
       case State::kFinished:
       case State::kAborted:
       case State::kTimedOut:

@@ -742,7 +742,10 @@ TEST_P(ViewTransitionTest, ScopedPseudoTree) {
       kPseudoIdViewTransition));
 
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kPendingDone);
+  test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kFinished);
+  UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(scope_element->GetPseudoElement(kPseudoIdViewTransition));
 }
@@ -1556,6 +1559,8 @@ TEST_P(ViewTransitionTest, ReplaceDocumentElement) {
 
   UpdateAllLifecyclePhasesForTest();
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kPendingDone);
+  test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kFinished);
 
   EXPECT_TRUE(
@@ -1596,6 +1601,8 @@ TEST_P(ViewTransitionTest, ReplaceBody) {
 
   UpdateAllLifecyclePhasesForTest();
   UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kPendingDone);
+  test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kFinished);
 
   EXPECT_FALSE(

@@ -5164,6 +5164,10 @@
       status: "stable",
     },
     {
+      name: "ViewTransitionAsyncFinished",
+      status: "stable",
+    },
+    {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
       status: "test",
     },

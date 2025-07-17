@@ -334,6 +334,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     kAnimateTagDiscovery,
     kAnimateRequestPending,
     kAnimating,
+    kPendingDone,
 
     // Terminal states.
     kFinished,
