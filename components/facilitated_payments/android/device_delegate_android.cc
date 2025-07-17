@@ -81,7 +81,8 @@ DeviceDelegateAndroid::GetSupportedPaymentApps(const GURL& payment_link_url) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobjectArray> raw_array =
       Java_DeviceDelegate_getSupportedPaymentApps(
-          env, url::GURLAndroid::FromNativeGURL(env, payment_link_url));
+          env, url::GURLAndroid::FromNativeGURL(env, payment_link_url),
+          web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
   return std::make_unique<FacilitatedPaymentsAppInfoListAndroid>(
       std::move(raw_array));
 }

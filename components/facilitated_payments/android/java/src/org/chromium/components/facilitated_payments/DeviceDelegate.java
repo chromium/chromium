@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
@@ -21,10 +22,16 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /** A JNI bridge to allow the native side to interact with the Android device. */
 @JNINamespace("payments::facilitated")
 @NullMarked
 public class DeviceDelegate {
+    private static final String A2A_INTENT_ACTION_NAME =
+            "org.chromium.intent.action.FACILITATED_PAYMENT";
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
     // Deeplink to the Pix account linking page on Google Wallet.
     private static final String GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK =
@@ -76,8 +83,63 @@ public class DeviceDelegate {
     }
 
     @CalledByNative
-    static ResolveInfo[] getSupportedPaymentApps(GURL paymentLinkUrl) {
-        // TODO(crbug.com/428716832): Implement payments app retrieval logic.
-        return new ResolveInfo[0];
+    static ResolveInfo[] getSupportedPaymentApps(GURL paymentLinkUrl, WindowAndroid windowAndroid) {
+        if (windowAndroid == null) {
+            return new ResolveInfo[0];
+        }
+        Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return new ResolveInfo[0];
+        }
+        PackageManager packageManager = context.getPackageManager();
+        if (packageManager == null) {
+            return new ResolveInfo[0];
+        }
+        return getSupportedPaymentApps(
+                paymentLinkUrl, windowAndroid, new PackageManagerDelegate(packageManager));
+    }
+
+    @VisibleForTesting
+    static ResolveInfo[] getSupportedPaymentApps(
+            GURL paymentLinkUrl,
+            WindowAndroid windowAndroid,
+            PackageManagerDelegate packageManagerDelegate) {
+        Intent searchIntent = new Intent();
+        searchIntent.setAction(A2A_INTENT_ACTION_NAME);
+        searchIntent.setData(Uri.parse(paymentLinkUrl.getSpec()));
+        List<ResolveInfo> resolveInfos =
+                packageManagerDelegate.getActivitiesThatCanRespondToIntent(searchIntent);
+        // Deduplicate ResolveInfos for a same package.
+        Map<String, ResolveInfo> packageToResolveInfo = new HashMap<>();
+        for (ResolveInfo ri : resolveInfos) {
+            if (isValidResolveInfo(ri, packageManagerDelegate)) {
+                packageToResolveInfo.put(ri.activityInfo.packageName, ri);
+            }
+        }
+        return packageToResolveInfo.values().toArray(new ResolveInfo[packageToResolveInfo.size()]);
+    }
+
+    private static boolean isValidResolveInfo(
+            ResolveInfo ri, PackageManagerDelegate packageManagerDelegate) {
+        if (ri == null) {
+            return false;
+        }
+        if (ri.activityInfo == null) {
+            return false;
+        }
+        if (ri.activityInfo.packageName == null || ri.activityInfo.packageName.isEmpty()) {
+            return false;
+        }
+        if (ri.activityInfo.name == null || ri.activityInfo.name.isEmpty()) {
+            return false;
+        }
+        CharSequence appName = packageManagerDelegate.getAppLabel(ri);
+        if (appName == null || appName.toString().trim().isEmpty()) {
+            return false;
+        }
+        if (packageManagerDelegate.getAppIcon(ri) == null) {
+            return false;
+        }
+        return true;
     }
 }

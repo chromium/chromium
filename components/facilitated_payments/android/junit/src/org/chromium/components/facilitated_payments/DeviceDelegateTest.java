@@ -5,6 +5,7 @@
 package org.chromium.components.facilitated_payments;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -14,6 +15,10 @@ import static org.mockito.Mockito.when;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
 import androidx.test.filters.SmallTest;
@@ -30,8 +35,13 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /** Tests for {@link DeviceDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,15 +51,20 @@ public class DeviceDelegateTest {
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
     private static final String GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK =
             "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome";
+    private static final GURL PAYMENT_LINK = new GURL("https://www.example.com");
 
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
 
     @Mock private WindowAndroid mMockWindowAndroid;
     @Mock private Context mMockContext;
+    @Mock private PackageManagerDelegate mMockPackageManagerDelegate;
+    @Mock private Drawable mMockDrawable;
+    @Mock private PackageManager mMockPackageManager;
 
     @Before
     public void setUp() {
         when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mMockContext));
+        when(mMockContext.getPackageManager()).thenReturn(mMockPackageManager);
     }
 
     @Test
@@ -96,5 +111,159 @@ public class DeviceDelegateTest {
 
         // Verify startActivity was called (even though it threw).
         verify(mMockContext).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void testGetSupportedPaymentApps_nullWindowAndroid() {
+        ResolveInfo[] apps = DeviceDelegate.getSupportedPaymentApps(PAYMENT_LINK, null);
+
+        assertEquals(0, apps.length);
+    }
+
+    @Test
+    public void testGetSupportedPaymentApps_nullContext() {
+        when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
+
+        ResolveInfo[] apps =
+                DeviceDelegate.getSupportedPaymentApps(PAYMENT_LINK, mMockWindowAndroid);
+
+        assertEquals(0, apps.length);
+    }
+
+    @Test
+    public void testGetSupportedPaymentApps_nullPackageManager() {
+        when(mMockContext.getPackageManager()).thenReturn(null);
+
+        ResolveInfo[] apps =
+                DeviceDelegate.getSupportedPaymentApps(PAYMENT_LINK, mMockWindowAndroid);
+
+        assertEquals(0, apps.length);
+    }
+
+    @Test
+    public void testGetSupportedPaymentApps_noActivitiesFound() {
+        when(mMockPackageManagerDelegate.getActivitiesThatCanRespondToIntent(any(Intent.class)))
+                .thenReturn(Collections.emptyList());
+
+        ResolveInfo[] apps =
+                DeviceDelegate.getSupportedPaymentApps(
+                        PAYMENT_LINK, mMockWindowAndroid, mMockPackageManagerDelegate);
+
+        assertEquals(0, apps.length);
+        verify(mMockPackageManagerDelegate).getActivitiesThatCanRespondToIntent(any(Intent.class));
+    }
+
+    @Test
+    public void testGetSupportedPaymentApps_oneValidApp() {
+        ResolveInfo validApp = createResolveInfo("com.valid.app", "ValidAppActivity");
+        when(mMockPackageManagerDelegate.getActivitiesThatCanRespondToIntent(any(Intent.class)))
+                .thenReturn(Collections.singletonList(validApp));
+        when(mMockPackageManagerDelegate.getAppLabel(validApp)).thenReturn("Valid App");
+        when(mMockPackageManagerDelegate.getAppIcon(validApp)).thenReturn(mMockDrawable);
+
+        ResolveInfo[] apps =
+                DeviceDelegate.getSupportedPaymentApps(
+                        PAYMENT_LINK, mMockWindowAndroid, mMockPackageManagerDelegate);
+
+        assertEquals(1, apps.length);
+        assertEquals("com.valid.app", apps[0].activityInfo.packageName);
+    }
+
+    @Test
+    public void testGetSupportedPaymentApps_multipleValidApps() {
+        ResolveInfo validApp1 = createResolveInfo("com.valid.app1", "ValidApp1Activity");
+        ResolveInfo validApp2 = createResolveInfo("com.valid.app2", "ValidApp2Activity");
+        when(mMockPackageManagerDelegate.getActivitiesThatCanRespondToIntent(any(Intent.class)))
+                .thenReturn(Arrays.asList(validApp1, validApp2));
+        when(mMockPackageManagerDelegate.getAppLabel(validApp1)).thenReturn("Valid App 1");
+        when(mMockPackageManagerDelegate.getAppIcon(validApp1)).thenReturn(mMockDrawable);
+        when(mMockPackageManagerDelegate.getAppLabel(validApp2)).thenReturn("Valid App 2");
+        when(mMockPackageManagerDelegate.getAppIcon(validApp2)).thenReturn(mMockDrawable);
+
+        ResolveInfo[] apps =
+                DeviceDelegate.getSupportedPaymentApps(
+                        PAYMENT_LINK, mMockWindowAndroid, mMockPackageManagerDelegate);
+
+        assertEquals(2, apps.length);
+        List<String> packageNames = new ArrayList<>();
+        for (ResolveInfo app : apps) {
+            packageNames.add(app.activityInfo.packageName);
+        }
+        assertTrue(packageNames.contains("com.valid.app1"));
+        assertTrue(packageNames.contains("com.valid.app2"));
+    }
+
+    @Test
+    public void testGetSupportedPaymentApps_deduplicatesApps() {
+        ResolveInfo app1 = createResolveInfo("com.valid.app", "Activity1");
+        ResolveInfo app2 = createResolveInfo("com.valid.app", "Activity2"); // Same package
+        when(mMockPackageManagerDelegate.getActivitiesThatCanRespondToIntent(any(Intent.class)))
+                .thenReturn(Arrays.asList(app1, app2));
+        when(mMockPackageManagerDelegate.getAppLabel(any(ResolveInfo.class)))
+                .thenReturn("Same App");
+        when(mMockPackageManagerDelegate.getAppIcon(any(ResolveInfo.class)))
+                .thenReturn(mMockDrawable);
+
+        ResolveInfo[] apps =
+                DeviceDelegate.getSupportedPaymentApps(
+                        PAYMENT_LINK, mMockWindowAndroid, mMockPackageManagerDelegate);
+
+        assertEquals(1, apps.length);
+        assertEquals("com.valid.app", apps[0].activityInfo.packageName);
+    }
+
+    @Test
+    public void testGetSupportedPaymentApps_filtersInvalidApps() {
+        ResolveInfo validApp = createResolveInfo("com.valid.app", "ValidAppActivity");
+        ResolveInfo appWithNullActivityInfo = createResolveInfo("com.null.activity", "Activity");
+        appWithNullActivityInfo.activityInfo = null;
+        ResolveInfo appWithNullPackage = createResolveInfo(null, "Activity");
+        ResolveInfo appWithEmptyPackage = createResolveInfo("", "Activity");
+        ResolveInfo appWithNullName = createResolveInfo("com.null.name", null);
+        ResolveInfo appWithEmptyName = createResolveInfo("com.empty.name", "");
+        ResolveInfo appWithNullLabel = createResolveInfo("com.null.label", "Activity");
+        ResolveInfo appWithEmptyLabel = createResolveInfo("com.empty.label", "Activity");
+        ResolveInfo appWithNullIcon = createResolveInfo("com.null.icon", "Activity");
+
+        List<ResolveInfo> allApps =
+                Arrays.asList(
+                        validApp,
+                        appWithNullActivityInfo,
+                        appWithNullPackage,
+                        appWithEmptyPackage,
+                        appWithNullName,
+                        appWithEmptyName,
+                        appWithNullLabel,
+                        appWithEmptyLabel,
+                        appWithNullIcon);
+
+        when(mMockPackageManagerDelegate.getActivitiesThatCanRespondToIntent(any(Intent.class)))
+                .thenReturn(allApps);
+
+        // Setup mocks for valid and invalid apps
+        when(mMockPackageManagerDelegate.getAppLabel(validApp)).thenReturn("Valid App");
+        when(mMockPackageManagerDelegate.getAppIcon(validApp)).thenReturn(mMockDrawable);
+
+        when(mMockPackageManagerDelegate.getAppLabel(appWithNullLabel)).thenReturn(null);
+        when(mMockPackageManagerDelegate.getAppLabel(appWithEmptyLabel)).thenReturn(" ");
+
+        when(mMockPackageManagerDelegate.getAppLabel(appWithNullIcon))
+                .thenReturn("App With Null Icon");
+        when(mMockPackageManagerDelegate.getAppIcon(appWithNullIcon)).thenReturn(null);
+
+        ResolveInfo[] apps =
+                DeviceDelegate.getSupportedPaymentApps(
+                        PAYMENT_LINK, mMockWindowAndroid, mMockPackageManagerDelegate);
+
+        assertEquals(1, apps.length);
+        assertEquals("com.valid.app", apps[0].activityInfo.packageName);
+    }
+
+    private ResolveInfo createResolveInfo(String packageName, String name) {
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = packageName;
+        resolveInfo.activityInfo.name = name;
+        return resolveInfo;
     }
 }

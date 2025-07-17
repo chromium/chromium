@@ -11,6 +11,7 @@ android_library("java") {
     "src/org/chromium/components/facilitated_payments/DeviceDelegate.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClient.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridge.java",
+    "src/org/chromium/components/facilitated_payments/PackageManagerDelegate.java",
     "src/org/chromium/components/facilitated_payments/SecureData.java",
     "src/org/chromium/components/facilitated_payments/SecurePayload.java",
   ]
