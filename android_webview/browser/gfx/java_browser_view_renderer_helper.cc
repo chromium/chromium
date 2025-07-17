@@ -33,7 +33,7 @@ AwDrawSWFunctionTable* g_sw_draw_functions = NULL;
 class JavaCanvasHolder : public SoftwareCanvasHolder {
  public:
   JavaCanvasHolder(JNIEnv* env,
-                   const base::android::JavaRef<jobject>& java_canvas,
+                   jobject java_canvas,
                    const gfx::Point& scroll_correction);
 
   JavaCanvasHolder(const JavaCanvasHolder&) = delete;
@@ -48,14 +48,13 @@ class JavaCanvasHolder : public SoftwareCanvasHolder {
   std::unique_ptr<SkCanvas> canvas_;
 };
 
-JavaCanvasHolder::JavaCanvasHolder(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& java_canvas,
-    const gfx::Point& scroll)
+JavaCanvasHolder::JavaCanvasHolder(JNIEnv* env,
+                                   jobject java_canvas,
+                                   const gfx::Point& scroll)
     : pixels_(nullptr) {
   if (!g_sw_draw_functions)
     return;
-  pixels_ = g_sw_draw_functions->access_pixels(env, java_canvas.obj());
+  pixels_ = g_sw_draw_functions->access_pixels(env, java_canvas);
   if (!pixels_ || !pixels_->state)
     return;
 
@@ -85,7 +84,7 @@ SkCanvas* JavaCanvasHolder::GetCanvas() {
 class AuxiliaryCanvasHolder : public SoftwareCanvasHolder {
  public:
   AuxiliaryCanvasHolder(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& java_canvas,
+                        jobject java_canvas,
                         const gfx::Point& scroll_correction,
                         const gfx::Size size);
 
@@ -106,7 +105,7 @@ class AuxiliaryCanvasHolder : public SoftwareCanvasHolder {
 
 AuxiliaryCanvasHolder::AuxiliaryCanvasHolder(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& java_canvas,
+    jobject java_canvas,
     const gfx::Point& scroll_correction,
     const gfx::Size size)
     : jcanvas_(env, java_canvas), scroll_(scroll_correction) {
@@ -161,7 +160,7 @@ void RasterHelperSetAwDrawSWFunctionTable(AwDrawSWFunctionTable* table) {
 
 // static
 std::unique_ptr<SoftwareCanvasHolder> SoftwareCanvasHolder::Create(
-    const base::android::JavaRef<jobject>& java_canvas,
+    jobject java_canvas,
     const gfx::Point& scroll_correction,
     const gfx::Size& auxiliary_bitmap_size,
     bool force_auxiliary_bitmap) {

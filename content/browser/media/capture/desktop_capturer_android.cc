@@ -179,7 +179,7 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   next_frame_->set_icc_profile({});
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  const auto span = base::android::JavaByteBufferToSpan(env, plane.buf);
+  const auto span = base::android::JavaByteBufferToSpan(env, plane.buf.obj());
   const auto offset =
       plane.crop_top * plane.row_stride + plane.crop_left * plane.pixel_stride;
 

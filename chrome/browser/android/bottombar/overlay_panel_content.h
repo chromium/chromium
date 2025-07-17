@@ -23,7 +23,7 @@ class WebContentsDelegateAndroid;
 class OverlayPanelContent {
  public:
   // Constructs a native manager associated with the Java manager.
-  OverlayPanelContent(JNIEnv* env, const base::android::JavaRef<jobject>& obj);
+  OverlayPanelContent(JNIEnv* env, jobject obj);
 
   OverlayPanelContent(const OverlayPanelContent&) = delete;
   OverlayPanelContent& operator=(const OverlayPanelContent&) = delete;

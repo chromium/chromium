@@ -51,7 +51,7 @@ void BrowsingHistoryBridge::Destroy(JNIEnv*) {
 void BrowsingHistoryBridge::QueryHistory(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_result_obj,
-    const base::android::JavaRef<jstring>& j_query,
+    jstring j_query,
     const JavaParamRef<jstring>& j_app_id,
     jboolean j_host_only) {
   j_query_result_obj_.Reset(env, j_result_obj);
@@ -97,7 +97,7 @@ void BrowsingHistoryBridge::OnGetAllAppIds(
 
 void BrowsingHistoryBridge::GetLastVisitToHostBeforeRecentNavigations(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_host_name,
+    jstring j_host_name,
     const JavaParamRef<jobject>& jcallback) {
   browsing_history_service_->GetLastVisitToHostBeforeRecentNavigations(
       base::android::ConvertJavaStringToUTF8(env, j_host_name),

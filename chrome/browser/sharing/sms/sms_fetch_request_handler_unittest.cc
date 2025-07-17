@@ -350,7 +350,7 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameConfirm) {
   origin_list.push_back(url::Origin::Create(GURL(top_origin)));
   subscriber->OnReceive(origin_list, "123",
                         SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, formatted_top_origin, j_embedded_origin);
+  handler.OnConfirm(env, formatted_top_origin, j_embedded_origin.obj());
   loop.Run();
 }
 
@@ -395,6 +395,6 @@ TEST(SmsFetchRequestHandlerTest, EmbeddedFrameDismiss) {
   origin_list.push_back(url::Origin::Create(GURL(top_origin)));
   subscriber->OnReceive(origin_list, "123",
                         SmsFetcher::UserConsent::kNotObtained);
-  handler.OnDismiss(env, formatted_top_origin, j_embedded_origin);
+  handler.OnDismiss(env, formatted_top_origin, j_embedded_origin.obj());
   loop.Run();
 }

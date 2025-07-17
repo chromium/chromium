@@ -73,13 +73,12 @@ jlong JNI_WebApkUpdateDataFetcher_Initialize(
   return reinterpret_cast<intptr_t>(fetcher);
 }
 
-WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const GURL& start_url,
-    const GURL& scope,
-    const GURL& web_manifest_url,
-    const GURL& web_manifest_id)
+WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(JNIEnv* env,
+                                                 jobject obj,
+                                                 const GURL& start_url,
+                                                 const GURL& scope,
+                                                 const GURL& web_manifest_url,
+                                                 const GURL& web_manifest_id)
     : content::WebContentsObserver(nullptr),
       start_url_(start_url),
       scope_(scope),

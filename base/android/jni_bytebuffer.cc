@@ -8,17 +8,13 @@
 
 namespace base::android {
 
-base::span<const uint8_t> JavaByteBufferToSpan(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& buffer) {
+base::span<const uint8_t> JavaByteBufferToSpan(JNIEnv* env, jobject buffer) {
   auto span = MaybeJavaByteBufferToSpan(env, buffer);
   CHECK(span.has_value());
   return *span;
 }
 
-base::span<uint8_t> JavaByteBufferToMutableSpan(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& buffer) {
+base::span<uint8_t> JavaByteBufferToMutableSpan(JNIEnv* env, jobject buffer) {
   auto span = MaybeJavaByteBufferToMutableSpan(env, buffer);
   CHECK(span.has_value());
   return *span;
@@ -26,7 +22,7 @@ base::span<uint8_t> JavaByteBufferToMutableSpan(
 
 std::optional<base::span<const uint8_t>> MaybeJavaByteBufferToSpan(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& buffer) {
+    jobject buffer) {
   auto span = MaybeJavaByteBufferToMutableSpan(env, buffer);
   return span ? std::make_optional(base::span<const uint8_t>(*span))
               : std::nullopt;
@@ -34,9 +30,9 @@ std::optional<base::span<const uint8_t>> MaybeJavaByteBufferToSpan(
 
 std::optional<base::span<uint8_t>> MaybeJavaByteBufferToMutableSpan(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& buffer) {
-  void* data = env->GetDirectBufferAddress(buffer.obj());
-  jlong size = env->GetDirectBufferCapacity(buffer.obj());
+    jobject buffer) {
+  void* data = env->GetDirectBufferAddress(buffer);
+  jlong size = env->GetDirectBufferCapacity(buffer);
 
   // !data && size == 0 is allowed - this is how a 0-length Buffer is
   // represented.

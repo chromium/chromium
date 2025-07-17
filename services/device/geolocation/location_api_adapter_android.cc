@@ -116,9 +116,8 @@ void LocationApiAdapterAndroid::OnNewLocationAvailable(double latitude,
 }
 
 // static
-void LocationApiAdapterAndroid::OnNewErrorAvailable(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& message) {
+void LocationApiAdapterAndroid::OnNewErrorAvailable(JNIEnv* env,
+                                                    jstring message) {
   LocationApiAdapterAndroid* self = GetInstance();
   self->task_runner_->PostTask(
       FROM_HERE,
@@ -127,7 +126,7 @@ void LocationApiAdapterAndroid::OnNewErrorAvailable(
           base::Unretained(self),
           mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
               mojom::GeopositionErrorCode::kPositionUnavailable,
-              base::android::ConvertJavaStringToUTF8(message),
+              base::android::ConvertJavaStringToUTF8(env, message),
               /*error_technical=*/""))));
 }
 

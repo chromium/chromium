@@ -48,11 +48,10 @@ CompositorView* CompositorView::FromJavaObject(
                                            jcompositor_view));
 }
 
-CompositorViewImpl::CompositorViewImpl(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    ui::WindowAndroid* window_android,
-    int64_t java_background_color)
+CompositorViewImpl::CompositorViewImpl(JNIEnv* env,
+                                       jobject obj,
+                                       ui::WindowAndroid* window_android,
+                                       int64_t java_background_color)
     : obj_(env, obj),
       root_layer_(cc::slim::SolidColorLayer::Create()),
       current_surface_format_(kPixelFormatUnknown) {

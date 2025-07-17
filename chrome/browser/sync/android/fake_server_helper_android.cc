@@ -56,12 +56,12 @@ using base::android::JavaParamRef;
 
 namespace {
 
-void DeserializeEntity(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& serialized_entity,
-    sync_pb::SyncEntity* entity) {
-  std::string string;
-  base::android::JavaByteArrayToString(env, serialized_entity, &string);
+void DeserializeEntity(JNIEnv* env,
+                       jbyteArray serialized_entity,
+                       sync_pb::SyncEntity* entity) {
+  int bytes_length = env->GetArrayLength(serialized_entity);
+  jbyte* bytes = env->GetByteArrayElements(serialized_entity, nullptr);
+  std::string string(reinterpret_cast<char*>(bytes), bytes_length);
 
   bool success = entity->ParseFromString(string);
   DCHECK(success) << "Could not deserialize Entity";

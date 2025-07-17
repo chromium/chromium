@@ -35,7 +35,7 @@ void DeserializePaymentOptionsFromJavaByteBuffer(
     return;
   }
   base::span<const uint8_t> span =
-      base::android::JavaByteBufferToSpan(env, jbuffer);
+      base::android::JavaByteBufferToSpan(env, jbuffer.obj());
   if (span.empty()) {
     *out = nullptr;
     return;

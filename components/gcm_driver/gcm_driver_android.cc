@@ -84,9 +84,9 @@ void GCMDriverAndroid::OnMessageReceived(
   message.sender_id = ConvertJavaStringToUTF8(env, j_sender_id);
 
   if (!j_message_id.is_null())
-    message.message_id = ConvertJavaStringToUTF8(env, j_message_id);
+    ConvertJavaStringToUTF8(env, j_message_id, &message.message_id);
   if (!j_collapse_key.is_null())
-    message.collapse_key = ConvertJavaStringToUTF8(env, j_collapse_key);
+    ConvertJavaStringToUTF8(env, j_collapse_key, &message.collapse_key);
 
   // Expand j_data_keys_and_values from array to map.
   std::vector<std::string> data_keys_and_values;

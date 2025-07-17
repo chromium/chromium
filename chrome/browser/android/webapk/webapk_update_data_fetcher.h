@@ -31,7 +31,7 @@ struct InstallableData;
 class WebApkUpdateDataFetcher : public content::WebContentsObserver {
  public:
   WebApkUpdateDataFetcher(JNIEnv* env,
-                          const base::android::JavaRef<jobject>& obj,
+                          jobject obj,
                           const GURL& start_url,
                           const GURL& scope,
                           const GURL& web_manifest_url,

@@ -25,8 +25,8 @@ jboolean JNI_ClipboardAndroidTestSupport_NativeWriteHtml(
   {
     // Simulate something writing HTML to the clipboard in native.
     // Android requires both a plaintext and HTML version.
-    std::u16string html_text =
-        base::android::ConvertJavaStringToUTF16(env, j_html_text);
+    std::u16string html_text;
+    base::android::ConvertJavaStringToUTF16(env, j_html_text, &html_text);
     std::string url;
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteHTML(html_text, url);
@@ -62,8 +62,8 @@ jboolean JNI_ClipboardAndroidTestSupport_NativeClipboardContains(
     return false;
   }
 
-  std::string expected_text =
-      base::android::ConvertJavaStringToUTF8(env, j_text);
+  std::string expected_text;
+  base::android::ConvertJavaStringToUTF8(env, j_text, &expected_text);
 
   std::string contents;
   clipboard->ReadAsciiText(ClipboardBuffer::kCopyPaste,

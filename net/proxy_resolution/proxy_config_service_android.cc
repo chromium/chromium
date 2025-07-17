@@ -438,7 +438,7 @@ class ProxyConfigServiceAndroid::Delegate
       std::string host = ConvertJavaStringToUTF8(env, jhost);
       std::string pac_url;
       if (jpac_url)
-        pac_url = ConvertJavaStringToUTF8(env, jpac_url);
+        ConvertJavaStringToUTF8(env, jpac_url, &pac_url);
       std::vector<std::string> exclusion_list;
       base::android::AppendJavaStringArrayToStringVector(
           env, jexclusion_list, &exclusion_list);

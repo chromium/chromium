@@ -31,7 +31,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
 
   void QueryHistory(JNIEnv* env,
                     const JavaParamRef<jobject>& j_result_obj,
-                    const base::android::JavaRef<jstring>& j_query,
+                    jstring j_query,
                     const JavaParamRef<jstring>& j_app_id,
                     jboolean j_host_only);
 
@@ -43,7 +43,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
 
   void GetLastVisitToHostBeforeRecentNavigations(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_host_name,
+      jstring j_host_name,
       const JavaParamRef<jobject>& jcallback_);
 
   // Adds a HistoryEntry with the |j_url| and |j_native_timestamps| to the list

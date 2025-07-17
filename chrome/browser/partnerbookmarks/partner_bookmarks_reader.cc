@@ -153,9 +153,8 @@ jlong PartnerBookmarksReader::AddPartnerBookmark(
 
     // Handle favicon and touchicon
     if (profile_ != nullptr) {
-      if (!favicon.is_null() || !touchicon.is_null()) {
-        jbyteArray icon =
-            (!touchicon.is_null()) ? touchicon.obj() : favicon.obj();
+      if (favicon != nullptr || touchicon != nullptr) {
+        jbyteArray icon = (touchicon != nullptr) ? touchicon : favicon;
         const favicon_base::IconType icon_type =
             touchicon ? favicon_base::IconType::kTouchIcon
                       : favicon_base::IconType::kFavicon;

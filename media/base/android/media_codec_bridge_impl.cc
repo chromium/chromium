@@ -773,7 +773,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
     if (!data.empty()) {
       ScopedJavaLocalRef<jobject> j_buffer =
           Java_ObtainBlockResult_buffer(env, j_result);
-      base::android::JavaByteBufferToMutableSpan(env, j_buffer)
+      base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
           .first(data.size())
           .copy_from_nonoverlapping(data);
     }
@@ -921,7 +921,7 @@ base::span<uint8_t> MediaCodecBridgeImpl::GetInputBuffer(
       Java_MediaCodecBridge_getInputBuffer(env, j_bridge_, input_buffer_index));
   return j_buffer.is_null()
              ? base::span<uint8_t>()
-             : base::android::JavaByteBufferToMutableSpan(env, j_buffer);
+             : base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj());
 }
 
 MediaCodecResult MediaCodecBridgeImpl::CopyFromOutputBuffer(
@@ -934,7 +934,7 @@ MediaCodecResult MediaCodecBridgeImpl::CopyFromOutputBuffer(
   if (j_buffer.is_null()) {
     return {MediaCodecResult::Codes::kError, "Unable to get output buffer."};
   }
-  auto src_span = base::android::JavaByteBufferToSpan(env, j_buffer);
+  auto src_span = base::android::JavaByteBufferToSpan(env, j_buffer.obj());
   dst.copy_from_nonoverlapping(src_span.subspan(offset, dst.size()));
   return OkStatus();
 }
@@ -1016,7 +1016,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
 
   if (!data.empty()) {
     auto j_buffer = Java_ObtainBlockResult_buffer(env, j_result);
-    base::android::JavaByteBufferToMutableSpan(env, j_buffer)
+    base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
         .first(data.size())
         .copy_from_nonoverlapping(data);
   }

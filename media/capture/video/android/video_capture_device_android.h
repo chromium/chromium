@@ -99,16 +99,16 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   // Implement org.chromium.media.VideoCapture.nativeOnFrameAvailable.
   void OnFrameAvailable(JNIEnv* env,
-                        const base::android::JavaRef<jbyteArray>& data,
+                        const base::android::JavaParamRef<jbyteArray>& data,
                         jint length,
                         jint rotation);
 
   // Implement org.chromium.media.VideoCapture.nativeOnI420FrameAvailable.
   void OnI420FrameAvailable(JNIEnv* env,
-                            const base::android::JavaRef<jobject>& y_buffer,
+                            jobject y_buffer,
                             jint y_stride,
-                            const base::android::JavaRef<jobject>& u_buffer,
-                            const base::android::JavaRef<jobject>& v_buffer,
+                            jobject u_buffer,
+                            jobject v_buffer,
                             jint uv_row_stride,
                             jint uv_pixel_stride,
                             jint width,
@@ -119,21 +119,20 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   // Implement org.chromium.media.VideoCapture.nativeOnError.
   void OnError(JNIEnv* env,
                int android_video_capture_error,
-               const base::android::JavaRef<jstring>& message);
+               const base::android::JavaParamRef<jstring>& message);
 
   // Implement org.chromium.media.VideoCapture.nativeOnFrameDropped.
   void OnFrameDropped(JNIEnv* env,
                       int android_video_capture_frame_drop_reason);
 
-  void OnGetPhotoCapabilitiesReply(
-      JNIEnv* env,
-      jlong callback_id,
-      const base::android::JavaRef<jobject>& photo_capabilities);
+  void OnGetPhotoCapabilitiesReply(JNIEnv* env,
+                                   jlong callback_id,
+                                   jobject photo_capabilities);
 
   // Implement org.chromium.media.VideoCapture.nativeOnPhotoTaken.
   void OnPhotoTaken(JNIEnv* env,
                     jlong callback_id,
-                    const base::android::JavaRef<jbyteArray>& data);
+                    const base::android::JavaParamRef<jbyteArray>& data);
 
   // Implement org.chromium.media.VideoCapture.nativeOnStarted.
   void OnStarted(JNIEnv* env);

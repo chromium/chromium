@@ -26,7 +26,7 @@ class FontSizePrefsAndroid {
  public:
   FontSizePrefsAndroid(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& obj,
+      jobject obj,
       const base::android::JavaParamRef<jobject>& jbrowser_context_handle);
 
   FontSizePrefsAndroid(const FontSizePrefsAndroid&) = delete;

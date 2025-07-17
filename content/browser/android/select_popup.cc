@@ -144,7 +144,7 @@ void SelectPopup::SelectMenuItems(JNIEnv* env,
       reinterpret_cast<blink::mojom::PopupMenuClient*>(selectPopupDelegate);
   DCHECK(popup_client_raw_ptr && popup_client_.get() == popup_client_raw_ptr);
 
-  if (indices.is_null()) {
+  if (indices == NULL) {
     popup_client_->DidCancel();
     return;
   }

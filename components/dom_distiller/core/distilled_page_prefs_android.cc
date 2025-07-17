@@ -18,7 +18,7 @@ namespace android {
 
 DistilledPagePrefsAndroid::DistilledPagePrefsAndroid(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
+    jobject obj,
     DistilledPagePrefs* distilled_page_prefs_ptr)
     : distilled_page_prefs_(distilled_page_prefs_ptr) {}
 
@@ -78,7 +78,7 @@ void DistilledPagePrefsAndroid::RemoveObserver(JNIEnv* env,
 
 DistilledPagePrefsObserverAndroid::DistilledPagePrefsObserverAndroid(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj) {
+    jobject obj) {
   java_ref_.Reset(env, obj);
 }
 

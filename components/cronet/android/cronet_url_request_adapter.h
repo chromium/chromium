@@ -47,7 +47,7 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   CronetURLRequestAdapter(
       CronetContextAdapter* context,
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jurl_request,
+      jobject jurl_request,
       const GURL& url,
       net::RequestPriority priority,
       jboolean jdisable_cache,

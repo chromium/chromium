@@ -151,14 +151,14 @@ void AudioTrackOutputStream::GetVolume(double* volume) {
 // AudioOutputStream::SourceCallback implementation methods called from Java.
 ScopedJavaLocalRef<jobject> AudioTrackOutputStream::OnMoreData(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& audio_data,
+    jobject audio_data,
     jlong delay_in_frame) {
   DCHECK(callback_);
 
   base::TimeDelta delay =
       AudioTimestampHelper::FramesToTime(delay_in_frame, params_.sample_rate());
 
-  void* native_buffer = env->GetDirectBufferAddress(audio_data.obj());
+  void* native_buffer = env->GetDirectBufferAddress(audio_data);
 
   if (params_.IsBitstreamFormat()) {
     // For bitstream formats, use the direct buffer memory to avoid additional
@@ -197,11 +197,9 @@ void AudioTrackOutputStream::OnError(JNIEnv* env) {
   callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
 }
 
-jlong AudioTrackOutputStream::GetAddress(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& byte_buffer) {
-  return reinterpret_cast<jlong>(
-      env->GetDirectBufferAddress(byte_buffer.obj()));
+jlong AudioTrackOutputStream::GetAddress(JNIEnv* env,
+                                         jobject byte_buffer) {
+  return reinterpret_cast<jlong>(env->GetDirectBufferAddress(byte_buffer));
 }
 
 }  // namespace media

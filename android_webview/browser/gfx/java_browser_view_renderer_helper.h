@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/android/jni_android.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -22,7 +21,7 @@ namespace android_webview {
 class SoftwareCanvasHolder {
  public:
   static std::unique_ptr<SoftwareCanvasHolder> Create(
-      const base::android::JavaRef<jobject>& java_canvas,
+      jobject java_canvas,
       const gfx::Point& scroll_correction,
       const gfx::Size& auxiliary_bitmap_size,
       bool force_auxiliary_bitmap);

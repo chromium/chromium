@@ -213,7 +213,7 @@ void TouchToFillPaymentMethodControllerImpl::LocalIbanSuggestionSelected(
     const base::android::JavaParamRef<jstring>& guid) {
   if (delegate_) {
     delegate_->IbanSuggestionSelected(
-        Iban::Guid((*env).GetStringUTFChars(guid.obj(), nullptr)));
+        Iban::Guid((*env).GetStringUTFChars(guid, nullptr)));
   }
 }
 

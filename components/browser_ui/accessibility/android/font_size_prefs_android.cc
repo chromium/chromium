@@ -26,7 +26,7 @@ const char kWebKitFontScaleFactor[] = "webkit.webprefs.font_scale_factor";
 
 FontSizePrefsAndroid::FontSizePrefsAndroid(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
+    jobject obj,
     const JavaParamRef<jobject>& jbrowser_context_handle)
     : pref_service_(user_prefs::UserPrefs::Get(
           content::BrowserContextFromJavaHandle(jbrowser_context_handle))) {

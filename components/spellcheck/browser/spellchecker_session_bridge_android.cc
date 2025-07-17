@@ -89,7 +89,7 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
   for (size_t i = 0; i < offsets.size(); i++) {
     base::android::ScopedJavaLocalRef<jobjectArray> suggestions_for_word_array(
         env, static_cast<jobjectArray>(
-                 env->GetObjectArrayElement(suggestions_array.obj(), i)));
+                 env->GetObjectArrayElement(suggestions_array, i)));
     std::vector<std::u16string> suggestions_for_word;
     base::android::AppendJavaStringArrayToStringVector(
         env, suggestions_for_word_array, &suggestions_for_word);

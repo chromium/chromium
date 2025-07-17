@@ -13,8 +13,7 @@
 // testing.
 class HeapProfilingTestShim {
  public:
-  HeapProfilingTestShim(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+  HeapProfilingTestShim(JNIEnv* env, jobject obj);
   void Destroy(JNIEnv* env);
 
   HeapProfilingTestShim(const HeapProfilingTestShim&) = delete;

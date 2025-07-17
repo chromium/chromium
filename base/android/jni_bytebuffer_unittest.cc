@@ -28,7 +28,7 @@ TEST(JniByteBuffer, ConversionDoesNotCopy) {
       env, env->NewDirectByteBuffer(bytes, sizeof(bytes)));
   ASSERT_TRUE(jbuffer);
 
-  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer);
+  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer.obj());
   EXPECT_EQ(span.data(), bytes);
   EXPECT_EQ(span.size(), sizeof(bytes));
 }
@@ -49,7 +49,7 @@ TEST(JniByteBuffer, DISABLED_ConversionFromNonBuffer) {
   ScopedJavaLocalRef<jobject> jnonbuffer(env, env->NewObject(cls, init));
 
   std::optional<base::span<const uint8_t>> maybe_span =
-      MaybeJavaByteBufferToSpan(env, jnonbuffer);
+      MaybeJavaByteBufferToSpan(env, jnonbuffer.obj());
   EXPECT_FALSE(maybe_span.has_value());
 }
 
@@ -59,7 +59,7 @@ TEST(JniByteBuffer, ZeroByteConversionSucceeds) {
                                       env->NewDirectByteBuffer(nullptr, 0));
   ASSERT_TRUE(jbuffer);
 
-  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer);
+  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer.obj());
   EXPECT_EQ(span.data(), nullptr);
   EXPECT_EQ(span.size(), 0u);
 }

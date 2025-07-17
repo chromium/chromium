@@ -354,9 +354,9 @@ static void JNI_TranslateBridge_SetLanguageOrder(
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService(j_profile));
   std::vector<std::string> order;
-  const int num_langs = (*env).GetArrayLength(j_order.obj());
+  const int num_langs = (*env).GetArrayLength(j_order);
   for (int i = 0; i < num_langs; i++) {
-    jstring string = (jstring)(*env).GetObjectArrayElement(j_order.obj(), i);
+    jstring string = (jstring)(*env).GetObjectArrayElement(j_order, i);
     order.push_back((*env).GetStringUTFChars(string, nullptr));
   }
   translate_prefs->SetLanguageOrder(order);

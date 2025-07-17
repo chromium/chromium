@@ -28,8 +28,7 @@ class AutofillSaveCardInfoBar : public infobars::ConfirmInfoBar {
   ~AutofillSaveCardInfoBar() override;
 
   // Called when a link in the legal message text was clicked.
-  void OnLegalMessageLinkClicked(JNIEnv* env,
-                                 const base::android::JavaRef<jstring>& url);
+  void OnLegalMessageLinkClicked(JNIEnv* env, jstring url);
 
  private:
   // ConfirmInfoBar:

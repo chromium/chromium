@@ -21,10 +21,9 @@ class WebContents;
 // Android implementation of the page info UI.
 class PageInfoControllerAndroid : public PageInfoUI {
  public:
-  PageInfoControllerAndroid(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& java_page_info,
-      content::WebContents* web_contents);
+  PageInfoControllerAndroid(JNIEnv* env,
+                            jobject java_page_info,
+                            content::WebContents* web_contents);
 
   PageInfoControllerAndroid(const PageInfoControllerAndroid&) = delete;
   PageInfoControllerAndroid& operator=(const PageInfoControllerAndroid&) =

@@ -181,9 +181,8 @@ void SpeechRecognizerImplAndroid::OnRecognitionResults(
   std::vector<std::u16string> options;
   AppendJavaStringArrayToStringVector(env, strings, &options);
   std::vector<float> scores(options.size(), 0.0);
-  if (!floats.is_null()) {
+  if (floats != NULL)
     JavaFloatArrayToFloatVector(env, floats, &scores);
-  }
   std::vector<media::mojom::WebSpeechRecognitionResultPtr> results;
   results.push_back(media::mojom::WebSpeechRecognitionResult::New());
   media::mojom::WebSpeechRecognitionResultPtr& result = results.back();

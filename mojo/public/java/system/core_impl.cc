@@ -37,12 +37,10 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_CreateMessagePipe(
     const JavaParamRef<jobject>& options_buffer) {
   const MojoCreateMessagePipeOptions* options = NULL;
   if (options_buffer) {
-    const void* buffer_start =
-        env->GetDirectBufferAddress(options_buffer.obj());
+    const void* buffer_start = env->GetDirectBufferAddress(options_buffer);
     DCHECK(buffer_start);
     DCHECK_EQ(reinterpret_cast<const uintptr_t>(buffer_start) % 8, 0u);
-    const size_t buffer_size =
-        env->GetDirectBufferCapacity(options_buffer.obj());
+    const size_t buffer_size = env->GetDirectBufferCapacity(options_buffer);
     DCHECK_EQ(buffer_size, sizeof(MojoCreateMessagePipeOptions));
     options = static_cast<const MojoCreateMessagePipeOptions*>(buffer_start);
     DCHECK_EQ(options->struct_size, buffer_size);
@@ -58,12 +56,10 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_CreateDataPipe(
     const JavaParamRef<jobject>& options_buffer) {
   const MojoCreateDataPipeOptions* options = NULL;
   if (options_buffer) {
-    const void* buffer_start =
-        env->GetDirectBufferAddress(options_buffer.obj());
+    const void* buffer_start = env->GetDirectBufferAddress(options_buffer);
     DCHECK(buffer_start);
     DCHECK_EQ(reinterpret_cast<const uintptr_t>(buffer_start) % 8, 0u);
-    const size_t buffer_size =
-        env->GetDirectBufferCapacity(options_buffer.obj());
+    const size_t buffer_size = env->GetDirectBufferCapacity(options_buffer);
     DCHECK_EQ(buffer_size, sizeof(MojoCreateDataPipeOptions));
     options = static_cast<const MojoCreateDataPipeOptions*>(buffer_start);
     DCHECK_EQ(options->struct_size, buffer_size);
@@ -80,12 +76,10 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_CreateSharedBuffer(
     jlong num_bytes) {
   const MojoCreateSharedBufferOptions* options = 0;
   if (options_buffer) {
-    const void* buffer_start =
-        env->GetDirectBufferAddress(options_buffer.obj());
+    const void* buffer_start = env->GetDirectBufferAddress(options_buffer);
     DCHECK(buffer_start);
     DCHECK_EQ(reinterpret_cast<const uintptr_t>(buffer_start) % 8, 0u);
-    const size_t buffer_size =
-        env->GetDirectBufferCapacity(options_buffer.obj());
+    const size_t buffer_size = env->GetDirectBufferCapacity(options_buffer);
     DCHECK_EQ(buffer_size, sizeof(MojoCreateSharedBufferOptions));
     options = static_cast<const MojoCreateSharedBufferOptions*>(buffer_start);
     DCHECK_EQ(options->struct_size, buffer_size);
@@ -104,11 +98,11 @@ static jint JNI_CoreImpl_QueryHandleSignalsState(
     JNIEnv* env,
     jlong mojo_handle,
     const JavaParamRef<jobject>& buffer) {
-  MojoHandleSignalsState* signals_state = static_cast<MojoHandleSignalsState*>(
-      env->GetDirectBufferAddress(buffer.obj()));
+  MojoHandleSignalsState* signals_state =
+      static_cast<MojoHandleSignalsState*>(env->GetDirectBufferAddress(buffer));
   DCHECK(signals_state);
   DCHECK_EQ(sizeof(MojoHandleSignalsState),
-            static_cast<size_t>(env->GetDirectBufferCapacity(buffer.obj())));
+            static_cast<size_t>(env->GetDirectBufferCapacity(buffer)));
   return MojoQueryHandleSignalsState(mojo_handle, signals_state);
 }
 
@@ -122,18 +116,17 @@ static jint JNI_CoreImpl_WriteMessage(
   const void* buffer_start = 0;
   uint32_t buffer_size = 0;
   if (bytes) {
-    buffer_start = env->GetDirectBufferAddress(bytes.obj());
+    buffer_start = env->GetDirectBufferAddress(bytes);
     DCHECK(buffer_start);
-    DCHECK(env->GetDirectBufferCapacity(bytes.obj()) >= num_bytes);
+    DCHECK(env->GetDirectBufferCapacity(bytes) >= num_bytes);
     buffer_size = num_bytes;
   }
   const jlong* java_handles = nullptr;
   uint32_t num_handles = 0;
   if (handles_buffer) {
     java_handles =
-        static_cast<jlong*>(env->GetDirectBufferAddress(handles_buffer.obj()));
-    num_handles =
-        env->GetDirectBufferCapacity(handles_buffer.obj()) / sizeof(jlong);
+        static_cast<jlong*>(env->GetDirectBufferAddress(handles_buffer));
+    num_handles = env->GetDirectBufferCapacity(handles_buffer) / sizeof(jlong);
   }
 
   // Truncate handle values if necessary.
@@ -196,9 +189,9 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadData(
   void* buffer_start = 0;
   uint32_t buffer_size = elements_capacity;
   if (elements) {
-    buffer_start = env->GetDirectBufferAddress(elements.obj());
+    buffer_start = env->GetDirectBufferAddress(elements);
     DCHECK(buffer_start);
-    DCHECK(elements_capacity <= env->GetDirectBufferCapacity(elements.obj()));
+    DCHECK(elements_capacity <= env->GetDirectBufferCapacity(elements));
   }
   MojoReadDataOptions options;
   options.struct_size = sizeof(options);
@@ -243,9 +236,9 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_WriteData(
     const JavaParamRef<jobject>& elements,
     jint limit,
     jint flags) {
-  void* buffer_start = env->GetDirectBufferAddress(elements.obj());
+  void* buffer_start = env->GetDirectBufferAddress(elements);
   DCHECK(buffer_start);
-  DCHECK(limit <= env->GetDirectBufferCapacity(elements.obj()));
+  DCHECK(limit <= env->GetDirectBufferCapacity(elements));
   uint32_t buffer_size = limit;
 
   MojoWriteDataOptions options;
@@ -291,11 +284,9 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_Duplicate(
     const JavaParamRef<jobject>& options_buffer) {
   const MojoDuplicateBufferHandleOptions* options = 0;
   if (options_buffer) {
-    const void* buffer_start =
-        env->GetDirectBufferAddress(options_buffer.obj());
+    const void* buffer_start = env->GetDirectBufferAddress(options_buffer);
     DCHECK(buffer_start);
-    const size_t buffer_size =
-        env->GetDirectBufferCapacity(options_buffer.obj());
+    const size_t buffer_size = env->GetDirectBufferCapacity(options_buffer);
     DCHECK_EQ(buffer_size, sizeof(MojoDuplicateBufferHandleOptions));
     options =
         static_cast<const MojoDuplicateBufferHandleOptions*>(buffer_start);
@@ -329,7 +320,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_Map(JNIEnv* env,
 
 static int JNI_CoreImpl_Unmap(JNIEnv* env,
                               const JavaParamRef<jobject>& buffer) {
-  void* buffer_start = env->GetDirectBufferAddress(buffer.obj());
+  void* buffer_start = env->GetDirectBufferAddress(buffer);
   DCHECK(buffer_start);
   return MojoUnmapBuffer(buffer_start);
 }
@@ -339,7 +330,7 @@ static jint JNI_CoreImpl_GetNativeBufferOffset(
     const JavaParamRef<jobject>& buffer,
     jint alignment) {
   jint offset =
-      reinterpret_cast<uintptr_t>(env->GetDirectBufferAddress(buffer.obj())) %
+      reinterpret_cast<uintptr_t>(env->GetDirectBufferAddress(buffer)) %
       alignment;
   if (offset == 0)
     return 0;

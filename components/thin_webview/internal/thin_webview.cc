@@ -36,7 +36,7 @@ jlong JNI_ThinWebViewImpl_Init(JNIEnv* env,
 }
 
 ThinWebView::ThinWebView(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& obj,
+                         jobject obj,
                          CompositorView* compositor_view,
                          ui::WindowAndroid* window_android)
     : obj_(env, obj),

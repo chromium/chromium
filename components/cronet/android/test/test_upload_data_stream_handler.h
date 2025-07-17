@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
@@ -27,8 +26,7 @@ class TestUploadDataStreamHandler {
   TestUploadDataStreamHandler(
       std::unique_ptr<net::UploadDataStream> upload_data_stream,
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&
-          jtest_upload_data_stream_handler,
+      jobject jtest_upload_data_stream_handler,
       jlong jcontext_adapter);
 
   TestUploadDataStreamHandler(const TestUploadDataStreamHandler&) = delete;

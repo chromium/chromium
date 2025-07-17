@@ -20,9 +20,7 @@ static jlong JNI_HeapProfilingTestShim_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(profiler);
 }
 
-HeapProfilingTestShim::HeapProfilingTestShim(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {}
+HeapProfilingTestShim::HeapProfilingTestShim(JNIEnv* env, jobject obj) {}
 HeapProfilingTestShim::~HeapProfilingTestShim() = default;
 
 void HeapProfilingTestShim::Destroy(JNIEnv* env) {

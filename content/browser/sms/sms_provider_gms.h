@@ -34,9 +34,7 @@ class CONTENT_EXPORT SmsProviderGms : public SmsProvider {
 
   // Implementation of corresponding JNI methods in SmsProviderGms.Natives.*
 
-  void OnReceive(JNIEnv*,
-                 const base::android::JavaRef<jstring>& message,
-                 jint backend);
+  void OnReceive(JNIEnv*, jstring message, jint backend);
   void OnTimeout(JNIEnv* env);
   void OnCancel(JNIEnv* env);
   void OnNotAvailable(JNIEnv* env);

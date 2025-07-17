@@ -67,7 +67,7 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   // anchor rect for `anchor_view` to the specified bounds. Invoked when opening
   // a datalist popup.
   void SetAnchorViewRect(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& anchor_view,
+                         jobject anchor_view,
                          jfloat x,
                          jfloat y,
                          jfloat width,

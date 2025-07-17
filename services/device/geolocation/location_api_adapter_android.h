@@ -54,9 +54,7 @@ class LocationApiAdapterAndroid {
                                      double heading,
                                      bool has_speed,
                                      double speed);
-  static void OnNewErrorAvailable(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& message);
+  static void OnNewErrorAvailable(JNIEnv* env, jstring message);
 
   // Returns our singleton.
   static LocationApiAdapterAndroid* GetInstance();

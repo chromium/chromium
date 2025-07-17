@@ -80,7 +80,7 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
  public:
   LogoObserverAndroid(base::WeakPtr<LogoBridge> logo_bridge,
                       JNIEnv* env,
-                      const base::android::JavaRef<jobject>& j_logo_observer)
+                      jobject j_logo_observer)
       : logo_bridge_(logo_bridge) {
     j_logo_observer_.Reset(env, j_logo_observer);
   }

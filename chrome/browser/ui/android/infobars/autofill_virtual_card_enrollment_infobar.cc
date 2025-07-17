@@ -50,7 +50,7 @@ AutofillVirtualCardEnrollmentInfoBar::~AutofillVirtualCardEnrollmentInfoBar() =
 
 void AutofillVirtualCardEnrollmentInfoBar::OnInfobarLinkClicked(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& url,
+    jstring url,
     jint link_type) {
   virtual_card_enrollment_delegate_->OnInfobarLinkClicked(
       GURL(base::android::ConvertJavaStringToUTF16(env, url)),

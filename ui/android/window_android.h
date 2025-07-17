@@ -70,7 +70,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
       const base::android::JavaParamRef<jobject>& jwindow_android);
 
   WindowAndroid(JNIEnv* env,
-                const base::android::JavaRef<jobject>& obj,
+                jobject obj,
                 int display_id,
                 float scroll_factor,
                 bool window_is_wide_color_gamut);

@@ -184,7 +184,7 @@ DownloadManagerService::DownloadManagerService()
 DownloadManagerService::~DownloadManagerService() = default;
 
 void DownloadManagerService::Init(JNIEnv* env,
-                                  const base::android::JavaRef<jobject>& obj,
+                                  const JavaParamRef<jobject>& obj,
                                   bool is_profile_added) {
   java_ref_.Reset(env, obj);
   if (is_profile_added) {

@@ -26,9 +26,7 @@ namespace embedder_support {
 
 namespace {
 
-GURL JNI_UrlUtilities_ConvertJavaStringToGURL(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& url) {
+GURL JNI_UrlUtilities_ConvertJavaStringToGURL(JNIEnv* env, jstring url) {
   return url ? GURL(ConvertJavaStringToUTF8(env, url)) : GURL();
 }
 
