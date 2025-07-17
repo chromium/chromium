@@ -203,6 +203,7 @@ source_set("impl") {
       "//chrome/browser/ui/toasts:toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/webauthn",
       "//chrome/browser/ui/webui/signin:login",
       "//components/autofill/core/browser",
       "//components/password_manager/core/browser/features:password_features",

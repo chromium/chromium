@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("webauthn") {
+  sources = [ "authenticator_request_dialog_view_controller.h" ]
+  public_deps = []
+
+  if (toolkit_views) {
+    sources += [
+      "account_hover_list_model.h",
+      "authenticator_request_sheet_model.h",
+      "authenticator_request_window.h",
+      "context_menu_helper.h",
+      "hover_list_model.h",
+      "passkey_deleted_confirmation_controller.h",
+      "passkey_not_accepted_bubble_controller.h",
+      "passkey_saved_confirmation_controller.h",
+      "passkey_updated_confirmation_controller.h",
+      "passkey_upgrade_request_controller.h",
+      "sheet_models.h",
+      "transport_hover_list_model.h",
+      "user_actions.h",
+      "webauthn_ui_helpers.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/ui/passwords/bubble_controllers",
+      "//chrome/browser/webauthn",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//content/public/browser",
+      "//device/fido",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+}

@@ -141,6 +141,7 @@ if (!is_android) {
       "//base/test:test_proto",
       "//base/test:test_support",
       "//chrome/browser/signin/e2e_tests:test_support",
+      "//chrome/browser/ui/webauthn",
       "//chrome/test:test_support",
       "//components/metrics_services_manager",
       "//components/no_state_prefetch/browser",
