@@ -54,11 +54,13 @@
 
 using testing::_;
 using testing::An;
+using testing::Between;
 using testing::ByRef;
 using testing::ContainerEq;
 using testing::Contains;
 using testing::DoAll;
 using testing::Each;
+using testing::ElementsAre;
 using testing::Eq;
 using testing::Invoke;
 using testing::IsEmpty;
@@ -218,7 +220,12 @@ class TabGroupSyncServiceImplTest : public testing::Test {
     auto collaboration_finder =
         std::make_unique<testing::NiceMock<MockCollaborationFinder>>();
     collaboration_finder_ = collaboration_finder.get();
-    EXPECT_CALL(*decider_, RegisterOptimizationTypes(_)).Times(1);
+    EXPECT_CALL(*decider_, RegisterOptimizationTypes(ElementsAre(
+                               optimization_guide::proto::SAVED_TAB_GROUP)))
+        .Times(1);
+    EXPECT_CALL(*decider_, RegisterOptimizationTypes(ElementsAre(
+                               optimization_guide::proto::PAGE_ENTITIES)))
+        .Times(Between(0, 1));
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model),
         std::make_unique<SyncDataTypeConfiguration>(
@@ -2050,6 +2057,9 @@ TEST_F(TabGroupSyncServiceImplTest, MakeTabGroupShared) {
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_CALL(*observer_, OnTabGroupMigrated(_, group_1_.saved_guid(),
                                              TriggerSource::LOCAL));
+  EXPECT_CALL(*decider_, RegisterOptimizationTypes(ElementsAre(
+                             optimization_guide::proto::PAGE_ENTITIES)))
+      .Times(1);
   MakeTabGroupShared(local_group_id_1_,
                      syncer::CollaborationId("collaboration"));
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
@@ -2891,6 +2901,43 @@ TEST_F(TabGroupSyncServiceImplTest, ShouldReturnSavedTabGroupOnly) {
   EXPECT_THAT(all_groups, SizeIs(3));
   EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));
   EXPECT_THAT(all_groups, Not(Contains(HasGuid(shared_group->saved_guid()))));
+}
+
+TEST_F(TabGroupSyncServiceImplTest,
+       LoadSharedTabGroupsOnStartup_WillRegisterPageEntitiesOptimizationType) {
+  SavedTabGroup shared_group(test::CreateTestSavedTabGroup());
+  CollaborationId collaboration_id("foo");
+  shared_group.SetCollaborationId(collaboration_id);
+
+  EXPECT_CALL(*observer_, OnInitialized()).Times(1);
+  EXPECT_CALL(*decider_, RegisterOptimizationTypes(ElementsAre(
+                             optimization_guide::proto::PAGE_ENTITIES)))
+      .Times(1);
+
+  model_->LoadStoredEntries(
+      /*groups=*/{shared_group},
+      /*tabs=*/{});
+  task_environment_.AdvanceClock(GetOriginatingSavedGroupCleanUpTimeInterval());
+  task_environment_.FastForwardBy(base::Seconds(10));
+  WaitForPostedTasks();
+}
+
+TEST_F(
+    TabGroupSyncServiceImplTest,
+    LoadSharedTabGroupsOnStartup_WillNotRegisterPageEntitiesOptimizationType) {
+  SavedTabGroup saved_group(test::CreateTestSavedTabGroup());
+
+  EXPECT_CALL(*observer_, OnInitialized()).Times(1);
+  EXPECT_CALL(*decider_, RegisterOptimizationTypes(ElementsAre(
+                             optimization_guide::proto::PAGE_ENTITIES)))
+      .Times(0);
+
+  model_->LoadStoredEntries(
+      /*groups=*/{saved_group},
+      /*tabs=*/{});
+  task_environment_.AdvanceClock(GetOriginatingSavedGroupCleanUpTimeInterval());
+  task_environment_.FastForwardBy(base::Seconds(10));
+  WaitForPostedTasks();
 }
 
 class EmptyTabGroupSyncServiceImplTest : public TabGroupSyncServiceImplTest {
