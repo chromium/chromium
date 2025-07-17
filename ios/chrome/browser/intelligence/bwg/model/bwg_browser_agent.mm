@@ -88,11 +88,6 @@ void BwgBrowserAgent::PresentBwgOverlay(
   config.shouldShowSuggestionChips =
       bwg_tab_helper->ShouldShowSuggestionChips();
 
-  // Set the location permission state.
-  // TODO(crbug.com/426207968): Populate with actual value.
-  config.BWGLocationPermissionState =
-      ios::provider::BWGLocationPermissionState::kUnknown;
-
   // Set the page context and page state for the current web state. If the page
   // context is unavailable, the page state represents the error.
   std::unique_ptr<optimization_guide::proto::PageContext> pageContext = nullptr;
