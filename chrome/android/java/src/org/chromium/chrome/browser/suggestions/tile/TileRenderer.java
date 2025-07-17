@@ -16,8 +16,6 @@ import android.view.View;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
@@ -28,6 +26,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -55,10 +55,11 @@ import java.util.Map;
  * Utility class that renders {@link Tile}s into a provided {@link TilesLinearLayout}, creating and
  * manipulating the views as needed.
  */
+@NullMarked
 public class TileRenderer {
     private final Context mContext;
     private RoundedIconGenerator mIconGenerator;
-    private ImageFetcher mImageFetcher;
+    private @Nullable ImageFetcher mImageFetcher;
 
     @TileStyle private final int mStyle;
     private final int mDesiredIconSize;
@@ -66,7 +67,7 @@ public class TileRenderer {
     private final float mIconCornerRadius;
     private int mTitleLinesCount;
     private boolean mNativeInitializationComplete;
-    private Profile mProfile;
+    private @Nullable Profile mProfile;
 
     @LayoutRes private final int mTileLayoutResId;
     private final float mTileWidthDp;
@@ -107,7 +108,7 @@ public class TileRenderer {
         private final Map<SiteSuggestion, LinkedList<SuggestionsTileView>> mStorage =
                 new HashMap<>();
 
-        void put(SiteSuggestion key, @NonNull SuggestionsTileView value) {
+        void put(SiteSuggestion key, SuggestionsTileView value) {
             LinkedList<SuggestionsTileView> bucket = mStorage.get(key);
             if (bucket == null) {
                 bucket = new LinkedList<>();
@@ -116,8 +117,7 @@ public class TileRenderer {
             bucket.addLast(value);
         }
 
-        @Nullable
-        SuggestionsTileView remove(SiteSuggestion key) {
+        @Nullable SuggestionsTileView remove(SiteSuggestion key) {
             SuggestionsTileView ret = null;
             LinkedList<SuggestionsTileView> bucket = mStorage.get(key);
             if (bucket != null) {
@@ -131,7 +131,10 @@ public class TileRenderer {
     }
 
     public TileRenderer(
-            Context context, @TileStyle int style, int titleLines, ImageFetcher imageFetcher) {
+            Context context,
+            @TileStyle int style,
+            int titleLines,
+            @Nullable ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
         mStyle = style;
         mTitleLinesCount = titleLines;
@@ -354,6 +357,7 @@ public class TileRenderer {
 
     /** Returns whether the tile represents a Search query. */
     private boolean isSearchTile(Tile tile) {
+        assert mProfile != null;
         return TileUtils.isSearchTile(mProfile, tile);
     }
 

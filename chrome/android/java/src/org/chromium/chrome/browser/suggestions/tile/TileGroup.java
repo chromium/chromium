@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -33,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /** The model and controller for a group of site suggestion tiles. */
+@NullMarked
 public class TileGroup implements MostVisitedSites.Observer {
 
     /**
@@ -164,9 +168,7 @@ public class TileGroup implements MostVisitedSites.Observer {
 
     /** Delegate for handling interactions with tiles. */
     public interface TileInteractionDelegate
-            extends View.OnClickListener,
-                    View.OnLongClickListener,
-                    View.OnTouchListener {
+            extends View.OnClickListener, View.OnLongClickListener, View.OnTouchListener {
         /**
          * Set a runnable for click events on the tile. This is primarily used to track interaction
          * with the tile used by feature engagement purposes.
@@ -497,7 +499,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         mPendingChanges.siteSuggestions = null;
 
         List<Tile> newPersonalizedTiles = mTileSections.get(TileSectionType.PERSONALIZED);
-
+        assumeNonNull(newPersonalizedTiles);
         boolean dataChanged =
                 isInitialLoad || !tileListAreEqual(oldPersonalizedTiles, newPersonalizedTiles);
 
@@ -507,6 +509,7 @@ public class TileGroup implements MostVisitedSites.Observer {
 
             mOfflineModelObserver.updateAllSuggestionsOfflineAvailability();
 
+            assumeNonNull(oldPersonalizedTiles);
             if (isInitialLoad || oldPersonalizedTiles.size() != newPersonalizedTiles.size()) {
                 mObserver.onTileCountChanged();
             }
@@ -523,9 +526,11 @@ public class TileGroup implements MostVisitedSites.Observer {
         mPendingChanges.taskToRunAfterTileReload.clear();
     }
 
-    protected @Nullable Tile findTile(SiteSuggestion suggestion) {
-        if (mTileSections.get(suggestion.sectionType) == null) return null;
-        for (Tile tile : mTileSections.get(suggestion.sectionType)) {
+    protected @Nullable Tile findTile(@Nullable SiteSuggestion suggestion) {
+        if (suggestion == null) return null;
+        var tiles = mTileSections.get(suggestion.sectionType);
+        if (tiles == null) return null;
+        for (Tile tile : tiles) {
             if (tile.getData().equals(suggestion)) return tile;
         }
         return null;
@@ -536,7 +541,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * @param tiles The section to search in, represented by the contained list of tiles.
      * @return A tile matching the provided URL and section, or {@code null} if none is found.
      */
-    private static Tile findTileByUrl(GURL url, @Nullable List<Tile> tiles) {
+    private static @Nullable Tile findTileByUrl(GURL url, @Nullable List<Tile> tiles) {
         if (tiles == null) return null;
         for (Tile tile : tiles) {
             if (tile.getUrl().equals(url)) return tile;
@@ -602,7 +607,8 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     public @Nullable SiteSuggestion getHomepageTileData() {
-        for (Tile tile : mTileSections.get(TileSectionType.PERSONALIZED)) {
+        var tiles = assumeNonNull(mTileSections.get(TileSectionType.PERSONALIZED));
+        for (Tile tile : tiles) {
             if (tile.getSource() == TileSource.HOMEPAGE) {
                 return tile.getData();
             }
@@ -749,8 +755,7 @@ public class TileGroup implements MostVisitedSites.Observer {
             return success;
         }
 
-        private boolean assignCustomLinkAndUpdateOnSuccess(
-                GURL keyUrl, String name, @Nullable GURL url) {
+        private boolean assignCustomLinkAndUpdateOnSuccess(GURL keyUrl, String name, GURL url) {
             if (!TileUtils.isValidCustomTileName(name)
                     || (url != null && !TileUtils.isValidCustomTileUrl(url))) {
                 return false;

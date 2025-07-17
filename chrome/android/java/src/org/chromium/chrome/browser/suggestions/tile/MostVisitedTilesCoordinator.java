@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Handler;
@@ -12,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -31,6 +33,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for displaying a list of {@link SuggestionsTileView} in a {@link ViewGroup}. */
+@NullMarked
 public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver {
     private static final int TITLE_LINES = 1;
     public static final String CONTEXT_MENU_USER_ACTION_PREFIX = "Suggestions";
@@ -39,10 +42,10 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final MostVisitedTilesMediator mMediator;
     private final UiConfig mUiConfig;
-    private TileRenderer mRenderer;
-    private UserEducationHelper mUserEducationHelper;
-    private ContextMenuManager mContextMenuManager;
-    private OfflinePageBridge mOfflinePageBridge;
+    private @Nullable TileRenderer mRenderer;
+    private @Nullable UserEducationHelper mUserEducationHelper;
+    private @Nullable ContextMenuManager mContextMenuManager;
+    private @Nullable OfflinePageBridge mOfflinePageBridge;
 
     /**
      * @param activity The app activity.
@@ -136,7 +139,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 suggestionsUiDelegate,
                 mContextMenuManager,
                 tileGroupDelegate,
-                mOfflinePageBridge,
+                assumeNonNull(mOfflinePageBridge),
                 mRenderer);
     }
 

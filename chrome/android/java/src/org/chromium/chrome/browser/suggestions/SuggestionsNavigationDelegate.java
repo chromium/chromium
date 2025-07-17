@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.suggestions;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,6 +24,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 /** Extension of {@link NativePageNavigationDelegate} with suggestions-specific methods. */
+@NullMarked
 public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateImpl {
 
     public SuggestionsNavigationDelegate(

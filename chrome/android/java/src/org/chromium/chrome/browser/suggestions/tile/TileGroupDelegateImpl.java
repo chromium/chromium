@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -37,6 +40,7 @@ import java.util.Set;
  * Reusable implementation of {@link TileGroup.Delegate}. Performs work in parts of the system that
  * the {@link TileGroup} should not know about.
  */
+@NullMarked
 public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private static final Set<Integer> sMvtClickForUserAction =
             new HashSet<>(
@@ -53,8 +57,8 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private @Nullable ModalDialogManager mModalDialogManager;
 
     private boolean mIsDestroyed;
-    private SnackbarController mTileRemovedSnackbarController;
-    private SnackbarController mTileUnpinnedSnackbarController;
+    private @Nullable SnackbarController mTileRemovedSnackbarController;
+    private @Nullable SnackbarController mTileUnpinnedSnackbarController;
 
     public TileGroupDelegateImpl(
             Context context,
@@ -192,14 +196,14 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             mTileUnpinnedSnackbarController =
                     new SnackbarController() {
                         @Override
-                        public void onDismissNoAction(Object actionData) {}
+                        public void onDismissNoAction(@Nullable Object actionData) {}
 
                         /** Undoes the tile removal. */
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             if (mIsDestroyed) return;
                             Runnable undoHandlerFromData = (Runnable) actionData;
-                            undoHandlerFromData.run();
+                            assumeNonNull(undoHandlerFromData).run();
                             RecordUserAction.record("Suggestions.SnackBar.UndoUnpinItem");
                         }
                     };
@@ -242,13 +246,14 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             mTileRemovedSnackbarController =
                     new SnackbarController() {
                         @Override
-                        public void onDismissNoAction(Object actionData) {}
+                        public void onDismissNoAction(@Nullable Object actionData) {}
 
                         /** Undoes the tile removal. */
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             if (mIsDestroyed) return;
                             GURL url = (GURL) actionData;
+                            if (url == null) return;
                             mMostVisitedSites.removeBlocklistedUrl(url);
                         }
                     };

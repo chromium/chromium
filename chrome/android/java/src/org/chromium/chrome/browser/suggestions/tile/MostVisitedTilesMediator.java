@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
@@ -14,12 +15,14 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.ViewStub;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -36,6 +39,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** Mediator for handling {@link MostVisitedTilesLayout} related logic. */
+@NullMarked
 public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrlServiceObserver {
 
     /**
@@ -52,11 +56,11 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private final boolean mIsTablet;
     private final int mTileViewLandscapePadding;
     private final int mTileViewPortraitEdgePadding;
-    private final Runnable mSnapshotTileGridChangedRunnable;
-    private final Runnable mTileCountChangedRunnable;
+    private final @Nullable Runnable mSnapshotTileGridChangedRunnable;
+    private final @Nullable Runnable mTileCountChangedRunnable;
     private final boolean mNtpCustomizationForMvtFeatureEnabled;
 
-    private NtpCustomizationConfigManager.HomepageStateListener mMvtVisibilityListener;
+    private @Nullable HomepageStateListener mMvtVisibilityListener;
     private int mTileViewPortraitIntervalPadding;
 
     private TileRenderer mRenderer;
@@ -112,7 +116,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         if (!mNtpCustomizationForMvtFeatureEnabled) return;
 
         mMvtVisibilityListener =
-                new NtpCustomizationConfigManager.HomepageStateListener() {
+                new HomepageStateListener() {
                     @Override
                     public void onMvtVisibilityChanged(boolean isMvtVisible) {
                         setMvtVisibility(isMvtVisible);
@@ -122,6 +126,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     }
 
     /** Called to initialize this mediator when native is ready. */
+    @Initializer
     public void initWithNative(
             Profile profile,
             UserEducationHelper userEducationHelper,
@@ -161,6 +166,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         if (mTileGroup.getTileSections().size() < 1) return;
 
         List<Tile> tiles = mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assumeNonNull(tiles);
         mRenderer.renderTileSection(tiles, mMvTilesLayout, mTileGroup.getTileSetupDelegate());
         mTileGroup.notifyTilesRendered();
         updateTilesView();
@@ -212,6 +218,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         updateTilesView();
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mMvTilesLayout != null) {
             mMvTilesLayout.destroy();
@@ -248,7 +255,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         if (tileView != null) tileView.renderOfflineBadge(tile);
     }
 
-    private SuggestionsTileView findTileView(SiteSuggestion data) {
+    private @Nullable SuggestionsTileView findTileView(SiteSuggestion data) {
         int tileCount = mMvTilesLayout.getTileCount();
         for (int i = 0; i < tileCount; i++) {
             SuggestionsTileView tileView = (SuggestionsTileView) mMvTilesLayout.getTileAt(i);
