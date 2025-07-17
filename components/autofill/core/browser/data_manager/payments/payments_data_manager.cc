@@ -2235,8 +2235,8 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
       payment_instrument.bnpl_issuer_details();
 
   // If `payment_instrument` has an unsupported issuer ID, do not cache it.
-  if (!base::Contains(payments::BnplManager::GetSupportedBnplIssuerIds(),
-                      bnpl_issuer_details.issuer_id())) {
+  if (!payments::BnplManager::IsBnplIssuerSupported(
+          bnpl_issuer_details.issuer_id())) {
     return;
   }
 
@@ -2258,7 +2258,7 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
     return;
   }
 
-  // `GetSupportedBnplIssuerIds` is already called to filter out any unknown
+  // `IsBnplIssuerSupported` is already called to filter out any unknown
   // issuer IDs that might be returned by the payment server. This ensures that
   // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
   // processed, thus guaranteeing that `ConvertToBnplIssuerIdEnum` will not
@@ -2316,8 +2316,7 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
 
   // If `payment_instrument_creation_option` has an unsupported issuer ID, do
   // not cache it.
-  if (!base::Contains(payments::BnplManager::GetSupportedBnplIssuerIds(),
-                      bnpl_issuer.issuer_id())) {
+  if (!payments::BnplManager::IsBnplIssuerSupported(bnpl_issuer.issuer_id())) {
     return;
   }
 
@@ -2338,7 +2337,7 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
     return;
   }
 
-  // `GetSupportedBnplIssuerIds` is already called to filter out any unknown
+  // `IsBnplIssuerSupported` is already called to filter out any unknown
   // issuer IDs that might be returned by the payment server. This ensures that
   // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
   // processed, thus guaranteeing that `ConvertToBnplIssuerIdEnum` will not

@@ -45,8 +45,8 @@ class BnplManager {
   BnplManager& operator=(const BnplManager& other) = delete;
   virtual ~BnplManager();
 
-  // Retrieve supported BNPL issuers.
-  static const std::array<std::string_view, 2>& GetSupportedBnplIssuerIds();
+  // Returns if `issuer_id` is a supported BNPL issuer.
+  static bool IsBnplIssuerSupported(std::string_view issuer_id);
 
   // Initializes the BNPL flow, which includes UI shown to the user to select an
   // issuer, a possible ToS dialog, and redirecting to the selected issuer's

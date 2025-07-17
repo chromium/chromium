@@ -64,16 +64,18 @@ BnplManager::BnplManager(BrowserAutofillManager* browser_autofill_manager)
 BnplManager::~BnplManager() = default;
 
 // static
-const std::array<std::string_view, 2>&
-BnplManager::GetSupportedBnplIssuerIds() {
-  // Calling `ConvertToBnplIssuerIdString` serves as a validation step,
-  // verifying that each supported Bnpl IssuerId enum value has a corresponding
-  // string representation. This helps maintain the invariant with
-  // `ConvertToBnplIssuerIdEnum`.
-  static const std::array<std::string_view, 2> kBnplIssuers = {
+bool BnplManager::IsBnplIssuerSupported(std::string_view issuer_id) {
+  base::flat_set<std::string_view> supported_issuers = {
       autofill::ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAffirm),
       autofill::ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplZip)};
-  return kBnplIssuers;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableBuyNowPayLaterForKlarna)) {
+    supported_issuers.insert(autofill::ConvertToBnplIssuerIdString(
+        BnplIssuer::IssuerId::kBnplKlarna));
+  }
+
+  return supported_issuers.contains(issuer_id);
 }
 
 void BnplManager::OnDidAcceptBnplSuggestion(

@@ -1898,6 +1898,25 @@ TEST_F(
   bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
 }
 
+TEST_F(BnplManagerTest, IsBnplIssuerSupported) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterForKlarna);
+
+  EXPECT_TRUE(BnplManager::IsBnplIssuerSupported(kBnplAffirmIssuerId));
+  EXPECT_TRUE(BnplManager::IsBnplIssuerSupported(kBnplZipIssuerId));
+  EXPECT_TRUE(BnplManager::IsBnplIssuerSupported(kBnplKlarnaIssuerId));
+}
+
+TEST_F(BnplManagerTest, IsBnplIssuerSupported_KlarnaDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableBuyNowPayLaterForKlarna);
+
+  EXPECT_TRUE(BnplManager::IsBnplIssuerSupported(kBnplAffirmIssuerId));
+  EXPECT_TRUE(BnplManager::IsBnplIssuerSupported(kBnplZipIssuerId));
+  EXPECT_FALSE(BnplManager::IsBnplIssuerSupported(kBnplKlarnaIssuerId));
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

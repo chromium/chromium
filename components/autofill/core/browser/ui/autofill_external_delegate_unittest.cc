@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -783,7 +784,7 @@ TEST_F(AutofillExternalDelegateTest, BnplSuggestionsShownWithCreditCardEntry) {
 TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
   IssueOnQuery();
   CreditCard card = test::GetVirtualCard();
-  card.set_issuer_id(payments::BnplManager::GetSupportedBnplIssuerIds()[0]);
+  card.set_issuer_id(kBnplAffirmIssuerId);
 
   const uint64_t expected_amount = 50'000'000;
 
