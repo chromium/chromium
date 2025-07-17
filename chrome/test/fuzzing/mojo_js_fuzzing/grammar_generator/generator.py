@@ -629,6 +629,13 @@ def main():
                         '--root-build-dir',
                         required=True,
                         help="The path to the root out dir.")
+    parser.add_argument(
+        '-i',
+        '--interface-name',
+        required=False,
+        help=
+        'If provided, this generates the rules for the specified interface and its dependencies only.'
+    )
 
     args = parser.parse_args()
     interfaces = {}
@@ -661,8 +668,8 @@ def main():
                 interface_modules[entry[1]] = entry[0]
 
         for root_interface_name, module_path in interface_modules.items():
-            # if 'CoordinatorConnector' not in root_interface_name:
-            #     continue
+            if args.interface_name and args.interface_name not in root_interface_name:
+                continue
             module_path = os.path.join(args.root_build_dir, module_path)
             with open(module_path, 'rb') as f:
                 m = mojom.Module.Load(f)
@@ -675,9 +682,12 @@ def main():
                     m.Stylize(JavaScriptStylizer())
                     build_root_interface_rules(root_interface_name, m, builder)
 
-    with action_helpers.atomic_output(
-            f'{args.root_build_dir}/mojo_js_in_process_fuzzer.html',
-            mode="w") as f:
+    html_file_name = f'{args.root_build_dir}/mojo_js_in_process_fuzzer.html'
+
+    if args.interface_name:
+        html_file_name = f'{args.root_build_dir}/{args.interface_name}_in_process_fuzzer.html'
+
+    with action_helpers.atomic_output(html_file_name, mode="w") as f:
         f.write('<html>\n')
         f.write(' <body>\n')
         f.write(
