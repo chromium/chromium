@@ -283,4 +283,48 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
     ]
     data = [ "$root_gen_dir/" ]
   }
+
+  action("digital_identity_request_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/DigitalIdentityRequest.txt",
+                  root_build_dir),
+      "-i",
+      "DigitalIdentityRequest",
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/DigitalIdentityRequest.txt",
+      "${root_build_dir}/DigitalIdentityRequest_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("digital_identity_request_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/mojo_js_fuzzing/digital_identity_request_template.js"
+    grammars = [ "digital_identity_request_fuzzer:${target_gen_dir}/DigitalIdentityRequest.txt" ]
+    deps = [ ":digital_identity_request_grammar_generator" ]
+  }
+
+  in_process_fuzzer("digital_identity_request_in_process_fuzzer") {
+    sources = [ "digital_identity_request_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":digital_identity_request_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [ "$root_gen_dir/" ]
+  }
 }
