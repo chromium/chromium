@@ -598,11 +598,44 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    protected void moveGroupToIndex(Token tabGroupId, int newIndex) {}
+    protected void moveGroupToIndex(Token tabGroupId, int newIndex) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return;
+
+        List<Tab> tabs = getTabsInGroup(tabGroupId);
+        if (tabs.isEmpty()) return;
+
+        Tab firstTab = tabs.get(0);
+        int curIndex = indexOf(firstTab);
+
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            observer.willMoveTabGroup(tabGroupId, curIndex);
+        }
+
+        int finalIndex =
+                TabCollectionTabModelImplJni.get()
+                        .moveTabGroupTo(mNativeTabCollectionTabModelImplPtr, tabGroupId, newIndex);
+
+        if (finalIndex == curIndex) return;
+
+        // TODO(crbug.com/432297442): See if anything cares about sequencing this after all the tabs
+        // are moved.
+        for (int i = 0; i < tabs.size(); i++) {
+            Tab tab = tabs.get(i);
+            for (TabModelObserver observer : mTabModelObservers) {
+                observer.didMoveTab(tab, finalIndex + i, curIndex + i);
+            }
+        }
+
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            observer.didMoveTabGroup(firstTab, finalIndex, curIndex);
+        }
+    }
 
     @Override
     protected List<Tab> getAllTabs() {
         assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return Collections.emptyList();
         return TabCollectionTabModelImplJni.get().getAllTabs(mNativeTabCollectionTabModelImplPtr);
     }
 
@@ -730,7 +763,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void moveRelatedTabs(@TabId int id, int newIndex) {}
+    public void moveRelatedTabs(@TabId int id, int newIndex) {
+        Tab tab = getTabById(id);
+        if (tab == null) return;
+
+        Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId == null) return;
+
+        moveGroupToIndex(tabGroupId, newIndex);
+    }
 
     @Override
     public boolean willMergingCreateNewGroup(List<Tab> tabsToMerge) {
@@ -1114,7 +1155,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     /**
      * Moves a tab to a new index. Firing observer events for any changes in pinned or tab group
-     * state.
+     * state. Note the pinned and grouped states are mutually exclusive.
      *
      * @param tab The tab to move.
      * @param index The current index of the tab.
@@ -1125,9 +1166,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      */
     private int moveTabInternal(
             Tab tab, int index, int newIndex, @Nullable Token newTabGroupId, boolean isPinned) {
+        assert newTabGroupId == null || !isPinned
+                : "Pinned and grouped tabs are mutually exclusive.";
+
         Token oldTabGroupId = tab.getTabGroupId();
-        boolean isMovingOutOfGroup = oldTabGroupId != null && !oldTabGroupId.equals(newTabGroupId);
-        boolean isMergingIntoGroup = newTabGroupId != null;
+        boolean isMovingWithinGroup = false;
+        boolean isMovingOutOfGroup = false;
+        if (oldTabGroupId != null) {
+            isMovingWithinGroup = oldTabGroupId.equals(newTabGroupId);
+            isMovingOutOfGroup = !isMovingWithinGroup;
+        }
+        // Moving tabs within a group does not count as merging despite newTabGroupId being
+        // non-null. However, if the oldTabGroupId was null or does not match newTabGroupId we want
+        // to fire this event if a newTabGroupId is provided.
+        boolean isMergingIntoGroup = !isMovingWithinGroup && newTabGroupId != null;
         boolean isChangingPinState = tab.getIsPinned() != isPinned;
 
         if (isChangingPinState) {
@@ -1163,6 +1215,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
+        if (isMovingWithinGroup) {
+            for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+                observer.didMoveWithinGroup(tab, index, finalIndex);
+            }
+        }
+
         if (isChangingPinState) {
             for (TabModelObserver obs : mTabModelObservers) {
                 obs.didChangePinState(tab);
@@ -1176,9 +1234,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // TODO(crbug.com/429145597): Also close the detached tab group if this is not an
             // undoable merge.
             if (wasLastTabInGroup && newTabGroupId == null) {
+                final @DidRemoveTabGroupReason int reason;
+                if (isPinned) {
+                    reason = DidRemoveTabGroupReason.PIN;
+                } else if (isMergingIntoGroup) {
+                    reason = DidRemoveTabGroupReason.MERGE;
+                } else {
+                    reason = DidRemoveTabGroupReason.UNGROUP;
+                }
                 for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
-                    observer.didRemoveTabGroup(
-                            Tab.INVALID_TAB_ID, oldTabGroupId, DidRemoveTabGroupReason.UNGROUP);
+                    observer.didRemoveTabGroup(Tab.INVALID_TAB_ID, oldTabGroupId, reason);
                 }
             }
         }
@@ -1268,7 +1333,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 @TabGroupColorId int colorId,
                 boolean isCollapsed);
 
-        void moveTabGroupTo(
+        int moveTabGroupTo(
                 long nativeTabCollectionTabModelImpl,
                 @JniType("base::Token") Token tabGroupId,
                 int newIndex);

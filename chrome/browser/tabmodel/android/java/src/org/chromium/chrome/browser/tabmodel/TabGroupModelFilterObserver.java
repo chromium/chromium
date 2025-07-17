@@ -38,6 +38,9 @@ public interface TabGroupModelFilterObserver {
          * or closing of individual tabs.
          */
         int CLOSE = 2;
+
+        /** The last tab in the group became pinned. */
+        int PIN = 3;
     }
 
     /**

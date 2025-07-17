@@ -54,7 +54,8 @@ class TabCollectionTabModelImpl {
   // Recurses until reaching the given index. Returns null if not found.
   TabAndroid* GetTabAtIndexRecursive(JNIEnv* env, size_t index) const;
 
-  // Moves a tab updating its group or pinned state if applicable.
+  // Moves a tab updating its group or pinned state if applicable. Returns the
+  // final index of the tab.
   int MoveTabRecursive(JNIEnv* env,
                        size_t current_index,
                        size_t new_index,
@@ -78,10 +79,11 @@ class TabCollectionTabModelImpl {
                       jint j_color_id,
                       bool is_collapsed);
 
-  // Moves the tab group to a the new index.
-  void MoveTabGroupTo(JNIEnv* env,
-                      const base::Token& tab_group_id,
-                      int to_index);
+  // Moves the tab group to a the new index. Returns the final index of the
+  // group.
+  int MoveTabGroupTo(JNIEnv* env,
+                     const base::Token& tab_group_id,
+                     int to_index);
 
   // Returns the tabs in a group. If the group is not found, returns an empty
   // vector.

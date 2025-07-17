@@ -140,6 +140,9 @@ public class BlankCTATabInitialStateRule implements TestRule {
                         // the group. If this happens delete the tab forcibly.
                         closeAllButOneTab(regularTabModel);
                     }
+                    if (activityTab.getIsPinned()) {
+                        regularTabModel.unpinTab(activityTab.getId());
+                    }
                 });
         mActivityTestRule.loadUrl("about:blank");
         ThreadUtils.runOnUiThreadBlocking(

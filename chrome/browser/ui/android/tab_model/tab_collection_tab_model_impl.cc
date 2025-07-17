@@ -184,14 +184,17 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetTabsInGroup(
   return tabs;
 }
 
-void TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
-                                               const base::Token& token,
-                                               int to_index) {
+int TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
+                                              const base::Token& token,
+                                              int to_index) {
   TabGroupId tab_group_id = TabGroupId::FromRawToken(token);
   TabGroupTabCollection* group_collection =
       tab_strip_collection_->GetTabGroupCollection(tab_group_id);
   CHECK(group_collection);
   gfx::Range range = group_collection->GetTabGroup()->ListTabs();
+  // TODO(crbug.com/429145597): Reusing GetSafeIndex here might not work for
+  // groups with multiple tabs.
+
   // Don't pass the `tab_group_id` since we don't want to constrain the index
   // range to that of the group. Instead we are moving the entirety of the
   // group to any valid position that an ungrouped tab could be moved to.
@@ -199,6 +202,7 @@ void TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
                           /*tab_group_id=*/std::nullopt,
                           /*is_pinned=*/false);
   tab_strip_collection_->MoveTabGroupTo(tab_group_id, to_index);
+  return base::checked_cast<int>(to_index);
 }
 
 void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
