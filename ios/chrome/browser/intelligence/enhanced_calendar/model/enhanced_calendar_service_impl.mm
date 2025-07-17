@@ -103,7 +103,7 @@ void EnhancedCalendarServiceImpl::ExecuteEnhancedCalendarRequest(
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state_.get()
       completionCallback:std::move(page_context_completion_callback)];
-  [page_context_wrapper_ setShouldGetInnerText:YES];
+  [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
   [page_context_wrapper_ setShouldGetSnapshot:YES];
   [page_context_wrapper_ setTextToHighlight:base::SysUTF8ToNSString(
                                                 request_params->selected_text)];

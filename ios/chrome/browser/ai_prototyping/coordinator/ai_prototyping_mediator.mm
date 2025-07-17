@@ -167,7 +167,7 @@
   _pageContextWrapper = [[PageContextWrapper alloc]
         initWithWebState:_webStateList->GetActiveWebState()
       completionCallback:std::move(page_context_completion_callback)];
-  [_pageContextWrapper setShouldGetInnerText:YES];
+  [_pageContextWrapper setShouldGetAnnotatedPageContent:YES];
   [_pageContextWrapper setShouldGetSnapshot:YES];
   [_pageContextWrapper setShouldGetFullPagePDF:YES];
   [_pageContextWrapper populatePageContextFieldsAsync];

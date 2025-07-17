@@ -201,7 +201,7 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
     [self processSnapshotWithBarrier:page_context_barrier];
   }
 
-  if (_shouldGetInnerText) {
+  if (_shouldGetAnnotatedPageContent) {
     [self processInnerTextWithBarrier:page_context_barrier];
   }
 
@@ -240,13 +240,13 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
 
 // Sets the flag to enabled/disabled, and increments/decrements accordingly the
 // total amount of async tasks gating the completion callback.
-- (void)setShouldGetInnerText:(BOOL)shouldGetInnerText {
-  if (_shouldGetInnerText == shouldGetInnerText) {
+- (void)setShouldGetAnnotatedPageContent:(BOOL)shouldGetAnnotatedPageContent {
+  if (_shouldGetAnnotatedPageContent == shouldGetAnnotatedPageContent) {
     return;
   }
 
-  _asyncTasksToComplete += shouldGetInnerText ? 1 : -1;
-  _shouldGetInnerText = shouldGetInnerText;
+  _asyncTasksToComplete += shouldGetAnnotatedPageContent ? 1 : -1;
+  _shouldGetAnnotatedPageContent = shouldGetAnnotatedPageContent;
 }
 
 #pragma mark - Private
@@ -391,7 +391,7 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   // Construct the response, either with the expected value or an error.
   if (_forceDetachPageContext) {
     response = base::unexpected(PageContextWrapperError::kForceDetachError);
-  } else if (_shouldGetInnerText &&
+  } else if (_shouldGetAnnotatedPageContent &&
              !_page_context->has_annotated_page_content()) {
     response = base::unexpected(PageContextWrapperError::kAPCError);
   } else if (_shouldGetSnapshot && !_page_context->has_tab_screenshot()) {
