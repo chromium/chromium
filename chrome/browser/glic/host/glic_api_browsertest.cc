@@ -1672,10 +1672,16 @@ class GlicGetHostCapabilityApiTest
 IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
   const bool enable_features = GetParam();
   if (enable_features) {
+#if BUILDFLAG(ENABLE_PDF)
+    // The host is only capable of scrolling on PDF document if the feature flag
+    // is enabled, and on PDF-enabled platforms.
     ExecuteJsTest({
         .params = base::Value(base::Value::List().Append(
             base::to_underlying(mojom::HostCapability::kScrollToPdf))),
     });
+#else
+    ExecuteJsTest();
+#endif
   } else {
     ExecuteJsTest();
   }

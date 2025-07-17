@@ -70,6 +70,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
@@ -589,9 +590,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         features::kGlicUserStatusRefreshApi.Get();
     state->enable_multi_tab =
         base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab);
+#if BUILDFLAG(ENABLE_PDF)
     if (features::kGlicScrollToPDF.Get()) {
       state->host_capabilities.push_back(mojom::HostCapability::kScrollToPdf);
     }
+#endif
 
     std::move(callback).Run(std::move(state));
   }
