@@ -620,6 +620,10 @@ component("skia") {
       "SKOTTIE_TRIVIAL_FONTRUN_ITER",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 component("skia_switches") {
@@ -681,6 +685,10 @@ template("skia_source_set") {
       ":skia_library_config",
       "//build/config/compiler:no_chromium_code",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     public_configs = [ ":skia_config" ]
 
     if (is_apple) {
