@@ -915,9 +915,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.IGNORE_DUPLICATE_NAVS,
                 "Ignore duplicate navigations, keeping the older navigations instead."),
-        Flag.baseFeature(
-                "AllowSensorsToEnterBfcache",
-                "Allow pages with sensors to enter back/forward cache."),
         Flag.baseFeature("OverrideAPIKey"),
         Flag.baseFeature(
                 "RustyPng", "When enabled, uses Rust `png` crate to decode and encode PNG images."),

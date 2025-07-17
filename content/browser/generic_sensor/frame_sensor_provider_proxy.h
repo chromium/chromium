@@ -16,10 +16,6 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom.h"
 
-namespace features {
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAllowSensorsToEnterBfcache);
-}  // namespace features
-
 namespace content {
 
 // Per-RenderFrameHost SensorProvider implementation. It does permission checks
