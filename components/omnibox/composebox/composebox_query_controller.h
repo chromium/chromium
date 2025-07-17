@@ -202,7 +202,8 @@ class ComposeboxQueryController {
       version_info::Channel channel,
       std::string locale,
       TemplateURLService* template_url_service,
-      variations::VariationsClient* variations_client);
+      variations::VariationsClient* variations_client,
+      bool send_lns_surface);
   virtual ~ComposeboxQueryController();
 
   // Session management. Virtual for testing.
@@ -381,6 +382,11 @@ class ComposeboxQueryController {
 
   // Owned by the Profile, and thus guaranteed to outlive this instance.
   const raw_ptr<variations::VariationsClient> variations_client_;
+
+  // Whether or not to send the lns_surface parameter.
+// TODO(crbug.com/430070871): Remove this once the server supports the
+// `lns_surface` parameter.
+  bool send_lns_surface_ = false;
 
   base::WeakPtrFactory<ComposeboxQueryController> weak_ptr_factory_{this};
 };

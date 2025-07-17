@@ -56,7 +56,8 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       version_info::Channel channel,
       std::string locale,
       TemplateURLService* template_url_service,
-      variations::VariationsClient* variations_client);
+      variations::VariationsClient* variations_client,
+      bool send_lns_surface);
   ~TestComposeboxQueryController() override;
 
   // Mutators.

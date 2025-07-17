@@ -48,13 +48,15 @@ TestComposeboxQueryController::TestComposeboxQueryController(
     version_info::Channel channel,
     std::string locale,
     TemplateURLService* template_url_service,
-    variations::VariationsClient* variations_client)
+    variations::VariationsClient* variations_client,
+    bool send_lns_surface)
     : ComposeboxQueryController(identity_manager,
                                 url_loader_factory,
                                 channel,
                                 locale,
                                 template_url_service,
-                                variations_client) {}
+                                variations_client,
+                                send_lns_surface) {}
 TestComposeboxQueryController::~TestComposeboxQueryController() = default;
 
 std::unique_ptr<EndpointFetcher>

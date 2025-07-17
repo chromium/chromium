@@ -54,8 +54,9 @@ constexpr char kTestServerSessionId[] = "test_server_session_id";
 constexpr char kLocale[] = "en-US";
 constexpr char kRegion[] = "US";
 constexpr char kTimeZone[] = "America/Los_Angeles";
-inline constexpr char kRequestIdParameterKey[] = "vsrid";
-inline constexpr char kVisualInputTypeParameterKey[] = "vit";
+constexpr char kRequestIdParameterKey[] = "vsrid";
+constexpr char kVisualInputTypeParameterKey[] = "vit";
+constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
 base::Time kTestQueryStartTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1000);
 
@@ -69,6 +70,24 @@ class ComposeboxQueryControllerTest
  public:
   ComposeboxQueryControllerTest() = default;
   ~ComposeboxQueryControllerTest() override = default;
+
+  void CreateController(bool send_lns_surface) {
+    controller_ = std::make_unique<TestComposeboxQueryController>(
+        identity_manager(), shared_url_loader_factory_,
+        version_info::Channel::UNKNOWN, kLocale, template_url_service(),
+        fake_variations_client_.get(), send_lns_surface);
+    controller_->AddObserver(this);
+
+    lens::LensOverlayServerClusterInfoResponse cluster_info_response;
+    cluster_info_response.set_search_session_id(kTestSearchSessionId);
+    cluster_info_response.set_server_session_id(kTestServerSessionId);
+    controller_->set_fake_cluster_info_response(cluster_info_response);
+
+    controller().set_on_query_controller_state_changed_callback(
+        base::BindRepeating(
+            &ComposeboxQueryControllerTest::OnQueryControllerStateChanged,
+            base::Unretained(this)));
+  }
 
   void SetUp() override {
     shared_url_loader_factory_ =
@@ -85,21 +104,7 @@ class ComposeboxQueryControllerTest
     ASSERT_TRUE(U_SUCCESS(error_code));
 
     fake_variations_client_ = std::make_unique<FakeVariationsClient>();
-    controller_ = std::make_unique<TestComposeboxQueryController>(
-        identity_manager(), shared_url_loader_factory_,
-        version_info::Channel::UNKNOWN, kLocale, template_url_service(),
-        fake_variations_client_.get());
-    controller_->AddObserver(this);
-
-    lens::LensOverlayServerClusterInfoResponse cluster_info_response;
-    cluster_info_response.set_search_session_id(kTestSearchSessionId);
-    cluster_info_response.set_server_session_id(kTestServerSessionId);
-    controller_->set_fake_cluster_info_response(cluster_info_response);
-
-    controller().set_on_query_controller_state_changed_callback(
-        base::BindRepeating(
-            &ComposeboxQueryControllerTest::OnQueryControllerStateChanged,
-            base::Unretained(this)));
+    CreateController(/*send_lns_surface=*/false);
   }
 
   void TearDown() override {
@@ -843,4 +848,33 @@ TEST_F(ComposeboxQueryControllerTest, ClearFiles) {
 
   // Check that file is no longer in cache.
   EXPECT_FALSE(controller().GetFileInfo(file_token));
+}
+
+TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithLnsSurface) {
+  CreateController(/*send_lns_surface=*/true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(
+      file_token,
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token);
+
+  // Act: Create the destination URL for the query. The destination URL can
+  // only be created after the cluster info is received.
+  GURL aim_url = controller().CreateAimUrl("hello", kTestQueryStartTime);
+
+  // Assert: Lns surface is added to the url.
+  std::string lns_surface_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kLnsSurfaceParameterKey,
+                                         &lns_surface_value));
+  EXPECT_EQ(lns_surface_value, "47");
 }

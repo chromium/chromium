@@ -8,6 +8,7 @@
 // This file contains utility functions for search engine functionality.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -235,8 +236,8 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
 // `request_id` (vsrid) is the visual search request id used by lens to obtain
 // the uploaded context.
 // `mime_type` (vit) is the type of the file that has been uploaded.
-// TODO(crbug.com/428067264): Check if `lns_surface` should be supported as
-// well.
+// TODO(crbug.com/430070871): Make `lns_surface` a required parameter when
+// the server supports it.
 GURL GetUrlForMultimodalAim(
     TemplateURLService* turl_service,
     const std::string& aim_entrypoint,
@@ -244,6 +245,7 @@ GURL GetUrlForMultimodalAim(
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
     const lens::MimeType mime_type,
+    const std::string& lns_surface = std::string(),
     const std::u16string& query_text = std::u16string());
 
 #endif  // COMPONENTS_SEARCH_ENGINES_UTIL_H_

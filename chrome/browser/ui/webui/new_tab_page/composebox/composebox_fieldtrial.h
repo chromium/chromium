@@ -29,6 +29,10 @@ extern const base::FeatureParam<size_t> kDownscaleMaxImageWidthParam;
 extern const base::FeatureParam<size_t> kDownscaleMaxImageHeightParam;
 // The composition quality to use when encoding images.
 extern const base::FeatureParam<size_t> ImageCompressionQualityParam;
+// Whether to send the lns_surface parameter.
+// TODO(crbug.com/430070871): Remove this flag once the server supports the
+// `lns_surface` parameter.
+extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
 
 struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   // Whether the feature is enabled.

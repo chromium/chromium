@@ -109,6 +109,10 @@ const base::FeatureParam<size_t> ImageCompressionQualityParam(
     "NtpComposeboxImageCompressionQualityParam",
     40);
 
+const base::FeatureParam<bool> kSendLnsSurfaceParam(&kNtpComposebox,
+                                                    "SendLnsSurfaceParam",
+                                                    false);
+
 FeatureConfig::FeatureConfig()
     : enabled(base::FeatureList::IsEnabled(kNtpComposebox)),
       config(GetNTPComposeboxConfig()),

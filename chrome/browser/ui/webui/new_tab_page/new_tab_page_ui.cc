@@ -902,7 +902,8 @@ void NewTabPageUI::CreatePageHandler(
           g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
           g_browser_process->GetApplicationLocale(),
           TemplateURLServiceFactory::GetForProfile(profile_),
-          profile_->GetVariationsClient()),
+          profile_->GetVariationsClient(),
+          ntp_composebox::kSendLnsSurfaceParam.Get()),
       web_contents());
 }
 

@@ -56,7 +56,11 @@ constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kOAuthConsumerName[] = "ComposeboxQueryController";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
+
+// TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
+// surface values.
 constexpr char kEntrypointParameterValue[] = "42";
+constexpr char kLnsSurfaceParameterValue[] = "47";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("ntp_composebox_query_controller", R"(
@@ -159,13 +163,15 @@ ComposeboxQueryController::ComposeboxQueryController(
     version_info::Channel channel,
     std::string locale,
     TemplateURLService* template_url_service,
-    variations::VariationsClient* variations_client)
+    variations::VariationsClient* variations_client,
+    bool send_lns_surface)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       channel_(channel),
       locale_(locale),
       template_url_service_(template_url_service),
-      variations_client_(variations_client) {
+      variations_client_(variations_client),
+      send_lns_surface_(send_lns_surface) {
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -209,7 +215,9 @@ GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
         cluster_info_->search_session_id(),
         request_id_generator_.GetNextRequestId(
             lens::RequestIdUpdateMode::kSearchUrl),
-        last_file->mime_type_, base::UTF8ToUTF16(query_text));
+        last_file->mime_type_,
+        send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
+        base::UTF8ToUTF16(query_text));
   }
   return GetUrlForAim(template_url_service_, kEntrypointParameterValue,
                       query_start_time, base::UTF8ToUTF16(query_text));

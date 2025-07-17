@@ -76,13 +76,15 @@ class MockQueryController : public TestComposeboxQueryController {
       version_info::Channel channel,
       std::string locale,
       TemplateURLService* template_url_service,
-      variations::VariationsClient* variations_client)
+      variations::VariationsClient* variations_client,
+      bool send_lns_surface)
       : TestComposeboxQueryController(identity_manager,
                                       url_loader_factory,
                                       channel,
                                       locale,
                                       template_url_service,
-                                      variations_client) {}
+                                      variations_client,
+                                      send_lns_surface) {}
   ~MockQueryController() override = default;
 
   MOCK_METHOD(void, NotifySessionStarted, ());
@@ -147,7 +149,7 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
     auto query_controller_ptr = std::make_unique<MockQueryController>(
         /*identity_manager=*/nullptr, shared_url_loader_factory_,
         version_info::Channel::UNKNOWN, "en-US", template_url_service_,
-        fake_variations_client_.get());
+        fake_variations_client_.get(), /*send_lns_surface=*/false);
     query_controller_ = query_controller_ptr.get();
     web_contents()->SetDelegate(&delegate_);
     handler_ = std::make_unique<ComposeboxHandler>(
