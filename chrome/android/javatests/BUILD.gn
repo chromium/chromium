@@ -1069,6 +1069,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.permissions") {
     "src/org/chromium/chrome/browser/permissions/AutomaticEmbargoTest.java",
     "src/org/chromium/chrome/browser/permissions/EmbeddedPermissionPromptTest.java",
     "src/org/chromium/chrome/browser/permissions/GeolocationTest.java",
+    "src/org/chromium/chrome/browser/permissions/LocationPrecisionChooserRenderTest.java",
     "src/org/chromium/chrome/browser/permissions/MIDITest.java",
     "src/org/chromium/chrome/browser/permissions/MediaTest.java",
     "src/org/chromium/chrome/browser/permissions/NotificationTest.java",

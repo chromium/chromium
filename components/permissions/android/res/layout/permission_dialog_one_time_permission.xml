@@ -15,6 +15,15 @@ found in the LICENSE file.
 
     <include layout="@layout/permission_dialog_one_time_permission_header" />
 
+    <LinearLayout
+        android:id="@+id/custom_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"> </LinearLayout>
+
     <org.chromium.components.browser_ui.widget.RadioButtonLayout
         android:id="@+id/radio_buttons"
         android:layout_width="match_parent"

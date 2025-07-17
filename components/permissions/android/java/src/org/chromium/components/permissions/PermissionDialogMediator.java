@@ -8,13 +8,15 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -57,9 +59,10 @@ public class PermissionDialogMediator
 
     protected @Nullable PropertyModel mDialogModel;
     private @Nullable PropertyModel mOverlayDetectedDialogModel;
+    private @Nullable LocationPrecisionChooserController mLocationPrecisionChooserController;
     protected @Nullable PermissionDialogDelegate mDialogDelegate;
     protected @Nullable ModalDialogManager mModalDialogManager;
-    protected PermissionDialogCoordinator.@Nullable Delegate mCoordinatorDelegate;
+    protected @Nullable PermissionDialogCoordinator.Delegate mCoordinatorDelegate;
 
     /** The current state, whether we have a prompt showing and so on. */
     protected @State int mState;
@@ -81,9 +84,41 @@ public class PermissionDialogMediator
         assert mState == State.NOT_SHOWING;
         mDialogDelegate = delegate;
         mModalDialogManager = manager;
+
+        boolean isGeolocationConntentSetting =
+                mDialogDelegate.getContentSettingsTypes().length == 1
+                        && mDialogDelegate.getContentSettingsTypes()[0]
+                                == ContentSettingsType.GEOLOCATION;
+        boolean isApproximateGeolocationEnabled =
+                PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
+
+        LinearLayout locationPrecisionContainer = view.findViewById(R.id.custom_view_container);
+
+        if (isGeolocationConntentSetting
+                && isApproximateGeolocationEnabled
+                && locationPrecisionContainer != null) {
+
+            mLocationPrecisionChooserController =
+                    new LocationPrecisionChooserController(
+                            view.getContext(),
+                            locationPrecisionContainer,
+                            this::onLocationAccuracyRadioButtonSelected);
+            mLocationPrecisionChooserController.show();
+        } else {
+            if (locationPrecisionContainer != null) {
+                locationPrecisionContainer.setVisibility(View.GONE);
+                locationPrecisionContainer.removeAllViews();
+            }
+        }
+
         mDialogModel = createModalDialogModel(view);
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
         mState = State.PROMPT_OPEN;
+    }
+
+    private void onLocationAccuracyRadioButtonSelected(int accuracy) {
+        // TODO(crbug.com/410752554): Handle the selected location accuracy.
     }
 
     /** Update the current displaying dialog. */
@@ -352,6 +387,11 @@ public class PermissionDialogMediator
     public void destroy() {
         if (mModalDialogManager != null) {
             mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.UNKNOWN);
+        }
+
+        if (mLocationPrecisionChooserController != null) {
+            mLocationPrecisionChooserController.hide();
+            mLocationPrecisionChooserController = null;
         }
 
         mDialogModel = null;
