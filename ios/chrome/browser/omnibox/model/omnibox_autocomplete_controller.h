@@ -152,6 +152,10 @@ struct OmniboxTextModel;
 /// Notifies thumbnail update.
 - (void)setHasThumbnail:(BOOL)hasThumbnail;
 
+/// Returns the autocomplete result. This is used to forward the result to the
+/// client. TODO(crbug.com/432215477): Remove after refactor.
+- (const AutocompleteResult*)autocompleteResult;
+
 #pragma mark - Prefetch events
 
 /// Starts an autocomplete prefetch request so that zero-prefix providers can

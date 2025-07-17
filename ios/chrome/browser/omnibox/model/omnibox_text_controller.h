@@ -11,7 +11,6 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 
-class AutocompleteController;
 @protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
 class OmniboxClient;
@@ -120,10 +119,6 @@ class OmniboxClient;
 /// change should be immediately user-visible, because either the user is not
 /// editing or the edit does not have focus.
 - (bool)resetDisplayTexts;
-
-/// Sets the autocompleteController.
-- (void)setAutocompleteController:
-    (AutocompleteController*)autocompleteController;
 
 #pragma mark - Autocomplete event
 

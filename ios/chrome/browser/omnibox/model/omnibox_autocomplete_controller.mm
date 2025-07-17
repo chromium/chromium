@@ -494,6 +494,10 @@ using base::UserMetricsAction;
                                   isFirstUpdate:isFirstUpdate];
 }
 
+- (const AutocompleteResult*)autocompleteResult {
+  return _autocompleteController ? &_autocompleteController->result() : nullptr;
+}
+
 #pragma mark - Prefetch events
 
 - (void)startZeroSuggestPrefetch {
@@ -844,8 +848,6 @@ using base::UserMetricsAction;
     // Update the autocomplete controller in the metrics recorder and the text
     // controller.
     [self.omniboxMetricsRecorder
-        setAutocompleteController:_autocompleteController.get()];
-    [self.omniboxTextController
         setAutocompleteController:_autocompleteController.get()];
   }
 }

@@ -37,8 +37,6 @@ const char kOmniboxFocusResultedInNavigation[] =
 @implementation OmniboxTextController {
   /// Client of the omnibox.
   raw_ptr<OmniboxClient> _omniboxClient;
-  /// The autocomplete controller , owned by the OmniboxAutocompleteController.
-  raw_ptr<AutocompleteController> _autocompleteController;
   /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
   /// The omnbibox text model, holding the text state.
@@ -70,16 +68,8 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)disconnect {
-  _autocompleteController = nullptr;
   _omniboxClient = nullptr;
   _omniboxTextModel = nullptr;
-}
-
-- (void)setOmniboxAutocompleteController:
-    (OmniboxAutocompleteController*)omniboxAutocompleteController {
-  _omniboxAutocompleteController = omniboxAutocompleteController;
-  _autocompleteController =
-      omniboxAutocompleteController.autocompleteController;
 }
 
 - (void)updateAppearance {
@@ -303,11 +293,11 @@ const char kOmniboxFocusResultedInNavigation[] =
       _omniboxTextModel->user_input_in_progress ? [self currentMatch:nullptr]
                                                 : AutocompleteMatch();
 
-  if (_autocompleteController) {
+  if (const AutocompleteResult* result =
+          [self.omniboxAutocompleteController autocompleteResult]) {
     _omniboxClient->OnTextChanged(
         current_match, _omniboxTextModel->user_input_in_progress,
-        _omniboxTextModel->user_text, _autocompleteController->result(),
-        _omniboxTextModel->HasFocus());
+        _omniboxTextModel->user_text, *result, _omniboxTextModel->HasFocus());
   }
 }
 
@@ -350,11 +340,6 @@ const char kOmniboxFocusResultedInNavigation[] =
          (!_omniboxTextModel->HasFocus() ||
           (!_omniboxTextModel->user_input_in_progress &&
            !_omniboxAutocompleteController.hasSuggestions));
-}
-
-- (void)setAutocompleteController:
-    (AutocompleteController*)autocompleteController {
-  _autocompleteController = autocompleteController;
 }
 
 #pragma mark - Autocomplete events
