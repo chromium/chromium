@@ -3113,13 +3113,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_MakeCredentialDeclineGPM DISABLED_MakeCredentialDeclineGPM
+#define MAYBE_MakeCredentialDeclineGPMThenAccept \
+  DISABLED_MakeCredentialDeclineGPMThenAccept
 #else
-#define MAYBE_MakeCredentialDeclineGPM MakeCredentialDeclineGPM
+#define MAYBE_MakeCredentialDeclineGPMThenAccept \
+  MakeCredentialDeclineGPMThenAccept
 #endif
 // TODO(crbug.com/345308672): Failing on various Mac bots.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
-                       MAYBE_MakeCredentialDeclineGPM) {
+                       MAYBE_MakeCredentialDeclineGPMThenAccept) {
   SetTrustedVaultEmpty();
   delegate_observer()->AddAdditionalTransport(
       device::FidoTransportProtocol::kInternal);
@@ -3147,7 +3149,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   delegate_observer()->WaitForDelegateDestruction();
 
   // With the enclave configured, the next request should offer GPM as a
-  // priority mechanism for an attachment=platform request.
+  // priority mechanism for an attachment=platform request. Decline it.
   content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
   delegate_observer()->WaitForUI();
   EXPECT_EQ(dialog_model()->step(),
@@ -3158,7 +3160,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   model_observer()->WaitForStep();
   dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
+  EXPECT_EQ(
+      browser()->profile()->GetPrefs()->GetInteger(
+          webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount),
+      1);
 
+  // Decline a second time.
   content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
   delegate_observer()->WaitForUI();
   EXPECT_EQ(dialog_model()->step(),
@@ -3169,6 +3176,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   model_observer()->WaitForStep();
   dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
+  EXPECT_EQ(
+      browser()->profile()->GetPrefs()->GetInteger(
+          webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount),
+      2);
 
   // After backing out of GPM twice, the next attempt should default to
   // either mechanism selection or, on Mac, the custom platform authenticator
@@ -3177,6 +3188,30 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   delegate_observer()->WaitForUI();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+
+  // Now, select GPM from the list and complete the creation.
+  dialog_model()->OnGPMSelected();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kReady);
+  dialog_model()->OnGPMCreatePasskey();
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  delegate_observer()->WaitForDelegateDestruction();
+
+  // The decline count should be reset.
+  EXPECT_EQ(
+      browser()->profile()->GetPrefs()->GetInteger(
+          webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount),
+      0);
+
+  // The next request should have GPM as the priority again.
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
   dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
 }

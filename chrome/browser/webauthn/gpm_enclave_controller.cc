@@ -303,6 +303,8 @@ const char* ToString(
 void ResetDeclinedBootstrappingCount(Profile* profile) {
   profile->GetPrefs()->SetInteger(
       webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount, 0);
+  profile->GetPrefs()->SetInteger(
+      webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount, 0);
 }
 
 }  // namespace
