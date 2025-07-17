@@ -543,6 +543,11 @@ public class StripLayoutHelper
     private @MonotonicNonNull TabGroupListBottomSheetCoordinator
             mTabGroupListBottomSheetCoordinator;
 
+    // Multi selected tab context menu
+    // Set when showMultiSelectedTabsContextMenu is called for the first time.
+    private @MonotonicNonNull MultiSelectedTabsContextMenuCoordinator
+            mMultiSelectedTabsContextMenuCoordinator;
+
     // Tab group share.
     // These are set if shouldEnableGroupSharing() is true.
     private @MonotonicNonNull DataSharingService mDataSharingService;
@@ -2236,6 +2241,39 @@ public class StripLayoutHelper
         mTabContextMenuCoordinator.showMenu(anchorRectProvider, tab.getTabId());
     }
 
+    private void showMultiSelectedTabsContextMenu(List<Integer> tabIds, StripLayoutTab clickedTab) {
+        if (mModel == null || mTabGroupModelFilter == null) return;
+        if (mMultiSelectedTabsContextMenuCoordinator == null) {
+            if (mTabGroupListBottomSheetCoordinator == null) {
+                mTabGroupListBottomSheetCoordinator =
+                        mTabGroupListBottomSheetCoordinatorFactory.create(
+                                mContext,
+                                assumeNonNull(mTabGroupModelFilter.getTabModel().getProfile()),
+                                (newTabGroupId) -> {
+                                    showTabGroupContextMenu(
+                                            findGroupTitle(newTabGroupId),
+                                            /* shouldWaitForUpdate= */ true);
+                                },
+                                /* tabMovedCallback= */ null,
+                                mTabGroupModelFilter,
+                                mBottomSheetController,
+                                /* supportsShowNewGroup= */ true,
+                                /* destroyOnHide= */ false);
+            }
+            mMultiSelectedTabsContextMenuCoordinator =
+                    MultiSelectedTabsContextMenuCoordinator.createContextMenuCoordinator(
+                            mModel,
+                            mTabGroupModelFilter,
+                            mTabGroupListBottomSheetCoordinator,
+                            mMultiInstanceManager,
+                            mWindowAndroid);
+        }
+        RectProvider anchorRectProvider = new RectProvider();
+        getAnchorRect(clickedTab, anchorRectProvider);
+        StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
+        mMultiSelectedTabsContextMenuCoordinator.showMenu(anchorRectProvider, tabIds);
+    }
+
     /**
      * Opens the context menu for the keyboard-focused view, if applicable.
      *
@@ -2581,6 +2619,11 @@ public class StripLayoutHelper
             TabContextMenuCoordinator tabGroupContextMenuCoordinator) {
         mTabContextMenuCoordinator = tabGroupContextMenuCoordinator;
         ResettersForTesting.register(() -> mTabContextMenuCoordinator = null);
+    }
+
+    void setMultiSelectedTabsContextMenuCoordinatorForTesting(
+            MultiSelectedTabsContextMenuCoordinator multiSelectedTabsGroupContextMenuCoordinator) {
+        mMultiSelectedTabsContextMenuCoordinator = multiSelectedTabsGroupContextMenuCoordinator;
     }
 
     private void clearLastHoveredTab() {
@@ -2930,17 +2973,48 @@ public class StripLayoutHelper
     private boolean showContextMenu(@Nullable StripLayoutView clickedView) {
         if (clickedView == null) return false;
         if (clickedView instanceof StripLayoutTab clickedTab) {
-            showTabContextMenu(clickedTab);
+            // The current tab is always multi selected. So we need to check if there are more tabs
+            // in multi-selection.
+            if (mModel != null
+                    && mModel.isTabMultiSelected(clickedTab.getTabId())
+                    && mModel.getMultiSelectedTabsCount() > 1) {
+                showMultiSelectedTabsContextMenu(getMultiSelectedTabIds(), clickedTab);
+            } else {
+                if (mModel != null) {
+                    mModel.clearMultiSelection(/* notifyObservers= */ true);
+                }
+                showTabContextMenu(clickedTab);
+            }
             return true;
         } else if (clickedView instanceof CompositorButton button
                 && button.getType() == ButtonType.TAB_CLOSE) {
+            if (mModel != null) {
+                mModel.clearMultiSelection(/* notifyObservers= */ true);
+            }
             showCloseButtonMenu(assumeNonNull((StripLayoutTab) button.getParentView()));
             return true;
         } else if (clickedView instanceof StripLayoutGroupTitle groupTitle) {
+            if (mModel != null) {
+                mModel.clearMultiSelection(/* notifyObservers= */ true);
+            }
             showTabGroupContextMenu(groupTitle, /* shouldWaitForUpdate= */ false);
             return true;
         }
         return false;
+    }
+
+    private List<Integer> getMultiSelectedTabIds() {
+        List<Integer> multiSelectedTabs = new ArrayList<>();
+        if (mModel == null) return multiSelectedTabs;
+        for (StripLayoutTab stripTab : mStripTabs) {
+            if (mModel.isTabMultiSelected(stripTab.getTabId())) {
+                multiSelectedTabs.add(stripTab.getTabId());
+            }
+        }
+        assert multiSelectedTabs.size() == mModel.getMultiSelectedTabsCount()
+                : "Count of multi selected tabs don't match.";
+        assert multiSelectedTabs.size() >= 2 : "Too few tabs in multi selection";
+        return multiSelectedTabs;
     }
 
     /**

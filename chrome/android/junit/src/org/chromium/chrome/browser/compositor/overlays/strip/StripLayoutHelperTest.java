@@ -204,6 +204,7 @@ public class StripLayoutHelperTest {
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabContextMenuCoordinator mTabContextMenuCoordinator;
+    @Mock private MultiSelectedTabsContextMenuCoordinator mMultiSelectedTabsContextMenuCoordinator;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private ShareDelegate mShareDelegate;
@@ -6150,6 +6151,48 @@ public class StripLayoutHelperTest {
                 "Anchor tab should be reset after a Ctrl+Click.",
                 Tab.INVALID_TAB_ID,
                 mStripLayoutHelper.getAnchorTabIdForTesting());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING})
+    @Feature("Tab Context Menu")
+    public void testTabContextMenu_MultipleTabsSelected() {
+        // Setup
+        initializeTest(false, false, 0, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.setMultiSelectedTabsContextMenuCoordinatorForTesting(
+                mMultiSelectedTabsContextMenuCoordinator);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // Ctrl+Click tab 1 and 3 to multi-select them along with the current tab (0).
+        mStripLayoutHelper.click(
+                TIMESTAMP,
+                getClickCoordinateForTabAtIndex(stripViews, 1),
+                0,
+                MotionEvent.BUTTON_PRIMARY,
+                KeyEvent.META_CTRL_ON);
+        mStripLayoutHelper.click(
+                TIMESTAMP,
+                getClickCoordinateForTabAtIndex(stripViews, 3),
+                0,
+                MotionEvent.BUTTON_PRIMARY,
+                KeyEvent.META_CTRL_ON);
+
+        // Right-click on one of the selected tabs to open the context menu.
+        mStripLayoutHelper.click(
+                TIMESTAMP,
+                getClickCoordinateForTabAtIndex(stripViews, 1),
+                0,
+                MotionEvent.BUTTON_SECONDARY,
+                0);
+
+        // Verify
+        List<Integer> expectedTabIds =
+                List.of(tabs[0].getTabId(), tabs[1].getTabId(), tabs[3].getTabId());
+        verify(mMultiSelectedTabsContextMenuCoordinator).showMenu(any(), eq(expectedTabIds));
     }
 
     private float getClickCoordinateForTabAtIndex(StripLayoutView[] stripViews, int i) {
