@@ -59,7 +59,7 @@ ScriptPromise<IDLString> InternalsFedCm::getFedCmDialogType(
         if (!type.empty()) {
           resolver->Resolve(type);
         } else {
-          resolver->Reject();
+          resolver->Reject("no such alert");
         }
       },
       WrapPersistent(resolver), std::move(federated_auth_request_automation)));
