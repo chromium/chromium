@@ -17,8 +17,10 @@
 @protocol AutocompleteSuggestion;
 struct AutocompleteMatch;
 class AutocompleteController;
+class AutocompleteInput;
 class AutocompleteResult;
 @class AutocompleteResultWrapper;
+class GURL;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
 class OmniboxClient;
@@ -125,6 +127,17 @@ struct OmniboxTextModel;
 
 /// Called when a new omnibox session starts.
 - (void)resetSession;
+
+/// If a query is active or the popup is visible, find the best match item
+/// (default or selected). This will update `match` and, if found,
+/// `alternateNavigationURL`. Returns whether a match has been found.
+- (BOOL)findMatchForInput:(const AutocompleteInput&)input
+                     match:(AutocompleteMatch*)match
+    alternateNavigationURL:(GURL*)alternateNavigationURL;
+
+/// Computes the alternate navigation URL for `input` and `match`.
+- (GURL)computeAlternateNavURLForInput:(const AutocompleteInput&)input
+                                 match:(const AutocompleteMatch&)match;
 
 /// Closes the omnibox popup.
 - (void)closeOmniboxPopup;
