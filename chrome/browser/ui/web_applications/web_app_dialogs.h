@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/native_widget_types.h"
@@ -143,7 +144,8 @@ void ShowSimpleInstallDialogForWebApps(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback,
-    PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
+    PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown,
+    bool show_initiating_origin = false);
 
 // Shows the PWA install dialog for apps that are not installable, AKA, DIY
 // apps.

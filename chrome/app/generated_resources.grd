@@ -3492,6 +3492,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DIY_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a DIY app, read by spoken feedback.">
         App name
       </message>
+      <message name="IDS_INSTALL_PWA_DIALOG_ORIGIN_LABEL" desc="The label in front of the origin of the site that is installing the web app.">
+        from: <ph name="APP_ORIGIN">$1<ex>example.com</ex></ph>
+      </message>
 
       <message name="IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a bookmark app, read by spoken feedback.">
         Shortcut name

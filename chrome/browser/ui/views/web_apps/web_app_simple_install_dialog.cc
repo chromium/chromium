@@ -25,7 +25,9 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -62,7 +64,8 @@ void ShowSimpleInstallDialogForWebApps(
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback,
-    PwaInProductHelpState iph_state) {
+    PwaInProductHelpState iph_state,
+    bool show_initiating_origin) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     std::move(callback).Run(false, nullptr);
@@ -105,27 +108,36 @@ void ShowSimpleInstallDialogForWebApps(
       InstallDialogType::kSimple);
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
-  auto dialog_model =
-      ui::DialogModel::Builder(std::move(delegate))
-          .SetInternalName("WebAppSimpleInstallDialog")
-          .SetTitle(l10n_util::GetStringUTF16(IDS_INSTALL_PWA_DIALOG_TITLE))
-          .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
-                                      delegate_weak_ptr),
-                       ui::DialogModel::Button::Params().SetLabel(
-                           l10n_util::GetStringUTF16(IDS_INSTALL)))
-          .AddCancelButton(base::BindOnce(
-              &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
-          .SetCloseActionCallback(base::BindOnce(
-              &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
-          .SetDialogDestroyingCallback(base::BindOnce(
-              &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
-          .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
-          .AddCustomField(
-              std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                  WebAppIconNameAndOriginView::Create(icon_image, app_name,
-                                                      start_url),
-                  views::BubbleDialogModelHost::FieldType::kControl))
-          .Build();
+  auto dialog_model_builder = ui::DialogModel::Builder(std::move(delegate));
+  dialog_model_builder.SetInternalName("WebAppSimpleInstallDialog")
+      .SetTitle(l10n_util::GetStringUTF16(IDS_INSTALL_PWA_DIALOG_TITLE))
+      .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
+                                  delegate_weak_ptr),
+                   ui::DialogModel::Button::Params().SetLabel(
+                       l10n_util::GetStringUTF16(IDS_INSTALL)))
+      .AddCancelButton(base::BindOnce(&WebAppInstallDialogDelegate::OnCancel,
+                                      delegate_weak_ptr))
+      .SetCloseActionCallback(base::BindOnce(
+          &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
+      .SetDialogDestroyingCallback(base::BindOnce(
+          &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
+      .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
+      .AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              WebAppIconNameAndOriginView::Create(icon_image, app_name,
+                                                  start_url),
+              views::BubbleDialogModelHost::FieldType::kControl));
+  // Only show the initiating origin subtitle label for background document
+  // installs from the Web Install API.
+  if (show_initiating_origin) {
+    url::Origin initiating_origin =
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    std::u16string origin_url = url_formatter::FormatOriginForSecurityDisplay(
+        initiating_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+    dialog_model_builder.SetSubtitle(l10n_util::GetStringFUTF16(
+        IDS_INSTALL_PWA_DIALOG_ORIGIN_LABEL, origin_url));
+  }
+  auto dialog_model = dialog_model_builder.Build();
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kChild);
 
