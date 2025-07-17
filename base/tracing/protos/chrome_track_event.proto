@@ -115,15 +115,15 @@ message RenderFrameImplDeletion {
   // The intent for the deletion.
   optional FrameDeleteIntention intent = 1;
 
-  // Whether the frame that's about to be deleted has a pending navigation
+  // Whether the frame that is about to be deleted has a pending navigation
   // commit.
   optional bool has_pending_commit = 2;
 
-  // Whether the frame that's about to be deleted has a pending cross-document
+  // Whether the frame that is about to be deleted has a pending cross-document
   // navigation commit.
   optional bool has_pending_cross_document_commit = 3;
 
-  // The FrameTreeNode ID of the frame that's about to be deleted.
+  // The FrameTreeNode ID of the frame that is about to be deleted.
   optional uint64 frame_tree_node_id = 4;
 }
 
