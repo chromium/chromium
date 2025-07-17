@@ -4,18 +4,23 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/separate_profiles_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface SeparateProfilesMigrationTestCase : ChromeTestCase
 @end
@@ -524,6 +529,31 @@
               prefs::kWaitingForMultiProfileForcedMigrationTimestamp],
       base::Time(),
       @"kWaitingForMultiProfileForcedMigrationTimestamp should not be set");
+
+  // Verify the enterprise onboarding UI shows to notify the user about the
+  // force-migration.
+  WaitForEnterpriseOnboardingScreen();
+  // Verify the primary button string is the right one.
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                   IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Relaunch again and verify the onboarding UI shows only once; does not show
+  // again.
+  [self
+      relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
+             enabledFeatures:{kIdentityDiscAccountMenu,
+                              kSeparateProfilesForManagedAccounts,
+                              kSeparateProfilesForManagedAccountsForceMigration}
+            disabledFeatures:{}];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kManagedProfileCreationScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

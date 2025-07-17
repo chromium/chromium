@@ -5,6 +5,8 @@
 #import "ios/chrome/app/profile/multi_profile_forced_migration_profile_agent.h"
 
 #import "base/logging.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -78,6 +80,8 @@
                                 didAccept:(BOOL)accepted
                      browsingDataSeparate:(BOOL)browsingDataSeparate {
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_MultiProfileForcedMigration_DialogAcknowleged"));
   _managedConfirmationScreenCoordinator.delegate = nil;
   [_managedConfirmationScreenCoordinator stop];
   _managedConfirmationScreenCoordinator = nil;
@@ -126,6 +130,8 @@
 
   [_managedConfirmationScreenCoordinator start];
   localState->SetBoolean(prefs::kMultiProfileForcedMigrationDone, false);
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_MultiProfileForcedMigration_DialogShown"));
 }
 
 // Returns YES if the browser provider is incognito.

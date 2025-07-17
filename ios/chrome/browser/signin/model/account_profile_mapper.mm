@@ -11,6 +11,8 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/account_management_type_metrics_recorder.h"
@@ -461,6 +463,10 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
     // At this point, the migration is done.
     local_pref_service_->ClearPref(
         prefs::kWaitingForMultiProfileForcedMigrationTimestamp);
+    local_pref_service_->SetBoolean(prefs::kMultiProfileForcedMigrationDone,
+                                    true);
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_MultiProfileForcedMigration_MigrationDone"));
   }
 
   // Let observers know about the changes.

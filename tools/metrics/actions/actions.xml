@@ -40593,6 +40593,37 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_MultiProfileForcedMigration_DialogAcknowleged">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Records when the user acknowledges the multi-profile forced migration
+    dialog. iOS only.
+  </description>
+</action>
+
+<action name="Signin_MultiProfileForcedMigration_DialogShown"
+    not_user_triggered="true">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Records when the multi-profile forced migration dialog is shown to the user
+    which informs the user that the migration is done. iOS only.
+  </description>
+</action>
+
+<action name="Signin_MultiProfileForcedMigration_MigrationDone"
+    not_user_triggered="true">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Records when the multi-profile forced migration is completed. iOS only.
+  </description>
+</action>
+
 <action name="Signin_MyGoogleUI_AccountDetails">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
