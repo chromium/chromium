@@ -16583,12 +16583,7 @@
                     "enable_features": [
                         "AcceleratedVideoDecodeLinuxGL",
                         "AcceleratedVideoDecodeLinuxZeroCopyGL",
-                        "AllowWindowDragUsingSystemDragDrop",
-                        "OverrideDefaultOzonePlatformHintToAuto",
-                        "WaylandLinuxDrmSyncobj",
-                        "WaylandPerSurfaceScale",
-                        "WaylandTextInputV3",
-                        "WaylandUiScale"
+                        "OverrideDefaultOzonePlatformHintToAuto"
                     ]
                 },
                 {
