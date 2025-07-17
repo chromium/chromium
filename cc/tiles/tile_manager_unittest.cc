@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <array>
+#include <cmath>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -126,7 +127,7 @@ class FakeRasterBuffer : public RasterBuffer {
   bool SupportsBackgroundThreadPriority() const override { return true; }
 
  private:
-  const float expected_hdr_headroom_ = 1.f;
+  const float expected_hdr_headroom_ = 0.f;
 };
 
 class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
@@ -2539,7 +2540,7 @@ class MockReadyToDrawRasterBufferProviderImpl
   }
 
  private:
-  float expected_hdr_headroom_ = 1.f;
+  float expected_hdr_headroom_ = 0.f;
 };
 
 class TileManagerReadyToDrawTest : public TileManagerTest {
@@ -2664,9 +2665,9 @@ TEST_F(TileManagerReadyToDrawTest, NonSmoothActivationDoesNotWaitOnCallback) {
 }
 
 TEST_F(TileManagerReadyToDrawTest, HdrHeadroomPropagated) {
-  constexpr float kTestHdrHeadroom = 4.f;
+  constexpr float kTestHdrHeadroom = 2.f;
   TargetColorParams target_color_params;
-  target_color_params.hdr_max_luminance_relative = kTestHdrHeadroom;
+  target_color_params.hdr_max_luminance_relative = std::exp2(kTestHdrHeadroom);
   host_impl()->set_target_color_params(target_color_params);
   mock_raster_buffer_provider()->set_expected_hdr_headroom(kTestHdrHeadroom);
 

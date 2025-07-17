@@ -4,11 +4,16 @@
 
 #include "cc/paint/target_color_params.h"
 
+#include <cmath>
 #include <sstream>
 
 #include "base/hash/hash.h"
 
 namespace cc {
+
+float TargetColorParams::GetHdrHeadroom() const {
+  return std::log2(hdr_max_luminance_relative);
+}
 
 size_t TargetColorParams::GetHash() const {
   const uint32_t* hdr_max_luminance_relative_int =

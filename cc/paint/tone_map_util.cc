@@ -253,7 +253,7 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
     SkPaint& paint,
     const SkImage* image,
     const std::optional<gfx::HDRMetadata>& metadata,
-    float target_linear_hdr_headroom) {
+    float target_hdr_headroom) {
   if (!image || !image->colorSpace()) {
     return;
   }
@@ -323,15 +323,14 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
 
   // Apply tone mapping.
   if (agtm_parsed) {
-    auto tone_map_filter =
-        GetAgtmFilter(agtm, std::log2(target_linear_hdr_headroom));
+    auto tone_map_filter = GetAgtmFilter(agtm, target_hdr_headroom);
     filter = SkColorFilters::Compose(tone_map_filter, std::move(filter));
   } else {
     const float content_max_luminance =
         gfx::HDRMetadata::GetContentMaxLuminance(metadata);
     auto tone_map_filter = GetReinhardToneMapFilter(
         content_max_luminance / reference_white_luminance,
-        target_linear_hdr_headroom);
+        std::exp2(target_hdr_headroom));
     filter = SkColorFilters::Compose(tone_map_filter, std::move(filter));
   }
 

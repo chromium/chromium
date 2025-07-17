@@ -45,7 +45,7 @@ class CC_PAINT_EXPORT ToneMapUtil {
       SkPaint& paint,
       const SkImage* image,
       const std::optional<gfx::HDRMetadata>& metadata,
-      float target_linear_hdr_headroom);
+      float target_hdr_headroom);
 };
 
 }  // namespace cc

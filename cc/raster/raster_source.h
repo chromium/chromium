@@ -54,8 +54,8 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
     // Visible hint, GPU may use it as a hint to schedule raster tasks.
     bool visible = false;
 
-    // The HDR headroom to use when tone mapping content.
-    float hdr_headroom = 1.f;
+    // The HDR headroom (in log2 space) to use when tone mapping content.
+    float hdr_headroom = 0.f;
 
     raw_ptr<ImageProvider> image_provider = nullptr;
     raw_ptr<const ScrollOffsetMap> raster_inducing_scroll_offsets = nullptr;
