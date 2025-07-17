@@ -79,7 +79,7 @@ class FacePileMediatorTest : public PlatformTest {
     face_pile_config_ = [[FacePileConfiguration alloc] init];
     face_pile_config_.groupID = data_sharing::GroupId("test_group_id");
     face_pile_config_.avatarSize = 40.0;
-    face_pile_config_.showsEmptyState = false;
+    face_pile_config_.showsEmptyState = true;
 
     fake_face_pile_consumer_ = [[FakeFacePileConsumer alloc] init];
 
@@ -91,6 +91,7 @@ class FacePileMediatorTest : public PlatformTest {
     SignIn();
   }
 
+  // Sign in with a fake identity.
   void SignIn() {
     FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
@@ -99,6 +100,13 @@ class FacePileMediatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
     AuthenticationServiceFactory::GetForProfile(profile_.get())
         ->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
+  }
+
+  // Sign out.
+  void SignOut() {
+    AuthenticationServiceFactory::GetForProfile(profile_.get())
+        ->SignOut(signin_metrics::ProfileSignout::kTest, ^(){
+                  });
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -116,7 +124,7 @@ class FacePileMediatorTest : public PlatformTest {
   FacePileMediator* _mediator;
 };
 
-// Test updateConsumer with an empty group (0 member).
+// Tests updateConsumer with an empty group (0 member).
 TEST_F(FacePileMediatorTest, UpdateConsumerEmptyGroup) {
   GroupData group_data = CreateGroupData(1);
 
@@ -131,10 +139,10 @@ TEST_F(FacePileMediatorTest, UpdateConsumerEmptyGroup) {
   // Expect consumer to be updated for empty state and with no faces.
   ASSERT_EQ(fake_face_pile_consumer_.updateWithViewsCallCount, 0u);
   ASSERT_EQ(fake_face_pile_consumer_.lastFaces.count, 0u);
-  ASSERT_EQ(fake_face_pile_consumer_.lastShowsTextWhenEmpty, NO);
+  ASSERT_EQ(fake_face_pile_consumer_.lastShowsShareButtonWhenEmpty, YES);
 }
 
-// Test updateConsumer with an empty group (1 members).
+// Tests updateConsumer with an empty group (1 members).
 TEST_F(FacePileMediatorTest, UpdateConsumerEmptyGroupWithOwner) {
   GroupData group_data = CreateGroupData(1);
 
@@ -151,10 +159,10 @@ TEST_F(FacePileMediatorTest, UpdateConsumerEmptyGroupWithOwner) {
   ASSERT_EQ(fake_face_pile_consumer_.updateWithViewsCallCount, 1u);
   ASSERT_EQ(fake_face_pile_consumer_.lastFaces.count, 1u);
   ASSERT_EQ(fake_face_pile_consumer_.lastTotalNumber, 1u);
-  ASSERT_EQ(fake_face_pile_consumer_.lastShowsTextWhenEmpty, NO);
+  ASSERT_EQ(fake_face_pile_consumer_.lastShowsShareButtonWhenEmpty, YES);
 }
 
-// Test updateConsumer with an medium group (3 members).
+// Tests updateConsumer with an medium group (3 members).
 TEST_F(FacePileMediatorTest, UpdateConsumerMediumGroup) {
   GroupData group_data = CreateGroupData(3);
 
@@ -171,10 +179,10 @@ TEST_F(FacePileMediatorTest, UpdateConsumerMediumGroup) {
   ASSERT_EQ(fake_face_pile_consumer_.updateWithViewsCallCount, 1u);
   ASSERT_EQ(fake_face_pile_consumer_.lastFaces.count, 3u);
   ASSERT_EQ(fake_face_pile_consumer_.lastTotalNumber, 3u);
-  ASSERT_EQ(fake_face_pile_consumer_.lastShowsTextWhenEmpty, NO);
+  ASSERT_EQ(fake_face_pile_consumer_.lastShowsShareButtonWhenEmpty, YES);
 }
 
-// Test updateConsumer with an big group (8 members).
+// Tests updateConsumer with an big group (8 members).
 TEST_F(FacePileMediatorTest, UpdateConsumerBigGroup) {
   GroupData group_data = CreateGroupData(8);
 
@@ -191,5 +199,21 @@ TEST_F(FacePileMediatorTest, UpdateConsumerBigGroup) {
   ASSERT_EQ(fake_face_pile_consumer_.updateWithViewsCallCount, 1u);
   ASSERT_EQ(fake_face_pile_consumer_.lastFaces.count, 2u);
   ASSERT_EQ(fake_face_pile_consumer_.lastTotalNumber, 8u);
-  ASSERT_EQ(fake_face_pile_consumer_.lastShowsTextWhenEmpty, NO);
+  ASSERT_EQ(fake_face_pile_consumer_.lastShowsShareButtonWhenEmpty, YES);
+}
+
+// Tests updateConsumer when the user is signed out.
+TEST_F(FacePileMediatorTest, UpdateConsumerSignedOut) {
+  SignOut();
+
+  // Stub IsGroupDataModelLoaded and ReadGroup should not be called.
+  EXPECT_CALL(*data_sharing_service_, IsGroupDataModelLoaded())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*data_sharing_service_, ReadGroup(face_pile_config_.groupID))
+      .Times(0);
+
+  _mediator.consumer = fake_face_pile_consumer_;
+
+  // Expect consumer to be updated to show the share button.
+  ASSERT_EQ(fake_face_pile_consumer_.lastShowsShareButtonWhenEmpty, YES);
 }

@@ -7,8 +7,7 @@
 @implementation FakeFacePileConsumer
 
 - (void)setSharedButtonWhenEmpty:(BOOL)showsShareButtonWhenEmpty {
-  _lastShowsTextWhenEmpty = showsShareButtonWhenEmpty;
-  _setShowsTextWhenEmptyCallCount++;
+  _lastShowsShareButtonWhenEmpty = showsShareButtonWhenEmpty;
 }
 
 - (void)setFacePileBackgroundColor:(UIColor*)backgroundColor {
