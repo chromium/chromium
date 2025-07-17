@@ -19,7 +19,7 @@ source_set("internal") {
     sources += [
       "android/android_base_window.cc",
       "android/android_browser_window.cc",
-      "browser_window_interface_iterator_android.cc",
+      "android/browser_window_interface_iterator_android.cc",
     ]
   } else {
     sources += [
