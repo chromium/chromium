@@ -22,16 +22,27 @@
 class InfobarBannerViewControllerTest : public PlatformTest {
  protected:
   InfobarBannerViewControllerTest()
-      : banner_delegate_(OCMProtocolMock(@protocol(InfobarBannerDelegate))),
+      : banner_delegate_(
+            OCMStrictProtocolMock(@protocol(InfobarBannerDelegate))),
         view_controller_([[InfobarBannerViewController alloc]
             initWithDelegate:banner_delegate_
                presentsModal:YES
                         type:InfobarType::kInfobarTypeConfirm]) {}
+
+  void TearDown() override {
+    PlatformTest::TearDown();
+    OCMStub([banner_delegate_ infobarBannerWasDismissed]);
+    view_controller_ = nil;
+    EXPECT_OCMOCK_VERIFY(banner_delegate_);
+  }
+
   id banner_delegate_;
   InfobarBannerViewController* view_controller_;
   ScopedKeyWindow scoped_key_window_;
 };
 
+// Tests that button press is transmitted to the delegate, and that
+// following presses are ignored.
 TEST_F(InfobarBannerViewControllerTest, TestBannerButtonPressed) {
   OCMExpect([banner_delegate_ bannerInfobarButtonWasPressed:[OCMArg any]]);
   // Add view_controller_ to the UI Hierarchy to make sure views are created and
@@ -40,6 +51,8 @@ TEST_F(InfobarBannerViewControllerTest, TestBannerButtonPressed) {
   [view_controller_.infobarButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
   EXPECT_OCMOCK_VERIFY(banner_delegate_);
+  [view_controller_.infobarButton
+      sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
 TEST_F(InfobarBannerViewControllerTest, TestTextConfiguration) {
