@@ -1,7 +1,8 @@
 <style>
   :host {
     display: flex;
-    width: fit-content;
+    width: 100%;
+    height: 100%;
     --cr-font-family: 'Roboto', sans-serif;
     --cr-font-size-sm: 13px;
     --tabs-background-color: #ffffff;
@@ -13,22 +14,47 @@
     --cr-active-background-color: #e8f0fe;
   }
 
-  #tablist {
+  #sidebar-container {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
     background: var(--tabs-background-color);
     border-right: 1px solid var(--tabs-border-color);
-    font-family: var(--cr-font-family);
-    font-size: var(--cr-font-size-sm);
-    display: inline-block;
-    margin: 0;
-    padding: 8px 0;
-    vertical-align: top;
-    flex: none;
+    transition: min-width 0.2s ease-in-out;
   }
 
-  :host([sticky-tabs]) #tablist {
-    position: sticky;
-    top: 0;
-    z-index: var(--cr-tab-box-tabs-z-index, 1);
+  :host([collapsed]) #sidebar-container {
+    border-right-color: transparent;
+  }
+
+  #sidebar-visibility-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    margin: 8px;
+    align-self: flex-start;
+    flex-shrink: 0;
+  }
+
+  #sidebar-visibility-button svg {
+    display: block;
+    width: 32px;
+    height: 32px;
+    fill: var(--cr-primary-text-color);
+  }
+
+  #tablist {
+    display: flex;
+    flex-direction: column;
+    min-width: 250px;
+    font-family: var(--cr-font-family);
+    font-size: var(--cr-font-size-sm);
+    padding: 8px 0;
+  }
+
+  :host([collapsed]) #tablist {
+    display: none;
   }
 
   #tablist ::slotted(.group-header) {
@@ -76,17 +102,13 @@
   }
 
   #tabpanels {
-    box-shadow: none;
-    display: inline-block;
     flex-grow: 1;
-    overflow: hidden;
-    vertical-align: top;
-    padding: 4px 9px 4px 10px;
+    overflow: auto;
+    padding: 12px 24px;
   }
 
   #tabpanels ::slotted(*) {
     display: none;
-    flex: 1;
   }
 
   #tabpanels ::slotted([selected]) {
@@ -94,9 +116,16 @@
   }
 </style>
 
-<span id="tablist" role="tablist">
-  <slot name="tab"></slot>
-</span>
+<div id="sidebar-container">
+  <button id="sidebar-visibility-button" aria-label="Toggle Sidebar Visibility">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+    </svg>
+  </button>
+  <span id="tablist" role="tablist">
+    <slot name="tab"></slot>
+  </span>
+</div>
 <span id="tabpanels">
   <slot name="panel"></slot>
 </span>

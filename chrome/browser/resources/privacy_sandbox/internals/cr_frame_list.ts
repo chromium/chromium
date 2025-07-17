@@ -20,7 +20,7 @@ export class CrFrameListElement extends CustomElement {
   }
 
   static get observedAttributes() {
-    return ['selected-index'];
+    return ['selected-index', 'collapsed'];
   }
 
   private tabs_: HTMLElement;
@@ -37,11 +37,13 @@ export class CrFrameListElement extends CustomElement {
   }
 
   setupEventListeners() {
+    // Add event listener for keyboard navigation and tab clicks.
     this.tabs_.addEventListener('keydown', e => this.onKeydown_(e));
     this.tabs_.addEventListener('click', (e: MouseEvent) => {
       const tabs = this.getSlottedTabs_();
       const clickedTab = (e.target as HTMLElement).closest('[slot="tab"]');
 
+      // Ignore clicks on non-selectable headings or outside of a tab.
       if (!clickedTab || clickedTab.getAttribute('role') === 'heading') {
         return;
       }
@@ -51,9 +53,13 @@ export class CrFrameListElement extends CustomElement {
         this.setAttribute('selected-index', index.toString());
       }
     });
+
+    this.getRequiredElement('#sidebar-visibility-button')
+        .addEventListener('click', () => this.toggleSidebar_());
   }
 
   connectedCallback() {
+    // Avoid re-setting the index if it's already been set.
     if (this.hasAttribute('selected-index')) {
       return;
     }
@@ -71,43 +77,51 @@ export class CrFrameListElement extends CustomElement {
   }
 
   attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
-    assert(name === 'selected-index');
-    const newIndex = Number(newValue);
-    assert(!Number.isNaN(newIndex));
-    this.getSlottedPanels_().forEach((panel: Element, index: number) => {
-      panel.toggleAttribute('selected', index === newIndex);
-    });
-    this.getSlottedTabs_().forEach((tab: HTMLElement, index: number) => {
-      const isSelected = index === newIndex;
-      tab.toggleAttribute('selected', isSelected);
+    if (name === 'selected-index') {
+      const newIndex = Number(newValue);
+      assert(!Number.isNaN(newIndex));
 
-      if (tab.getAttribute('role') !== 'heading') {
-        // Update tabIndex for a11y
-        tab.setAttribute('tabindex', isSelected ? '0' : '-1');
-        // Update aria-selected attribute for a11y
-        const firstSelection = !tab.hasAttribute('aria-selected');
-        tab.setAttribute('aria-selected', isSelected ? 'true' : 'false');
-        // Update focus, but don't override initial focus.
-        if (isSelected && !firstSelection) {
-          tab.focus();
+      this.getSlottedPanels_().forEach((panel: Element, index: number) => {
+        panel.toggleAttribute('selected', index === newIndex);
+      });
+
+      this.getSlottedTabs_().forEach((tab: HTMLElement, index: number) => {
+        const isSelected = index === newIndex;
+        tab.toggleAttribute('selected', isSelected);
+
+        // Non-selectable heading tabs should not get focus or ARIA attributes.
+        if (tab.getAttribute('role') !== 'heading') {
+          // Update tabIndex for a11y
+          tab.setAttribute('tabindex', isSelected ? '0' : '-1');
+          // Update aria-selected attribute for a11y
+          const firstSelection = !tab.hasAttribute('aria-selected');
+          tab.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+          // Update focus, but don't override initial focus.
+          if (isSelected && !firstSelection) {
+            tab.focus();
+          }
         }
-      }
-    });
+      });
 
-    this.dispatchEvent(new CustomEvent(
-        'selected-index-change',
-        {bubbles: true, composed: true, detail: newIndex}));
+      this.dispatchEvent(new CustomEvent(
+          'selected-index-change',
+          {bubbles: true, composed: true, detail: newIndex}));
+    }
+  }
+
+  private toggleSidebar_() {
+    this.toggleAttribute('collapsed');
   }
 
   private getSlottedTabs_(): HTMLElement[] {
-    return Array.from(this.tabs_.querySelector('slot')!.assignedElements()) as
-        HTMLElement[];
+    const slot = this.tabs_.querySelector('slot');
+    return slot ? (Array.from(slot.assignedElements()) as HTMLElement[]) : [];
   }
 
   private getSlottedPanels_(): Element[] {
-    const slots: HTMLSlotElement =
-        this.panels_.querySelector('slot[name=panel]')!;
-    return Array.from(slots.assignedElements());
+    const slot =
+        this.panels_.querySelector<HTMLSlotElement>('slot[name=panel]');
+    return slot ? Array.from(slot.assignedElements()) : [];
   }
 
   private onKeydown_(e: KeyboardEvent) {
