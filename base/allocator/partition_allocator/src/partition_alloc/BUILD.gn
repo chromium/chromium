@@ -1077,6 +1077,10 @@ if (build_with_chromium) {
 
     configs -= partition_alloc_remove_configs
     configs += partition_alloc_add_configs
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 

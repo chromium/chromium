@@ -4303,6 +4303,10 @@ test("base_unittests") {
   if (enable_nocompile_tests) {
     deps += [ ":base_nocompile_tests" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # Test that CFG is enabled in Rust code.
