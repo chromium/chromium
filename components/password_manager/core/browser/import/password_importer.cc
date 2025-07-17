@@ -67,10 +67,10 @@ namespace {
 // Preferred filename extension for the imported files.
 const base::FilePath::CharType kFileExtension[] = FILE_PATH_LITERAL("csv");
 
-// Limiting the file size to 150 KB: a limit is introduced to limit the
+// Limiting the file size to 1000 KB: a limit is introduced to limit the
 // number of passwords and limit the amount of data that can be displayed in
 // memory to preview the content of the import in a single run.
-const int32_t kMaxFileSizeBytes = 150 * 1024;
+const int32_t kMaxFileSizeBytes = 1000 * 1024;
 
 // Reads and returns a status and the contents of the file at |path| as a
 // optional string. The string will be present if the status is SUCCESS.

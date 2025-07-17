@@ -1053,8 +1053,8 @@ TEST_F(PasswordImporterTest, PartialImportSucceeds) {
 
 TEST_F(PasswordImporterTest, CSVImportLargeFileShouldFail) {
   base::HistogramTester histogram_tester;
-  // content has more than kMaxFileSizeBytes (150KB) of bytes.
-  std::string content(150 * 1024 + 100, '*');
+  // content has more than kMaxFileSizeBytes (1000KB) of bytes.
+  std::string content(1000 * 1024 + 100, '*');
 
   base::FilePath temp_file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path));
@@ -1066,7 +1066,7 @@ TEST_F(PasswordImporterTest, CSVImportLargeFileShouldFail) {
   EXPECT_THAT(stored_passwords(), IsEmpty());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportFileSize",
-                                      /*sample=*/153700,
+                                      /*sample=*/1024100,
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
   histogram_tester.ExpectTotalCount(
@@ -1080,8 +1080,8 @@ TEST_F(PasswordImporterTest, CSVImportLargeFileShouldFail) {
 
 TEST_F(PasswordImporterTest, CSVImportLargeStringShouldFail) {
   base::HistogramTester histogram_tester;
-  // content has more than kMaxFileSizeBytes (150KB) of bytes.
-  std::string content(150 * 1024 + 100, '*');
+  // content has more than kMaxFileSizeBytes (1000KB) of bytes.
+  std::string content(1000 * 1024 + 100, '*');
 
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(content.c_str()));
   AssertNotStartedState();
@@ -1089,7 +1089,7 @@ TEST_F(PasswordImporterTest, CSVImportLargeStringShouldFail) {
   EXPECT_THAT(stored_passwords(), IsEmpty());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportFileSize",
-                                      /*sample=*/153700,
+                                      /*sample=*/1024100,
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
   histogram_tester.ExpectTotalCount(
