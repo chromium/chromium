@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
@@ -85,7 +86,17 @@ class TypeTool : public ToolBase {
       KeyParams key_params);
   mojom::ActionResultPtr SimulateKeyPress(TypeTool::KeyParams params);
 
+  void ContinueIncrementalTyping(ToolFinishedCallback callback);
+
   mojom::TypeActionPtr action_;
+
+  // Used when typing incrementally.
+  std::optional<TargetAndKeys> target_and_keys_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  bool is_key_down_ = false;
+  size_t current_key_ = 0;
+
+  base::WeakPtrFactory<TypeTool> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

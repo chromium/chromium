@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
@@ -15,6 +17,7 @@
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -220,6 +223,23 @@ std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(char c) const {
   return params;
 }
 
+namespace {
+
+std::string_view WebInputEventResultToString(WebInputEventResult result) {
+  switch (result) {
+    case WebInputEventResult::kNotHandled:
+      return "NotHandled";
+    case WebInputEventResult::kHandledSuppressed:
+      return "HandledSuppressed";
+    case WebInputEventResult::kHandledApplication:
+      return "HandledApplication";
+    case WebInputEventResult::kHandledSystem:
+      return "HandledSystem";
+  }
+}
+
+}  // namespace
+
 WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
     WebInputEvent::Type type,
     KeyParams key_params) {
@@ -236,12 +256,14 @@ WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
   WebInputEventResult result =
       frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
           WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
+  journal_->Log(
+      task_id_, WebInputEvent::GetName(type),
+      absl::StrFormat("%s[%s] -> %s", WebInputEvent::GetName(type),
+                      key_params.dom_key, WebInputEventResultToString(result)));
 
   return result;
 }
-
 mojom::ActionResultPtr TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
-  // TODO(crbug.com/402082693): Maybe add slight delay between events?
   WebInputEventResult down_result =
       CreateAndDispatchKeyEvent(WebInputEvent::Type::kRawKeyDown, params);
 
@@ -321,15 +343,69 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
                 << focused << "]. https://crbug.com/421133798.";
   }
 
-  for (const auto& param : validated_result->key_sequence) {
-    mojom::ActionResultPtr result = SimulateKeyPress(param);
-    if (!IsOk(*result)) {
-      std::move(callback).Run(std::move(result));
+  if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
+    for (const auto& param : validated_result->key_sequence) {
+      mojom::ActionResultPtr result = SimulateKeyPress(param);
+      if (!IsOk(*result)) {
+        std::move(callback).Run(std::move(result));
+        return;
+      }
+    }
+
+    std::move(callback).Run(MakeOkResult());
+  } else {
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+    target_and_keys_ = std::move(validated_result).value();
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TypeTool::ContinueIncrementalTyping,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        features::kGlicActorKeyUpDuration.Get());
+  }
+}
+
+void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
+  const KeyParams& params = target_and_keys_->key_sequence[current_key_];
+
+  if (!is_key_down_) {
+    WebInputEventResult down_result =
+        CreateAndDispatchKeyEvent(WebInputEvent::Type::kRawKeyDown, params);
+
+    // Only the KeyDown event will check for and report failure. The reason the
+    // other events don't is that if the KeyDown event was dispatched to the
+    // page, the key input was observable to the page and it may mutate itself
+    // in a way that subsequent Char and KeyUp events are suppressed (e.g.
+    // mutating the DOM tree, removing frames, etc). These "failure" cases can
+    // be considered successful in terms that the tool has acted on the page. In
+    // particular, a preventDefault()'ed KeyDown event will force suppressing
+    // the following Char event but this is expected and common.
+    if (down_result == WebInputEventResult::kHandledSuppressed) {
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kTypeKeyDownSuppressed,
+                     absl::StrFormat("Suppressed char[%s]", params.dom_key)));
       return;
     }
+
+    CreateAndDispatchKeyEvent(WebInputEvent::Type::kChar, params);
+
+    is_key_down_ = true;
+  } else {
+    CreateAndDispatchKeyEvent(WebInputEvent::Type::kKeyUp, params);
+    is_key_down_ = false;
+    current_key_++;
   }
 
-  std::move(callback).Run(MakeOkResult());
+  if (current_key_ >= target_and_keys_->key_sequence.size()) {
+    std::move(callback).Run(MakeOkResult());
+  } else {
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TypeTool::ContinueIncrementalTyping,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        (is_key_down_ ? features::kGlicActorKeyDownDuration
+                      : features::kGlicActorKeyUpDuration)
+            .Get());
+  }
 }
 
 std::string TypeTool::DebugString() const {

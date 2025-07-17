@@ -18,7 +18,11 @@
     </form>
     <script>
       let input_event_log = [];
-      let log_handler = e => input_event_log.push(`${e.type}`);
+      let input_event_log_times = [];
+      let log_handler = e => {
+        input_event_log.push(e.type);
+        input_event_log_times.push(e.timeStamp);
+      };
 
       document.getElementById('input').addEventListener('change', log_handler);
       document.getElementById('input').addEventListener('input', log_handler);

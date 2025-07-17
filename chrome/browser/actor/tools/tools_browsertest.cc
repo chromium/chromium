@@ -1006,6 +1006,65 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonFocusable) {
   EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
+// Ensure the type tool emits events at the expected intervals when typing
+// incrementally.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_IncrementalTyping) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActorIncrementalTyping)) {
+    GTEST_SKIP() << "GlicActorIncrementalTyping feature is disabled";
+  }
+
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  const std::string_view typed_string = "Test";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/false);
+
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  // Check that the events are what we expect.
+  ASSERT_EQ(
+      "keydown,input,keyup,"  // T
+      "keydown,input,keyup,"  // e
+      "keydown,input,keyup,"  // s
+      "keydown,input,keyup",  // t
+      EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  base::Value::List timestamps =
+      EvalJs(web_contents(), "input_event_log_times").ExtractList();
+
+  // There are 3 events per character (keydown, input, keyup).
+  ASSERT_EQ(timestamps.size(), typed_string.length() * 3);
+
+  // Check that the time between events is what we expect.
+  for (size_t i = 0; i < typed_string.length(); ++i) {
+    const double key_down_ts = timestamps[i * 3].GetDouble();
+    const double key_up_ts = timestamps[i * 3 + 2].GetDouble();
+    const base::TimeDelta key_down_to_up_delta =
+        base::Milliseconds(key_up_ts - key_down_ts);
+
+    // Check the delay between keydown and keyup.
+    EXPECT_GE(key_down_to_up_delta, features::kGlicActorKeyDownDuration.Get());
+
+    // Check the delay between this character's keyup and the next character's
+    // keydown.
+    if (i < typed_string.length() - 1) {
+      const double next_key_down_ts = timestamps[(i + 1) * 3].GetDouble();
+      const base::TimeDelta key_up_to_down_delta =
+          base::Milliseconds(next_key_down_ts - key_up_ts);
+      EXPECT_GE(key_up_to_down_delta, features::kGlicActorKeyUpDuration.Get());
+    }
+  }
+}
+
 // ===============================================
 // Mouse Move Tool
 // ===============================================

@@ -376,6 +376,19 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
     &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(10)};
 
+// Controls whether typing happens incrementally.
+BASE_FEATURE(kGlicActorIncrementalTyping,
+             "GlicActorIncrementalTyping",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kGlicActorKeyDownDuration{
+    &kGlicActorIncrementalTyping,
+    "glic-actor-incremental-typing-key-down-duration", base::Milliseconds(5)};
+
+const base::FeatureParam<base::TimeDelta> kGlicActorKeyUpDuration{
+    &kGlicActorIncrementalTyping,
+    "glic-actor-incremental-typing-key-up-duration", base::Milliseconds(5)};
+
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
