@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
+
 static_library("browser") {
   sources = [
     "no_state_prefetch_config.cc",
@@ -35,6 +37,7 @@ static_library("browser") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/google/core/common",
+    "//components/guest_view/buildflags",
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/paint_preview/browser:browser",
@@ -46,8 +49,7 @@ static_library("browser") {
     "//url",
   ]
 
-  # TODO(crbug.com/40520585): Use a dedicated build flag for GuestView.
-  if (!is_android && !is_ios && !is_fuchsia) {
+  if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
 }

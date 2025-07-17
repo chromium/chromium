@@ -14,7 +14,7 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "build/build_config.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -28,8 +28,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// TODO(crbug.com/40520585): Use a dedicated build flag for GuestView.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"  // nogncheck
 #endif
 
@@ -93,12 +92,11 @@ std::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_frame_id,
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin) {
-// TODO(crbug.com/40520585): Use a dedicated build flag for GuestView.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       launcher_render_process_id, launcher_render_frame_id);
-  // Guests inside <webview> do not support cross-process navigation and so we
-  // do not allow guests to prerender content.
+  // <webview> guests have partitioned storage, so we do not support
+  // prerendering in this case.
   if (guest_view::GuestViewBase::IsGuest(rfh)) {
     return std::nullopt;
   }
