@@ -99,11 +99,6 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
      */
     private class IncognitoCustomTabHost implements IncognitoTabHost {
         @Override
-        public boolean isActiveModel() {
-            return true;
-        }
-
-        @Override
         public boolean hasIncognitoTabs() {
             return !mActivity.isFinishing();
         }
@@ -111,6 +106,16 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
         @Override
         public void closeAllIncognitoTabs() {
             mNavigationController.finish(CustomTabActivityNavigationController.FinishReason.OTHER);
+        }
+
+        @Override
+        public void closeAllIncognitoTabsOnInit() {
+            closeAllIncognitoTabs();
+        }
+
+        @Override
+        public boolean isActiveModel() {
+            return true;
         }
     }
 }
