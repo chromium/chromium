@@ -6550,6 +6550,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CUSTOM_TAB_CANT_PERFORM_ACTION_TOAST" desc="Toast displayed when the URL currently being displayed in the Custom Tab cannot be opened in the regular browser.">
         Something went wrong. Try again.
       </message>
+      <message name="IDS_ACCESSIBILITY_CUSTOM_TAB_MENU_WITH_DOT" desc="Content description for the menu with a dot indicating the fallback UI for contextual page action is highlighted.">
+        Customize and control Google Chrome with a highlighted item
+      </message>
+      <message name="IDS_ACCESSIBILITY_CUSTOM_TAB_MENU_ITEM_HIGHLIGHT" desc="Announcement made when the overflow menu has a highlighted item for a recommended contextual page action.">
+        <ph name="MENU_NAME">%1$s<ex>Price Tracking</ex></ph> menu is highlighted.
+      </message>
 
       <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials.">
         Continue as <ph name="NAME">%1$s<ex>Albus (or Albus Dumbledore)</ex></ph>

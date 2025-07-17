@@ -221,6 +221,12 @@ class AppMenuHandlerImpl
         }
     }
 
+    @Override
+    public void setContentDescription(@Nullable String desc) {
+        assert mAppMenu != null;
+        mAppMenu.setContentDescription(desc);
+    }
+
     /**
      * Show the app menu.
      *
