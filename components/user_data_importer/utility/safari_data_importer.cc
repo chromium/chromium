@@ -153,7 +153,7 @@ namespace user_data_importer {
 // Object used to allow Rust History import pipeline to communicate results
 // back to this importer.
 class RustHistoryCallback final
-    : public user_data_importer::HistoryCallbackFromRust {
+    : public user_data_importer::HistoryCallbackFromRust<HistoryEntry> {
  public:
   using ParseHistoryCallback = base::RepeatingCallback<void(
       std::vector<user_data_importer::HistoryEntry>,

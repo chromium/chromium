@@ -10,17 +10,19 @@
 namespace user_data_importer {
 
 struct HistoryEntry;
+struct StablePortabilityHistoryEntry;
 
 // The primary purpose of this class is to provide an API that
 // 1) can wrap base::RepeatingCallback, and
 // 2) can be handled by cxx-based C++/Rust FFI
+template <typename HistoryType>
 class HistoryCallbackFromRust {
  public:
   // Callback function called from Rust to import history entries.
   // This input vector is cleared within this function call.
   // The "completed" argument must be false if there are still more history
   // entries to import and false if the history parsing is completed.
-  virtual void ImportHistoryEntries(std::vector<HistoryEntry>& history_entries,
+  virtual void ImportHistoryEntries(std::vector<HistoryType>& history_entries,
                                     bool completed) = 0;
 
   virtual ~HistoryCallbackFromRust() = default;
@@ -34,6 +36,11 @@ class HistoryCallbackFromRust {
  protected:
   HistoryCallbackFromRust() = default;
 };
+
+// Cxx-friendly type aliases for the template class.
+using SafariHistoryCallbackFromRust = HistoryCallbackFromRust<HistoryEntry>;
+using StablePortabilityHistoryCallbackFromRust =
+    HistoryCallbackFromRust<StablePortabilityHistoryEntry>;
 
 }  // namespace user_data_importer
 

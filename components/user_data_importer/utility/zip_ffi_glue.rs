@@ -21,6 +21,7 @@ mod ffi {
         History,
         Passwords,
         PaymentCards,
+        StablePortabilityHistory,
     }
 
     // C++ interop version of the HistoryJSONEntry structure.
@@ -32,6 +33,17 @@ mod ffi {
         destination_url: String,
         source_url: String,
         visit_count: u64,
+    }
+
+    // C++ interop version of the StablePortabilityHistoryJSONEntry structure.
+    // See StablePortabilityHistoryJSONEntry for field documentation.
+    struct StablePortabilityHistoryEntry {
+        synced: bool,
+        title: String,
+        url: String,
+        visit_time_unix_epoch_usec: u64,
+        visit_count: u64,
+        typed_count: u64,
     }
 
     // C++ interop version of the PaymentCardJSONEntry structure.
@@ -47,14 +59,23 @@ mod ffi {
     unsafe extern "C++" {
         include!("components/user_data_importer/utility/history_callback_from_rust.h");
 
-        type HistoryCallbackFromRust;
+        type SafariHistoryCallbackFromRust;
+        #[cxx_name = "ImportHistoryEntries"]
         fn ImportHistoryEntries(
-            self: Pin<&mut HistoryCallbackFromRust>,
+            self: Pin<&mut SafariHistoryCallbackFromRust>,
             history_entries: Pin<&mut CxxVector<HistoryEntry>>,
             completed: bool,
         );
-    }
 
+        type StablePortabilityHistoryCallbackFromRust;
+        #[cxx_name = "ImportHistoryEntries"]
+        fn ImportStablePortabilityHistoryEntries(
+            self: Pin<&mut StablePortabilityHistoryCallbackFromRust>,
+            history_entries: Pin<&mut CxxVector<StablePortabilityHistoryEntry>>,
+            completed: bool,
+        );
+
+    }
     extern "Rust" {
         type ResultOfZipFileArchive;
         fn err(self: &ResultOfZipFileArchive) -> bool;
@@ -69,7 +90,7 @@ mod ffi {
         ) -> bool;
         fn parse_history(
             self: &mut ZipFileArchive,
-            history_callback: UniquePtr<HistoryCallbackFromRust>,
+            history_callback: UniquePtr<SafariHistoryCallbackFromRust>,
             history_size_threshold: usize,
         );
         fn parse_payment_cards(
@@ -78,6 +99,11 @@ mod ffi {
         ) -> bool;
 
         fn new_archive(zip_filename: &[u8]) -> Box<ResultOfZipFileArchive>;
+        fn parse_stable_portability_history(
+            json_filename: &[u8],
+            history_callback: UniquePtr<StablePortabilityHistoryCallbackFromRust>,
+            history_size_threshold: usize,
+        ) -> bool;
     }
 }
 
@@ -121,6 +147,33 @@ struct HistoryJSONEntry {
     // An optional Boolean that’s true if the last visit to this item used the HTTP GET method;
     // otherwise, it’s false.
     // UNUSED: latest_visit_was_http_get: Option<bool>,
+}
+
+// Chrome's browser history JSON format.
+// JSON file with one entry per history visit.
+#[derive(Deserialize)]
+struct StablePortabilityHistoryJSONEntry {
+    // Optional boolean that represents whether this browsing history visit has been saved to or
+    // sync-ing to a server-side account by the browser. Defaults to false.
+    synced: Option<bool>,
+
+    // Required: title of the page that was visited.
+    title: String,
+
+    // Required: URL of the page that was visited.
+    url: String,
+
+    // Required: timestamp in which the navigation took place in microseconds since the
+    // Unix epoch.
+    visit_time_unix_epoch_usec: u64,
+
+    // Optional integer indicating the number of visits this entry represents. Defaults
+    // to 1.
+    visit_count: Option<u64>,
+
+    // Optional integer indicating how many of the visits were typed into the omnibox.
+    // Defaults to 0.
+    typed_count: Option<u64>,
 }
 
 // Safari's payment cards JSON format, as documented here:
@@ -186,6 +239,19 @@ impl From<HistoryJSONEntry> for ffi::HistoryEntry {
     }
 }
 
+impl From<StablePortabilityHistoryJSONEntry> for ffi::StablePortabilityHistoryEntry {
+    fn from(entry: StablePortabilityHistoryJSONEntry) -> Self {
+        Self {
+            synced: entry.synced.unwrap_or(false),
+            url: entry.url,
+            title: entry.title,
+            visit_time_unix_epoch_usec: entry.visit_time_unix_epoch_usec,
+            visit_count: entry.visit_count.unwrap_or(1),
+            typed_count: entry.typed_count.unwrap_or(0),
+        }
+    }
+}
+
 impl From<PaymentCardJSONEntry> for ffi::PaymentCardEntry {
     fn from(entry: PaymentCardJSONEntry) -> Self {
         Self {
@@ -222,6 +288,7 @@ fn has_extension(path: &Path, file_type: ffi::FileType) -> bool {
 fn expected_data_type(file_type: ffi::FileType) -> Result<&'static str> {
     match file_type {
         ffi::FileType::History => Ok("history"),
+        ffi::FileType::StablePortabilityHistory => Ok("history_visits"),
         ffi::FileType::PaymentCards => Ok("payment_cards"),
         _ => Err(anyhow!("No data type for this file type")),
     }
@@ -231,6 +298,7 @@ fn expected_data_type(file_type: ffi::FileType) -> Result<&'static str> {
 fn array_token_for_data_type(file_type: ffi::FileType) -> Result<&'static str> {
     match file_type {
         ffi::FileType::History => Ok("history"),
+        ffi::FileType::StablePortabilityHistory => Ok("history_visits"),
         ffi::FileType::PaymentCards => Ok("payment_cards"),
         _ => Err(anyhow!("No array token for this file type")),
     }
@@ -294,7 +362,7 @@ where
 }
 
 fn deserialize_top_level<'de, T, R>(
-    mut stream_reader: BufReader<zip::read::ZipFile<'de, R>>,
+    mut stream_reader: BufReader<R>,
     file_type: ffi::FileType,
     callback: impl FnMut(T) + 'de,
     metadata_only: bool,
@@ -396,7 +464,7 @@ fn parse_history_file<'a, R: Read>(
     stream_reader: ZipEntryBufReader<'a, R>,
     callback: impl FnMut(HistoryJSONEntry) + 'a,
 ) -> bool {
-    return deserialize_top_level::<HistoryJSONEntry, R>(
+    return deserialize_top_level(
         stream_reader.inner,
         ffi::FileType::History,
         callback,
@@ -405,9 +473,50 @@ fn parse_history_file<'a, R: Read>(
     .is_ok();
 }
 
+// Attempts to parse a Chrome history file. Returns whether parsing was
+// successful.
+fn parse_stable_portability_history(
+    json_filename: &[u8],
+    mut history_callback: cxx::UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
+    history_size_threshold: usize,
+) -> bool {
+    let mut history = CxxVector::<ffi::StablePortabilityHistoryEntry>::new();
+    let result = (|| -> Result<()> {
+        let path_str = std::str::from_utf8(json_filename)?;
+        let file = fs::File::open(path_str)?;
+        let stream_reader = BufReader::with_capacity(STREAM_BUFFER_SIZE, file);
+
+        deserialize_top_level::<StablePortabilityHistoryJSONEntry, std::fs::File>(
+            stream_reader,
+            ffi::FileType::StablePortabilityHistory,
+            |history_item| {
+                history.pin_mut().push(history_item.into());
+                if history.len() >= history_size_threshold {
+                    let mut batch_to_send = std::mem::replace(
+                        &mut history,
+                        CxxVector::<ffi::StablePortabilityHistoryEntry>::new(),
+                    );
+                    history_callback.as_mut().unwrap().ImportStablePortabilityHistoryEntries(
+                        batch_to_send.pin_mut(),
+                        /* completed= */ false,
+                    );
+                }
+            },
+            /* metadata_only= */ false,
+        )
+    })();
+
+    // Send final batch if any, and completion signal.
+    history_callback
+        .as_mut()
+        .unwrap()
+        .ImportStablePortabilityHistoryEntries(history.pin_mut(), true);
+    return result.is_ok();
+}
+
 // Returns whether the file used by the stream reader is a history file.
 fn is_history_file<'a, R: Read>(stream_reader: ZipEntryBufReader<'a, R>) -> bool {
-    return deserialize_top_level::<HistoryJSONEntry, R>(
+    return deserialize_top_level::<HistoryJSONEntry, zip::read::ZipFile<'a, R>>(
         stream_reader.inner,
         ffi::FileType::History,
         |_| {},
@@ -422,7 +531,7 @@ fn parse_payment_cards_file<'a, R: Read>(
     stream_reader: ZipEntryBufReader<'a, R>,
     callback: impl FnMut(PaymentCardJSONEntry) + 'a,
 ) -> bool {
-    return deserialize_top_level::<PaymentCardJSONEntry, R>(
+    return deserialize_top_level(
         stream_reader.inner,
         ffi::FileType::PaymentCards,
         callback,
@@ -433,7 +542,7 @@ fn parse_payment_cards_file<'a, R: Read>(
 
 // Returns whether the file used by the stream reader is a payment cards file.
 fn is_payment_cards_file<'a, R: Read>(stream_reader: ZipEntryBufReader<'a, R>) -> bool {
-    return deserialize_top_level::<PaymentCardJSONEntry, R>(
+    return deserialize_top_level::<PaymentCardJSONEntry, zip::read::ZipFile<'a, R>>(
         stream_reader.inner,
         ffi::FileType::PaymentCards,
         |_| {},
@@ -557,7 +666,7 @@ impl ZipFileArchive {
 
     fn parse_history(
         self: &mut ZipFileArchive,
-        mut history_callback: cxx::UniquePtr<ffi::HistoryCallbackFromRust>,
+        mut history_callback: cxx::UniquePtr<ffi::SafariHistoryCallbackFromRust>,
         history_size_threshold: usize,
     ) {
         let mut history = CxxVector::<ffi::HistoryEntry>::new();
