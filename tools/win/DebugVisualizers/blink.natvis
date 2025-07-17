@@ -113,14 +113,6 @@
       </ArrayItems>
     </Expand>
   </Type>
-  <Type Name="WTF::RefPtr&lt;*&gt;">
-    <AlternativeType Name="WTF::PassRefPtr&lt;*&gt;"/>
-    <DisplayString Condition="ptr_ == 0">null</DisplayString>
-    <DisplayString>{*ptr_}</DisplayString>
-    <Expand>
-      <Item Name="Ptr">ptr_</Item>
-    </Expand>
-  </Type>
   <Type Name="blink::FixedPoint&lt;*&gt;">
     <DisplayString>{(float)value_ / kFixedPointDenominator}</DisplayString>
     <Expand>
@@ -173,11 +165,11 @@
   </Type>
   <!-- Component build version -->
   <Type Name="blink::WebString">
-    <DisplayString>{(blink_platform_wtf.dll!WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
+    <DisplayString>{(blink_platform_wtf.dll!blink::StringImpl*)(impl_.ptr_)}</DisplayString>
   </Type>
   <!-- Non-component build version -->
   <Type Name="blink::WebString" Priority="Low">
-    <DisplayString>{(WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
+    <DisplayString>{(blink::StringImpl*)(impl_.ptr_)}</DisplayString>
   </Type>
   <!-- DOM -->
   <Type Name="blink::QualifiedName">
