@@ -86,19 +86,19 @@ class ByteCount {
 };
 
 template <typename T>
-  requires std::is_arithmetic_v<T>
+  requires std::is_integral_v<T>
 constexpr ByteCount KiB(T kib) {
   return ByteCount((CheckedNumeric<int64_t>(kib) * 1024).ValueOrDie());
 }
 
 template <typename T>
-  requires std::is_arithmetic_v<T>
+  requires std::is_integral_v<T>
 constexpr ByteCount MiB(T mib) {
   return ByteCount((CheckedNumeric<int64_t>(mib) * 1024 * 1024).ValueOrDie());
 }
 
 template <typename T>
-  requires std::is_arithmetic_v<T>
+  requires std::is_integral_v<T>
 constexpr ByteCount GiB(T gib) {
   return ByteCount(
       (CheckedNumeric<int64_t>(gib) * 1024 * 1024 * 1024).ValueOrDie());
