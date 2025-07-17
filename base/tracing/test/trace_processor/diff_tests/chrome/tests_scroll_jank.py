@@ -112,23 +112,24 @@ class ChromeScrollJankStdlib(TestSuite):
         SELECT
           ts,
           dur,
-          track_id,
-          name,
+          track.name AS track_name,
+          chrome_janky_event_latencies_v3.name,
           cause_of_jank,
           sub_cause_of_jank,
           delayed_frame_count,
           frame_jank_ts,
           frame_jank_dur
-        FROM chrome_janky_event_latencies_v3;
+        FROM chrome_janky_event_latencies_v3
+        JOIN track ON chrome_janky_event_latencies_v3.track_id = track.id;
         """,
         out=Csv("""
-        "ts","dur","track_id","name","cause_of_jank","sub_cause_of_jank","delayed_frame_count","frame_jank_ts","frame_jank_dur"
-        1035866897893926,49303000,968,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035866935295926,11901000
-        1035868162888926,61845000,1672,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868212811926,11921999
-        1035868886494926,49285000,2055,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868923855926,11924000
-        1035869208882926,60201000,2230,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",1,1035869257151926,11932000
-        1035869319831926,71490000,2287,"EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035869379377926,11944000
-        1035869386651926,60311000,2314,"EventLatency","RendererCompositorQueueingDelay","[NULL]",1,1035869434949926,12013000
+        "ts","dur","track_name","name","cause_of_jank","sub_cause_of_jank","delayed_frame_count","frame_jank_ts","frame_jank_dur"
+        1035866897893926,49303000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035866935295926,11901000
+        1035868162888926,61845000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868212811926,11921999
+        1035868886494926,49285000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868923855926,11924000
+        1035869208882926,60201000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",1,1035869257151926,11932000
+        1035869319831926,71490000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035869379377926,11944000
+        1035869386651926,60311000,"EventLatency","EventLatency","RendererCompositorQueueingDelay","[NULL]",1,1035869434949926,12013000
         """))
 
   def test_chrome_janky_frame_presentation_intervals(self):
@@ -203,6 +204,7 @@ class ChromeScrollJankStdlib(TestSuite):
         5,1035869379377926,11944000
         6,1035869434949926,12013000
         """))
+
   def test_chrome_presented_scroll_offsets(self):
     return DiffTestBlueprint(
         trace=DataPath('scroll_offsets_trace_2.pftrace'),
@@ -315,8 +317,8 @@ class ChromeScrollJankStdlib(TestSuite):
         INCLUDE PERFETTO MODULE chrome.event_latency;
 
         SELECT
-          id,
-          name,
+          chrome_event_latencies.id,
+          chrome_event_latencies.name,
           ts,
           dur,
           scroll_update_id,
@@ -324,7 +326,7 @@ class ChromeScrollJankStdlib(TestSuite):
           display_trace_id,
           is_presented,
           event_type,
-          track_id,
+          track.name AS track_name,
           vsync_interval_ms,
           is_janky_scrolled_frame,
           is_janky_scrolled_frame_v3,
@@ -334,6 +336,7 @@ class ChromeScrollJankStdlib(TestSuite):
           swap_end_timestamp,
           presentation_timestamp
         FROM chrome_event_latencies
+        JOIN track ON chrome_event_latencies.track_id = track.id
         WHERE
           event_type IN (
             'FIRST_GESTURE_SCROLL_UPDATE',
@@ -341,27 +344,27 @@ class ChromeScrollJankStdlib(TestSuite):
             'INERTIAL_GESTURE_SCROLL_UPDATE'
           )
           AND is_presented
-        ORDER BY id
+        ORDER BY chrome_event_latencies.id
         LIMIT 10;
         """,
         out=Csv("""
-        "id","name","ts","dur","scroll_update_id","surface_frame_trace_id","display_trace_id","is_presented","event_type","track_id","vsync_interval_ms","is_janky_scrolled_frame","is_janky_scrolled_frame_v3","buffer_available_timestamp","buffer_ready_timestamp","latch_timestamp","swap_end_timestamp","presentation_timestamp"
-        1393,"EventLatency",9648030168797,31117000,2715127443997596957,-5883104867331890212,197383,1,"FIRST_GESTURE_SCROLL_UPDATE",39,8.333000,0,0,9648042077797,"[NULL]",9648052119797,9648052279797,9648061285797
-        1472,"EventLatency",9648034310797,43643000,2715127443997596944,-5883104867331890224,197384,1,"GESTURE_SCROLL_UPDATE",45,8.333000,1,0,9648050525797,9648058623797,9648065887797,9648073080797,9648077953797
-        1552,"EventLatency",9648042670797,51959000,2715127443997596936,-5883104867331890217,197386,1,"GESTURE_SCROLL_UPDATE",55,8.333000,1,0,9648059044797,9648060854797,9648084625797,9648088709797,9648094629797
-        1590,"EventLatency",9648051037797,51935000,2715127443997596928,-5883104867331890197,197387,1,"GESTURE_SCROLL_UPDATE",64,8.333000,0,0,9648067745797,9648069434797,9648092936797,9648096033797,9648102972797
-        1802,"EventLatency",9648067763797,43528000,2715127443997597424,-5883104867331890193,197388,1,"GESTURE_SCROLL_UPDATE",80,8.333000,0,0,9648077953797,9648079259797,9648101348797,9648105190797,9648111291797
-        1880,"EventLatency",9648076110797,43521000,2715127443997597416,-5883104867331890205,197389,1,"GESTURE_SCROLL_UPDATE",88,8.333000,0,0,9648088212797,9648089952797,9648109861797,9648114300797,9648119631797
-        1934,"EventLatency",9648084476797,43447000,2715127443997597408,-5883104867331890202,197390,1,"GESTURE_SCROLL_UPDATE",96,8.333000,0,0,9648095641797,9648097461797,9648117880797,9648120847797,9648127923797
-        2018,"EventLatency",9648092838797,43426000,2715127443997597400,-5883104867331890183,197391,1,"GESTURE_SCROLL_UPDATE",104,8.333000,0,0,9648105944797,9648109986797,9648126173797,9648128941797,9648136264797
-        2100,"EventLatency",9648101207797,43390000,2715127443997597392,-5883104867331890179,197392,1,"GESTURE_SCROLL_UPDATE",112,8.333000,0,0,9648113821797,9648116687797,9648134608797,9648137873797,9648144597797
-        2184,"EventLatency",9648109566797,43363000,2715127443997597384,-5883104867331890192,197393,1,"GESTURE_SCROLL_UPDATE",120,8.333000,0,0,9648119837797,9648122956797,9648142849797,9648146215797,9648152929797
+        "id","name","ts","dur","scroll_update_id","surface_frame_trace_id","display_trace_id","is_presented","event_type","track_name","vsync_interval_ms","is_janky_scrolled_frame","is_janky_scrolled_frame_v3","buffer_available_timestamp","buffer_ready_timestamp","latch_timestamp","swap_end_timestamp","presentation_timestamp"
+        1393,"EventLatency",9648030168797,31117000,2715127443997596957,-5883104867331890212,197383,1,"FIRST_GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648042077797,"[NULL]",9648052119797,9648052279797,9648061285797
+        1472,"EventLatency",9648034310797,43643000,2715127443997596944,-5883104867331890224,197384,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,1,0,9648050525797,9648058623797,9648065887797,9648073080797,9648077953797
+        1552,"EventLatency",9648042670797,51959000,2715127443997596936,-5883104867331890217,197386,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,1,0,9648059044797,9648060854797,9648084625797,9648088709797,9648094629797
+        1590,"EventLatency",9648051037797,51935000,2715127443997596928,-5883104867331890197,197387,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648067745797,9648069434797,9648092936797,9648096033797,9648102972797
+        1802,"EventLatency",9648067763797,43528000,2715127443997597424,-5883104867331890193,197388,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648077953797,9648079259797,9648101348797,9648105190797,9648111291797
+        1880,"EventLatency",9648076110797,43521000,2715127443997597416,-5883104867331890205,197389,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648088212797,9648089952797,9648109861797,9648114300797,9648119631797
+        1934,"EventLatency",9648084476797,43447000,2715127443997597408,-5883104867331890202,197390,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648095641797,9648097461797,9648117880797,9648120847797,9648127923797
+        2018,"EventLatency",9648092838797,43426000,2715127443997597400,-5883104867331890183,197391,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648105944797,9648109986797,9648126173797,9648128941797,9648136264797
+        2100,"EventLatency",9648101207797,43390000,2715127443997597392,-5883104867331890179,197392,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648113821797,9648116687797,9648134608797,9648137873797,9648144597797
+        2184,"EventLatency",9648109566797,43363000,2715127443997597384,-5883104867331890192,197393,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,0,9648119837797,9648122956797,9648142849797,9648146215797,9648152929797
         """))
 
   # A trace from M131 (ToT as of adding this test) has the necessary
   # events/arguments.
   def test_chrome_input_pipeline_steps(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.input;
@@ -430,8 +433,8 @@ class ChromeScrollJankStdlib(TestSuite):
 
   def test_task_start_time_surface_frame_steps(self):
     return DiffTestBlueprint(
-      trace=DataPath('scroll_m132.pftrace'),
-      query="""
+        trace=DataPath('scroll_m132.pftrace'),
+        query="""
       INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
       SELECT
         step,
@@ -440,7 +443,7 @@ class ChromeScrollJankStdlib(TestSuite):
       ORDER BY ts
       LIMIT 10;
       """,
-      out=Csv("""
+        out=Csv("""
       "step","task_start_time_ts"
       "STEP_ISSUE_BEGIN_FRAME","[NULL]"
       "STEP_RECEIVE_BEGIN_FRAME",3030298007485995
@@ -456,8 +459,8 @@ class ChromeScrollJankStdlib(TestSuite):
 
   def test_task_start_time_display_frame_steps(self):
     return DiffTestBlueprint(
-      trace=DataPath('scroll_m132.pftrace'),
-      query="""
+        trace=DataPath('scroll_m132.pftrace'),
+        query="""
       INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
       SELECT
         step,
@@ -466,7 +469,7 @@ class ChromeScrollJankStdlib(TestSuite):
       ORDER BY ts
       LIMIT 10;
       """,
-      out=Csv("""
+        out=Csv("""
       "step","task_start_time_ts"
       "STEP_DRAW_AND_SWAP",3030298019565268
       "STEP_SURFACE_AGGREGATION",3030298019563268
@@ -481,7 +484,7 @@ class ChromeScrollJankStdlib(TestSuite):
       """))
 
   def test_chrome_coalesced_inputs(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.input;
@@ -508,7 +511,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_touch_move_to_scroll_update(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.input;
@@ -535,7 +538,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_touch_move_to_scroll_update_not_forwarded_to_renderer(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_with_input_not_forwarded_to_renderer.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.input;
@@ -562,7 +565,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_scroll_update_refs(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -603,7 +606,7 @@ class ChromeScrollJankStdlib(TestSuite):
   """))
 
   def test_chrome_scroll_update_input_pipeline(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -668,7 +671,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_scroll_update_frame_pipeline(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -737,7 +740,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_scroll_frame_info(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m132.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -762,9 +765,8 @@ class ChromeScrollJankStdlib(TestSuite):
         259,259
         """))
 
-
   def test_chrome_scroll_update_info(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -847,10 +849,10 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
 
   def test_chrome_scroll_update_info_step_templates(self):
-        # Verify that chrome_scroll_update_info_step_templates references at
-        # least one valid column name and no invalid column names in
-        # chrome_scroll_update_info.
-        return DiffTestBlueprint(
+    # Verify that chrome_scroll_update_info_step_templates references at
+    # least one valid column name and no invalid column names in
+    # chrome_scroll_update_info.
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
@@ -894,7 +896,7 @@ class ChromeScrollJankStdlib(TestSuite):
   # A trace from M132 (ToT as of adding this test) has the necessary
   # events/arguments (including the ones from the 'view' atrace category).
   def test_chrome_input_dispatch_step(self):
-        return DiffTestBlueprint(
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m132_with_atrace.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.android_input;
@@ -920,9 +922,9 @@ class ChromeScrollJankStdlib(TestSuite):
   # A trace from M132 has the necessary events/arguments
   # (including the ones from the 'input' atrace category).
   def test_chrome_scroll_update_info_with_android_input(self):
-        # Verify that non-fling scrolls have correct durations
-        # of the InputReader and InputDispatcher steps.
-        return DiffTestBlueprint(
+    # Verify that non-fling scrolls have correct durations
+    # of the InputReader and InputDispatcher steps.
+    return DiffTestBlueprint(
         trace=DataPath('scroll_m132_with_atrace.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
