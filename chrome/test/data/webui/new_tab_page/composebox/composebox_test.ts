@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
+import type {PageRemote} from 'chrome://new-tab-page/composebox.mojom-webui.js';
+import {FileUploadStatus} from 'chrome://new-tab-page/composebox_query.mojom-webui.js';
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -12,9 +14,17 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {installMock} from '../test_support.js';
 
+function generateZeroId(): string {
+  // Generate 128 bit unique identifier.
+  const components = new Uint32Array(4);
+  return components.reduce(
+      (id = '', component) => id + component.toString(16).padStart(8, '0'), '');
+}
+
 suite('NewTabPageComposeboxTest', () => {
   let composeboxElement: ComposeboxElement;
   let handler: TestMock<PageHandlerRemote>;
+  let callbackRouterRemote: PageRemote;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -22,7 +32,10 @@ suite('NewTabPageComposeboxTest', () => {
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(
             new ComposeboxProxyImpl(mock, new PageCallbackRouter())));
+    callbackRouterRemote = ComposeboxProxyImpl.getInstance()
+                               .callbackRouter.$.bindNewPipeAndPassRemote();
   });
+
   function createComposeboxElement() {
     composeboxElement = new ComposeboxElement();
     document.body.appendChild(composeboxElement);
@@ -47,6 +60,51 @@ suite('NewTabPageComposeboxTest', () => {
       };
       checkCount();
     });
+  }
+
+  async function uploadImageAndVerify(token: Object) {
+    handler.setResultFor('addFile', Promise.resolve({token: token}));
+
+    // Assert no files.
+    assertEquals(composeboxElement.$.carousel.files.length, 0);
+
+    // Act.
+    const dataTransfer = new DataTransfer();
+
+    const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
+    dataTransfer.items.add(file);
+
+    // Since the `onFileChange_` method checks the event target when creating
+    // the `objectUrl`, we have to mock it here.
+    const mockFileChange = new Event('change', {bubbles: true});
+    Object.defineProperty(mockFileChange, 'target', {
+      writable: false,
+      value: composeboxElement.$.imageInput,
+    });
+    composeboxElement.$.imageInput.files = dataTransfer.files;
+    composeboxElement.$.imageInput.dispatchEvent(mockFileChange);
+
+    await handler.whenCalled('addFile');
+    await microtasksFinished();
+
+    // Assert one image file.
+    const files = composeboxElement.$.carousel.files;
+    assertEquals(files.length, 1);
+    assertEquals(files[0]!.type, 'image/jpeg');
+    assertEquals(files[0]!.name, 'foo.jpg');
+    assertTrue(!!files[0]!.objectUrl);
+
+    assertEquals(handler.getCallCount('notifySessionStarted'), 1);
+
+    // Assert file is uploaded.
+    assertEquals(handler.getCallCount('addFile'), 1);
+
+    const fileBuffer = await file.arrayBuffer();
+    const fileArray = Array.from(new Uint8Array(fileBuffer));
+
+    const [[fileInfo, fileData]] = handler.getArgs('addFile');
+    assertEquals(fileInfo.fileName, 'foo.jpg');
+    assertDeepEquals(fileData.bytes, fileArray);
   }
 
   test('clear functionality', async () => {
@@ -108,49 +166,24 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload image', async () => {
     createComposeboxElement();
-    handler.setResultFor(
-        'addFile', Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+    const token = {low: BigInt(1), high: BigInt(2)};
+    await uploadImageAndVerify(token);
+  });
 
-    // Assert no files.
-    assertEquals(composeboxElement.$.carousel.files.length, 0);
 
-    // Act.
-    const dataTransfer = new DataTransfer();
 
-    const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
-    dataTransfer.items.add(file);
+  test('invalid image upload is removed', async () => {
+    createComposeboxElement();
+    const id = generateZeroId();
+    await uploadImageAndVerify(id);
 
-    // Since the `onFileChange_` method checks the event target when creating
-    // the `objectUrl`, we have to mock it here.
-    const mockFileChange = new Event('change', {bubbles: true});
-    Object.defineProperty(mockFileChange, 'target', {
-      writable: false,
-      value: composeboxElement.$.imageInput,
-    });
-    composeboxElement.$.imageInput.files = dataTransfer.files;
-    composeboxElement.$.imageInput.dispatchEvent(mockFileChange);
+    callbackRouterRemote.onFileUploadStatusChanged(
+        id, FileUploadStatus.kValidationFailed);
+    await callbackRouterRemote.$.flushForTesting();
 
-    await handler.whenCalled('addFile');
-    await microtasksFinished();
-
-    // Assert one image file.
+    // Assert no files in the carousel.
     const files = composeboxElement.$.carousel.files;
-    assertEquals(files.length, 1);
-    assertEquals(files[0]!.type, 'image/jpeg');
-    assertEquals(files[0]!.name, 'foo.jpg');
-    assertTrue(!!files[0]!.objectUrl);
-
-    assertEquals(handler.getCallCount('notifySessionStarted'), 1);
-
-    // Assert file is uploaded.
-    assertEquals(handler.getCallCount('addFile'), 1);
-
-    const fileBuffer = await file.arrayBuffer();
-    const fileArray = Array.from(new Uint8Array(fileBuffer));
-
-    const [[fileInfo, fileData]] = handler.getArgs('addFile');
-    assertEquals(fileInfo.fileName, 'foo.jpg');
-    assertDeepEquals(fileData.bytes, fileArray);
+    assertEquals(files.length, 0);
   });
 
   test('upload pdf', async () => {

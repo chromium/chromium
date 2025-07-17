@@ -13,7 +13,8 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
-import type {PageHandlerRemote} from '../composebox.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerRemote} from '../composebox.mojom-webui.js';
+import {FileUploadStatus} from '../composebox_query.mojom-webui.js';
 import {recordLoadDuration} from '../metrics_utils.js';
 import {WindowProxy} from '../window_proxy.js';
 
@@ -77,7 +78,9 @@ export class ComposeboxElement extends CrLitElement {
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
+  private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
+  private setFileUploadStatusListenerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
 
   private composeboxCloseByEscape_: boolean =
@@ -85,6 +88,7 @@ export class ComposeboxElement extends CrLitElement {
 
   constructor() {
     super();
+    this.callbackRouter_ = ComposeboxProxyImpl.getInstance().callbackRouter;
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
     this.pageHandler_.notifySessionStarted();
     recordLoadDuration(
@@ -94,6 +98,27 @@ export class ComposeboxElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.setFileUploadStatusListenerId_ =
+        this.callbackRouter_.onFileUploadStatusChanged.addListener(
+            (token: UnguessableToken, status: FileUploadStatus) => {
+              let file = this.files_.get(token);
+              if (file) {
+                if ([
+                      FileUploadStatus.kValidationFailed,
+                      FileUploadStatus.kUploadFailed,
+                    ].includes(status)) {
+                  this.files_.delete(token);
+
+                  // TODO(crbug.com/422559050): On error, inform the user.
+                } else {
+                  file = {...file, status: status};
+                  this.files_.set(token, file);
+                }
+                this.files_ = new Map([...this.files_]);
+              }
+            });
+
     this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.$.input.value.trim().length > 0;
     });
@@ -102,6 +127,7 @@ export class ComposeboxElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.callbackRouter_.removeListener(this.setFileUploadStatusListenerId_!);
     this.eventTracker_.removeAll();
   }
 
@@ -124,10 +150,9 @@ export class ComposeboxElement extends CrLitElement {
     if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
       return;
     }
-    const newFileMap: Map<UnguessableToken, ComposeboxFile> =
-        new Map(this.files_.entries());
-    newFileMap.delete(e.detail.uuid);
-    this.files_ = newFileMap;
+
+    this.files_ = new Map([...this.files_.entries()].filter(
+        ([uuid, _]) => uuid !== e.detail.uuid));
     this.pageHandler_.deleteFile(e.detail.uuid);
   }
 
@@ -138,10 +163,8 @@ export class ComposeboxElement extends CrLitElement {
         this.files_.size >= this.maxFileCount_) {
       return;
     }
-    const newFileMap: Map<UnguessableToken, ComposeboxFile> =
-        new Map(this.files_.entries());
-    for (let i = 0; i < files.length; i++) {
-      const file = files.item(i)!;
+
+    for (const file of files) {
       if (file.size === 0 || file.size > this.maxFileSize_) {
         // TODO(crbug.com/422559050): Show error state.
       } else {
@@ -152,7 +175,6 @@ export class ComposeboxElement extends CrLitElement {
 
         const bigBuffer:
             BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
-
         const {token} = await this.pageHandler_.addFile(
             {
               fileName: file.name,
@@ -160,16 +182,18 @@ export class ComposeboxElement extends CrLitElement {
               selectionTime: new Date(),
             },
             bigBuffer);
-        newFileMap.set(token, {
+
+        const attachment: ComposeboxFile = {
           uuid: token,
           name: file.name,
           objectUrl: input === this.$.imageInput ? URL.createObjectURL(file) :
                                                    null,
           type: file.type,
-        });
+          status: FileUploadStatus.kNotUploaded,
+        };
+        this.files_ = new Map([...this.files_.entries(), [token, attachment]]);
       }
     }
-    this.files_ = newFileMap;
     // Clear the file input.
     input.value = '';
     this.$.input.focus();
