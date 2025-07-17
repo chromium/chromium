@@ -28,8 +28,29 @@ StarboardDrmWrapper::DrmSystemResource::~DrmSystemResource() {
   StarboardDrmWrapper::GetInstance().RemoveResource(this);
 }
 
+StarboardDrmWrapper::Client::Client() {
+  StarboardDrmWrapper::GetInstance().AddClient(this);
+}
+
 StarboardDrmWrapper::Client::~Client() {
   StarboardDrmWrapper::GetInstance().RemoveClient(this);
+}
+
+bool StarboardDrmWrapper::HasClients() {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  return !clients_.empty();
+}
+
+void StarboardDrmWrapper::AddClient(Client* client) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  LOG(INFO) << "StarboardDrmWrapper::AddClient(client=" << client << ")";
+
+  const auto& [unused_it, inserted] = clients_.insert(client);
+  if (!inserted) {
+    LOG(WARNING) << "Duplicate Client* inserted";
+  }
 }
 
 void StarboardDrmWrapper::RemoveClient(Client* client) {
@@ -64,6 +85,9 @@ void StarboardDrmWrapper::RemoveClient(Client* client) {
       }
     }
   }
+
+  // Update clients_.
+  clients_.erase(client);
 }
 
 void StarboardDrmWrapper::CallOnSessionUpdateRequest(

@@ -46,9 +46,11 @@ class StarboardDrmWrapper {
   };
 
   // A client that interacts with a StarboardDrmWrapper to make DRM-related
-  // calls into starboard.
+  // calls into starboard. This should only be subclassed by CDM
+  // implementations.
   class Client {
    public:
+    Client();
     virtual ~Client();
 
     // Called when a new session has been created.
@@ -91,6 +93,10 @@ class StarboardDrmWrapper {
   // Disallow copy and assign.
   StarboardDrmWrapper(const StarboardDrmWrapper&) = delete;
   StarboardDrmWrapper& operator=(const StarboardDrmWrapper&) = delete;
+
+  // Returns true if at least one client is registered with StarboardDrmWrapper.
+  // This can be used as a signal that a CDM exists.
+  bool HasClients();
 
   // Returns the handle to the SbDrmSystem. This should only be called for the
   // purpose of creating the SbPlayer. Any calls to SbDrmSystem should go
@@ -152,6 +158,10 @@ class StarboardDrmWrapper {
   // Returns the next internal ticket. Avoids returning kSbDrmTicketInvalid.
   // Must be called on task_runner_.
   int GetNextTicket();
+
+  // Called by a Client upon construction. This tells StarboardDrmWrapper that a
+  // CDM instance currently exists.
+  void AddClient(Client* client);
 
   // Called by a Client upon deletion. This tells StarboardDrmWrapper that it
   // can clean up any mappings to/from that client in its internal data
@@ -240,6 +250,9 @@ class StarboardDrmWrapper {
   // Keeps track of internal tickets (from ticket_) and the Client they
   // correspond to.
   base::flat_map<int, Client*> ticket_to_client_;
+
+  // Tracks any existing clients, so we know whether a CDM exists.
+  base::flat_set<Client*> clients_;
 
   // Maps from our internal ticket (ticket_) to the ticket passed in by the
   // client. This is done in case multiple Clients interact with

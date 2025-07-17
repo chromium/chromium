@@ -73,6 +73,48 @@ class MockDelegate : public MediaPipelineBackend::Decoder::Delegate {
   MOCK_METHOD(void, OnVideoResolutionChanged, (const Size& size), (override));
 };
 
+// A mock client of StarboardDrmWrapper. Constructing one can be used to
+// simulate a CDM being created.
+class MockStarboardDrmWrapperClient : public StarboardDrmWrapper::Client {
+ public:
+  MockStarboardDrmWrapperClient() = default;
+  ~MockStarboardDrmWrapperClient() override = default;
+
+  MOCK_METHOD(void,
+              OnSessionUpdateRequest,
+              (int ticket,
+               StarboardDrmStatus status,
+               StarboardDrmSessionRequestType type,
+               std::string error_message,
+               std::string session_id,
+               std::vector<uint8_t> content),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSessionUpdated,
+              (int ticket,
+               StarboardDrmStatus status,
+               std::string error_message,
+               std::string session_id),
+              (override));
+
+  MOCK_METHOD(void,
+              OnKeyStatusesChanged,
+              (std::string session_id,
+               std::vector<StarboardDrmKeyId> key_ids,
+               std::vector<StarboardDrmKeyStatus> key_statuses),
+              (override));
+
+  MOCK_METHOD(void,
+              OnCertificateUpdated,
+              (int ticket,
+               StarboardDrmStatus status,
+               std::string error_message),
+              (override));
+
+  MOCK_METHOD(void, OnSessionClosed, (std::string session_id), (override));
+};
+
 // Returns a simple AudioConfig.
 AudioConfig GetBasicAudioConfig() {
   AudioConfig config;
@@ -546,8 +588,9 @@ TEST_F(MediaPipelineBackendStarboardTest,
   EXPECT_TRUE(backend.Initialize());
 }
 
-TEST_F(MediaPipelineBackendStarboardTest,
-       PassesNullDrmSystemToStarboardIfAudioAndVideoAreUnencrypted) {
+TEST_F(
+    MediaPipelineBackendStarboardTest,
+    PassesNullDrmSystemToStarboardIfAudioAndVideoAreUnencryptedAndNoCdmExists) {
   EXPECT_CALL(
       *starboard_,
       CreatePlayer(
@@ -580,6 +623,100 @@ TEST_F(MediaPipelineBackendStarboardTest,
   audio_decoder->SetDelegate(&audio_delegate);
   video_decoder->SetDelegate(&video_delegate);
 
+  EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       PassesDrmSystemToStarboardIfCdmExistsEvenIfAudioAndVideoAreUnencrypted) {
+  // This is a regression test for a scenario that can happen when casting
+  // Peacock. Sometimes playback begins with ads, which are unencrypted, but
+  // later switches to encrypted content (once the TV show or movie begins
+  // playing). We need to pass an SbDrmSystem to starboard in that case, even
+  // when both audio and video streams are unencrypted.
+
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(Pointee(Field(&StarboardPlayerCreationParam::drm_system,
+                                 Eq(&fake_drm_system_))),
+                   _))
+      .Times(1);
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+
+  // Both audio and video are unencrypted.
+  AudioConfig audio_config = GetBasicAudioConfig();
+  audio_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  audio_decoder->SetConfig(audio_config);
+
+  VideoConfig video_config = GetBasicVideoConfig();
+  video_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  video_decoder->SetConfig(video_config);
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  // Construct a MockStarboardDrmWrapperClient to simulate a CDM being created.
+  MockStarboardDrmWrapperClient client;
+
+  EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(
+    MediaPipelineBackendStarboardTest,
+    DoesNotPassDrmSystemToStarboardIfCdmIsDestroyedAndAudioAndVideoAreUnencrypted) {
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(
+          Pointee(Field(&StarboardPlayerCreationParam::drm_system, IsNull())),
+          _))
+      .Times(1);
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+
+  // Both audio and video are unencrypted.
+  AudioConfig audio_config = GetBasicAudioConfig();
+  audio_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  audio_decoder->SetConfig(audio_config);
+
+  VideoConfig video_config = GetBasicVideoConfig();
+  video_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  video_decoder->SetConfig(video_config);
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  {
+    // Construct a MockStarboardDrmWrapperClient to simulate a CDM being
+    // created.
+    MockStarboardDrmWrapperClient client;
+  }  // client is destructed
+
+  // There should be no CDMs at this point, so a null SbDrmSystem should be
+  // passed to starboard.
   EXPECT_TRUE(backend.Initialize());
 }
 
