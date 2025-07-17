@@ -290,6 +290,8 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
   form.signature = FormSignatureAsStr();
   form.alternative_signature =
       base::NumberToString(alternative_form_signature().value());
+  form.structural_form_signature =
+      base::NumberToString(structural_form_signature().value());
 
   std::map<const AutofillField*, std::vector<AttributeType>>
       field_to_attribute_types;

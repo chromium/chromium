@@ -18,6 +18,7 @@ struct FormDataPredictions {
   FormData data;
   std::string signature;
   std::string alternative_signature;
+  std::string structural_form_signature;
   std::vector<FormFieldDataPredictions> fields;
 
   FormDataPredictions();
