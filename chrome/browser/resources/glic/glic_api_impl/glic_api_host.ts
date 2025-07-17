@@ -662,6 +662,11 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.journalStop();
   }
 
+  glicBrowserJournalRecordFeedback(
+      request: {positive: boolean, reason: string}): void {
+    this.handler.journalRecordFeedback(request.positive, request.reason);
+  }
+
   glicBrowserOnResponseRated(request: {positive: boolean}): void {
     this.handler.onResponseRated(request.positive);
   }

@@ -661,6 +661,11 @@ interface WebClientHandler {
   // Stop journal collection.
   JournalStop();
 
+  // Record the journal in a listnr feedback. The reason will be sent to listnr
+  // as the feedback description exactly as is without being parsed or processed
+  // in the browser process.
+  JournalRecordFeedback(bool positive, string reason);
+
   // Called when the user submits input.
   OnUserInputSubmitted(WebClientMode mode);
 

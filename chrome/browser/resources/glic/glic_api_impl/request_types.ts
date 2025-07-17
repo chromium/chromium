@@ -241,6 +241,12 @@ export declare interface HostRequestTypes {
     },
   };
   glicBrowserJournalStop: {};
+  glicBrowserJournalRecordFeedback: {
+    request: {
+      positive: boolean,
+      reason: string,
+    },
+  };
   glicBrowserOnUserInputSubmitted: {
     request: {
       mode: number,
@@ -459,6 +465,7 @@ type HostRequestEnumNamesType = {
     JournalSnapshot: 0,
     JournalStart: 0,
     JournalStop: 0,
+    JournalRecordFeedback: 0,
     OnUserInputSubmitted: 0,
     OnRequestStarted: 0,
     OnResponseStarted: 0,

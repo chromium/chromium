@@ -736,6 +736,13 @@ class GlicBrowserHostJournalImpl implements GlicBrowserHostJournal {
   stop(): void {
     this.sender.requestNoResponse('glicBrowserJournalStop', undefined);
   }
+
+  recordFeedback(positive: boolean, reason: string) {
+    this.sender.requestNoResponse(
+        'glicBrowserJournalRecordFeedback',
+        {positive, reason},
+    );
+  }
 }
 
 class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {

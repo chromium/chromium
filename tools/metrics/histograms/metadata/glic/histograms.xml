@@ -81,6 +81,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GetZeroStateSuggestions"/>
     <variant name="GetZeroStateSuggestionsForFocusedTab"/>
     <variant name="JournalClear"/>
+    <variant name="JournalRecordFeedback"/>
     <variant name="JournalSnapshot"/>
     <variant name="JournalStart"/>
     <variant name="JournalStop"/>

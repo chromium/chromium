@@ -767,6 +767,12 @@ export declare interface GlicBrowserHostJournal {
    * Requests journal stop logging.
    */
   stop(): void;
+
+  /**
+   * Called when the user rates a response to submit a feedback with the current
+   * journal snapshot.
+   */
+  recordFeedback?(positive: boolean, reason: string): void;
 }
 
 /** Data sent back to the host about the opening of the panel. */

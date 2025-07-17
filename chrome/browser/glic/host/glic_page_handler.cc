@@ -355,13 +355,22 @@ class JournalHandler {
       std::move(callback).Run(glic::mojom::Journal::New());
       return;
     }
-    std::vector<uint8_t> result_buffer = GetSnapshotInternal(clear_journal);
     std::move(callback).Run(
-        glic::mojom::Journal::New(std::move(result_buffer)));
+        glic::mojom::Journal::New(journal_serializer_->Snapshot()));
+    if (clear_journal) {
+      journal_serializer_->Clear();
+    }
   }
 
   std::vector<uint8_t> GetSnapshot(bool clear_journal) {
-    return GetSnapshotInternal(clear_journal);
+    std::vector<uint8_t> result_buffer;
+    if (journal_serializer_) {
+      result_buffer = journal_serializer_->Snapshot();
+      if (clear_journal) {
+        journal_serializer_->Clear();
+      }
+    }
+    return result_buffer;
   }
 
   void Start(uint64_t max_bytes, bool capture_screenshots) {
@@ -373,16 +382,35 @@ class JournalHandler {
 
   void Stop() { journal_serializer_.reset(); }
 
- private:
-  std::vector<uint8_t> GetSnapshotInternal(bool clear_journal) {
-    std::vector<uint8_t> result_buffer;
-    if (journal_serializer_) {
-      result_buffer = journal_serializer_->Snapshot();
-      if (clear_journal) {
-        journal_serializer_->Clear();
-      }
+  void RecordFeedback(bool positive, const std::string& reason) {
+    if (base::FeatureList::IsEnabled(features::kGlicRecordActorJournal) &&
+        !positive) {
+      SendResponseFeedback(reason);
     }
-    return result_buffer;
+  }
+
+ private:
+  void SendResponseFeedback(const std::string& reason) {
+    base::WeakPtr<feedback::FeedbackUploader> uploader =
+        feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+            actor_keyed_service_->GetProfile())
+            ->AsWeakPtr();
+    scoped_refptr<::feedback::FeedbackData> feedback_data =
+        base::MakeRefCounted<feedback::FeedbackData>(
+            std::move(uploader), ContentTracingManager::Get());
+    auto journal = GetSnapshot(false);
+
+    // TODO(b/430054430): Fetch and include system data to the feedback.
+    feedback_data->set_description(
+        reason + "\n\n" + base::Uuid::GenerateRandomV4().AsLowercaseString());
+    feedback_data->set_product_id(feedback::kGeminiWebProductId);
+    feedback_data->set_category_tag(
+        std::string(feedback::kGeminiWebJournalCategoryTag));
+    feedback_data->set_is_offensive_or_unsafe(false);
+    feedback_data->AddFile("actor-journal", journal);
+
+    feedback_data->CompressSystemInfo();
+    feedback_data->OnFeedbackPageDataComplete();
   }
 
   absl::flat_hash_map<
@@ -961,6 +989,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void JournalStop() override { journal_handler_.Stop(); }
 
+  void JournalRecordFeedback(bool positive,
+                             const std::string& reason) override {
+    journal_handler_.RecordFeedback(positive, reason);
+  }
+
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode) override {
     glic_service_->OnUserInputSubmitted(mode);
   }
@@ -977,6 +1010,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void OnResponseRated(bool positive) override {
     glic_service_->metrics()->OnResponseRated(positive);
+    // TODO(b/430055759): Remove this block once RecordFeedback API is wired to
+    // be called from the client.
     if (base::FeatureList::IsEnabled(features::kGlicRecordActorJournal) &&
         !positive) {
       SendResponseFeedback();
@@ -1303,6 +1338,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyFocusedTabChanged(std::move(data));
   }
 
+  // TODO(b/430055759): Delete this function once RecordFeedback API is wired to
+  // be called from the client.
   void SendResponseFeedback() {
     base::WeakPtr<feedback::FeedbackUploader> uploader =
         feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(profile_)
