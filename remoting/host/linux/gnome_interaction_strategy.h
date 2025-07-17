@@ -54,8 +54,10 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy {
       base::WeakPtr<ClientSessionControl> client_session_control) override;
 
  private:
-  friend class GnomeInteractionStrategyFactory;
+  friend class GnomeDesktopResizer;
+  friend class GnomeDisplayInfoLoader;
   friend class GnomeInputInjector;
+  friend class GnomeInteractionStrategyFactory;
 
   using InitCallback =
       base::OnceCallback<void(base::expected<void, std::string>)>;

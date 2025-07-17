@@ -78,6 +78,11 @@ class PipewireCaptureStream {
   // Retrieves the mapping ID previously stored by set_mapping_id().
   std::string_view mapping_id();
 
+  const ScreenResolution& resolution() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return resolution_;
+  }
+
   // Obtains a weak pointer to this.
   base::WeakPtr<PipewireCaptureStream> GetWeakPtr();
 

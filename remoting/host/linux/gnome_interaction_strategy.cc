@@ -43,6 +43,8 @@
 #include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_ScreenCast.h"
 #include "remoting/host/linux/dbus_interfaces/org_gnome_ScreenSaver.h"
 #include "remoting/host/linux/ei_sender_session.h"
+#include "remoting/host/linux/gnome_desktop_resizer.h"
+#include "remoting/host/linux/gnome_display_info_loader.h"
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
 #include "remoting/proto/action.pb.h"
@@ -193,39 +195,6 @@ std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
 
 std::unique_ptr<DesktopResizer>
 GnomeInteractionStrategy::CreateDesktopResizer() {
-  // TODO(jamiewalch): Actually implement.
-  class GnomeDesktopResizer : public DesktopResizer {
-   public:
-    explicit GnomeDesktopResizer(
-        base::WeakPtr<GnomeInteractionStrategy> session)
-        : session_(std::move(session)) {}
-    ~GnomeDesktopResizer() override = default;
-    ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override {
-      // TODO(jamiewalch): Expose resolution from SharedScreencastStream
-      return {};
-    }
-    std::list<ScreenResolution> GetSupportedResolutions(
-        const ScreenResolution& preferred,
-        webrtc::ScreenId screen_id) override {
-      return {preferred};
-    }
-
-    void SetResolution(const ScreenResolution& resolution,
-                       webrtc::ScreenId screen_id) override {
-      if (!session_) {
-        return;
-      }
-      DCHECK_CALLED_ON_VALID_SEQUENCE(session_->sequence_checker_);
-      session_->capture_stream_.SetResolution(resolution);
-    }
-
-    void RestoreResolution(const ScreenResolution& original,
-                           webrtc::ScreenId screen_id) override {}
-    void SetVideoLayout(const protocol::VideoLayout& layout) override {}
-
-   private:
-    base::WeakPtr<GnomeInteractionStrategy> session_;
-  };
   return std::make_unique<GnomeDesktopResizer>(weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -268,19 +237,13 @@ GnomeInteractionStrategy::CreateActiveDisplayMonitor(
 std::unique_ptr<DesktopDisplayInfoMonitor>
 GnomeInteractionStrategy::CreateDisplayInfoMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(jamiewalch): Implement
-  class GnomeDisplayInfoLoader : public DesktopDisplayInfoLoader {
-   public:
-    DesktopDisplayInfo GetCurrentDisplayInfo() override {
-      DesktopDisplayInfo info;
-      // TODO(jamiewalch):
-      info.AddDisplay(
-          DisplayGeometry{0, 0, 0, 1280, 960, 96, 24, true, "Default display"});
-      return info;
-    }
-  };
+
+  // TODO: crbug.com/432217140 - Pass in `ui_task_runner_` instead, when
+  // supporting multiple displays. The GNOME DisplayConfig API will be needed
+  // to fetch the layout, and it makes sense to run that on the UI thread.
   return std::make_unique<DesktopDisplayInfoMonitor>(
-      ui_task_runner_, std::make_unique<GnomeDisplayInfoLoader>());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      std::make_unique<GnomeDisplayInfoLoader>(weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<LocalInputMonitor>
