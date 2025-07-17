@@ -1177,6 +1177,11 @@ public class NewTabPageLayout extends LinearLayout
             mSearchEngineIconObserver = null;
             mSearchEngineUtils = null;
         }
+
+        if (mComposeplateCoordinator != null) {
+            mComposeplateCoordinator.destroy();
+            mComposeplateCoordinator = null;
+        }
     }
 
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
