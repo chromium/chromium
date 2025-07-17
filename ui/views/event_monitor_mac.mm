@@ -16,8 +16,13 @@
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace views {
+
+namespace {
+bool g_use_remote_cocoa_for_testing = false;
+}
 
 // static
 std::unique_ptr<EventMonitor> EventMonitor::CreateApplicationMonitor(
@@ -58,7 +63,7 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
   // bypassing the NSEvent block-based monitoring approach that follows.
   auto* host = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       target_native_window);
-  if (host && host->application_host()) {
+  if (host && (host->application_host() || g_use_remote_cocoa_for_testing)) {
     event_monitor_ = host->AddEventMonitor(this);
     return;
   }
@@ -104,6 +109,12 @@ EventMonitorMac::~EventMonitorMac() {
 
 gfx::Point EventMonitorMac::GetLastMouseLocation() {
   return display::Screen::GetScreen()->GetCursorScreenPoint();
+}
+
+// static
+base::AutoReset<bool> EventMonitorMac::UseRemoteCocoaForTesting() {
+  base::AutoReset<bool> result(&g_use_remote_cocoa_for_testing, true);
+  return result;
 }
 
 }  // namespace views
