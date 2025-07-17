@@ -327,6 +327,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>) override;
+  void DropAndRecreateExistingCanvas2DResourceProvider() override;
 
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;

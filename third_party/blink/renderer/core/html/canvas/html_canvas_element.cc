@@ -903,7 +903,7 @@ void HTMLCanvasElement::DisableAccelerationForCanvas2D() {
   // Create and configure an unaccelerated CanvasResourceProvider.
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
-  DropAndRecreateExistingCanvas2DResourceProvider();
+  RenderingContext()->DropAndRecreateExistingCanvas2DResourceProvider();
 
   // We must force a paint invalidation on the canvas even if it's
   // content did not change because it layer was destroyed.
@@ -1973,7 +1973,7 @@ bool HTMLCanvasElement::RecreateCanvasInGPURasterModeForCanvas2D() {
     return false;
   }
   SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  DropAndRecreateExistingCanvas2DResourceProvider();
+  RenderingContext()->DropAndRecreateExistingCanvas2DResourceProvider();
   return true;
 }
 
@@ -2215,44 +2215,6 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
 
 size_t HTMLCanvasElement::GetMemoryUsage() const {
   return base::saturated_cast<size_t>(externally_allocated_memory_);
-}
-
-void HTMLCanvasElement::DropAndRecreateExistingCanvas2DResourceProvider() {
-  CHECK(IsRenderingContext2D());
-  CanvasResourceProvider* old_provider = GetResourceProviderForCanvas2D();
-  if (old_provider == nullptr) {
-    return;
-  }
-
-  scoped_refptr<StaticBitmapImage> image =
-      context_->GetImage(FlushReason::kReplaceLayerBridge);
-  // image can be null if allocation failed in which case we should just
-  // abort the provider switch to retain the old provider, which is still
-  // functional.
-  if (!image) {
-    return;
-  }
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder =
-      old_provider->ReleaseRecorder();
-  ResetLayer();
-  ReplaceResourceProviderForCanvas2D(nullptr);
-
-  // Bail out if the context is lost.
-  if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
-    return;
-  }
-
-  // Bail out if it's not possible to create a new provider.
-  CanvasResourceProvider* new_provider =
-      RecreateCanvasResourceProviderForCanvas2D();
-  if (!new_provider) {
-    return;
-  }
-
-  new_provider->RestoreBackBuffer(image->PaintImageForCurrentFrame());
-  new_provider->SetRecorder(std::move(recorder));
-
-  UpdateMemoryUsage();
 }
 
 CanvasResourceProvider*

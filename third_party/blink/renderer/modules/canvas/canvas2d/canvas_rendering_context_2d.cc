@@ -37,6 +37,7 @@
 
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -1302,6 +1303,44 @@ std::unique_ptr<CanvasResourceProvider>
 CanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
     std::unique_ptr<CanvasResourceProvider> provider) {
   return canvas()->ReplaceResourceProviderForCanvas2D(std::move(provider));
+}
+
+void CanvasRenderingContext2D::
+    DropAndRecreateExistingCanvas2DResourceProvider() {
+  CanvasResourceProvider* old_provider = GetResourceProviderForCanvas2D();
+  if (old_provider == nullptr) {
+    return;
+  }
+
+  scoped_refptr<StaticBitmapImage> image =
+      GetImage(FlushReason::kReplaceLayerBridge);
+  // image can be null if allocation failed in which case we should just
+  // abort the provider switch to retain the old provider, which is still
+  // functional.
+  if (!image) {
+    return;
+  }
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder =
+      old_provider->ReleaseRecorder();
+  canvas()->ResetLayer();
+  ReplaceResourceProviderForCanvas2D(nullptr);
+
+  // Bail out if the context is lost.
+  if (isContextLost() && !IsContextBeingRestored()) {
+    return;
+  }
+
+  // Bail out if it's not possible to create a new provider.
+  CanvasResourceProvider* new_provider =
+      canvas()->RecreateCanvasResourceProviderForCanvas2D();
+  if (!new_provider) {
+    return;
+  }
+
+  new_provider->RestoreBackBuffer(image->PaintImageForCurrentFrame());
+  new_provider->SetRecorder(std::move(recorder));
+
+  canvas()->UpdateMemoryUsage();
 }
 
 }  // namespace blink

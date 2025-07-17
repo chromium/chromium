@@ -405,6 +405,8 @@ class CORE_EXPORT HTMLCanvasElement final
   // Recreates the resource provider.
   CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D();
 
+  void ResetLayer();
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
@@ -446,7 +448,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool AreAuthorShadowsAllowed() const override { return false; }
 
   void Reset();
-  void ResetLayer();
 
   void SetSurfaceSize(gfx::Size);
 
@@ -508,10 +509,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // CanvasHibernationHandler is used when canvas has 2d rendering context
   std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
-
-  // If the ResourceProvider currently exists, replaces it with a
-  // CanvasResourceProvider that was newly created for usage with a 2D context.
-  void DropAndRecreateExistingCanvas2DResourceProvider();
 
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.
