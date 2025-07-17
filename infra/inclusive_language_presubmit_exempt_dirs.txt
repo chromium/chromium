@@ -617,6 +617,8 @@ third_party/rust/chromium_crates_io/supply-chain
 third_party/rust/chromium_crates_io/vendor/anstyle-v1
 third_party/rust/chromium_crates_io/vendor/anyhow-v1
 third_party/rust/chromium_crates_io/vendor/anyhow-v1/.github/workflows
+third_party/rust/chromium_crates_io/vendor/arrayvec-v0_7
+third_party/rust/chromium_crates_io/vendor/arrayvec-v0_7/.github/workflows
 third_party/rust/chromium_crates_io/vendor/base64-v0_22
 third_party/rust/chromium_crates_io/vendor/bytes-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src
@@ -638,6 +640,8 @@ third_party/rust/chromium_crates_io/vendor/cxx-v1/src
 third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2
 third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/src
 third_party/rust/chromium_crates_io/vendor/either-v1/.github/workflows
+third_party/rust/chromium_crates_io/vendor/encoding_rs-v0_8
+third_party/rust/chromium_crates_io/vendor/encoding_rs-v0_8/src
 third_party/rust/chromium_crates_io/vendor/equivalent-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/flate2-v1
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15
@@ -695,6 +699,19 @@ third_party/rust/chromium_crates_io/vendor/strum-v0_27
 third_party/rust/chromium_crates_io/vendor/strum-v0_27/src
 third_party/rust/chromium_crates_io/vendor/subtle-v2
 third_party/rust/chromium_crates_io/vendor/subtle-v2/src
+third_party/rust/chromium_crates_io/vendor/symphonia-bundle-flac-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-codec-adpcm-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-codec-pcm-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-codec-vorbis-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-format-mkv-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-format-mkv-v0_5/src
+third_party/rust/chromium_crates_io/vendor/symphonia-format-ogg-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-format-riff-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-metadata-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-utils-xiph-v0_5
+third_party/rust/chromium_crates_io/vendor/symphonia-v0_5
 third_party/rust/chromium_crates_io/vendor/syn-v2
 third_party/rust/chromium_crates_io/vendor/syn-v2/src
 third_party/rust/chromium_crates_io/vendor/termcolor-v1/.github/workflows

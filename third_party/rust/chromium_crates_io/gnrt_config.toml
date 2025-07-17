@@ -108,6 +108,9 @@ allow_unsafe = true
 [crate.anyhow.extra_kv]
 allow_unsafe = true
 
+[crate.arrayvec.extra_kv]
+allow_unsafe = true
+
 [crate.autocfg.extra_kv]
 allow_unsafe = false
 
@@ -116,6 +119,7 @@ allow_unsafe = false
 
 [crate.bitflags.extra_kv]
 allow_unsafe = false
+multiversion_cleanup_bug = "https://crbug.com/428224817"
 
 [crate.bytemuck.extra_kv]
 allow_unsafe = true
@@ -194,6 +198,9 @@ allow_unsafe = false
 allow_unsafe = false
 
 [crate.either.extra_kv]
+allow_unsafe = true
+
+[crate.encoding_rs.extra_kv]
 allow_unsafe = true
 
 [crate.equivalent.extra_kv]
@@ -509,6 +516,21 @@ allow_unsafe = false
 
 [crate.subtle.extra_kv]
 allow_unsafe = false
+
+[crate.symphonia]
+extra_kv = { allow_unsafe = false }
+
+[crate.symphonia-bundle-flac]
+extra_kv = { allow_unsafe = false }
+
+[crate.symphonia-core]
+extra_kv = { allow_unsafe = false }
+
+[crate.symphonia-metadata]
+extra_kv = { allow_unsafe = false }
+
+[crate.symphonia-utils-xiph]
+extra_kv = { allow_unsafe = false }
 
 [crate.syn.extra_kv]
 allow_unsafe = true
