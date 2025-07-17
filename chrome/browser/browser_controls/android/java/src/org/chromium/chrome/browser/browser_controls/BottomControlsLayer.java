@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
@@ -117,4 +120,21 @@ public interface BottomControlsLayer {
      * @see BrowserControlsStateProvider.Observer#onControlsOffsetChanged
      */
     default void onBrowserControlsOffsetUpdate(int layerYOffset) {}
+
+    /**
+     * Return the background color of the layer. This is used for bottom controls color
+     * coordination. When multiple layers are visible, the bottom-most visible layer's color will be
+     * used as the dominant background color for the entire bottom controls stack. Note that layers
+     * that do not provide a valid color from getBackgroundColor should never be considered for
+     * color coordination.
+     *
+     * <p>Note: The "dominant color" might not end up being the color used if all the layers have
+     * their own defined, intrinsic background color.
+     *
+     * @return The background color of the layer, or null if the layer doesn't provide a specific
+     *     background color.
+     */
+    default @Nullable @ColorInt Integer getBackgroundColor() {
+        return null;
+    }
 }

@@ -28,6 +28,9 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Coordinator class for UI layers in the bottom browser controls. This class manages the relative
  * y-axis position for every registered bottom control elements, and their background colors.
+ *
+ * <p>Background colors are automatically coordinated based on layer positioning - the bottom-most
+ * visible layer that provides a background color will be used for the entire bottom controls.
  */
 @NullMarked
 public class BottomControlsStacker implements BrowserControlsStateProvider.Observer {
@@ -147,6 +150,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
+    private @ColorInt int mCurrentBackgroundColor;
+
     // The default state is used before any visibility constraint changes occur (ex. reopening
     // chrome after it has been closed.) It must be set to SHOWN to allow the browser to initialize
     // the UI models with the correct y offsets.
@@ -251,6 +256,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
         updateLayerVisibilitiesAndSizes();
         updateBrowserControlsHeight(animate);
+        updateBackgroundColorFromLayers();
         if (mBrowserControlsSizer.offsetOverridden() && isDispatchingYOffset()) {
             repositionLayers(
                     mBrowserControlsSizer.getBottomControlOffset(),
@@ -312,8 +318,40 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      * @see BrowserControlsSizer#notifyBackgroundColor(int).
      */
     public void notifyBackgroundColor(@ColorInt int color) {
-        // TODO(crbug.com/430084697): Handle #notifyBackgroundColor in this class.
+        mCurrentBackgroundColor = color;
         mBrowserControlsSizer.notifyBackgroundColor(color);
+    }
+
+    /**
+     * Updates the background color based on the currently visible layers. The color is determined
+     * by the bottom-most visible layer that provides a background color.
+     */
+    private void updateBackgroundColorFromLayers() {
+        @ColorInt int newBackgroundColor = 0;
+
+        // Find the bottom-most visible layer that provides a background color
+        // Iterate through layers in reverse stack order (bottom to top).
+        for (int i = STACK_ORDER.length - 1; i >= 0; i--) {
+            int layerType = STACK_ORDER[i];
+            BottomControlsLayer layer = mLayers.get(layerType);
+
+            if (layer == null || !mLayerVisibilities.get(layerType)) {
+                continue;
+            }
+
+            Integer layerColor = layer.getBackgroundColor();
+            if (layerColor != null && layerColor != 0) {
+                newBackgroundColor = layerColor;
+                break;
+            }
+        }
+
+        // Only notify if the color has changed.
+        // TODO(crbug.com/430084697): Properly handle cases when newBackgroundColor == 0.
+        if (newBackgroundColor != mCurrentBackgroundColor && newBackgroundColor != 0) {
+            mCurrentBackgroundColor = newBackgroundColor;
+            mBrowserControlsSizer.notifyBackgroundColor(mCurrentBackgroundColor);
+        }
     }
 
     /**

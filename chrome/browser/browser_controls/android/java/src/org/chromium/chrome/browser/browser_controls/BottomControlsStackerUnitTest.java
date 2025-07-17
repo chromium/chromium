@@ -7,13 +7,19 @@ package org.chromium.chrome.browser.browser_controls;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -1858,5 +1864,97 @@ public class BottomControlsStackerUnitTest {
         public void clearOffsetTag() {
             mOffsetTag = null;
         }
+    }
+
+    private static class TestLayerWithColor extends TestLayer {
+        private final @ColorInt int mBackgroundColor;
+
+        TestLayerWithColor(
+                @LayerType int type,
+                int height,
+                @LayerScrollBehavior int scrollBehavior,
+                @LayerVisibility int layerVisibility,
+                @ColorInt int backgroundColor) {
+            super(type, height, scrollBehavior, layerVisibility);
+            mBackgroundColor = backgroundColor;
+        }
+
+        @Override
+        public @Nullable @ColorInt Integer getBackgroundColor() {
+            return mBackgroundColor;
+        }
+    }
+
+    @Test
+    public void testUpdateBackgroundColorFromLayers_noLayersWithBackgroundColor() {
+        TestLayer layer1 =
+                new TestLayer(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer layer2 =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        50,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(layer1);
+        mBottomControlsStacker.addLayer(layer2);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        // Verify that notifyBackgroundColor is never called since no layers provide
+        // background colors.
+        verify(mBrowserControlsSizer, never()).notifyBackgroundColor(anyInt());
+    }
+
+    @Test
+    public void testUpdateBackgroundColorFromLayers_bottomMostVisibleLayerColorSelected() {
+        TestLayerWithColor topLayer =
+                new TestLayerWithColor(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE,
+                        Color.BLUE);
+        TestLayerWithColor bottomLayer =
+                new TestLayerWithColor(
+                        BOTTOM_LAYER,
+                        50,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE,
+                        Color.GREEN);
+
+        mBottomControlsStacker.addLayer(topLayer);
+        mBottomControlsStacker.addLayer(bottomLayer);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        // Verify that the bottom-most visible layer's color is used.
+        verify(mBrowserControlsSizer).notifyBackgroundColor(Color.GREEN);
+    }
+
+    @Test
+    public void testUpdateBackgroundColorFromLayers_bottomLayerNoColor_topLayerHasColor() {
+        TestLayerWithColor topLayer =
+                new TestLayerWithColor(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE,
+                        Color.RED);
+        TestLayer bottomLayer =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        50,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(topLayer);
+        mBottomControlsStacker.addLayer(bottomLayer);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        // Verify that the top layer's color is used since bottom layer doesn't provide a color.
+        verify(mBrowserControlsSizer).notifyBackgroundColor(Color.RED);
     }
 }
