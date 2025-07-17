@@ -480,6 +480,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
       std::optional<std::string> plus_address_email_override,
+      const std::vector<std::string>& one_time_passwords,
       SuggestionsContext& context,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
@@ -508,14 +509,15 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (e.g. Fast Checkout, Autofill AI,
-  // SingleFieldFiller(s), address and credit card popups).
+  // SingleFieldFiller(s), address and credit card popups, OTP suggestions).
   // Suggestion flows that handle their own UI flow (e.g. FastCheckout, TTF,
   // SingleFieldFiller) are triggered from within these functions.
   //
-  // This process is split into phrases 1 and 2 to support asynchronous
-  // operations in the middle.
+  // This process is split into phrases 1, 2 and 3 to support asynchronous
+  // operations (fetching affiliated plus addresses during phase 1, and
+  // OTP values fetching) in the middle.
   //
-  // Phase 2 requires the list of `plus_addresses` as these can influence how
+  // Phase 3 requires the list of `plus_addresses` as these can influence how
   // address profile suggestions are shown. Other flows that rely on the
   // `external_delegate_` to show their suggestions, pass the suggestions list
   // to the delegate via `OnGenerateSuggestionsComplete` and request them to be
@@ -530,6 +532,13 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       std::vector<std::string> plus_addresses);
+  void GenerateSuggestionsAndMaybeShowUIPhase3(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext context,
+      const std::vector<std::string>& plus_addresses,
+      std::vector<std::string> one_time_passwords);
 
   // Receives the lists of plus address and single field form fill suggestions
   // and combines them. It gives priority to the plus address suggestions,

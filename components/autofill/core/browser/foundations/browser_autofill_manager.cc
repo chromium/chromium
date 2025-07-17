@@ -95,6 +95,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/password_manager/otp_suggestion_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
@@ -125,6 +126,7 @@
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
@@ -1301,6 +1303,44 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     std::vector<std::string> plus_addresses) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  // This function cannot exit early in case GetCachedFormAndField() yields
+  // `nullptrs` for `form_structure` and `autofill_field`. See the comment in
+  // `GenerateSuggestionsAndMaybeShowUIPhase1` for context.
+  std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
+                                      &form_structure, &autofill_field);
+
+  const OtpSuggestionDelegate* otp_delegate =
+      client().GetOtpSuggestionDelegate();
+  bool eligible_for_otp_filling =
+      form_structure && autofill_field && otp_delegate &&
+      otp_delegate->IsFieldEligibleForOtpFilling(form_structure->global_id(),
+                                                 autofill_field->global_id());
+
+  auto generate_suggestions_and_maybe_show_ui_phase3 = base::BindOnce(
+      &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3,
+      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,
+      plus_addresses);
+
+  if (eligible_for_otp_filling) {
+    otp_delegate->GetOtpSuggestions(
+        form_structure->global_id(), autofill_field->global_id(),
+        std::move(generate_suggestions_and_maybe_show_ui_phase3));
+    return;
+  }
+
+  std::move(generate_suggestions_and_maybe_show_ui_phase3)
+      .Run(/*otp_suggestions=*/{});
+}
+
+void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    SuggestionsContext context,
+    const std::vector<std::string>& plus_addresses,
+    std::vector<std::string> one_time_passwords) {
   OnGenerateSuggestionsCallback callback =
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
                      weak_ptr_factory_.GetWeakPtr(), form.global_id(),
@@ -1317,7 +1357,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   std::vector<Suggestion> suggestions = GetAvailableSuggestions(
       form, form_structure, field, autofill_field, trigger_source,
       GetPlusAddressOverride(client().GetPlusAddressDelegate(), plus_addresses),
-      context, ranking_context);
+      one_time_passwords, context, ranking_context);
 
   if (context.is_autofill_available &&
       ShouldSuppressSuggestions(context.suppress_reason, log_manager())) {
@@ -2021,7 +2061,8 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   std::vector<Suggestion> suggestions = GetAvailableSuggestions(
       form, form_structure, field, autofill_field,
       AutofillSuggestionTriggerSource::kUnspecified,
-      /*plus_address_email_override=*/std::nullopt, context, ranking_context);
+      /*plus_address_email_override=*/std::nullopt,
+      /*one_time_passwords=*/{}, context, ranking_context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -3105,6 +3146,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     std::optional<std::string> plus_address_email_override,
+    const std::vector<std::string>& one_time_passwords,
     SuggestionsContext& context,
     autofill_metrics::SuggestionRankingContext& ranking_context) {
   if (IsPlusAddressesManuallyTriggered(trigger_source)) {
@@ -3165,7 +3207,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       }
       break;
     case FillingProduct::kOneTimePassword:
-      // TODO(crbug.com/415273276): Implement.
+      suggestions = BuildOtpSuggestions(one_time_passwords);
       break;
     default:
       // Skip other filling products.

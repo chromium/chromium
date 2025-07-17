@@ -80,6 +80,7 @@
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_manager/mock_otp_suggestion_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
@@ -9088,6 +9089,62 @@ TEST_F(BrowserAutofillManagerUsingPasswordDelegateTest,
                        PasswordSuggestionRequest({}, form,
                                                  /*username_field_index=*/0,
                                                  /*password_field_index=*/0));
+}
+
+class BrowserAutofillManagerOtpSuggestionsTest
+    : public BrowserAutofillManagerTest {
+ protected:
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+    client().set_otp_suggestion_delegate(
+        std::make_unique<NiceMock<MockOtpSuggestionDelegate>>());
+  }
+
+  MockOtpSuggestionDelegate& otp_suggestion_delegate() {
+    return static_cast<MockOtpSuggestionDelegate&>(
+        *client().GetOtpSuggestionDelegate());
+  }
+};
+
+TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
+  FormData form =
+      test::GetFormData({.fields = {
+                             {.label = u"Enter one time code",
+                              .form_control_type = FormControlType::kInputText},
+                             {.label = u"Enter captcha",
+                              .form_control_type = FormControlType::kInputText},
+                         }});
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+
+  // Simulate form parsing results.
+  auto form_structure = std::make_unique<FormStructure>(form);
+  form_structure->field(0)->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning,
+      FieldType::ONE_TIME_CODE);
+  manager().AddSeenFormStructure(std::move(form_structure));
+
+  // Check that suggestions are offered for the first field if the OTP delegate
+  // suggests that.
+  EXPECT_CALL(otp_suggestion_delegate(),
+              IsFieldEligibleForOtpFilling(form.global_id(),
+                                           form.fields()[0].global_id()))
+      .WillOnce(Return(true));
+  const std::vector<std::string> otp_values = {"123456"};
+  EXPECT_CALL(
+      otp_suggestion_delegate(),
+      GetOtpSuggestions(form.global_id(), form.fields()[0].global_id(), _))
+      .WillOnce(RunOnceCallback<2>(otp_values));
+  OnAskForValuesToFill(form, form.fields()[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+
+  // Also check that there are no suggestions for the second field.
+  EXPECT_CALL(otp_suggestion_delegate(),
+              IsFieldEligibleForOtpFilling(form.global_id(),
+                                           form.fields()[1].global_id()))
+      .WillOnce(Return(false));
+  OnAskForValuesToFill(form, form.fields()[1]);
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
 }  // namespace
