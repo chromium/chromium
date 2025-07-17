@@ -39,6 +39,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
+#include "ipc/constants.mojom.h"
 
 namespace extensions {
 
@@ -699,7 +700,7 @@ void ExtensionMessagePort::NotifyResponsePending() {
 void ExtensionMessagePort::OpenPort(int process_id,
                                     const PortContext& port_context) {
   DCHECK((port_context.is_for_render_frame() &&
-          port_context.frame->routing_id != MSG_ROUTING_NONE) ||
+          port_context.frame->routing_id != IPC::mojom::kRoutingIdNone) ||
          (port_context.is_for_service_worker() &&
           port_context.worker->thread_id != kMainThreadId) ||
          for_all_extension_contexts_);
@@ -711,7 +712,7 @@ void ExtensionMessagePort::ClosePort(int process_id,
                                      int routing_id,
                                      int worker_thread_id) {
   const bool is_for_service_worker = worker_thread_id != kMainThreadId;
-  DCHECK(is_for_service_worker || routing_id != MSG_ROUTING_NONE);
+  DCHECK(is_for_service_worker || routing_id != IPC::mojom::kRoutingIdNone);
 
   if (is_for_service_worker) {
     UnregisterWorker(process_id, worker_thread_id);

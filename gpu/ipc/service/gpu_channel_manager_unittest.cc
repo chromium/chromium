@@ -21,6 +21,7 @@
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
+#include "ipc/constants.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
@@ -77,7 +78,7 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
     int32_t kRouteId =
         static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
     auto init_params = mojom::CreateCommandBufferParams::New();
-    init_params->share_group_id = MSG_ROUTING_NONE;
+    init_params->share_group_id = IPC::mojom::kRoutingIdNone;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
     init_params->attribs = ContextCreationAttribs();

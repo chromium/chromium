@@ -8,7 +8,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 
 namespace content {
 
@@ -39,8 +39,8 @@ struct CONTENT_EXPORT WebContentsMediaCaptureId {
   std::string ToString() const;
 
   // Tab video and audio capture need render process id and render frame id.
-  int render_process_id = MSG_ROUTING_NONE;
-  int main_render_frame_id = MSG_ROUTING_NONE;
+  int render_process_id = IPC::mojom::kRoutingIdNone;
+  int main_render_frame_id = IPC::mojom::kRoutingIdNone;
 
   bool disable_local_echo = false;
 

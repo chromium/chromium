@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 
 class Profile;
 
@@ -178,7 +178,7 @@ struct WebRtcEventLogPeerConnectionKey {
             /*render_process_id=*/0,
             /*lid=*/0,
             reinterpret_cast<BrowserContextId>(nullptr),
-            /*render_frame_id=*/MSG_ROUTING_NONE) {}
+            /*render_frame_id=*/IPC::mojom::kRoutingIdNone) {}
 
   constexpr WebRtcEventLogPeerConnectionKey(int render_process_id,
                                             int lid,

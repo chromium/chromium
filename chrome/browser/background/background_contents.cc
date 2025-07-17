@@ -22,6 +22,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "ipc/constants.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/gfx/geometry/rect.h"
@@ -45,9 +46,10 @@ BackgroundContents::BackgroundContents(
   WebContents::CreateParams create_params(profile_, std::move(site_instance));
   create_params.is_never_composited = true;
   create_params.opener_render_process_id =
-      opener ? opener->GetProcess()->GetDeprecatedID() : MSG_ROUTING_NONE;
+      opener ? opener->GetProcess()->GetDeprecatedID()
+             : IPC::mojom::kRoutingIdNone;
   create_params.opener_render_frame_id =
-      opener ? opener->GetRoutingID() : MSG_ROUTING_NONE;
+      opener ? opener->GetRoutingID() : IPC::mojom::kRoutingIdNone;
 
   if (session_storage_namespace) {
     content::SessionStorageNamespaceMap session_storage_namespace_map;

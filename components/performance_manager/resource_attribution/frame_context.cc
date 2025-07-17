@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "ipc/constants.mojom.h"
 
 namespace resource_attribution {
 
@@ -27,7 +28,7 @@ namespace {
 
 bool IsValidId(content::GlobalRenderFrameHostId id) {
   return !RenderProcessHostId(id.child_id).is_null() &&
-         id.frame_routing_id != MSG_ROUTING_NONE;
+         id.frame_routing_id != IPC::mojom::kRoutingIdNone;
 }
 
 }  // namespace

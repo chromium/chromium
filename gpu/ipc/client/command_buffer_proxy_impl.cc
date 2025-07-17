@@ -30,6 +30,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
+#include "ipc/constants.mojom.h"
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -80,7 +81,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
 
   auto params = mojom::CreateCommandBufferParams::New();
   params->share_group_id =
-      share_group ? share_group->route_id_ : MSG_ROUTING_NONE;
+      share_group ? share_group->route_id_ : IPC::mojom::kRoutingIdNone;
   params->stream_id = stream_id_;
   params->stream_priority = stream_priority;
   params->attribs = attribs;

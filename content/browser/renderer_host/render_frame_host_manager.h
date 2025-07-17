@@ -463,7 +463,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
 
   // Returns the routing id for a RenderFrameHost or RenderFrameProxyHost
   // that has the given SiteInstanceGroup and is associated with this
-  // RenderFrameHostManager. Returns MSG_ROUTING_NONE if none is found.
+  // RenderFrameHostManager. Returns IPC::mojom::kRoutingIdNone if none is
+  // found.
   int GetRoutingIdForSiteInstanceGroup(SiteInstanceGroup* site_instance_group);
 
   // Returns the frame token for a RenderFrameHost or RenderFrameProxyHost

@@ -33,8 +33,8 @@ struct PortContext {
     auto operator<=>(const FrameContext&) const = default;
 
     // The routing id of the frame context.
-    // This may be MSG_ROUTING_NONE if the context is process-wide and isn't
-    // tied to a specific RenderFrame.
+    // This may be IPC::mojom::kRoutingIdNone if the context is process-wide and
+    // isn't tied to a specific RenderFrame.
     int routing_id;
   };
 

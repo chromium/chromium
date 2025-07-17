@@ -19,6 +19,7 @@ include_rules = [
   "+content/public/common",
   "+content/public/test",
   "+crypto/sha2.h",
+  "+ipc/constants.mojom.h",
   "+ipc/ipc_message.h",
   "+ipc/ipc_channel_proxy.h",
   "+net/cookies",

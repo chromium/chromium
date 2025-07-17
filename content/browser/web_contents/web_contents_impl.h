@@ -2433,7 +2433,8 @@ class CONTENT_EXPORT WebContentsImpl
   // no fullscreen widget.
   int fullscreen_widget_process_id_;
 
-  // Routing id of the shown fullscreen widget or MSG_ROUTING_NONE otherwise.
+  // Routing id of the shown fullscreen widget or IPC::mojom::kRoutingIdNone
+  // otherwise.
   int fullscreen_widget_routing_id_;
 
   // At the time the fullscreen widget was being shut down, did it have focus?

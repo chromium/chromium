@@ -11,7 +11,7 @@
 #include "base/notreached.h"
 #include "components/url_matcher/url_matcher_factory.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 
 using url_matcher::URLMatcher;
 using url_matcher::URLMatcherConditionSet;
@@ -166,7 +166,7 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
     const EventMatcher* event_matcher = matcher_entry->second->event_matcher();
     // The context that installed the event listener should be the same context
     // as the one where the event listener is called.
-    if (routing_id != MSG_ROUTING_NONE &&
+    if (routing_id != IPC::mojom::kRoutingIdNone &&
         event_matcher->routing_id() != routing_id) {
       continue;
     }

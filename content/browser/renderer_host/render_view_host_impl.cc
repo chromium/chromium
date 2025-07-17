@@ -79,6 +79,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "ipc/constants.mojom.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/url_util.h"
@@ -426,14 +427,14 @@ bool RenderViewHostImpl::CreateRenderView(
   DCHECK(GetProcess()->GetBrowserContext());
 
   // Exactly one of main_frame_routing_id_ or proxy_route_id should be set.
-  CHECK(!(main_frame_routing_id_ != MSG_ROUTING_NONE &&
-          proxy_route_id != MSG_ROUTING_NONE));
-  CHECK(!(main_frame_routing_id_ == MSG_ROUTING_NONE &&
-          proxy_route_id == MSG_ROUTING_NONE));
+  CHECK(!(main_frame_routing_id_ != IPC::mojom::kRoutingIdNone &&
+          proxy_route_id != IPC::mojom::kRoutingIdNone));
+  CHECK(!(main_frame_routing_id_ == IPC::mojom::kRoutingIdNone &&
+          proxy_route_id == IPC::mojom::kRoutingIdNone));
 
   RenderFrameHostImpl* main_rfh = nullptr;
   RenderFrameProxyHost* main_rfph = nullptr;
-  if (main_frame_routing_id_ != MSG_ROUTING_NONE) {
+  if (main_frame_routing_id_ != IPC::mojom::kRoutingIdNone) {
     main_rfh = RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
                                            main_frame_routing_id_);
     DCHECK(main_rfh);

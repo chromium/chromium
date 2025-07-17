@@ -4,6 +4,7 @@
 
 #include "content/public/browser/global_routing_id.h"
 
+#include "base/pickle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 

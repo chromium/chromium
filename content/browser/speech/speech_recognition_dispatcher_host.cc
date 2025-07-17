@@ -25,6 +25,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "ipc/constants.mojom.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -112,7 +113,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
     media::mojom::StartSpeechRecognitionRequestParamsPtr params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   int embedder_render_process_id = 0;
-  int embedder_render_frame_id = MSG_ROUTING_NONE;
+  int embedder_render_frame_id = IPC::mojom::kRoutingIdNone;
 
   RenderFrameHostImpl* rfh =
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
@@ -155,7 +156,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
         embedder_frame->GetProcess()->GetDeprecatedID();
     DCHECK_NE(embedder_render_process_id, 0);
     embedder_render_frame_id = embedder_frame->GetRoutingID();
-    DCHECK_NE(embedder_render_frame_id, MSG_ROUTING_NONE);
+    DCHECK_NE(embedder_render_frame_id, IPC::mojom::kRoutingIdNone);
   }
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();

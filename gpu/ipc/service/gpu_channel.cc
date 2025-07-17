@@ -60,6 +60,7 @@
 #include "gpu/ipc/service/image_decode_accelerator_stub.h"
 #include "gpu/ipc/service/raster_command_buffer_stub.h"
 #include "gpu/ipc/service/webgpu_command_buffer_stub.h"
+#include "ipc/constants.mojom.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -1038,7 +1039,7 @@ void GpuChannel::CreateCommandBuffer(
   int32_t share_group_id = init_params->share_group_id;
   CommandBufferStub* share_group = LookupCommandBuffer(share_group_id);
 
-  if (!share_group && share_group_id != MSG_ROUTING_NONE) {
+  if (!share_group && share_group_id != IPC::mojom::kRoutingIdNone) {
     LOG(ERROR) << "ContextResult::kFatalFailure: invalid share group id";
     return;
   }

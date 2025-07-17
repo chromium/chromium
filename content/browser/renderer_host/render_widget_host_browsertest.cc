@@ -38,6 +38,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "ipc/constants.mojom.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -706,7 +707,7 @@ class ShowPopupInterceptor
 
   // blink::mojom::PopupWidgetHostInterceptorForTesting:
   blink::mojom::PopupWidgetHost* GetForwardingInterface() override {
-    DCHECK_NE(MSG_ROUTING_NONE, routing_id_);
+    DCHECK_NE(IPC::mojom::kRoutingIdNone, routing_id_);
     return RenderWidgetHostImpl::FromID(process_id_, routing_id_);
   }
 
@@ -731,7 +732,7 @@ class ShowPopupInterceptor
   CreateNewPopupWidgetInterceptor create_new_popup_widget_interceptor_;
   base::RunLoop run_loop_;
   gfx::Rect overriden_bounds_;
-  int32_t routing_id_ = MSG_ROUTING_NONE;
+  int32_t routing_id_ = IPC::mojom::kRoutingIdNone;
   int32_t process_id_ = 0;
 };
 

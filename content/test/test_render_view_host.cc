@@ -33,6 +33,7 @@
 #include "content/test/test_page_broadcast.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
+#include "ipc/constants.mojom.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -413,7 +414,7 @@ TestRenderViewHost::~TestRenderViewHost() {
 
 bool TestRenderViewHost::CreateTestRenderView() {
   return CreateRenderView(/*opener_frame_token=*/std::nullopt,
-                          /*proxy_route_id=*/MSG_ROUTING_NONE,
+                          /*proxy_route_id=*/IPC::mojom::kRoutingIdNone,
                           /*window_was_created_with_opener=*/false,
                           /*navigation_metrics_token=*/std::nullopt);
 }
@@ -433,7 +434,7 @@ bool TestRenderViewHost::CreateRenderView(
   // creating the mojo connections and calling RenderFrameCreated().
   RenderFrameHostImpl* main_frame = nullptr;
   RenderFrameProxyHost* proxy_host = nullptr;
-  if (main_frame_routing_id_ != MSG_ROUTING_NONE) {
+  if (main_frame_routing_id_ != IPC::mojom::kRoutingIdNone) {
     main_frame = RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
                                              main_frame_routing_id_);
   } else {

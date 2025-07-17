@@ -4,6 +4,7 @@
 
 #include "content/public/common/drop_data.h"
 
+#include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/filename_util.h"

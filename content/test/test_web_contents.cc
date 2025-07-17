@@ -31,6 +31,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
@@ -285,7 +286,7 @@ bool TestWebContents::CreateRenderViewForRenderManager(
     RenderFrameProxyHost* proxy_host,
     const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   const auto proxy_routing_id =
-      proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
+      proxy_host ? proxy_host->GetRoutingID() : IPC::mojom::kRoutingIdNone;
   // This will go to a TestRenderViewHost.
   static_cast<RenderViewHostImpl*>(render_view_host)
       ->CreateRenderView(opener_frame_token, proxy_routing_id, false,

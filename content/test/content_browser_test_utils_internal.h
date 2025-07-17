@@ -30,6 +30,7 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -423,7 +424,7 @@ class ShowPopupWidgetWaiter
 #endif
   base::RunLoop run_loop_;
   gfx::Rect initial_rect_;
-  int32_t routing_id_ = MSG_ROUTING_NONE;
+  int32_t routing_id_ = IPC::mojom::kRoutingIdNone;
   int32_t process_id_ = 0;
   const raw_ptr<RenderFrameHostImpl> frame_host_;
 };

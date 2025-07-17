@@ -80,6 +80,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "ipc/constants.mojom.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -704,7 +705,7 @@ void RenderFrameHostManager::InitRoot(
       site_instance, frame_tree_node_, is_new_site_instance_for_init_root);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitRoot, site_instance,
-      /*frame_routing_id=*/MSG_ROUTING_NONE,
+      /*frame_routing_id=*/IPC::mojom::kRoutingIdNone,
       mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
       blink::DocumentToken(), devtools_frame_token, renderer_initiated_creation,
       browsing_context_state,
@@ -2325,9 +2326,9 @@ void RenderFrameHostManager::DiscardSpeculativeRFH(
     }
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(reason));
     // If we were navigating away from a crashed main frame then we will have
-    // set the RVH's main frame routing ID to MSG_ROUTING_NONE. We need to set
-    // it back to the crashed frame to avoid having a situation where it's
-    // pointing to nothing even though there is no pending commit.
+    // set the RVH's main frame routing ID to IPC::mojom::kRoutingIdNone. We
+    // need to set it back to the crashed frame to avoid having a situation
+    // where it's pointing to nothing even though there is no pending commit.
     if (ShouldSkipEarlyCommitPendingForCrashedFrame() &&
         frame_tree_node_->IsMainFrame() &&
         !render_frame_host_->IsRenderFrameLive()) {
@@ -4045,7 +4046,7 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     if (frame_tree_node_->IsMainFrame()) {
       frame_tree_node_->frame_tree()
           .GetRenderViewHost(new_group)
-          ->SetMainFrameRoutingId(MSG_ROUTING_NONE);
+          ->SetMainFrameRoutingId(IPC::mojom::kRoutingIdNone);
     }
 
     // As there is an explicit check for |render_frame_host_|'s SiteInstance
@@ -4118,8 +4119,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
 
   // Only the kInitChild case passes in a frame routing id.
   DCHECK_EQ(create_frame_case != CreateFrameCase::kInitChild,
-            frame_routing_id == MSG_ROUTING_NONE);
-  if (frame_routing_id == MSG_ROUTING_NONE) {
+            frame_routing_id == IPC::mojom::kRoutingIdNone);
+  if (frame_routing_id == IPC::mojom::kRoutingIdNone) {
     frame_routing_id =
         site_instance->GetOrCreateProcess(process_allocation_context)
             ->GetNextRoutingID();
@@ -4382,7 +4383,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
   std::unique_ptr<RenderFrameHostImpl> new_render_frame_host =
       CreateRenderFrameHost(
           CreateFrameCase::kCreateSpeculative, instance,
-          /*frame_routing_id=*/MSG_ROUTING_NONE,
+          /*frame_routing_id=*/IPC::mojom::kRoutingIdNone,
           mojo::PendingAssociatedRemote<mojom::Frame>(),
           blink::LocalFrameToken(), blink::DocumentToken(),
           render_frame_host_->devtools_frame_token(),
@@ -4517,7 +4518,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
       // Before creating a new RenderFrameProxyHost, ensure a RenderViewHost
       // exists for |group|, as it creates the page level structure in Blink.
       render_view_host = frame_tree_node_->frame_tree().CreateRenderViewHost(
-          group, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
+          group, /*main_frame_routing_id=*/IPC::mojom::kRoutingIdNone,
           /*renderer_initiated_creation=*/false,
           features::GetBrowsingContextMode() ==
                   features::BrowsingContextStateImplementationType::
@@ -4942,7 +4943,7 @@ int RenderFrameHostManager::GetRoutingIdForSiteInstanceGroup(
   if (proxy)
     return proxy->GetRoutingID();
 
-  return MSG_ROUTING_NONE;
+  return IPC::mojom::kRoutingIdNone;
 }
 
 std::optional<blink::FrameToken>
@@ -5300,7 +5301,7 @@ void RenderFrameHostManager::CommitPending(
   // The RenderViewHost keeps track of the main RenderFrameHost routing id.
   // If this is committing a main frame navigation, update it and set the
   // routing id in the RenderViewHost associated with the old RenderFrameHost
-  // to MSG_ROUTING_NONE.
+  // to IPC::mojom::kRoutingIdNone.
   if (is_main_frame) {
     // If the RenderViewHost is transitioning from an inactive to active state,
     // it was reused, so dispatch a RenderViewReady event. For example, this is
@@ -5317,7 +5318,7 @@ void RenderFrameHostManager::CommitPending(
 
     new_rvh->SetMainFrameRoutingId(render_frame_host_->GetRoutingID());
     if (old_rvh != new_rvh)
-      old_rvh->SetMainFrameRoutingId(MSG_ROUTING_NONE);
+      old_rvh->SetMainFrameRoutingId(IPC::mojom::kRoutingIdNone);
   }
 
   // Store the old_render_frame_host's current frame size so that it can be used
@@ -5839,7 +5840,7 @@ void RenderFrameHostManager::NotifyPrepareForInnerDelegateAttachComplete(
                            ? render_frame_host_->GetProcess()->GetDeprecatedID()
                            : ChildProcessHost::kInvalidUniqueID;
   int32_t routing_id =
-      success ? render_frame_host_->GetRoutingID() : MSG_ROUTING_NONE;
+      success ? render_frame_host_->GetRoutingID() : IPC::mojom::kRoutingIdNone;
   // Invoking the callback asynchronously to meet the APIs promise.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

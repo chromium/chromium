@@ -4,6 +4,7 @@
 
 #include "content/public/browser/global_routing_id.h"
 
+#include "base/pickle.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 

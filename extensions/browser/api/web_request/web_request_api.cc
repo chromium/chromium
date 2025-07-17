@@ -63,6 +63,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/auth.h"
 #include "net/cookies/site_for_cookies.h"
@@ -558,8 +559,9 @@ WebRequestAPI::ProxyDecision WebRequestAPI::MaybeProxyURLLoaderFactoryInternal(
               browser_context_));
   WebRequestProxyingURLLoaderFactory::StartProxying(
       browser_context, is_navigation ? -1 : render_process_id,
-      frame ? frame->GetRoutingID() : MSG_ROUTING_NONE,
-      frame ? frame->GetRenderViewHost()->GetRoutingID() : MSG_ROUTING_NONE,
+      frame ? frame->GetRoutingID() : IPC::mojom::kRoutingIdNone,
+      frame ? frame->GetRenderViewHost()->GetRoutingID()
+            : IPC::mojom::kRoutingIdNone,
       &request_id_generator_, std::move(navigation_ui_data),
       std::move(navigation_id), ukm_source_id, factory_builder,
       std::move(header_client_receiver), proxies_.get(), type,
@@ -653,8 +655,8 @@ void WebRequestAPI::ProxyWebTransport(
   StartWebRequestProxyingWebTransport(
       render_process_host, frame_routing_id, url, initiator_origin,
       std::move(handshake_client),
-      request_id_generator_.Generate(MSG_ROUTING_NONE, 0), *proxies_.get(),
-      std::move(callback));
+      request_id_generator_.Generate(IPC::mojom::kRoutingIdNone, 0),
+      *proxies_.get(), std::move(callback));
 }
 
 void WebRequestAPI::ForceProxyForTesting() {

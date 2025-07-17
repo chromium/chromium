@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -447,7 +448,7 @@ PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
                 ? render_frame_host->GetProcess()->GetDeprecatedID()
                 : -1,
             render_frame_host ? render_frame_host->GetRoutingID()
-                              : MSG_ROUTING_NONE,
+                              : IPC::mojom::kRoutingIdNone,
             /*cookie_setting_overrides=*/
             render_frame_host ? render_frame_host->GetCookieSettingOverrides()
                               : net::CookieSettingOverrides(),

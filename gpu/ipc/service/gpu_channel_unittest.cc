@@ -13,6 +13,7 @@
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
+#include "ipc/constants.mojom.h"
 
 namespace gpu {
 
@@ -30,7 +31,7 @@ TEST_F(GpuChannelTest, CreateOffscreenCommandBuffer) {
   int32_t kRouteId =
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->share_group_id = MSG_ROUTING_NONE;
+  init_params->share_group_id = IPC::mojom::kRoutingIdNone;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
   init_params->attribs = ContextCreationAttribs();
@@ -57,7 +58,7 @@ TEST_F(GpuChannelTest, IncompatibleStreamIds) {
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   int32_t kStreamId1 = 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->share_group_id = MSG_ROUTING_NONE;
+  init_params->share_group_id = IPC::mojom::kRoutingIdNone;
   init_params->stream_id = kStreamId1;
   init_params->stream_priority = SchedulingPriority::kNormal;
   auto init_params2 = init_params.Clone();
@@ -100,7 +101,7 @@ TEST_F(GpuChannelTest, CreateFailsIfSharedContextIsLost) {
   {
     SCOPED_TRACE("kSharedRouteId");
     auto init_params = mojom::CreateCommandBufferParams::New();
-    init_params->share_group_id = MSG_ROUTING_NONE;
+    init_params->share_group_id = IPC::mojom::kRoutingIdNone;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
     init_params->attribs = ContextCreationAttribs();
@@ -198,7 +199,7 @@ TEST_F(GpuChannelExitForContextLostTest,
   int32_t kRouteId =
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->share_group_id = MSG_ROUTING_NONE;
+  init_params->share_group_id = IPC::mojom::kRoutingIdNone;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
   init_params->attribs = ContextCreationAttribs();
@@ -229,7 +230,7 @@ TEST_F(GpuChannelExitForContextLostTest,
   int32_t kRouteId =
       static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
   auto init_params = mojom::CreateCommandBufferParams::New();
-  init_params->share_group_id = MSG_ROUTING_NONE;
+  init_params->share_group_id = IPC::mojom::kRoutingIdNone;
   init_params->stream_id = 0;
   init_params->stream_priority = SchedulingPriority::kNormal;
   init_params->attribs = ContextCreationAttribs();

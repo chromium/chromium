@@ -14,6 +14,7 @@
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
+#include "ipc/constants.mojom.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
@@ -71,7 +72,7 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
       response_(network::mojom::URLResponseHead::New()),
       has_extra_headers_(has_extra_headers),
       info_(WebRequestInfoInitParams(
-          request_id_generator->Generate(MSG_ROUTING_NONE, 0),
+          request_id_generator->Generate(IPC::mojom::kRoutingIdNone, 0),
           process_id,
           render_frame_id,
           nullptr,

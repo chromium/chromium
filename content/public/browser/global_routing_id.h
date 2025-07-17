@@ -11,7 +11,7 @@
 #include "base/hash/hash.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_constants.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -72,7 +72,7 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
 
   // The route ID of a RenderFrame - should come from
   // RenderFrameHost::GetRoutingID().
-  int frame_routing_id = MSG_ROUTING_NONE;
+  int frame_routing_id = IPC::mojom::kRoutingIdNone;
 
   constexpr friend auto operator<=>(const GlobalRenderFrameHostId&,
                                     const GlobalRenderFrameHostId&) = default;
@@ -85,7 +85,7 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
   }
 
   explicit operator bool() const {
-    return frame_routing_id != MSG_ROUTING_NONE;
+    return frame_routing_id != IPC::mojom::kRoutingIdNone;
   }
 
   using TraceProto = perfetto::protos::pbzero::GlobalRenderFrameHostId;

@@ -114,7 +114,7 @@
 #include "content/renderer/web_ui_extension_data.h"
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 #include "crypto/sha2.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -1540,7 +1540,7 @@ RenderFrameImpl* RenderFrameImpl::Create(
         associated_interface_provider,
     const base::UnguessableToken& devtools_frame_token,
     bool is_for_nested_main_frame) {
-  DCHECK(routing_id != MSG_ROUTING_NONE);
+  DCHECK(routing_id != IPC::mojom::kRoutingIdNone);
   CreateParams params(agent_scheduling_group, frame_token, routing_id,
                       std::move(frame_receiver),
                       std::move(associated_interface_provider),
@@ -1564,7 +1564,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     mojom::CreateLocalMainFrameParamsPtr params,
     const blink::WebURL& base_url) {
   // A main frame RenderFrame must have a RenderWidget.
-  DCHECK_NE(MSG_ROUTING_NONE, params->widget_params->routing_id);
+  DCHECK_NE(IPC::mojom::kRoutingIdNone, params->widget_params->routing_id);
 
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
       agent_scheduling_group, params->frame_token, params->routing_id,
@@ -1795,7 +1795,7 @@ void RenderFrameImpl::CreateFrame(
     // Main frames are always local roots, so they should always have a
     // |widget_params| (and it always comes with a routing id).
     DCHECK(widget_params);
-    DCHECK_NE(widget_params->routing_id, MSG_ROUTING_NONE);
+    DCHECK_NE(widget_params->routing_id, IPC::mojom::kRoutingIdNone);
 
     render_frame->MaybeInitializeWidget(std::move(widget_params));
 
@@ -1803,7 +1803,7 @@ void RenderFrameImpl::CreateFrame(
     // because this frame is provisional and not attached to the Page yet. We
     // will tell WebViewImpl about it once it is swapped in.
   } else if (widget_params) {
-    DCHECK(widget_params->routing_id != MSG_ROUTING_NONE);
+    DCHECK(widget_params->routing_id != IPC::mojom::kRoutingIdNone);
 
     // This frame is a child local root, so we require a separate RenderWidget
     // for it from any other frames in the frame tree. Each local root defines
@@ -3592,7 +3592,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     ukm::SourceId document_ukm_source_id,
     FinishChildFrameCreationFn finish_creation) {
   // Tracing analysis uses this to find main frames when this value is
-  // MSG_ROUTING_NONE, and build the frame tree otherwise.
+  // IPC::mojom::kRoutingIdNone, and build the frame tree otherwise.
   CreateChildFrameTraceEvent trace_event(frame_token_);
 
   // Allocate child routing ID. This is a synchronous call.
@@ -6846,8 +6846,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
     return nullptr;
 
   DCHECK(reply);
-  DCHECK_NE(MSG_ROUTING_NONE, reply->main_frame_route_id);
-  DCHECK_NE(MSG_ROUTING_NONE, reply->widget_routing_id);
+  DCHECK_NE(IPC::mojom::kRoutingIdNone, reply->main_frame_route_id);
+  DCHECK_NE(IPC::mojom::kRoutingIdNone, reply->widget_routing_id);
 
   // While this view may be a background extension page, it can spawn a visible
   // render view. So we just assume that the new one is not another background

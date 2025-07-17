@@ -12,6 +12,7 @@
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -296,7 +297,7 @@ storage::mojom::IndexedDBClientStateChecker*
 IndexedDBClientStateCheckerFactory::
     GetOrCreateIndexedDBClientStateCheckerForTesting(
         const GlobalRenderFrameHostId& rfh_id) {
-  CHECK_NE(rfh_id.frame_routing_id, MSG_ROUTING_NONE)
+  CHECK_NE(rfh_id.frame_routing_id, IPC::mojom::kRoutingIdNone)
       << "RFH id should be valid when testing";
   return DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(
       RenderFrameHost::FromID(rfh_id));

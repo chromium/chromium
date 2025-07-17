@@ -25,6 +25,7 @@
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -317,7 +318,7 @@ void ServiceWorkerDevToolsAgentHost::WorkerStopped() {
   DCHECK_NE(WORKER_TERMINATED, state_);
   state_ = WORKER_TERMINATED;
   worker_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
-  worker_route_id_ = MSG_ROUTING_NONE;
+  worker_route_id_ = IPC::mojom::kRoutingIdNone;
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this)) {
     inspector->TargetCrashed();
   }

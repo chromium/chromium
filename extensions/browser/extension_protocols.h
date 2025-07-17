@@ -59,7 +59,7 @@ CreateExtensionServiceWorkerScriptURLLoaderFactory(
 // This function can also be used to make a factory for other non-subresource
 // requests to extension URLs, such as for the service worker script when
 // starting a service worker. In that case, render_frame_id will be
-// MSG_ROUTING_NONE.
+// IPC::mojom::kRoutingIdNone.
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateExtensionURLLoaderFactory(int render_process_id, int render_frame_id);
 

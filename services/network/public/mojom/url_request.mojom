@@ -411,9 +411,9 @@ struct URLRequest {
   // be different to the current requestor which is |render_frame_id|. For
   // example, if a navigation for window "abc" is intercepted by a service
   // worker, which re-issues the request via fetch, the re-issued request has
-  // |render_frame_id| of MSG_ROUTING_NONE (the service worker) and |window_id|
-  // of "abc". This is used for, e.g., client certificate selection. It's
-  // important that this id be unguessable so renderers cannot impersonate
+  // |render_frame_id| of IPC::mojom::kRoutingIdNone (the service worker) and
+  // |window_id| of "abc". This is used for, e.g., client certificate selection.
+  // It's important that this id be unguessable so renderers cannot impersonate
   // other renderers.
   //
   // This may be empty when the original requestor is the current requestor or

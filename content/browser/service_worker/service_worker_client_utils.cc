@@ -64,7 +64,7 @@ using OpenURLCallback = base::OnceCallback<void(GlobalRenderFrameHostId)>;
 // WebContents to be initialized, run the |callback| passed to its constructor
 // then self destroy.
 // The callback will receive the GlobalRenderFrameHostId. If something went
-// wrong it will have MSG_ROUTING_NONE.
+// wrong it will have IPC::mojom::kRoutingIdNone.
 class OpenURLObserver : public WebContentsObserver {
  public:
   OpenURLObserver(WebContents* web_contents,

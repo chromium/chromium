@@ -204,23 +204,22 @@ class CONTENT_EXPORT RenderFrameImpl
   // Creates a new RenderFrame with |routing_id|. If |previous_frame_token| is
   // not provided, it creates the Blink WebLocalFrame and inserts it into
   // the frame tree after the frame identified by |previous_sibling_routing_id|,
-  // or as the first child if |previous_sibling_routing_id| is MSG_ROUTING_NONE.
-  // Otherwise, the frame is semi-orphaned until it commits, at which point it
-  // replaces the previous object identified by |previous_frame_token|. The
-  // previous object can either be a RenderFrame or a RenderFrameProxy.
-  // The frame's opener is set to the frame identified by |opener_routing_id|.
-  // The frame is created as a child of the RenderFrame identified by
-  // |parent_routing_id| or as the top-level frame if
-  // the latter is MSG_ROUTING_NONE.
-  // |devtools_frame_token| is passed from the browser and corresponds to the
-  // owner FrameTreeNode. It can only be used for tagging requests and calls
-  // for context frame attribution. It should never be passed back to the
-  // browser as a frame identifier in the control flows calls.
-  // The |widget_params| is not null if the frame is to be a local root, which
-  // means it will own a RenderWidget, in which case the |widget_params| hold
-  // the routing id and initialization properties for the RenderWidget.
-  // The |web_view| param will only be set when the frame to be created will use
-  // new WebView, instead of using the previous Frame's WebView. This is only
+  // or as the first child if |previous_sibling_routing_id| is
+  // IPC::mojom::kRoutingIdNone. Otherwise, the frame is semi-orphaned until it
+  // commits, at which point it replaces the previous object identified by
+  // |previous_frame_token|. The previous object can either be a RenderFrame or
+  // a RenderFrameProxy. The frame's opener is set to the frame identified by
+  // |opener_routing_id|. The frame is created as a child of the RenderFrame
+  // identified by |parent_routing_id| or as the top-level frame if the latter
+  // is IPC::mojom::kRoutingIdNone. |devtools_frame_token| is passed from the
+  // browser and corresponds to the owner FrameTreeNode. It can only be used for
+  // tagging requests and calls for context frame attribution. It should never
+  // be passed back to the browser as a frame identifier in the control flows
+  // calls. The |widget_params| is not null if the frame is to be a local root,
+  // which means it will own a RenderWidget, in which case the |widget_params|
+  // hold the routing id and initialization properties for the RenderWidget. The
+  // |web_view| param will only be set when the frame to be created will use new
+  // WebView, instead of using the previous Frame's WebView. This is only
   // possible for provisional main RenderFrames that will do a local main
   // RenderFrame swap later on with the frame that has the token
   // |previous_frame_token|.

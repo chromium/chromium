@@ -42,6 +42,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_capability_type.h"
 #include "content/public/common/stop_find_action.h"
+#include "ipc/constants.mojom.h"
 #include "net/base/network_handle.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -187,7 +188,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
     int opener_render_process_id = content::ChildProcessHost::kInvalidUniqueID;
 
     // The routing id of the frame initiating the open.
-    int opener_render_frame_id = MSG_ROUTING_NONE;
+    int opener_render_frame_id = IPC::mojom::kRoutingIdNone;
 
     // If the opener is suppressed, then the new WebContents doesn't hold a
     // reference to its opener.

@@ -14,6 +14,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -201,8 +202,8 @@ void WebTransportConnectorImpl::OnThrottleDone(
       std::move(client_receiver));
 
   GetContentClient()->browser()->WillCreateWebTransport(
-      process_id_, frame_ ? frame_->GetRoutingID() : MSG_ROUTING_NONE, url,
-      origin_, std::move(handshake_client_to_pass),
+      process_id_, frame_ ? frame_->GetRoutingID() : IPC::mojom::kRoutingIdNone,
+      url, origin_, std::move(handshake_client_to_pass),
       base::BindOnce(
           &WebTransportConnectorImpl::OnWillCreateWebTransportCompleted,
           weak_factory_.GetWeakPtr(), url, std::move(fingerprints)));

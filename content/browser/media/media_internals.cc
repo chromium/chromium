@@ -596,7 +596,8 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
 std::unique_ptr<media::AudioLog> MediaInternals::CreateAudioLog(
     AudioComponent component,
     int component_id) {
-  return CreateAudioLogImpl(component, component_id, -1, MSG_ROUTING_NONE);
+  return CreateAudioLogImpl(component, component_id, -1,
+                            IPC::mojom::kRoutingIdNone);
 }
 
 mojo::PendingRemote<media::mojom::AudioLog> MediaInternals::CreateMojoAudioLog(

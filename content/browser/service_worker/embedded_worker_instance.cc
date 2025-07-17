@@ -46,7 +46,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
@@ -250,7 +250,7 @@ void EmbeddedWorkerInstance::Start(
     observer.OnStarting();
 
   // service_worker_route_id will be set later in SetupOnUIThread
-  params->service_worker_route_id = MSG_ROUTING_NONE;
+  params->service_worker_route_id = IPC::mojom::kRoutingIdNone;
   params->wait_for_debugger = false;
   params->subresource_loader_updater =
       subresource_loader_updater_.BindNewPipeAndPassReceiver();
@@ -927,7 +927,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
   GetContentClient()
       ->browser()
       ->RegisterNonNetworkSubresourceURLLoaderFactories(
-          rph->GetDeprecatedID(), MSG_ROUTING_NONE, origin,
+          rph->GetDeprecatedID(), IPC::mojom::kRoutingIdNone, origin,
           &non_network_factories);
 
   for (auto& pair : non_network_factories) {
@@ -1003,7 +1003,7 @@ int EmbeddedWorkerInstance::process_id() const {
 int EmbeddedWorkerInstance::worker_devtools_agent_route_id() const {
   if (devtools_proxy_)
     return devtools_proxy_->agent_route_id();
-  return MSG_ROUTING_NONE;
+  return IPC::mojom::kRoutingIdNone;
 }
 
 base::UnguessableToken EmbeddedWorkerInstance::WorkerDevtoolsId() const {

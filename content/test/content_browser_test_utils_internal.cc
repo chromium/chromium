@@ -741,7 +741,7 @@ void ShowPopupWidgetWaiter::Wait() {
 }
 
 blink::mojom::PopupWidgetHost* ShowPopupWidgetWaiter::GetForwardingInterface() {
-  DCHECK_NE(MSG_ROUTING_NONE, routing_id_);
+  DCHECK_NE(IPC::mojom::kRoutingIdNone, routing_id_);
   return RenderWidgetHostImpl::FromID(process_id_, routing_id_);
 }
 

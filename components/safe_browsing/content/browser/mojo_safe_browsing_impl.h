@@ -11,7 +11,7 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -65,7 +65,7 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing,
 
   mojo::ReceiverSet<mojom::SafeBrowsing> receivers_;
   scoped_refptr<UrlCheckerDelegate> delegate_;
-  int render_process_id_ = MSG_ROUTING_NONE;
+  int render_process_id_ = IPC::mojom::kRoutingIdNone;
 
   // Guaranteed to outlive this object as it owns it.
   raw_ptr<base::SupportsUserData> user_data_;

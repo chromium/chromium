@@ -22,6 +22,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/trace_util.h"
+#include "ipc/constants.mojom.h"
 #include "url/origin_debug.h"
 
 using content::BrowserThread;
@@ -545,8 +546,8 @@ void MessageService::ClosePort(RenderProcessHost* process,
   if (!IsValidSourceContext(*process, port_context)) {
     return;
   }
-  int routing_id =
-      port_context.frame ? port_context.frame->routing_id : MSG_ROUTING_NONE;
+  int routing_id = port_context.frame ? port_context.frame->routing_id
+                                      : IPC::mojom::kRoutingIdNone;
   int worker_thread_id =
       port_context.worker ? port_context.worker->thread_id : kMainThreadId;
   ClosePortImpl(port_id, process->GetDeprecatedID(), routing_id,

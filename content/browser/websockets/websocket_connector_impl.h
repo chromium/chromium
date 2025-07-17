@@ -31,7 +31,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
   // - For dedicated workers, |frame_id| should be its response document's
   //   frame's id.
   // - For shared workers and service workers, |frame_id| should be
-  //   MSG_ROUTING_NONE because they do not have a frame.
+  //   IPC::mojom::kRoutingIdNone because they do not have a frame.
   WebSocketConnectorImpl(int process_id,
                          int frame_id,
                          const url::Origin& origin,

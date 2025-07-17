@@ -33,6 +33,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_view_host.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -146,7 +147,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Set up the `blink::WebView` child process. Virtual because it is overridden
   // by TestRenderViewHost.
   // `opener_route_id` parameter indicates which `blink::WebView` created this
-  //   (MSG_ROUTING_NONE if none).
+  //   (IPC::mojom::kRoutingIdNone if none).
   // `window_was_opened_by_another_window` is true if this top-level frame was
   //   created by another window, as opposed to independently created (through
   //   the browser UI, etc). This is true even when the window is opened with
@@ -185,7 +186,9 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Tracks whether this RenderViewHost is in an active state (rather than
   // pending unload or unloaded), according to its main frame
   // RenderFrameHost.
-  bool is_active() const { return main_frame_routing_id_ != MSG_ROUTING_NONE; }
+  bool is_active() const {
+    return main_frame_routing_id_ != IPC::mojom::kRoutingIdNone;
+  }
   int main_frame_routing_id() const { return main_frame_routing_id_; }
 
   // Returns true if the `blink::WebView` is active and has not crashed.
@@ -234,8 +237,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // re-entrantly.
   void PostRenderViewReady();
 
-  // Sets the routing id for the main frame. When set to MSG_ROUTING_NONE, the
-  // view is not considered active.
+  // Sets the routing id for the main frame. When set to
+  // IPC::mojom::kRoutingIdNone, the view is not considered active.
   void SetMainFrameRoutingId(int routing_id);
 
   // Called when the RenderFrameHostImpls/RenderFrameProxyHosts that own this

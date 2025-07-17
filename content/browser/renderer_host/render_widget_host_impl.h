@@ -1021,7 +1021,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void ForceRedrawForTesting();
 
  protected:
-  // |routing_id| must not be MSG_ROUTING_NONE.
+  // |routing_id| must not be IPC::mojom::kRoutingIdNone.
   // If this object outlives |delegate|, DetachDelegate() must be called when
   // |delegate| goes away. |site_instance_group| will outlive this
   // widget but we store it via a `base::SafeRef` instead of a scoped_refptr to

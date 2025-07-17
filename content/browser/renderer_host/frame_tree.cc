@@ -42,6 +42,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
+#include "ipc/constants.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -392,7 +393,7 @@ FrameTreeNode* FrameTree::AddFrame(
     bool was_discarded,
     blink::FrameOwnerElementType owner_type,
     bool is_dummy_frame_for_inner_tree) {
-  CHECK_NE(new_routing_id, MSG_ROUTING_NONE);
+  CHECK_NE(new_routing_id, IPC::mojom::kRoutingIdNone);
   // Normally this path is for blink adding a child local frame. But fenced
   // frames add a dummy child frame that never gets a corresponding
   // RenderFrameImpl in any renderer process, and therefore its `frame_remote`

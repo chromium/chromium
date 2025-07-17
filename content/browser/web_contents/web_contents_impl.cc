@@ -174,6 +174,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/referrer_type_converters.h"
 #include "content/public/common/url_constants.h"
+#include "ipc/constants.mojom.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
 #include "net/http/http_util.h"
@@ -326,7 +327,7 @@ bool HasMatchingWidgetHost(FrameTree* tree, RenderWidgetHostImpl* host) {
 
 RenderFrameHostImpl* FindOpenerRFH(const WebContents::CreateParams& params) {
   RenderFrameHostImpl* opener_rfh = nullptr;
-  if (params.opener_render_frame_id != MSG_ROUTING_NONE) {
+  if (params.opener_render_frame_id != IPC::mojom::kRoutingIdNone) {
     opener_rfh = RenderFrameHostImpl::FromID(params.opener_render_process_id,
                                              params.opener_render_frame_id);
   }
@@ -10391,7 +10392,7 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   }
 
   const auto proxy_routing_id =
-      proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
+      proxy_host ? proxy_host->GetRoutingID() : IPC::mojom::kRoutingIdNone;
   // TODO(crbug.com/40166243): Given MPArch, should we pass
   // opened_by_another_window_ for non primary FrameTrees?
   if (!rvh_impl->CreateRenderView(opener_frame_token, proxy_routing_id,

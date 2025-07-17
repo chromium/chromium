@@ -11,7 +11,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_instance_process_creation_client.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 
 namespace chromecast {
 
@@ -20,10 +20,10 @@ RendererPrelauncher::RendererPrelauncher(
     const GURL& gurl)
     : browser_context_(browser_context),
       gurl_(gurl),
-      rph_routing_id_(MSG_ROUTING_NONE) {}
+      rph_routing_id_(IPC::mojom::kRoutingIdNone) {}
 
 RendererPrelauncher::~RendererPrelauncher() {
-  if (rph_routing_id_ != MSG_ROUTING_NONE) {
+  if (rph_routing_id_ != IPC::mojom::kRoutingIdNone) {
     DCHECK(site_instance_);
     site_instance_->GetProcess()->RemoveRoute(rph_routing_id_);
   }

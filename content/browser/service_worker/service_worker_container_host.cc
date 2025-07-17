@@ -27,6 +27,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -185,13 +186,13 @@ void ServiceWorkerContainerHostForClient::Register(
   // it's possible the RenderFrameHost has already been destroyed due to IPC
   // ordering.
   GlobalRenderFrameHostId global_frame_id(ChildProcessHost::kInvalidUniqueID,
-                                          MSG_ROUTING_NONE);
+                                          IPC::mojom::kRoutingIdNone);
   if (service_worker_client().IsContainerForWindowClient()) {
     // TODO(crbug.com/40364838): Validate that it is acceptable to have an
     // invalid global_frame_id for worker cases.
     global_frame_id = service_worker_client().GetRenderFrameHostId();
     DCHECK(global_frame_id.child_id != ChildProcessHost::kInvalidUniqueID);
-    DCHECK(global_frame_id.frame_routing_id != MSG_ROUTING_NONE);
+    DCHECK(global_frame_id.frame_routing_id != IPC::mojom::kRoutingIdNone);
   }
 
   // Registrations could come from different origins when "disable-web-security"

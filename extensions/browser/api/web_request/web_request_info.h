@@ -20,7 +20,7 @@
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -60,7 +60,7 @@ struct WebRequestInfoInitParams {
   uint64_t id = 0;
   GURL url;
   int render_process_id = -1;
-  int frame_routing_id = MSG_ROUTING_NONE;
+  int frame_routing_id = IPC::mojom::kRoutingIdNone;
   std::string method;
   bool is_navigation_request = false;
   std::optional<url::Origin> initiator;
@@ -128,8 +128,8 @@ struct WebRequestInfo {
   const int render_process_id;
 
   // The frame routing ID of the frame which initiated this request, or
-  // MSG_ROUTING_NONE if the request was not initiated by a frame.
-  const int frame_routing_id = MSG_ROUTING_NONE;
+  // IPC::mojom::kRoutingIdNone if the request was not initiated by a frame.
+  const int frame_routing_id = IPC::mojom::kRoutingIdNone;
 
   // The HTTP method used for the request, if applicable.
   const std::string method;

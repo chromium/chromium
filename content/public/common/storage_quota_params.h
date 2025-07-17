@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "content/common/content_export.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 
@@ -18,7 +18,7 @@ namespace content {
 // RequestStorageQuota call.
 struct CONTENT_EXPORT StorageQuotaParams {
   StorageQuotaParams()
-      : render_frame_id(MSG_ROUTING_NONE),
+      : render_frame_id(IPC::mojom::kRoutingIdNone),
         storage_type(blink::mojom::StorageType::kTemporary),
         requested_size(0) {}
 

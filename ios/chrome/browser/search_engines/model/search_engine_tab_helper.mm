@@ -16,6 +16,7 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ipc/constants.mojom.h"
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
@@ -170,7 +171,7 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
       keyword, osdd_url, item->GetFaviconStatus().url,
       url::Origin::Create(web_state_->GetLastCommittedURL()),
       profile->GetURLLoaderFactory(),
-      /* render_frame_id */ MSG_ROUTING_NONE,
+      /* render_frame_id */ IPC::mojom::kRoutingIdNone,
       /* request_id */ 0);
 }
 

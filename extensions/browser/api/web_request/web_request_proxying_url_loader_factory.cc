@@ -1636,7 +1636,7 @@ void WebRequestProxyingURLLoaderFactory::OnLoaderForCorsPreflightCreated(
   // two connections for the actual request and the preflight request before
   // sending request headers is very difficult.
   const uint64_t web_request_id =
-      request_id_generator_->Generate(MSG_ROUTING_NONE, 0);
+      request_id_generator_->Generate(IPC::mojom::kRoutingIdNone, 0);
 
   auto result = requests_.insert(std::make_pair(
       web_request_id, std::make_unique<InProgressRequest>(

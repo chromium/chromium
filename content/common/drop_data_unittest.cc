@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
