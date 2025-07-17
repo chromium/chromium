@@ -520,31 +520,38 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
 - (void)clearAndDismissSearchBar {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    // On iPad, with iOS 26+, the search bar is dismissed after clearing the
-    // text. The button for clearing text is always displayed.
+    // On iPad, when running on iOS 26+ and building with the iOS 26+ SDK, the
+    // search bar is dismissed after clearing the text. The button for clearing
+    // text is always displayed.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
     if (@available(iOS 26, *)) {
       [[EarlGrey
           selectElementWithMatcher:chrome_test_util::SearchBarClearTextButton()]
           performAction:grey_tap()];
       return;
     }
+#endif
 
-    // On iPad, with iOS < 26, the search bar is cleared and dismissed via the
-    // "Cancel" button.
+    // On iPad, when running on iOS < 26 or building with an SDK older than
+    // iOS 26, the search bar is cleared and dismissed via the "Cancel" button.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
         performAction:grey_tap()];
   } else {
-    // On iPhone, both the "Close" and "Cancel" buttons clear the search text
-    // and dismiss the search bar.
+    // On iPhone, the search text is cleared and the search bar is dismissed via
+    // a single button press.
 
-    // If iOS 26 is available, tap the "Close" button.
+    // When running on iOS 26+ and building with the iOS 26+ SDK, tap the
+    // "Close" button.
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
     if (@available(iOS 26, *)) {
       [[EarlGrey selectElementWithMatcher:chrome_test_util::CloseButton()]
           performAction:grey_tap()];
       return;
     }
+#endif
 
-    // If iOS 26 is not available, tap the "Cancel" button.
+    // When running on iOS < 26 or building with an SDK older than iOS 26, tap
+    // the "Cancel" button.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
         performAction:grey_tap()];
   }
