@@ -8,6 +8,8 @@ source_set("content") {
     "content_bookmark_parser.h",
     "favicon_reencode.cc",
     "favicon_reencode.h",
+    "stable_portability_data_importer.cc",
+    "stable_portability_data_importer.h",
   ]
   deps = [
     "//base",
@@ -15,6 +17,7 @@ source_set("content") {
     "//components/search_engines",
     "//components/user_data_importer/common",
     "//components/user_data_importer/utility:safari_data_importer",
+    "//content/public/browser",
     "//content/public/child",
     "//net",
     "//url",
@@ -23,12 +26,22 @@ source_set("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_bookmark_parser_unittest.cc" ]
+  sources = [
+    "content_bookmark_parser_unittest.cc",
+    "stable_portability_data_importer_unittest.cc",
+  ]
   deps = [
     ":content",
     "//base",
     "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/reading_list/core",
+    "//components/reading_list/core:test_support",
     "//components/user_data_importer/common",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }
