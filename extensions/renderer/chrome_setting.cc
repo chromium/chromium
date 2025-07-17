@@ -16,6 +16,8 @@
 #include "gin/arguments.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-object.h"
 
 namespace extensions {
@@ -33,10 +35,10 @@ v8::Local<v8::Object> ChromeSetting::Create(
   const std::string& pref_name = (*property_values)[0u].GetString();
   const base::Value::Dict& value_spec = (*property_values)[1u].GetDict();
 
-  gin::Handle<ChromeSetting> handle = gin::CreateHandle(
-      isolate, new ChromeSetting(request_handler, event_handler, type_refs,
-                                 access_checker, pref_name, value_spec));
-  return handle.ToV8().As<v8::Object>();
+  auto* setting = cppgc::MakeGarbageCollected<ChromeSetting>(
+      isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
+      event_handler, type_refs, access_checker, pref_name, value_spec);
+  return setting->GetWrapper(isolate).ToLocalChecked();
 }
 
 ChromeSetting::ChromeSetting(APIRequestHandler* request_handler,
@@ -66,20 +68,21 @@ ChromeSetting::ChromeSetting(APIRequestHandler* request_handler,
 
 ChromeSetting::~ChromeSetting() = default;
 
-gin::DeprecatedWrapperInfo ChromeSetting::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 gin::ObjectTemplateBuilder ChromeSetting::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return DeprecatedWrappable<ChromeSetting>::GetObjectTemplateBuilder(isolate)
+  return Wrappable<ChromeSetting>::GetObjectTemplateBuilder(isolate)
       .SetMethod("get", &ChromeSetting::Get)
       .SetMethod("set", &ChromeSetting::Set)
       .SetMethod("clear", &ChromeSetting::Clear)
       .SetProperty("onChange", &ChromeSetting::GetOnChangeEvent);
 }
 
-const char* ChromeSetting::GetTypeName() {
+const char* ChromeSetting::GetHumanReadableName() const {
   return "ChromeSetting";
+}
+
+const gin::WrapperInfo* ChromeSetting::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 void ChromeSetting::Get(gin::Arguments* arguments) {
