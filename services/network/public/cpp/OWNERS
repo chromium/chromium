@@ -27,3 +27,7 @@ per-file client_hints*=file://components/embedder_support/OWNERS
 
 # Files and features related to Attribution Reporting.
 per-file attribution*=file://content/browser/attribution_reporting/OWNERS
+
+# Files related to Task Schedueler.
+per-file network_service_task*=file://services/network/scheduler/OWNERS
+per-file sequence_manager*=file://services/network/scheduler/OWNERS

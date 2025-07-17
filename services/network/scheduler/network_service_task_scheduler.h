@@ -57,11 +57,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskScheduler {
 
   ~NetworkServiceTaskScheduler();
 
-  // Configures the sequence manager settings in Thread `options` for use with
-  // the network service scheduler. This must be called before the thread is
-  // started.
-  static void ConfigureSequenceManager(base::Thread::Options& options);
-
   using QueueType = NetworkServiceTaskQueues::QueueType;
 
   // Returns the task runner for the specified `QueueType`.

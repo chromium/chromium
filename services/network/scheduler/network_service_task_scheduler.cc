@@ -10,7 +10,8 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/task/task_runner.h"
-#include "services/network/scheduler/network_service_task_priority.h"
+#include "services/network/public/cpp/network_service_task_priority.h"
+#include "services/network/public/cpp/sequence_manager_configurator.h"
 
 namespace network {
 
@@ -18,13 +19,6 @@ namespace {
 
 // `g_network_service_task_scheduler` is intentionally leaked on shutdown.
 NetworkServiceTaskScheduler* g_network_service_task_scheduler = nullptr;
-
-// Set to true if the current thread's SequenceManager is configured correctly
-// to support the NetworkServiceTaskScheduler priorities.
-//
-// TODO(crbug.com/421051258): Make this flag thread local. Currently this flag
-// is set on the main thread which starts IO thread.
-bool g_is_sequence_manager_configured = false;
 
 // Network service thread extension of CurrentThread.
 class CurrentNetworkServiceThread : public ::base::CurrentThread {
@@ -39,7 +33,7 @@ class CurrentNetworkServiceThread : public ::base::CurrentThread {
 
 // static
 void NetworkServiceTaskScheduler::MaybeCreate() {
-  if (!g_is_sequence_manager_configured) {
+  if (!IsSequenceManagerConfigured()) {
     return;
   }
   // For testing scenarios, `MaybeCreate` can be called multiple times.
@@ -65,8 +59,7 @@ NetworkServiceTaskScheduler::CreateForTesting() {
       // ownership of it for cleanup.
       base::sequence_manager::CreateSequenceManagerOnCurrentThread(
           base::sequence_manager::SequenceManager::Settings::Builder()
-              .SetPrioritySettings(
-                  internal::CreateNetworkServiceTaskPrioritySettings())
+              .SetPrioritySettings(CreateNetworkServiceTaskPrioritySettings())
               .Build())));
 }
 
@@ -110,22 +103,6 @@ NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
   // Set the default task runner for this scheduler.
   sequence_manager_for_testing_->SetDefaultTaskRunner(
       task_queues_.GetDefaultTaskRunner());
-}
-
-// static
-void NetworkServiceTaskScheduler::ConfigureSequenceManager(
-    base::Thread::Options& options) {
-  options.sequence_manager_settings =
-      std::make_unique<base::sequence_manager::SequenceManagerSettings>(
-          base::sequence_manager::SequenceManager::Settings::Builder()
-              .SetPrioritySettings(
-                  network::internal::CreateNetworkServiceTaskPrioritySettings())
-              .SetMessagePumpType(options.message_pump_type)
-              .SetCanRunTasksByBatches(true)
-              .SetAddQueueTimeToTasks(true)
-              .SetShouldSampleCPUTime(true)
-              .Build());
-  g_is_sequence_manager_configured = true;
 }
 
 void NetworkServiceTaskScheduler::OnTaskCompleted(

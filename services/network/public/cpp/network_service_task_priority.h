@@ -2,14 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_PRIORITY_H_
-#define SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_PRIORITY_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_SERVICE_TASK_PRIORITY_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_SERVICE_TASK_PRIORITY_H_
 
 #include "base/component_export.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 
-namespace network::internal {
+namespace network {
+
+// Creates and returns the priority settings for the Network Service's
+// `SequenceManager`.
+COMPONENT_EXPORT(NETWORK_CPP)
+base::sequence_manager::SequenceManager::PrioritySettings
+CreateNetworkServiceTaskPrioritySettings();
+
+namespace internal {
 
 // Defines the set of task priorities for the Network Service. These priorities
 // are used by the `SequenceManager` to schedule tasks.
@@ -23,11 +31,7 @@ enum class NetworkServiceTaskPriority : base::sequence_manager::TaskQueue::
       kPriorityCount = 2,
     };
 
-// Creates and returns the priority settings for the Network Service's
-// `SequenceManager`.
-COMPONENT_EXPORT(NETWORK_SERVICE)
-base::sequence_manager::SequenceManager::PrioritySettings
-CreateNetworkServiceTaskPrioritySettings();
+}  // namespace internal
+}  // namespace network
 
-}  // namespace network::internal
-#endif  // SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_PRIORITY_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_NETWORK_SERVICE_TASK_PRIORITY_H_

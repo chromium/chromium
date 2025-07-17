@@ -10,7 +10,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequence_manager/sequence_manager.h"
-#include "services/network/scheduler/network_service_task_priority.h"
+#include "services/network/public/cpp/network_service_task_priority.h"
 
 namespace network {
 

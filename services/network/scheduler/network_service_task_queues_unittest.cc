@@ -10,7 +10,7 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "services/network/scheduler/network_service_task_priority.h"
+#include "services/network/public/cpp/network_service_task_priority.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,8 +33,7 @@ class NetworkServiceTaskQueuesTest : public testing::Test {
                     base::MessagePump::Create(base::MessagePumpType::DEFAULT),
                     base::sequence_manager::SequenceManager::Settings::Builder()
                         .SetPrioritySettings(
-                            internal::
-                                CreateNetworkServiceTaskPrioritySettings())
+                            CreateNetworkServiceTaskPrioritySettings())
                         .Build())),
         queues_(sequence_manager_.get()) {
     sequence_manager_->SetDefaultTaskRunner(queues_.GetDefaultTaskRunner());
