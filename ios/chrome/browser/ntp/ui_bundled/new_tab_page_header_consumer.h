@@ -36,10 +36,6 @@
 // Whether AIM is allowed.
 - (void)setAIMAllowed:(BOOL)allowed;
 
-// Updates the NTP’s background using the given color palette.
-// Pass `nil` to clear any previously applied background colors.
-- (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_CONSUMER_H_

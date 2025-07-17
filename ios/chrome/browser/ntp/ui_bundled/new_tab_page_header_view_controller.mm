@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -141,8 +142,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   // The logo for the default search engine. This is owned by the caching system
   // backing this logo.
   __weak UIImage* _dseLogo;
-  // The current NTP color palette.
-  NewTabPageColorPalette* _colorPalette;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -165,6 +164,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
         [weakSelf updateUIOnTraitChange:previousCollection];
       };
       [self registerForTraitChanges:traits withHandler:handler];
+      if (IsNTPBackgroundCustomizationEnabled()) {
+        NSArray<UITrait>* colorTraits =
+            TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
+        [self registerForTraitChanges:colorTraits
+                           withAction:@selector(applyBackgroundColors)];
+      }
     }
   }
   return self;
@@ -371,6 +376,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     [self.logoVendor fetchDoodle];
     self.headerView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self applyBackgroundColors];
+    }
   }
 }
 
@@ -639,20 +647,24 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     button.imageView.layer.masksToBounds = YES;
     button.layer.cornerRadius = image.size.width;
   } else {
+    NewTabPageColorPalette* colorPalette =
+        IsNTPBackgroundCustomizationEnabled()
+            ? [self.traitCollection objectForTrait:NewTabPageTrait.class]
+            : nil;
     button.layer.cornerRadius = 0;
     [button setImage:nil forState:UIControlStateNormal];
     UIButtonConfiguration* config =
         [UIButtonConfiguration plainButtonConfiguration];
     config.background.backgroundColor =
-        _colorPalette ? _colorPalette.secondaryColor
-                      : [[UIColor colorNamed:kSolidWhiteColor]
-                            colorWithAlphaComponent:0.75];
+        colorPalette ? colorPalette.secondaryColor
+                     : [[UIColor colorNamed:kSolidWhiteColor]
+                           colorWithAlphaComponent:0.75];
     NSDictionary* attributes = @{
       NSFontAttributeName : PreferredFontForTextStyle(
           UIFontTextStyleSubheadline, UIFontWeightSemibold,
           kIdentityDiscMaxFontSize),
-      NSForegroundColorAttributeName : _colorPalette
-          ? _colorPalette.tintColor
+      NSForegroundColorAttributeName : colorPalette
+          ? colorPalette.tintColor
           : [UIColor colorNamed:kBlue600Color],
     };
     config.attributedTitle = [[NSAttributedString alloc]
@@ -929,13 +941,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   _isAIMAllowed = allowed;
 }
 
-- (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {
-  [_headerView updateBackgroundWithColorPalette:colorPalette];
-  _colorPalette = colorPalette;
-
-  [self updateIdentityDiscState];
-}
-
 #pragma mark - UserAccountImageUpdateDelegate
 
 - (void)setSignedOutAccountImage {
@@ -1014,6 +1019,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 }
 
 #pragma mark - Private
+
+// Sets the background using the current color palette, or defaults if none is
+// set.
+- (void)applyBackgroundColors {
+  [self updateIdentityDiscState];
+}
 
 - (void)setIsSignedIn:(BOOL)isSignedIn {
   BOOL wasSignedIn = _isSignedIn;

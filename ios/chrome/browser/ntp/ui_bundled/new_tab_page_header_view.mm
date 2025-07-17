@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
@@ -355,6 +356,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
         [weakSelf updateUIOnTraitChange:previousCollection];
       };
       [self registerForTraitChanges:traits withHandler:handler];
+      if (IsNTPBackgroundCustomizationEnabled()) {
+        NSArray<UITrait>* colorTraits =
+            TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
+        [self registerForTraitChanges:colorTraits
+                           withAction:@selector(applyBackgroundColors)];
+      }
     }
   }
   return self;
@@ -836,6 +843,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   _customizationMenuButton = customizationMenuButton;
   _customizationNewFeatureBadge = newBadgeView;
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [self applyBackgroundColors];
+  }
 }
 
 - (void)hideBadgeOnCustomizationMenu {
@@ -871,32 +882,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 - (void)setAIMAllowed:(BOOL)allowed {
   _isAIMAllowed = allowed;
-}
-
-- (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {
-  _colorPalette = colorPalette;
-
-  if (colorPalette) {
-    [_fakeLocationBar setStartColor:colorPalette.omniboxColor
-                           endColor:colorPalette.omniboxColor];
-
-    _customizationMenuButton.backgroundColor = colorPalette.secondaryColor;
-    _customizationMenuButton.tintColor = colorPalette.tintColor;
-  } else {
-    [_fakeLocationBar setStartColor:FakeboxTopColor()
-                           endColor:FakeboxBottomColor()];
-
-    UIColor* backgroundColor =
-        IsSignInButtonNoAvatarEnabled()
-            ? [[UIColor colorNamed:kSolidWhiteColor]
-                  colorWithAlphaComponent:0.75]
-            : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-                  colorWithAlphaComponent:0.8];
-    _customizationMenuButton.backgroundColor = backgroundColor;
-    _customizationMenuButton.tintColor = [UIColor
-        colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
-                                                    : kTextSecondaryColor)];
-  }
 }
 
 #pragma mark - UITraitEnvironment
@@ -962,6 +947,34 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 #pragma mark - Private
+
+// Sets the background using the current color palette, or defaults if none is
+// set.
+- (void)applyBackgroundColors {
+  _colorPalette = [self.traitCollection objectForTrait:NewTabPageTrait.class];
+
+  if (_colorPalette) {
+    [_fakeLocationBar setStartColor:_colorPalette.omniboxColor
+                           endColor:_colorPalette.omniboxColor];
+
+    _customizationMenuButton.backgroundColor = _colorPalette.secondaryColor;
+    _customizationMenuButton.tintColor = _colorPalette.tintColor;
+  } else {
+    [_fakeLocationBar setStartColor:FakeboxTopColor()
+                           endColor:FakeboxBottomColor()];
+
+    UIColor* backgroundColor =
+        IsSignInButtonNoAvatarEnabled()
+            ? [[UIColor colorNamed:kSolidWhiteColor]
+                  colorWithAlphaComponent:0.75]
+            : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+                  colorWithAlphaComponent:0.8];
+    _customizationMenuButton.backgroundColor = backgroundColor;
+    _customizationMenuButton.tintColor = [UIColor
+        colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
+                                                    : kTextSecondaryColor)];
+  }
+}
 
 // Empties the fakebox buttons stack.
 - (void)removeAllFakeboxButtonsFromStack {

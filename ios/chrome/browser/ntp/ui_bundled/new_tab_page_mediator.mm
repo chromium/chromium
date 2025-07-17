@@ -43,12 +43,14 @@
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
@@ -390,16 +392,22 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
       _backgroundCustomizationService->GetCurrentColorTheme();
 
   if (colorTheme && colorTheme->color()) {
-    [self.consumer
-        updateBackgroundWithColorPalette:
-            CreateColorPaletteFromSeedColor(
-                skia::UIColorFromSkColor(colorTheme->color()),
-                ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()))];
+    // Sets the New Tab Page trait to a color palette generated from the current
+    // theme.
+    [self.consumer.traitOverrides
+        setObject:CreateColorPaletteFromSeedColor(
+                      skia::UIColorFromSkColor(colorTheme->color()),
+                      ProtoEnumToSchemeVariant(
+                          colorTheme->browser_color_variant()))
+         forTrait:NewTabPageTrait.class];
     [self.consumer setBackgroundImage:nil];
     return;
   }
 
-  [self.consumer updateBackgroundWithColorPalette:nil];
+  // Clears the color palette associated with the New Tab Page trait,
+  // reverting to the default colors defined by the trait.
+  [self.consumer.traitOverrides setObject:[NewTabPageTrait defaultValue]
+                                 forTrait:NewTabPageTrait.class];
   if (!background) {
     [self.consumer setBackgroundImage:nil];
     return;

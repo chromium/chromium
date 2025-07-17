@@ -28,6 +28,8 @@ source_set("color") {
     "new_tab_page_color_palette.mm",
     "new_tab_page_color_palette_util.h",
     "new_tab_page_color_palette_util.mm",
+    "new_tab_page_trait.h",
+    "new_tab_page_trait.mm",
     "theme_utils.h",
     "theme_utils.mm",
   ]
@@ -113,6 +115,7 @@ source_set("coordinator") {
     "new_tab_page_coordinator.mm",
   ]
   deps = [
+    ":color",
     ":component_factory_protocol",
     ":constants",
     ":feature_flags",
