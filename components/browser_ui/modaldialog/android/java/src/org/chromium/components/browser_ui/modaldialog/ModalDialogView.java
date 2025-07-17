@@ -61,7 +61,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private TextView mTitleView;
     private ImageView mTitleIcon;
     private TextView mMessageParagraph1;
-    private TextView mMessageParagraph2;
     private LinearLayout mMessageParagraphsContainer;
     private ViewGroup mCustomViewContainer;
     private ViewGroup mCustomButtonBarViewContainer;
@@ -138,7 +137,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
         mMessageParagraph1 = findViewById(R.id.message_paragraph_1);
-        mMessageParagraph2 = findViewById(R.id.message_paragraph_2);
         mMessageParagraphsContainer = findViewById(R.id.message_paragraphs_container);
         mCustomViewContainer = findViewById(R.id.custom_view_not_in_scrollable);
         mCustomButtonBarViewContainer = findViewById(R.id.custom_button_bar);
@@ -440,18 +438,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     /**
-     * @param message The message shown below the text set via {@link
-     *     #setMessageParagraph1(CharSequence)} when both are set.
-     */
-    void setMessageParagraph2(CharSequence message) {
-        assert mMessageParagraphsContainer.getChildCount() == 0
-                : "Please use only setMessageParagraphs().";
-
-        mMessageParagraph2.setText(message);
-        updateContentVisibility();
-    }
-
-    /**
      * Fills the dialog's message area with multiple paragraphs of text. This will clear any message
      * text previously set by other methods.
      *
@@ -459,8 +445,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
      */
     public void setMessageParagraphs(ArrayList<CharSequence> paragraphs) {
         assert TextUtils.isEmpty(mMessageParagraph1.getText())
-                        && TextUtils.isEmpty(mMessageParagraph2.getText())
-                : "Do not use setMessageParagraphs and setMessageParagraph1/2 at the same time.";
+                : "Do not use setMessageParagraphs and setMessageParagraph1 at the same time.";
 
         mMessageParagraphsContainer.removeAllViews();
 
@@ -667,13 +652,11 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean titleContainerVisible = titleVisible || titleIconVisible;
 
         boolean messageParagraph1Visible = !TextUtils.isEmpty(mMessageParagraph1.getText());
-        boolean messageParagraph2Visible = !TextUtils.isEmpty(mMessageParagraph2.getText());
         boolean multipleParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 0;
 
         boolean scrollViewVisible =
                 (mTitleScrollable && titleContainerVisible)
                         || messageParagraph1Visible
-                        || messageParagraph2Visible
                         || multipleParagraphsVisible;
 
         boolean footerMessageVisible = !TextUtils.isEmpty(mFooterMessageView.getText());
@@ -687,7 +670,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                 multipleParagraphsVisible ? View.VISIBLE : View.GONE);
         mMessageParagraph1.setVisibility(messageParagraph1Visible ? View.VISIBLE : View.GONE);
         mTitleScrollView.setVisibility(scrollViewVisible ? View.VISIBLE : View.GONE);
-        mMessageParagraph2.setVisibility(messageParagraph2Visible ? View.VISIBLE : View.GONE);
         mModalDialogScrollView.setVisibility(
                 modalDialogScrollViewVisible ? View.VISIBLE : View.GONE);
         mFooterContainer.setVisibility(footerMessageVisible ? View.VISIBLE : View.GONE);

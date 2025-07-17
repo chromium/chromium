@@ -34,8 +34,6 @@ public class ModalDialogViewBinder
             view.setTitleIcon(model.get(ModalDialogProperties.TITLE_ICON));
         } else if (ModalDialogProperties.MESSAGE_PARAGRAPH_1 == propertyKey) {
             view.setMessageParagraph1(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
-        } else if (ModalDialogProperties.MESSAGE_PARAGRAPH_2 == propertyKey) {
-            view.setMessageParagraph2(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_2));
         } else if (ModalDialogProperties.MESSAGE_PARAGRAPHS == propertyKey) {
             view.setMessageParagraphs(model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS));
         } else if (ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST == propertyKey) {

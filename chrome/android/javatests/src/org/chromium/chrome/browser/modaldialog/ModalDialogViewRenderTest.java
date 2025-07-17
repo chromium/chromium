@@ -223,32 +223,6 @@ public class ModalDialogViewRenderTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
-    public void testRender_TwoMessageParagraphs_Legacy() throws IOException {
-        final String paragraph1 = "This is the first paragraph of the message.";
-        final String paragraph2 =
-                "This is the second paragraph of the message, which is a bit longer to see how it"
-                        + " wraps.";
-
-        setUpViews(
-                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
-                /* forceWrapContentHeight= */ true);
-        createModel(
-                mModelBuilder
-                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, paragraph1)
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_2, paragraph2)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
-                        .with(
-                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                mResources,
-                                R.string.cancel));
-        waitForViewToBeRendered(mModalDialogView);
-        mRenderTestRule.render(mModalDialogView, "modal_dialog_two_paragraphs");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ModalDialog", "RenderTest"})
     public void testRender_TwoMessageParagraphs() throws IOException {
         final String paragraph1 = "This is the first paragraph of the message.";
         final String paragraph2 =
