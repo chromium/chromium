@@ -62,6 +62,8 @@ source_set("util") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/common/proto:connectors_proto_extras",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:hit_report",

@@ -15,6 +15,11 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.to_value.h"
 
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/common/proto/connectors.to_value.h"
+#endif
+
 using sync_pb::GaiaPasswordReuse;
 
 namespace safe_browsing::web_ui {
@@ -482,5 +487,60 @@ base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event) {
   result.Set("message", SerializeJson(event));
   return result;
 }
+
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+std::string SerializeContentAnalysisRequest(
+    bool per_profile_request,
+    const std::string& access_token_truncated,
+    const std::string& upload_info,
+    const std::string& upload_url,
+    const enterprise_connectors::ContentAnalysisRequest& request) {
+  base::Value::Dict request_dict = Serialize(request);
+  request_dict.Set("access_token", access_token_truncated);
+  request_dict.Set("upload_info", upload_info);
+  request_dict.Set("upload_url", upload_url);
+  return SerializeJson(request_dict);
+}
+
+std::string SerializeContentAnalysisResponse(
+    const enterprise_connectors::ContentAnalysisResponse& response) {
+  return SerializeJson(Serialize(response));
+}
+
+base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
+                                             const DeepScanDebugData& data) {
+  base::Value::Dict value;
+  value.Set("token", token);
+
+  if (!data.request_time.is_null()) {
+    value.Set("request_time",
+              data.request_time.InMillisecondsFSinceUnixEpoch());
+  }
+
+  if (data.request.has_value()) {
+    value.Set("request",
+              SerializeContentAnalysisRequest(
+                  data.per_profile_request, data.access_token_truncated,
+                  data.upload_info, data.upload_url, data.request.value()));
+  }
+
+  if (!data.response_time.is_null()) {
+    value.Set("response_time",
+              data.response_time.InMillisecondsFSinceUnixEpoch());
+  }
+
+  if (!data.response_status.empty()) {
+    value.Set("response_status", data.response_status);
+  }
+
+  if (data.response.has_value()) {
+    value.Set("response",
+              SerializeContentAnalysisResponse(data.response.value()));
+  }
+
+  return value;
+}
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
+        // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace safe_browsing::web_ui

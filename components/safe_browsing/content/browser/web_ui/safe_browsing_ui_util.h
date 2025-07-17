@@ -158,6 +158,19 @@ std::string SerializeHPRTLookupResponse(
 base::Value::Dict SerializeLogMessage(base::Time timestamp,
                                       const std::string& message);
 base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event);
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+std::string SerializeContentAnalysisRequest(
+    bool per_profile_request,
+    const std::string& access_token_truncated,
+    const std::string& upload_info,
+    const std::string& upload_url,
+    const enterprise_connectors::ContentAnalysisRequest& request);
+std::string SerializeContentAnalysisResponse(
+    const enterprise_connectors::ContentAnalysisResponse& response);
+base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
+                                             const DeepScanDebugData& data);
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
+        // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace safe_browsing::web_ui
 
