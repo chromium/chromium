@@ -18,8 +18,8 @@
               "legacy_chromium_config": {
                 "apply_configs": [
                   "clobber",
-                  "mac_toolchain",
-                  "mb"
+                  "mb",
+                  "mac_toolchain"
                 ],
                 "build_config": "Debug",
                 "config": "chromium_clang",
