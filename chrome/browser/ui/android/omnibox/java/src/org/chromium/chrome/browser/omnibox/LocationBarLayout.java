@@ -241,6 +241,7 @@ public class LocationBarLayout extends FrameLayout {
      */
     void updateLayoutParams(int parentWidthMeasureSpec) {
         int startMargin = 0;
+        int allocatedWidth = MeasureSpec.getSize(parentWidthMeasureSpec);
         for (int i = 0; i < getChildCount(); i++) {
             View childView = getChildAt(i);
             if (childView.getVisibility() != GONE) {
@@ -286,10 +287,10 @@ public class LocationBarLayout extends FrameLayout {
                 int heightMeasureSpec;
                 if (childLayoutParams.width == LayoutParams.WRAP_CONTENT) {
                     widthMeasureSpec =
-                            MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.AT_MOST);
+                            MeasureSpec.makeMeasureSpec(allocatedWidth, MeasureSpec.AT_MOST);
                 } else if (childLayoutParams.width == LayoutParams.MATCH_PARENT) {
                     widthMeasureSpec =
-                            MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.EXACTLY);
+                            MeasureSpec.makeMeasureSpec(allocatedWidth, MeasureSpec.EXACTLY);
                 } else {
                     widthMeasureSpec =
                             MeasureSpec.makeMeasureSpec(
@@ -318,7 +319,6 @@ public class LocationBarLayout extends FrameLayout {
         }
 
         int urlActionContainerWidth = getUrlActionContainerWidth();
-        int allocatedWidth = MeasureSpec.getSize(parentWidthMeasureSpec);
         int availableWidth = allocatedWidth - startMargin - urlActionContainerWidth;
         if (!mHidingActionContainerForNarrowWindow && availableWidth < mMinimumUrlBarWidthPx) {
             mHidingActionContainerForNarrowWindow = true;
