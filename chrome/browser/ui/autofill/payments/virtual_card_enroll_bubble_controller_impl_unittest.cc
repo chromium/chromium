@@ -23,11 +23,11 @@
 namespace autofill {
 namespace {
 
-VirtualCardEnrollmentFields CreateVirtualCardEnrollmentFields() {
+VirtualCardEnrollmentFields CreateVirtualCardEnrollmentFields(
+    gfx::ImageSkia* card_art_image) {
   VirtualCardEnrollmentFields virtual_card_enrollment_fields;
   virtual_card_enrollment_fields.credit_card = test::GetFullServerCard();
-  gfx::ImageSkia card_art_image = gfx::test::CreateImage(100, 50).AsImageSkia();
-  virtual_card_enrollment_fields.card_art_image = &card_art_image;
+  virtual_card_enrollment_fields.card_art_image = card_art_image;
   virtual_card_enrollment_fields.google_legal_message = {
       TestLegalMessageLine("google_test_legal_message")};
   virtual_card_enrollment_fields.issuer_legal_message = {
@@ -42,13 +42,12 @@ VirtualCardEnrollmentFields CreateVirtualCardEnrollmentFields() {
 class ControllerTestSupport {
  public:
   explicit ControllerTestSupport(content::WebContents* web_contents)
-      : card_art_image_(gfx::test::CreateImage(100, 50).AsImageSkia()),
+      : card_art_image_(gfx::test::CreateImage(100, 50).AsImageSkia())),
         controller_(static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(web_contents))) {
-    virtual_card_enrollment_fields_ = CreateVirtualCardEnrollmentFields();
+    virtual_card_enrollment_fields_ =
+        CreateVirtualCardEnrollmentFields(&card_art_image_);
   }
-
-  ~ControllerTestSupport() = default;
 
   VirtualCardEnrollBubbleControllerImpl* controller() const {
     return controller_;
@@ -153,7 +152,8 @@ class VirtualCardEnrollBubbleControllerImplBubbleViewTest
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     TestVirtualCardEnrollBubbleControllerImpl::CreateForTesting(web_contents);
-    virtual_card_enrollment_fields_ = CreateVirtualCardEnrollmentFields();
+    virtual_card_enrollment_fields_ =
+        CreateVirtualCardEnrollmentFields(&card_art_image_);
   }
 
   void ShowBubble() {
