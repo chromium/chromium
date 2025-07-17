@@ -1101,4 +1101,8 @@ target(libcxx_target_type, "libc++") {
       deps += [ "//buildtools/third_party/libc++abi" ]
     }
   }
+
+  # Disabling -Wexit-time-destructors, as libc++ uses `static string` objects
+  # for locale code.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
