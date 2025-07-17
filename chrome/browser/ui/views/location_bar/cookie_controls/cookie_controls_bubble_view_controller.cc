@@ -363,7 +363,6 @@ void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
   controller_->SetStateChangedViaBypass(true);
   SetIsReloadingState(true);
   controller_->OnTrackingProtectionsChangedForSite();
-  // TODO(crbug.com/388294499): Verify a11y readout for the button.
   web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
   bubble_view_->GetContentView()->SetTrackingProtectionsButtonReloadingState();
   // Set a timeout for how long the reloading UI is shown for.
