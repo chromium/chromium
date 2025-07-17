@@ -48,6 +48,7 @@ bool IsAddressType(FieldType type) {
     case FieldTypeGroup::kStandaloneCvcField:
     case FieldTypeGroup::kAutofillAi:
     case FieldTypeGroup::kLoyaltyCard:
+    case FieldTypeGroup::kOneTimePassword:
       return false;
   }
   NOTREACHED();

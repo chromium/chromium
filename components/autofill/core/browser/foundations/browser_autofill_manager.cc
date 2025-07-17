@@ -254,6 +254,7 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kNone:
     case FillingProduct::kIdentityCredential:
     case FillingProduct::kDataList:
+    case FillingProduct::kOneTimePassword:
       return false;
   }
 }
@@ -3161,6 +3162,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
               client().GetLastCommittedPrimaryMainFrameURL(), field);
         }
       }
+      break;
+    case FillingProduct::kOneTimePassword:
+      // TODO(crbug.com/415273276): Implement.
       break;
     default:
       // Skip other filling products.

@@ -1220,6 +1220,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(FieldType type) {
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kAutofillAi:
     case FieldTypeGroup::kLoyaltyCard:
+    case FieldTypeGroup::kOneTimePassword:
       return nullptr;
   }
   NOTREACHED();

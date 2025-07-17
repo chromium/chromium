@@ -18,7 +18,7 @@ import update_histogram_enum
 
 FIELD_TYPES_PATH = 'components/autofill/core/browser/field_types.h'
 FIELD_PREDICTION_GROUPS_PATH = \
-    'components/autofill/core/browser/metrics/autofill_metrics.cc'
+    'components/autofill/core/browser/metrics/prediction_quality_metrics.cc'
 
 
 def ReadEnum(filename, first_line, last_line_exclusive):

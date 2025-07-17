@@ -125,6 +125,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
           case FillingProduct::kAutofillAi:
           case FillingProduct::kLoyaltyCard:
           case FillingProduct::kIdentityCredential:
+          case FillingProduct::kOneTimePassword:
             return true;
           case FillingProduct::kAutocomplete:
           case FillingProduct::kCompose:

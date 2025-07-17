@@ -565,7 +565,8 @@ enum class FieldTypeGroup {
   kStandaloneCvcField,
   kAutofillAi,
   kLoyaltyCard,
-  kMaxValue = kLoyaltyCard,
+  kOneTimePassword,
+  kMaxValue = kOneTimePassword,
 };
 
 template <>
@@ -842,8 +843,10 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
-    case ONE_TIME_CODE:
       return FieldTypeGroup::kNoGroup;
+
+    case ONE_TIME_CODE:
+      return FieldTypeGroup::kOneTimePassword;
 
     case LOYALTY_MEMBERSHIP_ID:
     case LOYALTY_MEMBERSHIP_PROGRAM:

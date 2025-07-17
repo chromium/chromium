@@ -189,6 +189,7 @@ void AutofillAiLogger::RecordNumberOfFieldsFilled(const FormStructure& form,
           case FillingProduct::kAutofillAi:
           case FillingProduct::kLoyaltyCard:
           case FillingProduct::kIdentityCredential:
+          case FillingProduct::kOneTimePassword:
             return true;
           case FillingProduct::kAutocomplete:
           case FillingProduct::kCompose:

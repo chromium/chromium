@@ -142,6 +142,9 @@ chromium-metrics-reviews@google.com.
   <variant name="MerchantPromoCode"
       summary="User chose to fill a field with a merchant promo code."/>
   <variant name="None" summary="No filling product matches."/>
+  <variant name="OneTimePassword"
+      summary="User chose to fill a field with a one time password
+               suggestion."/>
   <variant name="Password"
       summary="User chose to fill a form or field with password credentials."/>
   <variant name="PlusAddresses"

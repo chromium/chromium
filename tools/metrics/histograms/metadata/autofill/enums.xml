@@ -1251,7 +1251,7 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <enum name="AutofillFieldPredictionQualityByFieldType">
-<!-- Generated from components/autofill/core/browser/metrics/autofill_metrics.cc.
+<!-- Generated from components/autofill/core/browser/metrics/prediction_quality_metrics.cc.
 Called by update_autofill_enums.py.-->
 
   <int value="0" label="AMBIGUOUS: True Positive"/>
@@ -1904,20 +1904,36 @@ Called by update_autofill_enums.py.-->
       label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Mismatch)"/>
   <int value="12041"
       label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Unknown)"/>
-  <int value="12288" label="PREDICTION_IMPROVEMENTS: True Positive"/>
-  <int value="12289"
-      label="PREDICTION_IMPROVEMENTS: True Negative (Ambiguous)"/>
-  <int value="12290" label="PREDICTION_IMPROVEMENTS: True Negative (Unknown)"/>
-  <int value="12291" label="PREDICTION_IMPROVEMENTS: True Negative (Empty)"/>
-  <int value="12292"
-      label="PREDICTION_IMPROVEMENTS: False Positive (Mismatch)"/>
-  <int value="12293"
-      label="PREDICTION_IMPROVEMENTS: False Positive (Ambiguous)"/>
-  <int value="12294" label="PREDICTION_IMPROVEMENTS: False Positive (Unknown)"/>
-  <int value="12295" label="PREDICTION_IMPROVEMENTS: False Positive (Empty)"/>
-  <int value="12296"
-      label="PREDICTION_IMPROVEMENTS: False Negative (Mismatch)"/>
-  <int value="12297" label="PREDICTION_IMPROVEMENTS: False Negative (Unknown)"/>
+  <int value="12288" label="AUTOFILL_AI: True Positive"/>
+  <int value="12289" label="AUTOFILL_AI: True Negative (Ambiguous)"/>
+  <int value="12290" label="AUTOFILL_AI: True Negative (Unknown)"/>
+  <int value="12291" label="AUTOFILL_AI: True Negative (Empty)"/>
+  <int value="12292" label="AUTOFILL_AI: False Positive (Mismatch)"/>
+  <int value="12293" label="AUTOFILL_AI: False Positive (Ambiguous)"/>
+  <int value="12294" label="AUTOFILL_AI: False Positive (Unknown)"/>
+  <int value="12295" label="AUTOFILL_AI: False Positive (Empty)"/>
+  <int value="12296" label="AUTOFILL_AI: False Negative (Mismatch)"/>
+  <int value="12297" label="AUTOFILL_AI: False Negative (Unknown)"/>
+  <int value="12544" label="LOYALTY_CARD: True Positive"/>
+  <int value="12545" label="LOYALTY_CARD: True Negative (Ambiguous)"/>
+  <int value="12546" label="LOYALTY_CARD: True Negative (Unknown)"/>
+  <int value="12547" label="LOYALTY_CARD: True Negative (Empty)"/>
+  <int value="12548" label="LOYALTY_CARD: False Positive (Mismatch)"/>
+  <int value="12549" label="LOYALTY_CARD: False Positive (Ambiguous)"/>
+  <int value="12550" label="LOYALTY_CARD: False Positive (Unknown)"/>
+  <int value="12551" label="LOYALTY_CARD: False Positive (Empty)"/>
+  <int value="12552" label="LOYALTY_CARD: False Negative (Mismatch)"/>
+  <int value="12553" label="LOYALTY_CARD: False Negative (Unknown)"/>
+  <int value="12800" label="ONE_TIME_PASSWORD: True Positive"/>
+  <int value="12801" label="ONE_TIME_PASSWORD: True Negative (Ambiguous)"/>
+  <int value="12802" label="ONE_TIME_PASSWORD: True Negative (Unknown)"/>
+  <int value="12803" label="ONE_TIME_PASSWORD: True Negative (Empty)"/>
+  <int value="12804" label="ONE_TIME_PASSWORD: False Positive (Mismatch)"/>
+  <int value="12805" label="ONE_TIME_PASSWORD: False Positive (Ambiguous)"/>
+  <int value="12806" label="ONE_TIME_PASSWORD: False Positive (Unknown)"/>
+  <int value="12807" label="ONE_TIME_PASSWORD: False Positive (Empty)"/>
+  <int value="12808" label="ONE_TIME_PASSWORD: False Negative (Mismatch)"/>
+  <int value="12809" label="ONE_TIME_PASSWORD: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFieldType">

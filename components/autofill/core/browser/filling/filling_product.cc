@@ -45,6 +45,8 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "IdentityCredential";
     case FillingProduct::kDataList:
       return "DataList";
+    case FillingProduct::kOneTimePassword:
+      return "OneTimePassword";
   }
   NOTREACHED();
 }
@@ -159,6 +161,8 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
       return FillingProduct::kAutofillAi;
     case kLoyaltyCard:
       return FillingProduct::kLoyaltyCard;
+    case kOneTimePassword:
+      return FillingProduct::kOneTimePassword;
   }
   NOTREACHED();
 }

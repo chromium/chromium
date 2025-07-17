@@ -129,6 +129,8 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
     case FillingProduct::kCompose:
     case FillingProduct::kDataList:
       return std::nullopt;
+    case FillingProduct::kOneTimePassword:
+      return FieldTypeSet{ONE_TIME_CODE};
     case FillingProduct::kNone:
       NOTREACHED();
   }
@@ -209,6 +211,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kCreditCard:
     case FillingProduct::kLoyaltyCard:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kOneTimePassword:
       return true;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:
@@ -331,6 +334,7 @@ struct FormFiller::AugmentedFillingPayload {
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kPlusAddresses:
       case FillingProduct::kIdentityCredential:
+      case FillingProduct::kOneTimePassword:
         return false;
       case FillingProduct::kPassword:
       case FillingProduct::kDataList:

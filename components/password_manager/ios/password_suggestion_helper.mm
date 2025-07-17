@@ -458,6 +458,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
     case autofill::FieldTypeGroup::kStandaloneCvcField:
     case autofill::FieldTypeGroup::kAutofillAi:
     case autofill::FieldTypeGroup::kLoyaltyCard:
+    case autofill::FieldTypeGroup::kOneTimePassword:
       return NO;
   }
 }

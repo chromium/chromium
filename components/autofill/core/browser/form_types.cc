@@ -33,6 +33,7 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kAutofillAi:
+    case FieldTypeGroup::kOneTimePassword:
       return FormType::kUnknownFormType;
   }
 }

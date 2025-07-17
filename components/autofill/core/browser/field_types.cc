@@ -629,7 +629,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
       return FieldTypeGroup::kNoGroup;
 
     case HtmlFieldType::kOneTimeCode:
-      return FieldTypeGroup::kNoGroup;
+      return FieldTypeGroup::kOneTimePassword;
 
     case HtmlFieldType::kMerchantPromoCode:
       return FieldTypeGroup::kNoGroup;

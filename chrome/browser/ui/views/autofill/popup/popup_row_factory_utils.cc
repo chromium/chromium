@@ -166,6 +166,7 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kPassword:
     case FillingProduct::kDataList:
     case FillingProduct::kNone:
+    case FillingProduct::kOneTimePassword:
       break;
   }
 }
