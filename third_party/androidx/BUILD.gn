@@ -60,7 +60,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_annotation_annotation_experimental_java") {
-    aar_path = "../androidx/cipd/libs/androidx_annotation_annotation_experimental/annotation-experimental-1.5.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_annotation_annotation_experimental/annotation-experimental-1.5.1.aar"
     info_path = "../androidx/committed/libs/androidx_annotation_annotation_experimental/androidx_annotation_annotation_experimental.info"
     enable_bytecode_checks = false
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
@@ -422,7 +422,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_concurrent_concurrent_futures_java") {
-    jar_path = "../androidx/cipd/libs/androidx_concurrent_concurrent_futures/concurrent-futures-1.3.0-SNAPSHOT.jar"
+    jar_path = "../androidx/cipd/libs/androidx_concurrent_concurrent_futures/concurrent-futures-1.3.0.jar"
     output_name = "androidx_concurrent_concurrent_futures"
     supports_android = true
     requires_android = true
@@ -436,7 +436,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_concurrent_concurrent_futures_ktx_java") {
-    jar_path = "../androidx/cipd/libs/androidx_concurrent_concurrent_futures_ktx/concurrent-futures-ktx-1.3.0-SNAPSHOT.jar"
+    jar_path = "../androidx/cipd/libs/androidx_concurrent_concurrent_futures_ktx/concurrent-futures-ktx-1.3.0.jar"
     output_name = "androidx_concurrent_concurrent_futures_ktx"
     supports_android = true
     requires_android = true
