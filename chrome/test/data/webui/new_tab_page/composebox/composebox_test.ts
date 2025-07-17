@@ -208,4 +208,38 @@ suite('NewTabPageComposeboxTest', () => {
     await whenToggleComposebox;
     assertEquals(handler.getCallCount('notifySessionAbandoned'), 1);
   });
+
+  test('submit button click leads to handler called', async () => {
+    createComposeboxElement();
+    // Assert.
+    assertEquals(handler.getCallCount('submitQuery'), 0);
+
+    // Arrange.
+    composeboxElement.$.input.value = 'test';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    const submitIcon = $$<HTMLElement>(composeboxElement, '#submitIcon');
+    assertTrue(!!submitIcon);
+    submitIcon.click();
+    await microtasksFinished();
+
+    // Assert call occurs.
+    assertEquals(handler.getCallCount('submitQuery'), 1);
+  });
+
+  test('empty input does not lead to submission', async () => {
+    createComposeboxElement();
+    // Assert.
+    assertEquals(handler.getCallCount('submitQuery'), 0);
+
+    // Arrange.
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    const submitIcon = $$<HTMLElement>(composeboxElement, '#submitIcon');
+    assertTrue(!!submitIcon);
+    submitIcon.click();
+    await microtasksFinished();
+
+    // Assert call does not occur.
+    assertEquals(handler.getCallCount('submitQuery'), 0);
+  });
 });

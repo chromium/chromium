@@ -17,16 +17,21 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_request_id_generator.h"
+#include "components/search_engines/util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
+#include "url/gurl.h"
+
+class TemplateURLService;
 
 enum class SessionState {
   kNone = 0,
   kSessionStarted = 1,
   kSessionAbandoned = 2,
-  kSubmittedQuery = 3,
+  kQuerySubmitted = 3,
 };
 
 enum class QueryControllerState {
@@ -185,12 +190,15 @@ class ComposeboxQueryController {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       version_info::Channel channel,
-      std::string locale);
+      std::string locale,
+      TemplateURLService* template_url_service);
   virtual ~ComposeboxQueryController();
 
   // Session management. Virtual for testing.
   virtual void NotifySessionStarted();
   virtual void NotifySessionAbandoned();
+  // Called when a query has been submitted.
+  GURL CreateAimUrl(const std::string& query_text);
 
   // Observer management.
   void AddObserver(FileUploadStatusObserver* obs);
@@ -332,6 +340,8 @@ class ComposeboxQueryController {
 
   // Task runner used to create the file upload request proto asynchronously.
   scoped_refptr<base::TaskRunner> create_request_task_runner_;
+
+  raw_ptr<TemplateURLService> template_url_service_;
 
   base::WeakPtrFactory<ComposeboxQueryController> weak_ptr_factory_{this};
 };

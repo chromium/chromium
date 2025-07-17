@@ -15,6 +15,8 @@ source_set("composebox") {
   deps = [
     "//base",
     "//components/omnibox/composebox",
+    "//content/public/browser",
+    "//ui/base:base",
   ]
 }
 
@@ -29,6 +31,8 @@ source_set("unit_tests") {
   deps = [
     ":composebox",
     "//base/test:test_support",
+    "//chrome/browser/search_engines:search_engines",
+    "//chrome/test:test_support",
     "//components/omnibox/composebox",
     "//services/network:test_support",
     "//services/network/public/cpp",

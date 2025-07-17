@@ -11,6 +11,7 @@
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -56,7 +57,7 @@ class ComposeboxQueryControllerTest
 
     controller_ = std::make_unique<TestComposeboxQueryController>(
         identity_manager(), shared_url_loader_factory_,
-        version_info::Channel::UNKNOWN, kLocale);
+        version_info::Channel::UNKNOWN, kLocale, template_url_service());
     controller_->AddObserver(this);
 
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
@@ -91,6 +92,10 @@ class ComposeboxQueryControllerTest
 
   signin::IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
+  }
+
+  TemplateURLService* template_url_service() {
+    return search_engines_test_environment_.template_url_service();
   }
 
   // Returns an AccessTokenInfo with valid information that can be used for
@@ -131,6 +136,7 @@ class ComposeboxQueryControllerTest
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   network::TestURLLoaderFactory test_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
@@ -550,4 +556,9 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientContextHasCorrectValues) {
   EXPECT_EQ(client_context.locale_context().language(), kLocale);
   EXPECT_EQ(client_context.locale_context().region(), kRegion);
   EXPECT_EQ(client_context.locale_context().time_zone(), kTimeZone);
+}
+
+TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
+  controller().CreateAimUrl("test");
+  EXPECT_EQ(SessionState::kQuerySubmitted, controller().session_state());
 }

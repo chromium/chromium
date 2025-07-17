@@ -4,10 +4,12 @@
 
 #include "components/omnibox/composebox/composebox_query_controller.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_request_construction.h"
+#include "components/search_engines/util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -36,6 +38,7 @@ constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kOAuthConsumerName[] = "ComposeboxQueryController";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
+constexpr char kEntrypointParameterValue[] = "42";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("ntp_composebox_query_controller", R"(
@@ -121,11 +124,13 @@ ComposeboxQueryController::ComposeboxQueryController(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     version_info::Channel channel,
-    std::string locale)
+    std::string locale,
+    TemplateURLService* template_url_service)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       channel_(channel),
-      locale_(locale) {
+      locale_(locale),
+      template_url_service_(template_url_service) {
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -155,6 +160,12 @@ void ComposeboxQueryController::NotifySessionAbandoned() {
   SetQueryControllerState(QueryControllerState::kOff);
   cluster_info_access_token_fetcher_.reset();
   cluster_info_endpoint_fetcher_.reset();
+}
+
+GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text) {
+  session_state_ = SessionState::kQuerySubmitted;
+  return GetUrlForAim(template_url_service_, kEntrypointParameterValue,
+                      base::UTF8ToUTF16(query_text));
 }
 
 void ComposeboxQueryController::AddObserver(FileUploadStatusObserver* obs) {

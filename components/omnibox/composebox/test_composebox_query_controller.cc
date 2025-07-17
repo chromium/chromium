@@ -35,11 +35,13 @@ TestComposeboxQueryController::TestComposeboxQueryController(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     version_info::Channel channel,
-    std::string locale)
+    std::string locale,
+    TemplateURLService* template_url_service)
     : ComposeboxQueryController(identity_manager,
                                 url_loader_factory,
                                 channel,
-                                locale) {}
+                                locale,
+                                template_url_service) {}
 TestComposeboxQueryController::~TestComposeboxQueryController() = default;
 
 std::unique_ptr<EndpointFetcher>
