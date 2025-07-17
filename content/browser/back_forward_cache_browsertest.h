@@ -87,10 +87,12 @@ class BackForwardCacheBrowserTest
 
   void SetupFeaturesAndParameters();
 
+  // Enabled and disable only takes effect once per feature and each param can
+  // only be set once. This allows subclasses to set values and then call
+  // `SetUpCommandLine` and not have them overridden.
   void EnableFeatureAndSetParams(const base::Feature& feature,
                                  std::string param_name,
                                  std::string param_value);
-
   void DisableFeature(const base::Feature& feature);
   // Convenience method for setting up cache-sizes.
   void EnableCacheSize(std::optional<int> cache_size,

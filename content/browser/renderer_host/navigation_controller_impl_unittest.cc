@@ -240,13 +240,6 @@ TEST(TimeSmoother, ClockBackwardsJump) {
 class NavigationControllerTest : public RenderViewHostImplTestHarness,
                                  public WebContentsObserver {
  public:
-  NavigationControllerTest() {
-    // Disable BackForward cache size overwritten by
-    // `kBackForwardCacheSize` so that it won't break some tests assumption.
-    scoped_feature_list_.InitWithFeaturesAndParameters({},
-                                                       {kBackForwardCacheSize});
-  }
-
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     WebContents* web_contents = RenderViewHostImplTestHarness::web_contents();
@@ -3326,9 +3319,7 @@ TEST_F(NavigationControllerTest, HistoryNavigate) {
   main_test_rfh()->GoToEntryAtOffset(120, false, base::TimeTicks::Now(),
                                      std::nullopt);  // Out of bounds.
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
-  // TODO(crbug.com/40780539): Figure out why HasNavigationRequest() is
-  // true when back/forward cache is enabled.
-  EXPECT_EQ(IsBackForwardCacheEnabled(), HasNavigationRequest());
+  EXPECT_FALSE(HasNavigationRequest());
 }
 
 // Test call to PruneAllButLastCommitted for the only entry.

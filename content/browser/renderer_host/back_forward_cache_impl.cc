@@ -85,16 +85,6 @@ namespace {
 using blink::scheduler::WebSchedulerTrackedFeature;
 using blink::scheduler::WebSchedulerTrackedFeatures;
 
-// The default number of entries the BackForwardCache can hold per tab.
-static constexpr size_t kDefaultBackForwardCacheSize = 1;
-
-// The default number value for the "foreground_cache_size" field trial
-// parameter. This parameter controls the numbers of entries associated with
-// foregrounded process the BackForwardCache can hold per tab, when using the
-// foreground/background cache-limiting strategy. This strategy is enabled if
-// the parameter values is non-zero.
-static constexpr size_t kDefaultForegroundBackForwardCacheSize = 0;
-
 // The default time to live in seconds for documents in BackForwardCache.
 // See also crbug.com/1305878.
 static constexpr int kDefaultTimeToLiveInBackForwardCacheInSeconds = 600;
@@ -711,8 +701,7 @@ size_t BackForwardCacheImpl::GetCacheSize() {
     return kBackForwardCacheSizeCacheSize.Get();
   }
 
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kBackForwardCache, "cache_size", kDefaultBackForwardCacheSize);
+  return 0;
 }
 
 size_t BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
@@ -728,9 +717,7 @@ size_t BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
   if (base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
     return kBackForwardCacheSizeForegroundCacheSize.Get();
   }
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kBackForwardCache, "foreground_cache_size",
-      kDefaultForegroundBackForwardCacheSize);
+  return 0;
 }
 
 bool BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit() {
