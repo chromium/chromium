@@ -18,5 +18,5 @@ declare_args() {
 
   # This enables building TFLite's GPU delegate with OpenCL, currently
   # experimental.
-  build_tflite_with_opencl = !enable_ml_internal && (is_linux || is_chromeos)
+  build_tflite_with_opencl = false
 }
