@@ -207,13 +207,13 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
   return nullptr;
 }
 
-// Returns true if:
-// 1. The magic boost feature is disabled; OR
-// 2. The Mahi feature has been approved before.
+// Returns true if the Mahi feature has been approved to be used.
 bool IsMahiApproved() {
-  return !chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() ||
-         chromeos::MagicBoostState::Get()->hmr_consent_status() ==
-             chromeos::HMRConsentStatus::kApproved;
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  CHECK(magic_boost_state->IsMagicBoostAvailable())
+      << "GenAI feature surfaced to non-eligible user.";
+  return magic_boost_state->hmr_consent_status() ==
+         chromeos::HMRConsentStatus::kApproved;
 }
 
 }  // namespace
