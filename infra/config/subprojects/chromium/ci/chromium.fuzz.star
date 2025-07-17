@@ -70,235 +70,177 @@ consoles.console_view(
     },
 )
 
-ci.builder(
+def ci_builder(
+        max_concurrent_invocations = None,
+        chromium_config = None,
+        gclient_apply_configs = None,
+        clusterfuzz_archive = None,
+        gn_extra_configs = [],
+        console_category = None,
+        console_short_name = None,
+        **kwargs):
+    gn_configs = ["remoteexec"] + gn_extra_configs
+
+    if chromium_config.build_config == builder_config.build_config.DEBUG:
+        gn_configs.append("debug_builder")
+        default_console_short_name = "dbg"
+    elif chromium_config.build_config == builder_config.build_config.RELEASE:
+        gn_configs.append("release_builder")
+        default_console_short_name = "rel"
+
+    if chromium_config.target_bits == 32:
+        gn_configs.append("x86")
+    elif chromium_config.target_bits == 64:
+        gn_configs.append("x64")
+
+    target_platform = chromium_config.target_platform
+    if target_platform == builder_config.target_platform.CHROMEOS:
+        gn_configs.append("chromeos")
+    elif target_platform == builder_config.target_platform.LINUX:
+        gn_configs.append("linux")
+    elif target_platform == builder_config.target_platform.MAC:
+        gn_configs.append("mac")
+    elif target_platform == builder_config.target_platform.WIN:
+        gn_configs.append("win")
+
+    return ci.builder(
+        triggering_policy = scheduler.greedy_batching(
+            max_concurrent_invocations = max_concurrent_invocations,
+        ),
+        builder_spec = builder_config.builder_spec(
+            gclient_config = builder_config.gclient_config(
+                config = "chromium",
+                apply_configs = gclient_apply_configs,
+            ),
+            chromium_config = chromium_config,
+            clusterfuzz_archive = clusterfuzz_archive,
+        ),
+        gn_args = gn_args.config(configs = gn_configs),
+        console_view_entry = consoles.console_view_entry(
+            category = console_category,
+            short_name = console_short_name or default_console_short_name,
+        ),
+        **kwargs
+    )
+
+def browser_builder(
+        max_concurrent_invocations = 4,
+        clusterfuzz_archive_name_prefix = None,
+        clusterfuzz_archive_subdir = None,
+        clusterfuzz_gs_bucket = None,
+        **kwargs):
+    return ci_builder(
+        max_concurrent_invocations = max_concurrent_invocations,
+        clusterfuzz_archive = builder_config.clusterfuzz_archive(
+            archive_name_prefix = clusterfuzz_archive_name_prefix,
+            archive_subdir = clusterfuzz_archive_subdir,
+            gs_acl = "public-read",
+            gs_bucket = clusterfuzz_gs_bucket,
+        ),
+        targets = targets.bundle(
+            additional_compile_targets = ["chromium_builder_asan"],
+            mixins = ["chromium-tester-service-account"],
+        ),
+        **kwargs
+    )
+
+def browser_asan_builder(
+        chromium_config_name = "chromium_asan",
+        build_config = None,
+        target_bits = None,
+        target_platform = None,
+        clusterfuzz_archive_name_prefix = "asan",
+        gn_extra_configs = [],
+        console_category = "linux asan",
+        **kwargs):
+    return browser_builder(
+        chromium_config = builder_config.chromium_config(
+            config = chromium_config_name,
+            apply_configs = [
+                "mb",
+                "clobber",
+            ],
+            build_config = build_config,
+            target_bits = target_bits,
+            target_platform = target_platform,
+        ),
+        gn_extra_configs = ["asan"] + gn_extra_configs,
+        clusterfuzz_archive_name_prefix = clusterfuzz_archive_name_prefix,
+        clusterfuzz_gs_bucket = "chromium-browser-asan",
+        console_category = console_category,
+        **kwargs
+    )
+
+browser_asan_builder(
     name = "ASAN Debug",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "lsan",
-            "debug_builder",
-            "remoteexec",
-            "x64",
-            "linux",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux asan",
-        short_name = "dbg",
-    ),
+    build_config = builder_config.build_config.DEBUG,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.LINUX,
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_extra_configs = [
+        "lsan",
+    ],
     siso_remote_jobs = 250,
 )
 
-ci.builder(
+browser_asan_builder(
     name = "ASan Debug (32-bit x86 with V8-ARM)",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan-v8-arm",
-            archive_subdir = "v8-arm",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "v8_heap",
-            "debug_builder",
-            "remoteexec",
-            "v8_hybrid",
-            "x86",
-            "linux",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux asan|x64 v8-ARM",
-        short_name = "dbg",
-    ),
+    build_config = builder_config.build_config.DEBUG,
+    target_bits = 32,
+    target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_name_prefix = "asan-v8-arm",
+    clusterfuzz_archive_subdir = "v8-arm",
+    console_category = "linux asan|x64 v8-ARM",
     contact_team_email = "v8-infra@google.com",
+    gn_extra_configs = [
+        "v8_heap",
+        "v8_hybrid",
+    ],
 )
 
-ci.builder(
+browser_asan_builder(
     name = "ASAN Release",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 5,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "lsan",
-            "fuzzer",
-            "v8_heap",
-            "release_builder",
-            "remoteexec",
-            "x64",
-            "linux",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux asan",
-        short_name = "rel",
-    ),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.LINUX,
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gn_extra_configs = [
+        "lsan",
+        "fuzzer",
+        "v8_heap",
+    ],
+    max_concurrent_invocations = 5,
     siso_remote_jobs = 250,
 )
 
-ci.builder(
+browser_asan_builder(
     name = "ASan Release (32-bit x86 with V8-ARM)",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan-v8-arm",
-            archive_subdir = "v8-arm",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "fuzzer",
-            "v8_heap",
-            "release_builder",
-            "remoteexec",
-            "v8_hybrid",
-            "x86",
-            "linux",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux asan|x64 v8-ARM",
-        short_name = "rel",
-    ),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 32,
+    target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_name_prefix = "asan-v8-arm",
+    clusterfuzz_archive_subdir = "v8-arm",
+    console_category = "linux asan|x64 v8-ARM",
     contact_team_email = "v8-infra@google.com",
+    gn_extra_configs = [
+        "fuzzer",
+        "v8_heap",
+        "v8_hybrid",
+    ],
 )
 
-ci.builder(
+browser_asan_builder(
     name = "ASAN Release Media",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan",
-            archive_subdir = "media",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "lsan",
-            "v8_heap",
-            "chromeos_codecs",
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux asan",
-        short_name = "med",
-    ),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_subdir = "media",
+    console_short_name = "med",
+    gn_extra_configs = [
+        "lsan",
+        "v8_heap",
+        "chromeos_codecs",
+    ],
     siso_remote_jobs = 250,
 )
 
@@ -610,242 +552,101 @@ Those fuzzers require more resources to run correctly.\
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.builder(
+browser_asan_builder(
     name = "ASan Release Media (32-bit x86 with V8-ARM)",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan-v8-arm",
-            archive_subdir = "v8-arm-media",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "fuzzer",
-            "v8_heap",
-            "chromeos_codecs",
-            "release_builder",
-            "remoteexec",
-            "v8_hybrid",
-            "linux",
-            "x86",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux asan|x64 v8-ARM",
-        short_name = "med",
-    ),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 32,
+    target_platform = builder_config.target_platform.LINUX,
+    clusterfuzz_archive_name_prefix = "asan-v8-arm",
+    clusterfuzz_archive_subdir = "v8-arm-media",
+    console_category = "linux asan|x64 v8-ARM",
+    console_short_name = "med",
     contact_team_email = "v8-infra@google.com",
+    gn_extra_configs = [
+        "fuzzer",
+        "v8_heap",
+        "chromeos_codecs",
+        "v8_hybrid",
+    ],
 )
 
-ci.builder(
+browser_asan_builder(
     name = "ChromiumOS ASAN Release",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 6,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan",
-            archive_subdir = "chromeos",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "chromeos",
-            "asan",
-            "lsan",
-            "fuzzer",
-            "v8_heap",
-            "release_builder",
-            "remoteexec",
-            "chromeos",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "cros asan",
-    ),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.CHROMEOS,
+    clusterfuzz_archive_subdir = "chromeos",
+    console_category = "cros asan",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    gclient_apply_configs = ["chromeos"],
+    gn_extra_configs = [
+        "lsan",
+        "fuzzer",
+        "v8_heap",
+    ],
+    max_concurrent_invocations = 6,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.builder(
+def browser_msan_builder(**kwargs):
+    return browser_builder(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "mb",
+                "msan",
+                "clobber",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        clusterfuzz_gs_bucket = "chromium-browser-msan",
+        os = os.LINUX_FOCAL,
+        console_category = "linux msan",
+        contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+        siso_remote_jobs = 250,
+        **kwargs
+    )
+
+browser_msan_builder(
     name = "MSAN Release (chained origins)",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "mb",
-                "msan",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "msan-chained-origins",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-msan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "msan",
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    os = os.LINUX_FOCAL,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux msan",
-        short_name = "org",
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = 250,
+    clusterfuzz_archive_name_prefix = "msan-chained-origins",
+    console_short_name = "org",
+    gn_extra_configs = [
+        "msan",
+    ],
 )
 
-ci.builder(
+browser_msan_builder(
     name = "MSAN Release (no origins)",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "mb",
-                "msan",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "msan-no-origins",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-msan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "msan_no_origins",
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    os = os.LINUX_FOCAL,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux msan",
-        short_name = "rel",
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = 250,
+    clusterfuzz_archive_name_prefix = "msan-no-origins",
+    gn_extra_configs = [
+        "msan_no_origins",
+    ],
 )
 
-ci.builder(
-    name = "Mac ASAN Release",
-    triggering_policy = scheduler.greedy_batching(
+def browser_asan_mac_builder(
+        gn_extra_configs = [],
+        **kwargs):
+    return browser_asan_builder(
         max_concurrent_invocations = 2,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
+        build_config = builder_config.build_config.RELEASE,
+        target_bits = 64,
+        target_platform = builder_config.target_platform.MAC,
+        gn_extra_configs = [
             "fuzzer",
             "v8_heap",
-            "release_builder",
-            "remoteexec",
-            "mac",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
+        ] + gn_extra_configs,
+        os = os.MAC_DEFAULT,
+        console_category = "mac asan",
+        **kwargs
+    )
+
+browser_asan_mac_builder(
+    name = "Mac ASAN Release",
     builderless = True,
-    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
-    console_view_entry = consoles.console_view_entry(
-        category = "mac asan",
-        short_name = "rel",
-    ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     health_spec = health_spec.modified_default({
         "Unhealthy": health_spec.unhealthy_thresholds(
@@ -854,327 +655,126 @@ ci.builder(
     }),
 )
 
-ci.builder(
+browser_asan_mac_builder(
     name = "Mac ASAN Release Media",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 2,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan",
-            archive_subdir = "media",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "fuzzer",
-            "v8_heap",
-            "chrome_with_codecs",
-            "release_builder",
-            "remoteexec",
-            "mac",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
     builderless = False,
     cores = 12,
-    os = os.MAC_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "mac asan",
-        short_name = "med",
-    ),
+    clusterfuzz_archive_subdir = "media",
+    console_short_name = "med",
+    gn_extra_configs = [
+        "chrome_with_codecs",
+    ],
 )
 
-ci.builder(
+def browser_tsan_builder(
+        build_config = None,
+        **kwargs):
+    return browser_builder(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "mb",
+                "tsan2",
+                "clobber",
+            ],
+            build_config = build_config,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        clusterfuzz_archive_name_prefix = "tsan",
+        clusterfuzz_gs_bucket = "chromium-browser-tsan",
+        gn_extra_configs = [
+            "tsan",
+        ],
+        console_category = "linux tsan",
+        contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+        **kwargs
+    )
+
+browser_tsan_builder(
     name = "TSAN Debug",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "mb",
-                "tsan2",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "tsan",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-tsan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "tsan",
-            "debug_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux tsan",
-        short_name = "dbg",
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = 250,
+    build_config = builder_config.build_config.DEBUG,
 )
 
-ci.builder(
+browser_tsan_builder(
     name = "TSAN Release",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 3,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
+    build_config = builder_config.build_config.RELEASE,
+    max_concurrent_invocations = 3,
+)
+
+def browser_ubsan_builder(
+        chromium_config_name = None,
+        **kwargs):
+    return browser_builder(
         chromium_config = builder_config.chromium_config(
-            config = "chromium_clang",
-            apply_configs = [
-                "mb",
-                "tsan2",
-                "clobber",
-            ],
+            config = chromium_config_name,
+            apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "tsan",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-tsan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "tsan",
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux tsan",
-        short_name = "rel",
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = 250,
-)
+        console_category = "linux UBSan",
+        clusterfuzz_gs_bucket = "chromium-browser-ubsan",
+        contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+        siso_remote_jobs = 250,
+        **kwargs
+    )
 
-ci.builder(
+browser_ubsan_builder(
     name = "UBSan Release",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_linux_ubsan",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "ubsan",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-ubsan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "ubsan",
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux UBSan",
-        short_name = "rel",
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = 250,
+    chromium_config_name = "chromium_linux_ubsan",
+    clusterfuzz_archive_name_prefix = "ubsan",
+    gn_extra_configs = [
+        "ubsan",
+    ],
 )
 
-ci.builder(
+browser_ubsan_builder(
     name = "UBSan vptr Release",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_linux_ubsan_vptr",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "ubsan-vptr",
-            archive_subdir = "vptr",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-ubsan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "ubsan_vptr",
-            "ubsan_vptr_no_recover_hack",
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "linux UBSan",
-        short_name = "vpt",
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = 250,
+    chromium_config_name = "chromium_linux_ubsan_vptr",
+    clusterfuzz_archive_name_prefix = "ubsan-vptr",
+    clusterfuzz_archive_subdir = "vptr",
+    console_short_name = "vpt",
+    gn_extra_configs = [
+        "ubsan_vptr",
+        "ubsan_vptr_no_recover_hack",
+    ],
 )
 
-ci.builder(
+def browser_asan_win_builder(
+        gn_extra_configs = [],
+        **kwargs):
+    return browser_asan_builder(
+        chromium_config_name = "chromium_win_clang_asan",
+        build_config = builder_config.build_config.RELEASE,
+        target_bits = 64,
+        target_platform = builder_config.target_platform.WIN,
+        gn_extra_configs = [
+            "clang",
+            "fuzzer",
+            "v8_heap",
+        ] + gn_extra_configs,
+        builderless = False,
+        os = os.WINDOWS_DEFAULT,
+        console_category = "win asan",
+        contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+        siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+        **kwargs
+    )
+
+browser_asan_win_builder(
     name = "Win ASan Release",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 7,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_win_clang_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.WIN,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "clang",
-            "asan",
-            "fuzzer",
-            "v8_heap",
-            "release_builder",
-            "remoteexec",
-            "win",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    builderless = False,
-    os = os.WINDOWS_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "win asan",
-        short_name = "rel",
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+    max_concurrent_invocations = 7,
 )
 
-ci.builder(
+browser_asan_win_builder(
     name = "Win ASan Release Media",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 6,
-    ),
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_win_clang_asan",
-            apply_configs = [
-                "mb",
-                "clobber",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.WIN,
-        ),
-        clusterfuzz_archive = builder_config.clusterfuzz_archive(
-            archive_name_prefix = "asan",
-            archive_subdir = "media",
-            gs_acl = "public-read",
-            gs_bucket = "chromium-browser-asan",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "clang",
-            "asan",
-            "fuzzer",
-            "v8_heap",
-            "chrome_with_codecs",
-            "release_builder",
-            "remoteexec",
-            "win",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        additional_compile_targets = ["chromium_builder_asan"],
-        mixins = ["chromium-tester-service-account"],
-    ),
-    builderless = False,
-    os = os.WINDOWS_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "win asan",
-        short_name = "med",
-    ),
-    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+    clusterfuzz_archive_subdir = "media",
+    console_short_name = "med",
+    gn_extra_configs = [
+        "chrome_with_codecs",
+    ],
+    max_concurrent_invocations = 6,
 )
 
 ci.builder(
