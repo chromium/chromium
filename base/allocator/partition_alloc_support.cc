@@ -814,7 +814,6 @@ bool PartitionAllocSupport::ShouldEnableMemoryTagging(
     return false;
   }
 
-  DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kKillPartitionAllocMemoryTagging)) {
     return false;
@@ -888,9 +887,6 @@ bool PartitionAllocSupport::ShouldEnablePartitionAllocWithAdvancedChecks(
 // static
 PartitionAllocSupport::BrpConfiguration
 PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
-  // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
-  CHECK(base::FeatureList::GetInstance());
-
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)
@@ -994,7 +990,15 @@ void PartitionAllocSupport::ReconfigureAfterZygoteFork(
 
 void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     const std::string& process_type,
-    bool configure_dangling_pointer_detector) {
+    bool configure_dangling_pointer_detector,
+    bool is_in_death_test_child) {
+  // In Death Tests, `FeatureList` is never initialized. Even in these cases
+  // we call this method to finalize the allocator configuration.
+  // TODO(https://crbug.com/432019338): Remove this param once fixed.
+  if (!is_in_death_test_child) {
+    CHECK(base::FeatureList::GetInstance());
+  }
+
   if (configure_dangling_pointer_detector) {
     base::allocator::InstallDanglingRawPtrChecks();
   }

@@ -541,7 +541,21 @@ void TestSuite::Initialize() {
   // ASAN.
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
   allocator::PartitionAllocSupport::Get()->ReconfigureForTests();
-#endif  // BUILDFLAG(IS_WIN)
+
+#if GTEST_HAS_DEATH_TEST
+  // Unfortunately GTEST does not call event listeners at all inside child
+  // processes. In such case do reconfiguration here instead of inside
+  // `FeatureListScopedToEachTest`. FeatureList is not fully initialized but
+  // better than never reconfigured.
+  // TODO(https://crbug.com/432019338): Remove this once fixed.
+  if (::testing::internal::InDeathTestChild()) {
+    allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
+        "",
+        /*configure_dangling_pointer_detector=*/true,
+        /*is_in_death_test_child=*/true);
+  }
+#endif  // GTEST_HAS_DEATH_TEST
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
 
   test::ScopedRunLoopTimeout::SetAddGTestFailureOnTimeout();
 

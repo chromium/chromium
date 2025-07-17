@@ -86,7 +86,8 @@ class BASE_EXPORT PartitionAllocSupport {
   void ReconfigureAfterZygoteFork(const std::string& process_type);
   void ReconfigureAfterFeatureListInit(
       const std::string& process_type,
-      bool configure_dangling_pointer_detector = true);
+      bool configure_dangling_pointer_detector = true,
+      bool is_in_death_test_child = false);
   void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
   // |has_main_frame| tells us if the renderer contains a main frame.
