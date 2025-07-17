@@ -93,19 +93,22 @@ TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorOnce) {
               kInjectOncePerWindow);
 
   WKWebView* web_view = [[WKWebView alloc] init];
-  web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
+  web::test::ExecuteJavaScriptInWebView(web_view,
+                                        feature_script.GetScriptString());
 
   // Ensure __gCrWeb was injected.
   ASSERT_TRUE(web::test::ExecuteJavaScript(
       web_view, @"try { !!window.__gCrWeb; } catch (err) {false;}"));
 
   // Store a value within `window.__gCrWeb`.
-  web::test::ExecuteJavaScript(web_view, @"window.__gCrWeb.someData = 1;");
+  web::test::ExecuteJavaScriptInWebView(web_view,
+                                        @"window.__gCrWeb.someData = 1;");
   ASSERT_NSEQ(@(1), web::test::ExecuteJavaScript(web_view,
                                                  @"window.__gCrWeb.someData"));
 
   // Execute feature script again, which should not overwrite window state.
-  web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
+  web::test::ExecuteJavaScriptInWebView(web_view,
+                                        feature_script.GetScriptString());
   // The `someData` value should still exist.
   EXPECT_NSEQ(@(1), web::test::ExecuteJavaScript(web_view,
                                                  @"window.__gCrWeb.someData"));

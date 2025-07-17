@@ -195,7 +195,8 @@ class WebFrameImplContentWorldIntTest
   void ExecuteJavaScriptInTestContentWorld(NSString* script) {
     WKWebView* web_view =
         [web::test::GetWebController(web_state()) ensureWebViewCreated];
-    test::ExecuteJavaScript(web_view, GetWKContentWorld(), script);
+    test::ExecuteJavaScriptInWebViewAndWorld(web_view, GetWKContentWorld(),
+                                             script);
   }
 };
 

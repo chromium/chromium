@@ -68,7 +68,7 @@ class BrowserStateWebViewPartitionTest : public WebIntTest {
         stringWithFormat:@"document.cookie='%@=%@;"
                          @"Expires=Tue, 05-May-9999 02:18:23 GMT; Path=/'",
                          key, value];
-    web::test::ExecuteJavaScript(web_view, set_cookie);
+    web::test::ExecuteJavaScriptInWebView(web_view, set_cookie);
   }
 
   // Returns a csv list of all cookies from `web_view`.
@@ -84,8 +84,8 @@ class BrowserStateWebViewPartitionTest : public WebIntTest {
     NSString* set_local_storage_item = [NSString
         stringWithFormat:@"localStorage.setItem('%@', '%@')", key, value];
     NSError* unused_error = nil;
-    web::test::ExecuteJavaScript(web_view, set_local_storage_item,
-                                 &unused_error);
+    web::test::ExecuteJavaScriptInWebView(web_view, set_local_storage_item,
+                                          &unused_error);
   }
 
   // Returns the localstorage value associated with `key` from `web_view`.

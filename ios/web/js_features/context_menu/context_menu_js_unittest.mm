@@ -233,8 +233,8 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
     }
 
     // Force layout
-    web::test::ExecuteJavaScript(web_view(),
-                                 @"document.getElementsByTagName('p')");
+    web::test::ExecuteJavaScriptInWebView(
+        web_view(), @"document.getElementsByTagName('p')");
 
     // Clear previous script message response.
     script_message_handler_.lastReceivedScriptMessage = nil;
@@ -847,8 +847,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest, DISABLED_LinkOfTextFromTallPage) {
 
   // Force layout to ensure `content_height` below is correct.
   EXPECT_TRUE(web::test::WaitForInjectedScripts(web_view()));
-  web::test::ExecuteJavaScript(web_view(),
-                               @"document.getElementsByTagName('p')");
+  web::test::ExecuteJavaScriptInWebView(web_view(),
+                                        @"document.getElementsByTagName('p')");
 
   // Scroll the webView to the bottom to make the link accessible.
   CGFloat content_height = GetWebViewContentSize().height;

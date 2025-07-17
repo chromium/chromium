@@ -32,12 +32,12 @@ TEST_F(PageScriptUtilTest, MakeScriptInjectableOnce) {
   WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
   NSString* identifier = @"script_id";
 
-  test::ExecuteJavaScript(
+  test::ExecuteJavaScriptInWebView(
       web_view, MakeScriptInjectableOnce(identifier, @"var value = 1;"));
   EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
 
-  test::ExecuteJavaScript(web_view,
-                          MakeScriptInjectableOnce(identifier, @"value = 2;"));
+  test::ExecuteJavaScriptInWebView(
+      web_view, MakeScriptInjectableOnce(identifier, @"value = 2;"));
   EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
 }
 

@@ -15,8 +15,8 @@ class CrWebJavaScriptTest : public web::JavascriptTest {
 
     ASSERT_TRUE(LoadHtml(@"<p>"));
 
-    web::test::ExecuteJavaScript(web_view(),
-                                 @"__gCrWeb.unit_tests.setupRegisterApi()");
+    web::test::ExecuteJavaScriptInWebView(
+        web_view(), @"__gCrWeb.unit_tests.setupRegisterApi()");
   }
 };
 
@@ -49,7 +49,7 @@ TEST_F(CrWebJavaScriptTest, PropertyAsArray) {
 
   ASSERT_NSEQ(@0, result_size_zero);
 
-  web::test::ExecuteJavaScript(
+  web::test::ExecuteJavaScriptInWebView(
       web_view(), @"__gCrWeb.unit_tests.getRegisteredApi('crWebAPI')."
                   @"getProperty('arrayProperty').push(8)");
   id result_size_one = web::test::ExecuteJavaScript(
@@ -68,9 +68,9 @@ TEST_F(CrWebJavaScriptTest, PropertyAsArray) {
 // Tests if an exception is thrown when trying to override an API.
 TEST_F(CrWebJavaScriptTest, ThrowExceptionInCollision) {
   NSError* execution_error = nil;
-  web::test::ExecuteJavaScript(web_view(),
-                               @"__gCrWeb.unit_tests.registerApi('crWebAPI')",
-                               &execution_error);
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(), @"__gCrWeb.unit_tests.registerApi('crWebAPI')",
+      &execution_error);
 
   ASSERT_NE(execution_error, nil);
   EXPECT_NSEQ(@"Error: API crWebAPI already registered.",
