@@ -521,10 +521,13 @@ bool GetStatusForSigninPolicy() {
 - (void)handleUpdateIsSigninAllowedValue:(BOOL)value
                               targetRect:(CGRect)targetRect {
   if (self.hasPrimaryIdentity) {
+    // If there is a primary identity, sign-in must be already on. So the value
+    // is toggled to off.
+    CHECK(!value, base::NotFatalUntil::M145);
     void (^completion)(BOOL, SceneState*) =
         ^(BOOL success, SceneState* scene_state) {
           GetApplicationContext()->GetLocalState()->SetBoolean(
-              prefs::kSigninAllowedOnDevice, success ? value : !value);
+              prefs::kSigninAllowedOnDevice, !success);
         };
     [self.commandHandler showSignOutFromTargetRect:targetRect
                                         completion:completion];
