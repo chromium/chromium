@@ -366,6 +366,8 @@ TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPdf) {
   EXPECT_TRUE(reasons_vec.empty());
 }
 
+// TODO(crbug.com/422767952): Add a test case for Glic-pinned tabs.
+
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardPageWithoutMainFrame) {
   ResetFrameNode();
   std::vector<CannotDiscardReason> reasons_vec;

@@ -67,6 +67,8 @@ const char* CannotDiscardReasonToString(CannotDiscardReason reason) {
       return "Tab has form interactions";
     case CannotDiscardReason::kUserEdits:
       return "The user has edited the tab's content";
+    case CannotDiscardReason::kGlicShared:
+      return "Tab is currently shared with Gemini";
   }
   NOTREACHED();
 }
