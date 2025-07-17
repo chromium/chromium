@@ -158,11 +158,6 @@ class AutocompleteHistoryManager : public KeyedService {
   // is in flight.
   std::optional<WebDataServiceBase::Handle> pending_query_;
 
-  // Cached results of the last batch of autocomplete suggestions.
-  // Key are the suggestions' values, and values are the associated
-  // AutocompletEntry.
-  std::map<std::u16string, AutocompleteEntry> last_entries_;
-
   // Whether the service is associated with an off-the-record browser context.
   bool is_off_the_record_ = false;
 

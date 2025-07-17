@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -105,19 +107,11 @@ void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
 
 void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion) {
-  // Try to find the AutofillEntry associated with the given suggestion.
-  auto last_entries_iter = last_entries_.find(suggestion.main_text.value);
-  if (last_entries_iter == last_entries_.end()) {
-    // Not found, therefore nothing to do. Most likely there was a race
-    // condition, but it's not that big of a deal in the current scenario
-    // (logging metrics).
-    DUMP_WILL_BE_NOTREACHED();
-    return;
-  }
-
+  CHECK_EQ(suggestion.type, SuggestionType::kAutocompleteEntry);
+  const AutocompleteEntry& entry =
+      CHECK_DEREF(std::get_if<AutocompleteEntry>(&suggestion.payload));
   // The AutocompleteEntry was found, use it to log the DaysSinceLastUsed.
-  base::TimeDelta time_delta =
-      base::Time::Now() - last_entries_iter->second.date_last_used();
+  base::TimeDelta time_delta = base::Time::Now() - entry.date_last_used();
   AutofillMetrics::LogAutocompleteDaysSinceLastUse(time_delta.InDays());
 }
 
@@ -200,12 +194,11 @@ void AutocompleteHistoryManager::SendSuggestions(
       entries.size() == 1 && query_handler.prefix == entries[0].key().value();
 
   std::vector<Suggestion> suggestions;
-  last_entries_.clear();
-
   if (!hide_suggestions) {
     for (const AutocompleteEntry& entry : entries) {
-      suggestions.push_back(Suggestion(entry.key().value()));
-      last_entries_.insert({entry.key().value(), AutocompleteEntry(entry)});
+      suggestions.emplace_back(entry.key().value(),
+                               SuggestionType::kAutocompleteEntry);
+      suggestions.back().payload = entry;
     }
   }
 
