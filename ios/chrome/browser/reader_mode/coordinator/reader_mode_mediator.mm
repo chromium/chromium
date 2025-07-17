@@ -79,11 +79,11 @@
   }
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(activeWebState);
-  if (!readerModeTabHelper->IsReaderModeWebStateAvailable()) {
-    return;
+  web::WebState* readerModeWebState =
+      readerModeTabHelper->GetReaderModeWebState();
+  if (readerModeWebState) {
+    [self.consumer setContentView:readerModeWebState->GetView()];
   }
-  [self.consumer
-      setContentView:readerModeTabHelper->GetReaderModeWebState()->GetView()];
 }
 
 @end

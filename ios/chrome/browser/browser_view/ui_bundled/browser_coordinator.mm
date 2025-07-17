@@ -394,6 +394,7 @@ enum class ToolbarKind {
     PolicyChangeCommands,
     PreloadControllerDelegate,
     QuickDeleteCommands,
+    ReaderModeCommands,
     ReadingListCoordinatorDelegate,
     RecentTabsCoordinatorDelegate,
     ReminderNotificationsCommands,
@@ -2730,6 +2731,17 @@ enum class ToolbarKind {
 #pragma mark - ReaderModeCommands
 
 - (void)showReaderMode {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(activeWebState);
+  if (!readerModeTabHelper->IsActive()) {
+    readerModeTabHelper->SetActive(true);
+    return;
+  }
+
   if (_readerModeCoordinator) {
     // If the Reader mode UI is already presented then there is nothing to do.
     return;
@@ -2741,6 +2753,17 @@ enum class ToolbarKind {
 }
 
 - (void)hideReaderMode {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(activeWebState);
+  if (readerModeTabHelper->IsActive()) {
+    readerModeTabHelper->SetActive(false);
+    return;
+  }
+
   if (!_readerModeCoordinator) {
     // If the Reader mode UI is already dismissed then there is nothing to do.
     return;

@@ -55,7 +55,7 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   // ReaderModeTabHelper::Observer methods.
-  void ReaderModeWebStateDidBecomeAvailable(
+  void ReaderModeWebStateDidLoadContent(
       ReaderModeTabHelper* tab_helper) override;
   void ReaderModeWebStateWillBecomeUnavailable(
       ReaderModeTabHelper* tab_helper) override;

@@ -27,7 +27,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   class Observer : public base::CheckedObserver {
    public:
     // Called when Reader mode content became available in this tab.
-    virtual void ReaderModeWebStateDidBecomeAvailable(
+    virtual void ReaderModeWebStateDidLoadContent(
         ReaderModeTabHelper* tab_helper) = 0;
     // Called when Reader mode content will become unavailable in this tab.
     virtual void ReaderModeWebStateWillBecomeUnavailable(
@@ -55,19 +55,13 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   void RemoveObserver(Observer* observer);
 
   // Returns whether Reader mode is active in the current tab. If so, the Reader
-  // mode UI should be presented.
-  // GetReaderModeWebState() may still return null.
+  // mode UI should be presented. GetReaderModeWebState() may still return null.
   bool IsActive() const;
   // Activates/deactivates Reader mode in the current tab.
   void SetActive(bool active);
 
-  // Whether the Reader mode WebState is available. When Reader mode becomes
-  // active, the Reader mode content will start being generated through
-  // distillation. If distillation process is successful, then the Reader mode
-  // WebState will become available.
-  bool IsReaderModeWebStateAvailable() const;
-  // Returns the Reader mode content view. A precondition for calling this
-  // method is for `IsReaderModeContentAvailable()` to be true.
+  // Returns the Reader mode content WebState if it is available. This can be
+  // null if Reader mode is active, or non-null while Reader mode is inactive.
   web::WebState* GetReaderModeWebState();
 
   // Returns whether the current page supports Reading mode.
@@ -145,8 +139,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Calls the callbacks waiting for the last committed URL eligibility result.
   void CallLastCommittedUrlEligibilityCallbacks(std::optional<bool> result);
 
-  // Whether the Reader mode WebState is available in this tab.
-  bool reader_mode_web_state_available_ = false;
+  // Whether Reader mode is active in this tab.
+  bool active_ = false;
+  // Whether the Reader mode WebState content was loaded.
+  bool reader_mode_web_state_content_loaded_ = false;
   // WebState used to render the Reader mode content.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
   id<SnackbarCommands> snackbar_handler_;

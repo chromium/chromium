@@ -37,7 +37,7 @@ class MockReaderModeTabHelperObserver : public ReaderModeTabHelper::Observer {
   ~MockReaderModeTabHelperObserver() override = default;
 
   MOCK_METHOD(void,
-              ReaderModeWebStateDidBecomeAvailable,
+              ReaderModeWebStateDidLoadContent,
               (ReaderModeTabHelper * tab_helper),
               (override));
   MOCK_METHOD(void,
@@ -263,9 +263,9 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
   WaitForReaderModeContentReady();
 
   // When SetActive(true) is called and distillation completes,
-  // ReaderModeWebStateDidBecomeAvailable should be called.
+  // ReaderModeWebStateDidLoadContent should be called.
   EXPECT_CALL(mock_observer,
-              ReaderModeWebStateDidBecomeAvailable(reader_mode_tab_helper()));
+              ReaderModeWebStateDidLoadContent(reader_mode_tab_helper()));
   reader_mode_tab_helper()->SetActive(true);
   WaitForReaderModeContentReady();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -317,7 +317,7 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
   observation.Observe(reader_mode_tab_helper());
 
   EXPECT_CALL(mock_observer,
-              ReaderModeWebStateDidBecomeAvailable(reader_mode_tab_helper()));
+              ReaderModeWebStateDidLoadContent(reader_mode_tab_helper()));
   reader_mode_tab_helper()->SetActive(true);
   WaitForReaderModeContentReady();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);

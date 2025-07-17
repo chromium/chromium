@@ -108,9 +108,9 @@ void ReaderModeBrowserAgent::WebStateListDidChange(
 
   // Show or hide the Reader mode UI if necessary.
   const bool old_reader_mode_web_state_available =
-      old_tab_helper && old_tab_helper->IsReaderModeWebStateAvailable();
+      old_tab_helper && (old_tab_helper->GetReaderModeWebState() != nullptr);
   const bool new_reader_mode_web_state_available =
-      new_tab_helper && new_tab_helper->IsReaderModeWebStateAvailable();
+      new_tab_helper && (new_tab_helper->GetReaderModeWebState() != nullptr);
   if (!old_reader_mode_web_state_available &&
       new_reader_mode_web_state_available) {
     ShowReaderModeUI(/* animated= */ false);
@@ -128,7 +128,7 @@ void ReaderModeBrowserAgent::WebStateListDestroyed(
 
 #pragma mark - ReaderModeTabHelper::Observer
 
-void ReaderModeBrowserAgent::ReaderModeWebStateDidBecomeAvailable(
+void ReaderModeBrowserAgent::ReaderModeWebStateDidLoadContent(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.

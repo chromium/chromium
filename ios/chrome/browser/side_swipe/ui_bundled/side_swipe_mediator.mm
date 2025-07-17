@@ -139,7 +139,7 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(webState);
   if (readerModeTabHelper &&
-      readerModeTabHelper->IsReaderModeWebStateAvailable()) {
+      readerModeTabHelper->GetReaderModeWebState() != nullptr) {
     [self.consumer setTrailingEdgeNavigationEnabled:YES];
     [self.consumer setLeadingEdgeNavigationEnabled:YES];
   }

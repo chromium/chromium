@@ -118,12 +118,8 @@ web::WebState* GetCurrentWebState() {
   // content that is displayed here.
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(current_web_state);
-  if (reader_mode_tab_helper &&
-      reader_mode_tab_helper->IsReaderModeWebStateAvailable()) {
-    web::WebState* reader_mode_web_state =
-        reader_mode_tab_helper->GetReaderModeWebState();
-    CHECK(reader_mode_web_state);
-    return reader_mode_web_state;
+  if (reader_mode_tab_helper) {
+    return reader_mode_tab_helper->GetReaderModeWebState() ?: current_web_state;
   }
   return current_web_state;
 }

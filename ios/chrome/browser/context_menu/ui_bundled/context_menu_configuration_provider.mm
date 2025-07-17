@@ -187,9 +187,12 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
     // Check if there is an alternate webState.
     ReaderModeTabHelper* readerModeTabHelper =
         ReaderModeTabHelper::FromWebState(activeWebState);
-    if (readerModeTabHelper &&
-        readerModeTabHelper->IsReaderModeWebStateAvailable()) {
-      return readerModeTabHelper->GetReaderModeWebState();
+    if (readerModeTabHelper) {
+      web::WebState* readerModeWebState =
+          readerModeTabHelper->GetReaderModeWebState();
+      if (readerModeWebState) {
+        return readerModeWebState;
+      }
     }
   }
   return activeWebState;
