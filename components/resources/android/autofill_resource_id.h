@@ -106,6 +106,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING,
                     R.drawable.ic_warning_red_16dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN,
                     R.drawable.ic_offer_tag)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_ANDROID_MESSAGES,
+                    R.drawable.ic_android_messages_icon)
 
 // Note that R.drawable.plus_addresses_logo is always present, but the icon in
 // branded builds is different from the one in unbranded builds,

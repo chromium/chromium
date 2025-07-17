@@ -182,6 +182,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
     case Suggestion::Icon::kWork:
+    case Suggestion::Icon::kAndroidMessages:
       return std::u16string();
   }
   NOTREACHED();
@@ -425,7 +426,8 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardUnionPay:
     case Suggestion::Icon::kCardVerve:
     case Suggestion::Icon::kCardVisa:
-    case Suggestion::Icon::kBnpl: {
+    case Suggestion::Icon::kBnpl:
+    case Suggestion::Icon::kAndroidMessages: {
       // For other suggestion entries, get the icon from PNG files.
       int icon_id = GetIconResourceID(icon);
       DCHECK_NE(icon_id, 0);

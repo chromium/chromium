@@ -346,6 +346,7 @@ struct Suggestion {
     kIban,
     kBnpl,
     kSaveAndFill,
+    kAndroidMessages,
   };
 
   // This enum is used to control filtration of suggestions (see it's used in
