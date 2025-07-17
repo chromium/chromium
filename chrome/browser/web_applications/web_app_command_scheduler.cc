@@ -456,8 +456,13 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
                                              OnceInstallCallback callback,
                                              const base::Location& location) {
   DCHECK(web_app.is_from_sync_and_pending_installation());
-  std::vector<apps::IconInfo> icon_infos =
-      ParseAppIconInfos("InstallFromSync", web_app.sync_proto().icon_infos())
+  std::vector<apps::IconInfo> manifest_icon_infos =
+      ParseAppIconInfos("InstallFromSyncManifestIcons",
+                        web_app.sync_proto().icon_infos())
+          .value_or(std::vector<apps::IconInfo>());
+  std::vector<apps::IconInfo> trusted_icon_infos =
+      ParseAppIconInfos("InstallFromSyncTrustedIcons",
+                        web_app.sync_proto().trusted_icons())
           .value_or(std::vector<apps::IconInfo>());
   std::optional<SkColor> theme_color;
   if (web_app.sync_proto().has_theme_color()) {
@@ -466,7 +471,8 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
   InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
       web_app.app_id(), web_app.manifest_id(), web_app.start_url(),
       web_app.sync_proto().name(), GURL(web_app.sync_proto().scope()),
-      theme_color, web_app.user_display_mode(), icon_infos);
+      theme_color, web_app.user_display_mode(), manifest_icon_infos,
+      trusted_icon_infos);
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromSyncCommand>(&profile_.get(), params,
                                                std::move(callback)),

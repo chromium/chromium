@@ -65,6 +65,8 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 
+// TODO(crbug.com/427566601): Update tests to use the WebAppIconManager to read
+// trusted icons once the API for that has been introduced.
 class InstallFromSyncTest : public WebAppTest {
  public:
   const int kIconSize = 96;
@@ -88,6 +90,11 @@ class InstallFromSyncTest : public WebAppTest {
   const GURL kFallbackIconUrl =
       GURL("https://example.com/path/fallback_icon.png");
   const SkColor kFallbackIconColor = SK_ColorBLUE;
+
+  const GURL kTrustedIconUrl =
+      GURL("https://example.com/path/trusted_icon.png");
+  const SkColor kTrustedIconColor = SK_ColorYELLOW;
+  const int kTrustedIconSize = 128;
 
   const std::u16string kDocumentTitle = u"Document Title";
   const GURL kDocumentIconUrl =
@@ -122,7 +129,8 @@ class InstallFromSyncTest : public WebAppTest {
         app_id, manifest_id, start_url, kFallbackTitle,
         start_url.GetWithoutFilename(), /*theme_color=*/std::nullopt,
         mojom::UserDisplayMode::kStandalone, /*icons=*/
-        {apps::IconInfo(kFallbackIconUrl, kIconSize)});
+        {apps::IconInfo(kFallbackIconUrl, kIconSize)},
+        {apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)});
   }
 
   InstallResult InstallFromSyncAndWait(GURL start_url,
@@ -186,6 +194,8 @@ class InstallFromSyncTest : public WebAppTest {
   }
 };
 
+// TODO(crbug.com/427566601): Update test to verify trusted icons once
+// ManifestToWebAppInstallInfoJob starts populating trusted icons.
 TEST_F(InstallFromSyncTest, SuccessWithManifest) {
   const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
@@ -343,6 +353,11 @@ TEST_F(InstallFromSyncTest, UrlRedirectUseFallback) {
   SkColor icon_color = IconManagerReadAppIconPixel(provider()->icon_manager(),
                                                    app_id, kIconSize);
   EXPECT_THAT(icon_color, Eq(kFallbackIconColor));
+
+  // Trusted app icons are also obtained, at least as part of the fallback
+  // installation flow.
+  EXPECT_THAT(registrar().GetTrustedAppIcons(app_id),
+              ElementsAre(apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)));
 }
 
 TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
@@ -383,6 +398,11 @@ TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
   SkColor icon_color = IconManagerReadAppIconPixel(provider()->icon_manager(),
                                                    app_id, kIconSize);
   EXPECT_THAT(icon_color, Eq(kFallbackIconColor));
+
+  // Trusted app icons are also obtained, at least as part of the fallback
+  // installation flow.
+  EXPECT_THAT(registrar().GetTrustedAppIcons(app_id),
+              ElementsAre(apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)));
 }
 
 TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
@@ -429,6 +449,11 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
   SkColor icon_color = IconManagerReadAppIconPixel(provider()->icon_manager(),
                                                    app_id, kIconSize);
   EXPECT_THAT(icon_color, Eq(kDocumentIconColor));
+
+  // Trusted app icons are also obtained, at least as part of the fallback
+  // installation flow.
+  EXPECT_THAT(registrar().GetTrustedAppIcons(app_id),
+              ElementsAre(apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)));
 }
 
 TEST_F(InstallFromSyncTest, TwoInstalls) {

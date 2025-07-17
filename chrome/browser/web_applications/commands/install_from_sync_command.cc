@@ -71,7 +71,8 @@ InstallFromSyncCommand::Params::Params(
     const GURL& scope,
     const std::optional<SkColor>& theme_color,
     const std::optional<mojom::UserDisplayMode>& user_display_mode,
-    const std::vector<apps::IconInfo>& icons)
+    const std::vector<apps::IconInfo>& manifest_icons,
+    const std::vector<apps::IconInfo>& trusted_icons)
     : app_id(app_id),
       manifest_id(manifest_id),
       start_url(start_url),
@@ -79,7 +80,8 @@ InstallFromSyncCommand::Params::Params(
       scope(scope),
       theme_color(theme_color),
       user_display_mode(user_display_mode),
-      icons(icons) {
+      manifest_icons(manifest_icons),
+      trusted_icons(trusted_icons) {
   CHECK(!app_id.empty());
   CHECK(manifest_id.is_valid());
   CHECK(!manifest_id.is_empty());
@@ -114,7 +116,8 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   fallback_install_info_->user_display_mode = params_.user_display_mode;
   fallback_install_info_->scope = params_.scope;
   fallback_install_info_->theme_color = params_.theme_color;
-  fallback_install_info_->manifest_icons = params_.icons;
+  fallback_install_info_->manifest_icons = params_.manifest_icons;
+  fallback_install_info_->trusted_icons = params_.trusted_icons;
   GetMutableDebugValue().Set("app_id", params_.app_id);
   GetMutableDebugValue().Set("manifest_id", params_.manifest_id.spec());
   GetMutableDebugValue().Set("title", params_.title);
@@ -186,7 +189,9 @@ void InstallFromSyncCommand::OnGetWebAppInstallInfo(
     return;
   }
 
-  // Populate fallback info with the data retrieved from `GetWebAppInstallInfo`
+  // Populate fallback info with the data retrieved from `GetWebAppInstallInfo`.
+  // `trusted_icons` do not need to be updated here because the
+  // `WebAppInstallInfo` obtained here is from the page metadata.
   fallback_install_info_->description = web_app_info->description;
   if (!web_app_info->manifest_icons.empty()) {
     fallback_install_info_->manifest_icons = web_app_info->manifest_icons;

@@ -52,7 +52,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
       /*scope=*/https_server()->GetURL("/banners/"),
       /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
       {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
-                      96)});
+                      96)},
+      {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-1x.png"),
+                      64)});
   provider->command_manager().ScheduleCommand(
       std::make_unique<InstallFromSyncCommand>(
           profile(), params,
@@ -92,7 +94,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
         /*scope=*/https_server()->GetURL("/banners/"),
         /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
-                        96)});
+                        96)},
+        {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-1x.png"),
+                        64)});
     provider->command_manager().ScheduleCommand(
         std::make_unique<InstallFromSyncCommand>(
             profile(), params,
@@ -109,7 +113,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
         /*scope=*/https_server()->GetURL("/banners/"),
         /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
-                        96)});
+                        96)},
+        {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-1x.png"),
+                        64)});
     provider->command_manager().ScheduleCommand(
         std::make_unique<InstallFromSyncCommand>(
             profile(), params,
@@ -162,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
       id, GenerateManifestIdFromStartUrlOnly(test_url), /*start_url=*/test_url,
       "Test Title",
       /*scope=*/https_server()->GetURL("/banners/"),
-      /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone, {});
+      /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone, {},
+      {});
   std::unique_ptr<InstallFromSyncCommand> command = std::make_unique<
       InstallFromSyncCommand>(
       profile(), params,

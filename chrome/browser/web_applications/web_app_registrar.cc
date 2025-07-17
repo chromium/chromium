@@ -768,6 +768,12 @@ void WebAppRegistrar::NotifyAlwaysShowToolbarInFullscreenChanged(
 }
 #endif
 
+std::vector<apps::IconInfo> WebAppRegistrar::GetTrustedAppIcons(
+    const webapps::AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->trusted_icons() : std::vector<apps::IconInfo>();
+}
+
 const WebApp* WebAppRegistrar::GetAppById(const webapps::AppId& app_id) const {
   return base::FindPtrOrNull(registry_, app_id);
 }

@@ -519,6 +519,10 @@ class WebAppRegistrar {
   // Returns whether the DIY app's icons are marked as masked on Mac.
   bool IsDiyAppIconsMarkedMaskedOnMac(const webapps::AppId& app_id) const;
 
+  // Returns the trusted icon metadata stored in the web app.
+  std::vector<apps::IconInfo> GetTrustedAppIcons(
+      const webapps::AppId& app_id) const;
+
   void AddObserver(WebAppRegistrarObserver* observer);
   void RemoveObserver(WebAppRegistrarObserver* observer);
 

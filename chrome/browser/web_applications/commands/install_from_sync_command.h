@@ -56,7 +56,8 @@ class InstallFromSyncCommand
            const GURL& scope,
            const std::optional<SkColor>& theme_color,
            const std::optional<mojom::UserDisplayMode>& user_display_mode,
-           const std::vector<apps::IconInfo>& icons);
+           const std::vector<apps::IconInfo>& manifest_icons,
+           const std::vector<apps::IconInfo>& trusted_icons);
     const webapps::AppId app_id;
     const webapps::ManifestId manifest_id;
     const GURL start_url;
@@ -64,7 +65,8 @@ class InstallFromSyncCommand
     const GURL scope;
     const std::optional<SkColor> theme_color;
     const std::optional<mojom::UserDisplayMode> user_display_mode;
-    const std::vector<apps::IconInfo> icons;
+    const std::vector<apps::IconInfo> manifest_icons;
+    const std::vector<apps::IconInfo> trusted_icons;
   };
   using DataRetrieverFactory =
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>;
