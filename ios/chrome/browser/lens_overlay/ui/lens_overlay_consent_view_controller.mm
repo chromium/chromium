@@ -96,12 +96,27 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
 
 - (CGSize)preferredContentSize {
   [_contentStack layoutIfNeeded];
-  CGFloat presentedContentHeight = _contentStack.frame.size.height;
 
-  // Only regular width is relevant, as the bottom sheet prresentation is
+  CGFloat totalHeight = 0.0;
+  for (UIView* subview in _contentStack.arrangedSubviews) {
+    if ([subview isKindOfClass:[UILabel class]]) {
+      // For `UILabel`s approximate the height that will be used to render the
+      // text based on the label's font.
+      totalHeight += [self heightForLabel:(UILabel*)subview
+                       inConstrainedWidth:kDialogWidthInRegularDisplaySize];
+    } else {
+      totalHeight += subview.frame.size.height;
+    }
+  }
+
+  // Factor in the stack spacing.
+  totalHeight +=
+      _contentStack.spacing * (_contentStack.arrangedSubviews.count - 1);
+
+  // Only regular width is relevant, as the bottom sheet presentation is
   // edge-attached in compact width.
   return CGSizeMake(kDialogWidthInRegularDisplaySize,
-                    presentedContentHeight + kDialogFixedItemsHeight);
+                    totalHeight + kDialogFixedItemsHeight);
 }
 
 #pragma mark - Private
@@ -302,6 +317,20 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
   config.animationName = animationAssetName;
   config.loopAnimationCount = kLottieInfiniteLoopFlag;
   return ios::provider::GenerateLottieAnimation(config);
+}
+
+// Approximates the height needed to display the text of a label in a given
+// width.
+- (CGFloat)heightForLabel:(UILabel*)label inConstrainedWidth:(CGFloat)width {
+  CGSize constraintRect = CGSizeMake(width, CGFLOAT_MAX);
+  NSDictionary* attributes = @{NSFontAttributeName : label.font};
+  CGRect boundingBox =
+      [label.text boundingRectWithSize:constraintRect
+                               options:NSStringDrawingUsesLineFragmentOrigin
+                            attributes:attributes
+                               context:nil];
+
+  return ceil(boundingBox.size.height);
 }
 
 @end
