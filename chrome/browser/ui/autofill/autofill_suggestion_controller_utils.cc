@@ -98,6 +98,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:
+    case SuggestionType::kOneTimePasswordEntry:
       return false;
   }
 }

@@ -302,6 +302,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kOneTimePasswordEntry:
       return false;
   }
   NOTREACHED();

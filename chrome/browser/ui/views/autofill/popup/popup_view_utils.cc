@@ -508,6 +508,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kOneTimePasswordEntry:
       return false;
   }
 }

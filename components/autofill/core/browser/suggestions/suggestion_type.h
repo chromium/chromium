@@ -137,6 +137,9 @@ enum class SuggestionType {
   kWebauthnCredential = 43,
   kWebauthnSignInWithAnotherDevice = 44,
 
+  // One time password suggestions.
+  kOneTimePasswordEntry = 74,
+
   // Other suggestions.
   kTitle = 45,
   kSeparator = 46,
@@ -168,8 +171,8 @@ enum class SuggestionType {
   // state. On click the user will be directed to sign in.
   kPendingStateSignin = 65,
 
-  // Next ID: 74
-  kMaxValue = kAllLoyaltyCardsEntry
+  // Next ID: 75
+  kMaxValue = kOneTimePasswordEntry
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

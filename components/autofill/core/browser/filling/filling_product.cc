@@ -121,6 +121,8 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kLoyaltyCard;
     case SuggestionType::kIdentityCredential:
       return FillingProduct::kIdentityCredential;
+    case SuggestionType::kOneTimePasswordEntry:
+      return FillingProduct::kOneTimePassword;
   }
   NOTREACHED();
 }

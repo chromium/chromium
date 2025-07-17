@@ -244,6 +244,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
       // suggestions related to standalone CVC fields.
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kOneTimePasswordEntry:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllLoyaltyCardsEntry:
@@ -677,6 +678,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kBnplEntry:
+    // So far OTP suggestions are only available on Android, so no preview
+    // is needed. This needs to be changed once Desktop suggestions and UI
+    // are implemented.
+    case SuggestionType::kOneTimePasswordEntry:
       break;
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
@@ -895,6 +900,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     }
+    case SuggestionType::kOneTimePasswordEntry: {
+      // TODO(crbug.com/415273276): Implement.
+      break;
+    }
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kPasswordEntry:
@@ -1040,6 +1049,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kOneTimePasswordEntry:
       return false;
   }
 }

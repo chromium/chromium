@@ -118,6 +118,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kLoyaltyCardEntry";
     case SuggestionType::kAllLoyaltyCardsEntry:
       return "kAllLoyaltyCardsEntry";
+    case SuggestionType::kOneTimePasswordEntry:
+      return "OneTimePasswordEntry";
   }
   NOTREACHED();
 }
