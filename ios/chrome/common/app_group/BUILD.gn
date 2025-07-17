@@ -52,20 +52,6 @@ source_set("helper") {
 
 # This target will be included into application extensions and the list
 # of its dependencies must be kept as short as possible.
-source_set("client") {
-  sources = [
-    "app_group_metrics_client.h",
-    "app_group_metrics_client.mm",
-  ]
-
-  deps = [
-    ":app_group",
-    "//base",
-  ]
-}
-
-# This target will be included into application extensions and the list
-# of its dependencies must be kept as short as possible.
 source_set("command") {
   sources = [
     "app_group_command.h",
@@ -74,7 +60,6 @@ source_set("command") {
 
   deps = [
     ":app_group",
-    ":client",
     "//base",
   ]
 }

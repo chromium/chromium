@@ -11,15 +11,6 @@
 // They are mainly used for communication between applications in the group.
 namespace app_group {
 
-// An enum of the different application member of the Chrome app group.
-// To ensure continuity in metrics log, applications can only be added at the
-// end.
-// Applications directly sending metrics must be added to this enum.
-enum AppGroupApplications {
-  APP_GROUP_CHROME = 0,
-  APP_GROUP_TODAY_EXTENSION,
-};
-
 // The different types of outcome used for UMA and created by the open
 // extension.
 // The entries should not be removed or reordered.
@@ -178,9 +169,6 @@ extern NSString* const kShareItemSourceShareExtension;
 
 // The values used by Chrome extensions in
 // `kChromeAppGroupCommandAppPreference`.
-extern NSString* const kOpenCommandSourceTodayExtension;
-extern NSString* const kOpenCommandSourceContentExtension;
-extern NSString* const kOpenCommandSourceSearchExtension;
 extern NSString* const kOpenCommandSourceShareExtension;
 extern NSString* const kOpenCommandSourceCredentialsExtension;
 extern NSString* const kOpenCommandSourceOpenExtension;
@@ -283,9 +271,6 @@ NSUserDefaults* GetGroupUserDefaults();
 // not (i.e. on simulator, or if entitlements do not allow it) returns
 // [NSUserDefaults standardUserDefaults].
 NSUserDefaults* GetCommonGroupUserDefaults();
-
-// The application name of `application`.
-NSString* ApplicationName(AppGroupApplications application);
 
 }  // namespace app_group
 

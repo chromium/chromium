@@ -5146,24 +5146,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.SearchExtension.Action" enum="IOSSearchExtensionAction"
-    expires_after="2024-09-18">
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>rkgibson@chromium.org</owner>
-  <summary>The action selected by the user in the Search Extension.</summary>
-</histogram>
-
-<histogram name="IOS.SearchExtension.DisplayCount" units="count"
-    expires_after="2024-09-18">
-  <owner>olivierrobin@chromium.org</owner>
-  <owner>rkgibson@chromium.org</owner>
-  <summary>
-    The number of times the Search Extension was displayed since last Chrome
-    foregrounding. Reported when Chrome is put in foreground. Note: events where
-    the count is zero were removed in M91.
-  </summary>
-</histogram>
-
 <histogram name="IOS.SearchWith.CharSelected" units="characters"
     expires_after="2025-08-31">
   <owner>olivierrobin@chromium.org</owner>

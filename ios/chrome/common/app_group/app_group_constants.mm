@@ -74,9 +74,6 @@ NSString* const kShareItemGaiaID = @"GaiaID";
 
 NSString* const kShareItemSourceShareExtension = @"ChromeShareExtension";
 
-NSString* const kOpenCommandSourceTodayExtension = @"ChromeTodayExtension";
-NSString* const kOpenCommandSourceContentExtension = @"ChromeContentExtension";
-NSString* const kOpenCommandSourceSearchExtension = @"ChromeSearchExtension";
 NSString* const kOpenCommandSourceShareExtension = @"ChromeShareExtension";
 NSString* const kOpenCommandSourceCredentialsExtension =
     @"ChromeCredentialsExtension";
@@ -126,15 +123,6 @@ NSString* CommonApplicationGroup() {
                                       BUILDFLAG(IOS_APP_BUNDLE_ID_PREFIX), nil];
   }
   return group;
-}
-
-NSString* ApplicationName(AppGroupApplications application) {
-  switch (application) {
-    case APP_GROUP_CHROME:
-      return base::SysUTF8ToNSString(version_info::GetProductName());
-    case APP_GROUP_TODAY_EXTENSION:
-      return @"TodayExtension";
-  }
 }
 
 NSUserDefaults* GetCommonGroupUserDefaults() {

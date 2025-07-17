@@ -142,7 +142,6 @@ template("chrome_ios_eg2_test_app_host") {
       "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
       "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
       "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$bundle_identifier.ContentTodayExtension",
       "EG_MAIN_APPLICATION_DELEGATE=$_eg_main_application_delegate",
       "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
       "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
