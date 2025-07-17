@@ -6100,7 +6100,7 @@ template <typename T>
 T* ConsumeFontSettingsTagAndValue(CSSParserTokenStream& stream,
                                   const CSSParserContext& context) {
   // Tag name consists of 4-letter characters.
-  const unsigned kTagNameLength = 4;
+  constexpr static unsigned kTagNameLength = 4;
 
   const CSSParserToken& token = stream.Peek();
   // Tag name comes first for both features and variations.
@@ -6122,8 +6122,19 @@ T* ConsumeFontSettingsTagAndValue(CSSParserTokenStream& stream,
   }
 
   CSSPrimitiveValue* tag_value = nullptr;
-  // Tag values could follow: <integer> | on | off
-  if (CSSPrimitiveValue* value = ConsumeInteger(stream, context)) {
+  CSSPrimitiveValue* value = nullptr;
+  if constexpr (std::is_same_v<T, CSSFontVariationValue>) {
+    // Tag values could follow: <number> | on | off.
+    // The <number> can be fractional or negative, depending on the value range
+    // available in your font, as defined by the font designer.
+    // See https://drafts.csswg.org/css-fonts/#font-variation-settings-def
+    value = ConsumeNumber(stream, context, CSSPrimitiveValue::ValueRange::kAll);
+  } else {
+    // Tag values could follow: <integer> | on | off
+    value = ConsumeInteger(stream, context);
+  }
+
+  if (value) {
     tag_value = value;
   } else if (stream.Peek().Id() == CSSValueID::kOn ||
              stream.Peek().Id() == CSSValueID::kOff) {
