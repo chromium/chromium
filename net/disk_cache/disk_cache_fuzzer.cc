@@ -1242,6 +1242,7 @@ void DiskCacheLPMFuzzer::CreateBackend(
       sql_cache_impl_ = cache.get();
       cache_ = std::move(cache);
       net::TestCompletionCallback cb;
+      sql_cache_impl_->EnableStrictCorruptionCheckForTesting();
       sql_cache_impl_->Init(cb.callback());
       CHECK_EQ(cb.WaitForResult(), net::OK);
       break;

@@ -923,6 +923,10 @@ void SqlBackendImpl::HandleTriggerEvictionOperation(
       base::BindOnce([](SqlPersistentStore::Error result) {}));
 }
 
+void SqlBackendImpl::EnableStrictCorruptionCheckForTesting() {
+  store_->EnableStrictCorruptionCheckForTesting();  // IN-TEST
+}
+
 SqlBackendImpl::InFlightEntryModification::InFlightEntryModification(
     const base::UnguessableToken& token,
     base::Time last_used)

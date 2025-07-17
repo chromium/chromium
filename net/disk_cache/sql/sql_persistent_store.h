@@ -303,6 +303,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Asynchronously retrieves the total size of all entries.
   virtual void GetSizeOfAllEntries(Int64Callback callback) const = 0;
 
+  // Enables a strict corruption checking mode for testing purposes.
+  virtual void EnableStrictCorruptionCheckForTesting() = 0;
+
  protected:
   SqlPersistentStore() = default;
 };

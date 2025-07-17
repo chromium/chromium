@@ -152,6 +152,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
     return background_task_runner_;
   }
 
+  // Enables a strict corruption checking mode for testing purposes. When
+  // enabled, any detected database corruption will cause an immediate crash
+  // via a `CHECK` failure. This is primarily useful for fuzzers, which can more
+  // easily identify problematic inputs if the process fails fast, rather than
+  // silently recovering.
+  void EnableStrictCorruptionCheckForTesting();
+
  private:
   class IteratorImpl;
 

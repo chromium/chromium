@@ -334,6 +334,10 @@ class Backend {
   ErrorAndEvictionRequested RunEviction(
       base::flat_set<CacheEntryKey> excluded_keys);
 
+  void EnableStrictCorruptionCheckForTesting() {
+    strict_corruption_check_enabled_ = true;
+  }
+
  private:
   void DatabaseErrorCallback(int error, sql::Statement* statement);
 
@@ -464,6 +468,10 @@ class Backend {
     return GetSizeOfAllEntries() > high_watermark_;
   }
 
+  void MaybeCrashIfCorrupted(bool corruption_detected) {
+    CHECK(!(corruption_detected && strict_corruption_check_enabled_));
+  }
+
   const base::FilePath path_;
   const int64_t max_bytes_;
   const int64_t high_watermark_;
@@ -472,6 +480,7 @@ class Backend {
   sql::MetaTable meta_table_;
   std::optional<Error> db_init_status_;
   StoreStatus store_status_;
+  bool strict_corruption_check_enabled_ = false;
 };
 
 InitResultOrError Backend::Initialize() {
@@ -488,6 +497,7 @@ InitResultOrError Backend::Initialize() {
                      PopulateTraceDetails(*db_init_status_, store_status_,
                                           dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return *db_init_status_ == Error::kOk
              ? InitResultOrError(InitResult(max_bytes_))
              : base::unexpected(*db_init_status_);
@@ -598,6 +608,7 @@ EntryInfoOrErrorAndEvictionRequested Backend::OpenOrCreateEntry(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return EntryInfoOrErrorAndEvictionRequested(std::move(result),
                                               ShouldStartEviction());
 }
@@ -636,6 +647,7 @@ OptionalEntryInfoOrError Backend::OpenEntry(const CacheEntryKey& key) {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return result;
 }
 
@@ -700,6 +712,7 @@ EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return EntryInfoOrErrorAndEvictionRequested(std::move(result),
                                               ShouldStartEviction());
 }
@@ -784,6 +797,7 @@ ErrorAndEvictionRequested Backend::DoomEntry(
                      PopulateTraceDetails(result, store_status_, dict);
                      dict.Add("corruption_detected", corruption_detected);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
@@ -876,6 +890,7 @@ ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
@@ -944,6 +959,7 @@ ErrorAndEvictionRequested Backend::DeleteLiveEntry(const CacheEntryKey& key) {
                      PopulateTraceDetails(result, store_status_, dict);
                      dict.Add("corruption_detected", corruption_detected);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
@@ -1034,6 +1050,7 @@ ErrorAndEvictionRequested Backend::DeleteAllEntries() {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
@@ -1100,6 +1117,7 @@ ErrorAndEvictionRequested Backend::DeleteLiveEntriesBetween(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
@@ -1256,6 +1274,7 @@ ErrorAndEvictionRequested Backend::UpdateEntryHeaderAndLastUsed(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
@@ -1339,6 +1358,7 @@ ErrorAndEvictionRequested Backend::WriteEntryData(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
@@ -1734,6 +1754,7 @@ IntOrError Backend::ReadEntryData(const base::UnguessableToken& token,
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return result;
 }
 
@@ -1955,6 +1976,7 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, dict);
                    });
+  MaybeCrashIfCorrupted(corruption_detected);
   return result;
 }
 
@@ -2010,6 +2032,7 @@ ErrorAndEvictionRequested Backend::RunEviction(
       RunEvictionInternal(std::move(excluded_keys), corruption_detected);
   RecordTimeAndErrorResultHistogram("RunEviction", timer.Elapsed(), result,
                                     corruption_detected);
+  MaybeCrashIfCorrupted(corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
@@ -2340,6 +2363,10 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void GetSizeOfAllEntries(Int64Callback callback) const override {
     backend_.AsyncCall(&Backend::GetSizeOfAllEntries).Then(std::move(callback));
+  }
+
+  void EnableStrictCorruptionCheckForTesting() override {
+    backend_.AsyncCall(&Backend::EnableStrictCorruptionCheckForTesting);
   }
 
  private:
