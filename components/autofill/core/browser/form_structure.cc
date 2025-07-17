@@ -175,6 +175,7 @@ FormStructure::FormStructure(const FormData& form)
 
   form_signature_ = CalculateFormSignature(form);
   alternative_form_signature_ = CalculateAlternativeFormSignature(form);
+  structural_form_signature_ = CalculateStructuralFormSignature(form);
   // Do further processing on the fields, as needed.
   // Computes the `parseable_name_` of the fields by removing common affixes
   // from their names.
@@ -645,6 +646,13 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
   // copy over the |form_signature_field_names_| corresponding to the query
   // request.
   form_signature_ = cached_form.form_signature_;
+
+  // Keeping the behavior for structural signature consistent with the main one.
+  // In practice, first-encountered signatures are preserved only for purely
+  // credit card forms.
+  // TODO(crbug.com/431754194): Investigate making the behavior consistent
+  // across all form types.
+  structural_form_signature_ = cached_form.structural_form_signature_;
 
   // Whether the AutofillAI model may be run is set at the same time as the
   // server predictions - it also needs to be retrieved from the cache.

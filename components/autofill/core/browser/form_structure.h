@@ -309,6 +309,14 @@ class FormStructure {
     alternative_form_signature_ = signature;
   }
 
+  FormSignature structural_form_signature() const {
+    return structural_form_signature_;
+  }
+
+  void set_structural_form_signature(FormSignature signature) {
+    structural_form_signature_ = signature;
+  }
+
   // Returns a FormData containing the data this form structure knows about.
   FormData ToFormData() const;
 
@@ -451,10 +459,25 @@ class FormStructure {
 
   // The alternative signature for this form which is more stable/generic than
   // `form_signature_`, used when signature is random/unstable at each reload.
-  // It is composed of the target url domain, the fields' form control types,
-  // and for forms with 1-2 fields, one of the following non-empty elements
-  // ordered by preference: path, reference, or query in a 64-bit hash.
+  // It is a 64-bit hash of the target url domain, the fields' form control
+  // types, and for forms with 1-2 fields, the first non-empty element of the
+  // following: [path, reference, query].
+  //
+  // TODO(crbug.com/430889664): Update the comment once deprecated.
+  // The alternative signature is currently only sent to server as part of Query
+  // requests and is used for overrides by password manager.
   FormSignature alternative_form_signature_;
+
+  // This form signature is equivalent to `alternative_form_signature_` for
+  // forms with more than 2 fields. For forms with 2 fields or less, it is more
+  // stable as doesn't depend on url path, reference, or query.
+  //
+  // TODO(crbug.com/427418538): Update the comment once the feature is launched.
+  // This signature is currently sent to server as part of Upload requests and
+  // will eventually be used together with three-bit hashes to fetch server
+  // predictions. See go/autofill-stable-form-signature and
+  // go/autofill-signatures-more-data for more details.
+  FormSignature structural_form_signature_;
 
   // The timestamp (not wallclock time) when this form was initially parsed.
   base::TimeTicks form_parsed_timestamp_;

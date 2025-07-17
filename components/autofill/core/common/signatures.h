@@ -38,6 +38,11 @@ class FieldSignature : public internal::FieldSignatureType {
 // Calculates form signature based on |form_data|.
 FormSignature CalculateFormSignature(const FormData& form_data);
 
+// Returns a generic form signature which is equivalent to alternative form
+// signature for forms with more than 2 fields. For forms with 2 fields or
+// less, it is more stable as it doesn't depend on url path, query or ref.
+FormSignature CalculateStructuralFormSignature(const FormData& form_data);
+
 // Returns a more generic form signature than CalculateFormSignature. It is used
 // in cases where the web form has an unstable form signature (a random
 // signature due to changing form or field names at each page load).

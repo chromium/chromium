@@ -826,8 +826,14 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   upload.set_client_version(
       std::string(version_info::GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form.form_signature().value());
-  upload.set_secondary_form_signature(
-      form.alternative_form_signature().value());
+  if (base::FeatureList::IsEnabled(
+          features::kUseStructuralSignatureInsteadOfSecondary)) {
+    upload.set_structural_form_signature(
+        form.structural_form_signature().value());
+  } else {
+    upload.set_secondary_form_signature(
+        form.alternative_form_signature().value());
+  };
   upload.set_autofill_used(false);
   upload.set_data_present(data_present);
   upload.set_has_form_tag(form.is_form_element());

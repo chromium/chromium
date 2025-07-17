@@ -260,15 +260,22 @@ message ThreeBitHashedFormMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 50
+// Next available id: 51
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
 
   // The secondary form signature is calculated based on field types instead of
   // names and is used if the primary one is unstable, i.e. the field names
-  // change on every page load. Not used currently.
-  optional fixed64 secondary_form_signature = 34;
+  // change on every page load. Deprecated due to instability on small (<3 field
+  // forms): use `structural_form_signature` instead.
+  optional fixed64 secondary_form_signature = 34 [deprecated = true];
+
+  // The structural form signature is calculated based on domain name and field
+  // types instead of field names and is equivalent to
+  // `secondary_form_signature` for forms with more than 2 fields.
+  // go/autofill-stable-form-signature
+  optional fixed64 structural_form_signature = 50;
 
   // True if the autofill feature was used to fill this form, false otherwise.
   required bool autofill_used = 3;
