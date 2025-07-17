@@ -569,6 +569,10 @@ if (enable_pdf) {
       ]
       configs += [ "//v8:external_startup_data" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   repack("pdf_unittests_pak") {
