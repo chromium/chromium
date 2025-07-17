@@ -684,7 +684,19 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSize) {
 // Tests that GetEntryCount() and GetSizeOfAllEntries() handle invalid
 // (e.g., negative) metadata by treating it as zero.
 TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
-  CreateAndCloseInitializedStore();
+  CreateStore();
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  // Write initial data to create a blob.
+  const std::string kInitialData = "0123456789";
+  const CacheEntryKey kKey("my-key");
+  const int64_t kEntrySize = kSqlBackendStaticResourceSize +
+                             kKey.string().size() + kInitialData.size();
+  const auto token = CreateEntryAndGetToken(kKey);
+  WriteDataAndAssertSuccess(kKey, token, /*old_body_end=*/0, /*offset=*/0,
+                            kInitialData, /*truncate=*/false);
+  EXPECT_EQ(GetEntryCount(), 1);
+  EXPECT_EQ(GetSizeOfAllEntries(), kEntrySize);
+  ClearStore();
 
   // Test with a negative entry count. The total size should still be valid.
   {
@@ -695,8 +707,9 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
   }
   CreateStore();
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
-  EXPECT_EQ(GetEntryCount(), 0);
-  EXPECT_EQ(GetSizeOfAllEntries(), 12345);
+  // Both the entry count and size metadata must have been recalculated.
+  EXPECT_EQ(GetEntryCount(), 1);
+  EXPECT_EQ(GetSizeOfAllEntries(), kEntrySize);
 
   // Test with an entry count that exceeds the int32_t limit.
   {
@@ -707,8 +720,9 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
         static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1));
   }
 
-  EXPECT_EQ(GetEntryCount(), 0);
-  EXPECT_EQ(GetSizeOfAllEntries(), 12345);
+  // Both the entry count and size metadata must have been recalculated.
+  EXPECT_EQ(GetEntryCount(), 1);
+  EXPECT_EQ(GetSizeOfAllEntries(), kEntrySize);
 
   // Test with an entry count with the int32_t limit.
   {
@@ -718,11 +732,12 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
         kSqlBackendMetaTableKeyEntryCount,
         static_cast<int64_t>(std::numeric_limits<int32_t>::max())));
   }
-
+  // Both the entry count and size metadata must not been recalculated.
   EXPECT_EQ(GetEntryCount(), std::numeric_limits<int32_t>::max());
   EXPECT_EQ(GetSizeOfAllEntries(),
-            12345 + static_cast<int64_t>(std::numeric_limits<int32_t>::max()) *
-                        kSqlBackendStaticResourceSize);
+            static_cast<int64_t>(std::numeric_limits<int32_t>::max()) *
+                    kSqlBackendStaticResourceSize +
+                kKey.string().size() + kInitialData.size());
 
   // Test with a negative total size. The entry count should still be valid.
   {
@@ -731,7 +746,9 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyEntryCount, 10));
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize, -1));
   }
-  EXPECT_EQ(GetSizeOfAllEntries(), 10 * kSqlBackendStaticResourceSize);
+  // Both the entry count and size metadata must have been recalculated.
+  EXPECT_EQ(GetEntryCount(), 1);
+  EXPECT_EQ(GetSizeOfAllEntries(), kEntrySize);
 
   // Test with a total size at the int64_t limit with no entries.
   {
@@ -741,6 +758,8 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize,
                                      std::numeric_limits<int64_t>::max()));
   }
+  // Both the entry count and size metadata must have been recalculated.
+  EXPECT_EQ(GetEntryCount(), 0);
   EXPECT_EQ(GetSizeOfAllEntries(), std::numeric_limits<int64_t>::max());
 
   // Test with a total size at the int64_t limit with one entry.
@@ -751,6 +770,7 @@ TEST_F(SqlPersistentStoreTest, GetEntryAndSizeWithInvalidMetadata) {
     ASSERT_TRUE(meta_table->SetValue(kSqlBackendMetaTableKeyTotalSize,
                                      std::numeric_limits<int64_t>::max()));
   }
+  EXPECT_EQ(GetEntryCount(), 1);
   // Adding the static size for the one entry would overflow. The implementation
   // should clamp the result at the maximum value.
   EXPECT_EQ(GetSizeOfAllEntries(), std::numeric_limits<int64_t>::max());
@@ -1614,10 +1634,11 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptSize) {
   ASSERT_EQ(DeleteLiveEntriesBetween(kTimeCorrupt, kTimeKeep),
             SqlPersistentStore::Error::kOk);
 
-  // Verify that kInvalidData was recorded due to the corrupted bytes_usage.
+  // Verify that `ResultWithCorruption` UMA was recorded in the histogram due to
+  // the corrupted bytes_usage.
   histogram_tester.ExpectUniqueSample(
-      "Net.SqlDiskCache.Backend.DeleteLiveEntriesBetween.Result",
-      SqlPersistentStore::Error::kInvalidData, 1);
+      "Net.SqlDiskCache.Backend.DeleteLiveEntriesBetween.ResultWithCorruption",
+      SqlPersistentStore::Error::kOk, 1);
 
   // kKeyToCorrupt should be deleted.
   // kKeyToKeep should remain.
@@ -1660,10 +1681,10 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenWithCorruptToken) {
   base::HistogramTester histogram_tester;
   ASSERT_EQ(DeleteLiveEntriesBetween(kTimeCorrupt, kTimeKeep),
             SqlPersistentStore::Error::kOk);
-  // Verify that kInvalidData was recorded due to the corrupted token.
+  // Verify that `ResultWithCorruption` UMA was recorded in the histogram.
   histogram_tester.ExpectUniqueSample(
-      "Net.SqlDiskCache.Backend.DeleteLiveEntriesBetween.Result",
-      SqlPersistentStore::Error::kInvalidData, 1);
+      "Net.SqlDiskCache.Backend.DeleteLiveEntriesBetween.ResultWithCorruption",
+      SqlPersistentStore::Error::kOk, 1);
 
   EXPECT_EQ(GetEntryCount(), 1);  // kKeyToKeep should remain
   const int64_t expected_size_after_delete =
@@ -1966,9 +1987,10 @@ TEST_F(SqlPersistentStoreTest,
                                          /*header_size_delta=*/buffer->size()),
             SqlPersistentStore::Error::kInvalidData);
 
-  // Verify that kInvalidData was recorded in the histogram.
+  // Verify that `ResultWithCorruption` UMA was recorded in the histogram.
   histogram_tester.ExpectUniqueSample(
-      "Net.SqlDiskCache.Backend.UpdateEntryHeaderAndLastUsed.Result",
+      "Net.SqlDiskCache.Backend.UpdateEntryHeaderAndLastUsed."
+      "ResultWithCorruption",
       SqlPersistentStore::Error::kInvalidData, 1);
 
   // Verify that the store status was NOT changed due to rollback.
@@ -2966,10 +2988,11 @@ TEST_F(SqlPersistentStoreTest, OpenLatestEntryBeforeResIdSkipsInvalidToken) {
   next_result = OpenLatestEntryBeforeResId(next_result->res_id);
   ASSERT_TRUE(next_result.has_value());
   EXPECT_EQ(next_result->key, kKeyValidBefore);
-  // Verify that kInvalidData was recorded in the histogram when skipping.
+  // Verify that `ResultWithCorruption` UMA was recorded in the histogram.
   histogram_tester.ExpectUniqueSample(
-      "Net.SqlDiskCache.Backend.OpenLatestEntryBeforeResId.Result",
-      SqlPersistentStore::Error::kInvalidData, 1);
+      "Net.SqlDiskCache.Backend.OpenLatestEntryBeforeResId."
+      "ResultWithCorruption",
+      SqlPersistentStore::Error::kOk, 1);
 
   // No more valid entries.
   next_result = OpenLatestEntryBeforeResId(next_result->res_id);

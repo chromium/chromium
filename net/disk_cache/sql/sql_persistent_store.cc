@@ -201,13 +201,17 @@ void PopulateTraceDetails(const base::expected<ResultType, Error>& result,
 // `Error` code to a ".Result" histogram.
 void RecordTimeAndErrorResultHistogram(std::string_view method_name,
                                        base::TimeDelta time_delta,
-                                       Error error) {
+                                       Error error,
+                                       bool corruption_detected) {
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat({kHistogramPrefix, method_name,
-                    error == Error::kOk ? ".SuccessTime" : ".FailureTime"}),
+                    error == Error::kOk ? ".SuccessTime" : ".FailureTime",
+                    corruption_detected ? "WithCorruption" : ""}),
       time_delta);
   base::UmaHistogramEnumeration(
-      base::StrCat({kHistogramPrefix, method_name, ".Result"}), error);
+      base::StrCat({kHistogramPrefix, method_name,
+                    corruption_detected ? ".ResultWithCorruption" : ".Result"}),
+      error);
 }
 
 // Sets up the database schema and indexes.
@@ -333,19 +337,23 @@ class Backend {
  private:
   void DatabaseErrorCallback(int error, sql::Statement* statement);
 
-  Error InitializeInternal();
-  EntryInfoOrError OpenOrCreateEntryInternal(const CacheEntryKey& key);
-  OptionalEntryInfoOrError OpenEntryInternal(const CacheEntryKey& key);
+  Error InitializeInternal(bool& corruption_detected);
+  EntryInfoOrError OpenOrCreateEntryInternal(const CacheEntryKey& key,
+                                             bool& corruption_detected);
+  OptionalEntryInfoOrError OpenEntryInternal(const CacheEntryKey& key,
+                                             bool& corruption_detected);
   EntryInfoOrError CreateEntryInternal(const CacheEntryKey& key,
-                                       bool run_existance_check);
+                                       bool run_existance_check,
+                                       bool& corruption_detected);
   Error DoomEntryInternal(const CacheEntryKey& key,
                           const base::UnguessableToken& token,
                           bool& corruption_detected);
   Error DeleteDoomedEntryInternal(const CacheEntryKey& key,
-                                  const base::UnguessableToken& token);
+                                  const base::UnguessableToken& token,
+                                  bool& corruption_detected);
   Error DeleteLiveEntryInternal(const CacheEntryKey& key,
                                 bool& corruption_detected);
-  Error DeleteAllEntriesInternal();
+  Error DeleteAllEntriesInternal(bool& corruption_detected);
   Error DeleteLiveEntriesBetweenInternal(
       base::Time initial_time,
       base::Time end_time,
@@ -358,20 +366,23 @@ class Backend {
       const base::UnguessableToken& token,
       base::Time last_used,
       scoped_refptr<net::IOBuffer> buffer,
-      int64_t header_size_delta);
+      int64_t header_size_delta,
+      bool& corruption_detected);
   Error WriteEntryDataInternal(const CacheEntryKey& key,
                                const base::UnguessableToken& token,
                                int64_t old_body_end,
                                int64_t offset,
                                scoped_refptr<net::IOBuffer> buffer,
                                int buf_len,
-                               bool truncate);
+                               bool truncate,
+                               bool& corruption_detected);
   IntOrError ReadEntryDataInternal(const base::UnguessableToken& token,
                                    int64_t offset,
                                    scoped_refptr<net::IOBuffer> buffer,
                                    int buf_len,
                                    int64_t body_end,
-                                   bool sparse_reading);
+                                   bool sparse_reading,
+                                   bool& corruption_detected);
   RangeResult GetEntryAvailableRangeInternal(
       const base::UnguessableToken& token,
       int64_t offset,
@@ -380,8 +391,9 @@ class Backend {
                                                 base::Time end_time);
   OptionalEntryInfoWithIdAndKey OpenLatestEntryBeforeResIdInternal(
       int64_t res_id_cursor,
-      Error& error_out);
-  Error RunEvictionInternal(const base::flat_set<CacheEntryKey>& excluded_keys);
+      bool& corruption_detected);
+  Error RunEvictionInternal(const base::flat_set<CacheEntryKey>& excluded_keys,
+                            bool& corruption_detected);
 
   // Trims blobs that overlap with the new write range [offset, end), and
   // updates the total size delta.
@@ -390,7 +402,8 @@ class Backend {
       int64_t offset,
       int64_t end,
       bool truncate,
-      base::CheckedNumeric<int64_t>& checked_total_size_delta);
+      base::CheckedNumeric<int64_t>& checked_total_size_delta,
+      bool& corruption_detected);
   // Truncates data by deleting all blobs that start at or after the given
   // offset.
   Error TruncateBlobsAfter(
@@ -410,12 +423,13 @@ class Backend {
                       int buf_len,
                       base::CheckedNumeric<int64_t>& checked_total_size_delta);
   // Deletes blobs by their IDs, and updates the total size delta.
-  Error DeleteBlobsById(
-      const std::vector<int64_t>& blob_ids_to_be_removed,
-      base::CheckedNumeric<int64_t>& checked_total_size_delta);
+  Error DeleteBlobsById(const std::vector<int64_t>& blob_ids_to_be_removed,
+                        base::CheckedNumeric<int64_t>& checked_total_size_delta,
+                        bool& corruption_detected);
   // Deletes a single blob by its ID, and updates the total size delta.
   Error DeleteBlobById(int64_t blob_id,
-                       base::CheckedNumeric<int64_t>& checked_total_size_delta);
+                       base::CheckedNumeric<int64_t>& checked_total_size_delta,
+                       bool& corruption_detected);
   // Deletes all blobs associated with a given token.
   Error DeleteBlobsByToken(const base::UnguessableToken& token);
 
@@ -427,7 +441,8 @@ class Backend {
   // `transaction`. Returns true on success, false on failure.
   bool UpdateStoreStatusAndCommitTransaction(sql::Transaction& transaction,
                                              int64_t entry_count_delta,
-                                             int64_t total_size_delta);
+                                             int64_t total_size_delta,
+                                             bool& corruption_detected);
 
   // Recalculates the store's status (entry count and total size) directly from
   // the database. This is a recovery mechanism used when metadata might be
@@ -463,9 +478,10 @@ InitResultOrError Backend::Initialize() {
   TRACE_EVENT_BEGIN0("disk_cache", "SqlBackend.Initialize");
   base::ElapsedTimer timer;
   CHECK(!db_init_status_.has_value());
-  db_init_status_ = InitializeInternal();
+  bool corruption_detected = false;
+  db_init_status_ = InitializeInternal(corruption_detected);
   RecordTimeAndErrorResultHistogram("Initialize", timer.Elapsed(),
-                                    *db_init_status_);
+                                    *db_init_status_, corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.Initialize", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -477,7 +493,7 @@ InitResultOrError Backend::Initialize() {
              : base::unexpected(*db_init_status_);
 }
 
-Error Backend::InitializeInternal() {
+Error Backend::InitializeInternal(bool& corruption_detected) {
   CHECK(!db_init_status_.has_value());
 
   db_.set_error_callback(base::BindRepeating(&Backend::DatabaseErrorCallback,
@@ -527,24 +543,22 @@ Error Backend::InitializeInternal() {
                                 /*default_value=*/0)) {
     return Error::kFailedToSetEntryCountMetadata;
   }
-  if (tmp_entry_count >= 0 &&
-      base::IsValueInRangeForNumericType<int32_t>(tmp_entry_count)) {
-    store_status_.entry_count = base::checked_cast<int32_t>(tmp_entry_count);
-  } else {
-    // TODO(crbug.com/422065015): Recalculate the entry count. And store into
-    // the metadata table.
-  }
-
   if (!GetOrInitializeMetaValue(meta_table_, kSqlBackendMetaTableKeyTotalSize,
                                 store_status_.total_size,
                                 /*default_value=*/0)) {
-    return Error::kFailedToSetEntryCountMetadata;
+    return Error::kFailedToSetTotalSizeMetadata;
   }
-  if (store_status_.total_size < 0) {
-    store_status_.total_size = 0;
-    // TODO(crbug.com/422065015): Recalculate the total size. And store into the
-    // metadata table.
+
+  if (tmp_entry_count < 0 ||
+      !base::IsValueInRangeForNumericType<int32_t>(tmp_entry_count) ||
+      store_status_.total_size < 0) {
+    corruption_detected = true;
+    return RecalculateStoreStatusAndCommitTransaction(transaction)
+               ? Error::kOk
+               : Error::kFailedToCommitTransaction;
   }
+
+  store_status_.entry_count = static_cast<int32_t>(tmp_entry_count);
 
   if (!transaction.Commit()) {
     return Error::kFailedToCommitTransaction;
@@ -574,9 +588,11 @@ EntryInfoOrErrorAndEvictionRequested Backend::OpenOrCreateEntry(
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
-  auto result = OpenOrCreateEntryInternal(key);
+  bool corruption_detected = false;
+  auto result = OpenOrCreateEntryInternal(key, corruption_detected);
   RecordTimeAndErrorResultHistogram("OpenOrCreateEntry", timer.Elapsed(),
-                                    result.error_or(Error::kOk));
+                                    result.error_or(Error::kOk),
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenOrCreateEntry", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -586,9 +602,10 @@ EntryInfoOrErrorAndEvictionRequested Backend::OpenOrCreateEntry(
                                               ShouldStartEviction());
 }
 
-EntryInfoOrError Backend::OpenOrCreateEntryInternal(const CacheEntryKey& key) {
+EntryInfoOrError Backend::OpenOrCreateEntryInternal(const CacheEntryKey& key,
+                                                    bool& corruption_detected) {
   // Try to open first.
-  auto open_result = OpenEntryInternal(key);
+  auto open_result = OpenEntryInternal(key, corruption_detected);
   if (open_result.has_value() && open_result->has_value()) {
     return std::move(*open_result.value());
   }
@@ -597,7 +614,8 @@ EntryInfoOrError Backend::OpenOrCreateEntryInternal(const CacheEntryKey& key) {
     return base::unexpected(open_result.error());
   }
   // If the entry was not found, try to create a new one.
-  return CreateEntryInternal(key, /*run_existance_check=*/false);
+  return CreateEntryInternal(key, /*run_existance_check=*/false,
+                             corruption_detected);
 }
 
 OptionalEntryInfoOrError Backend::OpenEntry(const CacheEntryKey& key) {
@@ -608,9 +626,11 @@ OptionalEntryInfoOrError Backend::OpenEntry(const CacheEntryKey& key) {
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
-  auto result = OpenEntryInternal(key);
+  bool corruption_detected = false;
+  auto result = OpenEntryInternal(key, corruption_detected);
   RecordTimeAndErrorResultHistogram("OpenEntry", timer.Elapsed(),
-                                    result.error_or(Error::kOk));
+                                    result.error_or(Error::kOk),
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenEntry", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -619,7 +639,8 @@ OptionalEntryInfoOrError Backend::OpenEntry(const CacheEntryKey& key) {
   return result;
 }
 
-OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
+OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key,
+                                                    bool& corruption_detected) {
   CheckDatabaseInitStatus();
 
   sql::Statement statement(db_.GetCachedStatement(
@@ -644,6 +665,7 @@ OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
     // This indicates data corruption in the database.
     // TODO(crbug.com/422065015): If this error is observed in UMA, implement
     // recovery logic.
+    corruption_detected = true;
     return base::unexpected(Error::kInvalidData);
   }
   entry_info.token = *maybe_token;
@@ -667,9 +689,12 @@ EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
-  auto result = CreateEntryInternal(key, /*run_existance_check=*/true);
+  bool corruption_detected = false;
+  auto result = CreateEntryInternal(key, /*run_existance_check=*/true,
+                                    corruption_detected);
   RecordTimeAndErrorResultHistogram("CreateEntry", timer.Elapsed(),
-                                    result.error_or(Error::kOk));
+                                    result.error_or(Error::kOk),
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.CreateEntry", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -680,14 +705,15 @@ EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
 }
 
 EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
-                                              bool run_existance_check) {
+                                              bool run_existance_check,
+                                              bool& corruption_detected) {
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return base::unexpected(Error::kFailedToStartTransaction);
   }
   if (run_existance_check) {
-    auto open_result = OpenEntryInternal(key);
+    auto open_result = OpenEntryInternal(key, corruption_detected);
     if (open_result.has_value() && open_result->has_value()) {
       return base::unexpected(Error::kAlreadyExists);
     }
@@ -727,10 +753,10 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
   // Update the store's status and commit the transaction.
   // The entry count is increased by 1, and the total size by `bytes_usage`.
   // This call will also handle updating the on-disk meta table.
-  if (!UpdateStoreStatusAndCommitTransaction(
-          transaction,
-          /*entry_count_delta=*/1,
-          /*total_size_delta=*/bytes_usage)) {
+  if (!UpdateStoreStatusAndCommitTransaction(transaction,
+                                             /*entry_count_delta=*/1,
+                                             /*total_size_delta=*/bytes_usage,
+                                             corruption_detected)) {
     return base::unexpected(Error::kFailedToCommitTransaction);
   }
 
@@ -750,9 +776,8 @@ ErrorAndEvictionRequested Backend::DoomEntry(
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = DoomEntryInternal(key, token, corruption_detected);
-  RecordTimeAndErrorResultHistogram(
-      "DoomEntry", timer.Elapsed(),
-      corruption_detected ? Error::kInvalidData : result);
+  RecordTimeAndErrorResultHistogram("DoomEntry", timer.Elapsed(), result,
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DoomEntry", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -795,9 +820,11 @@ Error Backend::DoomEntryInternal(const CacheEntryKey& key,
   }
 
   if (doomed_count > 1) {
-    // TODO(crbug.com/422065015): Add histograms to track how often this
-    // unexpected case is reached. A cache_key and token combination should
-    // uniquely identify a single non-doomed entry.
+    // The cache_key and token combination should uniquely identify a single
+    // non-doomed entry.
+    // TODO(crbug.com/422065015): If this error is observed in UMA, implement
+    // recovery logic.
+    corruption_detected = true;
   }
 
   // If no rows were updated, it means the entry was not found (or the token
@@ -821,7 +848,8 @@ Error Backend::DoomEntryInternal(const CacheEntryKey& key,
   if (!UpdateStoreStatusAndCommitTransaction(
           transaction,
           /*entry_count_delta=*/-doomed_count,
-          /*total_size_delta=*/total_size_delta.ValueOrDie())) {
+          /*total_size_delta=*/total_size_delta.ValueOrDie(),
+          corruption_detected)) {
     return Error::kFailedToCommitTransaction;
   }
 
@@ -839,9 +867,10 @@ ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
-  auto result = DeleteDoomedEntryInternal(key, token);
+  bool corruption_detected = false;
+  auto result = DeleteDoomedEntryInternal(key, token, corruption_detected);
   RecordTimeAndErrorResultHistogram("DeleteDoomedEntry", timer.Elapsed(),
-                                    result);
+                                    result, corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteDoomedEntry", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -851,7 +880,8 @@ ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
 }
 
 Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
-                                         const base::UnguessableToken& token) {
+                                         const base::UnguessableToken& token,
+                                         bool& corruption_detected) {
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -875,9 +905,11 @@ Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
   }
 
   if (deleted_count > 1) {
-    // TODO(crbug.com/422065015): Add histograms to track how often this
-    // unexpected case is reached. A cache_key and token combination should
-    // uniquely identify a single doomed entry.
+    // The cache_key and token combination should uniquely identify a single
+    // non-doomed entry.
+    // TODO(crbug.com/422065015): If this error is observed in UMA, implement
+    // recovery logic.
+    corruption_detected = true;
   }
 
   // If we didn't find any doomed entry matching the key and token, report it.
@@ -904,9 +936,8 @@ ErrorAndEvictionRequested Backend::DeleteLiveEntry(const CacheEntryKey& key) {
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result = DeleteLiveEntryInternal(key, corruption_detected);
-  RecordTimeAndErrorResultHistogram(
-      "DeleteLiveEntry", timer.Elapsed(),
-      corruption_detected ? Error::kInvalidData : result);
+  RecordTimeAndErrorResultHistogram("DeleteLiveEntry", timer.Elapsed(), result,
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteLiveEntry", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -979,7 +1010,8 @@ Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
           transaction,
           /*entry_count_delta=*/
           -static_cast<int64_t>(tokens_to_be_deleted.size()),
-          /*total_size_delta=*/total_size_delta.ValueOrDie())) {
+          /*total_size_delta=*/total_size_delta.ValueOrDie(),
+          corruption_detected)) {
     return Error::kFailedToCommitTransaction;
   }
 
@@ -993,9 +1025,10 @@ ErrorAndEvictionRequested Backend::DeleteAllEntries() {
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
-  Error result = DeleteAllEntriesInternal();
-  RecordTimeAndErrorResultHistogram("DeleteAllEntries", timer.Elapsed(),
-                                    result);
+  bool corruption_detected = false;
+  Error result = DeleteAllEntriesInternal(corruption_detected);
+  RecordTimeAndErrorResultHistogram("DeleteAllEntries", timer.Elapsed(), result,
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteAllEntries", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -1004,7 +1037,7 @@ ErrorAndEvictionRequested Backend::DeleteAllEntries() {
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
-Error Backend::DeleteAllEntriesInternal() {
+Error Backend::DeleteAllEntriesInternal(bool& corruption_detected) {
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1035,7 +1068,8 @@ Error Backend::DeleteAllEntriesInternal() {
   if (!UpdateStoreStatusAndCommitTransaction(
           transaction,
           /*entry_count_delta=*/-store_status_.entry_count,
-          /*total_size_delta=*/-store_status_.total_size)) {
+          /*total_size_delta=*/-store_status_.total_size,
+          corruption_detected)) {
     return Error::kFailedToCommitTransaction;
   }
   return Error::kOk;
@@ -1059,9 +1093,8 @@ ErrorAndEvictionRequested Backend::DeleteLiveEntriesBetween(
   bool corruption_detected = false;
   Error result = DeleteLiveEntriesBetweenInternal(
       initial_time, end_time, excluded_keys, corruption_detected);
-  RecordTimeAndErrorResultHistogram(
-      "DeleteLiveEntriesBetween", timer.Elapsed(),
-      corruption_detected ? Error::kInvalidData : result);
+  RecordTimeAndErrorResultHistogram("DeleteLiveEntriesBetween", timer.Elapsed(),
+                                    result, corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteLiveEntriesBetween",
                    "result", [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -1141,7 +1174,8 @@ Error Backend::DeleteLiveEntriesBetweenInternal(
   // Update the in-memory and on-disk store status (entry count and total size)
   // and commit the transaction.
   if (!UpdateStoreStatusAndCommitTransaction(transaction, entry_count_delta,
-                                             total_size_delta.ValueOrDie())) {
+                                             total_size_delta.ValueOrDie(),
+                                             corruption_detected)) {
     return Error::kFailedToCommitTransaction;
   }
 
@@ -1159,7 +1193,7 @@ Error Backend::UpdateEntryLastUsed(const CacheEntryKey& key,
   base::ElapsedTimer timer;
   auto result = UpdateEntryLastUsedInternal(key, last_used);
   RecordTimeAndErrorResultHistogram("UpdateEntryLastUsed", timer.Elapsed(),
-                                    result);
+                                    result, /*corruption_detected=*/false);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.UpdateEntryLastUsed", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -1210,10 +1244,13 @@ ErrorAndEvictionRequested Backend::UpdateEntryHeaderAndLastUsed(
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
+  bool corruption_detected = false;
   auto result = UpdateEntryHeaderAndLastUsedInternal(
-      key, token, last_used, std::move(buffer), header_size_delta);
+      key, token, last_used, std::move(buffer), header_size_delta,
+      corruption_detected);
   RecordTimeAndErrorResultHistogram("UpdateEntryHeaderAndLastUsed",
-                                    timer.Elapsed(), result);
+                                    timer.Elapsed(), result,
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.UpdateEntryHeaderAndLastUsed",
                    "result", [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -1227,7 +1264,8 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
     const base::UnguessableToken& token,
     base::Time last_used,
     scoped_refptr<net::IOBuffer> buffer,
-    int64_t header_size_delta) {
+    int64_t header_size_delta,
+    bool& corruption_detected) {
   CHECK(buffer);
   CheckDatabaseInitStatus();
 
@@ -1253,6 +1291,7 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
         // This indicates data corruption in the database.
         // TODO(crbug.com/422065015): If this error is observed in UMA,
         // implement recovery logic.
+        corruption_detected = true;
         return Error::kInvalidData;
       }
     } else {
@@ -1262,7 +1301,7 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
   if (!UpdateStoreStatusAndCommitTransaction(
           transaction,
           /*entry_count_delta=*/0,
-          /*total_size_delta=*/header_size_delta)) {
+          /*total_size_delta=*/header_size_delta, corruption_detected)) {
     return Error::kFailedToCommitTransaction;
   }
 
@@ -1289,9 +1328,12 @@ ErrorAndEvictionRequested Backend::WriteEntryData(
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
+  bool corruption_detected = false;
   auto result = WriteEntryDataInternal(key, token, old_body_end, offset,
-                                       std::move(buffer), buf_len, truncate);
-  RecordTimeAndErrorResultHistogram("WriteEntryData", timer.Elapsed(), result);
+                                       std::move(buffer), buf_len, truncate,
+                                       corruption_detected);
+  RecordTimeAndErrorResultHistogram("WriteEntryData", timer.Elapsed(), result,
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.WriteEntryData", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -1306,7 +1348,8 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
                                       int64_t offset,
                                       scoped_refptr<net::IOBuffer> buffer,
                                       int buf_len,
-                                      bool truncate) {
+                                      bool truncate,
+                                      bool& corruption_detected) {
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1331,8 +1374,9 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
   // If the write starts before the current end of the body, it might overlap
   // with existing data.
   if (offset < old_body_end) {
-    if (Error result = TrimOverlappingBlobs(token, offset, write_end, truncate,
-                                            checked_total_size_delta);
+    if (Error result =
+            TrimOverlappingBlobs(token, offset, write_end, truncate,
+                                 checked_total_size_delta, corruption_detected);
         result != Error::kOk) {
       return result;
     }
@@ -1361,6 +1405,7 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
   if (!checked_total_size_delta.IsValid()) {
     // If the total size delta calculation resulted in an overflow, it suggests
     // that the size values in the database were corrupt.
+    corruption_detected = true;
     return Error::kInvalidData;
   }
   int64_t total_size_delta = checked_total_size_delta.ValueOrDie();
@@ -1382,6 +1427,7 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
       // expected. This indicates data corruption, so we return an error.
       const int64_t returned_new_body_end = statement.ColumnInt64(0);
       if (returned_new_body_end != new_body_end) {
+        corruption_detected = true;
         return Error::kBodyEndMismatch;
       }
       // If the entry is doomed, its size is no longer tracked in the cache's
@@ -1402,7 +1448,7 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
   if (!UpdateStoreStatusAndCommitTransaction(
           transaction,
           /*entry_count_delta=*/0,
-          /*total_size_delta=*/total_size_delta)) {
+          /*total_size_delta=*/total_size_delta, corruption_detected)) {
     return Error::kFailedToCommitTransaction;
   }
   return Error::kOk;
@@ -1417,7 +1463,8 @@ Error Backend::TrimOverlappingBlobs(
     int64_t offset,
     int64_t end,
     bool truncate,
-    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+    base::CheckedNumeric<int64_t>& checked_total_size_delta,
+    bool& corruption_detected) {
   TRACE_EVENT1("disk_cache", "SqlBackend.TrimOverlappingBlobs", "data",
                [&](perfetto::TracedValue trace_context) {
                  auto dict = std::move(trace_context).WriteDictionary();
@@ -1472,6 +1519,7 @@ Error Backend::TrimOverlappingBlobs(
       // Consistency check: The blob's size should match its start and end
       // offsets.
       if (!IsBlobSizeValid(blob_start, blob_end, blob)) {
+        corruption_detected = true;
         return Error::kInvalidData;
       }
       // Mark the overlapping blob for removal.
@@ -1498,7 +1546,8 @@ Error Backend::TrimOverlappingBlobs(
 
   // Delete the old blobs.
   if (Error error =
-          DeleteBlobsById(blob_ids_to_be_removed, checked_total_size_delta);
+          DeleteBlobsById(blob_ids_to_be_removed, checked_total_size_delta,
+                          corruption_detected);
       error != Error::kOk) {
     return error;
   }
@@ -1592,10 +1641,12 @@ Error Backend::InsertNewBlob(
 // A helper function to delete multiple blobs by their IDs.
 Error Backend::DeleteBlobsById(
     const std::vector<int64_t>& blob_ids_to_be_removed,
-    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+    base::CheckedNumeric<int64_t>& checked_total_size_delta,
+    bool& corruption_detected) {
   // Iterate through the provided blob IDs and delete each one.
   for (auto blob_id : blob_ids_to_be_removed) {
-    if (Error error = DeleteBlobById(blob_id, checked_total_size_delta);
+    if (Error error = DeleteBlobById(blob_id, checked_total_size_delta,
+                                     corruption_detected);
         error != Error::kOk) {
       return error;
     }
@@ -1607,7 +1658,8 @@ Error Backend::DeleteBlobsById(
 // `RETURNING` clause to get the size of the deleted blob to update the total.
 Error Backend::DeleteBlobById(
     int64_t blob_id,
-    base::CheckedNumeric<int64_t>& checked_total_size_delta) {
+    base::CheckedNumeric<int64_t>& checked_total_size_delta,
+    bool& corruption_detected) {
   TRACE_EVENT1("disk_cache", "SqlBackend.DeleteBlobById", "data",
                [&](perfetto::TracedValue trace_context) {
                  auto dict = std::move(trace_context).WriteDictionary();
@@ -1628,6 +1680,7 @@ Error Backend::DeleteBlobById(
   const int64_t start = statement.ColumnInt64(0);
   const int64_t end = statement.ColumnInt64(1);
   if (end <= start) {
+    corruption_detected = true;
     return Error::kInvalidData;
   }
   // Subtract the size of the deleted blob from the total size delta.
@@ -1669,10 +1722,13 @@ IntOrError Backend::ReadEntryData(const base::UnguessableToken& token,
                        PopulateTraceDetails(store_status_, dict);
                      });
   base::ElapsedTimer timer;
-  auto result = ReadEntryDataInternal(token, offset, std::move(buffer), buf_len,
-                                      body_end, sparse_reading);
+  bool corruption_detected = false;
+  auto result =
+      ReadEntryDataInternal(token, offset, std::move(buffer), buf_len, body_end,
+                            sparse_reading, corruption_detected);
   RecordTimeAndErrorResultHistogram("ReadEntryData", timer.Elapsed(),
-                                    result.error_or(Error::kOk));
+                                    result.error_or(Error::kOk),
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.ReadEntryData", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -1686,7 +1742,8 @@ IntOrError Backend::ReadEntryDataInternal(const base::UnguessableToken& token,
                                           scoped_refptr<net::IOBuffer> buffer,
                                           int buf_len,
                                           int64_t body_end,
-                                          bool sparse_reading) {
+                                          bool sparse_reading,
+                                          bool& corruption_detected) {
   CheckDatabaseInitStatus();
 
   if (offset < 0 || buf_len < 0 || !buffer || buf_len > buffer->size()) {
@@ -1714,6 +1771,7 @@ IntOrError Backend::ReadEntryDataInternal(const base::UnguessableToken& token,
     const int64_t blob_end = statement.ColumnInt64(1);
     base::span<const uint8_t> blob = statement.ColumnBlob(2);
     if (!IsBlobSizeValid(blob_start, blob_end, blob)) {
+      corruption_detected = true;
       return base::unexpected(Error::kInvalidData);
     }
     // Determine the part of the blob that falls within the read request.
@@ -1774,7 +1832,7 @@ RangeResult Backend::GetEntryAvailableRange(const base::UnguessableToken& token,
   base::ElapsedTimer timer;
   auto result = GetEntryAvailableRangeInternal(token, offset, len);
   RecordTimeAndErrorResultHistogram("GetEntryAvailableRange", timer.Elapsed(),
-                                    Error::kOk);
+                                    Error::kOk, /*corruption_detected=*/false);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.GetEntryAvailableRange", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
@@ -1850,7 +1908,8 @@ int64_t Backend::CalculateSizeOfEntriesBetween(base::Time initial_time,
   base::ElapsedTimer timer;
   auto result = CalculateSizeOfEntriesBetweenInternal(initial_time, end_time);
   RecordTimeAndErrorResultHistogram("CalculateSizeOfEntriesBetween",
-                                    timer.Elapsed(), Error::kOk);
+                                    timer.Elapsed(), Error::kOk,
+                                    /*corruption_detected=*/false);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.CalculateSizeOfEntriesBetween",
                    "result", result);
   return result;
@@ -1885,22 +1944,23 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResId(
                        dict.Add("res_id_cursor", res_id_cursor);
                      });
   base::ElapsedTimer timer;
-  Error error = Error::kOk;
-  auto result = OpenLatestEntryBeforeResIdInternal(res_id_cursor, error);
+  bool corruption_detected = false;
+  auto result =
+      OpenLatestEntryBeforeResIdInternal(res_id_cursor, corruption_detected);
   RecordTimeAndErrorResultHistogram("OpenLatestEntryBeforeResId",
-                                    timer.Elapsed(), error);
+                                    timer.Elapsed(), Error::kOk,
+                                    corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.OpenLatestEntryBeforeResId",
                    "result", [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, dict);
-                     PopulateTraceDetails(error, dict);
                    });
   return result;
 }
 
 OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
     int64_t res_id_cursor,
-    Error& error_out) {
+    bool& corruption_detected) {
   CheckDatabaseInitStatus();
 
   sql::Statement statement(db_.GetCachedStatement(
@@ -1914,7 +1974,7 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
     if (!maybe_token) {
       // If OpenNextEntry encounters invalid data, it records it in a histogram
       // and ignores the data.
-      error_out = Error::kInvalidData;
+      corruption_detected = true;
       continue;
     }
 
@@ -1929,7 +1989,7 @@ OptionalEntryInfoWithIdAndKey Backend::OpenLatestEntryBeforeResIdInternal(
     if (blob_span.size() > std::numeric_limits<int>::max()) {
       // If OpenNextEntry encounters invalid data, it records it in a histogram
       // and ignores the data.
-      error_out = Error::kInvalidData;
+      corruption_detected = true;
       continue;
     }
     entry_info.head = base::MakeRefCounted<net::GrowableIOBuffer>();
@@ -1945,13 +2005,17 @@ ErrorAndEvictionRequested Backend::RunEviction(
     base::flat_set<CacheEntryKey> excluded_keys) {
   TRACE_EVENT0("disk_cache", "SqlBackend.RunEviction");
   base::ElapsedTimer timer;
-  auto result = RunEvictionInternal(std::move(excluded_keys));
-  RecordTimeAndErrorResultHistogram("RunEviction", timer.Elapsed(), result);
+  bool corruption_detected = false;
+  auto result =
+      RunEvictionInternal(std::move(excluded_keys), corruption_detected);
+  RecordTimeAndErrorResultHistogram("RunEviction", timer.Elapsed(), result,
+                                    corruption_detected);
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
 Error Backend::RunEvictionInternal(
-    const base::flat_set<CacheEntryKey>& excluded_keys) {
+    const base::flat_set<CacheEntryKey>& excluded_keys,
+    bool& corruption_detected) {
   int64_t size_to_be_removed = GetSizeOfAllEntries() - low_watermark_;
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1976,6 +2040,7 @@ Error Backend::RunEvictionInternal(
       auto maybe_token = ToUnguessableToken(statement.ColumnInt64(0),
                                             statement.ColumnInt64(1));
       if (!maybe_token) {
+        corruption_detected = true;
         continue;
       }
       tokens_to_be_deleted.push_back(*maybe_token);
@@ -1986,6 +2051,7 @@ Error Backend::RunEvictionInternal(
       checked_removed_total_size += kSqlBackendStaticResourceSize;
       if (!checked_total_size_delta.IsValid() ||
           !checked_removed_total_size.IsValid()) {
+        corruption_detected = true;
         return Error::kInvalidData;
       }
     }
@@ -2005,8 +2071,8 @@ Error Backend::RunEvictionInternal(
     }
   }
   if (!UpdateStoreStatusAndCommitTransaction(
-          transaction, entry_count_delta,
-          checked_total_size_delta.ValueOrDie())) {
+          transaction, entry_count_delta, checked_total_size_delta.ValueOrDie(),
+          corruption_detected)) {
     return Error::kFailedToCommitTransaction;
   }
   return Error::kOk;
@@ -2015,7 +2081,8 @@ Error Backend::RunEvictionInternal(
 bool Backend::UpdateStoreStatusAndCommitTransaction(
     sql::Transaction& transaction,
     int64_t entry_count_delta,
-    int64_t total_size_delta) {
+    int64_t total_size_delta,
+    bool& corruption_detected) {
   const auto old_entry_count = store_status_.entry_count;
   const auto old_total_size = store_status_.total_size;
   if (entry_count_delta != 0) {
@@ -2025,6 +2092,7 @@ bool Backend::UpdateStoreStatusAndCommitTransaction(
     if (!base::CheckAdd(store_status_.entry_count, entry_count_delta)
              .AssignIfValid(&store_status_.entry_count) ||
         store_status_.entry_count < 0) {
+      corruption_detected = true;
       store_status_.entry_count = CalculateResourceEntryCount();
     }
     meta_table_.SetValue(kSqlBackendMetaTableKeyEntryCount,
@@ -2038,6 +2106,7 @@ bool Backend::UpdateStoreStatusAndCommitTransaction(
     if (!base::CheckAdd(store_status_.total_size, total_size_delta)
              .AssignIfValid(&store_status_.total_size) ||
         store_status_.total_size < 0) {
+      corruption_detected = true;
       store_status_.total_size = CalculateTotalSize();
     }
     meta_table_.SetValue(kSqlBackendMetaTableKeyTotalSize,

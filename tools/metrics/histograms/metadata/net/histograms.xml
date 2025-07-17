@@ -132,18 +132,23 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SqlPersistentStoreMethodName">
+  <variant name="CalculateSizeOfEntriesBetween"/>
   <variant name="CreateEntry"/>
   <variant name="DeleteAllEntries"/>
   <variant name="DeleteDoomedEntry"/>
   <variant name="DeleteLiveEntriesBetween"/>
   <variant name="DeleteLiveEntry"/>
   <variant name="DoomEntry"/>
+  <variant name="GetEntryAvailableRange"/>
   <variant name="Initialize"/>
   <variant name="OpenEntry"/>
   <variant name="OpenLatestEntryBeforeResId"/>
   <variant name="OpenOrCreateEntry"/>
+  <variant name="ReadEntryData"/>
+  <variant name="RunEviction"/>
   <variant name="UpdateEntryHeaderAndLastUsed"/>
   <variant name="UpdateEntryLastUsed"/>
+  <variant name="WriteEntryData"/>
 </variants>
 
 <variants name="SuccessOrFailure">
@@ -7463,7 +7468,20 @@ chromium-metrics-reviews@google.com.
   <owner>src/net/OWNERS</owner>
   <summary>
     Records the result of the method of the SQL-based disk cache backend. This
-    helps track the frequency of different failures.
+    helps track the frequency of different failures. This histogram is not
+    reported if any data corruption was detected during the operation.
+  </summary>
+  <token key="MethodName" variants="SqlPersistentStoreMethodName"/>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.{MethodName}.ResultWithCorruption"
+    enum="SqlDiskCacheStoreError" expires_after="2025-09-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the error result of a method of the SQL-based disk cache backend
+    when a data corruption is detected. This helps track the frequency of
+    different failures in corrupted scenarios.
   </summary>
   <token key="MethodName" variants="SqlPersistentStoreMethodName"/>
 </histogram>
@@ -7475,14 +7493,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time taken to run the method of the SQL-based disk cache
     backend. This metric is recorded immediately after the logic for the method
-    succeeded or failed. It helps diagnose performance regressions. The
-    histogram is not reported on Windows machines without high resolution
-    clocks.
+    succeeded or failed. It helps diagnose performance regressions. This
+    histogram is not reported if any data corruption was detected during the
+    operation. The histogram is not reported on Windows machines without high
+    resolution clocks.
   </summary>
   <token key="MethodName" variants="SqlPersistentStoreMethodName"/>
   <token key="TimeType">
     <variant name="FailureTime"/>
+    <variant name="FailureTimeWithCorruption"/>
     <variant name="SuccessTime"/>
+    <variant name="SuccessTimeWithCorruption"/>
   </token>
 </histogram>
 
