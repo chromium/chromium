@@ -363,7 +363,8 @@ void CookieControlsBubbleViewController::OnTrackingProtectionsButtonPressed() {
   controller_->SetStateChangedViaBypass(true);
   SetIsReloadingState(true);
   controller_->OnTrackingProtectionsChangedForSite();
-  web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
+  web_contents_->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
+                                        true);
   bubble_view_->GetContentView()->SetTrackingProtectionsButtonReloadingState();
   // Set a timeout for how long the reloading UI is shown for.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
