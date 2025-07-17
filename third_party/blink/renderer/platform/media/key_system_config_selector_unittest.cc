@@ -49,6 +49,11 @@ const char kUnsupportedKeySystem[] = "keysystem.test.unsupported";
 const char kSupportedRobustness[] = "supported";
 const char kRecommendIdentifierRobustness[] = "recommend_identifier";
 const char kRequireIdentifierRobustness[] = "require_identifier";
+const char kDisallowedIdentifierRobustness[] = "disallow_identifier";
+const char kDisallowIdentifierAndDisallowHwSecureCodecRobustness[] =
+    "disallow_identifier_and_disallow_hw_secure_codec";
+const char kDisallowIdentifierAndRequireHwSecureCodecRobustness[] =
+    "disallow_identifier_and_require_hw_secure_codec";
 const char kDisallowHwSecureCodecRobustness[] = "disallow_hw_secure_codec";
 const char kRequireHwSecureCodecRobustness[] = "require_hw_secure_codec";
 const char kRequireIdentifierAndHwSecureCodecRobustness[] =
@@ -328,8 +333,21 @@ class FakeKeySystems : public media::KeySystems {
     if (requested_robustness == kRecommendIdentifierRobustness) {
       return EmeConfig{.identifier = EmeConfigRuleState::kRecommended};
     }
+    if (requested_robustness == kDisallowedIdentifierRobustness) {
+      return EmeConfig{.identifier = EmeConfigRuleState::kNotAllowed};
+    }
     if (requested_robustness == kDisallowHwSecureCodecRobustness) {
       return EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
+    }
+    if (requested_robustness ==
+        kDisallowIdentifierAndDisallowHwSecureCodecRobustness) {
+      return EmeConfig{.identifier = EmeConfigRuleState::kNotAllowed,
+                       .hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
+    }
+    if (requested_robustness ==
+        kDisallowIdentifierAndRequireHwSecureCodecRobustness) {
+      return EmeConfig{.identifier = EmeConfigRuleState::kNotAllowed,
+                       .hw_secure_codecs = EmeConfigRuleState::kRequired};
     }
     if (requested_robustness == kRequireHwSecureCodecRobustness) {
       return EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kRequired};
@@ -1282,6 +1300,26 @@ TEST_F(KeySystemConfigSelectorTest,
   EXPECT_EQ(MediaKeysRequirement::kRequired, config_.distinctive_identifier);
 }
 
+TEST_F(
+    KeySystemConfigSelectorTest,
+    VideoCapabilities_DisallowedIdentifierRobustness_PermissionNotRequested) {
+  media_permission_->is_granted = true;
+  key_systems_->distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
+
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kSupportedVideoCodec;
+  video_capabilities[0].robustness = kDisallowedIdentifierRobustness;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  SelectConfigReturnsConfig();
+  EXPECT_EQ(MediaKeysRequirement::kNotAllowed, config_.distinctive_identifier);
+}
+
 TEST_F(KeySystemConfigSelectorTest,
        VideoCapabilities_Robustness_NoPermissionRecommendedCrossOrigin) {
   key_systems_->distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
@@ -1649,6 +1687,76 @@ TEST_F(KeySystemConfigSelectorTest,
   SelectConfigReturnsError();
 }
 
+TEST_F(KeySystemConfigSelectorTest,
+       RequireIdentifierAndDisallowHwSecureCodec_PermissionRequested) {
+  media_permission_->is_granted = true;
+  key_systems_->distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
+
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "require_hw_secure_codec";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kDisallowHwSecureCodec;
+  video_capabilities[0].robustness = kRequireIdentifierRobustness;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  configs_.push_back(config);
+
+  SelectConfigRequestsPermissionAndReturnsConfig();
+  EXPECT_EQ(MediaKeysRequirement::kRequired, config_.distinctive_identifier);
+  ASSERT_EQ(1u, config_.video_capabilities.size());
+  EXPECT_EQ("require_hw_secure_codec",
+            config_.video_capabilities[0].content_type);
+  EXPECT_FALSE(cdm_config_.use_hw_secure_codecs);
+}
+
+TEST_F(KeySystemConfigSelectorTest,
+       DisallowIdentifierAndDisallowHwSecureCodec_NotSupported) {
+  // NOTE: Robustness disallows identifier, but JS requires it.
+
+  // Arrange
+  media_permission_->is_granted = true;
+  key_systems_->distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
+
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kSupportedVideoCodec;
+  video_capabilities[0].robustness =
+      kDisallowIdentifierAndDisallowHwSecureCodecRobustness;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  config.distinctive_identifier = MediaKeysRequirement::kRequired;
+  configs_.push_back(config);
+
+  // Act/Assert
+  SelectConfigReturnsError();
+}
+
+TEST_F(KeySystemConfigSelectorTest,
+       DisallowIdentifierAndRequireHwSecureCodec_NotSupported) {
+  // NOTE: Robustness disallows identifier, but JS requires it.
+
+  // Arrange
+  media_permission_->is_granted = true;
+  key_systems_->distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
+
+  std::vector<WebMediaKeySystemMediaCapability> video_capabilities(1);
+  video_capabilities[0].content_type = "a";
+  video_capabilities[0].mime_type = kSupportedVideoContainer;
+  video_capabilities[0].codecs = kSupportedVideoCodec;
+  video_capabilities[0].robustness =
+      kDisallowIdentifierAndRequireHwSecureCodecRobustness;
+
+  auto config = EmptyConfiguration();
+  config.video_capabilities = video_capabilities;
+  config.distinctive_identifier = MediaKeysRequirement::kRequired;
+  configs_.push_back(config);
+
+  // Act/Assert
+  SelectConfigReturnsError();
+}
 // --- Identifier, Persistence and HW Secure Robustness ---
 
 TEST_F(KeySystemConfigSelectorTest,

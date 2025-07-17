@@ -213,7 +213,10 @@ EmeConfig::Rule WidevineKeySystemInfo::GetRobustnessConfigRule(
     // On Windows, when software security is queried, explicitly not allow
     // hardware secure codecs to prevent robustness level upgrade, for stability
     // and compatibility reasons. See https://crbug.com/1327043.
-    return EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
+    // Also explicitly not allow identifier to prevent permission request.
+    // https://crbug.com/432054935.
+    return EmeConfig{.identifier = EmeConfigRuleState::kNotAllowed,
+                     .hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
   }
 #else
   // On other platforms, require hardware secure codecs for HW_SECURE_CRYPTO and
