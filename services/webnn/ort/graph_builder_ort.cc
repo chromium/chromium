@@ -107,20 +107,44 @@ constexpr base::cstring_view kOpTypeMaxPool2d = "MaxPool";
 constexpr base::cstring_view kOpTypeLpPool2d = "LpPool";
 
 // Reduction operations
-constexpr char kOpTypeReduceL1[] = "ReduceL1";
-constexpr char kOpTypeReduceL2[] = "ReduceL2";
-constexpr char kOpTypeReduceLogSum[] = "ReduceLogSum";
-constexpr char kOpTypeReduceLogSumExp[] = "ReduceLogSumExp";
-constexpr char kOpTypeReduceMax[] = "ReduceMax";
-constexpr char kOpTypeReduceMean[] = "ReduceMean";
-constexpr char kOpTypeReduceMin[] = "ReduceMin";
-constexpr char kOpTypeReduceProd[] = "ReduceProd";
-constexpr char kOpTypeReduceSum[] = "ReduceSum";
-constexpr char kOpTypeReduceSumSquare[] = "ReduceSumSquare";
+constexpr base::cstring_view kOpTypeReduceL1 = "ReduceL1";
+constexpr base::cstring_view kOpTypeReduceL2 = "ReduceL2";
+constexpr base::cstring_view kOpTypeReduceLogSum = "ReduceLogSum";
+constexpr base::cstring_view kOpTypeReduceLogSumExp = "ReduceLogSumExp";
+constexpr base::cstring_view kOpTypeReduceMax = "ReduceMax";
+constexpr base::cstring_view kOpTypeReduceMean = "ReduceMean";
+constexpr base::cstring_view kOpTypeReduceMin = "ReduceMin";
+constexpr base::cstring_view kOpTypeReduceProd = "ReduceProd";
+constexpr base::cstring_view kOpTypeReduceSum = "ReduceSum";
+constexpr base::cstring_view kOpTypeReduceSumSquare = "ReduceSumSquare";
 
-constexpr std::string_view kInserted = "Inserted";
-constexpr std::string_view kToEmulate = "ToEmulate";
-constexpr std::string_view kUnderscore = "_";
+// Attributes
+constexpr base::cstring_view kAttrAlpha = "alpha";
+constexpr base::cstring_view kAttrAxis = "axis";
+constexpr base::cstring_view kAttrBeta = "beta";
+constexpr base::cstring_view kAttrCeilMode = "ceil_mode";
+constexpr base::cstring_view kAttrDilations = "dilations";
+constexpr base::cstring_view kAttrEpsilon = "epsilon";
+constexpr base::cstring_view kAttrExclusive = "exclusive";
+constexpr base::cstring_view kAttrGroup = "group";
+constexpr base::cstring_view kAttrKeepDims = "keepdims";
+constexpr base::cstring_view kAttrKernelShape = "kernel_shape";
+constexpr base::cstring_view kAttrMode = "mode";
+constexpr base::cstring_view kAttrNoopWithEmptyAxes = "noop_with_empty_axes";
+constexpr base::cstring_view kAttrOutputPadding = "output_padding";
+constexpr base::cstring_view kAttrP = "p";
+constexpr base::cstring_view kAttrPads = "pads";
+constexpr base::cstring_view kAttrPerm = "perm";
+constexpr base::cstring_view kAttrReverse = "reverse";
+constexpr base::cstring_view kAttrStrides = "strides";
+constexpr base::cstring_view kAttrTo = "to";
+constexpr base::cstring_view kAttrTransA = "transA";
+constexpr base::cstring_view kAttrTransB = "transB";
+constexpr base::cstring_view kAttrUpper = "upper";
+
+constexpr base::cstring_view kInserted = "Inserted";
+constexpr base::cstring_view kToEmulate = "ToEmulate";
+constexpr base::cstring_view kUnderscore = "_";
 
 std::string GetOperandName(std::string_view name, OperandId id) {
   return base::JoinString({name, base::NumberToString(id.value())},
@@ -245,7 +269,7 @@ void CheckReduceInputSupported(const DataTypeLimits& data_type_limits,
   }
 }
 
-std::string MapReduceKindToOrtOpType(mojom::Reduce::Kind kind) {
+base::cstring_view MapReduceKindToOrtOpType(mojom::Reduce::Kind kind) {
   switch (kind) {
     case mojom::Reduce::Kind::kL1:
       return kOpTypeReduceL1;
@@ -446,7 +470,6 @@ void GraphBuilderOrt::AddCastNode(base::cstring_view node_name,
                                   ONNXTensorElementDataType to_data_type) {
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
-  constexpr base::cstring_view kAttrTo = "to";
   int64_t attr_to_data = static_cast<int64_t>(to_data_type);
   std::array<ScopedOrtOpAttr, 1> attributes = {
       model_editor_.CreateAttribute(kAttrTo, attr_to_data)};
@@ -663,8 +686,6 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
   CHECK(context_properties_.data_type_limits.arg_min_max_output.Has(
       output_data_type));
 
-  constexpr base::cstring_view kAttrAxis = "axis";
-  constexpr base::cstring_view kAttrKeepDims = "keepdims";
   std::array<ScopedOrtOpAttr, 2> attributes = {
       model_editor_.CreateAttribute(kAttrAxis,
                                     static_cast<int64_t>(arg_min_max.axis)),
@@ -752,9 +773,8 @@ void GraphBuilderOrt::AddBatchNormalizationOperation(
                                        bias.c_str(), mean.c_str(),
                                        variance.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
-  constexpr base::cstring_view kEpsilon = "epsilon";
   std::array<ScopedOrtOpAttr, 1> attributes = {
-      model_editor_.CreateAttribute(kEpsilon, batch_normalization.epsilon)};
+      model_editor_.CreateAttribute(kAttrEpsilon, batch_normalization.epsilon)};
   model_editor_.AddNode(kOpTypeBatchNormalization, node_name, inputs, outputs,
                         attributes);
 }
@@ -794,12 +814,10 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(conv2d.dilations->height),
       base::checked_cast<int64_t>(conv2d.dilations->width)};
-  constexpr base::cstring_view kAttrDilations = "dilations";
   attributes.push_back(
       model_editor_.CreateAttribute(kAttrDilations, dilations));
 
   int64_t group = base::checked_cast<int64_t>(conv2d.groups);
-  constexpr base::cstring_view kAttrGroup = "group";
   attributes.push_back(model_editor_.CreateAttribute(kAttrGroup, group));
 
   std::array<int64_t, 4> pads = {
@@ -807,13 +825,11 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
       base::checked_cast<int64_t>(conv2d.padding->beginning->width),
       base::checked_cast<int64_t>(conv2d.padding->ending->height),
       base::checked_cast<int64_t>(conv2d.padding->ending->width)};
-  constexpr base::cstring_view kAttrPads = "pads";
   attributes.push_back(model_editor_.CreateAttribute(kAttrPads, pads));
 
   std::array<int64_t, 2> strides = {
       base::checked_cast<int64_t>(conv2d.strides->height),
       base::checked_cast<int64_t>(conv2d.strides->width)};
-  constexpr base::cstring_view kAttrStrides = "strides";
   attributes.push_back(model_editor_.CreateAttribute(kAttrStrides, strides));
 
   switch (conv2d.kind) {
@@ -858,7 +874,6 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
       std::array<int64_t, 2> output_padding = {output_padding_height,
                                                output_padding_width};
 
-      constexpr base::cstring_view kAttrOutputPadding = "output_padding";
       attributes.push_back(
           model_editor_.CreateAttribute(kAttrOutputPadding, output_padding));
 
@@ -881,8 +896,6 @@ void GraphBuilderOrt::AddCumulativeSumOperation(
   const std::string axis =
       CreateScalarInitializer(base::checked_cast<int64_t>(cumulative_sum.axis));
 
-  constexpr base::cstring_view kAttrExclusive = "exclusive";
-  constexpr base::cstring_view kAttrReverse = "reverse";
   std::array<ScopedOrtOpAttr, 2> attributes = {
       model_editor_.CreateAttribute(
           kAttrExclusive,
@@ -920,9 +933,8 @@ void GraphBuilderOrt::AddEluOperation(const mojom::Elu& elu) {
     elu_output = GenerateOperandName();
   }
 
-  constexpr base::cstring_view kAlpha = "alpha";
   std::array<ScopedOrtOpAttr, 1> attributes = {
-      model_editor_.CreateAttribute(kAlpha, elu.alpha)};
+      model_editor_.CreateAttribute(kAttrAlpha, elu.alpha)};
 
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {elu_output.c_str()};
@@ -1252,9 +1264,8 @@ void GraphBuilderOrt::AddConcatOperation(const mojom::Concat& concat) {
   const std::string output = GetOperandNameById(concat.output_operand_id);
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAxis = "axis";
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
-      kAxis, base::checked_cast<int64_t>(concat.axis))};
+      kAttrAxis, base::checked_cast<int64_t>(concat.axis))};
 
   model_editor_.AddNode(kOpTypeConcat, node_name, inputs, outputs, attributes);
 }
@@ -1278,7 +1289,6 @@ void GraphBuilderOrt::AddGatherOperation(const T& operation,
   std::array<const char*, 2> inputs = {input.c_str(), clamped_indices.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrAxis = "axis";
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
       kAttrAxis, static_cast<int64_t>(operation.axis))};
 
@@ -1345,10 +1355,6 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   }
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrAlpha = "alpha";
-  constexpr base::cstring_view kAttrBeta = "beta";
-  constexpr base::cstring_view kAttrTransA = "transA";
-  constexpr base::cstring_view kAttrTransB = "transB";
   std::array<ScopedOrtOpAttr, 4> attributes = {
       model_editor_.CreateAttribute(kAttrAlpha, gemm.alpha),
       model_editor_.CreateAttribute(kAttrBeta, gemm.beta),
@@ -1372,8 +1378,6 @@ void GraphBuilderOrt::AddHardSigmoidOperation(
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrAlpha = "alpha";
-  constexpr base::cstring_view kAttrBeta = "beta";
   std::array<ScopedOrtOpAttr, 2> attributes = {
       model_editor_.CreateAttribute(kAttrAlpha, hard_sigmoid.alpha),
       model_editor_.CreateAttribute(kAttrBeta, hard_sigmoid.beta)};
@@ -1425,7 +1429,6 @@ void GraphBuilderOrt::AddInstanceNormalizationOperation(
   std::array<const char*, 3> inputs = {input.c_str(), scale.c_str(),
                                        bias.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
-  constexpr base::cstring_view kAttrEpsilon = "epsilon";
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
       kAttrEpsilon, instance_normalization.epsilon)};
   model_editor_.AddNode(kOpTypeInstanceNormalization, node_name, inputs,
@@ -1444,7 +1447,6 @@ void GraphBuilderOrt::AddLeakyReluOperation(
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrAlpha = "alpha";
   std::array<ScopedOrtOpAttr, 1> attributes = {
       model_editor_.CreateAttribute(kAttrAlpha, leaky_relu.alpha)};
   model_editor_.AddNode(kOpTypeLeakyRelu, node_name, inputs, outputs,
@@ -1503,11 +1505,6 @@ void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
 
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   std::vector<ScopedOrtOpAttr> attributes;
-  constexpr base::cstring_view kAttrDilations = "dilations";
-  constexpr base::cstring_view kAttrStrides = "strides";
-  constexpr base::cstring_view kAttrKernelShape = "kernel_shape";
-  constexpr base::cstring_view kAttrPads = "pads";
-  constexpr base::cstring_view kAttrCeilMode = "ceil_mode";
 
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(pool2d.dilations->height),
@@ -1569,7 +1566,6 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
     }
     case mojom::Pool2d::Kind::kL2Pool2d: {
       CHECK(data_type_limits.l2_pool2d_input.Supports(input_descriptor));
-      constexpr base::cstring_view kAttrP = "p";
       op_type = kOpTypeLpPool2d;
       attributes.push_back(
           model_editor_.CreateAttribute(kAttrP, static_cast<int64_t>(2)));
@@ -1647,19 +1643,15 @@ void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
   inputs.push_back(axes.c_str());
 
   int64_t keepdims = reduce.keep_dimensions ? 1 : 0;
-  constexpr base::cstring_view kAttrKeepdims = "keepdims";
-
   int64_t noop_with_empty_axes = 1;
-  constexpr base::cstring_view kAttrNoopWithEmptyAxes = "noop_with_empty_axes";
-
   std::array<ScopedOrtOpAttr, 2> attributes = {
-      model_editor_.CreateAttribute(kAttrKeepdims, keepdims),
+      model_editor_.CreateAttribute(kAttrKeepDims, keepdims),
       model_editor_.CreateAttribute(kAttrNoopWithEmptyAxes,
                                     noop_with_empty_axes),
   };
 
   const std::string node_name = GenerateNodeName(reduce.label);
-  std::string reduce_op_type = MapReduceKindToOrtOpType(reduce.kind);
+  base::cstring_view reduce_op_type = MapReduceKindToOrtOpType(reduce.kind);
   model_editor_.AddNode(reduce_op_type, node_name, inputs, outputs, attributes);
 }
 
@@ -1697,7 +1689,6 @@ void GraphBuilderOrt::AddResample2dOperation(
                                        scales.c_str(), sizes.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrMode = "mode";
   std::string mode;
   switch (resample2d.mode) {
     case mojom::Resample2d::InterpolationMode::kLinear:
@@ -1786,7 +1777,6 @@ void GraphBuilderOrt::AddScatterElementsOperation(
                                        updates.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrAxis = "axis";
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
       kAttrAxis, static_cast<int64_t>(scatter_elements.axis))};
 
@@ -1870,7 +1860,6 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrAxis = "axis";
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
       kAttrAxis, static_cast<int64_t>(softmax.axis))};
 
@@ -1919,7 +1908,6 @@ void GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
       break;
   }
 
-  constexpr base::cstring_view kAttrMode = "mode";
   std::array<ScopedOrtOpAttr, 1> attributes = {
       model_editor_.CreateAttribute(kAttrMode, mode)};
   model_editor_.AddNode(kOpTypePad, node_name, inputs, outputs, attributes);
@@ -1982,7 +1970,6 @@ void GraphBuilderOrt::AddSplitOperation(const mojom::Split& split) {
     outputs[i] = output_names[i].c_str();
   }
 
-  constexpr base::cstring_view kAttrAxis = "axis";
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
       kAttrAxis, base::checked_cast<int64_t>(split.axis))};
 
@@ -2017,7 +2004,6 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrPerm = "perm";
   std::vector<int64_t> perm_value(transpose.permutation.begin(),
                                   transpose.permutation.end());
   std::array<ScopedOrtOpAttr, 1> attributes = {
@@ -2041,7 +2027,6 @@ void GraphBuilderOrt::AddTriangularOperation(
   std::array<const char*, 2> inputs = {input.c_str(), diagonal.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  constexpr base::cstring_view kAttrUpper = "upper";
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
       kAttrUpper, static_cast<int64_t>(triangular.upper))};
 
