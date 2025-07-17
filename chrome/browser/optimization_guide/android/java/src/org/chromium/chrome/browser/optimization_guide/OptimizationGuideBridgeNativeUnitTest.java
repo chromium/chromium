@@ -122,7 +122,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         assertEquals(OptimizationGuideDecision.TRUE, decisionMetadata.getDecision());
         assertNotNull(decisionMetadata.getMetadata());
         assertEquals(
-                "optimization_guide.proto.LoadingPredictorMetadata",
+                "type.googleapis.com/optimization_guide.proto.LoadingPredictorMetadata",
                 decisionMetadata.getMetadata().getTypeUrl());
     }
 
@@ -135,7 +135,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         assertEquals(OptimizationGuideDecision.TRUE, result.getDecision());
         assertNotNull(result.getMetadata());
         assertEquals(
-                "optimization_guide.proto.LoadingPredictorMetadata",
+                "type.googleapis.com/optimization_guide.proto.LoadingPredictorMetadata",
                 result.getMetadata().getTypeUrl());
     }
 
@@ -163,7 +163,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         assertEquals(OptimizationGuideDecision.TRUE, test_url_lp_metadata.getDecision());
         assertNotNull(test_url_lp_metadata.getMetadata());
         assertEquals(
-                "optimization_guide.proto.LoadingPredictorMetadata",
+                "type.googleapis.com/optimization_guide.proto.LoadingPredictorMetadata",
                 test_url_lp_metadata.getMetadata().getTypeUrl());
         OptimizationGuideDecisionWithMetadata test_url_ds_metadata =
                 test_url_metadata.get(OptimizationType.DEFER_ALL_SCRIPT);
@@ -185,7 +185,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         assertEquals(OptimizationGuideDecision.TRUE, test_url2_ds_metadata.getDecision());
         assertNotNull(test_url2_ds_metadata.getMetadata());
         assertEquals(
-                "optimization_guide.proto.StringValue",
+                "type.googleapis.com/optimization_guide.proto.StringValue",
                 test_url2_ds_metadata.getMetadata().getTypeUrl());
     }
 }

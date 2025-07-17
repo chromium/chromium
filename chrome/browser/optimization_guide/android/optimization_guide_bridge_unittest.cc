@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -102,7 +103,7 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
   RegisterOptimizationTypes();
   optimization_guide::proto::LoadingPredictorMetadata hints_metadata;
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(hints_metadata);
+  metadata.set_any_metadata(optimization_guide::AnyWrapProto(hints_metadata));
   EXPECT_CALL(*optimization_guide_keyed_service_,
               CanApplyOptimization(
                   GURL("https://example.com/"),
@@ -120,7 +121,7 @@ TEST_F(OptimizationGuideBridgeTest, SyncCanApplyOptimizationHasHint) {
   RegisterOptimizationTypes();
   optimization_guide::proto::LoadingPredictorMetadata hints_metadata;
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(hints_metadata);
+  metadata.set_any_metadata(optimization_guide::AnyWrapProto(hints_metadata));
   EXPECT_CALL(
       *optimization_guide_keyed_service_,
       CanApplyOptimization(GURL("https://example.com/"),
@@ -137,11 +138,11 @@ TEST_F(OptimizationGuideBridgeTest, SyncCanApplyOptimizationHasHint) {
 TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationOnDemand) {
   optimization_guide::proto::LoadingPredictorMetadata lp_metadata;
   optimization_guide::OptimizationMetadata metadata;
-  metadata.SetAnyMetadataForTesting(lp_metadata);
+  metadata.set_any_metadata(optimization_guide::AnyWrapProto(lp_metadata));
 
   optimization_guide::proto::StringValue ds_metadata;
   optimization_guide::OptimizationMetadata metadata2;
-  metadata2.SetAnyMetadataForTesting(ds_metadata);
+  metadata2.set_any_metadata(optimization_guide::AnyWrapProto(ds_metadata));
 
   base::flat_map<optimization_guide::proto::OptimizationType,
                  optimization_guide::OptimizationGuideDecisionWithMetadata>
