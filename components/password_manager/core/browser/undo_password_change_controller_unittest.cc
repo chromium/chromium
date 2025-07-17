@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -214,12 +215,16 @@ TEST_F(UndoPasswordChangeControllerTest, OnSuggestionSelectedTwice) {
 TEST_F(UndoPasswordChangeControllerTest, OnTroubleSigningIn) {
   const auto credential = GetPasswordAndMetadata();
   const auto password_details = GetSuggestionDetails(credential);
+  base::HistogramTester histogram_tester;
 
   controller_.OnSuggestionSelected(credential);
   controller_.OnTroubleSigningInClicked(password_details);
 
   EXPECT_EQ(controller_.GetState(credential.username_value),
             PasswordRecoveryState::kIncludeBackup);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeRecoveryFlow",
+      PasswordChangeRecoveryFlowState::kTroubleSigningInClicked, 1);
 }
 
 TEST_F(UndoPasswordChangeControllerTest, DifferentUsernameResetsFlow) {
@@ -367,6 +372,7 @@ TEST_F(UndoPasswordChangeControllerTest, OnSuggestionsHidden) {
   best_match_form_.SetPasswordBackupNote(kBackupPassword);
   auto form_manager = CreateFormManager(best_match_form_);
   base::RunLoop run_loop;
+  base::HistogramTester histogram_tester;
 
   controller_.OnLoginPotentiallyFailed(&driver_, failed_login_form_);
   EXPECT_CALL(driver_, TriggerPasswordRecoverySuggestions(
@@ -379,6 +385,9 @@ TEST_F(UndoPasswordChangeControllerTest, OnSuggestionsHidden) {
 
   EXPECT_EQ(controller_.GetState(kUsername),
             PasswordRecoveryState::kIncludeBackup);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeRecoveryFlow",
+      PasswordChangeRecoveryFlowState::kProactiveRecoveryPopupShown, 1);
 }
 
 }  // namespace password_manager

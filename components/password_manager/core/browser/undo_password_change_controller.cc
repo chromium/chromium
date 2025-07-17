@@ -21,6 +21,14 @@
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 
 namespace password_manager {
+
+namespace {
+
+constexpr char kPasswordChangeRecoveryFlowStateHistogram[] =
+    "PasswordManager.PasswordChangeRecoveryFlow";
+
+}  // namespace
+
 UndoPasswordChangeController::UndoPasswordChangeController() = default;
 UndoPasswordChangeController::~UndoPasswordChangeController() {
   FinishObserving();
@@ -47,6 +55,10 @@ void UndoPasswordChangeController::OnTroubleSigningInClicked(
   CHECK_EQ(suggestion_details.username, current_username_);
 
   current_state_ = PasswordRecoveryState::kIncludeBackup;
+
+  base::UmaHistogramEnumeration(
+      kPasswordChangeRecoveryFlowStateHistogram,
+      PasswordChangeRecoveryFlowState::kTroubleSigningInClicked);
 }
 
 void UndoPasswordChangeController::OnLoginPotentiallyFailed(
@@ -89,6 +101,10 @@ UndoPasswordChangeController::FindLoginWithProactiveRecoveryState(
 void UndoPasswordChangeController::OnSuggestionsHidden() {
   if (current_state_ == PasswordRecoveryState::kShowProactiveRecovery) {
     current_state_ = PasswordRecoveryState::kIncludeBackup;
+
+    base::UmaHistogramEnumeration(
+        kPasswordChangeRecoveryFlowStateHistogram,
+        PasswordChangeRecoveryFlowState::kProactiveRecoveryPopupShown);
   }
   FinishObserving();
 }

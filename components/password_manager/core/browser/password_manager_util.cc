@@ -263,6 +263,17 @@ const PasswordForm* FindFormByUsername(
   return nullptr;
 }
 
+const password_manager::PasswordForm* FindLoginWithChangedPassword(
+    const password_manager::PasswordFormManagerForUI& submitted_manager) {
+  const password_manager::PasswordForm* match = FindFormByUsername(
+      submitted_manager.GetBestMatches(),
+      submitted_manager.GetPendingCredentials().username_value);
+  return match && match->type ==
+                      password_manager::PasswordForm::Type::kChangeSubmission
+             ? match
+             : nullptr;
+}
+
 const PasswordForm* GetMatchForUpdating(
     const PasswordForm& submitted_form,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&

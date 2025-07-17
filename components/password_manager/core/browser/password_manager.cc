@@ -97,17 +97,6 @@ namespace {
 using Logger = autofill::SavePasswordProgressLogger;
 constexpr char kLogInWithPasswordChangeSubmissionHistogram[] =
     "PasswordManager.LogInWithPasswordChangeSubmission";
-
-const PasswordForm* FindLoginWithChangedPassword(
-    const PasswordFormManager& submitted_manager) {
-  const PasswordForm* match = password_manager_util::FindFormByUsername(
-      submitted_manager.GetBestMatches(),
-      submitted_manager.GetPendingCredentials().username_value);
-  return match && match->type == PasswordForm::Type::kChangeSubmission
-             ? match
-             : nullptr;
-}
-
 bool DidLoginWithPrimaryChangedPassword(
     const PasswordFormManager& submitted_manager,
     const PasswordForm& change_password_login) {
@@ -122,7 +111,7 @@ void RecordMetricsForLoginWithChangedPassword(
     ukm::SourceId ukm_id,
     bool login_successful) {
   const PasswordForm* change_password_login =
-      FindLoginWithChangedPassword(submitted_manager);
+      password_manager_util::FindLoginWithChangedPassword(submitted_manager);
   if (!change_password_login) {
     return;
   }

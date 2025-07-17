@@ -794,6 +794,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate.h) -->
 
+<!-- LINT.IfChange(PasswordChangeRecoveryFlowState) -->
+
+<enum name="PasswordChangeRecoveryFlowState">
+  <int value="0" label="TroubleSigningInClicked"/>
+  <int value="1" label="ProactiveRecoveryPopupShown"/>
+  <int value="2" label="PrimaryPasswordUpdated"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/undo_password_change_controller.h:PasswordChangeRecoveryFlowState) -->
+
 <!-- LINT.IfChange(PasswordChangeToastEvent) -->
 
 <enum name="PasswordChangeToastEvent">

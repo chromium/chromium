@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 
 namespace password_manager {
@@ -113,6 +114,12 @@ std::vector<password_manager::PasswordForm> FindBestMatches(
 const password_manager::PasswordForm* FindFormByUsername(
     base::span<const password_manager::PasswordForm> forms,
     const std::u16string& username_value);
+
+// Returns a form from |submitted_manager|'s best matches with
+// `kChangeSubmission` type that matches |submitted_manager|'s pending
+// credentials on username. Returns nullptr is such form is not found.
+const password_manager::PasswordForm* FindLoginWithChangedPassword(
+    const password_manager::PasswordFormManagerForUI& submitted_manager);
 
 // If the user submits a form, they may have used existing credentials, new
 // credentials, or modified existing credentials that should be updated.

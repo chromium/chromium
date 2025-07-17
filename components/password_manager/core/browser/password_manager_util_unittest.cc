@@ -31,6 +31,7 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -655,6 +656,26 @@ TEST(PasswordManagerUtil, GetSignonRealm) {
   for (const auto& test_case : test_cases) {
     EXPECT_EQ(test_case.second, GetSignonRealm(test_case.first));
   }
+}
+
+TEST(PasswordManagerUtil, FindLoginWithChangedPassword) {
+  PasswordForm submitted_form;
+  submitted_form.username_value = u"username";
+  submitted_form.password_value = u"password";
+  PasswordForm backup_password_match(submitted_form);
+  backup_password_match.SetPasswordBackupNote(u"backup_password");
+  backup_password_match.type =
+      password_manager::PasswordForm::Type::kChangeSubmission;
+  auto form_manager = std::make_unique<
+      testing::StrictMock<password_manager::MockPasswordFormManagerForUI>>();
+  EXPECT_CALL(*form_manager, GetBestMatches())
+      .WillOnce(
+          testing::Return(std::vector<PasswordForm>{backup_password_match}));
+  EXPECT_CALL(*form_manager, GetPendingCredentials())
+      .WillOnce(testing::ReturnRef(submitted_form));
+
+  EXPECT_EQ(*FindLoginWithChangedPassword(*form_manager.get()),
+            backup_password_match);
 }
 
 // TODO(crbug.com/378653046): Merge android and non-android tests when

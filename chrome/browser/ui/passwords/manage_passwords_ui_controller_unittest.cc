@@ -49,6 +49,7 @@
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -552,6 +553,42 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSaved) {
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordChangeRecoveryFlow", 0);
+}
+
+TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {
+  base::HistogramTester histogram_tester;
+  auto* mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+      TrustSafetySentimentServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+  EXPECT_CALL(*mock_sentiment_service_, SavedPassword());
+  const std::u16string backup_password = u"backup";
+  PasswordForm submitted_form;
+  submitted_form.username_value = kExampleUsername;
+  submitted_form.password_value = backup_password;
+  PasswordForm stored_matching_form;
+  stored_matching_form.username_value = kExampleUsername;
+  stored_matching_form.password_value = kExamplePassword;
+  stored_matching_form.SetPasswordBackupNote(backup_password);
+  stored_matching_form.type =
+      password_manager::PasswordForm::Type::kChangeSubmission;
+  auto test_form_manager = CreateFormManagerWithBestMatches(
+      /*best_matches=*/{stored_matching_form}, &submitted_form);
+
+  EXPECT_CALL(*test_form_manager, Save());
+  controller()->OnUpdatePasswordSubmitted(std::move(test_form_manager));
+  controller()->SavePassword(submitted_form.username_value,
+                             submitted_form.password_value);
+
+  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeRecoveryFlow",
+      password_manager::PasswordChangeRecoveryFlowState::
+          kPrimaryPasswordUpdated,
+      1);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PhishedPasswordUpdated) {
