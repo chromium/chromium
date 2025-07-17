@@ -640,5 +640,60 @@ TEST_F(WebAppDatabaseSerializationTest,
   EXPECT_THAT(ParseWebAppProto(proto), IsNull());
 }
 
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_HasTrustedIcons_Valid) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+
+  sync_pb::WebAppIconInfo* icon1 = proto.add_trusted_icons();
+  icon1->set_url(start_url.Resolve(std::string("/icon") + "1").spec());
+  icon1->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon1->set_size_in_px(32);
+
+  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_HasTrustedIcons_InvalidMissingUrl) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+
+  sync_pb::WebAppIconInfo* icon1 = proto.add_trusted_icons();
+  icon1->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+  icon1->set_size_in_px(32);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_HasTrustedIcons_MissingPurposeANY) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+
+  sync_pb::WebAppIconInfo* icon1 = proto.add_trusted_icons();
+  icon1->set_url(start_url.Resolve(std::string("/icon") + "1").spec());
+  icon1->set_size_in_px(32);
+  auto web_app = ParseWebAppProto(proto);
+
+  ASSERT_THAT(web_app, NotNull());
+  ASSERT_EQ(1u, web_app->trusted_icons().size());
+  EXPECT_EQ(apps::IconInfo::Purpose::kAny, web_app->trusted_icons()[0].purpose);
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_HasTrustedIcons_MissingSizeValid) {
+  GURL start_url("https://example.com/");
+  proto::WebApp proto = CreateWebAppProtoForTesting("Test App", start_url);
+
+  sync_pb::WebAppIconInfo* icon1 = proto.add_trusted_icons();
+  icon1->set_url(start_url.Resolve(std::string("/icon") + "1").spec());
+  icon1->set_purpose(
+      sync_pb::WebAppIconInfo_Purpose::WebAppIconInfo_Purpose_ANY);
+
+  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+}
+
 }  // namespace
 }  // namespace web_app

@@ -1375,6 +1375,14 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     web_app->SetPendingUpdateInfo(proto.pending_update_info());
   }
 
+  std::optional<std::vector<apps::IconInfo>> parsed_trusted_icons =
+      ParseAppIconInfos("WebApp", proto.trusted_icons());
+  if (!parsed_trusted_icons) {
+    // ParseWebAppIconInfos() reports any errors.
+    return nullptr;
+  }
+  web_app->SetTrustedIcons(std::move(parsed_trusted_icons.value()));
+
   return web_app;
 }
 
@@ -1903,6 +1911,11 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
       }
     }
     *local_data->mutable_pending_update_info() = *web_app.pending_update_info();
+  }
+
+  for (const apps::IconInfo& trusted_icon_info : web_app.trusted_icons()) {
+    *(local_data->add_trusted_icons()) =
+        AppIconInfoToSyncProto(trusted_icon_info);
   }
 
   return local_data;

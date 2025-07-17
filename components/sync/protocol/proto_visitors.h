@@ -1880,6 +1880,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebAppSpecifics& proto) {
   VISIT(user_launch_ordinal);
   VISIT(relative_manifest_id);
   VISIT_ENUM(user_display_mode_cros);
+  VISIT_REP(trusted_icons);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WifiConfigurationSpecifics::

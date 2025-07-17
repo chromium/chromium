@@ -472,4 +472,8 @@ message WebApp {
   // Populated when there is a pending update to security sensitive members. If
   // not populated, then no update is registered.
   optional PendingUpdateInfo pending_update_info = 73;
+
+  // Contains the metadata for the trusted icons to be shown on security
+  // sensitive surfaces by the web app.
+  repeated sync_pb.WebAppIconInfo trusted_icons = 74;
 }

@@ -394,6 +394,11 @@ class WebApp {
     return pending_update_info_;
   }
 
+  // Contains the metadata for trusted icons for the web app.
+  const std::vector<apps::IconInfo>& trusted_icons() const {
+    return trusted_icons_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -497,6 +502,7 @@ class WebApp {
       std::vector<blink::Manifest::RelatedApplication> related_applications);
   void SetPendingUpdateInfo(
       std::optional<proto::PendingUpdateInfo> pending_update_info);
+  void SetTrustedIcons(std::vector<apps::IconInfo> trusted_icons);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -645,6 +651,8 @@ class WebApp {
   std::vector<blink::Manifest::RelatedApplication> related_applications_;
 
   std::optional<proto::PendingUpdateInfo> pending_update_info_;
+
+  std::vector<apps::IconInfo> trusted_icons_;
 
   // New fields must be added to:
   //  - |operator==|

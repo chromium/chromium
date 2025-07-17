@@ -466,6 +466,12 @@ struct WebAppInstallInfo {
   // Apps that are listed as related applications in the manifest.
   std::vector<blink::Manifest::RelatedApplication> related_applications;
 
+  // List of icon URLs with associated square size and purpose that is
+  // considered trusted. This is used to write to the web_app post installation
+  // or updates, and is used to store metadata about the icon that will be shown
+  // for the web app on security sensitive surfaces.
+  std::vector<apps::IconInfo> trusted_icons;
+
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);

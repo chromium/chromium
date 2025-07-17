@@ -96,4 +96,8 @@ message WebAppSpecifics {
   // populated).
   // Introduced in M122.
   optional UserDisplayMode user_display_mode_cros = 10;
+
+  // Contains the metadata for the trusted icons to be shown on security
+  // sensitive surfaces by the web app.
+  repeated WebAppIconInfo trusted_icons = 11;
 }

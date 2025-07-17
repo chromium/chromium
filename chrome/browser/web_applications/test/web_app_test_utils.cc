@@ -120,6 +120,9 @@ constexpr std::string_view kEcdsaP256SHA256SignatureHex =
     "3044022007381524F538B04F99CCC62703F06C87F66EF41BDA18A22D8E57952AA23E53A6"
     "022063C7F81D3A44798CB95823FA38FC23B15E0483744657FF49E1E83AB8C06B63C2";
 
+const std::array<web_app::SquareSizePx, 8> icon_sizes = {32,  48,  64,  96,
+                                                         128, 256, 512, 1024};
+
 }  // namespace
 
 namespace web_app::test {
@@ -610,6 +613,34 @@ CreateRandomRelatedApplications(RandomHelper& random) {
   return related_applications;
 }
 
+std::vector<apps::IconInfo> CreateRandomIconMetadata(RandomHelper& random,
+                                                     const GURL& base_url) {
+  const int num_icons = random.next_uint(10);
+  std::vector<apps::IconInfo> icons(num_icons);
+  for (int i = 0; i < num_icons; i++) {
+    apps::IconInfo icon;
+    icon.url = base_url.Resolve(
+        base::StrCat({"/icons", base::NumberToString(random.next_uint())}));
+    if (random.next_bool()) {
+      icon.square_size_px = icon_sizes[random.next_uint(8)];
+    }
+
+    int purpose = random.next_uint(4);
+    if (purpose == 0) {
+      icon.purpose = apps::IconInfo::Purpose::kAny;
+    }
+    if (purpose == 1) {
+      icon.purpose = apps::IconInfo::Purpose::kMaskable;
+    }
+    if (purpose == 2) {
+      icon.purpose = apps::IconInfo::Purpose::kMonochrome;
+    }
+    // if (purpose == 3), leave purpose unset. Should default to ANY.
+    icons[i] = icon;
+  }
+  return icons;
+}
+
 }  // namespace
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
@@ -827,40 +858,19 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetRunOnOsLoginMode(random.next_enum<RunOnOsLoginMode>());
 
-  const SquareSizePx size = 256;
-  const int num_icons = random.next_uint(10);
-  std::vector<apps::IconInfo> manifest_icons(num_icons);
-  for (int i = 0; i < num_icons; i++) {
-    apps::IconInfo icon;
-    icon.url = params.base_url.Resolve(
-        "/icon" + base::NumberToString(random.next_uint()));
-    if (random.next_bool()) {
-      icon.square_size_px = size;
-    }
+  app->SetManifestIcons(CreateRandomIconMetadata(random, params.base_url));
 
-    int purpose = random.next_uint(4);
-    if (purpose == 0) {
-      icon.purpose = apps::IconInfo::Purpose::kAny;
-    }
-    if (purpose == 1) {
-      icon.purpose = apps::IconInfo::Purpose::kMaskable;
-    }
-    if (purpose == 2) {
-      icon.purpose = apps::IconInfo::Purpose::kMonochrome;
-    }
-    // if (purpose == 3), leave purpose unset. Should default to ANY.
-
-    manifest_icons[i] = icon;
-  }
-  app->SetManifestIcons(manifest_icons);
   if (random.next_bool()) {
-    app->SetDownloadedIconSizes(IconPurpose::ANY, {size});
+    app->SetDownloadedIconSizes(IconPurpose::ANY,
+                                {icon_sizes[random.next_uint(8)]});
   }
   if (random.next_bool()) {
-    app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {size});
+    app->SetDownloadedIconSizes(IconPurpose::MASKABLE,
+                                {icon_sizes[random.next_uint(8)]});
   }
   if (random.next_bool()) {
-    app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, {size});
+    app->SetDownloadedIconSizes(IconPurpose::MONOCHROME,
+                                {icon_sizes[random.next_uint(8)]});
   }
   app->SetIsGeneratedIcon(random.next_bool());
 
@@ -1199,6 +1209,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     }
     app->SetPendingUpdateInfo(pending_update_info);
   }
+
+  app->SetTrustedIcons(CreateRandomIconMetadata(random, params.base_url));
 
   return app;
 }

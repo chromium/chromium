@@ -609,6 +609,10 @@ void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
       !syncer::StringOrdinal(sync_proto.user_page_ordinal()).IsValid()) {
     sync_proto.clear_user_page_ordinal();
   }
+  if (!ParseAppIconInfos("SetSyncProtoTrustedIcons", sync_proto.trusted_icons())
+           .has_value()) {
+    sync_proto.clear_trusted_icons();
+  }
 
   sync_proto_ = std::move(sync_proto);
 }
@@ -811,6 +815,10 @@ void WebApp::SetPendingUpdateInfo(
   pending_update_info_ = std::move(pending_update_info);
 }
 
+void WebApp::SetTrustedIcons(std::vector<apps::IconInfo> trusted_icons) {
+  trusted_icons_ = std::move(trusted_icons);
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -955,7 +963,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.was_shortcut_app_,
         app.related_applications_,
         app.diy_app_icons_masked_on_mac_,
-        app.pending_update_info_
+        app.pending_update_info_,
+        app.trusted_icons_
         // clang-format on
     );
   };
@@ -1173,6 +1182,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
            RelatedApplicationsToDebugValue(related_applications_));
 
   proto::MaybeSerialize(pending_update_info_, "pending_update_info", root);
+
+  root.Set("trusted_icons", ConvertDebugValueList(trusted_icons_));
 
   return base::Value(std::move(root));
 }

@@ -723,6 +723,10 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   for (const apps::IconInfo& icon_info : web_app_info.manifest_icons) {
     *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
   }
+  sync_proto.clear_trusted_icons();
+  for (const apps::IconInfo& trusted_icon : web_app_info.trusted_icons) {
+    *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(trusted_icon);
+  }
   web_app.SetSyncProto(std::move(sync_proto));
 
   if (!skip_icons_on_download_failure) {
@@ -775,8 +779,8 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
         purpose, GetSquareSizePxs(web_app_info.icon_bitmaps, purpose));
   }
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
+  web_app.SetTrustedIcons(web_app_info.trusted_icons);
 }
-
 
 bool CanWebAppUpdateIdentity(const WebApp* web_app) {
   if (web_app->IsPolicyInstalledApp() &&
