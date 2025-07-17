@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.createAdapter;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -165,31 +167,29 @@ public class ContextMenuRenderTest {
                                     ListItemType.CONTEXT_MENU_SUBMENU_HEADER,
                                     new PropertyModel.Builder(
                                                     ContextMenuSubmenuHeaderItemProperties.ALL_KEYS)
-                                            .with(
-                                                    ContextMenuSubmenuHeaderItemProperties.TITLE,
-                                                    EXAMPLE_LABEL)
-                                            .with(ListMenuItemProperties.ENABLED, true)
+                                            .with(TITLE, EXAMPLE_LABEL)
+                                            .with(ENABLED, true)
                                             .build()));
                     // Command type items
                     mListItems.add(
                             new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
                                     new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                            .with(ListMenuItemProperties.TITLE, EXAMPLE_LABEL)
+                                            .with(TITLE, EXAMPLE_LABEL)
                                             .with(
                                                     ListMenuItemProperties.START_ICON_BITMAP,
                                                     testBitmap)
-                                            .with(ListMenuItemProperties.ENABLED, true)
+                                            .with(ENABLED, true)
                                             .build()));
                     mListItems.add(
                             new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM,
                                     new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                            .with(ListMenuItemProperties.TITLE, EXAMPLE_LABEL)
+                                            .with(TITLE, EXAMPLE_LABEL)
                                             .with(
                                                     ListMenuItemProperties.START_ICON_BITMAP,
                                                     testBitmap)
-                                            .with(ListMenuItemProperties.ENABLED, false)
+                                            .with(ENABLED, false)
                                             .build()));
                     // Check items
                     mListItems.add(
@@ -197,22 +197,18 @@ public class ContextMenuRenderTest {
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
                                     new PropertyModel.Builder(
                                                     ContextMenuCheckItemProperties.ALL_KEYS)
-                                            .with(
-                                                    ContextMenuCheckItemProperties.TITLE,
-                                                    EXAMPLE_LABEL)
+                                            .with(TITLE, EXAMPLE_LABEL)
                                             .with(ContextMenuCheckItemProperties.CHECKED, true)
-                                            .with(ContextMenuCheckItemProperties.ENABLED, true)
+                                            .with(ENABLED, true)
                                             .build()));
                     mListItems.add(
                             new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
                                     new PropertyModel.Builder(
                                                     ContextMenuCheckItemProperties.ALL_KEYS)
-                                            .with(
-                                                    ContextMenuCheckItemProperties.TITLE,
-                                                    EXAMPLE_LABEL)
+                                            .with(TITLE, EXAMPLE_LABEL)
                                             .with(ContextMenuCheckItemProperties.CHECKED, false)
-                                            .with(ContextMenuCheckItemProperties.ENABLED, false)
+                                            .with(ENABLED, false)
                                             .build()));
                     // Radio items
                     mListItems.add(
@@ -220,22 +216,18 @@ public class ContextMenuRenderTest {
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
                                     new PropertyModel.Builder(
                                                     ContextMenuRadioItemProperties.ALL_KEYS)
-                                            .with(
-                                                    ContextMenuRadioItemProperties.TITLE,
-                                                    EXAMPLE_LABEL)
+                                            .with(TITLE, EXAMPLE_LABEL)
                                             .with(ContextMenuRadioItemProperties.SELECTED, true)
-                                            .with(ContextMenuRadioItemProperties.ENABLED, true)
+                                            .with(ENABLED, true)
                                             .build()));
                     mListItems.add(
                             new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
                                     new PropertyModel.Builder(
                                                     ContextMenuRadioItemProperties.ALL_KEYS)
-                                            .with(
-                                                    ContextMenuRadioItemProperties.TITLE,
-                                                    EXAMPLE_LABEL)
+                                            .with(TITLE, EXAMPLE_LABEL)
                                             .with(ContextMenuRadioItemProperties.SELECTED, false)
-                                            .with(ContextMenuRadioItemProperties.ENABLED, false)
+                                            .with(ENABLED, false)
                                             .build()));
                     // Submenu parent items
                     mListItems.add(
@@ -243,23 +235,19 @@ public class ContextMenuRenderTest {
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
                                     new PropertyModel.Builder(
                                                     ContextMenuSubmenuItemProperties.ALL_KEYS)
-                                            .with(
-                                                    ContextMenuSubmenuItemProperties.TITLE,
-                                                    EXAMPLE_LABEL)
+                                            .with(TITLE, EXAMPLE_LABEL)
                                             .with(
                                                     ListMenuItemProperties.START_ICON_BITMAP,
                                                     testBitmap)
-                                            .with(ListMenuItemProperties.ENABLED, true)
+                                            .with(ENABLED, true)
                                             .build()));
                     mListItems.add(
                             new ListItem(
                                     ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
                                     new PropertyModel.Builder(
                                                     ContextMenuSubmenuItemProperties.ALL_KEYS)
-                                            .with(
-                                                    ContextMenuSubmenuItemProperties.TITLE,
-                                                    EXAMPLE_LABEL)
-                                            .with(ListMenuItemProperties.ENABLED, false)
+                                            .with(TITLE, EXAMPLE_LABEL)
+                                            .with(ENABLED, false)
                                             .build()));
                 });
         mRenderTestRule.render(mFrame, "context_menu_items_from_extensions");
@@ -358,11 +346,8 @@ public class ContextMenuRenderTest {
     }
 
     private PropertyModel getItemModel(String title) {
-        return new PropertyModel.Builder(
-                        ListMenuItemProperties.MENU_ITEM_ID,
-                        ListMenuItemProperties.TITLE,
-                        ListMenuItemProperties.ENABLED)
-                .with(ListMenuItemProperties.TITLE, title)
+        return new PropertyModel.Builder(ListMenuItemProperties.MENU_ITEM_ID, TITLE, ENABLED)
+                .with(TITLE, title)
                 .build();
     }
 
@@ -374,8 +359,8 @@ public class ContextMenuRenderTest {
                                 UrlUtils.getIsolatedTestFilePath(
                                         "chrome/test/data/android/UiCapture/dots.png")));
         return new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                .with(ContextMenuItemWithIconButtonProperties.TITLE, title)
-                .with(ContextMenuItemWithIconButtonProperties.ENABLED, true)
+                .with(TITLE, title)
+                .with(ENABLED, true)
                 .with(ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE, drawable)
                 .build();
     }

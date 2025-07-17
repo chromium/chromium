@@ -6,8 +6,8 @@ package org.chromium.ui.listmenu;
 
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -19,7 +19,6 @@ import java.util.List;
 /** The properties controlling submenu-type items in context menus. */
 @NullMarked
 public class ContextMenuSubmenuItemProperties {
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     // The ON_HOVER should show the flyout on mouse hover or keyboard focus.
     public static final WritableObjectPropertyKey<Runnable> ON_HOVER =
             new WritableObjectPropertyKey<>();
@@ -27,6 +26,6 @@ public class ContextMenuSubmenuItemProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        TITLE, MENU_ITEM_ID, START_ICON_BITMAP, CLICK_LISTENER, ON_HOVER, ENABLED, SUBMENU_ITEMS
+        TITLE, START_ICON_BITMAP, CLICK_LISTENER, ON_HOVER, ENABLED, SUBMENU_ITEMS
     };
 }

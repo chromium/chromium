@@ -5,6 +5,9 @@
 package org.chromium.ui.listmenu;
 
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.graphics.Bitmap;
 
@@ -72,9 +75,9 @@ public class MenuModelBridge {
             final Runnable callback) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                        .with(ListMenuItemProperties.TITLE, label)
-                        .with(ListMenuItemProperties.START_ICON_BITMAP, bitmap)
-                        .with(ListMenuItemProperties.ENABLED, isEnabled)
+                        .with(TITLE, label)
+                        .with(START_ICON_BITMAP, bitmap)
+                        .with(ENABLED, isEnabled)
                         .with(CLICK_LISTENER, (view) -> callback.run());
         mItems.add(new ListItem(ListItemType.CONTEXT_MENU_ITEM, modelBuilder.build()));
     }
@@ -95,9 +98,9 @@ public class MenuModelBridge {
             final Runnable callback) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ContextMenuCheckItemProperties.ALL_KEYS)
-                        .with(ContextMenuCheckItemProperties.TITLE, label)
+                        .with(TITLE, label)
                         .with(ContextMenuCheckItemProperties.CHECKED, isChecked)
-                        .with(ContextMenuCheckItemProperties.ENABLED, isEnabled)
+                        .with(ENABLED, isEnabled)
                         .with(CLICK_LISTENER, (view) -> callback.run());
         mItems.add(
                 new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX, modelBuilder.build()));
@@ -119,9 +122,9 @@ public class MenuModelBridge {
             final Runnable callback) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ContextMenuRadioItemProperties.ALL_KEYS)
-                        .with(ContextMenuRadioItemProperties.TITLE, label)
+                        .with(TITLE, label)
                         .with(ContextMenuRadioItemProperties.SELECTED, isSelected)
-                        .with(ContextMenuRadioItemProperties.ENABLED, isEnabled)
+                        .with(ENABLED, isEnabled)
                         .with(CLICK_LISTENER, (view) -> callback.run());
         mItems.add(
                 new ListItem(
@@ -137,9 +140,9 @@ public class MenuModelBridge {
             MenuModelBridge submenuItems) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
-                        .with(ContextMenuSubmenuItemProperties.TITLE, label)
-                        .with(ListMenuItemProperties.START_ICON_BITMAP, bitmap)
-                        .with(ListMenuItemProperties.ENABLED, isEnabled)
+                        .with(TITLE, label)
+                        .with(START_ICON_BITMAP, bitmap)
+                        .with(ENABLED, isEnabled)
                         .with(ContextMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems.mItems);
         mItems.add(new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU, modelBuilder.build()));
     }

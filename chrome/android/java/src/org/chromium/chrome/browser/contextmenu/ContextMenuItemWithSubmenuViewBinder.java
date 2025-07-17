@@ -8,10 +8,10 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.ON_HOVER;
-import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -56,5 +56,4 @@ class ContextMenuItemWithSubmenuViewBinder {
             view.setOnClickListener(model.get(CLICK_LISTENER));
         }
     }
-    // MENU_ITEM_ID does not change the view.
 }

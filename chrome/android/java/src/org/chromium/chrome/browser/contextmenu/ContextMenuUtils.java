@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.SUBMENU_ITEMS;
-import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.view.View;
 import android.widget.ListView;
@@ -126,7 +126,7 @@ public class ContextMenuUtils {
         // Add the clicked item as a header to the submenu.
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuSubmenuHeaderItemProperties.ALL_KEYS)
-                        .with(ContextMenuSubmenuHeaderItemProperties.TITLE, item.model.get(TITLE))
+                        .with(TITLE, item.model.get(TITLE))
                         .with(ENABLED, true)
                         .with(
                                 CLICK_LISTENER,

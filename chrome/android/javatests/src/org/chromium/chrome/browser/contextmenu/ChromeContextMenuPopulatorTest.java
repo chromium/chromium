@@ -78,7 +78,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
@@ -1897,9 +1896,7 @@ public class ChromeContextMenuPopulatorTest {
                                 .with(TITLE, "Sample submenu item")
                                 .build()));
         String menuItemWithSubmenuTitle = "Sample item with Submenu";
-        modelList.add(
-                mPopulator.createListItemWithSubmenu(
-                        menuItemWithSubmenuTitle, /* menuItemId= */ 1000, submenuItems));
+        modelList.add(mPopulator.createListItemWithSubmenu(menuItemWithSubmenuTitle, submenuItems));
 
         when(mMenuModelBridge.populateModelList()).thenReturn(modelList);
 
@@ -1911,7 +1908,7 @@ public class ChromeContextMenuPopulatorTest {
         assertEquals(
                 "Title of the found submenu item should match",
                 menuItemWithSubmenuTitle,
-                menuItemWithSubmenu.model.get(ContextMenuSubmenuItemProperties.TITLE));
+                menuItemWithSubmenu.model.get(TITLE));
     }
 
     @Test

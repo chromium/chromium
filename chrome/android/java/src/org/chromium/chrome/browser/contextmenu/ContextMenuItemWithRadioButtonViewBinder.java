@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.ui.listmenu.ContextMenuRadioItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ContextMenuRadioItemProperties.SELECTED;
-import static org.chromium.ui.listmenu.ContextMenuRadioItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.view.View;
 import android.widget.RadioButton;
@@ -39,6 +39,5 @@ class ContextMenuItemWithRadioButtonViewBinder {
         } else if (propertyKey == CLICK_LISTENER) {
             view.setOnClickListener(model.get(CLICK_LISTENER));
         }
-        // MENU_ITEM_ID does not change the view.
     }
 }
