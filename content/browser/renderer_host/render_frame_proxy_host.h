@@ -19,7 +19,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -84,7 +83,6 @@ class SiteInstanceGroup;
 // complete, the RenderFrameHost is deleted.
 class CONTENT_EXPORT RenderFrameProxyHost
     : public IPC::Listener,
-      public IPC::Sender,
       public blink::mojom::RemoteFrameHost,
       public blink::mojom::RemoteMainFrameHost {
  public:
@@ -165,9 +163,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
                        bool allow_paint_holding);
 
   RenderViewHostImpl* GetRenderViewHost();
-
-  // IPC::Sender
-  bool Send(IPC::Message* msg) override;
 
   // IPC::Listener
   std::string ToDebugString() override;

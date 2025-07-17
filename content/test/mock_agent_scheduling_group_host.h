@@ -21,7 +21,6 @@ class MockAgentSchedulingGroupHost : public AgentSchedulingGroupHost {
   explicit MockAgentSchedulingGroupHost(RenderProcessHost& process);
 
   IPC::TestSink& sink() { return sink_; }
-  bool Send(IPC::Message* message) override;
 
  private:
   // Stores IPC messages that would have been sent to the renderer-side

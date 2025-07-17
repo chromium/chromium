@@ -89,8 +89,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // the future they will be handled directly by the AgentSchedulingGroupHost.
   // IPC:
   IPC::ChannelProxy* GetChannel();
-  // This is marked virtual for use in tests by `MockAgentSchedulingGroupHost`.
-  virtual bool Send(IPC::Message* message);
   void AddRoute(int32_t routing_id, IPC::Listener* listener);
   void RemoveRoute(int32_t routing_id);
 

@@ -212,10 +212,6 @@ RenderViewHostImpl* RenderFrameProxyHost::GetRenderViewHost() {
   return render_view_host_.get();
 }
 
-bool RenderFrameProxyHost::Send(IPC::Message* msg) {
-  return GetAgentSchedulingGroup().Send(msg);
-}
-
 std::string RenderFrameProxyHost::ToDebugString() {
   return "RFPH:" + frame_tree_node_->current_frame_host()->ToDebugString();
 }

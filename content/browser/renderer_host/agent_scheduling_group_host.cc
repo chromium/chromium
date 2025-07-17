@@ -275,26 +275,6 @@ ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
   return channel_.get();
 }
 
-bool AgentSchedulingGroupHost::Send(IPC::Message* message) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-
-  std::unique_ptr<IPC::Message> msg(message);
-
-  if (GetMBIMode() == features::MBIMode::kLegacy)
-    return process_->Send(msg.release());
-
-  // This DCHECK is too idealistic for now - messages that are handled by
-  // filters are sent as control messages since they are intercepted before
-  // routing. It is put here as documentation for now, since this code would not
-  // be reached until we activate
-  // `features::MBIMode::kEnabledPerRenderProcessHost` or
-  // `features::MBIMode::kEnabledPerSiteInstance`.
-  DCHECK_NE(message->routing_id(), MSG_ROUTING_CONTROL);
-
-  DCHECK(channel_);
-  return channel_->Send(msg.release());
-}
-
 void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
                                         Listener* listener) {
   DCHECK_EQ(state_, LifecycleState::kBound);
