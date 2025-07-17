@@ -21,7 +21,6 @@ static-libstdcpp = true
 [rust]
 download-rustc = false
 channel = "dev"
-description = "$PACKAGE_VERSION chromium"
 
 [build]
 # Check that vendored dependencies match the root Cargo.lock.
@@ -46,6 +45,8 @@ tools = [
     "rust-analyzer-proc-macro-srv",
     "src",
 ]
+
+description = "$PACKAGE_VERSION chromium"
 
 [install]
 prefix = "$INSTALL_DIR"
