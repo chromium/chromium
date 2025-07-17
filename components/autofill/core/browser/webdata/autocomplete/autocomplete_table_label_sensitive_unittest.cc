@@ -39,6 +39,8 @@ using AutocompleteEntryLabelSensitiveSet =
                       const AutocompleteEntryLabelSensitive&)>;
 using ::base::Time;
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
 
@@ -70,7 +72,7 @@ AutocompleteEntryLabelSensitive MakeAutocompleteEntryLabelSensitive(
       Time::FromTimeT(date_created), Time::FromTimeT(date_last_used));
 }
 
-// Checks |actual| and |expected| contain the same elements.
+// Checks that `actual` and `expected` contain the same elements.
 [[nodiscard]] testing::AssertionResult
 CompareAutocompleteEntryLabelSensitiveSets(
     const AutocompleteEntryLabelSensitiveSet& actual,
@@ -904,6 +906,40 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
                                  kDefaultName, kDefaultLabel, kDefaultValue))));
 }
 
+using RemoveFormElementTest = AutocompleteTableLabelSensitiveTest;
+
+// RemoveFormElement should remove a specified entry from the database.
+TEST_F(RemoveFormElementTest, RemovesEntry) {
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  ASSERT_TRUE(
+      table().RemoveFormElement(kDefaultName, kDefaultLabel, kDefaultValue));
+
+  EXPECT_THAT(table().GetAutocompleteEntryLabelSensitive(
+                  kDefaultName, kDefaultLabel, kDefaultValue),
+              Eq(std::nullopt));
+}
+
+// RemoveFormElement should do nothing if the entry does not exist.
+TEST_F(RemoveFormElementTest, DoesNothingIfEntryDoesNotExist) {
+  // The database stores timestamps with second precision. The test needs to
+  // do the same to be able to compare entries.
+  base::Time seconds_precision_now = base::Time::FromSecondsSinceUnixEpoch(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  ASSERT_TRUE(
+      table().RemoveFormElement(kDefaultName, kDefaultLabel, u"Wrong Value"));
+
+  EXPECT_THAT(table().GetAutocompleteEntryLabelSensitive(
+                  kDefaultName, kDefaultLabel, kDefaultValue),
+              Optional(AutocompleteEntryLabelSensitive(
+                  AutocompleteKeyLabelSensitive(kDefaultName, kDefaultLabel,
+                                                kDefaultValue),
+                  seconds_precision_now, seconds_precision_now)));
+}
+
 using UpdateAutocompleteEntriesTest = AutocompleteTableLabelSensitiveTest;
 
 // UpdateAutocompleteEntries works in `update or insert` fashion. If given entry
@@ -1118,6 +1154,40 @@ TEST_F(GetAllAutocompleteEntriesTest, ReturnsTwoIdentical) {
 
   EXPECT_TRUE(
       CompareAutocompleteEntryLabelSensitiveSets(entry_set, expected_entries));
+}
+
+using GetAutocompleteEntryLabelSensitiveTest =
+    AutocompleteTableLabelSensitiveTest;
+
+// If the database contains a specific entry (with a given name, label, and value),
+// GetAutocompleteEntryLabelSensitive should return it.
+TEST_F(GetAutocompleteEntryLabelSensitiveTest, ReturnsEntry) {
+  // The database stores timestamps with second precision. The test needs to
+  // do the same to be able to compare entries.
+  base::Time seconds_precision_now = base::Time::FromSecondsSinceUnixEpoch(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+
+  std::optional<AutocompleteEntryLabelSensitive> entry =
+      table().GetAutocompleteEntryLabelSensitive(kDefaultName, kDefaultLabel,
+                                                 kDefaultValue);
+
+  EXPECT_THAT(entry, Optional(AutocompleteEntryLabelSensitive(
+                         AutocompleteKeyLabelSensitive(
+                             kDefaultName, kDefaultLabel, kDefaultValue),
+                         seconds_precision_now, seconds_precision_now)));
+}
+
+// If the database does not contain a specific entry (with a given name, label, and
+// value), GetAutocompleteEntryLabelSensitive should return nullopt.
+TEST_F(GetAutocompleteEntryLabelSensitiveTest,
+       ReturnsNulloptIfEntryDoesNotExist) {
+  std::optional<AutocompleteEntryLabelSensitive> entry =
+      table().GetAutocompleteEntryLabelSensitive(kDefaultName, kDefaultLabel,
+                                                 kDefaultValue);
+
+  EXPECT_FALSE(entry.has_value());
 }
 
 // Poison the database and check that we don't crash when adding a value.
