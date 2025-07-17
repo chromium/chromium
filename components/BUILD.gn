@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//base/debug/debug.gni")
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
@@ -777,7 +778,7 @@ test("components_unittests") {
     ]
   }
 
-  if (toolkit_views) {
+  if (toolkit_views && !is_castos) {
     deps += [ "//components/constrained_window:unit_tests" ]
   }
 
@@ -1146,7 +1147,7 @@ if (use_blink) {
       data += [ "$root_out_dir/Content Shell.app/" ]
     }
 
-    if (toolkit_views && !is_mac) {
+    if (toolkit_views && !is_mac && !is_castos) {
       # TODO(crbug.com/349781050): Enable test on Mac.
       deps += [ "//components/constrained_window:browser_tests" ]
     }
