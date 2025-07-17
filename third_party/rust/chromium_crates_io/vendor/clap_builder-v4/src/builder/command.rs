@@ -4625,6 +4625,9 @@ impl Command {
         }
     }
 
+    /// Returns the first two arguments that match the condition.
+    ///
+    /// If fewer than two arguments that match the condition, `None` is returned.
     #[cfg(debug_assertions)]
     pub(crate) fn two_args_of<F>(&self, condition: F) -> Option<(&Arg, &Arg)>
     where
@@ -4633,7 +4636,9 @@ impl Command {
         two_elements_of(self.args.args().filter(|a: &&Arg| condition(a)))
     }
 
-    // just in case
+    /// Returns the first two groups that match the condition.
+    ///
+    /// If fewer than two groups that match the condition, `None` is returned.
     #[allow(unused)]
     fn two_groups_of<F>(&self, condition: F) -> Option<(&ArgGroup, &ArgGroup)>
     where
@@ -4913,6 +4918,7 @@ impl Command {
         }
     }
 
+    /// Checks if there is an argument or group with the given id.
     #[cfg(debug_assertions)]
     pub(crate) fn id_exists(&self, id: &Id) -> bool {
         self.args.args().any(|x| x.get_id() == id) || self.groups.iter().any(|x| x.id == *id)
@@ -5179,6 +5185,9 @@ struct MaxTermWidth(usize);
 
 impl AppExt for MaxTermWidth {}
 
+/// Returns the first two elements of an iterator as an `Option<(T, T)>`.
+///
+/// If the iterator has fewer than two elements, it returns `None`.
 fn two_elements_of<I, T>(mut iter: I) -> Option<(T, T)>
 where
     I: Iterator<Item = T>,

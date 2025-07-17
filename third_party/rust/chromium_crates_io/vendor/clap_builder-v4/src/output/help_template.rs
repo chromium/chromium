@@ -739,6 +739,10 @@ impl HelpTemplate<'_, '_> {
 
     fn spec_vals(&self, a: &Arg) -> String {
         debug!("HelpTemplate::spec_vals: a={a}");
+        let ctx = &self.styles.get_context();
+        let ctx_val = &self.styles.get_context_value();
+        let val_sep = format!("{ctx}, {ctx:#}"); // context values styled separator
+
         let mut spec_vals = Vec::new();
         #[cfg(feature = "env")]
         if let Some(ref env) = a.env {
@@ -758,7 +762,11 @@ impl HelpTemplate<'_, '_> {
                 } else {
                     Default::default()
                 };
-                let env_info = format!("[env: {}{}]", env.0.to_string_lossy(), env_val);
+                let env_info = format!(
+                    "{ctx}[env: {ctx:#}{ctx_val}{}{}{ctx_val:#}{ctx}]{ctx:#}",
+                    env.0.to_string_lossy(),
+                    env_val
+                );
                 spec_vals.push(env_info);
             }
         }
@@ -768,21 +776,23 @@ impl HelpTemplate<'_, '_> {
                 a.default_vals
             );
 
-            let pvs = a
+            let dvs = a
                 .default_vals
                 .iter()
-                .map(|pvs| pvs.to_string_lossy())
-                .map(|pvs| {
-                    if pvs.contains(char::is_whitespace) {
-                        Cow::from(format!("{pvs:?}"))
+                .map(|dv| dv.to_string_lossy())
+                .map(|dv| {
+                    if dv.contains(char::is_whitespace) {
+                        Cow::from(format!("{dv:?}"))
                     } else {
-                        pvs
+                        dv
                     }
                 })
                 .collect::<Vec<_>>()
                 .join(" ");
 
-            spec_vals.push(format!("[default: {pvs}]"));
+            spec_vals.push(format!(
+                "{ctx}[default: {ctx:#}{ctx_val}{dvs}{ctx_val:#}{ctx}]{ctx:#}"
+            ));
         }
 
         let mut als = Vec::new();
@@ -791,7 +801,7 @@ impl HelpTemplate<'_, '_> {
             .short_aliases
             .iter()
             .filter(|&als| als.1) // visible
-            .map(|als| format!("-{}", als.0)); // name
+            .map(|als| format!("{ctx_val}-{}{ctx_val:#}", als.0)); // name
         debug!(
             "HelpTemplate::spec_vals: Found short aliases...{:?}",
             a.short_aliases
@@ -802,12 +812,13 @@ impl HelpTemplate<'_, '_> {
             .aliases
             .iter()
             .filter(|&als| als.1) // visible
-            .map(|als| format!("--{}", als.0)); // name
+            .map(|als| format!("{ctx_val}--{}{ctx_val:#}", als.0)); // name
         debug!("HelpTemplate::spec_vals: Found aliases...{:?}", a.aliases);
         als.extend(long_als);
 
         if !als.is_empty() {
-            spec_vals.push(format!("[aliases: {}]", als.join(", ")));
+            let als = als.join(&val_sep);
+            spec_vals.push(format!("{ctx}[aliases: {ctx:#}{als}{ctx}]{ctx:#}"));
         }
 
         if !a.is_hide_possible_values_set() && !self.use_long_pv(a) {
@@ -818,10 +829,11 @@ impl HelpTemplate<'_, '_> {
                 let pvs = possible_vals
                     .iter()
                     .filter_map(PossibleValue::get_visible_quoted_name)
+                    .map(|pv| format!("{ctx_val}{pv}{ctx_val:#}"))
                     .collect::<Vec<_>>()
-                    .join(", ");
+                    .join(&val_sep);
 
-                spec_vals.push(format!("[possible values: {pvs}]"));
+                spec_vals.push(format!("{ctx}[possible values: {ctx:#}{pvs}{ctx}]{ctx:#}"));
             }
         }
         let connector = if self.use_long { "\n" } else { " " };
@@ -984,15 +996,20 @@ impl HelpTemplate<'_, '_> {
 
     fn sc_spec_vals(&self, a: &Command) -> String {
         debug!("HelpTemplate::sc_spec_vals: a={}", a.get_name());
+        let ctx = &self.styles.get_context();
+        let ctx_val = &self.styles.get_context_value();
+        let val_sep = format!("{ctx}, {ctx:#}"); // context values styled separator
         let mut spec_vals = vec![];
 
         let mut short_als = a
             .get_visible_short_flag_aliases()
-            .map(|a| format!("-{a}"))
+            .map(|a| format!("{ctx_val}-{a}{ctx_val:#}"))
             .collect::<Vec<_>>();
-        let als = a.get_visible_aliases().map(|s| s.to_string());
+        let als = a
+            .get_visible_aliases()
+            .map(|s| format!("{ctx_val}{s}{ctx_val:#}"));
         short_als.extend(als);
-        let all_als = short_als.join(", ");
+        let all_als = short_als.join(&val_sep);
         if !all_als.is_empty() {
             debug!(
                 "HelpTemplate::spec_vals: Found aliases...{:?}",
@@ -1002,7 +1019,7 @@ impl HelpTemplate<'_, '_> {
                 "HelpTemplate::spec_vals: Found short flag aliases...{:?}",
                 a.get_all_short_flag_aliases().collect::<Vec<_>>()
             );
-            spec_vals.push(format!("[aliases: {all_als}]"));
+            spec_vals.push(format!("{ctx}[aliases: {ctx:#}{all_als}{ctx}]{ctx:#}"));
         }
 
         spec_vals.join(" ")
