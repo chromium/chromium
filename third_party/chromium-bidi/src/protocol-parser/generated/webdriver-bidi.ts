@@ -1397,9 +1397,6 @@ export namespace Network {
   );
 }
 export namespace Network {
-  export const DataTypeSchema = z.literal('response');
-}
-export namespace Network {
   export const BytesValueSchema = z.lazy(() =>
     z.union([Network.StringValueSchema, Network.Base64ValueSchema]),
   );
@@ -1455,6 +1452,9 @@ export namespace Network {
       value: Network.BytesValueSchema,
     }),
   );
+}
+export namespace Network {
+  export const DataTypeSchema = z.literal('response');
 }
 export namespace Network {
   export const FetchTimingInfoSchema = z.lazy(() =>

@@ -1141,11 +1141,6 @@ export namespace Network {
   };
 }
 export namespace Network {
-  export const enum DataType {
-    Response = 'response',
-  }
-}
-export namespace Network {
   export type BytesValue = Network.StringValue | Network.Base64Value;
 }
 export namespace Network {
@@ -1194,6 +1189,11 @@ export namespace Network {
     name: string;
     value: Network.BytesValue;
   };
+}
+export namespace Network {
+  export const enum DataType {
+    Response = 'response',
+  }
 }
 export namespace Network {
   export type FetchTimingInfo = {
