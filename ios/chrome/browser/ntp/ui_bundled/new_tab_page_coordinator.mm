@@ -31,6 +31,7 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
@@ -145,6 +146,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
+                                     AIMPrototypeCoordinatorDelegate,
                                      AuthenticationServiceObserving,
                                      ContentSuggestionsDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
@@ -274,6 +276,8 @@
 @end
 
 @implementation NewTabPageCoordinator {
+  // Coordinator for the AIM prototype.
+  AIMPrototypeCoordinator* _aimPrototypeCoordinator;
   // Coordinator in charge of handling sharing use cases.
   SharingCoordinator* _sharingCoordinator;
   // Coordinator for presenting the Home customization menu.
@@ -387,6 +391,8 @@
   if (!self.started) {
     return;
   }
+
+  [self stopAimPrototypeCoordinator];
 
   _webState = nullptr;
 
@@ -1571,7 +1577,32 @@
   [self stopAccountMenuCoordinator];
 }
 
+#pragma mark - AIMPrototypeCoordinatorDelegate
+
+- (void)aimPrototypeCoordinatorDidFinish:(AIMPrototypeCoordinator*)coordinator {
+  [self stopAimPrototypeCoordinator];
+}
+
 #pragma mark - Private
+
+- (void)startAimPrototypeCoordinator {
+  if (_aimPrototypeCoordinator) {
+    return;
+  }
+  _aimPrototypeCoordinator = [[AIMPrototypeCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  _aimPrototypeCoordinator.delegate = self;
+  [_aimPrototypeCoordinator start];
+}
+
+- (void)stopAimPrototypeCoordinator {
+  if (!_aimPrototypeCoordinator) {
+    return;
+  }
+  [_aimPrototypeCoordinator stop];
+  _aimPrototypeCoordinator = nil;
+}
 
 - (void)stopSharingCoordinator {
   [_sharingCoordinator stop];
@@ -1934,6 +1965,10 @@
 }
 
 - (void)openMIA {
+  if (base::FeatureList::IsEnabled(kAIMPrototype)) {
+    [self startAimPrototypeCoordinator];
+    return;
+  }
   [self.NTPMetricsRecorder recordMIATapped];
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GetUrlForAim(

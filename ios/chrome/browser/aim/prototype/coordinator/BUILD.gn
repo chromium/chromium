@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "aim_prototype_coordinator.h",
+    "aim_prototype_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/aim/prototype/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+}
