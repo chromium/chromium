@@ -159,11 +159,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "allow-scroll-settings",
-    "owners": [ "zhangwenyu@chromium.org", "cros-device-enablement@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "allow-tab-closing-upon-minimization",
     "owners": ["lazzzis@google.com", "twellington@chromium.org", "clank-app-team@google.com"],
     "expiry_milestone": 142
