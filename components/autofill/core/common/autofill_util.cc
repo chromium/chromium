@@ -195,11 +195,7 @@ bool IsPlusAddressesManuallyTriggered(
 }
 
 bool IsPaymentsFieldSwappingEnabled() {
-#if BUILDFLAG(IS_IOS)
-  return false;
-#else
   return base::FeatureList::IsEnabled(features::kAutofillPaymentsFieldSwapping);
-#endif
 }
 
 std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list) {
