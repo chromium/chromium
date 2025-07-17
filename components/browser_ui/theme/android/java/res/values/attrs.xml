@@ -8,4 +8,6 @@ found in the LICENSE file.
 <resources>
   <attr name="defaultFontFamily" format="reference|string" />
   <attr name="defaultMediumFontFamily" format="reference|string" />
+  <attr name="toolbarButtonWidth" format="dimension" />
+  <attr name="toolbarButtonHeight" format="dimension" />
 </resources>

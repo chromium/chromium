@@ -120,6 +120,10 @@ found in the LICENSE file.
         <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
 
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+
+         <!-- Toolbar button size. -->
+        <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
+        <item name="toolbarButtonHeight">@dimen/toolbar_button_height</item>
     </style>
 
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
@@ -201,6 +205,10 @@ found in the LICENSE file.
         <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
 
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+
+         <!-- Toolbar button size. -->
+        <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
+        <item name="toolbarButtonHeight">@dimen/toolbar_button_height</item>
     </style>
     <!-- Overridden by night mode. -->
     <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
@@ -297,6 +305,10 @@ found in the LICENSE file.
         <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
 
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+
+        <!-- Toolbar button size. -->
+        <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
+        <item name="toolbarButtonHeight">@dimen/toolbar_button_height</item>
     </style>
     <!-- Overridden by night mode. -->
     <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar"/>
@@ -339,5 +351,10 @@ found in the LICENSE file.
 
     <style name="ThemeOverlay.BrowserUI.OptOutEdgeToEdge" parent="">
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">false</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.ToolbarButtonSizeDesktop" parent="">
+        <item name="toolbarButtonWidth">@dimen/toolbar_button_width_desktop</item>
+        <item name="toolbarButtonHeight">@dimen/toolbar_button_height_desktop</item>
     </style>
 </resources>

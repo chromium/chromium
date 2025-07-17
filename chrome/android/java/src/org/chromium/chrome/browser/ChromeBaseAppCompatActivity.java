@@ -49,6 +49,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
@@ -515,6 +516,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                 || CommandLine.getInstance()
                         .hasSwitch(ChromeSwitches.DISABLE_OPT_OUT_EDGE_TO_EDGE)) {
             applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_OptOutEdgeToEdge);
+        }
+
+        if (StripLayoutUtils.shouldApplyMoreDensity()) {
+            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_ToolbarButtonSizeDesktop);
         }
     }
 

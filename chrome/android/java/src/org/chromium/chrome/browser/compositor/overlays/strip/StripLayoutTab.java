@@ -9,10 +9,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FO
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.FloatProperty;
+import android.util.Size;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -120,12 +122,16 @@ public class StripLayoutTab extends StripLayoutView {
     // Close Button Constants
     // Close button padding value comes from the built-in padding in the source png.
     private static final int CLOSE_BUTTON_PADDING_DP = 7;
-    private static final int CLOSE_BUTTON_OFFSET_X = 12;
-    private static final int CLOSE_BUTTON_WIDTH_DP = 48;
+    // 16dp(Folio foot) + 10dp(Close end offset) - 7dp(Close icon padding) = 19dp.
+    private static final int DESKTOP_CLOSE_BUTTON_OFFSET_X_DP = 19;
+    // 7dp(ContentOffsetY) - (24dp(Close button height) - 20dp(Divider height)) / 2 + 2dp(TabDrawY)
+    // = 7dp.
+    private static final int DESKTOP_CLOSE_BUTTON_OFFSET_Y_DP = 7;
 
     // Strip Tab Offset Constants
     protected static final float TOP_MARGIN_DP = 2.f;
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
+    private static final int TAB_TOUCH_TARGET_END_OFFSET_X_DP = 12;
 
     // Visibility Constants.
     private static final float FAVICON_WIDTH = 16.f;
@@ -145,6 +151,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     private final TabLoadTracker mLoadTracker;
     private final LayoutUpdateHost mUpdateHost;
+    private final Size mCloseButtonSize;
     private TintedCompositorButton mCloseButton;
 
     private boolean mIsDying;
@@ -258,6 +265,7 @@ public class StripLayoutTab extends StripLayoutView {
                 apsBackgroundIncognitoPressedTint);
 
         mCloseButton.setIncognito(incognito);
+        mCloseButtonSize = getCloseButtonSize();
         resetCloseRect();
     }
 
@@ -716,8 +724,14 @@ public class StripLayoutTab extends StripLayoutView {
             @Nullable Float right,
             @Nullable Float bottom) {
         super.setTouchTargetInsets(left, top, right, bottom);
-        // The vertical insets of the close button should match that of the parent tab.
-        mCloseButton.setTouchTargetInsets(null, top, null, bottom);
+
+        // In more density mode, the close button's touch target should match its own size.
+        // Otherwise, align its vertical insets with the parent tab.
+        if (StripLayoutUtils.shouldApplyMoreDensity()) {
+            mCloseButton.setTouchTargetInsets(null, null, null, null);
+        } else {
+            mCloseButton.setTouchTargetInsets(null, top, null, bottom);
+        }
     }
 
     /**
@@ -817,7 +831,8 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     private RectF getCloseRect() {
-        int closeButtonWidth = CLOSE_BUTTON_WIDTH_DP;
+        int closeButtonWidth = mCloseButtonSize.getWidth();
+        int closeButtonHeight = mCloseButtonSize.getHeight();
         int closeButtonOffsetX = getCloseButtonOffsetX();
         if (!LocalizationUtils.isLayoutRtl()) {
             mClosePlacement.left = getWidth() - closeButtonWidth - closeButtonOffsetX;
@@ -827,19 +842,40 @@ public class StripLayoutTab extends StripLayoutView {
             mClosePlacement.right = closeButtonWidth + closeButtonOffsetX;
         }
 
-        mClosePlacement.top = 0;
-        mClosePlacement.bottom = getHeight();
+        mClosePlacement.top =
+                StripLayoutUtils.shouldApplyMoreDensity() ? DESKTOP_CLOSE_BUTTON_OFFSET_Y_DP : 0;
+        mClosePlacement.bottom =
+                StripLayoutUtils.shouldApplyMoreDensity()
+                        ? mClosePlacement.top + closeButtonHeight
+                        : getHeight();
 
         mClosePlacement.offset(getDrawX(), getDrawY());
         return mClosePlacement;
+    }
+
+    private Size getCloseButtonSize() {
+        float dpToPx = getDpToPx();
+        TypedArray closeAttributes =
+                mContext.obtainStyledAttributes(
+                        new int[] {R.attr.toolbarButtonWidth, R.attr.toolbarButtonHeight});
+        int widthPx = closeAttributes.getDimensionPixelSize(0, 0);
+        int heightPx = closeAttributes.getDimensionPixelSize(1, 0);
+        closeAttributes.recycle();
+        return new Size(Math.round(widthPx / dpToPx), Math.round(heightPx / dpToPx));
     }
 
     public int getCloseButtonPadding() {
         return CLOSE_BUTTON_PADDING_DP;
     }
 
+    public int getTabTouchTargetEndOffsetX() {
+        return TAB_TOUCH_TARGET_END_OFFSET_X_DP;
+    }
+
     public int getCloseButtonOffsetX() {
-        return CLOSE_BUTTON_OFFSET_X;
+        return StripLayoutUtils.shouldApplyMoreDensity()
+                ? DESKTOP_CLOSE_BUTTON_OFFSET_X_DP
+                : getTabTouchTargetEndOffsetX();
     }
 
     public boolean shouldHideFavicon() {
@@ -902,11 +938,11 @@ public class StripLayoutTab extends StripLayoutView {
         float leftInset;
         float rightInset;
         if (LocalizationUtils.isLayoutRtl()) {
-            leftInset = getCloseButtonOffsetX();
+            leftInset = getTabTouchTargetEndOffsetX();
             rightInset = FOLIO_FOOT_LENGTH_DP;
         } else {
             leftInset = FOLIO_FOOT_LENGTH_DP;
-            rightInset = getCloseButtonOffsetX();
+            rightInset = getTabTouchTargetEndOffsetX();
         }
         return new float[] {leftInset, rightInset};
     }
