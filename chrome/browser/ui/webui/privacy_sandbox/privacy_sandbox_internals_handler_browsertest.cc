@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
 
-#include "base/functional/bind.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,41 +29,9 @@ using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Ge;
-using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAreArray;
-
-// Helper to aid in waiting for mojo callbacks to happen.
-class CallbackWaiter {
- public:
-  void Notify() {
-    waiting_ = false;
-    if (runner_.get()) {
-      runner_->Quit();
-    }
-  }
-
-  void Wait() {
-    if (waiting_) {
-      runner_ = std::make_unique<base::RunLoop>();
-      runner_->Run();
-      runner_.reset();
-    }
-  }
-
-  void Reset() {
-    waiting_ = true;
-    if (runner_.get()) {
-      runner_->Quit();
-    }
-    runner_.reset();
-  }
-
- private:
-  bool waiting_{true};
-  std::unique_ptr<base::RunLoop> runner_;
-};
 
 class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
  public:
@@ -77,35 +43,9 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
         browser()->profile(), remote_.BindNewPipeAndPassReceiver());
   }
 
-  void ContentSettingsCallback(
-      const std::vector<ContentSettingPatternSource>& vec) {
-    content_settings_cb_data_ = vec;
-    waiter_.Notify();
-  }
-
-  void StringCallback(const std::string& s) {
-    string_cb_data_ = s;
-    waiter_.Notify();
-  }
-
-  void ContentSettingsPatternCallback(const ContentSettingsPattern& pattern) {
-    content_settings_pattern_cb_data_ = pattern;
-    waiter_.Notify();
-  }
-
  protected:
   mojo::Remote<PageHandler> remote_;
   std::unique_ptr<PrivacySandboxInternalsHandler> handler_;
-
-  // TODO(crbug.com/422166572): Rewrite tests to use TestFuture or
-  // FlushForTesting.
-  //
-  // Notified when _any_ callback from the mojo interface is made.
-  CallbackWaiter waiter_;
-
-  std::vector<ContentSettingPatternSource> content_settings_cb_data_;
-  std::string string_cb_data_;
-  ContentSettingsPattern content_settings_pattern_cb_data_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetCookieSettings) {
@@ -114,11 +54,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetCookieSettings) {
   settings->SetCookieSetting(GURL("https://example.com"),
                              CONTENT_SETTING_ALLOW);
 
-  remote_->ReadContentSettings(
-      ContentSettingsType::COOKIES,
-      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
-                     base::Unretained(this)));
-  waiter_.Wait();
+  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
+      future;
+  remote_->ReadContentSettings(ContentSettingsType::COOKIES,
+                               future.GetCallback());
+  auto& content_settings_cb_data_ = future.Get();
   EXPECT_THAT(
       content_settings_cb_data_,
       AllOf(
@@ -151,11 +91,10 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxInternalsContentSettingsMojoTest,
   ContentSettingsType type = static_cast<ContentSettingsType>(GetParam());
   LOG(INFO) << "Testing for type " << type;
   EXPECT_TRUE(IsKnownEnumValue(type));
-  remote_->ReadContentSettings(
-      type,
-      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
-                     base::Unretained(this)));
-  waiter_.Wait();
+  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
+      future;
+  remote_->ReadContentSettings(type, future.GetCallback());
+  auto& content_settings_cb_data_ = future.Get();
   // May or may not have a default value, but the read should succeed either
   // way.
   EXPECT_THAT(content_settings_cb_data_, SizeIs(Ge(0u)));
@@ -178,12 +117,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdMetadataGrants) {
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
 
+  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
+      future;
   // TODO: TPCD_METADATA_GRANTS are special and don't show up if read with the
   // regular method.
-  remote_->GetTpcdMetadataGrants(
-      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
-                     base::Unretained(this)));
-  waiter_.Wait();
+  remote_->GetTpcdMetadataGrants(future.GetCallback());
+  auto& content_settings_cb_data_ = future.Get();
   EXPECT_THAT(content_settings_cb_data_,
               AllOf(SizeIs(1), UnorderedElementsAreArray(
                                    settings->GetTpcdMetadataGrants())));
@@ -196,11 +135,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
   settings->SetTemporaryCookieGrantForHeuristic(
       GURL("https://accounts.google.com"), GURL("https://example.com"),
       base::Microseconds(1e10));
-  remote_->ReadContentSettings(
-      ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
-                     base::Unretained(this)));
-  waiter_.Wait();
+  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
+      future;
+  remote_->ReadContentSettings(ContentSettingsType::TPCD_HEURISTICS_GRANTS,
+                               future.GetCallback());
+  auto& content_settings_cb_data_ = future.Get();
   EXPECT_THAT(
       content_settings_cb_data_,
       AllOf(SizeIs(Ge(1u)),
@@ -221,11 +160,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdTrial) {
   map->SetContentSettingDefaultScope(
       GURL("https://example.org"), GURL("https://example.net"),
       ContentSettingsType::TPCD_TRIAL, CONTENT_SETTING_ALLOW);
-  remote_->ReadContentSettings(
-      ContentSettingsType::TPCD_TRIAL,
-      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
-                     base::Unretained(this)));
-  waiter_.Wait();
+  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
+      future;
+  remote_->ReadContentSettings(ContentSettingsType::TPCD_TRIAL,
+                               future.GetCallback());
+  auto& content_settings_cb_data_ = future.Get();
   EXPECT_THAT(
       content_settings_cb_data_,
       AllOf(SizeIs(Ge(1u)),
@@ -246,11 +185,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTopLevelTpcdTrial) {
   map->SetContentSettingDefaultScope(
       GURL("https://example.org"), GURL("https://example.net"),
       ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, CONTENT_SETTING_ALLOW);
-  remote_->ReadContentSettings(
-      ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
-      base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
-                     base::Unretained(this)));
-  waiter_.Wait();
+  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
+      future;
+  remote_->ReadContentSettings(ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
+                               future.GetCallback());
+  auto& content_settings_cb_data_ = future.Get();
   EXPECT_THAT(
       content_settings_cb_data_,
       AllOf(SizeIs(Ge(1u)),
@@ -269,30 +208,24 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
   for (const std::string& regex :
        {"[*.]example.com", "http://example.net", "example.org"}) {
     ContentSettingsPattern pattern = ContentSettingsPattern::FromString(regex);
-    remote_->ContentSettingsPatternToString(
-        pattern,
-        base::BindOnce(&PrivacySandboxInternalsMojoTest::StringCallback,
-                       base::Unretained(this)));
-    waiter_.Wait();
-    waiter_.Reset();
+    base::test::TestFuture<const std::string&> future;
+    remote_->ContentSettingsPatternToString(pattern, future.GetCallback());
+    auto& string_cb_data_ = future.Get();
     EXPECT_THAT(string_cb_data_, StrEq(pattern.ToString()));
   }
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
                        StringToContentSettingsPattern) {
+  base::test::TestFuture<const ContentSettingsPattern&> future;
   for (const std::string& regex :
        {"[*.]example.com", "http://example.net", "example.org"}) {
-    remote_->StringToContentSettingsPattern(
-        regex,
-        base::BindOnce(
-            &PrivacySandboxInternalsMojoTest::ContentSettingsPatternCallback,
-            base::Unretained(this)));
+    remote_->StringToContentSettingsPattern(regex, future.GetCallback());
     ContentSettingsPattern expected_pattern =
         ContentSettingsPattern::FromString(regex);
-    waiter_.Wait();
-    waiter_.Reset();
+    auto& content_settings_pattern_cb_data_ = future.Get();
     EXPECT_THAT(content_settings_pattern_cb_data_, Eq(expected_pattern));
+    future.Clear();
   }
 }
 
