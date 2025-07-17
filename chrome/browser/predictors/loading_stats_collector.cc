@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
+#include "content/public/browser/preconnect_request.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -32,7 +33,8 @@ size_t CountCorrectlyPredictiedOrigins(const PreconnectPrediction& prediction,
   const auto& actual_origins = summary.origins;
 
   size_t correctly_predicted_count = std::ranges::count_if(
-      prediction.requests, [&actual_origins](const PreconnectRequest& request) {
+      prediction.requests,
+      [&actual_origins](const content::PreconnectRequest& request) {
         return actual_origins.find(request.origin) != actual_origins.end();
       });
 

@@ -1501,7 +1501,7 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
   if (base::FeatureList::IsEnabled(
           blink::features::kLCPPAutoPreconnectLcpOrigin)) {
     size_t count = 0;
-    std::vector<PreconnectRequest> additional_preconnects;
+    std::vector<content::PreconnectRequest> additional_preconnects;
     auto anonymization_key =
         net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url));
     for (const url::Origin& preconnect_origin :

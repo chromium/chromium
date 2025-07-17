@@ -30,6 +30,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/sqlite_proto/key_value_data.h"
+#include "content/public/browser/preconnect_request.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "url/gurl.h"
@@ -56,29 +57,6 @@ struct LastVisitTimeCompare {
 
 class TestObserver;
 class ResourcePrefetcherManager;
-
-// Stores all values needed to trigger a preconnect/preresolve job to a single
-// origin.
-struct PreconnectRequest {
-  // |network_anonymization_key| specifies the key that network requests for the
-  // preconnected URL are expected to use. If a request is issued with a
-  // different key, it may not use the preconnected socket. It has no effect
-  // when |num_sockets| == 0.
-  PreconnectRequest(
-      const url::Origin& origin,
-      int num_sockets,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
-  PreconnectRequest(const PreconnectRequest&) = default;
-  PreconnectRequest(PreconnectRequest&&) = default;
-  PreconnectRequest& operator=(const PreconnectRequest&) = default;
-  PreconnectRequest& operator=(PreconnectRequest&&) = default;
-
-  url::Origin origin;
-  // A zero-value means that we need to preresolve a host only.
-  int num_sockets = 0;
-  bool allow_credentials = true;
-  net::NetworkAnonymizationKey network_anonymization_key;
-};
 
 struct PrefetchRequest {
   PrefetchRequest(const GURL& url,
@@ -107,7 +85,7 @@ struct PreconnectPrediction {
 
   bool is_redirected = false;
   std::string host;
-  std::vector<PreconnectRequest> requests;
+  std::vector<content::PreconnectRequest> requests;
   std::vector<PrefetchRequest> prefetch_requests;
 };
 

@@ -300,6 +300,8 @@ static_library("test_support") {
     "../public/test/permissions_test_utils.h",
     "../public/test/policy_container_utils.cc",
     "../public/test/policy_container_utils.h",
+    "../public/test/preconnect_test_util.cc",
+    "../public/test/preconnect_test_util.h",
     "../public/test/prefetch_test_util.cc",
     "../public/test/prefetch_test_util.h",
     "../public/test/preloading_test_util.cc",

@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/preconnect_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/network_anonymization_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,6 +31,8 @@ using testing::Return;
 using testing::StrictMock;
 using testing::DoAll;
 using testing::SetArgPointee;
+
+using content::PreconnectRequest;
 
 namespace predictors {
 

@@ -8,6 +8,8 @@
 #include <memory>
 #include <utility>
 
+#include "content/public/browser/preconnect_request.h"
+#include "content/public/test/preconnect_test_util.h"
 #include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
@@ -143,7 +145,7 @@ blink::mojom::ResourceLoadInfoPtr CreateResourceLoadInfoWithRedirects(
 PreconnectPrediction CreatePreconnectPrediction(
     std::string host,
     bool is_redirected,
-    const std::vector<PreconnectRequest>& requests) {
+    const std::vector<content::PreconnectRequest>& requests) {
   PreconnectPrediction prediction;
   prediction.host = host;
   prediction.is_redirected = is_redirected;
@@ -207,7 +209,8 @@ std::ostream& operator<<(std::ostream& os, const PageRequestSummary& summary) {
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const PreconnectRequest& request) {
+std::ostream& operator<<(std::ostream& os,
+                         const content::PreconnectRequest& request) {
   return os << "[" << request.origin << "," << request.num_sockets << ","
             << request.allow_credentials << ","
             << request.network_anonymization_key.ToDebugString() << "]";
@@ -283,12 +286,6 @@ bool operator==(const OriginStat& lhs, const OriginStat& rhs) {
          AlmostEqual(lhs.average_position(), rhs.average_position()) &&
          lhs.always_access_network() == rhs.always_access_network() &&
          lhs.accessed_network() == rhs.accessed_network();
-}
-
-bool operator==(const PreconnectRequest& lhs, const PreconnectRequest& rhs) {
-  return lhs.origin == rhs.origin && lhs.num_sockets == rhs.num_sockets &&
-         lhs.allow_credentials == rhs.allow_credentials &&
-         lhs.network_anonymization_key == rhs.network_anonymization_key;
 }
 
 bool operator==(const PreconnectPrediction& lhs,

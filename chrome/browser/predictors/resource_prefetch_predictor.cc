@@ -74,17 +74,6 @@ GURL CreateRedirectURL(const std::string& scheme,
 
 }  // namespace
 
-PreconnectRequest::PreconnectRequest(
-    const url::Origin& origin,
-    int num_sockets,
-    const net::NetworkAnonymizationKey& network_anonymization_key)
-    : origin(origin),
-      num_sockets(num_sockets),
-      network_anonymization_key(network_anonymization_key) {
-  DCHECK_GE(num_sockets, 0);
-  DCHECK(!network_anonymization_key.IsEmpty());
-}
-
 PrefetchRequest::PrefetchRequest(
     const GURL& url,
     network::mojom::RequestDestination destination)

@@ -14,12 +14,12 @@
 #include "base/types/optional_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_traffic_annotations.h"
-#include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
@@ -76,7 +76,7 @@ PreresolveJob::PreresolveJob(
   DCHECK(!this->network_anonymization_key.IsEmpty());
 }
 
-PreresolveJob::PreresolveJob(PreconnectRequest preconnect_request,
+PreresolveJob::PreresolveJob(content::PreconnectRequest preconnect_request,
                              PreresolveInfo* info)
     : PreresolveJob(preconnect_request.origin.GetURL(),
                     preconnect_request.num_sockets,
@@ -111,8 +111,9 @@ bool PreconnectManager::IsEnabled() {
          content::PreloadingEligibility::kEligible;
 }
 
-void PreconnectManager::Start(const GURL& url,
-                              std::vector<PreconnectRequest> requests) {
+void PreconnectManager::Start(
+    const GURL& url,
+    std::vector<content::PreconnectRequest> requests) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsEnabled())
     return;

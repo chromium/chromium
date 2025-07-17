@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
 #include "chrome/browser/predictors/resolve_host_client_impl.h"
-#include "chrome/browser/predictors/resource_prefetch_predictor.h"
+#include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
@@ -34,8 +34,6 @@ class NetworkContext;
 }  // namespace network
 
 namespace predictors {
-
-struct PreconnectRequest;
 
 struct PreconnectedRequestStats {
   PreconnectedRequestStats(const url::Origin& origin, bool was_preconnected);
@@ -96,7 +94,8 @@ struct PreresolveJob {
   PreresolveJob(const PreresolveJob&) = delete;
   PreresolveJob& operator=(const PreresolveJob&) = delete;
 
-  PreresolveJob(PreconnectRequest preconnect_request, PreresolveInfo* info);
+  PreresolveJob(content::PreconnectRequest preconnect_request,
+                PreresolveInfo* info);
   PreresolveJob(PreresolveJob&& other);
 
   ~PreresolveJob();
@@ -185,7 +184,8 @@ class PreconnectManager {
   virtual ~PreconnectManager();
 
   // Starts preconnect and preresolve jobs associated with |url|.
-  virtual void Start(const GURL& url, std::vector<PreconnectRequest> requests);
+  virtual void Start(const GURL& url,
+                     std::vector<content::PreconnectRequest> requests);
 
   // Starts special preconnect and preresolve jobs that are not cancellable and
   // don't report about their completion. They are considered more important
