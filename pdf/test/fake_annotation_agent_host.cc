@@ -6,7 +6,14 @@
 
 namespace chrome_pdf {
 
-FakeAnnotationAgentHost::FakeAnnotationAgentHost() = default;
+FakeAnnotationAgentHost::FakeAnnotationAgentHost(
+    mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
+        annotation_agent_host_receiver,
+    mojo::PendingRemote<blink::mojom::AnnotationAgent> annotation_agent_remote)
+    : annotation_agent_host_receiver_(
+          this,
+          std::move(annotation_agent_host_receiver)),
+      annotation_agent_remote_(std::move(annotation_agent_remote)) {}
 
 FakeAnnotationAgentHost::~FakeAnnotationAgentHost() = default;
 

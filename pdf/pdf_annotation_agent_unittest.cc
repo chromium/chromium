@@ -24,26 +24,31 @@ class MockPDFAnnogationAgentContainer : public PDFAnnotationAgent::Container {
   MOCK_METHOD(void, RemoveTextFragments, (), (override));
 };
 
-class PDFAnnotationAgentTest : public ::testing::Test,
-                               public FakeAnnotationAgentHost {
+class PDFAnnotationAgentTest : public ::testing::Test {
  public:
   ~PDFAnnotationAgentTest() override = default;
 
   void CreateAgent(blink::mojom::SelectorPtr selector) {
-    mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent_remote;
-    annotation_agent_host_receiver_.reset();
+    fake_annotation_agent_host_.reset();
     // IPC disconnection is asynchronous. FlushForTesting() does not work.
     base::RunLoop().RunUntilIdle();
+
+    mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
+        annotation_agent_host_receiver;
+    mojo::PendingRemote<blink::mojom::AnnotationAgent> annotation_agent_remote;
     pdf_annotation_agent_ = std::make_unique<PDFAnnotationAgent>(
         &mock_container_, blink::mojom::AnnotationType::kGlic,
         std::move(selector),
-        annotation_agent_host_receiver_.BindNewPipeAndPassRemote(),
-        annotation_agent_remote.BindNewPipeAndPassReceiver());
-    annotation_agent_remote_ = std::move(annotation_agent_remote);
+        annotation_agent_host_receiver.InitWithNewPipeAndPassRemote(),
+        annotation_agent_remote.InitWithNewPipeAndPassReceiver());
+    fake_annotation_agent_host_ = std::make_unique<FakeAnnotationAgentHost>(
+        std::move(annotation_agent_host_receiver),
+        std::move(annotation_agent_remote));
   }
 
  protected:
   MockPDFAnnogationAgentContainer mock_container_;
+  std::unique_ptr<FakeAnnotationAgentHost> fake_annotation_agent_host_;
 
  private:
   std::unique_ptr<PDFAnnotationAgent> pdf_annotation_agent_;
@@ -57,7 +62,7 @@ TEST_F(PDFAnnotationAgentTest, TextFragmentFound) {
       .WillOnce(Return(true));
   EXPECT_CALL(mock_container_, ScrollTextFragmentIntoView).Times(0);
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-  EXPECT_EQ(WaitForAttachmentResult(),
+  EXPECT_EQ(fake_annotation_agent_host_->WaitForAttachmentResult(),
             blink::mojom::AttachmentResult::kSuccess);
 }
 
@@ -67,7 +72,7 @@ TEST_F(PDFAnnotationAgentTest, TextFragmentNotFound) {
       .WillOnce(Return(false));
   EXPECT_CALL(mock_container_, ScrollTextFragmentIntoView).Times(0);
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-  EXPECT_EQ(WaitForAttachmentResult(),
+  EXPECT_EQ(fake_annotation_agent_host_->WaitForAttachmentResult(),
             blink::mojom::AttachmentResult::kSelectorNotMatched);
 }
 
@@ -88,7 +93,7 @@ TEST_F(PDFAnnotationAgentTest, ScrollIntoView) {
       .WillOnce(Return(true));
   EXPECT_CALL(mock_container_, ScrollTextFragmentIntoView);
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-  ScrollIntoView();
+  fake_annotation_agent_host_->ScrollIntoView();
 }
 
 }  // namespace chrome_pdf

@@ -3490,22 +3490,30 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 class PdfViewWebPluginAnnotationAgentContainerTest
-    : public PdfViewWebPluginTest,
-      public FakeAnnotationAgentHost {
+    : public PdfViewWebPluginTest {
  public:
   ~PdfViewWebPluginAnnotationAgentContainerTest() override = default;
 
   void CreateAgent(blink::mojom::SelectorPtr selector) {
-    mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent_remote;
-    annotation_agent_host_receiver_.reset();
+    fake_annotation_agent_host_.reset();
     // IPC disconnection is asynchronous. FlushForTesting() does not work.
     base::RunLoop().RunUntilIdle();
+
+    mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
+        annotation_agent_host_receiver;
+    mojo::PendingRemote<blink::mojom::AnnotationAgent> annotation_agent_remote;
+
     plugin_->CreateAgent(
-        annotation_agent_host_receiver_.BindNewPipeAndPassRemote(),
-        annotation_agent_remote.BindNewPipeAndPassReceiver(),
+        annotation_agent_host_receiver.InitWithNewPipeAndPassRemote(),
+        annotation_agent_remote.InitWithNewPipeAndPassReceiver(),
         blink::mojom::AnnotationType::kGlic, std::move(selector), std::nullopt);
-    annotation_agent_remote_ = std::move(annotation_agent_remote);
+    fake_annotation_agent_host_ = std::make_unique<FakeAnnotationAgentHost>(
+        std::move(annotation_agent_host_receiver),
+        std::move(annotation_agent_remote));
   }
+
+ protected:
+  std::unique_ptr<FakeAnnotationAgentHost> fake_annotation_agent_host_;
 };
 
 TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, TextFragmentFound) {
@@ -3514,7 +3522,7 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, TextFragmentFound) {
       .WillOnce(Return(true));
   EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment).Times(0);
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-  EXPECT_EQ(WaitForAttachmentResult(),
+  EXPECT_EQ(fake_annotation_agent_host_->WaitForAttachmentResult(),
             blink::mojom::AttachmentResult::kSuccess);
 }
 
@@ -3524,7 +3532,7 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, TextFragmentNotFound) {
       .WillOnce(Return(false));
   EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment).Times(0);
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-  EXPECT_EQ(WaitForAttachmentResult(),
+  EXPECT_EQ(fake_annotation_agent_host_->WaitForAttachmentResult(),
             blink::mojom::AttachmentResult::kSelectorNotMatched);
 }
 
@@ -3558,7 +3566,7 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, ScrollIntoView) {
       .WillOnce(Return(true));
   EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment);
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-  ScrollIntoView();
+  fake_annotation_agent_host_->ScrollIntoView();
 }
 
 TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, ConsecutiveQueries) {
@@ -3570,13 +3578,13 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest, ConsecutiveQueries) {
     EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment);
     CreateAgent(
         blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-    ScrollIntoView();
+    fake_annotation_agent_host_->ScrollIntoView();
   }
   {
     EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment);
     CreateAgent(
         blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
-    ScrollIntoView();
+    fake_annotation_agent_host_->ScrollIntoView();
   }
 }
 
@@ -3589,7 +3597,7 @@ TEST_F(PdfViewWebPluginAnnotationAgentContainerTest,
 
   CreateAgent(blink::mojom::Selector::NewSerializedSelector("does_not_matter"));
   plugin_->OnNewTextFragmentsSearchStarted();
-  ScrollIntoView();
+  fake_annotation_agent_host_->ScrollIntoView();
 }
 
 }  // namespace chrome_pdf

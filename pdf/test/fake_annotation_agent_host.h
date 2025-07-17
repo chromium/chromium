@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
@@ -18,7 +20,11 @@ namespace chrome_pdf {
 // A test-only browser-side IPC endpoint.
 class FakeAnnotationAgentHost : public blink::mojom::AnnotationAgentHost {
  public:
-  FakeAnnotationAgentHost();
+  FakeAnnotationAgentHost(
+      mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
+          annotation_agent_host_receiver,
+      mojo::PendingRemote<blink::mojom::AnnotationAgent>
+          annotation_agent_remote);
   ~FakeAnnotationAgentHost() override;
 
   // `blink::mojom::AnnotationAgentHost`:
@@ -30,12 +36,11 @@ class FakeAnnotationAgentHost : public blink::mojom::AnnotationAgentHost {
 
   blink::mojom::AttachmentResult WaitForAttachmentResult();
 
- protected:
+ private:
   mojo::Receiver<blink::mojom::AnnotationAgentHost>
-      annotation_agent_host_receiver_{this};
+      annotation_agent_host_receiver_;
   mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent_remote_;
 
- private:
   std::optional<blink::mojom::AttachmentResult> attachment_result_;
   base::RunLoop run_loop_;
 };
