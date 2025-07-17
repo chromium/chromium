@@ -28,7 +28,8 @@ bool IsNtpUrl(const GURL& url) {
 BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
     content::WebContents* web_contents)
     : breadcrumbs::BreadcrumbManagerTabHelper(
-          infobars::ContentInfoBarManager::FromWebContents(web_contents)),
+          infobars::ContentInfoBarManager::FromWebContents(web_contents),
+          breadcrumbs::BreadcrumbManagerTabHelper::ReserveUniqueId()),
       content::WebContentsObserver(web_contents),
       content::WebContentsUserData<BreadcrumbManagerTabHelper>(*web_contents) {}
 

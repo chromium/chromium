@@ -57,7 +57,8 @@ using LoggingBlock = void (^)(const std::string& event);
 
 BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(web::WebState* web_state)
     : breadcrumbs::BreadcrumbManagerTabHelper(
-          InfoBarManagerImpl::FromWebState(web_state)),
+          InfoBarManagerImpl::FromWebState(web_state),
+          breadcrumbs::BreadcrumbManagerTabHelper::ReserveUniqueId()),
       web_state_(web_state) {
   web_state_->AddObserver(this);
   if (web_state_->IsRealized()) {
