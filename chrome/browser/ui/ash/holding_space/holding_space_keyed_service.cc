@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <set>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -506,13 +505,10 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
 
   // The `HoldingSpaceSuggestionsDelegate` manages file suggestions (i.e. the
   // files predicted to be used).
-  if (features::IsHoldingSpaceSuggestionsEnabled()) {
-    auto suggestions_delegate =
-        std::make_unique<HoldingSpaceSuggestionsDelegate>(
-            this, &holding_space_model_);
-    suggestions_delegate_ = suggestions_delegate.get();
-    delegates_.push_back(std::move(suggestions_delegate));
-  }
+  auto suggestions_delegate = std::make_unique<HoldingSpaceSuggestionsDelegate>(
+      this, &holding_space_model_);
+  suggestions_delegate_ = suggestions_delegate.get();
+  delegates_.push_back(std::move(suggestions_delegate));
 
   // Initialize all delegates only after they have been added to our collection.
   // Delegates should not fire their respective callbacks during construction

@@ -4362,9 +4362,6 @@ extern const char kHelpAppOnboardingRevampDescription[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationName[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[];
 
-extern const char kHoldingSpaceSuggestionsName[];
-extern const char kHoldingSpaceSuggestionsDescription[];
-
 extern const char kHotspotName[];
 extern const char kHotspotDescription[];
 

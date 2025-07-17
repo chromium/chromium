@@ -7434,11 +7434,6 @@ const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[] =
     "Enables opening the Help App's What's New page immediately instead of "
     "showing a notification to open the help app.";
 
-const char kHoldingSpaceSuggestionsName[] = "Enable holding space suggestions";
-const char kHoldingSpaceSuggestionsDescription[] =
-    "Enables pinned file suggestions in holding space to help the user "
-    "understand and discover the ability to pin.";
-
 const char kHotspotName[] = "Hotspot";
 const char kHotspotDescription[] =
     "Enables the Chromebook to share its cellular internet connection to other "

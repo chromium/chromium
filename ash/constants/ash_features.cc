@@ -1498,11 +1498,6 @@ BASE_FEATURE(kHindiInscriptLayout,
              "HindiInscriptLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables suggestions in the pinned files section of Holding Space.
-BASE_FEATURE(kHoldingSpaceSuggestions,
-             "HoldingSpaceSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHomeButtonQuickAppAccess,
              "HomeButtonQuickAppAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3867,21 +3862,6 @@ bool IsHibernateEnabled() {
 
 bool IsHideShelfControlsInTabletModeEnabled() {
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
-}
-
-bool IsHoldingSpaceSuggestionsEnabled() {
-  // If the holdback feature flag is enabled, the feature should be disabled,
-  // but only if the device is eligible for the study. Exclusion happens
-  // via hardware overlay, so it needs to be checked separately from the finch
-  // controlled holdback feature flag.
-  const bool device_excluded_from_holdback_study = base::FeatureList::IsEnabled(
-      kFeatureManagementShouldExcludeFromSysUiHoldback);
-  if (IsSysUiShouldHoldbackDriveIntegrationEnabled() &&
-      !device_excluded_from_holdback_study) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(kHoldingSpaceSuggestions);
 }
 
 bool IsHomeButtonQuickAppAccessEnabled() {

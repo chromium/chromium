@@ -100,12 +100,8 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
       const HoldingSpaceItem* item) = 0;
 
   // Invoked to create the `placeholder_` for this section which shows when
-  // `container_` is empty. The `placeholder_` can be destroyed via call to
-  // `DestroyPlaceholder()` if it is no longer needed to exist.
+  // `container_` is empty.
   virtual std::unique_ptr<views::View> CreatePlaceholder();
-
-  // Invoked to destroy `placeholder_`.
-  void DestroyPlaceholder();
 
   // Whether to display this section's contents: either its `container_` or its
   // `placeholder_` as applicable. Sections that have no concept of expanded

@@ -8,7 +8,6 @@
 #include <deque>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -516,11 +515,6 @@ class HoldingSpaceTrayTestBase : public NoSessionAshTestBase {
 // that inherits from `HoldingSpaceAshTestBase`.
 class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
  public:
-  HoldingSpaceTrayTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kHoldingSpaceSuggestions);
-  }
-
   // Verifies that the user's preferences and the suggestion section's visual
   // appearance match a test's current scenario.
   void VerifySuggestionsSectionState(bool expanded, bool item_present) {
@@ -567,9 +561,6 @@ class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
     EXPECT_EQ(test_api()->GetSuggestionsSectionContainer()->GetVisible(),
               expanded && item_present);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests -----------------------------------------------------------------------
@@ -1006,106 +997,6 @@ TEST_F(HoldingSpaceTrayTest,
             HoldingSpaceItemView::Cast(screen_capture_chips[2])->item()->id());
 
   test_api()->Close();
-}
-
-// Until the user has pinned an item, a placeholder should exist in the pinned
-// files bubble which contains a chip to open the Files app.
-TEST_F(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
-  StartSession(/*pre_mark_time_of_first_add=*/false);
-
-  // The tray button should *not* be shown for users that have never added
-  // anything to the holding space.
-  EXPECT_FALSE(test_api()->IsShowingInShelf());
-
-  // Add a download item. This should cause the tray button to show.
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
-  MarkTimeOfFirstAdd();
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-
-  // Show the bubble. Both the pinned files and recent files child bubbles
-  // should be shown.
-  test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-
-  // A chip to open the Files app should exist in the pinned files bubble.
-  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
-  ASSERT_TRUE(pinned_files_bubble);
-  views::View* files_app_chip =
-      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
-  ASSERT_TRUE(files_app_chip);
-
-  // Prior to being acted upon by the user, there should be no events logged to
-  // the Files app chip histogram.
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      "HoldingSpace.FilesAppChip.Action.All",
-      holding_space_metrics::FilesAppChipAction::kClick, 0);
-
-  // Click the chip and expect a call to open the Files app.
-  EXPECT_CALL(*client(), OpenMyFiles);
-  Click(files_app_chip);
-
-  // After having been acted upon by the user, there should be a single click
-  // event logged to the Files app chip histogram.
-  histogram_tester.ExpectBucketCount(
-      "HoldingSpace.FilesAppChip.Action.All",
-      holding_space_metrics::FilesAppChipAction::kClick, 1);
-
-  // Because the holding space model contains a download item, the holding space
-  // tray should still be shown. The recent files bubble should be shown but
-  // pinned files child bubble should have been hidden due to destruction of the
-  // pinned files section placeholder which is no longer relevant.
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-}
-
-// The pinned files section of holding space UI contains a placeholder if the
-// user has never pinned a file. The placeholder contains a Files app chip to
-// take the user to the Files app to pin their first file. Once the user has
-// pressed the Files app chip, the pinned files section placeholder should be
-// permanently hidden.
-TEST_F(HoldingSpaceTrayTest, PlaceholderHiddenAfterFilesAppChipPressed) {
-  StartSession(/*pre_mark_time_of_first_add=*/true);
-
-  // The tray button should be shown because the user has previously added an
-  // item to their holding space.
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-
-  // Show the bubble. Only the pinned files child bubble should be shown.
-  test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
-
-  // A chip to open the Files app should exist in the pinned files bubble.
-  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
-  ASSERT_TRUE(pinned_files_bubble);
-  views::View* files_app_chip =
-      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
-  ASSERT_TRUE(files_app_chip);
-
-  // Click the chip and expect a call to open the Files app.
-  EXPECT_CALL(*client(), OpenMyFiles);
-  Click(files_app_chip);
-
-  // Because the holding space is completely empty, clicking the Files app chip
-  // should cause the holding space tray and all associated bubbles to hide.
-  EXPECT_FALSE(test_api()->IsShowingInShelf());
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
-
-  // Add a download item. This should cause the tray button to show.
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
-  MarkTimeOfFirstAdd();
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
-
-  // Show holding space UI. Because the Files app chip was previously pressed,
-  // the recent files bubble should be shown but the pinned files bubble should
-  // not.
-  test_api()->Show();
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 }
 
 // User should be able to expand and collapse the suggestions section by
@@ -3445,20 +3336,11 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, HasAnimatedProgressIndicators) {
   }
 }
 
-class HoldingSpaceTraySuggestionsFeatureTest
-    : public HoldingSpaceTrayTestBase,
-      public ::testing::WithParamInterface</*suggestions_enabled=*/bool> {
+class HoldingSpaceTraySuggestionsFeatureTest : public HoldingSpaceTrayTestBase {
  public:
-  HoldingSpaceTraySuggestionsFeatureTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceSuggestions, IsHoldingSpaceSuggestionsEnabled());
-  }
-
   void SetDisableDrive(bool disable) {
     ON_CALL(*client(), IsDriveDisabled).WillByDefault(testing::Return(disable));
   }
-
-  bool IsHoldingSpaceSuggestionsEnabled() const { return GetParam(); }
 
   bool IsGoogleChromeBranded() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3468,24 +3350,13 @@ class HoldingSpaceTraySuggestionsFeatureTest
 #endif
   }
 
-  bool GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
-      const views::View* pinned_files_bubble) const {
-    bool has_icons = pinned_files_bubble->GetViewByID(
+  bool GSuiteIconsAreVisible(const views::View* pinned_files_bubble) const {
+    return pinned_files_bubble->GetViewByID(
         kHoldingSpacePinnedFilesSectionPlaceholderGSuiteIconsId);
-    bool should_have_icons =
-        IsHoldingSpaceSuggestionsEnabled() && IsGoogleChromeBranded();
-    return has_icons == should_have_icons;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTraySuggestionsFeatureTest,
-                         /*suggestions_enabled=*/testing::Bool());
-
-TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
+TEST_F(HoldingSpaceTraySuggestionsFeatureTest,
        PinnedFilesPlaceholderShowsAfterPinUnpin) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
 
@@ -3506,44 +3377,34 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
-  // Add a downloaded file. Now the pinned placeholder should show if the
-  // suggestions flag is enabled.
+  // Add a downloaded file. Now the pinned placeholder should show.
   AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
   EXPECT_TRUE(test_api()->IsShowingInShelf());
   test_api()->Show();
   EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-  EXPECT_EQ(test_api()->PinnedFilesBubbleShown(),
-            IsHoldingSpaceSuggestionsEnabled());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 
-  if (test_api()->PinnedFilesBubbleShown()) {
-    views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
-    ASSERT_TRUE(pinned_files_bubble);
-
-    // If the suggestions feature is enabled, then the placeholder with the G
-    // Suite icons should be showing without the Files app chip. Otherwise, the
-    // placeholder shouldn't be showing at all.
-    EXPECT_FALSE(pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId));
-    EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
-        pinned_files_bubble));
-  }
+  // The placeholder with the G Suite icons should be showing in branded builds.
+  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+  ASSERT_TRUE(pinned_files_bubble);
+  EXPECT_EQ(GSuiteIconsAreVisible(pinned_files_bubble),
+            IsGoogleChromeBranded());
 }
 
-TEST_P(HoldingSpaceTraySuggestionsFeatureTest, TrayDoesNotShowUntilFirstAdd) {
+TEST_F(HoldingSpaceTraySuggestionsFeatureTest, TrayDoesNotShowUntilFirstAdd) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
 
-  // For the suggestions feature, the tray should still not show by default
-  // in the shelf.
+  // The tray should still not show by default in the shelf.
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 
   MarkTimeOfFirstAdd();
-
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 }
 
 // Until the user has pinned an item, a placeholder should exist in the pinned
 // files bubble which contains a prompt to pin files and, in chrome branded
 // builds, G Suite icons.
-TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
+TEST_F(HoldingSpaceTraySuggestionsFeatureTest,
        PlaceholderContainsGSuitePrompt) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
 
@@ -3552,7 +3413,7 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
   EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
-  // The new suggestions placeholder text and icons should exist in the pinned
+  // The suggestions placeholder text and icons should exist in the pinned
   // files bubble.
   views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
   ASSERT_TRUE(pinned_files_bubble);
@@ -3563,14 +3424,13 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   ASSERT_TRUE(suggestions_placeholder_label);
 
   std::u16string expected_text =
-      IsHoldingSpaceSuggestionsEnabled()
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS)
-          : l10n_util::GetStringUTF16(
-                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
   EXPECT_EQ(suggestions_placeholder_label->GetText(), expected_text);
 
-  // Also check to make sure that the label is adjusted when drive is disabled.
+  EXPECT_EQ(GSuiteIconsAreVisible(pinned_files_bubble),
+            IsGoogleChromeBranded());
+
+  // Check to make sure that the placeholder is adjusted when drive is disabled.
   test_api()->Close();
   SetDisableDrive(true);
   test_api()->Show();
@@ -3582,19 +3442,12 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
       static_cast<views::Label*>(pinned_files_bubble->GetViewByID(
           kHoldingSpacePinnedFilesSectionPlaceholderLabelId));
   ASSERT_TRUE(suggestions_placeholder_label);
-  expected_text =
-      IsHoldingSpaceSuggestionsEnabled()
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS_DRIVE_DISABLED)
-          : l10n_util::GetStringUTF16(
-                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
+  expected_text = l10n_util::GetStringUTF16(
+      IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_DRIVE_DISABLED);
   EXPECT_EQ(suggestions_placeholder_label->GetText(), expected_text);
 
-  bool has_files_app_chip =
-      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
-  EXPECT_NE(has_files_app_chip, IsHoldingSpaceSuggestionsEnabled());
-  EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
-      pinned_files_bubble));
+  EXPECT_EQ(GSuiteIconsAreVisible(pinned_files_bubble),
+            IsGoogleChromeBranded());
 }
 
 // Base class for holding space tray tests which make assertions about primary
@@ -3803,15 +3656,8 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
 // appropriate.
 class HoldingSpaceTrayVisibilityTest
     : public HoldingSpaceAshTestBase,
-      public testing::WithParamInterface<
-          std::tuple<HoldingSpaceItem::Type,
-                     /*suggestions_enabled=*/bool>> {
+      public testing::WithParamInterface<std::tuple<HoldingSpaceItem::Type>> {
  public:
-  HoldingSpaceTrayVisibilityTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceSuggestions, IsHoldingSpaceSuggestionsEnabled());
-  }
-
   void SetUp() override {
     HoldingSpaceAshTestBase::SetUp();
     test_api_ = std::make_unique<HoldingSpaceTestApi>();
@@ -3825,22 +3671,16 @@ class HoldingSpaceTrayVisibilityTest
   // Returns the parameterized holding space item type.
   HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
 
-  bool IsHoldingSpaceSuggestionsEnabled() const {
-    return std::get<1>(GetParam());
-  }
-
   HoldingSpaceTestApi* test_api() { return test_api_.get(); }
 
  private:
   std::unique_ptr<HoldingSpaceTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceTrayVisibilityTest,
-    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
-                     /*suggestions_enabled=*/testing::Bool()));
+    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes())));
 
 TEST_P(HoldingSpaceTrayVisibilityTest, TrayShowsForCorrectItemTypes) {
   // Partially initialized items should not cause the tray to show.

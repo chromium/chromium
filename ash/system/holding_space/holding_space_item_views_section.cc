@@ -331,19 +331,6 @@ std::unique_ptr<views::View> HoldingSpaceItemViewsSection::CreatePlaceholder() {
   return nullptr;
 }
 
-void HoldingSpaceItemViewsSection::DestroyPlaceholder() {
-  if (!placeholder_)
-    return;
-
-  RemoveChildViewT(placeholder_.get());
-  placeholder_ = nullptr;
-
-  // In the absence of `placeholder_`, the `header_` should only be visible
-  // when `container_` is non-empty.
-  if (header_->GetVisible() && container_->children().empty())
-    header_->SetVisible(false);
-}
-
 bool HoldingSpaceItemViewsSection::IsExpanded() {
   return true;
 }

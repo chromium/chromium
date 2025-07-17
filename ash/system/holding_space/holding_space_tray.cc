@@ -505,14 +505,11 @@ void HoldingSpaceTray::UpdateVisibility() {
 
   // The holding space tray should always be shown if the `model` contains items
   // that are previewable. Otherwise, it should only be visible if the time of
-  // first add has been marked, but a file has never been pinned, and the Files
-  // app chip has never been pressed.
+  // first add has been marked but a file has never been pinned.
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-  SetVisiblePreferred(
-      std::ranges::any_of(model->items(), IsPreviewable) ||
-      (prefs && holding_space_prefs::GetTimeOfFirstAdd(prefs) &&
-       !holding_space_prefs::GetTimeOfFirstPin(prefs) &&
-       !holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs)));
+  SetVisiblePreferred(std::ranges::any_of(model->items(), IsPreviewable) ||
+                      (prefs && holding_space_prefs::GetTimeOfFirstAdd(prefs) &&
+                       !holding_space_prefs::GetTimeOfFirstPin(prefs)));
 }
 
 void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {

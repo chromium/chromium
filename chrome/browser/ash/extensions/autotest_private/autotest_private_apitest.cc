@@ -337,7 +337,6 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
   ash::holding_space_prefs::MarkTimeOfFirstAdd(prefs);
   ash::holding_space_prefs::MarkTimeOfFirstAvailability(prefs);
   ash::holding_space_prefs::MarkTimeOfFirstEntry(prefs);
-  ash::holding_space_prefs::MarkTimeOfFirstFilesAppChipPress(prefs);
   ash::holding_space_prefs::MarkTimeOfFirstPin(prefs);
 
   const bool mark_time_of_first_add = GetParam().mark_time_of_first_add;
@@ -360,8 +359,6 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
   ASSERT_EQ(timeOfFirstAdd.has_value(), mark_time_of_first_add);
   ASSERT_NE(timeOfFirstAvailability, std::nullopt);
   ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstEntry(prefs), std::nullopt);
-  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs),
-            std::nullopt);
   ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), std::nullopt);
 
   if (timeOfFirstAdd) {

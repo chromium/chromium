@@ -54,10 +54,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   virtual void OpenItems(const std::vector<const HoldingSpaceItem*>& items,
                          SuccessCallback callback) = 0;
 
-  // Attempts to open the MyFiles folder.
-  // Success is returned via the supplied `callback`.
-  virtual void OpenMyFiles(SuccessCallback callback) = 0;
-
   // Pins the specified `file_paths`.
   virtual void PinFiles(const std::vector<base::FilePath>& file_paths) = 0;
 

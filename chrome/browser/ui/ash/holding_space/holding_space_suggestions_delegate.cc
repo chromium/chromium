@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "base/containers/adapters.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -51,9 +50,7 @@ bool ItemIsPinnedSuggestion(
 HoldingSpaceSuggestionsDelegate::HoldingSpaceSuggestionsDelegate(
     HoldingSpaceKeyedService* service,
     HoldingSpaceModel* model)
-    : HoldingSpaceKeyedServiceDelegate(service, model) {
-  DCHECK(features::IsHoldingSpaceSuggestionsEnabled());
-}
+    : HoldingSpaceKeyedServiceDelegate(service, model) {}
 
 HoldingSpaceSuggestionsDelegate::~HoldingSpaceSuggestionsDelegate() = default;
 

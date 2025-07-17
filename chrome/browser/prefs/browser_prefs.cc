@@ -1041,6 +1041,12 @@ constexpr char kOptGuideModelFetcherLastFetchAttempt[] =
 constexpr char kOptGuideModelFetcherLastFetchSuccess[] =
     "optimization_guide.predictionmodelfetcher.last_fetch_success";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 07/2025.
+inline constexpr char kTimeOfFirstFilesAppChipPress[] =
+    "ash.holding_space.time_of_first_files_app_chip_press";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1455,6 +1461,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 07/2025
   registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchAttempt, 0);
   registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchSuccess, 0);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 07/2025.
+  registry->RegisterTimePref(kTimeOfFirstFilesAppChipPress, base::Time());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -2712,6 +2723,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 07/2025
   profile_prefs->ClearPref(kOptGuideModelFetcherLastFetchAttempt);
   profile_prefs->ClearPref(kOptGuideModelFetcherLastFetchSuccess);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 07/2025.
+  profile_prefs->ClearPref(kTimeOfFirstFilesAppChipPress);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

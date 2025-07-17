@@ -96,17 +96,6 @@ ASH_PUBLIC_EXPORT std::optional<base::Time> GetTimeOfFirstPin(
 // pin was previously marked, this no-ops and returns false.
 ASH_PUBLIC_EXPORT bool MarkTimeOfFirstPin(PrefService* prefs);
 
-// Returns the time when the Files app chip in the holding space pinned files
-// section placeholder was first pressed. Note that if the time of first press
-// is unmarked, `std::nullopt` is returned.
-ASH_PUBLIC_EXPORT std::optional<base::Time> GetTimeOfFirstFilesAppChipPress(
-    PrefService* prefs);
-
-// Marks the time when the Files app chip in the holding space pinned files
-// section placeholder was first pressed. If the time of first press was
-// previously marked, this no-ops and returns false.
-ASH_PUBLIC_EXPORT bool MarkTimeOfFirstFilesAppChipPress(PrefService* prefs);
-
 }  // namespace ash::holding_space_prefs
 
 #endif  // ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_PREFS_H_

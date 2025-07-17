@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -202,23 +201,6 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenDownloads) {
   // We expect `HoldingSpaceClient::OpenDownloads()` to succeed.
   base::RunLoop run_loop;
   holding_space_client->OpenDownloads(
-      base::BindLambdaForTesting([&run_loop](bool success) {
-        EXPECT_TRUE(success);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-// Verifies that `HoldingSpaceClient::OpenMyFiles()` works as intended.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenMyFiles) {
-  ASSERT_TRUE(HoldingSpaceController::Get());
-
-  auto* holding_space_client = HoldingSpaceController::Get()->client();
-  ASSERT_TRUE(holding_space_client);
-
-  // We expect `HoldingSpaceClient::OpenMyFiles()` to succeed.
-  base::RunLoop run_loop;
-  holding_space_client->OpenMyFiles(
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_TRUE(success);
         run_loop.Quit();

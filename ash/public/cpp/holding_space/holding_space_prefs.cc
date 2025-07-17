@@ -32,11 +32,6 @@ constexpr char kTimeOfFirstAvailability[] =
 // Time preference storing when holding space was first entered.
 constexpr char kTimeOfFirstEntry[] = "ash.holding_space.time_of_first_entry";
 
-// Time preference storing when the Files app chip in the holding space pinned
-// files section placeholder was first pressed.
-constexpr char kTimeOfFirstFilesAppChipPress[] =
-    "ash.holding_space.time_of_first_files_app_chip_press";
-
 // Time preference storing when the first pin to holding space occurred.
 constexpr char kTimeOfFirstPin[] = "ash.holding_space.time_of_first_pin";
 
@@ -52,7 +47,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kTimeOfFirstAdd, unix_epoch);
   registry->RegisterTimePref(kTimeOfFirstAvailability, unix_epoch);
   registry->RegisterTimePref(kTimeOfFirstEntry, unix_epoch);
-  registry->RegisterTimePref(kTimeOfFirstFilesAppChipPress, unix_epoch);
   registry->RegisterTimePref(kTimeOfFirstPin, unix_epoch);
 }
 
@@ -61,7 +55,6 @@ void ResetProfilePrefsForTesting(PrefService* prefs) {
   prefs->ClearPref(kTimeOfFirstAdd);
   prefs->ClearPref(kTimeOfFirstAvailability);
   prefs->ClearPref(kTimeOfFirstEntry);
-  prefs->ClearPref(kTimeOfFirstFilesAppChipPress);
   prefs->ClearPref(kTimeOfFirstPin);
 }
 
@@ -160,20 +153,6 @@ std::optional<base::Time> GetTimeOfFirstPin(PrefService* prefs) {
 bool MarkTimeOfFirstPin(PrefService* prefs) {
   if (prefs->FindPreference(kTimeOfFirstPin)->IsDefaultValue()) {
     prefs->SetTime(kTimeOfFirstPin, base::Time::Now());
-    return true;
-  }
-  return false;
-}
-
-std::optional<base::Time> GetTimeOfFirstFilesAppChipPress(PrefService* prefs) {
-  auto* pref = prefs->FindPreference(kTimeOfFirstFilesAppChipPress);
-  return pref->IsDefaultValue() ? std::nullopt
-                                : base::ValueToTime(pref->GetValue());
-}
-
-bool MarkTimeOfFirstFilesAppChipPress(PrefService* prefs) {
-  if (prefs->FindPreference(kTimeOfFirstFilesAppChipPress)->IsDefaultValue()) {
-    prefs->SetTime(kTimeOfFirstFilesAppChipPress, base::Time::Now());
     return true;
   }
   return false;
