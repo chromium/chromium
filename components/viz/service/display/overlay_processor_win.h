@@ -171,6 +171,16 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
           render_pass_backdrop_filters,
       const DisplayResourceProvider* resource_provider) const;
 
+  // Remove the primary plane overlay from this frame. Ensure that the frame's
+  // overlay candidates fully cover the root pass' output rect or expect to "see
+  // through" to the window background.
+  //
+  // When the primary plane overlay is re-introduced on a later frame, then it
+  // will by fully damaged by the `root_render_pass` output rect from the frame
+  // it was removed from.
+  void RemovePrimaryPlane(const AggregatedRenderPass& root_render_pass,
+                          gfx::Rect& root_damage_rect);
+
   // Modifies the properties of |promoted_render_passes| for passes that are
   // referenced by RPDQ overlays. This gives |SkiaRenderer| enough information
   // to decide whether or not a RPDQ overlay can skip the copy in
@@ -210,7 +220,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   bool is_page_fullscreen_mode_ = false;
 
-  bool delegation_succeeded_last_frame_ = false;
+  bool pending_remove_primary_plane_ = false;
 
   // If true, causes the use of DComp surfaces as the backing image of all
   // render passes for the frame.

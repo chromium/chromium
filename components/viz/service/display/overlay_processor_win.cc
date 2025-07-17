@@ -163,8 +163,9 @@ gfx::Rect OverlayProcessorWin::GetAndResetOverlayDamage() {
 
 void OverlayProcessorWin::AdjustOutputSurfaceOverlay(
     std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
-  if (delegation_succeeded_last_frame_) {
+  if (pending_remove_primary_plane_) {
     output_surface_plane->reset();
+    pending_remove_primary_plane_ = false;
   }
 }
 
@@ -202,8 +203,6 @@ void OverlayProcessorWin::ProcessForOverlays(
   DebugLogAfterDelegation(status, *candidates, *root_damage_rect);
 
   frame_has_forced_dcomp_surface_ = false;
-  delegation_succeeded_last_frame_ =
-      status == DelegationStatus::kFullDelegation;
 }
 
 DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
@@ -306,19 +305,9 @@ DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
               /*surface_content_render_passes=*/{}, delegated_candidates);
     }
 
-    // Set this to the full output rect unconditionally on success. This is
-    // unioned with the next frame's damage (via |GetAndResetOverlayDamage|)
-    // to fully damage the root surface if the next frame fails delegation.
-    // Since delegated compositing succeeded here, the previous frame's
-    // |overlay_damage_rect_| influence on |root_damage_rect| is cleared
-    // below.
-    // In the case of resize, we will be correctly damaged from another
-    // source.
-    overlay_damage_rect_ = render_passes->back()->output_rect;
+    RemovePrimaryPlane(*render_passes->back(), *root_damage_rect);
 
-    delegation_succeeded_last_frame_ = true;
     *candidates = std::move(delegated_candidates);
-    *root_damage_rect = gfx::Rect();
 
     return DelegationStatus::kFullDelegation;
   } else {
@@ -612,6 +601,25 @@ OverlayProcessorWin::TryDelegatedCompositing(
   }
 
   return base::ok(std::move(result));
+}
+
+void OverlayProcessorWin::RemovePrimaryPlane(
+    const AggregatedRenderPass& root_render_pass,
+    gfx::Rect& root_damage_rect) {
+  // Set this to the full output rect unconditionally on success. This is
+  // unioned with the next frame's damage (via |GetAndResetOverlayDamage|) to
+  // fully damage the root surface if the next frame fails delegation. Since
+  // delegated compositing succeeded here, the previous frame's
+  // |overlay_damage_rect_| influence on |root_damage_rect| is cleared below.
+  //
+  // In the case of resize, we will be correctly damaged from another source.
+  overlay_damage_rect_ = root_render_pass.output_rect;
+
+  // `SkiaRenderer` expects no root damage when the primary plane is not
+  // present.
+  root_damage_rect = gfx::Rect();
+
+  pending_remove_primary_plane_ = true;
 }
 
 // static
