@@ -59,9 +59,10 @@ public class ContextMenuUtils {
 
                     @Override
                     public long getItemId(int position) {
-                        return isEnabled(position)
-                                ? ((ListItem) getItem(position)).model.get(MENU_ITEM_ID)
-                                : INVALID_ITEM_ID;
+                        if (!isEnabled(position)) return INVALID_ITEM_ID;
+                        ListItem item = (ListItem) getItem(position);
+                        if (!item.model.containsKey(MENU_ITEM_ID)) return INVALID_ITEM_ID;
+                        return item.model.get(MENU_ITEM_ID);
                     }
                 };
 
