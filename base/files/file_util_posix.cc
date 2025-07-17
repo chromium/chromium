@@ -1149,8 +1149,8 @@ bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if BUILDFLAG(IS_ANDROID)
   if (filename.IsVirtualDocumentPath()) {
-    std::optional<android::VirtualDocumentPath> vp =
-        android::VirtualDocumentPath::Parse(filename.value());
+    std::optional<files_internal::VirtualDocumentPath> vp =
+        files_internal::VirtualDocumentPath::Parse(filename.value());
     if (!vp) {
       return false;
     }

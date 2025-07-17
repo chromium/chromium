@@ -802,8 +802,8 @@ int File::Lstat(const FilePath& path, stat_wrapper_t* sb) {
 int File::Mkdir(const FilePath& path, mode_t mode) {
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsVirtualDocumentPath()) {
-    std::optional<android::VirtualDocumentPath> vp =
-        android::VirtualDocumentPath::Parse(path.value());
+    std::optional<files_internal::VirtualDocumentPath> vp =
+        files_internal::VirtualDocumentPath::Parse(path.value());
     if (!vp) {
       errno = ENOENT;
       return -1;

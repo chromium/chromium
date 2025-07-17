@@ -13,9 +13,10 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/virtual_document_path_jni/VirtualDocumentPath_jni.h"
 
-namespace base::android {
+namespace base::files_internal {
 
-VirtualDocumentPath::VirtualDocumentPath(const JavaRef<jobject>& obj) {
+VirtualDocumentPath::VirtualDocumentPath(
+    const base::android::JavaRef<jobject>& obj) {
   obj_.Reset(obj);
 }
 
@@ -29,7 +30,8 @@ VirtualDocumentPath::~VirtualDocumentPath() = default;
 std::optional<VirtualDocumentPath> VirtualDocumentPath::Parse(
     const std::string& path) {
   JNIEnv* env = android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = Java_VirtualDocumentPath_parse(env, path);
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      Java_VirtualDocumentPath_parse(env, path);
   if (obj.is_null()) {
     return std::nullopt;
   }
@@ -58,8 +60,9 @@ bool VirtualDocumentPath::Mkdir(mode_t mode) const {
 
 bool VirtualDocumentPath::WriteFile(span<const uint8_t> data) const {
   JNIEnv* env = android::AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> bs = ToJavaByteArray(env, data);
+  base::android::ScopedJavaLocalRef<jbyteArray> bs =
+      base::android::ToJavaByteArray(env, data);
   return Java_VirtualDocumentPath_writeFile(env, obj_, bs);
 }
 
-}  // namespace base::android
+}  // namespace base::files_internal

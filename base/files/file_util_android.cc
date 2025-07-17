@@ -34,8 +34,8 @@ std::optional<FilePath> ResolveToContentUri(const base::FilePath& path) {
     return std::nullopt;
   }
 
-  std::optional<android::VirtualDocumentPath> vp =
-      android::VirtualDocumentPath::Parse(path.value());
+  std::optional<files_internal::VirtualDocumentPath> vp =
+      files_internal::VirtualDocumentPath::Parse(path.value());
   if (!vp) {
     return std::nullopt;
   }
@@ -49,8 +49,8 @@ std::optional<FilePath> ResolveToContentUri(const base::FilePath& path) {
 }
 
 std::optional<FilePath> ResolveToVirtualDocumentPath(const FilePath& path) {
-  std::optional<android::VirtualDocumentPath> vp =
-      android::VirtualDocumentPath::Parse(path.value());
+  std::optional<files_internal::VirtualDocumentPath> vp =
+      files_internal::VirtualDocumentPath::Parse(path.value());
   if (!vp) {
     return std::nullopt;
   }
