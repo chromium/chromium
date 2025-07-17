@@ -7,34 +7,31 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/chrome_content_client.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
-#include "components/invalidation/public/invalidation_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_registry.h"
-#include "content/public/browser/storage_partition.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/files/file_path.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -44,20 +41,15 @@
 namespace invalidation {
 namespace {
 
-std::variant<std::unique_ptr<InvalidationService>,
-             std::unique_ptr<InvalidationListener>>
-CreateInvalidationServiceOrListenerImpl(Profile* profile,
-                                        IdentityProvider* identity_provider,
-                                        int64_t project_number,
-                                        std::string log_prefix) {
-  return CreateInvalidationServiceOrListener(
-      identity_provider,
+std::unique_ptr<InvalidationListener> CreateInvalidationListener(
+    Profile* profile,
+    int64_t project_number,
+    std::string log_prefix) {
+  return invalidation::InvalidationListener::Create(
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver(),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      profile->GetPrefs(), project_number, std::move(log_prefix));
+      project_number, std::move(log_prefix));
 }
 
 std::unique_ptr<IdentityProvider> CreateIdentityProvider(Profile* profile) {
@@ -113,6 +105,8 @@ ProfileInvalidationProviderFactory::ProfileInvalidationProviderFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
+  // TODO(crbug.com/341377023): `IdentityProvider` is needed for legacy topics
+  // cleanup. Remove it once cleanup is done.
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
@@ -135,14 +129,9 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  std::unique_ptr<IdentityProvider> identity_provider =
-      CreateIdentityProvider(profile);
-  ProfileInvalidationProvider::InvalidationServiceOrListenerFactory
-      service_or_listener_factory =
-          base::BindRepeating(&CreateInvalidationServiceOrListenerImpl, profile,
-                              identity_provider.get());
   return std::make_unique<ProfileInvalidationProvider>(
-      std::move(identity_provider), std::move(service_or_listener_factory));
+      CreateIdentityProvider(profile),
+      base::BindRepeating(&CreateInvalidationListener, profile));
 }
 
 void ProfileInvalidationProviderFactory::RegisterProfilePrefs(

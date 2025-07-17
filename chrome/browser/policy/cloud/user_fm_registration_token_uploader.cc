@@ -8,13 +8,11 @@
 
 #include <memory>
 #include <set>
-#include <variant>
 
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
@@ -28,15 +26,11 @@ namespace {
 
 // Returns a set of all project numbers that will be used by user.
 std::set<int64_t> GetAllInvalidationProjectNumbers() {
-  // Cannot be a static constant because project number is decided by feature,
-  // which is not available during static initialization.
-  return {policy::GetPolicyInvalidationProjectNumber(
-              policy::PolicyInvalidationScope::kUser),
-          policy::GetRemoteCommandsInvalidationProjectNumber(
-              policy::PolicyInvalidationScope::kUser),
+  return {
+      policy::kPolicyInvalidationProjectNumber,
+      policy::kRemoteCommandsInvalidationsProjectNumber,
 #if BUILDFLAG(IS_CHROMEOS)
-          ash::cert_provisioning::GetCertProvisioningInvalidationProjectNumber(
-              ash::cert_provisioning::CertScope::kUser)
+      ash::cert_provisioning::kCertProvisioningInvalidationProjectNumber,
 #endif
   };
 }
@@ -84,18 +78,12 @@ void UserFmRegistrationTokenUploader::OnProfileInitializationComplete(
     return;
   }
 
-  for (const auto& project_number : GetAllInvalidationProjectNumbers()) {
-    auto invalidation_service_or_listener =
-        invalidation_provider->GetInvalidationServiceOrListener(project_number);
-    if (!std::holds_alternative<invalidation::InvalidationListener*>(
-            invalidation_service_or_listener)) {
-      continue;
-    }
+  for (const int64_t project_number : GetAllInvalidationProjectNumbers()) {
+    invalidation::InvalidationListener* invalidation_listener =
+        invalidation_provider->GetInvalidationListener(project_number);
 
     uploaders_.emplace_back(std::make_unique<FmRegistrationTokenUploader>(
-        PolicyInvalidationScope::kUser,
-        std::get<invalidation::InvalidationListener*>(
-            invalidation_service_or_listener),
+        PolicyInvalidationScope::kUser, invalidation_listener,
         policy_manager_->core()));
   }
 }

@@ -23,8 +23,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "components/invalidation/impl/fake_invalidation_service.h"
-#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/test_support/fake_invalidation_listener.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
@@ -34,7 +33,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
-#include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -68,16 +66,11 @@ struct FeaturesTestParam {
   std::vector<base::test::FeatureRef> disabled_features;
 };
 
-std::variant<std::unique_ptr<invalidation::InvalidationService>,
-             std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForProjectNumber(int64_t project_number,
-                                          std::string /*log_prefix*/) {
-  if (invalidation::IsInvalidationListenerSupported(project_number)) {
-    return std::make_unique<invalidation::FakeInvalidationListener>(
-        project_number);
-  }
-
-  return std::make_unique<invalidation::FakeInvalidationService>();
+std::unique_ptr<invalidation::InvalidationListener>
+CreateInvalidationListenerForProjectNumber(int64_t project_number,
+                                           std::string /*log_prefix*/) {
+  return std::make_unique<invalidation::FakeInvalidationListener>(
+      project_number);
 }
 
 std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
@@ -86,7 +79,7 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)),
-      base::BindRepeating(&CreateInvalidationServiceForProjectNumber));
+      base::BindRepeating(&CreateInvalidationListenerForProjectNumber));
 }
 
 }  // namespace
@@ -211,22 +204,6 @@ class UserRemoteCommandsServiceTest
     profile_ = nullptr;
   }
 
-  invalidation::FakeInvalidationService* GetInvalidationServiceForProjectNumber(
-      int64_t project_number) {
-    auto* profile_invalidation_provider_factory =
-        static_cast<invalidation::ProfileInvalidationProvider*>(
-            invalidation::ProfileInvalidationProviderFactory::GetInstance()
-                ->GetForProfile(profile()));
-    auto invalidation_service_or_listener =
-        profile_invalidation_provider_factory->GetInvalidationServiceOrListener(
-            project_number);
-    CHECK(std::holds_alternative<invalidation::InvalidationService*>(
-        invalidation_service_or_listener));
-    return static_cast<invalidation::FakeInvalidationService*>(
-        std::get<invalidation::InvalidationService*>(
-            invalidation_service_or_listener));
-  }
-
   void AddPendingRemoteCommand(const em::RemoteCommand& command) {
     test_server_->remote_commands_state()->AddPendingRemoteCommand(command);
   }
@@ -280,12 +257,8 @@ IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UserRemoteCommandsServiceTest,
-    testing::Values(
-        FeaturesTestParam{},
-        FeaturesTestParam{
-            .enabled_features = {
-                policy::
-                    kUserRemoteCommandsInvalidationWithDirectMessagesEnabled,
-                kUserRemoteCommands}}));
+    testing::Values(FeaturesTestParam{},
+                    FeaturesTestParam{
+                        .enabled_features = {kUserRemoteCommands}}));
 
 }  // namespace enterprise_commands

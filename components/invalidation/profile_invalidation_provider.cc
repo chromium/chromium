@@ -6,50 +6,47 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "components/invalidation/impl/invalidation_prefs.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
-#include "components/invalidation/public/invalidation_service.h"
+#include "components/invalidation/public/identity_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace invalidation {
 
+ProfileInvalidationProvider::ProfileInvalidationProvider() = default;
+
 ProfileInvalidationProvider::ProfileInvalidationProvider(
     std::unique_ptr<IdentityProvider> identity_provider,
-    InvalidationServiceOrListenerFactory
-        invalidation_service_or_listener_factory)
-    : identity_provider_(std::move(identity_provider)),
-      invalidation_service_or_listener_factory_(
-          std::move(invalidation_service_or_listener_factory)) {}
+    InvalidationListenerFactory invalidation_listener_factory)
+    : invalidation_listener_factory_(std::move(invalidation_listener_factory)) {
+}
 
 ProfileInvalidationProvider::~ProfileInvalidationProvider() = default;
 
-IdentityProvider* ProfileInvalidationProvider::GetIdentityProvider() {
-  return identity_provider_.get();
-}
-
-std::variant<InvalidationService*, InvalidationListener*>
-ProfileInvalidationProvider::GetInvalidationServiceOrListener(
+InvalidationListener* ProfileInvalidationProvider::GetInvalidationListener(
     int64_t project_number) {
-  DCHECK(invalidation_service_or_listener_factory_);
+  if (!invalidation_listener_factory_) {
+    return nullptr;
+  }
 
-  auto& service_or_listener =
-      sender_id_to_invalidation_service_or_listener_[project_number];
+  auto& listener = project_number_to_invalidation_listener_[project_number];
 
-  if (!std::visit([](auto&& ptr) { return !!ptr; }, service_or_listener)) {
-    service_or_listener = invalidation_service_or_listener_factory_.Run(
+  if (!listener) {
+    listener = invalidation_listener_factory_.Run(
         project_number, "ProfileInvalidationProvider");
   }
 
-  return invalidation::UniquePointerVariantToPointer(service_or_listener);
+  return listener.get();
 }
 
 void ProfileInvalidationProvider::Shutdown() {
-  sender_id_to_invalidation_service_or_listener_.clear();
-  invalidation_service_or_listener_factory_.Reset();
+  project_number_to_invalidation_listener_.clear();
+  invalidation_listener_factory_.Reset();
 }
 
 // static
