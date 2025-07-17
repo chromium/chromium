@@ -266,29 +266,6 @@ void MigrateIntegerPref(std::string_view pref_name,
   source_pref_service->ClearPref(pref_name);
 }
 
-// Migrates a string pref from source to target PrefService.
-void MigrateStringPref(std::string_view pref_name,
-                       PrefService* target_pref_service,
-                       PrefService* source_pref_service) {
-  const PrefService::Preference* target_pref =
-      target_pref_service->FindPreference(pref_name);
-  CHECK(target_pref);
-
-  const PrefService::Preference* source_pref =
-      source_pref_service->FindPreference(pref_name);
-  CHECK(source_pref);
-
-  // Only migrate the pref if 1. it is not set in target,
-  // 2. it is not the default in source.
-  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
-    target_pref_service->SetString(pref_name,
-                                   source_pref_service->GetString(pref_name));
-  }
-
-  // In all cases, clear the pref from source.
-  source_pref_service->ClearPref(pref_name);
-}
-
 // Migrates a Dict pref from source to target PrefService.
 void MigrateDictPref(std::string_view pref_name,
                      PrefService* target_pref_service,
@@ -356,15 +333,6 @@ void MigrateListPref(std::string_view pref_name,
 
   // In all cases, clear the pref from source.
   source_pref_service->ClearPref(pref_name);
-}
-
-// Helper function migrating the `string` preference from LocalState prefs to
-// Profile prefs.
-void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  MigrateStringPref(pref_name, profile_pref_service,
-                    GetApplicationContext()->GetLocalState());
 }
 
 // Helper function migrating the `int` preference from LocalState prefs to
@@ -573,7 +541,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kIosDefaultBrowserPromoLastAction, -1);
 
   // Preference related to the tab pickup feature.
-  registry->RegisterBooleanPref(prefs::kTabPickupEnabled, true);
+  registry->RegisterBooleanPref(prefs::kTabPickupEnabled, false);
 
   // Preferences related to the new Safety Check Manager.
   registry->RegisterStringPref(
@@ -664,22 +632,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kMultiProfileForcedMigrationDone, false);
 
   registry->RegisterTimePref(prefs::kNextSSORecallTime, base::Time());
-
-  // Deprecated 07/2024 (migrated to profile prefs).
-  registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
-  registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
-                               std::string());
-
-  // Deprecated 07/2024.
-  registry->RegisterDictionaryPref(
-      prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
-      PrefRegistry::LOSSY_PREF);
-
-  // Deprecated 07/2024 (migrated to profile pref).
-  registry->RegisterStringPref(
-      prefs::kIosSafetyCheckManagerPasswordCheckResult,
-      NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
-      PrefRegistry::LOSSY_PREF);
 
   // Deprecated 08/2024.
   registry->RegisterIntegerPref(kTrialPrefName, 0);
@@ -983,11 +935,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterDictionaryPref(prefs::kWebAnnotationsPolicy);
 
-  // Preferences related to the tab pickup feature.
-  registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
-  registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
-                               std::string());
-
   // Pref used to store the latest Most Visited Sites to detect changes
   // to the top Most Visited Sites.
   registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
@@ -1178,11 +1125,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // This function is not allowed to block.
   base::ScopedDisallowBlocking disallow_blocking;
 
-  // Added 07/2024.
-  prefs->ClearPref(prefs::kTabPickupEnabled);
-  prefs->ClearPref(prefs::kTabPickupLastDisplayedTime);
-  prefs->ClearPref(prefs::kTabPickupLastDisplayedURL);
-
   // Added 08/2024.
   prefs->ClearPref(kTrialPrefName);
 
@@ -1224,6 +1166,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 06/2025.
   prefs->ClearPref(prefs::kNTPLensEntryPointNewBadgeShownCount);
   prefs->ClearPref(prefs::kNTPHomeCustomizationNewBadgeImpressionCount);
+
+  // Added 07/2025.
+  prefs->ClearPref(prefs::kTabPickupEnabled);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1233,24 +1178,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 07/2024.
-  // Note that this key is an obsolete LocalState pref, it's here because it was
-  // moved from LocalState pref to Profile pref and before clearing it the
-  // Profile pref needs to be updated.
-  MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kIosSafetyCheckManagerPasswordCheckResult, prefs);
-
-  // Added 07/2024.
-  // Note that this key is an obsolete LocalState pref, it's here because it was
-  // moved from LocalState pref to Profile pref and before clearing it the
-  // Profile pref needs to be updated.
-  MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kIosSafetyCheckManagerInsecurePasswordCounts, prefs);
-
-  // Added 07/2024.
-  prefs->ClearPref(prefs::kTabPickupLastDisplayedTime);
-  prefs->ClearPref(prefs::kTabPickupLastDisplayedURL);
 
   // Added 09/2024.
   prefs->ClearPref(kContentSettingsWindowLastTabIndex);
@@ -1404,12 +1331,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 07/2024.
-  [defaults
-      removeObjectForKey:@"MostRecentTimestampBlueDotPromoShownInOverflowMenu"];
-  [defaults
-      removeObjectForKey:@"MostRecentTimestampBlueDotPromoShownInSettingsMenu"];
 
   // Added 08/2024.
   [defaults removeObjectForKey:@"userHasInteractedWithWhatsNew"];

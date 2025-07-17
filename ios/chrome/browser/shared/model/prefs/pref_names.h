@@ -538,14 +538,6 @@ inline constexpr char kSearchSuggestEnabled[] = "search.suggest_enabled";
 // Boolean that is true when the TabPickup feature is enabled.
 inline constexpr char kTabPickupEnabled[] = "ios.tab_pickup_enabled";
 
-// The last time a tab pickup banner was displayed.
-inline constexpr char kTabPickupLastDisplayedTime[] =
-    "ios.tab_pickup_last_displayed_time";
-
-// The last URL used to display a tab pickup banner.
-inline constexpr char kTabPickupLastDisplayedURL[] =
-    "ios.tab_pickup_last_displayed_url";
-
 // Boolean indicating if displaying price drops for shopping URLs on Tabs
 // in the Tab Switching UI is enabled.
 inline constexpr char kTrackPricesOnTabsEnabled[] =
