@@ -12,8 +12,8 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -30,7 +30,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom-forward.h"
-#include "components/bookmarks/browser/bookmark_model.h"
+#include "chrome/browser/ui/webui/omnibox/omnibox_mojom_traits.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
@@ -55,123 +55,6 @@
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #endif
-
-using bookmarks::BookmarkModel;
-
-namespace {
-
-std::string AnswerTypeToString(int answer_type) {
-  switch (answer_type) {
-    case omnibox::ANSWER_TYPE_UNSPECIFIED:
-      return "invalid";
-    case omnibox::ANSWER_TYPE_DICTIONARY:
-      return "dictionary";
-    case omnibox::ANSWER_TYPE_FINANCE:
-      return "finance";
-    case omnibox::ANSWER_TYPE_GENERIC_ANSWER:
-      return "knowledge graph";
-    case omnibox::ANSWER_TYPE_SPORTS:
-      return "sports";
-    case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
-      return "sunrise";
-    case omnibox::ANSWER_TYPE_TRANSLATION:
-      return "translation";
-    case omnibox::ANSWER_TYPE_WEATHER:
-      return "weather";
-    case omnibox::ANSWER_TYPE_CURRENCY:
-      return "currency";
-    case omnibox::ANSWER_TYPE_LOCAL_TIME:
-      return "local time";
-    default:
-      return base::NumberToString(answer_type);
-  }
-}
-
-}  // namespace
-
-namespace mojo {
-
-template <>
-struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
-  static mojom::AutocompleteMatchPtr Convert(const AutocompleteMatch& input) {
-    mojom::AutocompleteMatchPtr result(mojom::AutocompleteMatch::New());
-    if (input.provider) {
-      result->provider_name = std::string(input.provider->GetName());
-      result->provider_done = input.provider->done();
-    }
-    result->relevance = input.relevance;
-    result->deletable = input.deletable;
-    result->fill_into_edit = base::UTF16ToUTF8(input.fill_into_edit);
-    result->inline_autocompletion =
-        base::UTF16ToUTF8(input.inline_autocompletion);
-    result->destination_url = input.destination_url;
-    result->stripped_destination_url = input.stripped_destination_url;
-
-    result->icon = input.icon_url;
-    result->image = input.ImageUrl();
-
-    result->contents = base::UTF16ToUTF8(input.contents);
-    result->contents_class = input.contents_class;
-    result->description = base::UTF16ToUTF8(input.description);
-    result->description_class = input.description_class;
-    result->swap_contents_and_description = input.swap_contents_and_description;
-    if (input.answer_template.has_value()) {
-      omnibox::AnswerData answer_data = input.answer_template->answers(0);
-      result->answer = answer_data.headline().text() + " / " +
-                       answer_data.subhead().text() + " / " +
-                       AnswerTypeToString(input.answer_type);
-    }
-    result->transition =
-        ui::PageTransitionGetCoreTransitionString(input.transition);
-    result->allowed_to_be_default_match = input.allowed_to_be_default_match;
-    result->type = AutocompleteMatchType::ToString(input.type);
-    result->is_search_type = AutocompleteMatch::IsSearchType(input.type);
-    omnibox::SuggestType type = input.suggest_type;
-    auto subtypes = input.subtypes;
-    AutocompleteController::ExtendMatchSubtypes(input, &subtypes);
-    std::vector<std::string> subtypes_str;
-    subtypes_str.push_back(base::NumberToString(type));
-    std::ranges::transform(
-        subtypes, std::back_inserter(subtypes_str),
-        [](int subtype) { return base::NumberToString(subtype); });
-    result->aqs_type_subtypes = base::JoinString(subtypes_str, ",");
-    result->has_tab_match = input.has_tab_match.value_or(false);
-    if (input.associated_keyword.get()) {
-      result->associated_keyword =
-          base::UTF16ToUTF8(input.associated_keyword->keyword);
-    }
-    result->keyword = base::UTF16ToUTF8(input.keyword);
-    result->duplicates = static_cast<int32_t>(input.duplicate_matches.size());
-    result->from_previous = input.from_previous;
-    const auto* pedal = OmniboxPedal::FromAction(input.GetActionAt(0u));
-    result->pedal_id =
-        pedal == nullptr ? 0 : static_cast<int32_t>(pedal->PedalId());
-    if (input.scoring_signals.has_value()) {
-      result->scoring_signals = input.scoring_signals.value();
-    }
-    for (const auto& [key, value] : input.additional_info) {
-      result->additional_info.insert({key, value});
-    }
-    return result;
-  }
-};
-
-template <>
-struct TypeConverter<mojom::AutocompleteResultsForProviderPtr,
-                     scoped_refptr<AutocompleteProvider>> {
-  static mojom::AutocompleteResultsForProviderPtr Convert(
-      const scoped_refptr<AutocompleteProvider>& input) {
-    mojom::AutocompleteResultsForProviderPtr resultsForProvider(
-        mojom::AutocompleteResultsForProvider::New());
-    resultsForProvider->provider_name = input->GetName();
-    resultsForProvider->results =
-        mojo::ConvertTo<std::vector<mojom::AutocompleteMatchPtr>>(
-            input->matches());
-    return resultsForProvider;
-  }
-};
-
-}  // namespace mojo
 
 OmniboxPageHandler::OmniboxPageHandler(
     Profile* profile,
@@ -216,49 +99,40 @@ void OmniboxPageHandler::OnResultChanged(AutocompleteController* controller,
   response->is_typed_host = is_typed_host;
   response->input_text = base::UTF16ToUTF8(input_.text());
 
-  {
-    // Copy to an ACMatches to make conversion easier. Since this isn't
-    // performance critical we don't worry about the cost here.
-    ACMatches matches(controller->result().begin(), controller->result().end());
-    response->combined_results =
-        mojo::ConvertTo<std::vector<mojom::AutocompleteMatchPtr>>(matches);
-  }
+  // `AutocompleteMatch` cannot be serialized directly, since the Mojo type
+  // includes fields that can only be calculated in `//chrome` and not
+  // `//components`.
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_);
+  response->combined_results = base::ToVector(
+      controller->result(), [&](const ::AutocompleteMatch& match) {
+        return ::AutocompleteMatchWrapper(bookmark_model, match);
+      });
   std::vector<scoped_refptr<AutocompleteProvider>> providers = {};
   for (const auto& provider : controller->providers()) {
     if (controller->ShouldRunProvider(provider.get())) {
       providers.push_back(provider);
     }
   }
-  response->results_by_provider =
-      mojo::ConvertTo<std::vector<mojom::AutocompleteResultsForProviderPtr>>(
-          providers);
+  response->results_by_provider = base::ToVector(
+      providers, [&](const scoped_refptr<AutocompleteProvider>& input) {
+        return mojom::AutocompleteResultsForProvider::New(
+            input->GetName(),
+            base::ToVector(
+                input->matches(), [&](const ::AutocompleteMatch& match) {
+                  return ::AutocompleteMatchWrapper(bookmark_model, match);
+                }));
+      });
 
-  // Fill AutocompleteMatch::starred.
-  BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(profile_);
-  if (bookmark_model) {
-    for (const auto& match : response->combined_results) {
-      match->starred =
-          bookmark_model->IsBookmarked(match->destination_url);
-    }
-    for (const auto& results_by_provider : response->results_by_provider) {
-      for (const auto& match : results_by_provider->results) {
-        match->starred =
-            bookmark_model->IsBookmarked(match->destination_url);
-      }
-    }
-  }
-
-  // Obtain a vector of all image urls required.
   std::vector<GURL> image_urls;
-  for (const auto& match : response->combined_results) {
-    image_urls.push_back(match->icon);
-    image_urls.push_back(match->image);
+  for (const auto& wrapper : response->combined_results) {
+    image_urls.push_back(wrapper.wrapped_match().icon_url);
+    image_urls.push_back(wrapper.wrapped_match().ImageUrl());
   }
   for (const auto& results_by_provider : response->results_by_provider) {
-    for (const auto& match : results_by_provider->results) {
-      image_urls.push_back(match->icon);
-      image_urls.push_back(match->image);
+    for (const auto& wrapper : results_by_provider->results) {
+      image_urls.push_back(wrapper.wrapped_match().icon_url);
+      image_urls.push_back(wrapper.wrapped_match().ImageUrl());
     }
   }
 
@@ -281,9 +155,10 @@ void OmniboxPageHandler::OnResultChanged(AutocompleteController* controller,
 
 void OmniboxPageHandler::OnMlScored(AutocompleteController* controller,
                                     const AutocompleteResult& result) {
-  ACMatches matches(result.begin(), result.end());
   auto combined_results =
-      mojo::ConvertTo<std::vector<mojom::AutocompleteMatchPtr>>(matches);
+      base::ToVector(result, [](const ::AutocompleteMatch& match) {
+        return ::AutocompleteMatchWrapper(nullptr, match);
+      });
   page_->HandleNewMlResponse(GetAutocompleteControllerType(controller),
                              base::UTF16ToUTF8(controller->input().text()),
                              std::move(combined_results));
