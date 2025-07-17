@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "net/disk_cache/disk_cache.h"
 
 #include <array>
@@ -36,6 +35,7 @@
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
 #include "net/disk_cache/blockfile/block_files.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache_test_base.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/disk_cache/simple/simple_backend_impl.h"
@@ -494,7 +494,7 @@ void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
   InitCache();
   EXPECT_TRUE(TimeWrites(story));
 
-  disk_cache::FlushCacheThreadForTesting();
+  FlushQueueForTest();
   base::RunLoop().RunUntilIdle();
 
   ResetAndEvictSystemDiskCache();
@@ -503,7 +503,7 @@ void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
   EXPECT_TRUE(TimeReads(WhatToRead::HEADERS_ONLY,
                         kMetricCacheHeadersReadTimeWarmMs, story));
 
-  disk_cache::FlushCacheThreadForTesting();
+  FlushQueueForTest();
   base::RunLoop().RunUntilIdle();
 
   ResetAndEvictSystemDiskCache();
@@ -512,7 +512,7 @@ void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
   EXPECT_TRUE(TimeReads(WhatToRead::HEADERS_AND_BODY,
                         kMetricCacheEntriesReadTimeWarmMs, story));
 
-  disk_cache::FlushCacheThreadForTesting();
+  FlushQueueForTest();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -537,6 +537,13 @@ TEST_F(DiskCachePerfTest, MAYBE_SimpleCacheBackendPerformance) {
   SetBackendToTest(BackendToTest::kSimple);
   CacheBackendPerformance("simple_cache");
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+TEST_F(DiskCachePerfTest, SqlCacheBackendPerformance) {
+  SetBackendToTest(BackendToTest::kSql);
+  CacheBackendPerformance("sql_cache");
+}
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // Creating and deleting "entries" on a block-file is something quite frequent
 // (after all, almost everything is stored on block files). The operation is
