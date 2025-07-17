@@ -75,12 +75,13 @@ class OmniboxTextControllerTest : public PlatformTest {
   }
 
   ~OmniboxTextControllerTest() override {
-    omnibox_client_ = nullptr;
+    [omnibox_text_controller_ disconnect];
+    omnibox_text_controller_ = nil;
     [omnibox_autocomplete_controller_ disconnect];
+    omnibox_autocomplete_controller_ = nil;
+    omnibox_client_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
-    omnibox_autocomplete_controller_ = nil;
-    omnibox_text_controller_ = nil;
   }
 
   TestLocationBarModel* location_bar_model() {
@@ -96,17 +97,16 @@ class OmniboxTextControllerTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment environment_;
 
+  OmniboxAutocompleteController* omnibox_autocomplete_controller_;
   TestOmniboxTextController* omnibox_text_controller_;
+  std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
+  std::unique_ptr<TestOmniboxClient> omnibox_client_;
   // Application pref service.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  OmniboxAutocompleteController* omnibox_autocomplete_controller_;
-  std::unique_ptr<TestOmniboxClient> omnibox_client_;
-  std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
 };
 
 // Tests if the controller updates the inline autocomplete text.
-// TODO(crbug.com/430259426): Re-enable the test.
-TEST_F(OmniboxTextControllerTest, DISABLED_InlineAutocompleteText) {
+TEST_F(OmniboxTextControllerTest, InlineAutocompleteText) {
   EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
   [omnibox_text_controller_ setUserText:u"he"];
   [omnibox_text_controller_ onPopupDataChanged:u"llo"
@@ -135,8 +135,7 @@ TEST_F(OmniboxTextControllerTest, DISABLED_InlineAutocompleteText) {
   EXPECT_EQ(u"llo", omnibox_text_model_->inline_autocompletion);
 }
 
-// TODO(crbug.com/430259426): Re-enable the test.
-TEST_F(OmniboxTextControllerTest, DISABLED_CurrentMatch) {
+TEST_F(OmniboxTextControllerTest, CurrentMatch) {
   // Test the HTTP case.
   {
     location_bar_model()->set_url(GURL("http://www.example.com/"));
@@ -173,8 +172,7 @@ TEST_F(OmniboxTextControllerTest, DISABLED_CurrentMatch) {
   }
 }
 
-// TODO(crbug.com/430259426): Re-enable the test.
-TEST_F(OmniboxTextControllerTest, DISABLED_DisplayText) {
+TEST_F(OmniboxTextControllerTest, DisplayText) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
   location_bar_model()->set_url_for_display(u"example.com");
 
