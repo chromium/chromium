@@ -373,6 +373,13 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     LOG(ERROR) << "GetBuffer failed with error " << std::hex;
     return {nullptr, nullptr};
   }
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture;
+  hr = swap_chain->GetBuffer(1, IID_PPV_ARGS(&front_buffer_texture));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "GetBuffer failed with error " << std::hex;
+    return {nullptr, nullptr};
+  }
+
   auto back_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
       back_buffer_mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(back_buffer_texture), swap_chain,
@@ -381,12 +388,6 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
   back_buffer_backing->SetCleared();
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture;
-  hr = swap_chain->GetBuffer(1, IID_PPV_ARGS(&front_buffer_texture));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "GetBuffer failed with error " << std::hex;
-    return {nullptr, nullptr};
-  }
   auto front_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
       front_buffer_mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(front_buffer_texture), swap_chain,
