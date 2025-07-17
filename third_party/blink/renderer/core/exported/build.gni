@@ -65,6 +65,7 @@ blink_core_sources_exported = [
   "web_shared_worker_impl.cc",
   "web_shared_worker_impl.h",
   "web_text_checking_result.cc",
+  "web_url_pattern_to_safe_url_pattern.cc",
   "web_v8_context_snapshot.cc",
   "web_v8_features.cc",
   "web_view_impl.cc",

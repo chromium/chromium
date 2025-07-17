@@ -10,6 +10,8 @@ source_set("controlled_frame") {
   sources = [
     "controlled_frame_extensions_renderer_api_provider.cc",
     "controlled_frame_extensions_renderer_api_provider.h",
+    "web_url_pattern_natives.cc",
+    "web_url_pattern_natives.h",
   ]
 
   configs += [
@@ -22,5 +24,6 @@ source_set("controlled_frame") {
     "//chrome:resources",
     "//extensions/renderer",
     "//third_party/blink/public:blink",
+    "//v8:v8_headers",
   ]
 }
