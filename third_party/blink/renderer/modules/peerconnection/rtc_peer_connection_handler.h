@@ -54,7 +54,6 @@ class RTCRtpTransport;
 class RTCSessionDescriptionInit;
 class RTCVoidRequest;
 class SetLocalDescriptionRequest;
-class WebLocalFrame;
 
 // Helper class for passing pre-parsed session descriptions to functions.
 // Create a ParsedSessionDescription by calling one of the Parse functions.

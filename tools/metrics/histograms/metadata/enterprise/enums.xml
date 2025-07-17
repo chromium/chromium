@@ -2252,6 +2252,7 @@ chromium-metrics-reviews@google.com.
   <int value="1381" label="ProtectedContentIdentifiersAllowed"/>
   <int value="1382" label="LegacyCookieScopeEnabled"/>
   <int value="1383" label="LegacyCookieScopeEnabledForDomainList"/>
+  <int value="1384" label="WebRtcPostQuantumKeyAgreement"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

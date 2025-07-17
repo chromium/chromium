@@ -87,6 +87,8 @@ const PrefMappingEntry kMappings[] = {
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"webRTCIPHandlingUrl", prefs::kWebRTCIPHandlingUrl,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+    {"webRTCPostQuantumKeyAgreement", prefs::kWebRTCPostQuantumKeyAgreement,
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"webRTCUDPPortRange", prefs::kWebRTCUDPPortRange,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"relatedWebsiteSetsEnabled",

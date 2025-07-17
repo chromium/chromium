@@ -112,6 +112,8 @@ PrefWatcher::PrefWatcher(Profile* profile)
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCIPHandlingUrl,
                                      renderer_callback);
+  profile_pref_change_registrar_.Add(prefs::kWebRTCPostQuantumKeyAgreement,
+                                     renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCUDPPortRange,
                                      renderer_callback);
 

@@ -156,6 +156,11 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
     prefs->webrtc_ip_handling_urls.push_back(
         {pattern, blink::ToWebRTCIPHandlingPolicy(*handling)});
   }
+  if (pref_service->IsManagedPreference(
+          prefs::kWebRTCPostQuantumKeyAgreement)) {
+    prefs->webrtc_post_quantum_key_agreement =
+        pref_service->GetBoolean(prefs::kWebRTCPostQuantumKeyAgreement);
+  }
 
   std::string webrtc_udp_port_range =
       pref_service->GetString(prefs::kWebRTCUDPPortRange);

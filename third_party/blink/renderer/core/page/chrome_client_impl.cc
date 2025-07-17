@@ -344,6 +344,11 @@ bool ChromeClientImpl::AcceptsLoadDrops() const {
   return web_view_->GetRendererPreferences().can_accept_load_drops;
 }
 
+std::optional<bool> ChromeClientImpl::GetWebRTCPostQuantumKeyAgreement() const {
+  CHECK(web_view_);
+  return web_view_->GetRendererPreferences().webrtc_post_quantum_key_agreement;
+}
+
 Page* ChromeClientImpl::CreateWindowDelegate(
     LocalFrame* frame,
     const FrameLoadRequest& r,

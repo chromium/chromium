@@ -104,6 +104,10 @@ struct RendererPreferences {
   // over the value for webrtc_ip_handling_policy.
   array<WebRtcIpHandlingUrlEntry> webrtc_ip_handling_urls;
 
+  // If specified, controls whether post-quantum key agreement is allowed
+  // for WebRTC. If null, this is determined by the feature flag.
+  bool? webrtc_post_quantum_key_agreement;
+
   // This is the range of UDP ports allowed to be used by WebRTC. A value of
   // zero in both fields means all ports are allowed.
   uint16 webrtc_udp_min_port = 0;

@@ -59,6 +59,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   blink::mojom::WebRtcIpHandlingPolicy webrtc_ip_handling_policy =
       blink::mojom::WebRtcIpHandlingPolicy::kDefault;
   std::vector<WebRtcIpHandlingUrlEntry> webrtc_ip_handling_urls;
+  std::optional<bool> webrtc_post_quantum_key_agreement;
   uint16_t webrtc_udp_min_port{0};
   uint16_t webrtc_udp_max_port{0};
   std::vector<std::string> webrtc_local_ips_allowed_urls;

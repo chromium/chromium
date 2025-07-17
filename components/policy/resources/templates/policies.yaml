@@ -1382,6 +1382,7 @@ policies:
   1381: ProtectedContentIdentifiersAllowed
   1382: LegacyCookieScopeEnabled
   1383: LegacyCookieScopeEnabledForDomainList
+  1384: WebRtcPostQuantumKeyAgreement
 atomic_groups:
   1: Homepage
   2: RemoteAccess

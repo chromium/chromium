@@ -1841,6 +1841,10 @@ inline constexpr char kWebRTCIPHandlingPolicy[] = "webrtc.ip_handling_policy";
 // When no URL pattern matches, WebRTC will default to the policy
 // WebRTCIPHandlingPolicy above.
 inline constexpr char kWebRTCIPHandlingUrl[] = "webrtc.ip_handling_url";
+// Define the WebRTCPostQuantumKeyAgreement policy that controls enabling
+// post-quantum key agreement for WebRTC.
+inline constexpr char kWebRTCPostQuantumKeyAgreement[] =
+    "webrtc.post_quantum_key_agreement";
 // Define range of UDP ports allowed to be used by WebRTC PeerConnections.
 inline constexpr char kWebRTCUDPPortRange[] = "webrtc.udp_port_range";
 // Whether WebRTC event log collection by Google domains is allowed.

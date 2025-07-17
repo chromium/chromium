@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
@@ -26,6 +27,27 @@ class RendererPreferencesUtilTest : public testing::Test {
   TestingProfile profile_;
   raw_ptr<PrefService> pref_service_;
 };
+
+TEST_F(RendererPreferencesUtilTest, WebRTCPostQuantumKeyAgreement) {
+  std::array<std::optional<bool>, 3> webrtc_post_quantum_key_agreement_values =
+      {std::nullopt, true, false};
+  std::array<std::optional<bool>, 3> expected_values = {std::nullopt, true,
+                                                        false};
+
+  for (int i = 0; i < 3; i++) {
+    if (webrtc_post_quantum_key_agreement_values[i]) {
+      profile_.GetTestingPrefService()->SetManagedPref(
+          prefs::kWebRTCPostQuantumKeyAgreement,
+          std::make_unique<base::Value>(
+              *webrtc_post_quantum_key_agreement_values[i]));
+    }
+    blink::RendererPreferences renderer_preferences;
+    renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
+                                                        &profile_);
+    EXPECT_EQ(renderer_preferences.webrtc_post_quantum_key_agreement,
+              expected_values[i]);
+  }
+}
 
 TEST_F(RendererPreferencesUtilTest, WebRTCIPHandlingPolicy) {
   std::array<const char*, 5> webrtc_ip_handling_policy_values = {

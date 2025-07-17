@@ -150,6 +150,11 @@ struct BLINK_COMMON_EXPORT
     return data.webrtc_ip_handling_urls;
   }
 
+  static const std::optional<bool> webrtc_post_quantum_key_agreement(
+      const ::blink::RendererPreferences& data) {
+    return data.webrtc_post_quantum_key_agreement;
+  }
+
   static const uint16_t& webrtc_udp_min_port(
       const ::blink::RendererPreferences& data) {
     return data.webrtc_udp_min_port;

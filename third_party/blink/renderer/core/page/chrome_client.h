@@ -254,6 +254,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                              const gfx::Rect& drag_obj_rect) = 0;
   virtual bool AcceptsLoadDrops() const = 0;
 
+  virtual std::optional<bool> GetWebRTCPostQuantumKeyAgreement() const {
+    return std::nullopt;
+  }
+
   // The LocalFrame pointer provides the ChromeClient with context about which
   // LocalFrame wants to create the new Page. Also, the newly created window
   // should not be shown to the user until the ChromeClient of the newly

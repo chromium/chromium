@@ -101,6 +101,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                      const gfx::Vector2d& cursor_offset,
                      const gfx::Rect& drag_obj_rect) override;
   bool AcceptsLoadDrops() const override;
+  std::optional<bool> GetWebRTCPostQuantumKeyAgreement() const override;
   Page* CreateWindowDelegate(LocalFrame*,
                              const FrameLoadRequest&,
                              const AtomicString& name,

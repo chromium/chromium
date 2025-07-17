@@ -33,10 +33,13 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
@@ -882,7 +885,14 @@ bool RTCPeerConnectionHandler::Initialize(
   configuration_.crypto_options->srtp.enable_encrypted_rtp_header_extensions =
       base::FeatureList::IsEnabled(kWebRtcEncryptedRtpHeaderExtensions);
   configuration_.enable_implicit_rollback = true;
-  if (base::FeatureList::IsEnabled(features::kWebRtcPqcForDtls)) {
+  bool webrtc_post_quantum_key_agreement =
+      LocalFrame::FromFrameToken(frame_->GetLocalFrameToken())
+          ->GetPage()
+          ->GetChromeClient()
+          .GetWebRTCPostQuantumKeyAgreement()
+          .value_or(base::FeatureList::IsEnabled(features::kWebRtcPqcForDtls));
+
+  if (webrtc_post_quantum_key_agreement) {
     configuration_.crypto_options->ephemeral_key_exchange_cipher_groups
         .AddFirst(webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
                       kX25519_MLKEM768);

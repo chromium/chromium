@@ -1,0 +1,20 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webrtc.post_quantum_key_agreement",
+      "pref_location": "user_profile",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]
