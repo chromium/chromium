@@ -9,7 +9,7 @@ source_set("webauthn") {
   ]
   public_deps = []
 
-  if (is_android) {
+  if (!is_android) {
     sources += [
       "authenticator_request_dialog_model.h",
       "authenticator_transport.h",
