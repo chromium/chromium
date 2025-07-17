@@ -176,6 +176,10 @@ class TestSharedImageInterface : public SharedImageInterface {
   const SyncToken& MostRecentDestroyToken() const {
     return most_recent_destroy_token_;
   }
+  ClientSharedImage* MostRecentMappableSharedImage() const {
+    return most_recent_mappable_shared_image_;
+  }
+
   bool CheckSharedImageExists(const Mailbox& mailbox) const;
 
   const SharedImageCapabilities& GetCapabilities() override;
@@ -214,6 +218,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   gfx::Size most_recent_size_;
   SyncToken most_recent_generated_token_;
   SyncToken most_recent_destroy_token_;
+  raw_ptr<ClientSharedImage> most_recent_mappable_shared_image_;
   absl::flat_hash_set<Mailbox> shared_images_;
   bool emulate_client_provided_native_buffer_ = false;
 

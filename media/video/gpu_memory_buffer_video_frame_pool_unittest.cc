@@ -671,6 +671,13 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
   EXPECT_TRUE(frame->HasSharedImage());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
+
+  auto* client_si = sii_->MostRecentMappableSharedImage();
+  EXPECT_TRUE(!!client_si);
+
+  auto mapping = client_si->Map();
+  void* memory = static_cast<void*>(mapping->GetMemoryForPlane(0).data());
+  EXPECT_EQ(as_xr30(0, 543, 0), *static_cast<uint32_t*>(memory));
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXB30Frame) {

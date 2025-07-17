@@ -319,19 +319,23 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
     if (si_info_copy.meta.format.PrefersExternalSampler()) {
       si_info_copy.meta.format.ClearPrefersExternalSampler();
     }
-    return ClientSharedImage::CreateForTesting(
+    auto client_si = ClientSharedImage::CreateForTesting(
         mailbox, si_info_copy.meta, sync_token, std::move(gpu_memory_buffer),
         buffer_usage, holder_);
+    most_recent_mappable_shared_image_ = client_si.get();
+    return client_si;
   }
 
   auto gmb_handle =
       CreateGMBHandle(buffer_format, si_info_copy.meta.size, buffer_usage);
 
-  return base::MakeRefCounted<ClientSharedImage>(
+  auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info_copy, sync_token,
       GpuMemoryBufferHandleInfo(std::move(gmb_handle), si_info_copy.meta.format,
                                 si_info_copy.meta.size, buffer_usage),
       holder_);
+  most_recent_mappable_shared_image_ = client_si.get();
+  return client_si;
 }
 
 scoped_refptr<ClientSharedImage>
@@ -457,6 +461,11 @@ void TestSharedImageInterface::DestroySharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
   base::AutoLock locked(lock_);
+  if (most_recent_mappable_shared_image_ &&
+      mailbox == most_recent_mappable_shared_image_->mailbox()) {
+    most_recent_mappable_shared_image_ = nullptr;
+  }
+
   shared_images_.erase(mailbox);
   most_recent_destroy_token_ = sync_token;
 
