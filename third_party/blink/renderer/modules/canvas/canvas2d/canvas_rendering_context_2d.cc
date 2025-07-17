@@ -1246,11 +1246,7 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   if (!element) [[unlikely]] {
     return nullptr;
   }
-  return GetOrCreateCanvasResourceProviderForCanvas2D();
-}
 
-CanvasResourceProvider*
-CanvasRenderingContext2D::GetOrCreateCanvasResourceProviderForCanvas2D() {
   CanvasResourceProvider* resource_provider = GetResourceProviderForCanvas2D();
   if (isContextLost() && !IsContextBeingRestored()) {
     DCHECK(!resource_provider);
