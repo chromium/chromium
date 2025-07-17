@@ -307,12 +307,14 @@ bool IsValidStateForWindowsCreateFunction(
 api::tabs::Tab CreateTabObjectHelper(WebContents* contents,
                                      const Extension* extension,
                                      mojom::ContextType context,
-                                     TabStripModel* tab_strip,
+                                     BrowserWindowInterface* browser,
                                      int tab_index) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, context, contents);
+  TabListInterface* tab_list =
+      browser ? TabListInterface::From(browser) : nullptr;
   return ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior,
-                                           extension, tab_strip, tab_index);
+                                           extension, tab_list, tab_index);
 }
 
 // Moves the given tab to the |target_browser|. On success, returns the
@@ -1151,9 +1153,10 @@ ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
   if (!contents) {
     return RespondNow(Error(tabs_constants::kNoSelectedTabError));
   }
+
   return RespondNow(ArgumentList(tabs::Get::Results::Create(
       CreateTabObjectHelper(contents, extension(), source_context_type(),
-                            tab_strip, tab_strip->active_index()))));
+                            browser, tab_strip->active_index()))));
 }
 
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
@@ -1371,8 +1374,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       }
 
       result.Append(CreateTabObjectHelper(web_contents, extension(),
-                                          source_context_type(),
-                                          browser->GetTabStripModel(), i)
+                                          source_context_type(), browser, i)
                         .ToValue());
     }
   }
@@ -1446,23 +1448,30 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   }
 
   WebContents* new_contents = chrome::DuplicateTabAt(browser, tab_index);
+  if (!new_contents) {
+    return RespondNow(Error(kUnknownErrorDoNotUse));
+  }
+
   if (!has_callback()) {
     return RespondNow(NoArguments());
   }
 
   // Duplicated tab may not be in the same window as the original, so find
-  // the window and the tab.
-  TabStripModel* new_tab_strip = nullptr;
+  // the new window.
+  TabListInterface* new_tab_list = nullptr;
   int new_tab_index = -1;
-  ExtensionTabUtil::GetTabStripModel(new_contents, &new_tab_strip,
-                                     &new_tab_index);
-  if (!new_tab_strip || new_tab_index == -1) {
+  if (!ExtensionTabUtil::GetTabListInterface(*new_contents, &new_tab_list,
+                                             &new_tab_index)) {
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }
 
-  return RespondNow(ArgumentList(tabs::Get::Results::Create(
-      CreateTabObjectHelper(new_contents, extension(), source_context_type(),
-                            new_tab_strip, new_tab_index))));
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(extension(), source_context_type(),
+                                            new_contents);
+  return RespondNow(
+      ArgumentList(tabs::Get::Results::Create(ExtensionTabUtil::CreateTabObject(
+          new_contents, scrub_tab_behavior, extension(), new_tab_list,
+          new_tab_index))));
 }
 
 ExtensionFunction::ResponseAction TabsGetFunction::Run() {
@@ -1479,16 +1488,10 @@ ExtensionFunction::ResponseAction TabsGetFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  // The window/tab strip can be null in the prerender case and
-  // CreateTabObjectHelper is OK with a null.
-  TabStripModel* tab_strip = nullptr;
-  if (window && window->GetBrowser()) {
-    tab_strip = window->GetBrowser()->tab_strip_model();
-  }
-
-  return RespondNow(ArgumentList(tabs::Get::Results::Create(
-      CreateTabObjectHelper(contents, extension(), source_context_type(),
-                            tab_strip, tab_index))));
+  return RespondNow(
+      ArgumentList(tabs::Get::Results::Create(CreateTabObjectHelper(
+          contents, extension(), source_context_type(),
+          window ? window->GetBrowserWindowInterface() : nullptr, tab_index))));
 }
 
 ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
@@ -1915,9 +1918,9 @@ bool TabsMoveFunction::MoveTab(int tab_id,
       content::WebContents* web_contents =
           target_controller->GetWebContentsAt(inserted_index);
 
-      tab_values.Append(CreateTabObjectHelper(
-                            web_contents, extension(), source_context_type(),
-                            target_browser->tab_strip_model(), inserted_index)
+      tab_values.Append(CreateTabObjectHelper(web_contents, extension(),
+                                              source_context_type(),
+                                              target_browser, inserted_index)
                             .ToValue());
     }
 
@@ -1943,10 +1946,11 @@ bool TabsMoveFunction::MoveTab(int tab_id,
   }
 
   if (has_callback()) {
-    tab_values.Append(CreateTabObjectHelper(contents, extension(),
-                                            source_context_type(),
-                                            source_tab_strip, *new_index)
-                          .ToValue());
+    tab_values.Append(
+        CreateTabObjectHelper(contents, extension(), source_context_type(),
+                              source_window->GetBrowserWindowInterface(),
+                              *new_index)
+            .ToValue());
   }
 
   // Insert the tabs one after another.

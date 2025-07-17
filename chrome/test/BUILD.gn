@@ -4839,6 +4839,7 @@ if (!is_android) {
         "//chrome/browser/ui/javascript_dialogs",
         "//chrome/browser/ui/search:test_support_ui",
         "//chrome/browser/ui/supervised_user",
+        "//chrome/browser/ui/tabs:tab_list_interface",
         "//chrome/browser/web_applications/extensions",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",

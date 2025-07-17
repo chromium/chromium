@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
@@ -1606,20 +1607,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
     EXPECT_EQ(0u, result.size());
   }
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabListInterface* tab_list = TabListInterface::From(browser());
 
   // Creates Tab object to ensure the property is correct for the extension.
   api::tabs::Tab tab_object_a = ExtensionTabUtil::CreateTabObject(
-      web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
+      web_contents_a, kDontScrubBehavior, nullptr, tab_list, 0);
   EXPECT_FALSE(tab_object_a.discarded);
 
   // Discards one tab.
   EXPECT_TRUE(tab_manager->DiscardTabByExtension(web_contents_a));
-  web_contents_a = tab_strip_model->GetWebContentsAt(1);
+  web_contents_a = browser()->tab_strip_model()->GetWebContentsAt(1);
 
   // Make sure the property is changed accordingly after discarding the tab.
   tab_object_a = ExtensionTabUtil::CreateTabObject(
-      web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
+      web_contents_a, kDontScrubBehavior, nullptr, tab_list, 0);
   EXPECT_TRUE(tab_object_a.discarded);
 
   // Get non-discarded tabs after discarding one tab.
@@ -1652,8 +1653,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
     ASSERT_EQ(1u, result.size());
 
     // Make sure the returned tab is the correct one.
-    int tab_id_c =
-        ExtensionTabUtil::GetTabId(tab_strip_model->GetWebContentsAt(0));
+    int tab_id_c = ExtensionTabUtil::GetTabId(
+        browser()->tab_strip_model()->GetWebContentsAt(0));
 
     ASSERT_TRUE(result[0].is_dict());
     std::optional<int> id = result[0].GetDict().FindInt(extension_misc::kId);
@@ -1669,7 +1670,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
   }
 
   // Activates the first created tab.
-  tab_strip_model->ActivateTabAt(1);
+  browser()->tab_strip_model()->ActivateTabAt(1);
 
   // Get non-discarded tabs after activating a discarded tab.
   {
@@ -1941,9 +1942,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
       browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
   // Creates Tab object to ensure the property is correct for the extension.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabListInterface* tab_list = TabListInterface::From(browser());
   api::tabs::Tab tab_object_a = ExtensionTabUtil::CreateTabObject(
-      web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
+      web_contents_a, kDontScrubBehavior, nullptr, tab_list, 0);
   EXPECT_TRUE(tab_object_a.auto_discardable);
 
   // Set up query and update functions with the extension.
@@ -1983,7 +1984,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
 
   // Make sure the property is changed accordingly after updating the tab.
   tab_object_a = ExtensionTabUtil::CreateTabObject(
-      web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
+      web_contents_a, kDontScrubBehavior, nullptr, tab_list, 0);
   EXPECT_FALSE(tab_object_a.auto_discardable);
 
   // Get auto-discardable tabs after changing the status of web contents A.
@@ -2017,7 +2018,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
   std::optional<int> id_value =
       query_result[0].GetDict().FindInt(extension_misc::kId);
   ASSERT_TRUE(id_value);
-  EXPECT_EQ(ExtensionTabUtil::GetTabId(tab_strip_model->GetWebContentsAt(0)),
+  EXPECT_EQ(ExtensionTabUtil::GetTabId(
+                browser()->tab_strip_model()->GetWebContentsAt(0)),
             *id_value);
 
   // Get auto-discardable tabs after changing the status of both created tabs.

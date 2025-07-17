@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
@@ -25,10 +26,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/url_formatter/url_fixer.h"
+#include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -55,7 +58,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
-#include "base/hash/hash.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -89,7 +91,6 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"  // nogncheck
 #include "content/public/browser/back_forward_cache.h"
-#include "content/public/browser/favicon_status.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
@@ -439,7 +440,8 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
   // Return data about the newly created tab.
   return ExtensionTabUtil::CreateTabObject(
              navigate_params.navigated_or_inserted_contents, scrub_tab_behavior,
-             function->extension(), tab_strip, new_index)
+             function->extension(),
+             TabListInterface::From(navigate_params.browser), new_index)
       .ToValue();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -514,63 +516,58 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     WebContents* contents,
     ScrubTabBehavior scrub_tab_behavior,
     const Extension* extension,
-    TabStripModel* tab_strip,
+    TabListInterface* tab_list,
     int tab_index) {
+  if (!tab_list) {
+    GetTabListInterface(*contents, &tab_list, &tab_index);
+  }
+  api::tabs::Tab tab_object;
+  tab_object.id =
 #if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED() << " Using stub implementation of CreateTabObject";
-  api::tabs::Tab tab_object;
-  tab_object.id = GetTabId(contents);
-  tab_object.index = tab_index;
-  tab_object.window_id = GetWindowIdOfTab(contents);
-  tab_object.status = GetLoadingStatus(contents);
-  tab_object.incognito = contents->GetBrowserContext()->IsOffTheRecord();
-  gfx::Size contents_size = contents->GetContainerBounds().size();
-  tab_object.width = contents_size.width();
-  tab_object.height = contents_size.height();
-  tab_object.url = contents->GetLastCommittedURL().spec();
-  if (auto* pending_entry = contents->GetController().GetPendingEntry()) {
-    tab_object.pending_url = pending_entry->GetVirtualURL().spec();
-  }
-  tab_object.title = base::UTF16ToUTF8(contents->GetTitle());
-  ScrubTabForExtension(extension, contents, &tab_object, scrub_tab_behavior);
-  return tab_object;
+      GetTabId(contents);
 #else
-  if (!tab_strip) {
-    ExtensionTabUtil::GetTabStripModel(contents, &tab_strip, &tab_index);
-  }
-  api::tabs::Tab tab_object;
-  tab_object.id = GetTabIdForExtensions(contents);
+      GetTabIdForExtensions(contents);
+#endif
   tab_object.index = tab_index;
   tab_object.window_id = GetWindowIdOfTab(contents);
   tab_object.status = GetLoadingStatus(contents);
   tab_object.last_accessed =
       contents->GetLastActiveTime().InMillisecondsFSinceUnixEpoch();
-  tab_object.active = tab_strip && tab_index == tab_strip->active_index();
-  tab_object.selected = tab_strip && tab_index == tab_strip->active_index();
-  tab_object.highlighted = tab_strip && tab_strip->IsTabSelected(tab_index);
-  tab_object.pinned = tab_strip && tab_strip->IsTabPinned(tab_index);
+
+  tabs::TabInterface* tab_interface =
+      tab_list ? tab_list->GetTab(tab_index) : nullptr;
+
+  bool is_active = tab_interface && tab_interface->IsActivated();
+  tab_object.active = is_active;
+  tab_object.selected = is_active;
+  tab_object.highlighted = tab_interface && tab_interface->IsSelected();
+  tab_object.pinned = tab_interface && tab_interface->IsPinned();
 
   tab_object.group_id = -1;
-  if (tab_strip) {
-    std::optional<tab_groups::TabGroupId> group =
-        tab_strip->GetTabGroupForTab(tab_index);
+  if (tab_interface) {
+    std::optional<tab_groups::TabGroupId> group = tab_interface->GetGroup();
     if (group.has_value()) {
       tab_object.group_id = GetGroupId(group.value());
     }
   }
 
-  auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);
-  bool audible = false;
-  if (audible_helper) {
-    // WebContents in a tab strip have RecentlyAudible helpers. They endow the
-    // tab with a notion of audibility that has a timeout for quiet periods. Use
-    // that if available.
-    audible = audible_helper->WasRecentlyAudible();
-  } else {
+  auto get_audible = [contents]() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);
+    if (audible_helper) {
+      // WebContents in a tab strip have RecentlyAudible helpers. They endow
+      // the tab with a notion of audibility that has a timeout for quiet
+      // periods. Use that if available.
+      return audible_helper->WasRecentlyAudible();
+    }
+#endif
     // Otherwise use the instantaneous notion of audibility.
-    audible = contents->IsCurrentlyAudible();
-  }
-  tab_object.audible = audible;
+    return contents->IsCurrentlyAudible();
+  };
+
+  tab_object.audible = get_audible();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* tab_lifecycle_unit_external =
       resource_coordinator::TabLifecycleUnitExternal::FromWebContents(contents);
 
@@ -590,6 +587,8 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
                           ::mojom::LifecycleUnitState::FROZEN;
 
   tab_object.muted_info = CreateMutedInfo(contents);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   tab_object.incognito = contents->GetBrowserContext()->IsOffTheRecord();
   gfx::Size contents_size = contents->GetContainerBounds().size();
   tab_object.width = contents_size.width();
@@ -607,6 +606,10 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   if (visible_entry && visible_entry->GetFavicon().valid) {
     tab_object.fav_icon_url = visible_entry->GetFavicon().url.spec();
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  TabStripModel* tab_strip = nullptr;
+  GetTabStripModel(contents, &tab_strip, &tab_index);
   if (tab_strip) {
     tabs::TabInterface* opener = tab_strip->GetOpenerOfTabAt(tab_index);
     if (opener) {
@@ -614,10 +617,10 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
       tab_object.opener_tab_id = GetTabIdForExtensions(opener->GetContents());
     }
   }
+#endif
 
   ScrubTabForExtension(extension, contents, &tab_object, scrub_tab_behavior);
   return tab_object;
-#endif
 }
 
 // static
@@ -728,6 +731,56 @@ void ExtensionTabUtil::ScrubTabForExtension(
         break;
     }
   }
+}
+
+bool ExtensionTabUtil::GetTabListInterface(content::WebContents& web_contents,
+                                           TabListInterface** tab_list_out,
+                                           int* index_out) {
+  // In practice, none of the current mechanisms for looking up a browser window
+  // (and thus tab list) from a tab work fully on Android today.
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(&web_contents);
+  if (!tab_interface) {
+    return false;
+  }
+
+  BrowserWindowInterface* browser = tab_interface->GetBrowserWindowInterface();
+
+  if (!browser) {
+    return false;
+  }
+
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  if (!tab_list) {
+    return false;
+  }
+
+  // Find the index of the tab within the browser window.
+  // TODO(https://crbug.com/415961057): This is clunky. Let's add a
+  // GetIndexOfTab() method.
+  std::vector<tabs::TabInterface*> all_tabs = tab_list->GetAllTabs();
+  int index = -1;
+  for (size_t i = 0; i < all_tabs.size(); ++i) {
+    if (all_tabs[i] == tab_interface) {
+      index = i;
+      break;
+    }
+  }
+
+  // Even though we got here by looking at the tab strip from the browser window
+  // we got from the tab, it's possible the tab isn't in the tab strip. One case
+  // in which this happens is if the tab is in the process of being removed.
+  if (index == -1) {
+    return false;
+  }
+
+  *index_out = index;
+  *tab_list_out = tab_list;
+  return true;
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -900,13 +953,13 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
                     contents, nullptr);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
 int ExtensionTabUtil::GetGroupId(const tab_groups::TabGroupId& id) {
   uint32_t hash = base::PersistentHash(id.ToString());
   return std::abs(static_cast<int>(hash));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 int ExtensionTabUtil::GetWindowIdOfGroup(const tab_groups::TabGroupId& id) {
   Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);

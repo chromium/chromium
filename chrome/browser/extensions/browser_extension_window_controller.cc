@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/core/session_id.h"
@@ -265,13 +266,15 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
+  TabListInterface* tab_list_interface =
+      TabListInterface::From(&browser_.get());
   for (int i = 0; i < tab_strip_model_->count(); ++i) {
     content::WebContents* web_contents = tab_strip_model_->GetWebContentsAt(i);
     const ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context, web_contents);
     tab_list.Append(
         ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
-                                          extension, &tab_strip_model_.get(), i)
+                                          extension, tab_list_interface, i)
             .ToValue());
   }
 #endif
