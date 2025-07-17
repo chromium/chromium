@@ -62,9 +62,9 @@ ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
 ProfileManagementDisclaimerService::~ProfileManagementDisclaimerService() =
     default;
 
-base::ScopedClosureRunner ProfileManagementDisclaimerService::
-    DisableManagementDisclaimerOnPrimaryAccountChangeUntilReset() {
-  enable_management_disclaimer_on_primary_account_change_ = false;
+base::ScopedClosureRunner
+ProfileManagementDisclaimerService::DisableManagementDisclaimerUntilReset() {
+  enable_management_disclaimer_ = false;
   return base::ScopedClosureRunner(
       base::BindOnce(&ProfileManagementDisclaimerService::
                          SetEnableManagementDisclaimerOnPrimaryAccountChange,
@@ -120,6 +120,15 @@ void ProfileManagementDisclaimerService::
   }
   // We should always know the access point that triggered the profile creation.
   CHECK_NE(access_point, signin_metrics::AccessPoint::kUnknown);
+
+  // If the management disclaimer is not enabled on primary account change,
+  // reset the state and return early. This to avoid showing the disclaimer
+  // after the primary account has changed when another class is handling
+  // signin.
+  if (!enable_management_disclaimer_) {
+    Reset();
+    return;
+  }
   state_->access_point = access_point;
 
   // Wait for the current disclaimer to be closed.
@@ -203,16 +212,22 @@ void ProfileManagementDisclaimerService::Reset() {
 
 void ProfileManagementDisclaimerService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  if (!enable_management_disclaimer_on_primary_account_change_) {
-    return;
-  }
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
       signin::PrimaryAccountChangeEvent::Type::kSet) {
     return;
   }
-  MaybeShowEnterpriseManagementDisclaimer(
-      event.GetCurrentState().primary_account.account_id,
-      signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAfterSignin);
+
+  // Post the task here because the class that set the primary account might
+  // handle the signin in a synchronous way. This avoids showing the disclaimer
+  // twice.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProfileManagementDisclaimerService::
+                         MaybeShowEnterpriseManagementDisclaimer,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     event.GetCurrentState().primary_account.account_id,
+                     signin_metrics::AccessPoint::
+                         kEnterpriseManagementDisclaimerAfterSignin));
 }
 
 void ProfileManagementDisclaimerService::OnExtendedAccountInfoUpdated(

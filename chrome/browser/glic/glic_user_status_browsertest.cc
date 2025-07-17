@@ -136,8 +136,8 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   // Simulates user signing in and getting a refresh token.
   void SimulatePrimaryAccountChangedSignIn(TestAccount* account) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    auto resetter = enterprise_util::
-        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+    auto resetter =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);

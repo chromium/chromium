@@ -71,8 +71,7 @@ class ProfileManagementDisclaimerService
     user_choice_for_testing_ = std::move(choice);
   }
 
-  base::ScopedClosureRunner
-  DisableManagementDisclaimerOnPrimaryAccountChangeUntilReset();
+  base::ScopedClosureRunner DisableManagementDisclaimerUntilReset();
 
  private:
   struct ResetableState {
@@ -127,7 +126,7 @@ class ProfileManagementDisclaimerService
   void Reset();
 
   void SetEnableManagementDisclaimerOnPrimaryAccountChange(bool enabled) {
-    enable_management_disclaimer_on_primary_account_change_ = enabled;
+    enable_management_disclaimer_ = enabled;
   }
 
   // signin::IdentityManager::Observer:
@@ -144,7 +143,7 @@ class ProfileManagementDisclaimerService
       profile_separation_policies_for_testing_;
   std::optional<signin::SigninChoice> user_choice_for_testing_;
 
-  bool enable_management_disclaimer_on_primary_account_change_ = true;
+  bool enable_management_disclaimer_ = true;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

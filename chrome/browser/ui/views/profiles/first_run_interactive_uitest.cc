@@ -331,8 +331,8 @@ class FirstRunInteractiveUiTest
   void SimulateSignIn(const std::string& account_email,
                       const std::string& account_given_name) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
-        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+    auto enable_disclaimer_on_primary_account_change_resetter =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());

@@ -335,8 +335,8 @@ class ManagedProfileCreationBrowserTest
       const std::string& email,
       const std::string& hosted_domain,
       bool primary_account = false) {
-    auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
-        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+    auto enable_disclaimer_on_primary_account_change_resetter =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             GetProfile());
     std::optional<signin::ConsentLevel> consent_level;
     if (primary_account) {

@@ -544,16 +544,14 @@ std::u16string GetEnterpriseLabel(Profile* profile, bool truncated) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-base::ScopedClosureRunner
-DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+base::ScopedClosureRunner DisableAutomaticManagementDisclaimerUntilReset(
     Profile* profile) {
   auto* disclaimer_service =
       ProfileManagementDisclaimerServiceFactory::GetForProfile(profile);
   if (!disclaimer_service) {
     return base::ScopedClosureRunner(base::DoNothing());
   }
-  return disclaimer_service
-      ->DisableManagementDisclaimerOnPrimaryAccountChangeUntilReset();
+  return disclaimer_service->DisableManagementDisclaimerUntilReset();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

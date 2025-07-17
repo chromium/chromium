@@ -133,8 +133,7 @@ void GetManagementIcon(const GURL& url,
 std::u16string GetEnterpriseLabel(Profile* profile, bool truncated = false);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-base::ScopedClosureRunner
-DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+base::ScopedClosureRunner DisableAutomaticManagementDisclaimerUntilReset(
     Profile* profile);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

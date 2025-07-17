@@ -496,8 +496,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
 }
 
 IN_PROC_BROWSER_TEST_P(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
-  auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
-      DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+  auto enable_disclaimer_on_primary_account_change_resetter =
+      enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
           browser()->profile());
   signin::IdentityManager* identity_manager_empty =
       IdentityManagerFactory::GetForProfile(browser()->profile());

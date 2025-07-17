@@ -203,9 +203,8 @@ TurnSyncOnHelper::TurnSyncOnHelper(
               ->Subscribe(base::BindOnce(&TurnSyncOnHelper::AbortAndDelete,
                                          base::Unretained(this)))),
       enable_automatic_management_disclaimer_on_primary_account_change_(
-          enterprise_util::
-              DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
-                  profile)) {
+          enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+              profile)) {
   DCHECK(delegate_);
   DCHECK(profile_);
   // Should not start syncing if the profile is already authenticated

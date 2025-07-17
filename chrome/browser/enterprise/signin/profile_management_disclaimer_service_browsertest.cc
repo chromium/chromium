@@ -255,13 +255,12 @@ IN_PROC_BROWSER_TEST_P(
     disclaimer_service->SetUserChoiceForTesting(GetParam().user_choice.value());
   }
 
-  auto resetter =
-      disclaimer_service
-          ->DisableManagementDisclaimerOnPrimaryAccountChangeUntilReset();
+  auto resetter = disclaimer_service->DisableManagementDisclaimerUntilReset();
   AccountInfo primary_account_info =
       MakeValidPrimaryAccountInfoAvailableAndUpdate(
           "bob@example.com",
           GetParam().is_managed ? "example.com" : kNoHostedDomainFound);
+  base::RunLoop().RunUntilIdle();
   std::move(resetter).RunAndReset();
 
   ASSERT_TRUE(
@@ -415,6 +414,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
       identity_test_env()->MakePrimaryAccountAvailable(
           "bob@example.com", signin::ConsentLevel::kSignin);
 
+  base::RunLoop().RunUntilIdle();
   ASSERT_EQ(disclaimer_service->GetAccountBeingConsideredForManagementIfAny(),
             primary_account_info.account_id);
 

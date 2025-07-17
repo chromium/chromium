@@ -104,8 +104,8 @@ class SingleClientPlusAddressSyncTest
       }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      auto enable_disclaimer_on_primary_account_change_resetter = enterprise_util::
-          DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+      auto enable_disclaimer_on_primary_account_change_resetter =
+          enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
               GetProfile(0));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       return GetClient(0)->SignInPrimaryAccount(account) &&

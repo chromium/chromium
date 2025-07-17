@@ -620,8 +620,8 @@ bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
   // Sync each of the profiles.
   for (int client_index = 0; client_index < num_clients_; client_index++) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    auto resetter = enterprise_util::
-        DisableAutomaticManagementDisclaimerOnPrimaryAccountChangeUntilReset(
+    auto resetter =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             GetProfile(client_index));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     SyncServiceImplHarness* client = GetClient(client_index);
