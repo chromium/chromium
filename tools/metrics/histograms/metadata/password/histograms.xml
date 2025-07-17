@@ -1981,7 +1981,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.ImportFileSize" units="bytes"
+<histogram name="PasswordManager.ImportFileSize2" units="bytes"
     expires_after="2025-12-11">
   <owner>natiahlyi@google.com</owner>
   <owner>markusheintz@google.com</owner>

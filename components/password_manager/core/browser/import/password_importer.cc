@@ -79,8 +79,8 @@ base::expected<std::string, ImportResults::Status> ReadFileToString(
   std::optional<int64_t> file_size = base::GetFileSize(path);
 
   if (file_size.has_value()) {
-    base::UmaHistogramCounts1M("PasswordManager.ImportFileSize",
-                               file_size.value());
+    base::UmaHistogramCounts10M("PasswordManager.ImportFileSize2",
+                                file_size.value());
     if (file_size.value() > kMaxFileSizeBytes) {
       return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
     }
@@ -97,7 +97,7 @@ base::expected<std::string, ImportResults::Status> ReadFileToString(
 base::expected<std::string, ImportResults::Status> ValidateString(
     std::string string) {
   int64_t file_size = string.size();
-  base::UmaHistogramCounts1M("PasswordManager.ImportFileSize", file_size);
+  base::UmaHistogramCounts10M("PasswordManager.ImportFileSize2", file_size);
   if (file_size > kMaxFileSizeBytes) {
     return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
   }
