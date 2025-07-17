@@ -48,10 +48,10 @@ void Decryptor::Handle::CloseRecord(
 
   // Produce symmetric key from shared secret using HKDF.
   // Since the original keys were only used once, no salt and context is needed.
-  uint8_t out_symmetric_key[kKeySize];
-  if (!ProduceSymmetricKey(
-          reinterpret_cast<const uint8_t*>(shared_secret_.data()),
-          out_symmetric_key)) {
+  std::array<uint8_t, kKeySize> out_symmetric_key;
+  auto shared_secret =
+      *base::as_byte_span(shared_secret_).to_fixed_extent<kKeySize>();
+  if (!ProduceSymmetricKey(shared_secret, out_symmetric_key)) {
     std::move(cb).Run(base::unexpected(
         Status(error::INTERNAL, "Symmetric key extraction failed")));
     return;
@@ -90,13 +90,13 @@ StatusOr<std::string> Decryptor::DecryptSecret(
   }
 
   // Compute shared secret.
-  uint8_t out_shared_value[kKeySize];
-  RestoreSharedSecret(
-      reinterpret_cast<const uint8_t*>(private_key.data()),
-      reinterpret_cast<const uint8_t*>(peer_public_value.data()),
-      out_shared_value);
+  auto key = *base::as_byte_span(private_key).to_fixed_extent<kKeySize>();
+  auto peer_pubkey =
+      *base::as_byte_span(peer_public_value).to_fixed_extent<kKeySize>();
+  std::array<uint8_t, kKeySize> out_shared_value;
+  RestoreSharedSecret(key, peer_pubkey, out_shared_value);
 
-  return std::string(reinterpret_cast<const char*>(out_shared_value), kKeySize);
+  return std::string(base::as_string_view(out_shared_value));
 }
 
 Decryptor::Decryptor()

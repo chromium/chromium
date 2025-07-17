@@ -47,9 +47,10 @@ Status SignatureVerifier::Verify(std::string_view message,
   if (verification_public_key_.size() != kKeySize) {
     return Status{error::FAILED_PRECONDITION, "Wrong public key size"};
   }
-  if (!VerifySignature(
-          reinterpret_cast<const uint8_t*>(verification_public_key_.data()),
-          message, reinterpret_cast<const uint8_t*>(signature.data()))) {
+  base::span<const uint8_t, kKeySize> key(
+      base::as_byte_span(verification_public_key_));
+  base::span<const uint8_t, kSignatureSize> sig(base::as_byte_span(signature));
+  if (!VerifySignature(key, message, sig)) {
     return Status{error::INVALID_ARGUMENT, "Verification failed"};
   }
 

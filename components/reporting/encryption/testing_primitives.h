@@ -16,27 +16,27 @@ namespace reporting {
 namespace test {
 
 // Generates new pair of encryption private key and public value.
-void GenerateEncryptionKeyPair(uint8_t private_key[kKeySize],
-                               uint8_t public_value[kKeySize]);
+void GenerateEncryptionKeyPair(base::span<uint8_t, kKeySize> private_key,
+                               base::span<uint8_t, kKeySize> public_value);
 
 // Restore shared secret.
-void RestoreSharedSecret(const uint8_t private_key[kKeySize],
-                         const uint8_t peer_public_value[kKeySize],
-                         uint8_t shared_secret[kKeySize]);
+void RestoreSharedSecret(base::span<const uint8_t, kKeySize> private_key,
+                         base::span<const uint8_t, kKeySize> peer_public_value,
+                         base::span<uint8_t, kKeySize> shared_secret);
 
 // Performs AEAD decryption with Chacha20Poly1305 key.
-void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
+void PerformSymmetricDecryption(base::span<const uint8_t, kKeySize> key,
                                 std::string_view input_data,
                                 std::string* output_data);
 
 // Generates new pair of signing private key and public value.
-void GenerateSigningKeyPair(uint8_t private_key[kSignKeySize],
-                            uint8_t public_value[kKeySize]);
+void GenerateSigningKeyPair(base::span<uint8_t, kSignKeySize> private_key,
+                            base::span<uint8_t, kKeySize> public_value);
 
 // Signs the |message| producing ED25519 |signature|.
-void SignMessage(const uint8_t signing_key[kSignKeySize],
+void SignMessage(base::span<const uint8_t, kSignKeySize> signing_key,
                  std::string_view message,
-                 uint8_t signature[kSignatureSize]);
+                 base::span<uint8_t, kSignatureSize> signature);
 
 }  // namespace test
 }  // namespace reporting

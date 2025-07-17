@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -75,11 +76,12 @@ void Encryptor::Handle::ProduceEncryptedRecord(
       kKeySize);
 
   // Compute shared secret, store it in |encrypted_record|.
-  uint8_t out_shared_secret[kKeySize];
-  uint8_t out_generatet_public_value[kKeySize];
-  if (!ComputeSharedSecret(
-          reinterpret_cast<const uint8_t*>(asymmetric_key.first.data()),
-          out_shared_secret, out_generatet_public_value)) {
+  std::array<uint8_t, kKeySize> out_shared_secret;
+  std::array<uint8_t, kKeySize> out_generated_public_value;
+  auto peer_pubkey =
+      *base::as_byte_span(asymmetric_key.first).to_fixed_extent<kKeySize>();
+  if (!ComputeSharedSecret(peer_pubkey, out_shared_secret,
+                           out_generated_public_value)) {
     std::move(cb).Run(base::unexpected(
         Status(error::DATA_LOSS, "Curve25519 shared secret not derived")));
     base::UmaHistogramEnumeration(
@@ -89,10 +91,10 @@ void Encryptor::Handle::ProduceEncryptedRecord(
     return;
   }
   encrypted_record.mutable_encryption_info()->mutable_encryption_key()->assign(
-      reinterpret_cast<const char*>(out_generatet_public_value), kKeySize);
+      base::as_string_view(out_generated_public_value));
 
   // Produce symmetric key from shared secret using HKDF.
-  uint8_t out_symmetric_key[kKeySize];
+  std::array<uint8_t, kKeySize> out_symmetric_key;
   if (!ProduceSymmetricKey(out_shared_secret, out_symmetric_key)) {
     std::move(cb).Run(base::unexpected(
         Status(error::INTERNAL, "Symmetric key production failed")));
