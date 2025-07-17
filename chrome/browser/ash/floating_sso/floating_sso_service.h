@@ -95,6 +95,7 @@ class FloatingSsoService : public KeyedService,
   void BindToCookieManager();
   void OnCookiesLoaded(const net::CookieList& cookies);
   bool ShouldSyncCookie(const net::CanonicalCookie& cookie) const;
+  bool ShouldSyncSessionCookies() const;
   void OnConnectionError();
   bool IsDomainAllowed(const GURL& url) const;
   void OnCookieSet(net::CookieAccessResult result);

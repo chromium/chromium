@@ -285,15 +285,28 @@ bool FloatingSsoService::ShouldSyncCookie(
   if (cookie.SourceType() != net::CookieSourceType::kHTTP) {
     return false;
   }
-  // Filter out session cookies (except when Floating Workspace is enabled).
-  if (!cookie.IsPersistent() &&
-      !ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
+
+  if (!cookie.IsPersistent() && !ShouldSyncSessionCookies()) {
     return false;
   }
 
   const GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
       cookie.Domain(), cookie.SecureAttribute());
   return ShouldSyncCookiesForUrl(cookie_domain_url);
+}
+
+bool FloatingSsoService::ShouldSyncSessionCookies() const {
+  const PrefService::Preference* session_cookies_pref =
+      prefs_->FindPreference(::prefs::kFloatingSsoSessionCookiesIncluded);
+
+  // If the pref is null or the policy isn't managed, the FWS logic applies.
+  // Otherwise, the FloatingSsoSessionCookiesIncluded policy value directly
+  // determines if session cookies are synced, overriding any FWS logic.
+  if (session_cookies_pref && session_cookies_pref->IsManaged()) {
+    return session_cookies_pref->GetValue()->GetBool();
+  }
+
+  return ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled();
 }
 
 bool FloatingSsoService::ShouldSyncCookiesForUrl(const GURL& url) const {
