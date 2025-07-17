@@ -85,6 +85,7 @@ source_set("sync") {
     "//chrome/browser/plus_addresses",
     "//chrome/browser/signin",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/webauthn",
 
     # TODO(crbug.com/374910357): Investigate for a better dependency injection.
     "//chrome/browser/autofill",

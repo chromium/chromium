@@ -2,6 +2,43 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("webauthn") {
+  sources = [
+    "webauthn_metrics_util.h",
+    "webauthn_switches.h",
+  ]
+  public_deps = []
+
+  if (is_android) {
+    sources += [
+      "authenticator_request_dialog_model.h",
+      "authenticator_transport.h",
+      "enclave_manager.h",
+      "enclave_manager_factory.h",
+      "enclave_manager_interface.h",
+      "gpm_enclave_controller.h",
+      "gpm_enclave_transaction.h",
+      "local_authentication_token.h",
+      "passkey_model_factory.h",
+    ]
+    public_deps += [
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/common:version_header",
+      "//components/keyed_service/core",
+      "//components/os_crypt/async/common",
+      "//components/trusted_vault",
+      "//components/webauthn/core/browser:passkey_model",
+      "//content/public/browser",
+      "//crypto",
+      "//device/fido",
+      "//google_apis",
+    ]
+  }
+}
+
 if (!is_android) {
   static_library("test_support") {
     testonly = true
@@ -20,6 +57,7 @@ if (!is_android) {
     ]
 
     deps = [
+      ":webauthn",
       "//base",
       "//chrome/browser",
       "//chrome/browser/sync",
