@@ -13,7 +13,7 @@
 @protocol FacePileProviding
 
 // Returns the FacePile computed width.
-- (CGFloat)facePileWdith;
+- (CGFloat)facePileWidth;
 
 // Returns the FacePile associated with this object.
 - (UIView*)facePileView;

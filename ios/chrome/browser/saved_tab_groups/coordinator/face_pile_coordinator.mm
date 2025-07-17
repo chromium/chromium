@@ -40,7 +40,7 @@
 
 #pragma mark - FacePileProviding
 
-- (CGFloat)facePileWdith {
+- (CGFloat)facePileWidth {
   return _facePileView.optimalWidth;
 }
 

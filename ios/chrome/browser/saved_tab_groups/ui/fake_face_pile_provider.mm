@@ -10,7 +10,7 @@
 
 #pragma mark - FacePileProviding
 
-- (CGFloat)facePileWdith {
+- (CGFloat)facePileWidth {
   return 60;
 }
 

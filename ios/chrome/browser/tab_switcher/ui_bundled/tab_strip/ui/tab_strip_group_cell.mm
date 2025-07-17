@@ -260,7 +260,7 @@ CGFloat CalculateTitleLength(NSString* title) {
   }
 
   _groupStrokeViewTitleLabelConstraint.constant =
-      [_facePileProvider facePileWdith];
+      [_facePileProvider facePileWidth];
   facePile.translatesAutoresizingMaskIntoConstraints = NO;
   [facePile setContentHuggingPriority:UILayoutPriorityRequired
                               forAxis:UILayoutConstraintAxisHorizontal];
@@ -439,7 +439,7 @@ CGFloat CalculateTitleLength(NSString* title) {
   CGFloat width =
       2 * TabStripGroupItemConstants.contentContainerHorizontalPadding;
   if (_facePile) {
-    width += [_facePileProvider facePileWdith];
+    width += [_facePileProvider facePileWidth];
     width += kFacePileLeadingPadding + kFacePileTrailingPadding;
     width -= TabStripGroupItemConstants.contentContainerHorizontalPadding;
   }
