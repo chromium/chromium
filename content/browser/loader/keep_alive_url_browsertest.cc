@@ -1110,8 +1110,7 @@ class KeepAliveFetchRetryBrowserTest
                           retryOptions: {
                             maxAttempts: $3,
                             retryAfterUnload: true,
-                            retryNonIdempotent: true,
-                            maxAge: 500
+                            retryNonIdempotent: true
                           }});)",
                   fetch_url, GetParam(), kMaxRetryCountPerLoaderForTesting),
         content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
@@ -1218,34 +1217,6 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
       /*retried_count=*/0);
 }
 
-// Test that a failure with a network error that doesn't trigger a retry
-IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
-                       FailedNotRetried_NonRetryEligibleNetworkError) {
-  ASSERT_TRUE(server()->Start());
-  const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
-  // Always fail the fetch with a SSL protocol error.
-  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
-      URLLoaderInterceptor::SetupRequestFailForURL(beacon_url,
-                                                   net::ERR_SSL_PROTOCOL_ERROR);
-  LoadPageAndTriggerFetchKeepaliveWithRetry(beacon_url);
-
-  // Observe the error, which is invalid for retrying.
-  loaders_observer().WaitForTotalOnComplete({net::ERR_SSL_PROTOCOL_ERROR});
-  loaders_observer().WaitForTotalOnCompleteForwarded(
-      {net::ERR_SSL_PROTOCOL_ERROR});
-  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
-
-  // The fetch is not retried.
-  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
-  ExpectFetchKeepAliveHistogram(
-      FetchKeepAliveRequestMetricType::kFetch,
-      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
-      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
-      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
-      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/1),
-      /*retried_count=*/0);
-}
-
 // Test failing a load and all the retries.
 IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
                        FailedRetriedUntilMaxRetryCount) {
@@ -1261,9 +1232,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
   std::vector<int> errors = {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED,
                              net::ERR_NETWORK_CHANGED};
   loaders_observer().WaitForTotalOnComplete(errors);
-  EXPECT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(
-                /*include_failed_retry=*/false),
-            0u);
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
 
   // Only the last failure is forwarded to the renderer.
   loaders_observer().WaitForTotalOnCompleteForwarded(
@@ -1287,9 +1256,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
   errors.insert(errors.end(),
                 {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED});
   loaders_observer().WaitForTotalOnComplete(errors);
-  EXPECT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(
-                /*include_failed_retry=*/false),
-            0u);
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
 
   // The last failure is forwarded to the renderer too.
   loaders_observer().WaitForTotalOnCompleteForwarded(
@@ -1382,8 +1349,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
                         retryOptions: {
                           maxAttempts: 10,
                           initialDelay: (1000 * 3600 * 24), // 1 day
-                          retryNonIdempotent: true,
-                          maxAge: 500
+                          retryNonIdempotent: true
                         }});)",
                                beacon_url),
                      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
@@ -1394,12 +1360,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
   // The loader is now waiting for its retry attempt (which is scheduled for
   // 1 day from now).
   ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
-  EXPECT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(
-                /*include_failed_retry=*/true),
-            1u);
-  EXPECT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(
-                /*include_failed_retry=*/false),
-            1u);
+  ASSERT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(), 1u);
 
   // Simulate clearing cookies.
   base::RunLoop run_loop;
@@ -1412,12 +1373,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
   run_loop.Run();
   // The pending retry loader is deleted.
   ASSERT_EQ(loader_service()->NumLoadersForTesting(), 0u);
-  EXPECT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(
-                /*include_failed_retry=*/true),
-            0u);
-  EXPECT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(
-                /*include_failed_retry=*/false),
-            0u);
+  ASSERT_EQ(loader_service()->NumLoadersAttemptingRetryForTesting(), 0u);
 
   // No retry happened and the failure is not forwarded to the renderer because
   // the loader is deleted while it's waiting for retry.
