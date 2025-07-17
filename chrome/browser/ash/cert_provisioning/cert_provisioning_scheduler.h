@@ -208,6 +208,11 @@ class CertProvisioningSchedulerImpl
   // is true.
   void RemoveWorkerFromMap(WorkerMap::iterator worker_iter,
                            bool send_visible_state_changed_update);
+  // Removes the failed worker with `cert_profile_id` and notifies the
+  // observers.
+  void RemoveFailedWorker(const CertProfileId& cert_profile_id);
+  // Removes all failed workers and notifies the observers.
+  void ClearFailedWorkers();
 
   // Returns true if the process can be continued (if it's not required to
   // wait).
