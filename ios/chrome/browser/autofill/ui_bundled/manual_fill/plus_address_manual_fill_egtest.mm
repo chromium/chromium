@@ -87,8 +87,9 @@ id<GREYMatcher> PlusAddressSelectDoneMatcher() {
 
 // Returns a matcher for the plus address search bar in manual fallback.
 id<GREYMatcher> PlusAddressSelectSearchBarMatcher() {
-  return grey_accessibilityID(
-      manual_fill::kPlusAddressSearchBarAccessibilityIdentifier);
+  // Match using the accessibility trait for a search field.
+  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitSearchField),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the select plus address action.
