@@ -27,6 +27,11 @@ Questa policy verrà rimossa in futuro, una volta completata l'implementazione d
 <translation id="1011266755572744012">Specifica il numero massimo di fogli che l'utente può utilizzare per un singolo processo di stampa.
 
       Se non viene impostato, non saranno applicate limitazioni e l'utente potrà stampare qualsiasi documento.</translation>
+<translation id="1013949464926722411">La configurazione della policy impedisce alle origini elencate di ottenere gli attributi dei dispositivi (ad es. numero di serie, nome host) utilizzando l'API Device Attributes.
+
+Le origini devono corrispondere ad applicazioni web con installazione forzata come app web isolate (tramite la policy <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />) o configurate come app kiosk. Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="101438888985615157">Ruota lo schermo di 180°</translation>
 <translation id="1017967144265860778">Gestione dell'alimentazione nella schermata di accesso</translation>
 <translation id="1018427234617066902">Consente di forzare l'attivazione delle lingue per il controllo ortografico. Le lingue dell'elenco non riconosciute verranno ignorate.
@@ -2146,6 +2151,7 @@ Se la policy viene impostata su <ph name="POLICY_VALUE_VISIBLE" />, la funzional
 Se la policy viene impostata su <ph name="POLICY_VALUE_DISABLEDE" />, la funzionalità di sincronizzazione file viene disattivata se era stata precedentemente attivata dall'utente. Consente di nascondere la funzionalità nell'app File e nelle Impostazioni in modo che l'utente non possa riattivarla. I file esistenti che sono stati resi disponibili offline dall'utente rimarranno disponibili offline. L'utente può comunque rendere disponibili offline gli elementi manualmente.
 
 Se la policy non viene configurata, <ph name="POLICY_VALUE_VISIBLE" /> è la selezione predefinita.</translation>
+<translation id="2488455166114458307">Consenti l'API attributi dispositivo su questi siti</translation>
 <translation id="2489558694350871332">Consenti al dispositivo di eseguire macchine virtuali</translation>
 <translation id="2492240920793040106">Attiva la segnalazione di informazioni di sistema e contenuti della pagina per migliorare Navigazione sicura</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
@@ -2716,6 +2722,12 @@ comportamento dei tasti funzione e questa impostazione non sarà modificabile da
       Tieni inoltre presente che si tratta di una policy "alternativa" destinata a essere di breve durata.
       </translation>
 <translation id="2939335382784544151">Abilita l'importazione della cronologia di navigazione alla prima esecuzione</translation>
+<translation id="2939606629175440564">La configurazione di questa policy consente di specificare se un'app web isolata o un'applicazione kiosk con installazione forzata ha accesso all'API Device Attributes per impostazione predefinita.
+Per informazioni dettagliate, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.
+
+Se la policy viene impostata su 1 o se non viene configurata, le app web isolate e le applicazioni kiosk installate forzatamente possono usare l'API.
+
+Se la policy viene impostata su 2, le app web isolate e le applicazioni kiosk con installazione forzata non possono usare l'API.</translation>
 <translation id="2940127076681735544">Se per la policy viene impostata un URL valido, <ph name="PRODUCT_NAME" /> scarica l'elenco dei siti da tale URL e applica le regole come se fossero state configurate con la policy <ph name="SITELIST_POLICY_NAME" />.
 
       Se la policy non viene impostata (o se viene impostato un URL non valido), <ph name="PRODUCT_NAME" /> non usa la policy come fonte di regole per il cambio di browser.
@@ -6148,6 +6160,11 @@ I caratteri jolly nell'host globale (ad es. "*" o "[*]") non sono consentiti. La
 
 Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 <translation id="5297948043665200363">Consenti all'utente di mantenere l'accesso dopo che il suo account non è più autenticato</translation>
+<translation id="5298594338496226089">La configurazione della policy consente alle origini elencate di ottenere gli attributi dei dispositivi (ad es. numero di serie, nome host) utilizzando l'API Device Attributes.
+
+Le origini devono corrispondere alle applicazioni web con installazione forzata tramite la policy <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (dalla versione 125) o configurate come app kiosk. Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi (dalla versione 127), visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="5298949392804966105">Nessuna limitazione per gli account gestiti</translation>
 <translation id="530111809849214840">Nascondi l'opzione <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">L'ora del giorno, in ora locale, in cui viene rinnovata la quota di utilizzo.</translation>
@@ -6158,6 +6175,7 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 <translation id="5307432759655324440">Disponibilità della modalità di navigazione in incognito</translation>
 <translation id="5308551343115571396">Dopo la disattivazione di <ph name="LACROS_NAME" />, tentiamo di conservare il maggior numero possibile di dati utente, rimuovendo tutti i dati del browser.</translation>
 <translation id="530949964068726932">Nascondi opzioni di accessibilità nel menu della barra delle applicazioni</translation>
+<translation id="5309944663104291505">Non consentire alle app web isolate e alle applicazioni kiosk con installazione forzata di utilizzare l'API Device Attributes</translation>
 <translation id="5310544046492594469">Se la policy viene impostata su 0 (valore predefinito), è possibile accedere agli strumenti per sviluppatori e alla console JavaScript, ma non se ci sono estensioni installate in base alle policy aziendali o, dalla versione 114 e se si tratta di un utente gestito, estensioni integrate nel browser. Se la policy viene impostata su 1, è possibile accedere agli strumenti per sviluppatori e alla console JavaScript in ogni caso, anche se ci sono estensioni installate in base alle policy aziendali. Se la policy viene impostata su 2, non è possibile accedere agli strumenti per sviluppatori, né esaminare gli elementi dei siti web.
 
       Questa impostazione disattiva anche le scorciatoie da tastiera e le voci dei menu o dei menu contestuali per aprire gli strumenti per sviluppatori o la console JavaScript.
@@ -6509,6 +6527,7 @@ Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di SharePoi
 <translation id="5534235660122271432">Non consentire la scrittura su dispositivi di archiviazione esterni</translation>
 <translation id="5535256585099022933">Imposta l'intervallo di tempo per il riavvio</translation>
 <translation id="5537400155400537818">Disattivato: lo zoom CSS mantiene il comportamento pre-standard precedente.</translation>
+<translation id="5537587542872235553">Consenti alle app web isolate e alle applicazioni kiosk con installazione forzata di utilizzare l'API Device Attributes</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
 <translation id="5542235730745104308">Se la policy viene impostata su true, <ph name="PRODUCT_NAME" /> consente l'utilizzo di pagine di errore alternative integrate nel browser (come "pagina non trovata"). Se la policy viene impostata su false, <ph name="PRODUCT_NAME" /> non consente mai l'utilizzo di pagine di errore alternative.
@@ -6718,6 +6737,7 @@ Se non viene configurata o se la durata della release non può essere determinat
 <translation id="5645779841392247734">Consenti i cookie in questi siti</translation>
 <translation id="5646234199535103501">Policy di configurazione per il connettore OnBulkDataEntry di Chrome Enterprise</translation>
 <translation id="5648016151508002741">Impedisci l'esecuzione dei controlli <ph name="OCSP_CRL_LABEL" /> online</translation>
+<translation id="5648436277949979783">Controlla l'utilizzo dell'API Device Attributes</translation>
 <translation id="5649046890958064703">Se per la policy <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLACKLIST" />, la configurazione della policy <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. Gli utenti avranno a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questa policy. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nella policy <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Questa policy è deprecata. Usa la policy <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
@@ -7869,23 +7889,6 @@ Le funzionalità di AI generativa di DevTools includono:
 
 Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">La norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_OS_NAME" />. Utilizza la norma PresentationScreenDimDelayScale.</translation>
-<translation id="6397424663361748439">Una policy per controllare se la funzionalità <ph name="IP_PROTECTION_NAME" /> di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
-
-<ph name="IP_PROTECTION_NAME" /> è una funzionalità che limita la disponibilità dell'indirizzo IP originale di un utente per determinate richieste di rete di terze parti effettuate durante la navigazione in modalità di navigazione in incognito, migliorando le protezioni contro il monitoraggio tra siti durante le sessioni di navigazione in incognito.
-
-Se la policy viene disattivata, la funzionalità <ph name="IP_PROTECTION_NAME" /> verrà disattivata e gli utenti non potranno attivarla tramite le impostazioni della UI.
-Se la policy viene attivata, la funzionalità <ph name="IP_PROTECTION_NAME" /> verrà attivata e gli utenti non potranno disattivarla tramite le impostazioni della UI.
-Se la policy non viene configurata, la funzionalità <ph name="IP_PROTECTION_NAME" /> verrà attivata per impostazione predefinita e gli utenti potranno controllarla sul proprio dispositivo tramite le impostazioni della UI.
-
-Alcune considerazioni sul fatto che le aziende debbano o meno disattivare <ph name="IP_PROTECTION_NAME" />:
-- Le ricerche DNS non verranno eseguite per le richieste trasferite al proxy, il che potrebbe influire sul monitoraggio o sul filtro basato su DNS.
-- Le applicazioni aziendali potrebbero non funzionare correttamente se usate in modalità di navigazione in incognito, in quanto si basano su richieste a domini (o a sottodomini di questi) in Masked Domain List (<ph name="MASKED_DOMAIN_LIST_URL" />) e richiedono che queste richieste provengano da intervalli di indirizzi IP specifici.
-- Il traffico potrebbe non essere trasferito al proxy in modalità di navigazione in incognito in determinate condizioni, ad esempio quando gli utenti avviano la modalità di navigazione in incognito da un profilo Chrome a cui non hanno eseguito l'accesso. In generale, la funzionalità richiede che l'utente abbia eseguito l'accesso a Chrome con un Account Google personale quando avvia la modalità di navigazione in incognito.
-- L'elenco dei domini in Masked Domain List può cambiare nel tempo e le nuove versioni vengono automaticamente trasferite agli utenti. Per maggiori informazioni su Masked Domain List, consulta: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
-
-Per maggiori informazioni su <ph name="IP_PROTECTION_NAME" />, consulta: <ph name="IP_PROTECTION_README_URL" />.
-
-La funzionalità <ph name="IP_PROTECTION_NAME" /> verrà lanciata non prima della versione M139.</translation>
 <translation id="6397588391180665797">Consente di segnalare eventi di configurazione di rete degli utenti su dispositivi registrati.
 
       Se la policy viene impostata su False, le informazioni non vengono segnalate.
@@ -11632,6 +11635,7 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
 <translation id="9015952763003753868">Fai in modo che <ph name="ACAM_HEADER_NAME" /> abbia una corrispondenza in <ph name="CORS" /> per la conformità alle specifiche preflight</translation>
 <translation id="9020630127193895800">Colore della retroilluminazione della tastiera blu indaco</translation>
 <translation id="9025912013525357598">Conservazione degli spazi vuoti DataURL per tutti i tipi di media</translation>
+<translation id="9029815312472546960">Blocca l'API Device Attributes su questi siti</translation>
 <translation id="9031831501689819108">Attiva Supporto dei browser precedenti</translation>
 <translation id="9032595854515551464">Attiva il servizio <ph name="PRODUCT_NAME" /> V2 e avvia la scrivania remota all'accesso</translation>
 <translation id="9034285085962866065">Consenti la personalizzazione delle scorciatoie di sistema</translation>

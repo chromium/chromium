@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 address}other{# addresses}}</translation>
 <translation id="1605405588277479165">Off – Not recommended</translation>
 <translation id="1605658421715042784">Copy image</translation>
+<translation id="1606899876897213121">Close recent activity summary</translation>
 <translation id="1612754831519568745">Your Safe Browsing is currently off. Get protection from dangerous sites, downloads and extensions.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622717322707146952">Select “Add to Google Calendar“ or “Add to Apple Calendar.“</translation>
@@ -407,6 +408,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2559843230610279254">Tab group, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabs.</translation>
 <translation id="2577522251608256362">Neighbourhood</translation>
 <translation id="2579713773888829241">Shared drives</translation>
+<translation id="2583688836549072561">Tab group, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tabs, new activity.</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Track price drops of products</translation>
 <translation id="260378315836159338">At the top of the screen, tap +</translation>
@@ -572,6 +574,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3273510436356991673">Customise your home screen</translation>
 <translation id="3277021493514034324">Site address copied</translation>
 <translation id="3280562213547448728">Voice search</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, new activity</translation>
 <translation id="3305294846493618482">more</translation>
 <translation id="3311748811247479259">Off</translation>
 <translation id="3312300514034250578">Enhanced Safe Browsing</translation>
@@ -1642,6 +1645,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7561982940498449837">Close menu</translation>
+<translation id="7566349809380613217">Open <ph name="GROUP_TITLE" />, shared group of <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Bookmarks are hidden</translation>
 <translation id="7577900504646297215">Manage interests</translation>
 <translation id="7582666837709186351">Translate text in your photos or your surroundings with your camera.</translation>

@@ -722,6 +722,7 @@
 <translation id="4306489587293957491">إدخال</translation>
 <translation id="4307992518367153382">الإعدادات الأساسية</translation>
 <translation id="4311652497846705514">‏هل تريد فتح ملف PDF؟</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{إشعار يُحتمل أن يكون غير مرغوب فيه}zero{إشعارات يُحتمل أن تكون غير مرغوب فيها (#)}two{إشعاران يُحتمل أن يكونا غير مرغوب فيهما}few{إشعارات يُحتمل أن تكون غير مرغوب فيها (#)}many{إشعارات يُحتمل أن تكون غير مرغوب فيها (#)}other{إشعارات يُحتمل أن تكون غير مرغوب فيها (#)}}</translation>
 <translation id="4320177379694898372">لا يتوفر اتصال بالإنترنت</translation>
 <translation id="4326079409704643112">‏عليك إثبات هويتك لاستخدام بيانات Chrome وحفظها في حسابك على Google</translation>
 <translation id="433213510553688132">جارٍ المتابعة…</translation>
@@ -1060,6 +1061,7 @@
 <translation id="580893287573699959">إدارة المواضيع والمواقع الإلكترونية التي تهمّك</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{قبل ساعة واحدة (#)}zero{قبل # ساعة}two{قبل ساعتين (#)}few{قبل # ساعات}many{قبل # ساعة}other{قبل # ساعة}}</translation>
 <translation id="5810288467834065221">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{عرض الإشعار}zero{عرض الإشعارات}two{عرض الإشعارَين}few{عرض الإشعارات}many{عرض الإشعارات}other{عرض الإشعارات}}</translation>
 <translation id="5814749351757353073">متابعة المواقع الإلكترونية المفضّلة</translation>
 <translation id="5823093032261493462">هل المطلوب تنزيل "<ph name="FILE_NAME" />" من <ph name="DOWNLOAD_DOMAIN" /> على أي حال؟</translation>
 <translation id="5828921839638612740">‏يمكنك حذف البيانات من خلال إعدادات Chrome</translation>

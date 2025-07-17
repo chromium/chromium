@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">যোৱা ৩০ দিন</translation>
 <translation id="2691385045260836588">মডেল</translation>
 <translation id="2691924980723297736">সুৰক্ষা সম্পর্কীয় সতর্কবার্তা</translation>
+<translation id="2696385693639654606">Chrome Enterprise Coreএ আপোনাক ব্ৰাউজাৰৰ নীতি, এপ্ আৰু ক্লাউডৰ পৰা এক্সটেনশ্বনসমূহ পৰিচালনা কৰিবলৈ দিয়ে</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> সোধক</translation>
 <translation id="2699273987028089219">উপ-মেনু উপলব্ধ, অতিৰিক্ত বিকল্পলৈ নেভিগে’ট কৰাৰ বাবে <ph name="SHORTCUT" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="2701514975700770343">তলমুখীয়াকৈ</translation>
@@ -2664,6 +2665,7 @@
 <translation id="5466018172325111652">আপোনাৰ ক’ডটো পোৱা নাই নেকি? <ph name="BEGIN_LINK" />নতুন ক’ড পাওক<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;সম্পাদনা ৰিডু কৰক</translation>
 <translation id="5472588168895083535">হাতৰ ট্ৰেকিং অৱৰোধ কৰা হৈছে</translation>
+<translation id="5479505548832623900">এক্সটেনশ্বনে সম্ভৱতঃ উপেক্ষা কৰিছে।</translation>
 <translation id="547963486735802022">পুনৰ আপোনাৰ ফাইল স্থানান্তৰণ কৰি চাওক</translation>
 <translation id="5481076368049295676">এই সমলখিনিয়ে আপোনাৰ ডিভাইচত আপোনাৰ তথ্য চুৰি কৰিব বা মচিব পৰা কোনো বিপজ্জনক ছফ্টৱেৰ ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">ৱিণ্ড’ আৰু টেবৰ সংগঠন</translation>
@@ -3137,6 +3139,7 @@
 <translation id="6284449872909111707">পাঠ আৰু তাৎক্ষণিক বাৰ্তা বিনিময়</translation>
 <translation id="6284517535531159884">ৰূপভেদ ছীডৰ প্ৰকাৰ</translation>
 <translation id="6287197303017372967">নেভিগেশ্বন সুবিধাটো ব্যৱহাৰ কৰি প্ৰতিটো আলি-কেঁকুৰিসহ দিক্-নিৰ্দেশনাৰে আপোনাৰ গন্তব্যস্থানলৈ দিক্-নিৰ্দেশনা পাওক।</translation>
+<translation id="6288559570252410796">Google AI ম'ড বিচাৰক</translation>
 <translation id="628877850550444614">ডিছকাউণ্ট বিচাৰি পোৱা গৈছে</translation>
 <translation id="6289939620939689042">পৃষ্ঠাৰ ৰং</translation>
 <translation id="6292819926564202163">Chromeত আপোনাৰ সন্ধানৰ ইঞ্জিন</translation>
@@ -3303,6 +3306,7 @@
 <translation id="6527049834925947126">খাদ্য বস্তু প্ৰস্তুতকৰণ</translation>
 <translation id="6529173248185917884">সপ্তম ৰোল</translation>
 <translation id="6529602333819889595">মচা কার্য &amp;ৰিডু কৰক</translation>
+<translation id="6532101170117367231">Google Driveত ছেভ কৰক</translation>
 <translation id="6535617236508021606">এই কাৰ্ডখন আপোনাৰ Google একাউণ্টত ছেভ কৰা হৈছে যাতে আপুনি সেইখন Googleৰ সমগ্ৰ সেৱাত ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="6536221421038631327">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পৰা এটা পাছপইণ্টৰ ছাবস্ক্ৰিপশ্বন আঁতৰোৱাটোৱে সম্পৰ্কিত নেটৱৰ্কসমূহ আঁতৰাই পেলাব। আপোনাৰ ছাবস্ক্ৰিপশ্বনৰ আঁচনিত সালসলনি কৰিবলৈ "<ph name="FRIENDLY_NAME" />"ৰ সৈতে যোগাযোগ কৰক। <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">তুলনা কৰাৰ তালিকা চাবলৈ ছিংক অন কৰক</translation>
@@ -3550,6 +3554,7 @@
 <translation id="6970885655016700774">ফেব্ৰিক (আৰ্কাইভেল)</translation>
 <translation id="6971439137020188025">Slidesত ক্ষিপ্ৰতাৰে এটা নতুন Google উপস্থাপন সৃষ্টি কৰক</translation>
 <translation id="6972629891077993081">HID ডিভাইচসমূহ</translation>
+<translation id="6972867931824045907">আপোনাৰ ক্লিপব’ৰ্ড ব্যৱহাৰ কৰিবলৈ <ph name="LINK" />ত Chromeক এক্সেছ দিয়ক।</translation>
 <translation id="6973656660372572881">স্থিৰ প্ৰ’ক্সি ছার্ভাৰ আৰু .pac স্ক্ৰিপ্টৰ URL দুয়োটাকে নির্দিষ্ট কৰা হৈছে।</translation>
 <translation id="6973988895180423160">৩.৫ x ৫ ইঞ্চি</translation>
 <translation id="6978121630131642226">সন্ধান ইঞ্জিনসমূহ</translation>
@@ -3912,6 +3917,7 @@
 <translation id="7569490014721427265">গ’ল্ফ</translation>
 <translation id="7569952961197462199">Chromeৰ পৰা ক্ৰেডিট কার্ড আঁতৰাবনে?</translation>
 <translation id="7569983096843329377">ক'লা</translation>
+<translation id="7571813784389228510">Google AI ম’ড</translation>
 <translation id="7574998639136359461">শীতকালীন ক্ৰীড়াৰ সা-সৰঞ্জাম</translation>
 <translation id="7575207903026901870">পৰামৰ্শৰ বুটামটো আঁতৰাওক, এই পৰামৰ্শটো আঁতৰাবলৈ এণ্টাৰ টিপক</translation>
 <translation id="7575800019233204241">"আপোনাৰ সংযোগটো ব্যক্তিগত নহয়" বা "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" বা "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" বা "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" বা "SSL প্ৰমাণপত্ৰৰ আসোঁৱাহ"</translation>
@@ -4349,6 +4355,7 @@
 <translation id="831997045666694187">সন্ধিয়া</translation>
 <translation id="8321448084834652864">আপুনি যিকোনো সময়তে Chromiumৰ ছেটিঙত আপোনাৰ সন্ধান ইঞ্জিনটো সলনি কৰিব পাৰে।</translation>
 <translation id="8321476692217554900">জাননী</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI ম’ড বিচাৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="8322402665880479974">বিছনা আৰু হেডবৰ্ড</translation>
 <translation id="8323505966575306467">আপোনাৰ পাছৱৰ্ডত অধিক সুৰক্ষা যোগ দিয়ক</translation>
 <translation id="832547548543012337">পাছপ’ৰ্ট মচক</translation>
@@ -4433,7 +4440,6 @@
 <translation id="8460854335417802511">এইটো অন কৰক</translation>
 <translation id="8461694314515752532">আপোনাৰ নিজৰ ছিংক পাছফ্ৰেজৰ সৈতে ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক।</translation>
 <translation id="8461973047386722744">কোনো পাছৱৰ্ড পোৱা নগ’ল</translation>
-<translation id="8465128304789431677">Chromeত Pixৰ জৰিয়তে পোনপটীয়াকৈ পৰিশোধ কৰক</translation>
 <translation id="8467494337615822642">ছেটিঙত Chromeৰ সুৰক্ষা পৰীক্ষা পৃষ্ঠালৈ যাওক</translation>
 <translation id="8468358362970107653">এনভেল’প C3</translation>
 <translation id="8469428721212363950">খুচুৰা ব্যৱসায়</translation>
@@ -4639,6 +4645,7 @@
 <translation id="883848425547221593">অন্য বুকমাৰ্ক</translation>
 <translation id="8842351563145134519">স্পৰ্শ কৰিলে পূৰ হ’বলগীয়া উপলব্ধ পৰিশোধ পদ্ধতিসমূহ অৰ্ধ উচ্চতাত খোল খাইছে।</translation>
 <translation id="884264119367021077">শ্বিপিং ঠিকনা</translation>
+<translation id="8849032795302265570">আপোনাৰ কৰ্মচাৰীসকলে কেনেকৈ ৱেব ব্ৰাউজ কৰে সেয়া সহজে পৰিচালনা কৰক</translation>
 <translation id="8849231003559822746">১৩০ x ১৮০ মি.মি.</translation>
 <translation id="884923133447025588">প্ৰত্যাহাৰৰ কোনো উপায় বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="8849262850971482943">অতিৰিক্ত সুৰক্ষাৰ বাবে আপোনাৰ ভাৰ্চুৱেল কাৰ্ডখন ব্যৱহাৰ কৰক</translation>
@@ -4889,6 +4896,7 @@
 <translation id="950926967802086924">পাছকী • Google Password Manager</translation>
 <translation id="955429569736351433">VRৰ অনুমতি আছে</translation>
 <translation id="955627189349169688">আপুনি <ph name="BEGIN_LINK" />Chrome ছিংকৰ ছেটিঙ<ph name="END_LINK" />ত এই নীতিটোৰ পৰা অপ্ট আউট কৰিব পাৰে।</translation>
+<translation id="95676157383774931">AI ম’ডৰ বুটাম, Google AI ম’ড বিচাৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="95721182352849470">হালধীয়া ২</translation>
 <translation id="961663415146723894">তলৰ অংশত সংযুক্ত কৰক</translation>
 <translation id="961856697154696964">ব্ৰাউজিঙৰ ডেটা মচক</translation>

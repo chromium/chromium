@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">过去 30 天</translation>
 <translation id="2691385045260836588">型号</translation>
 <translation id="2691924980723297736">安全警告</translation>
+<translation id="2696385693639654606">借助 Chrome 企业核心版，您可以从云端管理浏览器政策、应用和扩展程序</translation>
 <translation id="2697248912349197812">向 <ph name="KEYWORD_SHORT_NAME" /> 提问</translation>
 <translation id="2699273987028089219">子菜单可用，使用<ph name="SHORTCUT" />可找到其他选项。</translation>
 <translation id="2701514975700770343">正面朝下</translation>
@@ -2664,6 +2665,7 @@
 <translation id="5466018172325111652">没收到验证码？<ph name="BEGIN_LINK" />获取新验证码<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">恢复修改(&amp;R)</translation>
 <translation id="5472588168895083535">已屏蔽手部跟踪</translation>
+<translation id="5479505548832623900">可能已被扩展程序忽略。</translation>
 <translation id="547963486735802022">尝试重新传输文件</translation>
 <translation id="5481076368049295676">此内容可能会试图在您的设备上安装危险的软件来窃取或删除您的信息。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">窗口和标签页的排列</translation>
@@ -3137,6 +3139,7 @@
 <translation id="6284449872909111707">短信与即时通讯</translation>
 <translation id="6284517535531159884">变体版本种子类型</translation>
 <translation id="6287197303017372967">使用导航功能查询前往目的地的精细路线指导。</translation>
+<translation id="6288559570252410796">询问 Google AI 模式</translation>
 <translation id="628877850550444614">发现了折扣</translation>
 <translation id="6289939620939689042">页面颜色</translation>
 <translation id="6292819926564202163">您在 Chrome 中使用的搜索引擎</translation>
@@ -3303,6 +3306,7 @@
 <translation id="6527049834925947126">食品生产</translation>
 <translation id="6529173248185917884">第 7 卷</translation>
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>
+<translation id="6532101170117367231">保存到 Google 云端硬盘</translation>
 <translation id="6535617236508021606">此卡已保存在您的 Google 账号中，以便您在各项 Google 服务中使用此卡。</translation>
 <translation id="6536221421038631327">从<ph name="DEVICE_TYPE" />移除 Passpoint 订阅后，关联的网络也会一并移除。如需更改订阅方案，请与“<ph name="FRIENDLY_NAME" />”联系。<ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">如需查看比较表格，请开启同步功能</translation>
@@ -3550,6 +3554,7 @@
 <translation id="6970885655016700774">织物（存档用）</translation>
 <translation id="6971439137020188025">在 Google 幻灯片中快速创建新的 Google 演示文稿</translation>
 <translation id="6972629891077993081">HID 设备</translation>
+<translation id="6972867931824045907">如需使用剪贴板，请在<ph name="LINK" />中授予 Chrome 访问权限。</translation>
 <translation id="6973656660372572881">固定代理服务器和 .pac 脚本网址均已指定。</translation>
 <translation id="6973988895180423160">3.5 x 5 英寸</translation>
 <translation id="6978121630131642226">搜索引擎</translation>
@@ -3787,7 +3792,7 @@
 <translation id="7388594495505979117">{0,plural, =1{您的设备将在 1 分钟后重启}other{您的设备将在 # 分钟后重启}}</translation>
 <translation id="7393161616326137353">冒险游戏</translation>
 <translation id="7393475648162498734">在结账时显示凭您的卡可以享受哪些奖励和福利</translation>
-<translation id="7393971683644170444">正在连接到发卡机构…</translation>
+<translation id="7393971683644170444">正在连接发卡机构…</translation>
 <translation id="739728382607845710">付款处理程序图标</translation>
 <translation id="7399616692258236448">系统会自动屏蔽除您允许的网站之外的其他所有网站的位置信息请求</translation>
 <translation id="7400418766976504921">网址</translation>
@@ -3913,6 +3918,7 @@
 <translation id="7569490014721427265">高尔夫</translation>
 <translation id="7569952961197462199">从 Chrome 中移除信用卡信息？</translation>
 <translation id="7569983096843329377">黑色</translation>
+<translation id="7571813784389228510">Google AI 模式</translation>
 <translation id="7574998639136359461">冬季运动装备</translation>
 <translation id="7575207903026901870">“移除建议”按钮，按 Enter 键即可移除这项建议</translation>
 <translation id="7575800019233204241">“您的连接不是私密连接”、“&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;”、“&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;”、“&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;”或“SSL 证书错误”</translation>
@@ -4350,6 +4356,7 @@
 <translation id="831997045666694187">晚上</translation>
 <translation id="8321448084834652864">您可以随时在 Chromium 的设置中更改搜索引擎。</translation>
 <translation id="8321476692217554900">通知</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Enter 键即可询问 Google AI 模式</translation>
 <translation id="8322402665880479974">床和床头板</translation>
 <translation id="8323505966575306467">对您的密码增强保护</translation>
 <translation id="832547548543012337">删除护照</translation>
@@ -4434,7 +4441,6 @@
 <translation id="8460854335417802511">开启</translation>
 <translation id="8461694314515752532">使用您自己的同步口令加密已同步的数据</translation>
 <translation id="8461973047386722744">找不到任何密码</translation>
-<translation id="8465128304789431677">直接在 Chrome 中使用 Pix 付款</translation>
 <translation id="8467494337615822642">前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="8468358362970107653">C3 信封</translation>
 <translation id="8469428721212363950">零售</translation>
@@ -4641,6 +4647,7 @@
 <translation id="883848425547221593">其他书签</translation>
 <translation id="8842351563145134519">付款方式列表已半屏显示，轻触即可填充。</translation>
 <translation id="884264119367021077">送货地址</translation>
+<translation id="8849032795302265570">轻松管理员工浏览网页的方式</translation>
 <translation id="8849231003559822746">130 x 180 毫米</translation>
 <translation id="884923133447025588">未找到任何吊销机制。</translation>
 <translation id="8849262850971482943">使用您的虚拟卡提升安全性</translation>
@@ -4890,6 +4897,7 @@
 <translation id="950926967802086924">通行密钥 • Google 密码管理工具</translation>
 <translation id="955429569736351433">允许使用 VR</translation>
 <translation id="955627189349169688">您可在 <ph name="BEGIN_LINK" />Chrome 同步设置<ph name="END_LINK" />中选择停用此政策。</translation>
+<translation id="95676157383774931">AI 模式按钮，启用即可询问 Google AI 模式</translation>
 <translation id="95721182352849470">黄色 2</translation>
 <translation id="961663415146723894">装订（底部）</translation>
 <translation id="961856697154696964">删除浏览数据</translation>

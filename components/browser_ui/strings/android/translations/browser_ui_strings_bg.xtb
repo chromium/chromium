@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}}</translation>
 <translation id="2410940059315936967">В посетен от вас сайт може да има вградено съдържание от други сайтове, като например изображения, реклами и текст. „Бисквитките“, зададени от другите сайтове, се наричат „бисквитки“ на трети страна.</translation>
+<translation id="2411116727035790889">Включване на преките пътища</translation>
 <translation id="2433507940547922241">Облик</translation>
 <translation id="2434158240863470628">Изтеглянето завърши <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Временно разрешихте на този сайт да използва „бисквитки“ на трети страни. Това ще понижи нивото на защита при сърфиране, но е по-вероятно функциите на сайта да работят по очаквания начин. <ph name="BEGIN_LINK" />Изпращане на отзиви<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">Сайтът не работи? „Бисквитките“ на трети страни са блокирани</translation>
 <translation id="8197286292360124385">Достъпът до <ph name="PERMISSION_1" /> е разрешен</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
-<translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
 <translation id="8211406090763984747">Връзката е защитена</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Преместване най-горе</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">Без повторно питане</translation>
 <translation id="8362795839483915693">Можете да увеличавате или намалявате мащаба на сайтовете, които посещавате</translation>
 <translation id="8372893542064058268">Разрешаване на синхронизирането на заден план за конкретен сайт.</translation>
+<translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="83792324527827022">Сайт използва камерата и микрофона ви</translation>
 <translation id="8380167699614421159">На този сайт се показват натрапчиви или подвеждащи реклами</translation>
 <translation id="8394832520002899662">Докоснете, за да се върнете към сайта</translation>

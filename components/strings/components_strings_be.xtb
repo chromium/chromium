@@ -2667,6 +2667,7 @@
 <translation id="5466018172325111652">Не атрымалі код? Паспрабуйце <ph name="BEGIN_LINK" />атрымаць новы<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Адрабіць змену</translation>
 <translation id="5472588168895083535">Адсочванне рухаў рук заблакіравана</translation>
+<translation id="5479505548832623900">Магчыма, пашырэнне ігнаруе гэтыя правілы.</translation>
 <translation id="547963486735802022">Паспрабуйце перанесці файлы яшчэ раз</translation>
 <translation id="5481076368049295676">Праз гэта змесціва на вашу прыладу можа ўсталявацца небяспечнае праграмнае забеспячэнне, якое будзе красці або выдаляць інфармацыю. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">размяшчэнне вокнаў і ўкладак;</translation>
@@ -3307,6 +3308,7 @@
 <translation id="6527049834925947126">Вытворчасць харчовых прадуктаў</translation>
 <translation id="6529173248185917884">Сёмы рулон</translation>
 <translation id="6529602333819889595">&amp;Узнавіць выдаленне</translation>
+<translation id="6532101170117367231">Захаваць на Google Дыск</translation>
 <translation id="6535617236508021606">Гэта картка захавана ў вашым Уліковым запісе Google, таму вы можаце выкарыстоўваць яе ў розных сэрвісах Google.</translation>
 <translation id="6536221421038631327">Калі вы скасуеце падпіску Passpoint на прыладзе <ph name="DEVICE_TYPE" />, даныя пра звязаныя сеткі будуць выдалены. Каб унесці змяненні ў падпіску, звяжыцеся з кампаніяй "<ph name="FRIENDLY_NAME" />". <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Каб убачыць табліцы параўнання, уключыце сінхранізацыю</translation>
@@ -3918,6 +3920,7 @@
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569952961197462199">Выдаліць крэдытную карту з Chrome?</translation>
 <translation id="7569983096843329377">Чорны</translation>
+<translation id="7571813784389228510">Рэжым AI ад Google</translation>
 <translation id="7574998639136359461">Рыштунак для зімовых відаў спорту</translation>
 <translation id="7575207903026901870">Кнопка "Выдаліць прапанову". Каб выдаліць прапанову, націсніце Enter.</translation>
 <translation id="7575800019233204241">"Падключэнне не з’яўляецца прыватным" або "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" або "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" або "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" або "Памылка сертыфіката SSL"</translation>
@@ -4439,7 +4442,6 @@
 <translation id="8460854335417802511">Уключыць</translation>
 <translation id="8461694314515752532">Зашыфраваць сінхранізаваныя даныя з дапамогай фразы-пароля.</translation>
 <translation id="8461973047386722744">Паролі не знойдзены</translation>
-<translation id="8465128304789431677">Плаціце з дапамогай Pix непасрэдна ў браўзеры Chrome</translation>
 <translation id="8467494337615822642">Перайсці на старонку праверкі бяспекі Chrome у наладах</translation>
 <translation id="8468358362970107653">Канверт C3</translation>
 <translation id="8469428721212363950">Рознічны гандаль</translation>

@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}}</translation>
 <translation id="2410940059315936967">Сајтот што го посетувате може да вметне содржини од други сајтови, на пример, слики, реклами и текст. Колачињата поставени од овие други сајтови се нарекуваат колачиња од трети страни.</translation>
+<translation id="2411116727035790889">Вклучи ги кратенките</translation>
 <translation id="2433507940547922241">Изглед</translation>
 <translation id="2434158240863470628">Преземањето е завршено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Привремено дозволивте сајтов да користи колачиња од трети страни, што значи помала заштита при прелистување, но поголема веројатност функциите на сајтот да работат според очекувањата. <ph name="BEGIN_LINK" />Испратете повратни информации<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">Дали сајтот не функционира? Колачињата од трети страни се блокирани</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> е одобрена</translation>
 <translation id="8200772114523450471">Продолжи</translation>
-<translation id="8206354486702514201">Поставката ја наметнува администраторот.</translation>
 <translation id="8211406090763984747">Врската е безбедна</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Премести најгоре</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">Не прашувај повторно</translation>
 <translation id="8362795839483915693">Можете да зумирате или да одзумирате на сајтовите што ги посетувате</translation>
 <translation id="8372893542064058268">Дозволи Синхронизација во заднина за одреден сајт.</translation>
+<translation id="8378714024927312812">Управувано од вашата организација</translation>
 <translation id="83792324527827022">Сајтот ги користи камерата и микрофонот</translation>
 <translation id="8380167699614421159">Сајтов прикажува нападни или лажни реклами</translation>
 <translation id="8394832520002899662">Допрете за да се вратите на сајтот</translation>

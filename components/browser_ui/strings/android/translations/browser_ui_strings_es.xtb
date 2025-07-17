@@ -121,6 +121,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos}}</translation>
 <translation id="2410940059315936967">Un sitio que visites puede insertar contenido de otros sitios, como imágenes, anuncios y texto. Las cookies creadas por estos sitios se denominan cookies de terceros.</translation>
+<translation id="2411116727035790889">Activar las combinaciones de teclas</translation>
 <translation id="2433507940547922241">Aspecto</translation>
 <translation id="2434158240863470628">Descarga finalizada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Has permitido temporalmente que este sitio use cookies de terceros. Tendrás menos protección al navegar, pero será más probable que las funciones del sitio funcionen según lo previsto. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8186479265534291036">¿El sitio no funciona? Cookies de terceros bloqueadas.</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> permitido</translation>
 <translation id="8200772114523450471">Reanudar</translation>
-<translation id="8206354486702514201">El administrador aplica esta opción.</translation>
 <translation id="8211406090763984747">La conexión es segura</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> o <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Mover al principio</translation>
@@ -622,6 +622,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8324158725704657629">No volver a preguntar</translation>
 <translation id="8362795839483915693">Puedes ampliar o reducir el tamaño de los sitios que visitas</translation>
 <translation id="8372893542064058268">Permite la sincronización en segundo plano de un sitio específico.</translation>
+<translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="83792324527827022">Un sitio web está usando tu cámara y tu micrófono</translation>
 <translation id="8380167699614421159">El sitio web muestra anuncios invasivos o engañosos</translation>
 <translation id="8394832520002899662">Toca para volver al sitio web</translation>

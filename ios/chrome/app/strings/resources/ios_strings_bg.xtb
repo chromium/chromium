@@ -158,6 +158,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адрес}other{# адреса}}</translation>
 <translation id="1605405588277479165">Изключено – не се препоръчва</translation>
 <translation id="1605658421715042784">Копиране на изображението</translation>
+<translation id="1606899876897213121">Затваряне на обобщението на скорошната активност</translation>
 <translation id="1612754831519568745">Функцията Безопасно сърфиране понастоящем е изключена. Получете защита срещу опасни сайтове, изтегляния и разширения.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Изберете „Добавяне към Google Календар“ или „Добавяне към Apple Calendar“.</translation>
@@ -408,6 +409,7 @@
 <translation id="2559843230610279254">Група раздели <ph name="GROUP_TITLE" />, съдържа <ph name="TABS_NUMBER" /> раздела.</translation>
 <translation id="2577522251608256362">Квартал</translation>
 <translation id="2579713773888829241">Споделени дискове</translation>
+<translation id="2583688836549072561">Група раздели „<ph name="GROUP_TITLE" />“, съдържа <ph name="TABS_NUMBER" /> раздела, нова активност.</translation>
 <translation id="2593272815202181319">Непропорционален</translation>
 <translation id="2601778637777010194">Проследяване на пониженията на цените на продукти</translation>
 <translation id="260378315836159338">В горната част на екрана докоснете +.</translation>
@@ -573,6 +575,7 @@
 <translation id="3273510436356991673">Персонализиране на началния екран</translation>
 <translation id="3277021493514034324">Адресът на сайта бе копиран</translation>
 <translation id="3280562213547448728">Гласово търсене</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, нова активност</translation>
 <translation id="3305294846493618482">още</translation>
 <translation id="3311748811247479259">Изключено</translation>
 <translation id="3312300514034250578">Подобрена защита от Безопасно сърфиране</translation>
@@ -1645,6 +1648,7 @@
 <translation id="7557508262441527045">Излязохте от профила си</translation>
 <translation id="7561196759112975576">Винаги</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
+<translation id="7566349809380613217">Отваряне на „<ph name="GROUP_TITLE" />“, споделена група от <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Отметките са скрити</translation>
 <translation id="7577900504646297215">Управление на интересите</translation>
 <translation id="7582666837709186351">Използвайте камерата си, за да превеждате текст в снимки или от заобикалящата ви среда.</translation>

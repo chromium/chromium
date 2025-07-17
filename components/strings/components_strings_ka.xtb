@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">ბოლო 30 დღე</translation>
 <translation id="2691385045260836588">მოდელი</translation>
 <translation id="2691924980723297736">გაფრთხილება უსაფრთხოების შესახებ</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core საშუალებას გაძლევთ, ღრუბლიდან მართოთ ბრაუზერის წესები, აპები და გაფართოებები</translation>
 <translation id="2697248912349197812">ჰკითხეთ <ph name="KEYWORD_SHORT_NAME" />-ს</translation>
 <translation id="2699273987028089219">ხელმისაწვდომია ქვემენიუ, გამოიყენეთ <ph name="SHORTCUT" /> დამატებით ვარიანტებზე გადასასვლელად.</translation>
 <translation id="2701514975700770343">ნაბეჭდი მხარით დაღმა</translation>
@@ -2668,6 +2669,7 @@
 <translation id="5466018172325111652">კოდი არ მიგიღიათ? <ph name="BEGIN_LINK" />მოითხოვეთ ახალი კოდი<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">რედაქტირების &amp;გამეორება</translation>
 <translation id="5472588168895083535">ხელების მოძრაობაზე თვალის მიდევნება დაიბლოკა</translation>
+<translation id="5479505548832623900">როგორც ჩანს, იგნორირებულია გაფართოების მიერ.</translation>
 <translation id="547963486735802022">ცადეთ თქვენი ფაილების ხელახლა გადაცემა</translation>
 <translation id="5481076368049295676">ამ კონტენტმა შეიძლება თქვენს მოწყობილობაზე დააინსტალიროს სახიფათო პროგრამული უზრუნველყოფა, რომელიც შეძლებს თქვენი ინფორმაციის მოპარვას ან წაშლას. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">ფანჯრებისა და ჩანართების მოწყობა</translation>
@@ -3142,6 +3144,7 @@
 <translation id="6284449872909111707">ტექსტური და მყისიერი შეტყობინებები</translation>
 <translation id="6284517535531159884">ნაირსახეობათა წყაროს ტიპი</translation>
 <translation id="6287197303017372967">გაკვალეთ მარშრუტები თქვენი დანიშნულების წერტილამდე ეტაპობრივი ინსტრუქციების მეშვეობით, ნავიგაციის ფუნქციის გამოყენებით.</translation>
+<translation id="6288559570252410796">ჰკითხეთ Google-ის ხელოვნური ინტელექტის რეჟიმს</translation>
 <translation id="628877850550444614">მოიძებნა ფასდაკლება</translation>
 <translation id="6289939620939689042">გვერდის ფერი</translation>
 <translation id="6292819926564202163">თქვენი საძიებო სისტემა Chrome-ში</translation>
@@ -3308,6 +3311,7 @@
 <translation id="6527049834925947126">კვების მრეწველობა</translation>
 <translation id="6529173248185917884">მეშვიდე რულონი</translation>
 <translation id="6529602333819889595">წაშლის &amp;გამეორება</translation>
+<translation id="6532101170117367231">შენახვა Google Drive-ზე</translation>
 <translation id="6535617236508021606">ეს ბარათი შენახულია თქვენს Google ანგარიშში. ასე რომ, შეგიძლიათ გამოიყენოთ ის Google-ის სხვადასხვა სერვისში.</translation>
 <translation id="6536221421038631327">თქვენი <ph name="DEVICE_TYPE" />-იდან Passpoint გამოწერის წაშლის შემთხვევაში წაიშლება დაკავშირებული ქსელებიც. დაუკავშირდით „<ph name="FRIENDLY_NAME" />“-ს, თქვენს გამოწერაში ცვლილებები რომ შეიტანოთ. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">შედარების ცხრილების სანახავად ჩართეთ სინქრონიზაცია</translation>
@@ -3918,6 +3922,7 @@
 <translation id="7569490014721427265">გოლფი</translation>
 <translation id="7569952961197462199">ამოიშალოს საკრედიტო ბარათი Chrome-იდან?</translation>
 <translation id="7569983096843329377">შავი</translation>
+<translation id="7571813784389228510">Google-ის ხელოვნური ინტელექტის რეჟიმი</translation>
 <translation id="7574998639136359461">ზამთრის სპორტის სახეობები აღჭურვილობა</translation>
 <translation id="7575207903026901870">შემოთავაზების ამოშლის ღილაკი, ამ შემოთავაზების ამოსაშლელად დააჭირეთ კლავიშს „Enter“</translation>
 <translation id="7575800019233204241">„თქვენი კავშირი არ არის კონფიდენციალური“, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ ან „SSL სერტიფიკატის შეცდომა“</translation>
@@ -4355,6 +4360,7 @@
 <translation id="831997045666694187">საღამო</translation>
 <translation id="8321448084834652864">საძიებო სისტემის შეცვლას ნებისმიერ დროს შეძლებთ Chromium-ის პარამეტრებიდან.</translation>
 <translation id="8321476692217554900">შეტყობინებები</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ შეყვანას, რომ Google-ის ხელოვნური ინტელექტის რეჟიმს ჰკითხოთ</translation>
 <translation id="8322402665880479974">საწოლები და საზურგეები</translation>
 <translation id="8323505966575306467">გააძლიერეთ თქვენი პაროლების დაცვა</translation>
 <translation id="832547548543012337">პასპორტის წაშლა</translation>
@@ -4439,7 +4445,6 @@
 <translation id="8460854335417802511">ჩართვა</translation>
 <translation id="8461694314515752532">სინქრონიზებული მონაცემების დაშიფვრა თქვენი საკუთარი საიდუმლო ფრაზით</translation>
 <translation id="8461973047386722744">პაროლები ვერ მოიძებნა</translation>
-<translation id="8465128304789431677">Pix-ით უშუალოდ Chrome-ში გადახდა</translation>
 <translation id="8467494337615822642">Chrome-ის უსაფრთხოების შემოწმების გვერდზე გადასვლა პარამეტრებში</translation>
 <translation id="8468358362970107653">კონვერტი C3</translation>
 <translation id="8469428721212363950">საცალო ვაჭრობა</translation>
@@ -4645,6 +4650,7 @@
 <translation id="883848425547221593">სხვა სანიშნეები</translation>
 <translation id="8842351563145134519">იმ გადახდის მეთოდების სია, რომელთა შევსებაც შესაძლებელია შეხებით, გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="884264119367021077">მიწოდების მისამართი</translation>
+<translation id="8849032795302265570">მარტივად მართეთ, როგორ ნახონ თქვენმა თანამშრომლებმა ვები</translation>
 <translation id="8849231003559822746">130 x 180 მმ</translation>
 <translation id="884923133447025588">გაუქმების მექანიზმის პოვნა ვერ მოხერხდა.</translation>
 <translation id="8849262850971482943">დამატებითი უსაფრთხოებისთვის გამოიყენეთ თქვენი ვირტუალური ბარათი</translation>
@@ -4895,6 +4901,7 @@
 <translation id="950926967802086924">წვდომის გასაღები • Google პაროლების მმართველი</translation>
 <translation id="955429569736351433">VR ნებადართულია</translation>
 <translation id="955627189349169688">ამ წესებზე უარის თქმა შეგიძლიათ <ph name="BEGIN_LINK" />Chrome სინქის პარამეტრებში<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">ხელოვნური ინტელექტის რეჟიმის ღილაკი, გაააქტიურეთ Google-ის ხელოვნური ინტელექტის რეჟიმისთვის საკითხავად</translation>
 <translation id="95721182352849470">ყვითელი 2</translation>
 <translation id="961663415146723894">აკინძვა ქვემოთ</translation>
 <translation id="961856697154696964">დათვალ. მონაცემების წაშლა</translation>

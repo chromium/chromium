@@ -1022,6 +1022,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2690699652723742414">Últimos 30 días</translation>
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691924980723297736">Advertencia de seguridad</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core te permite administrar las políticas, las apps y las extensiones del navegador desde la nube</translation>
 <translation id="2697248912349197812">Preguntarle a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenú disponible. Utiliza <ph name="SHORTCUT" /> para navegar a las opciones adicionales.</translation>
 <translation id="2701514975700770343">Hacia abajo</translation>
@@ -2669,6 +2670,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5466018172325111652">¿No recibiste el código? <ph name="BEGIN_LINK" />Obtener un código nuevo<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Rehacer Editar</translation>
 <translation id="5472588168895083535">Se bloqueó el seguimiento de manos</translation>
+<translation id="5479505548832623900">Es probable que la extensión las ignore.</translation>
 <translation id="547963486735802022">Intenta volver a transferir tus archivos</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o borre tu información en tu dispositivo . <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Organización de ventanas y pestañas</translation>
@@ -3143,6 +3145,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6284449872909111707">Mensajería instantánea y de texto</translation>
 <translation id="6284517535531159884">Tipo de origen de las variaciones</translation>
 <translation id="6287197303017372967">Usar la función de navegación para obtener instrucciones paso a paso sobre cómo llegar a tu destino</translation>
+<translation id="6288559570252410796">Preguntar al Modo IA de Google</translation>
 <translation id="628877850550444614">Se encontró un descuento</translation>
 <translation id="6289939620939689042">Color de la página</translation>
 <translation id="6292819926564202163">Tu motor de búsqueda en Chrome</translation>
@@ -3309,6 +3312,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6527049834925947126">Producción alimentaria</translation>
 <translation id="6529173248185917884">Séptimo rollo</translation>
 <translation id="6529602333819889595">&amp;Rehacer Eliminar</translation>
+<translation id="6532101170117367231">Guardar en Google Drive</translation>
 <translation id="6535617236508021606">Esta tarjeta se ha guardado en tu Cuenta de Google para que puedas usarla en todos los servicios de Google.</translation>
 <translation id="6536221421038631327">Si quitas una suscripción a Passpoint de tu <ph name="DEVICE_TYPE" />, también se quitarán las redes asociadas. Comunícate con "<ph name="FRIENDLY_NAME" />" para hacer cambios en tu plan de suscripción. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Para ver las tablas de comparación, activa la sincronización</translation>
@@ -3556,6 +3560,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6970885655016700774">Tela (archivo)</translation>
 <translation id="6971439137020188025">Crea una presentación de Google nueva en Presentaciones rápidamente</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
+<translation id="6972867931824045907">Para usar el portapapeles, otorga acceso a Chrome en la <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Se especifican servidores proxy fijos y URL de secuencias de comandos .pac.</translation>
 <translation id="6973988895180423160">8.89 × 12.7 cm (3.5 × 5 in)</translation>
 <translation id="6978121630131642226">Motores de búsqueda</translation>
@@ -3919,6 +3924,7 @@ Detalles adicionales:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">¿Confirmas que quieres quitar la tarjeta de crédito de Chrome?</translation>
 <translation id="7569983096843329377">Negro</translation>
+<translation id="7571813784389228510">Modo IA de Google</translation>
 <translation id="7574998639136359461">Equipo para deportes de invierno</translation>
 <translation id="7575207903026901870">Botón Quitar sugerencia; presiona Intro para quitar esta sugerencia</translation>
 <translation id="7575800019233204241">"La conexión no es privada" o "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" o "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" o "Error de certificado SSL"</translation>
@@ -4356,6 +4362,7 @@ Detalles adicionales:
 <translation id="831997045666694187">Tarde</translation>
 <translation id="8321448084834652864">Puedes cambiar el motor de búsqueda en cualquier momento desde la configuración de Chromium.</translation>
 <translation id="8321476692217554900">notificaciones</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Intro para activar el Modo IA de Google</translation>
 <translation id="8322402665880479974">Camas y cabeceras</translation>
 <translation id="8323505966575306467">Agrega más protección a tus contraseñas</translation>
 <translation id="832547548543012337">Borrar pasaporte</translation>
@@ -4440,7 +4447,6 @@ Detalles adicionales:
 <translation id="8460854335417802511">Activar</translation>
 <translation id="8461694314515752532">Encriptar los datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8461973047386722744">No se encontraron contraseñas</translation>
-<translation id="8465128304789431677">Paga con Pix directamente en Chrome</translation>
 <translation id="8467494337615822642">Ir a la página de verificación de seguridad de Chrome en la configuración</translation>
 <translation id="8468358362970107653">Sobre C3</translation>
 <translation id="8469428721212363950">Comercio minorista</translation>
@@ -4647,6 +4653,7 @@ Detalles adicionales:
 <translation id="883848425547221593">Otros favoritos</translation>
 <translation id="8842351563145134519">La lista de formas de pago disponibles que se debe tocar para completar está abierta a media altura.</translation>
 <translation id="884264119367021077">Dirección de envío</translation>
+<translation id="8849032795302265570">Administra fácilmente cómo navegan tus empleados por la Web</translation>
 <translation id="8849231003559822746">130 × 180 mm</translation>
 <translation id="884923133447025588">No se ha encontrado ningún mecanismo de revocación.</translation>
 <translation id="8849262850971482943">Usa tu tarjeta virtual para mejorar la seguridad</translation>
@@ -4897,6 +4904,7 @@ Detalles adicionales:
 <translation id="950926967802086924">Llave de acceso • Administrador de contraseñas de Google</translation>
 <translation id="955429569736351433">Se permite la RV</translation>
 <translation id="955627189349169688">Puedes inhabilitar esta política en la <ph name="BEGIN_LINK" />configuración de la Sincronización de Chrome<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Botón del Modo IA, actívalo para preguntar al Modo IA de Google</translation>
 <translation id="95721182352849470">Amarillo 2</translation>
 <translation id="961663415146723894">Encuadernado en la parte inferior</translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>

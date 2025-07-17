@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">Εισαγωγή</translation>
 <translation id="4307992518367153382">Βασικά στοιχεία</translation>
 <translation id="4311652497846705514">Άνοιγμα PDF;</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Πιθανώς ανεπιθύμητο}other{Πιθανώς ανεπιθύμητα (#)}}</translation>
 <translation id="4320177379694898372">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="4326079409704643112">Για να χρησιμοποιήσετε και να αποθηκεύσετε δεδομένα Chrome στον Λογαριασμό σας Google, επαληθεύστε την ταυτότητά σας</translation>
 <translation id="433213510553688132">Παρακολούθηση…</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">Διαχειριστείτε τα θέματα και τους ιστοτόπους που σας ενδιαφέρουν</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Πριν από # ώρα}other{Πριν από # ώρες}}</translation>
 <translation id="5810288467834065221">Πνευματικά δικαιώματα <ph name="YEAR" /> Google LLC. Με την επιφύλαξη παντός δικαιώματος.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Εμφάνιση ειδοποίησης}other{Εμφάνιση ειδοποιήσεων}}</translation>
 <translation id="5814749351757353073">Ενημερωθείτε σχετικά με τους αγαπημένους σας ιστοτόπους</translation>
 <translation id="5823093032261493462">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" /> από τον ιστότοπο <ph name="DOWNLOAD_DOMAIN" />;</translation>
 <translation id="5828921839638612740">Μπορείτε να διαγράψετε τα δεδομένα στις ρυθμίσεις του Chrome</translation>

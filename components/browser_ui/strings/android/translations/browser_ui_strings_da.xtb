@@ -121,6 +121,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er tilladt}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er tilladt}}</translation>
 <translation id="2410940059315936967">Et website, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Cookies, der gemmes af disse andre websites, kaldes tredjepartscookies.</translation>
+<translation id="2411116727035790889">Aktivér genveje</translation>
 <translation id="2433507940547922241">Udseende</translation>
 <translation id="2434158240863470628">Downloaden er fuldført <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Du har givet dette website midlertidig tilladelse til at bruge tredjepartscookies, hvilket betyder, at browserbeskyttelsen er mindre, men at der er større sandsynlighed for, at websitefunktionerne fungerer som forventet. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8186479265534291036">Fungerer websitet ikke? Tredjepartscookies er blokeret</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> blev tilladt</translation>
 <translation id="8200772114523450471">Genoptag</translation>
-<translation id="8206354486702514201">Denne indstilling håndhæves af din administrator.</translation>
 <translation id="8211406090763984747">Forbindelsen er sikker</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Flyt til toppen</translation>
@@ -622,6 +622,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8324158725704657629">Spørg ikke igen</translation>
 <translation id="8362795839483915693">Du kan zoome ind eller ud på websites, du besøger</translation>
 <translation id="8372893542064058268">Tillad synkronisering i baggrunden for et bestemt website.</translation>
+<translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="83792324527827022">Et website anvender dit kamera og din mikrofon</translation>
 <translation id="8380167699614421159">Dette website viser påtrængende eller vildledende annoncer</translation>
 <translation id="8394832520002899662">Tryk for at vende tilbage til websitet</translation>

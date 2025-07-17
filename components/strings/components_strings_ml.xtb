@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">കഴിഞ്ഞ 30 ദിവസം</translation>
 <translation id="2691385045260836588">മോഡല്‍</translation>
 <translation id="2691924980723297736">സുരക്ഷാ മുന്നറിയിപ്പ്</translation>
+<translation id="2696385693639654606">ക്ലൗഡിൽ നിന്ന് ബ്രൗസർ നയങ്ങൾ, ആപ്പുകൾ, വിപുലീകരണങ്ങൾ എന്നിവ മാനേജ് ചെയ്യാൻ Chrome Enterprise Core നിങ്ങളെ അനുവദിക്കുന്നു</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> എന്നതിനോട് ചോദിക്കുക</translation>
 <translation id="2699273987028089219">ഉപമെനു ലഭ്യമാണ്, അധിക ഓപ്‌ഷനുകളിലേക്ക് നാവിഗേറ്റ് ചെയ്യാൻ <ph name="SHORTCUT" /> ഉപയോഗിക്കുക.</translation>
 <translation id="2701514975700770343">ഫേസ് ഡൗൺ</translation>
@@ -3142,6 +3143,7 @@
 <translation id="6284449872909111707">ടെക്‌സ്‌റ്റ് ചെയ്യലും തൽക്ഷണ സന്ദേശമയയ്‌ക്കലും</translation>
 <translation id="6284517535531159884">വകഭേദങ്ങളുടെ സീഡ് തരം</translation>
 <translation id="6287197303017372967">നാവിഗേഷൻ ഫീച്ചർ ഉപയോഗിച്ച് നിങ്ങളുടെ ലക്ഷ്യസ്ഥാനത്തേക്കുള്ള വഴികൾ ടേൺ-ബൈ-ടേൺ മാർഗ്ഗനിർദ്ദേശത്തിലൂടെ മനസ്സിലാക്കൂ.</translation>
+<translation id="6288559570252410796">Google AI മോഡിനോട് ചോദിക്കുക</translation>
 <translation id="628877850550444614">കിഴിവ് കണ്ടെത്തി</translation>
 <translation id="6289939620939689042">പേജിന്റെ നിറം</translation>
 <translation id="6292819926564202163">Chrome-ലെ നിങ്ങളുടെ തിരയൽ യന്ത്രം</translation>
@@ -3308,6 +3310,7 @@
 <translation id="6527049834925947126">ഭക്ഷ്യോൽപ്പാദനം</translation>
 <translation id="6529173248185917884">ഏഴാമത്തെ റോൾ</translation>
 <translation id="6529602333819889595">&amp;ഇല്ലാതാക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
+<translation id="6532101170117367231">Google ഡ്രൈവിൽ സംരക്ഷിക്കൂ</translation>
 <translation id="6535617236508021606">Google Account-ൽ ഈ കാർഡ് സംരക്ഷിച്ചിരിക്കുന്നതിനാൽ നിങ്ങൾക്ക് ഇത് Google സേവനങ്ങളിലുടനീളം ഉപയോഗിക്കാനാകും.</translation>
 <translation id="6536221421038631327">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിന്ന് Passpoint സബ്‌സ്ക്രിപ്ഷൻ നീക്കം ചെയ്താൽ അനുബന്ധ നെറ്റ്‌വർക്കുകളും നീക്കം ചെയ്യും. നിങ്ങളുടെ സബ്‌സ്ക്രിപ്ഷൻ പ്ലാനിൽ മാറ്റങ്ങൾ വരുത്താൻ "<ph name="FRIENDLY_NAME" />" എന്നതിനെ ബന്ധപ്പെടുക. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">താരതമ്യ പട്ടികകൾ കാണാൻ, സമന്വയിപ്പിക്കുക' ഓണാക്കുക</translation>
@@ -4355,6 +4358,7 @@
 <translation id="831997045666694187">വൈകുന്നേരം</translation>
 <translation id="8321448084834652864">Chromium ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും തിരയൽ എഞ്ചിൻ മാറ്റാം.</translation>
 <translation id="8321476692217554900">അറിയിപ്പുകൾ</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI മോഡിനോട് ചോദിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="8322402665880479974">കിടക്കകളും ഹെഡ്‌ബോർഡുകളും</translation>
 <translation id="8323505966575306467">നിങ്ങളുടെ പാസ്‌വേഡുകൾക്ക് കൂടുതൽ പരിരക്ഷ ചേർക്കുക</translation>
 <translation id="832547548543012337">പാസ്‌പോർട്ട് ഇല്ലാതാക്കുക</translation>
@@ -4439,7 +4443,6 @@
 <translation id="8460854335417802511">ഇത് ഓണാക്കുക</translation>
 <translation id="8461694314515752532">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച്, സമന്വയിപ്പിച്ച ഡാറ്റ എൻക്രി‌പ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8461973047386722744">പാസ്‌വേഡുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
-<translation id="8465128304789431677">Chrome-ൽ നേരിട്ട് Pix ഉപയോഗിച്ച് പണമടയ്ക്കുക</translation>
 <translation id="8467494337615822642">ക്രമീകരണത്തിലെ Chrome സുരക്ഷാ പരിശോധനാ പേജിലേക്ക് പോകുക</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8469428721212363950">ചില്ലറ വ്യാപാരം</translation>
@@ -4645,6 +4648,7 @@
 <translation id="883848425547221593">മറ്റുള്ള ബുക്ക്‌മാര്‍‌ക്കുകള്‍‌</translation>
 <translation id="8842351563145134519">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കാൻ ലഭ്യമായ പേയ്‌മെന്റ് രീതികൾ പകുതി തുറന്നിരിക്കുന്നു.</translation>
 <translation id="884264119367021077">ഷിപ്പിംഗ് വിലാസം</translation>
+<translation id="8849032795302265570">നിങ്ങളുടെ ജീവനക്കാർ വെബ് ബ്രൗസ് ചെയ്യുന്ന രീതി എളുപ്പത്തിൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="8849231003559822746">130 x 180 മി.മീ</translation>
 <translation id="884923133447025588">അസാധുവാക്കല്‍ പ്രവര്‍ത്തനം കണ്ടെത്തിയിട്ടില്ല.</translation>
 <translation id="8849262850971482943">അധിക സുരക്ഷയ്‌ക്ക് നിങ്ങളുടെ വെർച്വൽ കാർഡ് ഉപയോഗിക്കുക</translation>
@@ -4895,6 +4899,7 @@
 <translation id="950926967802086924">പാസ്‌കീ • Google Password Manager</translation>
 <translation id="955429569736351433">VR അനുവദിച്ചു</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome സമന്വയത്തിനുള്ള ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് ഈ നയം ഒഴിവാക്കാം.</translation>
+<translation id="95676157383774931">Google AI മോഡിനോട് ചോദിക്കുന്നതിനായി AI മോഡ് ബട്ടൺ സജീവമാക്കുക</translation>
 <translation id="95721182352849470">മഞ്ഞ 2</translation>
 <translation id="961663415146723894">താഴെ ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="961856697154696964">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കൂ</translation>

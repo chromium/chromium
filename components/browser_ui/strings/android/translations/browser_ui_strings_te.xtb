@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> అనుమతించబడ్డాయి}}</translation>
 <translation id="2410940059315936967">మీరు చూసే సైట్ ఇతర సైట్‌ల నుండి కంటెంట్‌ను పొందుపరచవచ్చు, ఉదాహరణకు, ఇమేజ్‌లు, యాడ్‌లు, ఇంకా టెక్స్ట్. ఈ ఇతర సైట్‌లు సెట్ చేసిన కుక్కీలను థర్డ్-పార్టీ కుక్కీలు అంటారు.</translation>
+<translation id="2411116727035790889">షార్ట్‌కట్‌లను ఆన్ చేయండి</translation>
 <translation id="2433507940547922241">కనిపించే తీరు</translation>
 <translation id="2434158240863470628">డౌన్‌లోడ్ పూర్తయింది <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">థర్డ్-పార్టీ కుక్కీలను ఉపయోగించడానికి ఈ సైట్‌కు మీరు తాత్కాలికంగా అనుమతిని ఇచ్చారు, అనగా బ్రౌజింగ్ రక్షణ తక్కువగా ఉంటుంది కానీ సైట్ ఫీచర్‌లు దాదాపు ఊహించిన విధంగానే పని చేయవచ్చు. <ph name="BEGIN_LINK" />ఫీడ్‌బ్యాక్‌ను పంపండి<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">సైట్ పని చేయడం లేదా? థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> అనుమతించబడింది</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
-<translation id="8206354486702514201">ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా అమలు చేయబడింది.</translation>
 <translation id="8211406090763984747">కనెక్షన్ సురక్షితంగా ఉంది</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">ఎగువకు తరలించు</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">మళ్లీ అడగవద్దు</translation>
 <translation id="8362795839483915693">మీరు చూసే సైట్‌లలో మీరు జూమ్ - ఇన్ లేదా జూమ్ - అవుట్ చేయవచ్చు</translation>
 <translation id="8372893542064058268">నిర్దిష్ట సైట్ కోసం నేపథ్య సింక్‌ను అనుమతిస్తుంది.</translation>
+<translation id="8378714024927312812">మీ సంస్థ ద్వారా నిర్వహించబడుతున్నవి</translation>
 <translation id="83792324527827022">ఒక సైట్ మీ కెమెరాను, మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="8380167699614421159">ఈ సైట్ అనుచితమైన లేదా తప్పుదారి పట్టించే ప్రకటనలను చూపుతుంది</translation>
 <translation id="8394832520002899662">సైట్‌కు తిరిగి వెళ్లడానికి ట్యాప్ చేయండి</translation>

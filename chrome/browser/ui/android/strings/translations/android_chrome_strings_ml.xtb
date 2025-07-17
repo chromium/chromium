@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">നൽകുക</translation>
 <translation id="4307992518367153382">അടിസ്ഥാനങ്ങള്‍</translation>
 <translation id="4311652497846705514">PDF തുറക്കണോ?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{സ്‌പാം ആകാനിടയുള്ളത്}other{സ്‌പാം ആകാനിടയുള്ളത് (#)}}</translation>
 <translation id="4320177379694898372">ഇന്റർനെറ്റ് കണക്ഷനൊന്നുമില്ല</translation>
 <translation id="4326079409704643112">നിങ്ങളുടെ Google Account-ലെ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="433213510553688132">പിന്തുടരുന്നു...</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളും സൈറ്റുകളും മാനേജ് ചെയ്യുക</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# മണിക്കൂര്‍ മുമ്പ്}other{# മണിക്കൂര്‍ മുമ്പ്}}</translation>
 <translation id="5810288467834065221">പകർപ്പവകാശം <ph name="YEAR" /> Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{അറിയിപ്പ് കാണിക്കുക}other{അറിയിപ്പുകൾ കാണിക്കുക}}</translation>
 <translation id="5814749351757353073">നിങ്ങളുടെ പ്രിയപ്പെട്ട സൈറ്റുകളെ കുറിച്ച് അറി‌ഞ്ഞുകൊണ്ടേ ഇരിക്കൂ</translation>
 <translation id="5823093032261493462">നിങ്ങൾക്ക് <ph name="DOWNLOAD_DOMAIN" /> എന്നതിൽ നിന്ന് "<ph name="FILE_NAME" />" എന്തായാലും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="5828921839638612740">Chrome ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഈ ഡാറ്റ ഇല്ലാതാക്കാം</translation>

@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> მბაიტი</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}}</translation>
 <translation id="2410940059315936967">საიტს, რომელსაც ეწვევით, შეუძლია სხვა საიტების კონტენტის (მაგალითად, სურათების, რეკლამისა და ტექსტის) ჩაშენება. სხვა საიტების მიერ განსაზღვრულ ქუქი-ჩანაწერებს მესამე მხარის ქუქი-ჩანაწერები ეწოდება.</translation>
+<translation id="2411116727035790889">მალსახმობების ჩართვა</translation>
 <translation id="2433507940547922241">გაფორმება</translation>
 <translation id="2434158240863470628">ჩამოტვირთვა დასრულდა: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">თქვენ დროებით მიანიჭეთ ამ საიტს მესამე მხარის ქუქი-ჩანაწერების გამოყენების ნებართვა, რაც ნიშნავს, რომ ვების დათვალიერებისას ნაკლებად იქნებით დაცული, თუმცა საიტის ფუნქციები, დიდი ალბათობით, მოლოდინისამებრ იმუშავებს. <ph name="BEGIN_LINK" />გამოხმაურება<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">საიტი არ მუშაობს? მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია.</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> დაშვებულია</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
-<translation id="8206354486702514201">ეს პარამეტრი იძულებითაა დაყენებული თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="8211406090763984747">კავშირი დაცულია</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">თავში გადატანა</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">აღარ მკითხო</translation>
 <translation id="8362795839483915693">შეგიძლიათ გაზარდოთ ან შეამციროთ თქვენ მიერ მონახულებული საიტების მასშტაბი</translation>
 <translation id="8372893542064058268">კონკრეტული საიტისთვის ფონური სინქრონიზაციის დაშვება.</translation>
+<translation id="8378714024927312812">იმართება თქვენი ორგანიზაციის მიერ</translation>
 <translation id="83792324527827022">ეს საიტი იყენებს თქვენს კამერასა და მიკროფონს</translation>
 <translation id="8380167699614421159">ამ საიტზე ნაჩვენებია მომაბეზრებელი ან შეცდომაში შემყვანი რეკლამა</translation>
 <translation id="8394832520002899662">შეეხეთ საიტზე დასაბრუნებლად</translation>

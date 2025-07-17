@@ -2669,6 +2669,7 @@
 <translation id="5466018172325111652">Не получихте кода си? <ph name="BEGIN_LINK" />Получаване на нов код<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Възстановяване на редактирането</translation>
 <translation id="5472588168895083535">Проследяването на ръцете е блокирано</translation>
+<translation id="5479505548832623900">Вероятно се пренебрегва от разширението.</translation>
 <translation id="547963486735802022">Опитайте отново да прехвърлите файловете си</translation>
 <translation id="5481076368049295676">Въпросното съдържание може да се опита да инсталира опасен софтуер на устройството ви, който да открадне или изтрие информацията ви. <ph name="BEGIN_LINK" />Показване въпреки това<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Подреждане на прозорците и разделите</translation>
@@ -3310,6 +3311,7 @@
 <translation id="6527049834925947126">Хранително-вкусова промишленост</translation>
 <translation id="6529173248185917884">Седма ролка</translation>
 <translation id="6529602333819889595">&amp;Възстановяване на изтриването</translation>
+<translation id="6532101170117367231">Запазване в Google Диск</translation>
 <translation id="6535617236508021606">Тази карта е запазена в профила ви в Google, за да можете да я използвате в услугите ни.</translation>
 <translation id="6536221421038631327">Премахването на абонамент за Passpoint от <ph name="DEVICE_TYPE" /> ще премахне свързаните мрежи. Свържете се с(ъс) <ph name="FRIENDLY_NAME" />, за да направите промени в абонаментния си план. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">За да видите таблиците за сравнения, включете синхронизирането</translation>
@@ -3557,6 +3559,7 @@
 <translation id="6970885655016700774">Текстил (архивен)</translation>
 <translation id="6971439137020188025">Бързо създаване на презентация в Google Презентации</translation>
 <translation id="6972629891077993081">HID устройства</translation>
+<translation id="6972867931824045907">За да се използва буферната ви памет, дайте достъп на Chrome от <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Посочени са както фиксирани прокси сървъри, така и URL адрес на скрипт във формат .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 инча</translation>
 <translation id="6978121630131642226">Търсещи машини</translation>
@@ -3920,6 +3923,7 @@
 <translation id="7569490014721427265">Голф</translation>
 <translation id="7569952961197462199">Кредитната карта да се премахне ли от Chrome?</translation>
 <translation id="7569983096843329377">Черно</translation>
+<translation id="7571813784389228510">Режим с AI на Google</translation>
 <translation id="7574998639136359461">Екипировка за зимни спортове</translation>
 <translation id="7575207903026901870">Бутон за премахване на предложенията. Натиснете Enter, за да премахнете това предложение.</translation>
 <translation id="7575800019233204241">„Връзката ви не е частна“, „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;“, „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;“ или „Грешка при SSL сертификатите“</translation>
@@ -4442,7 +4446,6 @@
 <translation id="8460854335417802511">Включване</translation>
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8461973047386722744">Няма открити пароли</translation>
-<translation id="8465128304789431677">Плащане чрез Pix директно в Chrome</translation>
 <translation id="8467494337615822642">Отваряне на страницата за проверка на безопасността в Chrome от настройките</translation>
 <translation id="8468358362970107653">Плик C3</translation>
 <translation id="8469428721212363950">Търговия на дребно</translation>

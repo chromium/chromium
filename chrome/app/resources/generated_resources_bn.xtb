@@ -1643,6 +1643,7 @@
 <translation id="2121825465123208577">ছোট বড় করুন</translation>
 <translation id="2123766928840368256">অন্য কোনও ফাইল বেছে নিন</translation>
 <translation id="2124930039827422115">{1,plural, =1{একজন ব্যবহারকারী <ph name="AVERAGE_RATING" /> রেট করেছে।}one{# জন ব্যবহারকারী <ph name="AVERAGE_RATING" /> রেট করেছে।}other{# জন ব্যবহারকারী <ph name="AVERAGE_RATING" /> রেট করেছে।}}</translation>
+<translation id="2125715366913703594">&amp;Extensions এক্সপ্লোর করুন</translation>
 <translation id="2126167708562367080">আপনার প্রশাসকের দ্বারা সিঙ্ক অক্ষম করা হয়েছে।</translation>
 <translation id="2127372758936585790">নিম্ন শক্তির চার্জার</translation>
 <translation id="212862741129535676">ফ্রিকোয়েন্সি স্টেট ওকুপেন্সির শতকরা হার</translation>
@@ -4516,6 +4517,7 @@
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) এ উইন্ডো সরান</translation>
 <translation id="4110485659976215879">রিস্টোর করা সংক্রান্ত সতর্কতা</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (অফলাইন)</translation>
+<translation id="4113030288477039509">আপনার প্রশাসকের দ্বারা পরিচালিত</translation>
 <translation id="4113743276555482284">ফাইলের পাসওয়ার্ড</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />'লোকেশন অ্যাকুরেসি' সেটিং চালু করা থাকলে, ডিভাইসের লোকেশন আরও নিখুঁতভাবে অনুমান করতে, ওয়াই-ফাই অ্যাক্সেস পয়েন্ট, মোবাইল নেটওয়ার্ক টাওয়ারের মতো ওয়্যারলেস সিগন্যাল সম্পর্কিত তথ্য এবং তার পাশাপাশি, অ্যাকসিলরোমিটার ও জাইরোস্কোপের মতো ডিভাইস সেন্সর ডেটা ব্যবহার করা হয়, যেগুলি Android অ্যাপ ও পরিষেবা ব্যবহার করে লোকেশন ভিত্তিক ফিচার প্রদান করে। এটি করতে, নির্দিষ্ট সময়ের ব্যবধানে Google ডিভাইস সেন্সর ও আপনার কাছাকাছি থাকা ওয়্যারলেস সিগন্যাল সম্পর্কিত ডেটা সংগ্রহ করে, যাতে ক্রাউডসোর্স করা ওয়্যারলেস সিগন্যালের লোকেশন বিষয়ক তথ্যে কন্ট্রিবিউট করা যায়।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google আপনাকে শনাক্ত না করেই এই তথ্য ব্যবহার করে এইসব কাজ করে: 'লোকেশন অ্যাকুরেসি' সেটিং ও লোকেশন-ভিত্তিক পরিষেবা উন্নত করে ও সাধারণভাবে Google-এর পরিষেবা প্রদান ও উন্নত করে ও তা বজায় রাখে। ব্যবহারকারীর চাহিদা পূরণ করতে, আমরা Google ও থার্ড-পার্টির আইনগত স্বার্থের উপর ভিত্তি করে এই তথ্য প্রসেস করি।<ph name="END_PARAGRAPH2" />
@@ -9251,6 +9253,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> অ্যাপ দিয়ে <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">আপনার অ্যাকাউন্টের অন্যান্য ডিভাইসের সাথে সিঙ্ক করা হয়েছে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">EAP নেটওয়ার্ক যাচাইকরণ সংক্রান্ত তথ্য</translation>
+<translation id="754225194829660954"><ph name="DISPLAY_INITIATOR_ORIGIN" /> থেকে</translation>
 <translation id="7542619176101025604"><ph name="ACTION_NAME" /> - পিন করা হয়েছে</translation>
 <translation id="7543104066686362383">এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইসে ডিবাগিং বৈশিষ্ট্যগুলি চালু করুন৷</translation>
 <translation id="7544227555407951270">ডিভাইস এনরোল করুন</translation>
@@ -10798,6 +10801,7 @@
 <translation id="8602851771975208551">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম একটি অ্যাপ্লিকেশন জুড়েছে যা Chrome এর কাজ করার পদ্ধতিকে পাল্টে দিতে পারে৷</translation>
 <translation id="8605428685123651449">SQLite মেমোরি</translation>
 <translation id="8607171490667464784">ডিভাইস পাওয়ার সোর্সে প্লাগ-ইন করা না থাকলে ও ব্যাটারির পাওয়ারে চললে</translation>
+<translation id="8607661817136110841">আপনার ট্যাব গ্রুপ</translation>
 <translation id="8607828412110648570">আপনার ব্লুটুথ ডিভাইস কাছাকাছি এবং 'যোগ করার মোড'-এ আছে কিনা ভাল করে দেখে নিন। আপনার বিশ্বাস রয়েছে শুধুমাত্র এমন ডিভাইসেই যোগ করুন। এই Chromebook-এ সব অ্যাকাউন্টে পেয়ার করা ডিভাইস দেখা যাবে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">একটি Kerberos টিকিট যোগ করুন</translation>
 <translation id="8609465669617005112">উপরে যান</translation>

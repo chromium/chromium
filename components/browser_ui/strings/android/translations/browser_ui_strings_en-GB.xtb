@@ -121,6 +121,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
 <translation id="2410940059315936967">A site that you visit can embed content from other sites, for example, images, ads and text. Cookies set by these other sites are called third-party cookies.</translation>
+<translation id="2411116727035790889">Turn on shortcuts</translation>
 <translation id="2433507940547922241">Appearance</translation>
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="8186479265534291036">Site not working? Third-party cookies blocked</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> allowed</translation>
 <translation id="8200772114523450471">Resume</translation>
-<translation id="8206354486702514201">This setting is enforced by your administrator.</translation>
 <translation id="8211406090763984747">Connection is secure</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Move to top</translation>
@@ -622,6 +622,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8324158725704657629">Don't ask again</translation>
 <translation id="8362795839483915693">You can zoom in or out on sites that you visit</translation>
 <translation id="8372893542064058268">Allow Background Sync for a specific site.</translation>
+<translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="83792324527827022">A site is using your camera and microphone</translation>
 <translation id="8380167699614421159">This site shows intrusive or misleading ads</translation>
 <translation id="8394832520002899662">Tap to return to the site</translation>

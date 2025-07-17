@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">Последние 30 дней</translation>
 <translation id="2691385045260836588">Модель</translation>
 <translation id="2691924980723297736">Предупреждение</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core позволяет управлять из облака правилами браузера, приложениями и расширениями.</translation>
 <translation id="2697248912349197812">Запрос к <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Доступно подменю. Чтобы открыть дополнительные варианты, нажмите <ph name="SHORTCUT" />.</translation>
 <translation id="2701514975700770343">Лицевой стороной вниз</translation>
@@ -2667,6 +2668,7 @@
 <translation id="5466018172325111652">Вам не пришел код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Повторить изменения</translation>
 <translation id="5472588168895083535">Отслеживание рук заблокировано</translation>
+<translation id="5479505548832623900">Вероятно, правила не действуют в этом расширении.</translation>
 <translation id="547963486735802022">Попробуйте перенести файлы ещё раз.</translation>
 <translation id="5481076368049295676">Посещение этой страницы может привести к установке вредоносной программы, которая похищает или удаляет данные. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Расположение окон и вкладок.</translation>
@@ -3141,6 +3143,7 @@
 <translation id="6284449872909111707">Текстовые и мгновенные сообщения</translation>
 <translation id="6284517535531159884">Тип файла конфигурации для модификации</translation>
 <translation id="6287197303017372967">Проложить маршруты до пункта назначения с пошаговыми инструкциями, используя функцию навигации</translation>
+<translation id="6288559570252410796">Спросить ИИ от Google</translation>
 <translation id="628877850550444614">Доступна скидка</translation>
 <translation id="6289939620939689042">Цвет страницы</translation>
 <translation id="6292819926564202163">Поисковая система в Chrome</translation>
@@ -3307,6 +3310,7 @@
 <translation id="6527049834925947126">Производство пищевых продуктов</translation>
 <translation id="6529173248185917884">Седьмой рулон</translation>
 <translation id="6529602333819889595">&amp;Повторить удаление</translation>
+<translation id="6532101170117367231">Сохранить на Google Диске</translation>
 <translation id="6535617236508021606">Карта сохранена в вашем аккаунте Google. Теперь вы можете платить ею в сервисах Google.</translation>
 <translation id="6536221421038631327">Если вы отмените подписку Passpoint на устройстве <ph name="DEVICE_TYPE" />, данные о связанных сетях будут удалены. Сменить тарифный план можно в приложении "<ph name="FRIENDLY_NAME" />". <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Чтобы появились сравнительные таблицы, включите синхронизацию.</translation>
@@ -3554,6 +3558,7 @@
 <translation id="6970885655016700774">Ткань (архивная)</translation>
 <translation id="6971439137020188025">Быстро создать презентацию Google</translation>
 <translation id="6972629891077993081">Устройства HID</translation>
+<translation id="6972867931824045907">Чтобы использовать буфер обмена, предоставьте Chrome доступ в <ph name="LINK" /></translation>
 <translation id="6973656660372572881">Указаны как фиксированные прокси-серверы, так и URL PAC-скриптов.</translation>
 <translation id="6973988895180423160">3,5 x 5 дюймов</translation>
 <translation id="6978121630131642226">Поисковые системы</translation>
@@ -3917,6 +3922,7 @@
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569952961197462199">Удалить кредитную карту из Chrome?</translation>
 <translation id="7569983096843329377">Черный</translation>
+<translation id="7571813784389228510">Режим ИИ от Google</translation>
 <translation id="7574998639136359461">Инвентарь для зимних видов спорта</translation>
 <translation id="7575207903026901870">Кнопка удаления подсказки. Нажмите Ввод, чтобы удалить подсказку.</translation>
 <translation id="7575800019233204241">"Подключение не защищено", &lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;, &lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;, &lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt; или "Ошибка сертификата SSL"</translation>
@@ -4354,6 +4360,7 @@
 <translation id="831997045666694187">До вечера</translation>
 <translation id="8321448084834652864">Вы в любой момент можете изменить поисковую систему по умолчанию в настройках Chromium.</translation>
 <translation id="8321476692217554900">уведомления</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, чтобы перейти к разговору с ИИ от Google, нажмите Ввод</translation>
 <translation id="8322402665880479974">Кровати и изголовья</translation>
 <translation id="8323505966575306467">Усильте защиту паролей</translation>
 <translation id="832547548543012337">Удаление паспорта</translation>
@@ -4438,7 +4445,6 @@
 <translation id="8460854335417802511">Включить</translation>
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8461973047386722744">Пароли не найдены.</translation>
-<translation id="8465128304789431677">Платите через Pix, не выходя из Chrome</translation>
 <translation id="8467494337615822642">Перейти на страницу проверки безопасности Chrome в настройках</translation>
 <translation id="8468358362970107653">Конверт C3</translation>
 <translation id="8469428721212363950">Розничная торговля</translation>
@@ -4644,6 +4650,7 @@
 <translation id="883848425547221593">Другие закладки</translation>
 <translation id="8842351563145134519">Список способов оплаты, данные которых можно ввести нажатием, развернут наполовину.</translation>
 <translation id="884264119367021077">Адрес доставки</translation>
+<translation id="8849032795302265570">Без труда контролируйте работу сотрудников в интернете</translation>
 <translation id="8849231003559822746">130 x 180 мм</translation>
 <translation id="884923133447025588">Не обнаружен механизм отзыва.</translation>
 <translation id="8849262850971482943">Для дополнительной защиты используйте виртуальную карту.</translation>
@@ -4894,6 +4901,7 @@
 <translation id="950926967802086924">Ключ доступа • Google Менеджер паролей</translation>
 <translation id="955429569736351433">Дано разрешение на использование VR</translation>
 <translation id="955627189349169688">Вы можете отключить эту функцию в <ph name="BEGIN_LINK" />настройках синхронизации Chrome<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Кнопка, при нажатии которой вы переходите в режим разговора с ИИ от Google</translation>
 <translation id="95721182352849470">Желтый 2</translation>
 <translation id="961663415146723894">Скрепление снизу</translation>
 <translation id="961856697154696964">Удалить данные браузера</translation>

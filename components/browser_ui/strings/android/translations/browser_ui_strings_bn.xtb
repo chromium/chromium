@@ -121,6 +121,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> এমবি</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা ব্যবহারের অনুমতি দেওয়া হয়েছে}}</translation>
 <translation id="2410940059315936967">আপনি যে সাইটটি দেখছেন সেটি অন্য সাইট থেকে কন্টেন্ট এম্বেড করতে পারে, যেমন ছবি, বিজ্ঞাপন এবং টেক্সট। এই অন্যান্য সাইট দ্বারা সেট করা কুকিগুলিকে থার্ড-পার্টি কুকি বলা হয়।</translation>
+<translation id="2411116727035790889">শর্টকাট চালু করুন</translation>
 <translation id="2433507940547922241">উপস্থিতি</translation>
 <translation id="2434158240863470628"><ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /> ডাউনলোড সম্পূর্ণ হয়েছে</translation>
 <translation id="2438120137003069591">আপনি এই সাইটটিকে থার্ড-পার্টি কুকি ব্যবহারের সাময়িকভাবে অনুমতি দিয়েছেন, যার ফলে ব্রাউজিং সংক্রান্ত সুরক্ষা একটু কম থাকলেও সাইটের সব ফিচার প্রত্যাশা অনুযায়ী কাজ করার সম্ভাবনা বেশি হবে। <ph name="BEGIN_LINK" />মতামত জানান<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="8186479265534291036">সাইট কাজ করছে না? থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
-<translation id="8206354486702514201">এই সেটিংটি আপনার প্রশাসক দ্বারা কার্যকরী করা হয়েছে৷</translation>
 <translation id="8211406090763984747">কানেকশনটি নিরাপদ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">শীর্ষে সরান</translation>
@@ -622,6 +622,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="8324158725704657629">আর দেখতে চাই না</translation>
 <translation id="8362795839483915693">আপনার ভিজিট করা সাইটে বড় বা ছোট করতে পারবেন</translation>
 <translation id="8372893542064058268">একটি নির্দিষ্ট সাইটের জন্য পটভূমি সিঙ্কের অনুমতি দিন।</translation>
+<translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
 <translation id="83792324527827022">একটি সাইট আপনার ক্যামেরা ও মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="8380167699614421159">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়</translation>
 <translation id="8394832520002899662">সাইটে ফিরে যেতে ট্যাপ করুন</translation>

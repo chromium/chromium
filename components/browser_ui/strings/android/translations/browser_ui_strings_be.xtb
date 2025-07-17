@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">На сайце, які вы наведваеце, можа быць убудаванае змесціва з іншых сайтаў (напрыклад, відарысы, рэклама або тэкст). Файлы cookie, зададзеныя такімі сайтамі, называюцца староннімі файламі cookie.</translation>
+<translation id="2411116727035790889">Уключыць ярлыкі</translation>
 <translation id="2433507940547922241">Выгляд</translation>
 <translation id="2434158240863470628">Спампоўванне завершана <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Вы часова дазволілі гэтаму сайту выкарыстоўваць староннія файлы cookie. Гэта знізіць вашу абароненасць падчас прагляду вэб-старонак, але функцыі сайта з большай імавернасцю будуць працаваць правільна. <ph name="BEGIN_LINK" />Адправіць водгук<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">Сайт не працуе? Староннія файлы cookie заблакіраваны.</translation>
 <translation id="8197286292360124385">Дазволена: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Узнавіць</translation>
-<translation id="8206354486702514201">Гэтай наладай кіруе адміністратар.</translation>
 <translation id="8211406090763984747">Падключэнне бяспечнае</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Перамясціць уверх</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">Больш не пытацца</translation>
 <translation id="8362795839483915693">Вы можаце павялічваць або памяншаць маштаб на сайтах, якія наведваеце</translation>
 <translation id="8372893542064058268">Дазволіць фонавую сінхранізацыю для канкрэтнага сайта.</translation>
+<translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="83792324527827022">Сайт выкарыстоўвае камеру і мікрафон</translation>
 <translation id="8380167699614421159">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман</translation>
 <translation id="8394832520002899662">Каб вярнуцца на сайт, націсніце тут</translation>

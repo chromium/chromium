@@ -2668,6 +2668,7 @@
 <translation id="5466018172325111652">क्या आपको कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;बदलाव को फिर से लागू करें</translation>
 <translation id="5472588168895083535">हाथ ट्रैक करने की सुविधा ब्लॉक है</translation>
+<translation id="5479505548832623900">ऐसा हो सकता है कि एक्सटेंशन ने नीतियों को अनदेखा कर दिया हो.</translation>
 <translation id="547963486735802022">अपनी फ़ाइलें फिर से ट्रांसफ़र करने की कोशिश करें</translation>
 <translation id="5481076368049295676">यह सामग्री आपके डिवाइस पर ऐसा खतरनाक सॉफ़्टवेयर इंस्टॉल करने की कोशिश कर सकती है जो आपकी जानकारी चुरा सकता है या उसे हटा सकता है. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">विंडो और टैब को व्यवस्थित करना</translation>
@@ -3308,6 +3309,7 @@
 <translation id="6527049834925947126">फ़ूड प्रोडक्शन</translation>
 <translation id="6529173248185917884">सातवां रोल</translation>
 <translation id="6529602333819889595">मिटाना &amp;फिर से करें</translation>
+<translation id="6532101170117367231">Google डिस्क में सेव करें</translation>
 <translation id="6535617236508021606">यह कार्ड आपके Google खाते में सेव है. इसलिए, इसका इस्तेमाल Google की सभी सेवाओं पर किया जा सकता है.</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> से पासपॉइंट सदस्यता हटाने पर, उससे जुड़े नेटवर्क भी हट जाएंगे. अपनी सदस्यता की योजना में बदलाव करने के लिए, "<ph name="FRIENDLY_NAME" />" से संपर्क करें. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">तुलना करने वाली टेबल देखने के लिए, सिंक करने की सुविधा चालू करें</translation>
@@ -3919,6 +3921,7 @@
 <translation id="7569490014721427265">गोल्फ़</translation>
 <translation id="7569952961197462199">Chrome से क्रेडिट कार्ड निकालें?</translation>
 <translation id="7569983096843329377">काला</translation>
+<translation id="7571813784389228510">Google का एआई मोड</translation>
 <translation id="7574998639136359461">विंटर स्पोर्ट्स के इक्विपमेंट</translation>
 <translation id="7575207903026901870">सुझाव बटन हटाएं, इस सुझाव को हटाने के लिए Enter दबाएं</translation>
 <translation id="7575800019233204241">"आपका कनेक्शन निजी नहीं है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" या "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" या "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" या "SSL प्रमाणपत्र गड़बड़ी"</translation>
@@ -4440,7 +4443,6 @@
 <translation id="8460854335417802511">इसे चालू करें</translation>
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने सिंक किए गए लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8461973047386722744">कोई पासवर्ड नहीं मिला</translation>
-<translation id="8465128304789431677">Chrome में Pix से पेमेंट करें</translation>
 <translation id="8467494337615822642">सेटिंग में, Chrome की सुरक्षा जांच वाले पेज पर जाएं</translation>
 <translation id="8468358362970107653">C3 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8469428721212363950">खुदरा व्यापार</translation>

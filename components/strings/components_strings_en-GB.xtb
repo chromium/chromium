@@ -2668,6 +2668,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5466018172325111652">Didn\u2019t receive your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Redo edit</translation>
 <translation id="5472588168895083535">Hand tracking blocked</translation>
+<translation id="5479505548832623900">Likely ignored by the extension.</translation>
 <translation id="547963486735802022">Try transferring your files again</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Windows and tabs arrangement</translation>
@@ -3308,6 +3309,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6527049834925947126">Food production</translation>
 <translation id="6529173248185917884">Seventh roll</translation>
 <translation id="6529602333819889595">&amp;Redo Delete</translation>
+<translation id="6532101170117367231">Save to Google Drive</translation>
 <translation id="6535617236508021606">This card is saved in your Google Account so that you can use it across Google services.</translation>
 <translation id="6536221421038631327">Removing a Passpoint subscription from your <ph name="DEVICE_TYPE" /> will remove the associated networks. Contact '<ph name="FRIENDLY_NAME" />' to make changes to your subscription plan. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">To see comparison tables, turn on sync</translation>
@@ -3555,6 +3557,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6970885655016700774">Fabric (archival)</translation>
 <translation id="6971439137020188025">Create a new Google presentation in Slides quickly</translation>
 <translation id="6972629891077993081">HID devices</translation>
+<translation id="6972867931824045907">To use your Clipboard, give Chrome access in <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Both fixed proxy servers and a .pac script URL are specified.</translation>
 <translation id="6973988895180423160">3.5 in x 5.0 in</translation>
 <translation id="6978121630131642226">Search Engines</translation>
@@ -3918,6 +3921,7 @@ Additional details:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Remove credit card from Chrome?</translation>
 <translation id="7569983096843329377">Black</translation>
+<translation id="7571813784389228510">Google AI Mode</translation>
 <translation id="7574998639136359461">Winter Sports Equipment</translation>
 <translation id="7575207903026901870">Remove Suggestion button, press Enter to remove this suggestion</translation>
 <translation id="7575800019233204241">'Your connection is not private' or "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" or "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" or 'SSL certificate error'</translation>
@@ -4439,7 +4443,6 @@ Additional details:
 <translation id="8460854335417802511">Turn it on</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8461973047386722744">No passwords found</translation>
-<translation id="8465128304789431677">Pay with Pix directly in Chrome</translation>
 <translation id="8467494337615822642">Go to Chrome safety check page in settings</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8469428721212363950">Retail trade</translation>

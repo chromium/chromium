@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">30 הימים האחרונים</translation>
 <translation id="2691385045260836588">דגם</translation>
 <translation id="2691924980723297736">אזהרת אבטחה</translation>
+<translation id="2696385693639654606">‏‫Chrome Enterprise Core מאפשר לנהל כללי מדיניות, אפליקציות ותוספים לדפדפן דרך הענן</translation>
 <translation id="2697248912349197812">לשאול את <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">בתפריט המשנה הזמין אפשר להשתמש ב<ph name="SHORTCUT" /> כדי לעבור לאפשרויות נוספות.</translation>
 <translation id="2701514975700770343">פנים כלפי מטה</translation>
@@ -2672,6 +2673,7 @@ Del</translation>
 <translation id="5466018172325111652">לא קיבלת את הקוד? <ph name="BEGIN_LINK" />אני רוצה לקבל קוד חדש<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;ביצוע מחדש של עריכה</translation>
 <translation id="5472588168895083535">המעקב אחר תנועות הידיים חסום</translation>
+<translation id="5479505548832623900">התוסף כנראה מתעלם ממדיניות התוספים.</translation>
 <translation id="547963486735802022">רוצה לנסות שוב להעביר את הקבצים?</translation>
 <translation id="5481076368049295676">ייתכן שהתוכן הזה מכיל אמצעים שינסו להתקין תוכנה מסוכנת, שגונבת או מוחקת את המידע שלך. <ph name="BEGIN_LINK" />אני רוצה להציג בכל זאת<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">סידור של חלונות וכרטיסיות</translation>
@@ -3147,6 +3149,7 @@ Del</translation>
 <translation id="6284449872909111707">העברת הודעות מיידיות והודעות טקסט</translation>
 <translation id="6284517535531159884">וריאציות של סוג המקור</translation>
 <translation id="6287197303017372967">קבלת מסלול מפורט ליעד בעזרת תכונת הניווט.</translation>
+<translation id="6288559570252410796">‏מצב Google AI: רוצה לשאול משהו?</translation>
 <translation id="628877850550444614">נמצאה הנחה</translation>
 <translation id="6289939620939689042">צבע הדף</translation>
 <translation id="6292819926564202163">‏מנוע החיפוש שלך ב-Chrome</translation>
@@ -3313,6 +3316,7 @@ Del</translation>
 <translation id="6527049834925947126">תעשיית המזון</translation>
 <translation id="6529173248185917884">הגליל השביעי</translation>
 <translation id="6529602333819889595">&amp;ביצוע מחדש של מחיקה</translation>
+<translation id="6532101170117367231">‏שמירה ב-Google Drive</translation>
 <translation id="6535617236508021606">‏הכרטיס הזה נשמר בחשבון Google, כך שאפשר להשתמש בו בשירותי Google.</translation>
 <translation id="6536221421038631327">‏הסרת מינוי Passpoint ממכשיר <ph name="DEVICE_TYPE" /> תגרום להסרת הרשתות המשויכות. צריך ליצור קשר עם '<ph name="FRIENDLY_NAME" />' כדי לערוך שינויים בתוכנית המינוי שלך. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">כדי לראות טבלאות השוואה, צריך להפעיל את הסנכרון</translation>
@@ -3924,6 +3928,7 @@ Del</translation>
 <translation id="7569490014721427265">גולף</translation>
 <translation id="7569952961197462199">‏האם להסיר את פרטי כרטיס האשראי מ-Chrome?</translation>
 <translation id="7569983096843329377">שחור</translation>
+<translation id="7571813784389228510">‏מצב Google AI</translation>
 <translation id="7574998639136359461">ציוד לספורט חורף</translation>
 <translation id="7575207903026901870">‏הכפתור 'הסרת ההצעה', יש ללחוץ על Enter כדי להסיר את ההצעה הזו</translation>
 <translation id="7575800019233204241">‏"החיבור שלך אינך פרטי" או "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" או "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" או "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" או "שגיאת אישור SSL"</translation>
@@ -4361,6 +4366,7 @@ Del</translation>
 <translation id="831997045666694187">ערב</translation>
 <translation id="8321448084834652864">‏תמיד אפשר לבחור מנוע חיפוש אחר בהגדרות של Chromium.</translation>
 <translation id="8321476692217554900">התראות</translation>
+<translation id="8322230666450346681">‏‫<ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, אפשר להקיש על Enter כדי לשאול במצב Google AI</translation>
 <translation id="8322402665880479974">מיטות ולוחות ראש למיטות</translation>
 <translation id="8323505966575306467">הוספת עוד הגנה לסיסמאות</translation>
 <translation id="832547548543012337">מחיקת הדרכון</translation>
@@ -4445,7 +4451,6 @@ Del</translation>
 <translation id="8460854335417802511">להפעלת ההגדרה</translation>
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
 <translation id="8461973047386722744">לא נמצאו סיסמאות</translation>
-<translation id="8465128304789431677">‏אפשר לשלם דרך Pix ישירות ב-Chrome</translation>
 <translation id="8467494337615822642">‏מעבר לדף בדיקת האבטחה ב-Chrome בהגדרות</translation>
 <translation id="8468358362970107653">‏מעטפה – C3</translation>
 <translation id="8469428721212363950">מסחר קמעונאי</translation>
@@ -4651,6 +4656,7 @@ Del</translation>
 <translation id="883848425547221593">סימניות אחרות</translation>
 <translation id="8842351563145134519">רשימת אמצעי התשלום הזמינים למילוי במגע נפתחה בחצי מגובה המסך.</translation>
 <translation id="884264119367021077">כתובת למשלוח</translation>
+<translation id="8849032795302265570">מנהלים בקלות את אופן הגלישה של העובדים באינטרנט</translation>
 <translation id="8849231003559822746">‏130x180 מ"מ</translation>
 <translation id="884923133447025588">לא נמצא מנגנון ביטול</translation>
 <translation id="8849262850971482943">כדי להגביר את רמת האבטחה, יש להשתמש בכרטיס וירטואלי</translation>
@@ -4901,6 +4907,7 @@ Del</translation>
 <translation id="950926967802086924">‏מפתח גישה • מנהל הסיסמאות של Google</translation>
 <translation id="955429569736351433">‏יש הרשאה לשימוש ב-VR</translation>
 <translation id="955627189349169688">‏אפשר לבטל את ההסכמה למדיניות הזו ב<ph name="BEGIN_LINK" />הגדרות הסנכרון של Chrome<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">‏כפתור למצב AI, צריך להפעיל כדי לשאול במצב Google AI</translation>
 <translation id="95721182352849470">צהוב 2</translation>
 <translation id="961663415146723894">כריכה בקצה התחתון</translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>

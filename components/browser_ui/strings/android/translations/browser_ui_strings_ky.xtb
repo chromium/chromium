@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Мб</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}}</translation>
 <translation id="2410940059315936967">Сиз кирген сайт башка сайттардан алынган материалдарды, мисалы, сүрөттөрдү, жарнамаларды жана текстти жалгаштыра алат. Мындай сайттар орноткон cookie файлдары үчүнчү тараптын cookie файлдары деп аталат.</translation>
+<translation id="2411116727035790889">Ыкчам баскычтарды күйгүзүү</translation>
 <translation id="2433507940547922241">Көрүнүш</translation>
 <translation id="2434158240863470628">Жүктөлүп алынды: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Бул сайтка үчүнчү тараптын cookie файлдарын колдонууга убактылуу уруксат бердиңиз. Муну менен серептөө учурунда коргоо төмөндөйт, бирок сайттын функциялары ойдогудай иштей берет. <ph name="BEGIN_LINK" />Пикир билдирүү<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">Сайт иштебей жатабы? Үчүнчү тараптын cookie файлдары бөгөттөлгөн</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> дайындарын колдонууга уруксат берилди</translation>
 <translation id="8200772114523450471">Улантуу</translation>
-<translation id="8206354486702514201">Бул параметрди администраторуңуз күчүнө киргизген.</translation>
 <translation id="8211406090763984747">Туташуу коопсуз</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Башына жылдыруу</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">Экинчи суралбасын</translation>
 <translation id="8362795839483915693">Баш баккан сайттарда жакындатып же алыстата аласыз</translation>
 <translation id="8372893542064058268">Белгилүү бир сайт фондо шайкештирилишине уруксат берүү.</translation>
+<translation id="8378714024927312812">Уюмуңуз тарабынан башкарылат</translation>
 <translation id="83792324527827022">Сайт камераңызды жана микрофонуңузду колдонуп жатат</translation>
 <translation id="8380167699614421159">Бул сайт тажатма же адаштыруучу жарнамаларды көрсөтүп жатат</translation>
 <translation id="8394832520002899662">Сайтка кайтуу үчүн таптаңыз</translation>

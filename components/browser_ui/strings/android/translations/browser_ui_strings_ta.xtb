@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> மெ.பை.</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் வழங்கப்பட்டுள்ளன}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் வழங்கப்பட்டுள்ளன}}</translation>
 <translation id="2410940059315936967">நீங்கள் பார்வையிடும் தளம் பிற தளங்களில் உள்ள உள்ளடக்கத்தை (படங்கள், விளம்பரங்கள், வார்த்தைகள் போன்றவை) உட்பொதிக்கலாம். இதுபோல பிற தளங்கள் அமைக்கும் குக்கீகள் மூன்றாம் தரப்புக் குக்கீகள் என்று அழைக்கப்படுகின்றன.</translation>
+<translation id="2411116727035790889">ஷார்ட்கட்களை ஆன் செய்யும்</translation>
 <translation id="2433507940547922241">தோற்றம்</translation>
 <translation id="2434158240863470628">பதிவிறக்கம் முடிந்தது <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">மூன்றாம் தரப்புக் குக்கீகளைப் பயன்படுத்த இந்தத் தளத்தைத் தற்காலிகமாக அனுமதித்துள்ளீர்கள். இதனால் உலாவல் பாதுகாப்பு குறைவாக இருக்கும், ஆனால் எதிர்பார்த்தபடி தள அம்சங்கள் செயல்படக்கூடும். <ph name="BEGIN_LINK" />கருத்தை அனுப்பு<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">தளம் இயங்கவில்லையா? மூன்றாம் தரப்புக் குக்கீகள் தடுக்கப்பட்டுள்ளன</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />க்கான அனுமதி வழங்கப்பட்டது</translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
-<translation id="8206354486702514201">இந்த அமைப்பு உங்கள் நிர்வாகியால் செயலாக்கப்பட்டுள்ளது.</translation>
 <translation id="8211406090763984747">இணைப்பு பாதுகாப்பானது</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">முதலாவதாக நகர்த்து</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">மீண்டும் கேட்காதே</translation>
 <translation id="8362795839483915693">நீங்கள் பார்வையிடும் தளங்களைப் பெரிதாக்கலாம் சிறிதாக்கலாம்</translation>
 <translation id="8372893542064058268">குறிப்பிட்ட தளத்திற்கு, பின்னணி ஒத்திசைவை அனுமதி.</translation>
+<translation id="8378714024927312812">உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="83792324527827022">ஒரு தளம் உங்கள் மைக்ரோஃபோனையும் கேமராவையும் பயன்படுத்துகிறது</translation>
 <translation id="8380167699614421159">குறுக்கிடும் அல்லது தவறாக வழிநடத்தும் விளம்பரங்களை இந்தத் தளம் காண்பிக்கிறது</translation>
 <translation id="8394832520002899662">தளத்திற்குச் செல்ல, தட்டவும்</translation>

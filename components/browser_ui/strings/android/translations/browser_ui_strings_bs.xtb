@@ -121,6 +121,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Dozvoljeno: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Web lokacija koju posjetite može ugraditi sadržaj s drugih web lokacija, naprimjer slike, oglase i tekst. Kolačići koje postavljaju ove druge web lokacije se nazivaju kolačićima treće strane.</translation>
+<translation id="2411116727035790889">Uključivanje prečica</translation>
 <translation id="2433507940547922241">Izgled</translation>
 <translation id="2434158240863470628">Preuzimanje je završeno <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Ovoj web lokaciji ste privremeno dozvolili da koristi kolačiće trećih strana, što podrazumijeva manju zaštitu prilikom pregledanja, ali veću vjerovatnost da će funkcije web lokacije funkcionirati u skladu s očekivanjima. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8186479265534291036">Web lokacija ne funkcionira? Kolačići treće strane su blokirani</translation>
 <translation id="8197286292360124385">Dozvoljeno: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
-<translation id="8206354486702514201">Ovu postavku je nametnuo vaš administrator.</translation>
 <translation id="8211406090763984747">Veza je sigurna</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Premjesti na vrh</translation>
@@ -622,6 +622,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8324158725704657629">Ne pitaj ponovo</translation>
 <translation id="8362795839483915693">Možete uvećati ili umanjiti na web lokacijama koje posjećujete</translation>
 <translation id="8372893542064058268">Dozvolite sinhronizaciju u pozadini za određenu web lokaciju.</translation>
+<translation id="8378714024927312812">Ovim upravlja vaša organizacija</translation>
 <translation id="83792324527827022">Web lokacija koristi vašu kameru i mikrofon</translation>
 <translation id="8380167699614421159">Ova web lokacija prikazuje ometajuće ili obmanjujuće oglase</translation>
 <translation id="8394832520002899662">Dodirnite da se vratite na web lokaciju</translation>

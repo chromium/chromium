@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">Τελευταίες 30 ημέρες</translation>
 <translation id="2691385045260836588">Μοντέλο</translation>
 <translation id="2691924980723297736">Προειδοποίηση ασφαλείας</translation>
+<translation id="2696385693639654606">Το Chrome Enterprise Core σας επιτρέπει να διαχειρίζεστε πολιτικές, εφαρμογές και επεκτάσεις του προγράμματος περιήγησης από το cloud</translation>
 <translation id="2697248912349197812">Ερώτηση στο <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Διαθέσιμο υπομενού. Χρησιμοποιήστε τη συντόμευση <ph name="SHORTCUT" /> για πλοήγηση σε πρόσθετες επιλογές.</translation>
 <translation id="2701514975700770343">Πρόσοψη προς τα κάτω</translation>
@@ -3145,6 +3146,7 @@
 <translation id="6284449872909111707">Αποστολή άμεσων μηνυμάτων και μηνυμάτων κειμένου</translation>
 <translation id="6284517535531159884">Τύπος αρχικών θέσεων παραλλαγών</translation>
 <translation id="6287197303017372967">Λάβετε λεπτομερείς οδηγίες για τον προορισμό σας με τη λειτουργία πλοήγησης.</translation>
+<translation id="6288559570252410796">Ερώτηση στη Λειτουργία AI της Google</translation>
 <translation id="628877850550444614">Βρέθηκε έκπτωση</translation>
 <translation id="6289939620939689042">Χρώμα σελίδας</translation>
 <translation id="6292819926564202163">Η μηχανή αναζήτησής σας στο Chrome</translation>
@@ -3312,6 +3314,7 @@
 <translation id="6527049834925947126">Παραγωγή τροφίμων</translation>
 <translation id="6529173248185917884">Έβδομο ρολό</translation>
 <translation id="6529602333819889595">&amp;Επανάληψη διαγραφής</translation>
+<translation id="6532101170117367231">Αποθήκευση στο Google Drive</translation>
 <translation id="6535617236508021606">Αυτή η κάρτα αποθηκεύτηκε στον Λογαριασμό σας Google, ώστε να μπορείτε να τη χρησιμοποιείτε σε όλες τις υπηρεσίες Google.</translation>
 <translation id="6536221421038631327">Με την κατάργηση μιας συνδρομής Passpoint από τη συσκευή <ph name="DEVICE_TYPE" />, θα καταργηθούν τα συσχετισμένα δίκτυα. Επικοινωνήστε με το <ph name="FRIENDLY_NAME" /> για να κάνετε αλλαγές στο πρόγραμμα συνδρομής σας. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Για να δείτε πίνακες σύγκρισης, ενεργοποιήστε τον συγχρονισμό</translation>
@@ -4361,6 +4364,7 @@
 <translation id="831997045666694187">Βράδυ</translation>
 <translation id="8321448084834652864">Μπορείτε να αλλάξετε τη μηχανή αναζήτησης ανά πάσα στιγμή στις ρυθμίσεις του Chromium.</translation>
 <translation id="8321476692217554900">ειδοποιήσεις</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Enter για να ρωτήσετε τη Λειτουργία AI της Google</translation>
 <translation id="8322402665880479974">Κρεβάτια και προσκέφαλα</translation>
 <translation id="8323505966575306467">Προσθέστε περισσότερη προστασία στους κωδικούς πρόσβασής σας</translation>
 <translation id="832547548543012337">Διαγραφή διαβατηρίου</translation>
@@ -4445,7 +4449,6 @@
 <translation id="8460854335417802511">Ενεργοποίηση</translation>
 <translation id="8461694314515752532">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας φράση πρόσβασης συγχρονισμού</translation>
 <translation id="8461973047386722744">Δεν βρέθηκαν κωδικοί πρόσβασης</translation>
-<translation id="8465128304789431677">Πληρώστε με το Pix απευθείας στο Chrome</translation>
 <translation id="8467494337615822642">Μετάβαση στη σελίδα ελέγχου ασφαλείας του Chrome στις ρυθμίσεις</translation>
 <translation id="8468358362970107653">Φάκελος C3</translation>
 <translation id="8469428721212363950">Λιανικό εμπόριο</translation>
@@ -4652,6 +4655,7 @@
 <translation id="883848425547221593">Άλλοι σελιδοδείκτες</translation>
 <translation id="8842351563145134519">Η λίστα των τρόπων πληρωμής που είναι διαθέσιμοι για συμπλήρωση μέσω αφής είναι ανοιχτή στο μισό ύψος.</translation>
 <translation id="884264119367021077">Διεύθυνση αποστολής</translation>
+<translation id="8849032795302265570">Εύκολη διαχείριση του τρόπου με τον οποίο οι υπάλληλοι περιηγούνται στον ιστό</translation>
 <translation id="8849231003559822746">130 x 180 χιλ.</translation>
 <translation id="884923133447025588">Δεν εντοπίστηκε μηχανισμός ακύρωσης.</translation>
 <translation id="8849262850971482943">Χρησιμοποιήστε την εικονική σας κάρτα για πρόσθετη ασφάλεια</translation>
@@ -4902,6 +4906,7 @@
 <translation id="950926967802086924">Κλειδί πρόσβασης • Διαχείριση κωδικών πρόσβασης Google</translation>
 <translation id="955429569736351433">Επιτράπηκε η χρήση του VR</translation>
 <translation id="955627189349169688">Μπορείτε να εξαιρεθείτε από αυτή την πολιτική στις <ph name="BEGIN_LINK" />Ρυθμίσεις της λειτουργίας Συγχρονισμός Chrome<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Κουμπί Λειτουργίας AI, ενεργοποίηση για ερώτηση στη Λειτουργία AI της Google</translation>
 <translation id="95721182352849470">Κίτρινο 2</translation>
 <translation id="961663415146723894">Δέσιμο στο κάτω μέρος</translation>
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>

@@ -27,6 +27,11 @@ Diese Richtlinie wird entfernt, nachdem die Funktion „OOPIF-PDF-Viewer“ voll
 <translation id="1011266755572744012">Gibt die maximal zulässige Anzahl an Blättern an, die der Nutzer während eines einzelnen Druckauftrags drucken kann.
 
       Wenn diese Richtlinie nicht konfiguriert ist, gelten keine Einschränkungen und der Nutzer kann eine beliebige Anzahl an Dokumenten drucken.</translation>
+<translation id="1013949464926722411">Wenn diese Richtlinie konfiguriert ist, dürfen die aufgeführten Ursprünge Geräteattribute wie die Seriennummer und den Hostnamen nicht über die Device Attributes API abrufen.
+
+Die Ursprünge müssen Web-Apps entsprechen, die isolierte Web-Apps mit erzwungener Installation sind (über die Richtlinie „<ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“) oder die als Kiosk-App eingerichtet sind. Technische Daten und Informationen zur Device Attributes API findest du unter https://wicg.github.io/WebApiDevice/device_attributes.
+
+Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="101438888985615157">Bildschirm um 180 Grad drehen</translation>
 <translation id="1017967144265860778">Energieverwaltung auf dem Anmeldebildschirm</translation>
 <translation id="1018427234617066902">Damit werden Sprachen für die Rechtschreibprüfung erzwungen. Sprachen in der Liste, die nicht erkannt werden, werden ignoriert.
@@ -1595,6 +1600,17 @@ Wird diese Richtlinie nicht konfiguriert, entspricht dies für normale Nutzer ei
 <translation id="2168397434410358693">Inaktivitätsverzögerung im Netzbetrieb</translation>
 <translation id="217013996107840632">Befehlszeilenparameter für den Wechsel vom alternativen Browser.</translation>
 <translation id="2170233653554726857">WPAD-Optimierung aktivieren</translation>
+<translation id="2170953111275398079">Diese Richtlinie bestimmt, ob <ph name="PRODUCT_NAME" /> unter Verwendung des NIST-Standards ML-KEM einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen bei TLS anbietet. Vor <ph name="PRODUCT_NAME" /> 131 war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. Durch diese Richtlinie können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, bietet <ph name="PRODUCT_NAME" /> bei TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic wird dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
+
+Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_NAME" /> bei TLS‑Verbindungen keine Post-Quanten-Schlüsselvereinbarung an. Der Nutzertraffic wird dann nicht vor Quantencomputern geschützt.
+
+Das Anbieten einer Post-Quanten-Schlüsselvereinbarung ist abwärtskompatibel. Bei vorhandenen TLS‑Servern und Netzwerk-Middleware wird voraussichtlich die neue Option ignoriert und eine frühere ausgewählt.
+
+Auf Geräten, auf denen TLS nicht korrekt implementiert ist, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht post-quanten-kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
+
+Die Richtlinie ist eine vorübergehende Maßnahme und wird nach Version 145 von <ph name="PRODUCT_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob es Probleme gibt, und lässt sich zum Beheben etwaiger Probleme deaktivieren.</translation>
 <translation id="2172201084331314152">Die Kamera, Browser- und Betriebssystemeinstellungen sowie Scan-, Web Store-, Canvas-, Entdecken-, Crosh-, Galerie-, Terminal-, Rekorder-, Druckauftrag-, Tastenkombinationen-, Gmail-, Google Docs-, Google-Präsentation-, Google Sheets-, Google Drive-, Google Notizen-, Google Kalender-, Google Chat-, YouTube-, Google Maps-, Rechner- und Texteditor-Funktionen deaktivieren</translation>
 <translation id="2174946221763588594">Über diese Richtlinie wird konfiguriert, ob vom Nutzer aufgerufene Websites immersive Augmented-Reality-Sitzungen mit der <ph name="WEBXR_API_NAME" /> erstellen dürfen.
 
@@ -2072,6 +2088,7 @@ Wenn die Richtlinie auf „<ph name="POLICY_VALUE_VISIBLE" />“ gesetzt ist, wi
 Wenn die Richtlinie auf „<ph name="POLICY_VALUE_DISABLEDE" />“ gesetzt ist, wird die Dateisynchronisierung deaktiviert, wenn sie zuvor vom Nutzer aktiviert wurde. Die Funktion wird in der App „Dateien“ und in den Einstellungen ausgeblendet, damit der Nutzer sie nicht wieder aktivieren kann. Vorhandene Dateien, die der Nutzer offline verfügbar gemacht hat, bleiben offline verfügbar. Nutzer können Elemente weiterhin manuell offline verfügbar machen.
 
 Ist die Richtlinie nicht konfiguriert, ist „<ph name="POLICY_VALUE_VISIBLE" />“ die Standardauswahl.</translation>
+<translation id="2488455166114458307">Device Attributes API auf diesen Websites erlauben</translation>
 <translation id="2489558694350871332">Zulassen, dass das Gerät virtuelle Maschinen ausführt</translation>
 <translation id="2492240920793040106">Berichte zu Systeminformationen und Seiteninhalten aktivieren, um Safe Browsing zu verbessern</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
@@ -2636,6 +2653,12 @@ Wenn diese Richtlinie aktiviert ist, kann das Verhalten von Funktionstasten mit 
       Außerdem ist diese Richtlinie nur als vorübergehende Notlösung gedacht.
       </translation>
 <translation id="2939335382784544151">Import des Browserverlaufs bei der ersten Ausführung aktivieren</translation>
+<translation id="2939606629175440564">Über diese Richtlinie kann festgelegt werden, ob eine isolierte Web-App mit erzwungener Installation oder eine Kiosk-App standardmäßig Zugriff auf die Device Attributes API hat.
+Weitere Informationen findest du unter https://wicg.github.io/WebApiDevice/device_attributes.
+
+Wenn die Richtlinie auf „1“ gesetzt oder nicht konfiguriert ist, können isolierte Web-Apps mit erzwungener Installation und Kiosk-Apps die API verwenden.
+
+Wenn die Richtlinie auf „2“ gesetzt ist, wird die Verwendung der API für isolierte Web-Apps mit erzwungener Installation und Kiosk-Apps blockiert.</translation>
 <translation id="2940127076681735544">Ist für die Richtlinie eine gültige URL angegeben, lädt <ph name="PRODUCT_NAME" /> die Websiteliste von dieser URL herunter und wendet die Regeln so an, als wären sie mit der Richtlinie "<ph name="SITELIST_POLICY_NAME" />" konfiguriert worden.
 
       Wenn die Richtlinie nicht konfiguriert oder keine gültige URL angegeben ist, wird sie von <ph name="PRODUCT_NAME" /> nicht als Regelquelle für den Browserwechsel verwendet.
@@ -6028,6 +6051,11 @@ Alles einschließende Platzhalter für den Host (z. B. „*“ oder „[*]“) 
 
 Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 <translation id="5297948043665200363">Nutzer kann angemeldet bleiben, wenn sein Konto nicht mehr authentifiziert ist</translation>
+<translation id="5298594338496226089">Wenn diese Richtlinie konfiguriert ist, dürfen die aufgeführten Ursprünge Geräteattribute wie die Seriennummer und den Hostnamen über die Device Attributes API abrufen.
+
+Die Ursprünge müssen Web-Apps entsprechen, deren Installation über die Richtlinien „<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ oder „<ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />“ (ab Version 125) erzwungen wird oder die als Kiosk-App eingerichtet sind. Technische Daten und Informationen zur Device Attributes API findest du unter https://wicg.github.io/WebApiDevice/device_attributes.
+
+Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern (ab Version 127) findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="5298949392804966105">Keine Einschränkungen für verwaltete Konten</translation>
 <translation id="530111809849214840"><ph name="GOOGLE_DRIVE_NAME" /> nicht als Option anzeigen.</translation>
 <translation id="530134925949808452">Zeitpunkt (in Ortszeit), an dem das Nutzungskontingent erneuert wird.</translation>
@@ -6038,6 +6066,7 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 <translation id="5307432759655324440">Inkognitomodus - Verfügbarkeit</translation>
 <translation id="5308551343115571396">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, so viele Nutzerdaten wie möglich zu speichern und gleichzeitig alle Browserdaten zu entfernen.</translation>
 <translation id="530949964068726932">Bedienungshilfen im Taskleistenmenü ausblenden</translation>
+<translation id="5309944663104291505">Isolierten Web-Apps mit erzwungener Installation und Kiosk-Apps nicht erlauben, die Device Attributes API zu verwenden</translation>
 <translation id="5310544046492594469">Wenn die Richtlinie auf 0 gesetzt ist (Standardeinstellung), kannst du auf die Entwicklertools und die JavaScript-Konsole zugreifen. Für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, oder ab Version 114 für Erweiterungen, die in den Browser eines verwalteten Nutzers integriert sind, ist der Zugriff aber nicht möglich. Ist die Richtlinie auf 1 gesetzt, kannst du die Entwicklertools und die JavaScript-Konsole in allen Kontexten aufrufen, also auch bei Erweiterungen, die über die Unternehmensrichtlinie installiert wurden. Wenn die Richtlinie auf 2 gesetzt ist, kann nicht auf die Entwicklertools zugegriffen werden und Websiteelemente können nicht geprüft werden.
 
       Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die Entwicklertools oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.
@@ -6386,6 +6415,7 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Shar
 <translation id="5534235660122271432">Schreiben auf externen Speichergeräten nicht zulassen</translation>
 <translation id="5535256585099022933">Zeitintervall für den Neustart festlegen</translation>
 <translation id="5537400155400537818">Deaktiviert: CSS‑Zoom behält das alte Verhalten bei.</translation>
+<translation id="5537587542872235553">Isolierten Web-Apps mit erzwungener Installation und Kiosk-Apps erlauben, die Device Attributes API zu verwenden</translation>
 <translation id="553806128266843748">Boolescher Parameter, der angibt, ob die Drosselung aktiviert ist.</translation>
 <translation id="5540885720415375851">Erkennung lokaler Geräte zulassen</translation>
 <translation id="5542235730745104308">Wenn die Richtlinie auf „True“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> alternative Fehlerseiten (z. B. „Seite nicht gefunden“). Ist sie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /> niemals alternative Fehlerseiten.
@@ -6595,6 +6625,7 @@ Wenn die Richtlinie nicht konfiguriert ist oder das Alter des Release nicht ermi
 <translation id="5645779841392247734">Cookies auf diesen Websites zulassen</translation>
 <translation id="5646234199535103501">Konfigurationsrichtlinie für den Chrome Enterprise Connector "OnBulkDataEntry"</translation>
 <translation id="5648016151508002741">Ausführung von Onlineprüfungen von <ph name="OCSP_CRL_LABEL" />-verhindern</translation>
+<translation id="5648436277949979783">Verwendung der Device Attributes API festlegen</translation>
 <translation id="5649046890958064703">Wenn <ph name="PRINTERS_BLACKLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.
 
       Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
@@ -7716,23 +7747,6 @@ Zu den auf generativer KI basierenden Funktionen der Entwicklertools gehören f
 
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Diese Richtlinie ist ab <ph name="PRODUCT_OS_NAME" />-Version 29 nicht mehr vorhanden. Verwende stattdessen die Richtlinie "PresentationScreenDimDelayScale".</translation>
-<translation id="6397424663361748439">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „<ph name="IP_PROTECTION_NAME" />“ aktiviert werden soll.
-
-Durch die Funktion „<ph name="IP_PROTECTION_NAME" />“ wird die Verfügbarkeit der ursprünglichen IP-Adresse von Nutzern, die im Inkognitomodus surfen, für bestimmte Netzwerkanfragen von Drittanbietern eingeschränkt. Dadurch werden Nutzer im Inkognitomodus besser vor websiteübergreifendem Tracking geschützt.
-
-Ist die Richtlinie deaktiviert, ist die Funktion „<ph name="IP_PROTECTION_NAME" />“ deaktiviert und Nutzer können sie nicht über die Einstellungen der Benutzeroberfläche aktivieren.
-Ist die Richtlinie aktiviert, ist die Funktion „<ph name="IP_PROTECTION_NAME" />“ aktiviert und Nutzer können sie nicht über die Einstellungen der Benutzeroberfläche deaktivieren.
-Ist die Richtlinie nicht konfiguriert, ist die Funktion „<ph name="IP_PROTECTION_NAME" />“ standardmäßig aktiviert und Nutzer können sie auf ihrem Gerät über die Einstellungen der Benutzeroberfläche steuern.
-
-Hinweise für Unternehmen, die erwägen, die Funktion „<ph name="IP_PROTECTION_NAME" />“ zu deaktivieren:
-– Bei Anfragen über einen Proxy werden keine DNS-Lookups durchgeführt. Dies kann sich auf die DNS-basierte Kontrolle oder Filterung auswirken.
-– Bei Unternehmensanwendungen, die im Inkognitomodus verwendet werden, können Probleme auftreten, wenn sie auf Anfragen an Domains (oder zugehörige Subdomains) auf der Liste der maskierten Domains (<ph name="MASKED_DOMAIN_LIST_URL" />) angewiesen sind und diese Anfragen aus bestimmten IP-Adressbereichen stammen müssen.
-– Unter bestimmten Bedingungen wird der Traffic im Inkognitomodus möglicherweise nicht über einen Proxy geleitet, z. B. wenn Nutzer den Inkognitomodus über ein Chrome-Profil starten, in dem sie nicht angemeldet sind. Im Allgemeinen erfordert die Funktion, dass die Nutzer beim Starten des Inkognitomodus in Chrome in einem privaten Google-Konto angemeldet sind.
-– Die Liste der maskierten Domains kann sich im Laufe der Zeit ändern. Neue Versionen werden automatisch an Nutzer gesendet. Weitere Informationen zur Liste der maskierten Domains finden Sie unter <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
-
-Weitere Informationen zur Funktion „<ph name="IP_PROTECTION_NAME" />“ finden Sie unter <ph name="IP_PROTECTION_README_URL" />.
-
-Die Funktion „<ph name="IP_PROTECTION_NAME" />“ wird frühestens mit M139 eingeführt.</translation>
 <translation id="6397588391180665797">Mit dieser Richtlinie wird festgelegt, ob die Netzwerkkonfiguration von Nutzern auf angemeldeten Geräten ausgegeben wird.
 
       Wenn sie auf „false“ gesetzt ist, werden keine Informationen ausgegeben.
@@ -9206,6 +9220,19 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
 
       Wenn die Richtlinie nicht konfiguriert oder auf "false" festgelegt ist, wird die Funktion "<ph name="TLS_FALSE_START" />" aktiviert. Ist "true" festgelegt, wird die Funktion "<ph name="TLS_FALSE_START" />" deaktiviert.</translation>
 <translation id="7427607504279694910">Ereignisprotokolle für die Android-App-Installation werden nicht an Google weitergegeben</translation>
+<translation id="7431456748240652287">Diese Richtlinie auf Geräteebene bestimmt, ob <ph name="PRODUCT_OS_NAME" /> unter Verwendung des NIST-Standards ML-KEM einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen bei TLS anbietet. Vor <ph name="PRODUCT_OS_NAME" /> 131 war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. Durch diese Richtlinie können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, bietet <ph name="PRODUCT_OS_NAME" /> bei TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic wird dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
+
+Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_OS_NAME" /> bei TLS‑Verbindungen keine Post-Quanten-Schlüsselvereinbarung an. Der Nutzertraffic wird dann nicht vor Quantencomputern geschützt.
+
+Das Anbieten von Kyber ist abwärtskompatibel. Bei vorhandenen TLS‑Servern und Netzwerk-Middleware wird voraussichtlich die neue Option ignoriert und eine frühere ausgewählt.
+
+Auf Geräten, auf denen TLS nicht korrekt implementiert ist, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht post-quanten-kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
+
+Die Richtlinie ist eine vorübergehende Maßnahme und wird nach Version 145 von <ph name="PRODUCT_OS_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob es Probleme gibt, und lässt sich zum Beheben etwaiger Probleme deaktivieren.
+
+Wenn sowohl diese Richtlinie als auch die Richtlinie „PostQuantumKeyAgreementEnabled“ festgelegt sind, hat diese Richtlinie Vorrang.</translation>
 <translation id="7433253680989311514">InScript-Layout für Hindi aktivieren</translation>
 <translation id="7433714841194914373">Google Instant aktivieren</translation>
 <translation id="7434202861148928348">Erforderliche Domainnamen für Remote-Zugriff-Clients konfigurieren</translation>
@@ -11395,6 +11422,7 @@ Hinweis: Derzeit wird nur der erste Eintrag berücksichtigt. Erweiterungen werde
 <translation id="9015952763003753868"><ph name="ACAM_HEADER_NAME" />-Abgleich in <ph name="CORS" />-Preflight richtlinienkonform machen</translation>
 <translation id="9020630127193895800">Tastaturbeleuchtungsfarbe „Indigo“</translation>
 <translation id="9025912013525357598">Beibehaltung von Leerzeichen in Daten-URLs unabhängig vom Medientyp</translation>
+<translation id="9029815312472546960">Device Attributes API auf diesen Websites blockieren</translation>
 <translation id="9031831501689819108">Unterstützung älterer Browser aktivieren</translation>
 <translation id="9032595854515551464">Dienst <ph name="PRODUCT_NAME" /> Version 2 aktivieren und Remote-Desktop nach der Anmeldung starten</translation>
 <translation id="9034285085962866065">Anpassung von Tastenkombinationen auf Systemebene erlauben</translation>

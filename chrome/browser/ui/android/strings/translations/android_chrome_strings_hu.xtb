@@ -720,6 +720,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4306489587293957491">Bevitel</translation>
 <translation id="4307992518367153382">Alapok</translation>
 <translation id="4311652497846705514">Megnyitja a PDF-et?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Lehetséges spam}other{Lehetséges spam (#)}}</translation>
 <translation id="4320177379694898372">Nincs internetkapcsolat</translation>
 <translation id="4326079409704643112">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát</translation>
 <translation id="433213510553688132">Követés…</translation>
@@ -1058,6 +1059,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="580893287573699959">Az Önt érdeklő témák és webhelyek kezelése</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# órája}other{# órája}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Értesítés megjelenítése}other{Értesítések megjelenítése}}</translation>
 <translation id="5814749351757353073">Naprakész lehet a kedvenc webhelyeivel</translation>
 <translation id="5823093032261493462">Mindenképpen le szeretné tölteni a(z) „<ph name="FILE_NAME" />” fájlt innen: <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Az adatokat a Chrome beállításaiban törölheti</translation>

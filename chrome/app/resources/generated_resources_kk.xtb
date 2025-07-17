@@ -1629,6 +1629,7 @@
 <translation id="2121825465123208577">Өлшемін өзгерту</translation>
 <translation id="2123766928840368256">Басқа файлды таңдау</translation>
 <translation id="2124930039827422115">{1,plural, =1{Бір пайдаланушы <ph name="AVERAGE_RATING" /> деген баға берді.}other{# пайдаланушы <ph name="AVERAGE_RATING" /> деген баға берді.}}</translation>
+<translation id="2125715366913703594">Кеңейтімдерді зерттеу</translation>
 <translation id="2126167708562367080">Синхрондауды әкімшіңіз өшірген.</translation>
 <translation id="2127372758936585790">Төмен қуатты зарядтағыш</translation>
 <translation id="212862741129535676">Жиілік күйінің қамтылу пайыздық мөлшерлемесі</translation>
@@ -4498,6 +4499,7 @@
 <translation id="4109135793348361820">Терезені <ph name="USER_NAME" /> пайдаланушысына (<ph name="USER_EMAIL" />) жылжыту</translation>
 <translation id="4110485659976215879">Ескертуді қалпына келтіру</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4113030288477039509">Әкімші басқарады</translation>
 <translation id="4113743276555482284">Файл құпия сөзі</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Локация дәлдігі параметрі қосылған кезде, Wi-Fi кіру нүктелері, ұялы желі мұнаралары сияқты сымсыз сигналдар және құрылғыдағы акселерометр мен гироскоп сияқты датчик деректері туралы ақпарат локацияға негізделген функцияларды пайдаланатын Android қолданбалары мен қызметтері бар құрылғы локациясын дәлірек анықтау үшін пайдаланылады. Ол үшін Google сымсыз сигнал локацияларын анықтау мақсатында сізге жақын жердегі датчиктер мен сымсыз сигналдар туралы ақпаратты жинап отырады.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google бұл ақпаратты локация дәлдігін және локацияға негізделген қызметтерді жақсарту, сондай-ақ Google қызметтерін жалпылама жақсарту, ұсыну және жүргізу үшін пайдаланады. Бұл орайда жеке басыңыз туралы мәлімет берілмейді. Бұл ақпаратты пайдаланушылардың қажеттіліктерін қанағаттандыру мақсатында Google-дың және үшінші тараптардың заңды мүдделері негізінде өңдейміз.<ph name="END_PARAGRAPH2" />
@@ -7593,6 +7595,7 @@
 <translation id="6365411474437319296">Отбасы мен достарды қосу</translation>
 <translation id="6367097275976877956">ChromeOS-ке арналған ендірілген ChromeVox экранды оқу құралын іске қосқыңыз келе ме? Іске қосқыңыз келсе, бос орын түймесін басыңыз.</translation>
 <translation id="6367196786591004737">Жазбаны жою</translation>
+<translation id="6367351687417449639">Бетбелгілерді, құпия сөздер мен басқа ақпаратты барлық құрылғыдан алу үшін <ph name="EMAIL" /> ретінде кіріңіз.</translation>
 <translation id="6367396429435748845">Тінтуір пернелерін пайдалануды кідірту және жалғастыру үшін <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> пернелерін басыңыз.</translation>
 <translation id="6367985768157257101">Nearby Share сұрауын қабылдау керек пе?</translation>
 <translation id="6368157733310917710">&amp;Мекенжайлар және т.б.</translation>
@@ -9222,6 +9225,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> қолданбасымен <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">Аккаунтыңыздағы басқа құрылғылармен синхрондалды. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">EAP желісінің аутентификациясы туралы ақпарат</translation>
+<translation id="754225194829660954">Дереккөз: <ph name="DISPLAY_INITIATOR_ORIGIN" /></translation>
 <translation id="7542619176101025604"><ph name="ACTION_NAME" /> – бекітілді</translation>
 <translation id="7543104066686362383">Осы <ph name="IDS_SHORT_PRODUCT_NAME" /> құрылғысындағы түзету мүмкіндіктерін қосу</translation>
 <translation id="7544227555407951270">Құрылғыны тіркеу</translation>
@@ -10769,6 +10773,7 @@
 <translation id="8602851771975208551">Компьютеріңіздегі басқа бір бағдарлама қолданба қосты, ол Chrome жұмысын өзгертуі мүмкін.</translation>
 <translation id="8605428685123651449">SQLite жады</translation>
 <translation id="8607171490667464784">Әрекетсіз күйде болғанда және батарея салынған кезде</translation>
+<translation id="8607661817136110841">Қойындылар топтарыңыз</translation>
 <translation id="8607828412110648570">Bluetooth құрылғыңыз жұптау режимінде және маңайда болсын. Сенімді құрылғылармен ғана жұптаңыз. Жұпталған құрылғылар осы Chromebook-тегі барлық аккаунтқа көрінеді. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos билетін қосу</translation>
 <translation id="8609465669617005112">Жоғары қарай жылжыту</translation>

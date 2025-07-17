@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">ရိုက်ထည့်ပါ</translation>
 <translation id="4307992518367153382">အခြေခံများ</translation>
 <translation id="4311652497846705514">PDF ကို ဖွင့်မလား။</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{စပမ်း ဖြစ်နိုင်သည်}other{စပမ်း ဖြစ်နိုင်သည် (# ခု)}}</translation>
 <translation id="4320177379694898372">အင်တာနက် ချိတ်ဆက်မှု မရှိ</translation>
 <translation id="4326079409704643112">သင်၏ Google Account ရှိ Chrome ဒေတာ သုံးရန်၊ သိမ်းရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="433213510553688132">လိုက်ကြည့်နေသည်...</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">သင်စိတ်ဝင်စားသော အကြောင်းအရာများ၊ ဝဘ်ဆိုက်များကို စီမံနိုင်သည်</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{လွန်ခဲ့သည့် # နာရီက}other{လွန်ခဲ့သည့် # နာရီက}}</translation>
 <translation id="5810288467834065221">မူပိုင် <ph name="YEAR" /> Google LLC. မူပိုင်ခွင့်အားလုံး ယူထားသည်။</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{အကြောင်းကြားချက် ပြပါ}other{အကြောင်းကြားချက်များ ပြပါ}}</translation>
 <translation id="5814749351757353073">သင်၏အကြိုက်ဆုံးဝဘ်ဆိုက်များကို မျက်ခြည်မပြတ်ကြည့်ပါ</translation>
 <translation id="5823093032261493462">မည်သို့ပင်ဖြစ်စေ “<ph name="FILE_NAME" />” ကို <ph name="DOWNLOAD_DOMAIN" /> မှ ဒေါင်းလုဒ်လုပ်လိုသလား။</translation>
 <translation id="5828921839638612740">ဒေတာကို Chrome ဆက်တင်များတွင် ဖျက်နိုင်သည်</translation>

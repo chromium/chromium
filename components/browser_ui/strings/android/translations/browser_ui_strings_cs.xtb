@@ -121,6 +121,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="2410940059315936967">Navštívený web může zahrnovat vložený obsah z jiných webů, například obrázky, reklamy a text. Soubory cookie, které nastaví tyto jiné weby, se nazývají soubory cookie třetích stran.</translation>
+<translation id="2411116727035790889">Zapnout klávesové zkratky</translation>
 <translation id="2433507940547922241">Vzhled</translation>
 <translation id="2434158240863470628">Stažení bylo dokončeno <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Dočasně jste tomuto webu povolili používat soubory cookie třetích stran, což znamená, že při procházení budete méně chráněni, ale funkce webů budou s větší pravděpodobností fungovat správně. <ph name="BEGIN_LINK" />Odeslat zpětnou vazbu<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8186479265534291036">Web nefunguje? Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="8197286292360124385">Oprávnění <ph name="PERMISSION_1" /> je povoleno</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
-<translation id="8206354486702514201">Toto nastavení je vyžadováno administrátorem.</translation>
 <translation id="8211406090763984747">Připojení je zabezpečené</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Přesunout na začátek</translation>
@@ -622,6 +622,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8324158725704657629">Příště se neptat</translation>
 <translation id="8362795839483915693">Navštívené weby můžete přiblížit nebo oddálit</translation>
 <translation id="8372893542064058268">Povolit synchronizaci na pozadí konkrétnímu webu.</translation>
+<translation id="8378714024927312812">Spravováno vaší organizací</translation>
 <translation id="83792324527827022">Webové stránky používají váš fotoaparát a mikrofon</translation>
 <translation id="8380167699614421159">Tento web zobrazuje rušivé nebo zavádějící reklamy</translation>
 <translation id="8394832520002899662">Klepnutím se vrátíte na web</translation>

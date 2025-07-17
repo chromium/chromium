@@ -612,7 +612,6 @@
 <translation id="8186479265534291036">Да ли сајт не ради? Колачићи треће стране су блокирани</translation>
 <translation id="8197286292360124385">Одобрена је дозвола <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Настави</translation>
-<translation id="8206354486702514201">Ово подешавање примењује администратор.</translation>
 <translation id="8211406090763984747">Веза је безбедна</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Премести на врх</translation>
@@ -623,6 +622,7 @@
 <translation id="8324158725704657629">Не питај поново</translation>
 <translation id="8362795839483915693">Можете да увећавате или умањујете приказ сајтова које посећујете</translation>
 <translation id="8372893542064058268">Дозволите Синхронизацију у позадини за одређени сајт.</translation>
+<translation id="8378714024927312812">Овим управља организација</translation>
 <translation id="83792324527827022">Сајт користи камеру и микрофон</translation>
 <translation id="8380167699614421159">Овај сајт приказује огласе који ометају активности или обмањујуће огласе</translation>
 <translation id="8394832520002899662">Додирните да бисте се вратили на сајт</translation>

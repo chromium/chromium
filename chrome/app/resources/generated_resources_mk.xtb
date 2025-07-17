@@ -1643,6 +1643,7 @@
 <translation id="2121825465123208577">Промени големина</translation>
 <translation id="2123766928840368256">Изберете друга датотека</translation>
 <translation id="2124930039827422115">{1,plural, =1{Оценето со <ph name="AVERAGE_RATING" /> од еден корисник.}one{Оценето со <ph name="AVERAGE_RATING" /> од # корисник.}other{Оценето со <ph name="AVERAGE_RATING" /> од # корисници.}}</translation>
+<translation id="2125715366913703594">Истражете &amp;екстензии</translation>
 <translation id="2126167708562367080">Администратор ја оневозможил синхронизацијата.</translation>
 <translation id="2127372758936585790">Полнач со ниско напојување</translation>
 <translation id="212862741129535676">Процент на зафатеност на фреквентна состојба</translation>
@@ -4517,6 +4518,7 @@
 <translation id="4109135793348361820">Помести прозорец кај <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Врати ја опомената</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
+<translation id="4113030288477039509">Управувано од вашиот администратор</translation>
 <translation id="4113743276555482284">Лозинка на датотеката</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Кога е вклучена „Прецизност на локација“, податоците за безжичните сигнали, на пр. од пристапните точки за Wi‑Fi, базните станици за мобилна мрежа и GPS, вклучително и податоците од сензорите на уредот, како акцелерометарот и жироскопот, се користат за да се проценува попрецизна локација на уредот, којашто апликациите и услугите ја користат за да обезбедуваат локациски функции. За таа цел, Google повремено прибира податоци за сензорите на уредот и безжичните сигнали во ваша близина за да придонесува за прибирањето локации од безжичните сигнали со колективна соработка.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google ги користи податоциве без да ве идентификува за да ги подобрува прецизноста на локацијата и локациските услуги и општо да ги подобрува, обезбедува и одржува своите услуги. Податоциве ги обработуваме според легитимните интереси на Google и трети страни за да ги задоволиме потребите на корисниците.<ph name="END_PARAGRAPH2" />
@@ -9249,6 +9251,7 @@
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> со апликацијата <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Синхронизирано со други уреди на вашата сметка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">Информации за автентикација на мрежа со EAP</translation>
+<translation id="754225194829660954">Од <ph name="DISPLAY_INITIATOR_ORIGIN" /></translation>
 <translation id="7542619176101025604"><ph name="ACTION_NAME" /> - закачено</translation>
 <translation id="7543104066686362383">Овозможете функции за отстранување грешки на овој уред со <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7544227555407951270">Регистрирај го уредот</translation>
@@ -10799,6 +10802,7 @@
 <translation id="8602851771975208551">Друга програма на компјутерот додаде апликација која може да промени како работи Chrome.</translation>
 <translation id="8605428685123651449">Меморија на SQLite</translation>
 <translation id="8607171490667464784">Додека е неактивен и работи на батерија</translation>
+<translation id="8607661817136110841">Вашите групи картички</translation>
 <translation id="8607828412110648570">Проверете дали уредот со Bluetooth е во режим на спарување и во близина. Спарувајте само доверливи уреди. Спарените уреди се видливи за сите сметки на овој Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Додајте билет на Kerberos</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>

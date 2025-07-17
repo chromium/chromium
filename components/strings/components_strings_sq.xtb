@@ -2668,6 +2668,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5466018172325111652">Nuk e more kodin? <ph name="BEGIN_LINK" />Merr kod të ri<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Ribëj redaktimin</translation>
 <translation id="5472588168895083535">Gjurmimi i duarve u bllokua</translation>
+<translation id="5479505548832623900">Me gjasë janë shpërfillur nga shtesa.</translation>
 <translation id="547963486735802022">Provo t'i transferosh përsëri skedarët e tu</translation>
 <translation id="5481076368049295676">Kjo përmbajtje mund të përpiqet të instalojë softuerë të rrezikshëm në pajisjen tënde që vjedhin ose fshijnë informacionet e tua. <ph name="BEGIN_LINK" />Shfaqe gjithsesi<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Sistemimi i dritareve dhe skedave</translation>
@@ -3307,6 +3308,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6527049834925947126">Prodhimi ushqimor</translation>
 <translation id="6529173248185917884">Ruli i shtatë</translation>
 <translation id="6529602333819889595">&amp;Bëje përsëri fshirjen</translation>
+<translation id="6532101170117367231">Ruaj në "Diskun e Google"</translation>
 <translation id="6535617236508021606">Kjo kartë është ruajtur në "Llogarinë tënde të Google" që të mund ta përdorësh atë nëpër shërbimet e Google.</translation>
 <translation id="6536221421038631327">Heqja e një abonimi të Passpoint nga pajisja jote <ph name="DEVICE_TYPE" /> do t'i heqë rrjetet e lidhura. Kontakto me "<ph name="FRIENDLY_NAME" />" për të bërë ndryshime në planin tënd të abonimit. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Për të parë tabelat e krahasimit, aktivizo sinkronizimin</translation>
@@ -3554,6 +3556,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6970885655016700774">Pëlhurë (arkivore)</translation>
 <translation id="6971439137020188025">Krijo shpejt një prezantim të ri të Google në "Diapozitivat e Google"</translation>
 <translation id="6972629891077993081">Pajisjet HID</translation>
+<translation id="6972867931824045907">Për të përdorur kujtesën e fragmenteve, jepi qasje Chrome te <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Janë specifikuar serverë përfaqësues fiksë dhe një URL e skriptit .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 inç</translation>
 <translation id="6978121630131642226">Motorët e kërkimit</translation>
@@ -3916,6 +3919,7 @@ Detaje shtesë:
 <translation id="7569490014721427265">Golfi</translation>
 <translation id="7569952961197462199">Të hiqet karta e kreditit nga Chrome?</translation>
 <translation id="7569983096843329377">E zezë</translation>
+<translation id="7571813784389228510">Modaliteti i IA-së së Google</translation>
 <translation id="7574998639136359461">Pajisje për sporte dimërore</translation>
 <translation id="7575207903026901870">Butoni "Hiq sugjerimin", shtyp Enter për ta hequr këtë sugjerim</translation>
 <translation id="7575800019233204241">"Lidhja jote nuk është private" ose "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ose "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ose "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ose "Gabim i certifikatës SSL"</translation>
@@ -4437,7 +4441,6 @@ Detaje shtesë:
 <translation id="8460854335417802511">Aktivizoje</translation>
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
 <translation id="8461973047386722744">Nuk u gjetën fjalëkalime</translation>
-<translation id="8465128304789431677">Paguaj me Pix drejtpërdrejt në Chrome</translation>
 <translation id="8467494337615822642">Shko te faqja e kontrollit të sigurisë të Chrome te cilësimet</translation>
 <translation id="8468358362970107653">Zarf C3</translation>
 <translation id="8469428721212363950">Tregtia me pakicë</translation>

@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> एम.बि.</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छ}}</translation>
 <translation id="2410940059315936967">तपाईंले खोल्ने साइटले अन्य साइटका फोटो, विज्ञापन र टेक्स्टलगायतका सामग्री इम्बेड गर्न सक्छ। यी अन्य साइटहरूले सेट गरेका कुकीहरूलाई तेस्रो पक्षीय कुकीहरू भनिन्छ।</translation>
+<translation id="2411116727035790889">सर्टकटहरू अन गर्नुहोस्</translation>
 <translation id="2433507940547922241">रूपरंग</translation>
 <translation id="2434158240863470628">डाउनलोड सम्पन्न भयो <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">तपाईंले यो साइटलाई केही समयका लागि तेस्रो पक्षीय कुकी प्रयोग गर्ने अनुमति दिनुभयो। यसले गर्दा ब्राउजिङको सुरक्षाको स्तर कम हुन्छ तर साइटका सुविधाहरूले गर्नु पर्ने जसरी काम गर्न सक्छन्। <ph name="BEGIN_LINK" />प्रतिक्रिया पठाउनुहोस्<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">साइटले काम गरिरहेको छैन? तेस्रो पक्षीय कुकीहरू ब्लक गरिएका छन्</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
-<translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>
 <translation id="8211406090763984747">जडान सुरक्षित छ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">शीर्षभागमा सार्नुहोस्</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">फेरि नसोधियोस्</translation>
 <translation id="8362795839483915693">तपाईं आफूले खोल्ने साइटहरूमा जुम इन वा जुम आउट गर्न सक्नुहुन्छ</translation>
 <translation id="8372893542064058268">कुनै विशेष साइटलाई पृष्ठभूमिमा सिंक गर्ने सुविधाको प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
+<translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
 <translation id="83792324527827022">कुनै साइटले तपाईंको क्यामेरा र माइक्रोफोन प्रयोग गर्दै छ</translation>
 <translation id="8380167699614421159">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ</translation>
 <translation id="8394832520002899662">साइटमा फर्कन ट्याप गर्नुहोस्</translation>

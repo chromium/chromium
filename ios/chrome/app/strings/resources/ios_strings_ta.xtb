@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 முகவரி}other{# முகவரிகள்}}</translation>
 <translation id="1605405588277479165">முடக்கப்பட்டுள்ளது - பரிந்துரைக்கப்படவில்லை</translation>
 <translation id="1605658421715042784">படத்தை நகலெடு</translation>
+<translation id="1606899876897213121">சமீபத்திய செயல்பாடு குறித்த சுருக்க விவரத்தை மூடும்</translation>
 <translation id="1612754831519568745">பாதுகாப்பு உலாவல் தற்போது முடக்கப்பட்டுள்ளது. ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றில் இருந்து பாதுகாப்பைப் பெறுங்கள்.</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1622717322707146952">“Google Calendarரில் சேர்“ அல்லது “Apple Calendarரில் சேர்“ என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254"><ph name="GROUP_TITLE" /> என்ற தலைப்பில் <ph name="TABS_NUMBER" /> பக்கங்கள் உள்ள பக்கக் குழு.</translation>
 <translation id="2577522251608256362">அருகிலுள்ள இடம்</translation>
 <translation id="2579713773888829241">பகிர்ந்த இயக்ககங்கள்</translation>
+<translation id="2583688836549072561">பக்கக் குழு, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> பக்கங்கள், புதிய செயல்பாடு.</translation>
 <translation id="2593272815202181319">மோனோஸ்பேஸ்</translation>
 <translation id="2601778637777010194">தயாரிப்புகளுக்கான விலைக் குறைப்புகளைக் கண்காணிக்கலாம்</translation>
 <translation id="260378315836159338">திரையின் மேற்பகுதியில் உள்ள + குறியைத் தட்டவும்</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">முகப்பு திரையைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="3277021493514034324">தள முகவரி நகலெடுக்கப்பட்டது</translation>
 <translation id="3280562213547448728">குரல் தேடல்</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, புதிய செயல்பாடு</translation>
 <translation id="3305294846493618482">மேலும்</translation>
 <translation id="3311748811247479259">ஆஃப்</translation>
 <translation id="3312300514034250578">மேம்பட்ட பாதுகாப்பான பிரவுசிங்</translation>
@@ -1642,6 +1645,7 @@
 <translation id="7557508262441527045">வெளியேறிவிட்டீர்கள்</translation>
 <translation id="7561196759112975576">எப்போதும்</translation>
 <translation id="7561982940498449837">மெனுவை மூடு</translation>
+<translation id="7566349809380613217"><ph name="GROUP_TITLE" /> குழுவைத் திறக்கும், <ph name="NUMBER_OF_TABS" /> இன் பகிர்ந்த குழு, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">புக்மார்க்குகள் மறைக்கப்பட்டுள்ளன</translation>
 <translation id="7577900504646297215">ஆர்வங்களை நிர்வகிக்கும்</translation>
 <translation id="7582666837709186351">உங்கள் படங்களில் உள்ள வார்த்தைகள் அல்லது உங்களைச் சுற்றி இருப்பவற்றைக் கேமரா மூலம் மொழிபெயர்க்கலாம்.</translation>

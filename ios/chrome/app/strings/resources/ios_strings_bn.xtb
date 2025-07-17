@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{১টি ঠিকানা}one{#টি ঠিকানা}other{#টি ঠিকানা}}</translation>
 <translation id="1605405588277479165">বন্ধ আছে - সাজেস্ট করা হয়নি</translation>
 <translation id="1605658421715042784">ছবি কপি করুন</translation>
+<translation id="1606899876897213121">সাম্প্রতিক অ্যাক্টিভিটির সারসংক্ষেপ বন্ধ করুন</translation>
 <translation id="1612754831519568745">আপনার Safe Browsing এখন বন্ধ করা আছে। বিপজ্জনক সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষিত থাকুন।</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1622717322707146952">“Google Calendar-এ যোগ করুন“ বা “Apple Calendar-এ যোগ করুন“ বিকল্প বেছে নিন।</translation>
@@ -407,6 +408,7 @@
 <translation id="2559843230610279254">ট্যাব গ্রুপ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" />টি ট্যাব।</translation>
 <translation id="2577522251608256362">খুব পরিচিত ক্ষেত্র</translation>
 <translation id="2579713773888829241">শেয়ার্ড ড্রাইভ</translation>
+<translation id="2583688836549072561">ট্যাব গ্রুপ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> নম্বর ট্যাব, নতুন অ্যাক্টিভিটি</translation>
 <translation id="2593272815202181319">মোনোস্পেস</translation>
 <translation id="2601778637777010194">প্রোডাক্টের দাম কমা ট্র্যাক করুন</translation>
 <translation id="260378315836159338">স্ক্রিনের সবচেয়ে উপরে '+' আইকনে ট্যাপ করুন</translation>
@@ -572,6 +574,7 @@
 <translation id="3273510436356991673">আপনার হোম স্ক্রিন কাস্টমাইজ করুন</translation>
 <translation id="3277021493514034324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, নতুন অ্যাক্টিভিটি</translation>
 <translation id="3305294846493618482">আরও</translation>
 <translation id="3311748811247479259">বন্ধ করা আছে</translation>
 <translation id="3312300514034250578">উন্নত Safe Browsing</translation>
@@ -1643,6 +1646,7 @@
 <translation id="7557508262441527045">সাইন-আউট করুন</translation>
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
+<translation id="7566349809380613217"><ph name="GROUP_TITLE" /> খুলুন, <ph name="NUMBER_OF_TABS" />টি শেয়ার করা গ্রুপ, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">বুকমার্ক লুকানো আছে</translation>
 <translation id="7577900504646297215">আপনার পছন্দ ম্যানেজ করুন</translation>
 <translation id="7582666837709186351">ক্যামেরার সাহায্যে আপনার ফটো অথবা আশেপাশে থাকা টেক্সট অনুবাদ করুন।</translation>

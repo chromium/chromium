@@ -2668,6 +2668,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5466018172325111652">Non recibiches o código? <ph name="BEGIN_LINK" />Xerar un novo código<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;Refacer modificación</translation>
 <translation id="5472588168895083535">O seguimento das mans está bloqueado</translation>
+<translation id="5479505548832623900">É probable que a extensión as ignore.</translation>
 <translation id="547963486735802022">Proba a transferir os ficheiros de novo</translation>
 <translation id="5481076368049295676">É posible que con este contido se pretenda instalar software perigoso no teu dispositivo que che roube ou elimine información. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">Disposición de pestanas e ventás</translation>
@@ -3308,6 +3309,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6527049834925947126">Produción alimentaria</translation>
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refacer eliminación</translation>
+<translation id="6532101170117367231">Gardar en Google Drive</translation>
 <translation id="6535617236508021606">Esta tarxeta gardouse na túa Conta de Google para que poidas usala nos servizos de Google.</translation>
 <translation id="6536221421038631327">Se quitas unha subscrición a Passpoint do teu dispositivo (<ph name="DEVICE_TYPE" />), quitaranse tamén as redes asociadas. Ponte en contacto con <ph name="FRIENDLY_NAME" /> para facer cambios no teu plan de subscrición. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Para que se mostren as táboas de comparación, activa a sincronización</translation>
@@ -3555,6 +3557,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6970885655016700774">Tecido (arquivo)</translation>
 <translation id="6971439137020188025">Crear rapidamente unha presentación nova en Presentacións</translation>
 <translation id="6972629891077993081">Dispositivos de interface humana</translation>
+<translation id="6972867931824045907">Para usar o portapapeis, dálle a Chrome permiso para acceder a el en <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Especifícanse tanto servidores proxy fixos como un URL de script .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 polgadas</translation>
 <translation id="6978121630131642226">Motores de busca</translation>
@@ -3917,6 +3920,7 @@ Detalles adicionais:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Queres eliminar a tarxeta de crédito de Chrome?</translation>
 <translation id="7569983096843329377">Negro</translation>
+<translation id="7571813784389228510">Modo IA de Google</translation>
 <translation id="7574998639136359461">Equipamento de deportes de inverno</translation>
 <translation id="7575207903026901870">Botón Quitar suxestión, preme Intro para quitala</translation>
 <translation id="7575800019233204241">"A túa conexión non é privada", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ou "Erro de certificado SSL"</translation>
@@ -4438,7 +4442,6 @@ Detalles adicionais:
 <translation id="8460854335417802511">Activar</translation>
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
 <translation id="8461973047386722744">Non se atopou ningún contrasinal</translation>
-<translation id="8465128304789431677">Paga con Pix directamente en Chrome</translation>
 <translation id="8467494337615822642">Vai á páxina de comprobación de seguranza de Chrome na configuración</translation>
 <translation id="8468358362970107653">Sobre C3</translation>
 <translation id="8469428721212363950">Comercio retallista</translation>

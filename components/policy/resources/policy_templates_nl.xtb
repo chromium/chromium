@@ -7713,23 +7713,6 @@ De generatieve AI-functies in DevTools zijn onder andere:
 
 Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
-<translation id="6397424663361748439">Beleid om te bepalen of de functie <ph name="IP_PROTECTION_NAME" /> van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.
-
-<ph name="IP_PROTECTION_NAME" /> is een functie die de beschikbaarheid van het oorspronkelijke IP-adres van een gebruiker beperkt voor bepaalde netwerkverzoeken van derden die worden gedaan terwijl de gebruiker in de incognitomodus browst. Hiermee wordt de beveiliging tegen cross-site tracking verbeterd tijdens incognitosessies.
-
-Als je het beleid niet toepast, wordt <ph name="IP_PROTECTION_NAME" /> uitgezet en kunnen gebruikers de functie niet aanzetten via de UI-instellingen.
-Als je het beleid toepast, wordt <ph name="IP_PROTECTION_NAME" /> aangezet en kunnen gebruikers de functie niet uitzetten via de UI-instellingen.
-Als je het beleid niet instelt, wordt <ph name="IP_PROTECTION_NAME" /> standaard aangezet en kunnen gebruikers de functie op hun apparaat beheren via de UI-instellingen.
-
-Enkele overwegingen voor bedrijven die <ph name="IP_PROTECTION_NAME" /> willen uitzetten:
-- DNS-lookups worden niet uitgevoerd voor verzoeken die via een proxy worden gestuurd. Dit kan van invloed zijn op op DNS gebaseerde monitoring of filtering.
-- Bedrijfsapps werken misschien niet goed als ze worden gebruikt in de incognitomodus als ze afhankelijk zijn van verzoeken naar domeinen (of subdomeinen van die domeinen) op de lijst met gemaskeerde domeinen (<ph name="MASKED_DOMAIN_LIST_URL" />) en als die verzoeken afkomstig moeten zijn van specifieke IP-adresbereiken.
-- Verkeer wordt in de incognitomodus onder bepaalde omstandigheden misschien niet via een proxy gestuurd, bijvoorbeeld als gebruikers de incognitomodus starten vanuit een Chrome-profiel waarmee ze niet zijn ingelogd. Over het algemeen moet de gebruiker zijn ingelogd bij Chrome met een persoonlijk Google-account als die de incognitomodus start.
-- De lijst met domeinen op de lijst met gemaskeerde domeinen kan in de loop van de tijd veranderen. Nieuwe versies worden automatisch naar gebruikers gestuurd. Ga naar <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" /> voor meer informatie over de lijst met gemaskeerde domeinen.
-
-Ga naar <ph name="IP_PROTECTION_README_URL" /> voor meer informatie over <ph name="IP_PROTECTION_NAME" />.
-
-<ph name="IP_PROTECTION_NAME" /> wordt niet eerder gelanceerd dan in M139.</translation>
 <translation id="6397588391180665797">De netwerkconfiguratie van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.

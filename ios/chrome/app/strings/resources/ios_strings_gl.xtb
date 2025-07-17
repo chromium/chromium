@@ -157,6 +157,7 @@
 <translation id="1603718000246404895">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
 <translation id="1605405588277479165">Desactivada (non se recomenda)</translation>
 <translation id="1605658421715042784">Copiar imaxe</translation>
+<translation id="1606899876897213121">Pechar o resumo da actividade recente</translation>
 <translation id="1612754831519568745">A navegación segura está desactivada actualmente. Protéxete contra descargas, extensións e sitios perigosos.</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622717322707146952">Selecciona Engadir a Google Calendar ou Engadir a Apple Calendar.</translation>
@@ -407,6 +408,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2559843230610279254">Grupo de pestanas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanas.</translation>
 <translation id="2577522251608256362">Barrio</translation>
 <translation id="2579713773888829241">Unidades compartidas</translation>
+<translation id="2583688836549072561">Grupo de pestanas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanas, actividade nova.</translation>
 <translation id="2593272815202181319">Monoespazado</translation>
 <translation id="2601778637777010194">Fai un seguimento das baixadas de prezo de produtos</translation>
 <translation id="260378315836159338">Na parte superior da pantalla, toca +</translation>
@@ -572,6 +574,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3273510436356991673">Personalizar a pantalla de inicio</translation>
 <translation id="3277021493514034324">Copiouse o enderezo do sitio</translation>
 <translation id="3280562213547448728">Busca por voz</translation>
+<translation id="3302837541200840455"><ph name="TAB_TITLE" />, actividade nova</translation>
 <translation id="3305294846493618482">máis</translation>
 <translation id="3311748811247479259">Non</translation>
 <translation id="3312300514034250578">Goza dunha navegación segura mellorada</translation>
@@ -1642,6 +1645,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7557508262441527045">Pechouse a sesión</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
+<translation id="7566349809380613217">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" /> pestanas compartido, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Os marcadores están ocultos</translation>
 <translation id="7577900504646297215">Xestionar intereses</translation>
 <translation id="7582666837709186351">Traduce o texto das fotos ou o que captes dos arredores coa cámara.</translation>

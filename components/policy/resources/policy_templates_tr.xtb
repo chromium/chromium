@@ -27,6 +27,11 @@ Bu politika, gelecekte OOPIF PDF görüntüleyici özelliği tam olarak kullanı
 <translation id="1011266755572744012">Kullanıcının tek bir yazdırma işi için kullanmasına izin verilen maksimum sayfa sayısını belirtir.
 
       Ayarlanmazsa herhangi bir sınırlama uygulanmaz ve kullanıcı her dokümanı yazdırabilir.</translation>
+<translation id="1013949464926722411">Politika ayarlanırsa listelenen kaynakların Device Attributes API'yi kullanarak cihaz özelliklerini (ör. seri numarası, ana makine adı) almasına izin verilmez.
+
+Kaynaklar, <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> politikası kullanılarak zorunlu yüklenmiş yalıtılmış web uygulamaları veya kiosk uygulaması olarak ayarlanmış web uygulamalarına karşılık gelmelidir. Device Attributes API teknik özellikleri için lütfen https://wicg.github.io/WebApiDevice/device_attributes adresini ziyaret edin.
+
+Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="101438888985615157">Ekranı 180 derece döndür</translation>
 <translation id="1017967144265860778">Giriş ekranında güç yönetimi</translation>
 <translation id="1018427234617066902">Yazım denetimi dillerini zorla etkinleştirir. Listedeki tanınmayan diller yoksayılır.
@@ -1614,6 +1619,17 @@ Bu politikanın normal kullanıcılar için ayarlanmadan bırakılması, işlevs
 <translation id="2168397434410358693">AC güçle çalışırken boşta kalma gecikmesi</translation>
 <translation id="217013996107840632">Alternatif tarayıcıdan geçiş yapmak için komut satırı parametreleri.</translation>
 <translation id="2170233653554726857">WPAD optimizasyonunu etkinleştir</translation>
+<translation id="2170953111275398079">Bu politika, <ph name="PRODUCT_NAME" /> hizmetinin TLS'de ML-KEM NIST standardını kullanarak kuantum sonrası anahtar anlaşması algoritması sunup sunmayacağını yapılandırır. <ph name="PRODUCT_NAME" /> 131 sürümünden önce algoritma, standardın daha önceki bir taslak iterasyonu olan Kyber'di. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
+
+Bu politika, Etkin değerine ayarlanır veya ayarlanmazsa <ph name="PRODUCT_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunar. Bu durumda kullanıcı trafiği, uyumlu sunucularla iletişim kurarken kuantum bilgisayarlara karşı korunur.
+
+Bu politika devre dışı bırakılırsa <ph name="PRODUCT_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunmaz. Bu durumda kullanıcı trafiği, kuantum bilgisayarlara karşı korunmaz.
+
+Kuantum sonrası anahtar anlaşması sunmak, geriye dönük uyumludur. Mevcut TLS sunucularının ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri belirlemeye devam etmesi beklenir.
+
+Ancak, TLS'yi doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar, kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
+
+Bu politika geçici bir çözüm olup <ph name="PRODUCT_NAME" /> 145 sürümünden sonra kaldırılacaktır. Sorunları test etmenize olanak sağlamak için etkinleştirilmiş olabilir ve sorunlar çözülürken devre dışı olabilir.</translation>
 <translation id="2172201084331314152">Devre dışı bırakılacak kamera, tarayıcı ayarları, os ayarları, tarama, web mağazası, tuval, keşfet, crosh, galeri, terminal, kaydedici, yazdırma işleri, tuş_kısayolları, gmail, google_dokümanlar, google_slaytlar, google_e-tablolar, google_drive, google_keep, google_takvim, google_chat, youtube, google_haritalar, hesap makinesi ve metin_düzenleyici özelliklerini yapılandır</translation>
 <translation id="2174946221763588594">Kullanıcıların gittiği sitelerin, <ph name="WEBXR_API_NAME" /> API'yi kullanarak yoğun düzeyde artırılmış gerçeklik oturumları oluşturmasına izin verilip verilmeyeceğini yapılandırır.
 
@@ -2111,6 +2127,7 @@ devam eder. Kullanıcı, öğeleri manuel olarak çevrimdışı kullanılabilir 
 
 Politika ayarlanmazsa: <ph name="POLICY_VALUE_VISIBLE" />, varsayılan
 seçimdir.</translation>
+<translation id="2488455166114458307">Bu sitelerde Device Attributes API'ye izin ver</translation>
 <translation id="2489558694350871332">Cihazın, sanal makineleri çalıştırmasına izin ver</translation>
 <translation id="2492240920793040106">Güvenli Tarama'nın iyileştirilmesine yardımcı olmak için sistem bilgilerinin ve sayfa içeriğinin raporlanmasını etkinleştir</translation>
 <translation id="2496180316473517155">Tarama geçmişi</translation>
@@ -2686,6 +2703,12 @@ değiştirebilir, ancak bu ayar kullanıcılar tarafından değiştirilemez.</tr
       Bunun, kısa süre kullanılması amaçlanan bir "çıkış yolu" politikası olduğunu da hatırlatmak isteriz.
       </translation>
 <translation id="2939335382784544151">İlk çalıştırmada tarama geçmişinin içe aktarılmasını etkinleştir</translation>
+<translation id="2939606629175440564">Politika ayarlandığında, zorunlu yüklenmiş ve yalıtılmış bir web uygulamasının veya kiosk uygulamasının varsayılan olarak Device Attributes API'ye erişip erişemeyeceğini belirtir.
+Ayrıntılar için lütfen https://wicg.github.io/WebApiDevice/device_attributes adresini ziyaret edin.
+
+Politika, 1 değerine ayarlanır veya ayarlanmadan bırakılırsa zorunlu yüklenmiş, yalıtılmış web uygulamalarının ve kiosk uygulamalarının API'yi kullanmasına izin verilir.
+
+Politika, 2 değerine ayarlanırsa zorunlu yüklenmiş, yalıtılmış web uygulamalarının ve kiosk uygulamalarının API'yi kullanmasına izin verilmez.</translation>
 <translation id="2940127076681735544">Politika geçerli bir URL'ye ayarlanırsa <ph name="PRODUCT_NAME" />, site listesini o URL'den indirir ve kuralları, <ph name="SITELIST_POLICY_NAME" /> politikasıyla yapılandırılmışlar gibi uygular.
 
       Politika ayarlanmadan bırakılırsa (veya geçersiz bir URL'ye ayarlanırsa) <ph name="PRODUCT_NAME" />, politikayı tarayıcılar arasında geçiş yapmak için bir kural kaynağı olarak kullanmaz.
@@ -6133,6 +6156,11 @@ dışı bırakılmalıdır.
 
 Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 <translation id="5297948043665200363">Hesabının kimlik doğrulaması geçersiz hale geldikten sonra kullanıcının oturumunun açık kalmasına izin ver</translation>
+<translation id="5298594338496226089">Politika ayarlanırsa, listelenen kaynaklar Device Attributes API'yi kullanarak cihaz özelliklerini (ör. seri numarası, ana makine adı) alabilir.
+
+Kaynaklar, <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> veya <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sürüm 125'ten itibaren) politikası kullanılarak zorunlu yüklenmiş veya kiosk uygulaması olarak ayarlanmış web uygulamalarına karşılık gelmelidir. Device Attributes API teknik özellikleri için lütfen https://wicg.github.io/WebApiDevice/device_attributes adresini ziyaret edin.
+
+Geçerli <ph name="URL_LABEL" /> kalıpları (sürüm 127'den itibaren) hakkında ayrıntılı bilgi için lütfen https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresini ziyaret edin. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="5298949392804966105">Yönetilen hesaplarda kısıtlama yok</translation>
 <translation id="530111809849214840"><ph name="GOOGLE_DRIVE_NAME" /> seçeneği gizle.</translation>
 <translation id="530134925949808452">Kullanım kotasının yerel saatle günün hangi saatinde yenileneceği.</translation>
@@ -6143,6 +6171,7 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 <translation id="5307432759655324440">Gizli modun kullanılabilirliği</translation>
 <translation id="5308551343115571396"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra tüm tarayıcı verilerini kaldırırken mümkün olduğunca fazla kullanıcı verisini saklamaya çalışırız.</translation>
 <translation id="530949964068726932">Sistem tepsisi menüsündeki erişilebilirlik seçeneklerini gizle</translation>
+<translation id="5309944663104291505">Zorunlu yüklenmiş, yalıtılmış web uygulamalarının ve kiosk uygulamalarının Device Attributes API'yi kullanmasına izin verme</translation>
 <translation id="5310544046492594469">Politika, 0 (varsayılan) değerine ayarlanırsa geliştirici araçlarına ve JavaScript konsoluna erişebilirsiniz. Ancak kurumsal politikaya göre ya da 114 sürümünden itibaren yüklenen uzantılar, yönetilen bir kullanıcı hesabı olması durumunda da tarayıcıda yerleşik olarak bulunan uzantıların bağlamında bu erişimi sağlayamazsınız. Politika, 1 değerine ayarlanırsa kurumsal politikaya göre yüklenen uzantıların bağlamı dahil tüm bağlamlarda geliştirici araçlarına ve JavaScript konsoluna erişebilirsiniz. Politika, 2 değerine ayarlanırsa geliştirici araçlarına erişemezsiniz ve web sitesi öğelerini inceleyemezsiniz.
 
       Bu ayar, geliştirici araçlarını veya JavaScript konsolunu açmak için klavye kısayollarını ve menü veya içerik menüsü girişlerini de kapatır.
@@ -6495,6 +6524,7 @@ Microsoft SharePoint ve OneDrive kartı için ek yönetici yapılandırması ger
 <translation id="5534235660122271432">Harici depolama cihazlarına yazmaya izin verme</translation>
 <translation id="5535256585099022933">Yeniden başlatma zaman aralığını ayarla</translation>
 <translation id="5537400155400537818">Devre dışı: CSS yakınlaştırma, standart öncesindeki eski davranışını korur.</translation>
+<translation id="5537587542872235553">Zorunlu yüklenmiş, yalıtılmış web uygulamalarının ve kiosk uygulamalarının Device Attributes API'yi kullanmasına izin ver</translation>
 <translation id="553806128266843748">Veri akışı kısıtlamanın etkinleştirilip etkinleştirilmediğini gösteren bir boole flag'i.</translation>
 <translation id="5540885720415375851">Yerel cihaz bulmaya izin ver</translation>
 <translation id="5542235730745104308">Politika, Doğru değerine ayarlandığında <ph name="PRODUCT_NAME" /> tarayıcıya gömülü alternatif hata sayfalarını kullanır (ör. "sayfa bulunamadı"). Politika, Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> alternatif hata sayfalarını kullanmaz.
@@ -6705,6 +6735,7 @@ Politika ayarlanmazsa veya sürüm yaşı belirlenemezse tüm güncellemelerde <
 <translation id="5645779841392247734">Bu sitelerde çerezlere izin ver</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise Bağlayıcı için yapılandırma politikası</translation>
 <translation id="5648016151508002741">Online <ph name="OCSP_CRL_LABEL" /> kontrollerinin yapılmasını engelle</translation>
+<translation id="5648436277949979783">Device Attributes API'nin kullanımını kontrol et</translation>
 <translation id="5649046890958064703"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> için <ph name="PRINTERS_BLACKLIST" /> seçiliyken <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> politikası ayarlanırsa kullanıcıların hangi yazıcıları kullanamayacağı belirlenir. Bu politikada listelenen kimlikler dışında kalan tüm yazıcılar kullanıcılara sağlanır. Kimliklerin, <ph name="DEVICE_PRINTERS_POLICY_NAME" /> politikasında belirtilen dosyadaki <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarına karşılık gelmesi gerekir.
 
       Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> politikasını kullanın.</translation>
@@ -7849,23 +7880,6 @@ Aşağıdakiler Geliştirici Araçları üretken yapay zeka özellikleri arasın
 
 Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="6394350458541421998">Bu politika, <ph name="PRODUCT_OS_NAME" /> Sürüm 29 itibariyle kullanımdan kaldırılmıştır. Lütfen bunun yerine PresentationScreenDimDelayScale politikasını kullanın.</translation>
-<translation id="6397424663361748439"><ph name="PRIVACY_SANDBOX_NAME" /> <ph name="IP_PROTECTION_NAME" /> özelliğinin etkinleştirilip etkinleştirilmeyeceğini kontrol eden bir politika.
-
-<ph name="IP_PROTECTION_NAME" />, Gizli modda gezinirken yapılan belirli üçüncü taraf ağ istekleri için kullanıcının orijinal IP adresinin kullanılabilirliğini sınırlayan bir özelliktir. Bu özellik, Gizli modda göz atma oturumları sırasında siteler arası izlemeye karşı korumayı artırır.
-
-Politika, Devre Dışı değerine ayarlanırsa <ph name="IP_PROTECTION_NAME" /> devre dışı bırakılır ve kullanıcılar bu özelliği kullanıcı arayüzü ayarlarından etkinleştiremez.
-Politika, Etkin değerine ayarlanırsa <ph name="IP_PROTECTION_NAME" /> etkinleştirilir ve kullanıcılar bu özelliği kullanıcı arayüzü ayarlarından devre dışı bırakamaz.
-Politika ayarlanmazsa <ph name="IP_PROTECTION_NAME" /> varsayılan olarak etkinleştirilir ve kullanıcılar, bu özelliği cihazlarında kullanıcı arayüzü ayarlarından kontrol edebilir.
-
-Kuruluşların <ph name="IP_PROTECTION_NAME" /> özelliğini devre dışı bırakıp bırakmaması gerektiğiyle ilgili bazı önemli noktalar:
-- DNS aramaları, proxy'ye yönlendirilen istekler için gerçekleştirilmez ve bu durum DNS tabanlı izlemeyi veya filtrelemeyi etkileyebilir.
-- Kurumsal uygulamalar Gizli modda kullanıldığında, Maskelenmiş Alan Listesi'ndeki (<ph name="MASKED_DOMAIN_LIST_URL" />) alanlara (veya bu alanların alt alanlarına) yönelik isteklere dayanıyorsa ve bu isteklerin belirli IP adresi aralıklarından gelmesini gerektiriyorsa söz konusu uygulamalar çalışmayabilir.
-- Trafik, belirli koşullarda (ör. kullanıcılar oturum açmamış oldukları bir Chrome profilinden Gizli modu başlattığında) Gizli modda proxy'ye yönlendirilmeyebilir. Bu özellik genel olarak, Gizli modu başlatırken kullanıcının Chrome'da kişisel bir Google Hesabı ile oturum açmış olmasını gerektirir.
-- Maskelenmiş Alan Adı Listesi'ndeki alan adlarının listesi zaman içinde değişebilir ve yeni sürümler kullanıcılara otomatik olarak gönderilir. Maskelenmiş Alan Adı Listesi hakkında daha fazla bilgi için şu adresi ziyaret edin: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
-
-<ph name="IP_PROTECTION_NAME" /> hakkında daha fazla bilgi için şu adresi ziyaret edin: <ph name="IP_PROTECTION_README_URL" />.
-
-<ph name="IP_PROTECTION_NAME" />, M139 sürümünden önce kullanıma sunulmayacaktır.</translation>
 <translation id="6397588391180665797">Kayıtlı cihazlardaki kullanıcıların ağ yapılandırmasını raporla.
 
       Bu politika yanlış değerine ayarlanırsa bilgi raporlanmaz.
@@ -9384,6 +9398,19 @@ Bu politika Yanlış değerine ayarlandığında eski davranış etkinleştirili
 
       Bu politika ayarlanmazsa veya yanlış seçeneğine ayarlanırsa <ph name="TLS_FALSE_START" /> özelliği etkinleştirilir. Doğru seçeneğine ayarlanırsa <ph name="TLS_FALSE_START" /> özelliği devre dışı olur.</translation>
 <translation id="7427607504279694910">Android uygulama yükleme olay günlükleri Google ile paylaşılmaz</translation>
+<translation id="7431456748240652287">Cihaz düzeyindeki bu politika, <ph name="PRODUCT_OS_NAME" /> hizmetinin TLS'de ML-KEM NIST standardını kullanarak kuantum sonrası anahtar anlaşması algoritması sunup sunmayacağını yapılandırır. <ph name="PRODUCT_OS_NAME" /> 131 sürümünden önce algoritma, standardın daha önceki bir taslak iterasyonu olan Kyber'di. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
+
+Bu politika, Etkin değerine ayarlanır veya ayarlanmazsa <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunar. Bu durumda kullanıcı trafiği, uyumlu sunucularla iletişim kurarken kuantum bilgisayarlara karşı korunur.
+
+Bu politika devre dışı bırakılırsa <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunmaz. Bu durumda kullanıcı trafiği, kuantum bilgisayarlara karşı korunmaz.
+
+Kyber'ı sunmak, geriye dönük uyumludur. Mevcut TLS sunucularının ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri belirlemeye devam etmesi beklenir.
+
+Ancak, TLS'yi doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar, kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
+
+Bu politika geçici bir çözüm olup <ph name="PRODUCT_OS_NAME" /> 145 sürümünden sonra kaldırılacaktır. Sorunları test etmenize olanak sağlamak için etkinleştirilmiş olabilir ve sorunlar çözülürken devre dışı olabilir.
+
+Hem bu politika hem de PostQuantumKeyAgreementEnabled politikası ayarlanırsa bu politika öncelikli olur.</translation>
 <translation id="7433253680989311514">Hintçe Alfabetik Düzeni Etkinleştir</translation>
 <translation id="7433714841194914373">Anında Arama'yı etkinleştir</translation>
 <translation id="7434202861148928348">Uzaktan erişim istemcileri için gereken alan adlarını yapılandır</translation>
@@ -11628,6 +11655,7 @@ Not: Şu anda yalnızca ilk giriş dikkate alınır. Gelecekteki uzantılar bird
 <translation id="9015952763003753868"><ph name="CORS" /> ön kontrolünde eşleşen <ph name="ACAM_HEADER_NAME" /> yanıt başlığını spesifikasyonla uyumlu hale getir</translation>
 <translation id="9020630127193895800">Klavye arka ışığı çivit mavisi</translation>
 <translation id="9025912013525357598">Tüm medya türleri için veri URL'si boşluk koruması</translation>
+<translation id="9029815312472546960">Bu sitelerde Device Attributes API'yi engelle</translation>
 <translation id="9031831501689819108">Eski Tarayıcı Desteği'ni etkinleştir</translation>
 <translation id="9032595854515551464"><ph name="PRODUCT_NAME" /> V2 hizmetini etkinleştir ve giriş yaptıktan sonra uzaktan masayı başlat</translation>
 <translation id="9034285085962866065">Sistem kısayollarının özelleştirilmesine izin ver</translation>

@@ -1017,6 +1017,7 @@
 <translation id="2690699652723742414">గత 30 రోజులు</translation>
 <translation id="2691385045260836588">మోడల్</translation>
 <translation id="2691924980723297736">భద్రతా హెచ్చరిక</translation>
+<translation id="2696385693639654606">క్లౌడ్ నుండి బ్రౌజర్ పాలసీలను, యాప్‌లను, ఎక్స్‌టెన్షన్‌లను మేనేజ్ చేసే వీలును Chrome Enterprise Core మీకు కల్పిస్తుంది</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />‌ని అడగండి</translation>
 <translation id="2699273987028089219">సబ్‌మెనూ అందుబాటులో ఉంది, అదనపు ఆప్షన్‌లకు నావిగేట్ చేయడానికి <ph name="SHORTCUT" />‌ని ఉపయోగించండి.</translation>
 <translation id="2701514975700770343">ఫేస్ డౌన్</translation>
@@ -2663,6 +2664,7 @@
 <translation id="5466018172325111652">మీ కోడ్ అందలేదా? <ph name="BEGIN_LINK" />కొత్త కోడ్‌ను పొందండి<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">&amp;సవరించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="5472588168895083535">హ్యాండ్ ట్రాకింగ్ బ్లాక్ అయింది</translation>
+<translation id="5479505548832623900">ఎక్స్‌టెన్షన్ విస్మరించే అవకాశం ఉంది</translation>
 <translation id="547963486735802022">మీ ఫైళ్లను మళ్లీ బదిలీ చేయడానికి ట్రై చేయండి</translation>
 <translation id="5481076368049295676">ఈ కంటెంట్ మీ సమాచారాన్ని దొంగిలించగల లేదా తొలగించగల హానికరమైన సాఫ్ట్‌వేర్‌ను మీ పరికరంలో ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు. <ph name="BEGIN_LINK" />ఏదేమైనా చూపు<ph name="END_LINK" /></translation>
 <translation id="5481604577800516617">విండోలు, ట్యాబ్‌ల అమరిక</translation>
@@ -3137,6 +3139,7 @@
 <translation id="6284449872909111707">టెక్స్ట్ &amp; ఇన్‌స్టంట్ మెసేజింగ్</translation>
 <translation id="6284517535531159884">వేరియేషన్‌ల సీడ్ రకం</translation>
 <translation id="6287197303017372967">నావిగేషన్ ఫీచర్‌ను ఉపయోగించి 'సులువైన దిశల' గైడెన్స్‌తో మీ గమ్యస్థానానికి దిశలను పొందండి.</translation>
+<translation id="6288559570252410796">Google AI మోడ్‌ను అడగండి</translation>
 <translation id="628877850550444614">డిస్కౌంట్ కనుగొనబడింది</translation>
 <translation id="6289939620939689042">పేజీ రంగు</translation>
 <translation id="6292819926564202163">Chromeలో మీ సెర్చ్ ఇంజిన్</translation>
@@ -3303,6 +3306,7 @@
 <translation id="6527049834925947126">ఆహార ఉత్పత్తి</translation>
 <translation id="6529173248185917884">సెవెంత్ రోల్</translation>
 <translation id="6529602333819889595">&amp;తొలగించడాన్ని రిపీట్‌ చేయి</translation>
+<translation id="6532101170117367231">Google డిస్క్‌‌కు సేవ్ చేయండి</translation>
 <translation id="6535617236508021606">ఈ కార్డ్ మీ Google ఖాతాలో సేవ్ చేయబడుతుంది, కాబట్టి మీరు దీన్ని Google సర్వీస్‌ల అంతటా ఉపయోగించవచ్చు.</translation>
 <translation id="6536221421038631327">మీ <ph name="DEVICE_TYPE" /> నుండి Passpoint సబ్‌స్క్రిప్షన్‌ను తీసివేయడం వలన అనుబంధిత నెట్‌వర్క్‌లు తీసివేయబడతాయి. మీ సబ్‌స్క్రిప్షన్ ప్లాన్‌కు మార్పులు చేయడానికి "<ph name="FRIENDLY_NAME" />"ని కాంటాక్ట్ చేయండి. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">కంపారిజన్ టేబుల్స్‌ను చూడటానికి, సింక్‌ను ఆన్ చేయండి</translation>
@@ -3914,6 +3918,7 @@
 <translation id="7569490014721427265">గోల్ఫ్</translation>
 <translation id="7569952961197462199">Chrome నుండి క్రెడిట్ కార్డ్‌ను తీసివేయాలా?</translation>
 <translation id="7569983096843329377">నలుపు</translation>
+<translation id="7571813784389228510">Google AI మోడ్</translation>
 <translation id="7574998639136359461">శీతాకాలపు క్రీడలకు సంబంధించిన ఎక్విప్‌మెంట్</translation>
 <translation id="7575207903026901870">సూచన బటన్‌ను తీసివేసి, ఈ సూచనను తీసివేయడానికి ఎంటర్ నొక్కండి</translation>
 <translation id="7575800019233204241">"మీ కనెక్షన్ ప్రైవేట్‌గా లేదు" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" లేదా "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" లేదా "SSL సర్టిఫికేట్ ఎర్రర్"</translation>
@@ -4351,6 +4356,7 @@
 <translation id="831997045666694187">సాయంత్రం</translation>
 <translation id="8321448084834652864">మీ సెర్చ్ ఇంజిన్‌ను మీరు Chromium సెట్టింగ్‌లలో ఎప్పుడైనా సరే మార్చవచ్చు.</translation>
 <translation id="8321476692217554900">నోటిఫికేషన్‌లు</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI మోడ్‌ను అడగడానికి Enter కీని నొక్కండి</translation>
 <translation id="8322402665880479974">మంచాలు &amp; హెడ్ బోర్డ్‌లు</translation>
 <translation id="8323505966575306467">మీ పాస్‌వర్డ్‌లకు మరింత రక్షణను జోడించండి</translation>
 <translation id="832547548543012337">పాస్‌పోర్ట్‌ను తొలగించండి</translation>
@@ -4435,7 +4441,6 @@
 <translation id="8460854335417802511">దీన్ని ఆన్ చేయండి</translation>
 <translation id="8461694314515752532">మీ స్వంత సింక్‌ రహస్య పదబంధంతో సింక్ చేయబడిన డేటాను ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="8461973047386722744">పాస్‌వర్డ్‌లు ఏవీ దొరకలేదు</translation>
-<translation id="8465128304789431677">Chromeలో నేరుగా Pixతో పేమెంట్ చేయండి</translation>
 <translation id="8467494337615822642">సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లండి</translation>
 <translation id="8468358362970107653">ఎన్వలప్ C3</translation>
 <translation id="8469428721212363950">రిటైల్ ట్రేడ్</translation>
@@ -4641,6 +4646,7 @@
 <translation id="883848425547221593">ఇతర బుక్‌మార్క్‌లు:</translation>
 <translation id="8842351563145134519">'టచ్ చేసి నింపడానికి అందుబాటులో ఉన్న పేమెంట్ ఆప్షన్‌లు' సగం మేరకు తెరవబడ్డాయి.</translation>
 <translation id="884264119367021077">షిప్పింగ్ అడ్రస్‌</translation>
+<translation id="8849032795302265570">మీ ఉద్యోగులు వెబ్‌ను ఎలా బ్రౌజ్ చేయాలి అనే దానిని సులభంగా మేనేజ్ చేయండి</translation>
 <translation id="8849231003559822746">130 x 180 మి.మీ.</translation>
 <translation id="884923133447025588">ఏ రద్దు విధానం కనుగొనబడలేదు.</translation>
 <translation id="8849262850971482943">అదనపు భద్రత కోసం మీ వర్చువల్ కార్డ్‌ను ఉపయోగించండి</translation>
@@ -4891,6 +4897,7 @@
 <translation id="950926967802086924">పాస్-కీ • Google Password Manager</translation>
 <translation id="955429569736351433">VRకు అనుమతి ఉంది</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome సింక్ సెట్టింగ్‌ల<ph name="END_LINK" />లో మీరు ఈ పాలసీకి సమ్మతిని నిలిపివేయవచ్చు.</translation>
+<translation id="95676157383774931">AI మోడ్ బటన్, Google AI మోడ్‌ను అడగడానికి, దాన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="95721182352849470">పసుపు రంగు 2</translation>
 <translation id="961663415146723894">దిగువ భాగంలో బైండ్</translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>

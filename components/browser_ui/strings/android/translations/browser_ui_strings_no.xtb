@@ -612,7 +612,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8186479265534291036">Virker ikke nettstedet? Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> er tillatt</translation>
 <translation id="8200772114523450471">Fortsett</translation>
-<translation id="8206354486702514201">Denne innstillingen håndheves av administratoren din.</translation>
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Flytt til toppen</translation>
@@ -623,6 +622,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8324158725704657629">Ikke spør igjen</translation>
 <translation id="8362795839483915693">Du kan zoome inn eller ut på nettsteder som du besøker</translation>
 <translation id="8372893542064058268">Tillat bakgrunnssynkronisering for et bestemt nettsted.</translation>
+<translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="83792324527827022">Et nettsted bruker kameraet ditt og mikrofonen din</translation>
 <translation id="8380167699614421159">Dette nettstedet viser forstyrrende eller villedende annonser</translation>
 <translation id="8394832520002899662">Trykk for å gå tilbake til nettstedet</translation>

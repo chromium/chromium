@@ -3311,6 +3311,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6527049834925947126">Produção de alimentos</translation>
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refazer eliminação</translation>
+<translation id="6532101170117367231">Guardar no Google Drive</translation>
 <translation id="6535617236508021606">Este cartão está guardado na sua Conta Google para que o possa usar nos serviços Google.</translation>
 <translation id="6536221421038631327">Se remover uma subscrição do Passpoint do seu dispositivo <ph name="DEVICE_TYPE" />, as redes associadas são removidas. Contacte "<ph name="FRIENDLY_NAME" />" para alterar o seu plano de subscrição. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Para ver tabelas de comparação, ative a sincronização</translation>
@@ -3558,6 +3559,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6970885655016700774">Tecido (de arquivo)</translation>
 <translation id="6971439137020188025">Crie rapidamente uma nova apresentação Google no Slides</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
+<translation id="6972867931824045907">Para usar a área de transferência, dê acesso ao Chrome nas <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Foram especificados servidores proxy fixos e um URL de script .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 pol.</translation>
 <translation id="6978121630131642226">Motores de pesquisa</translation>
@@ -4443,7 +4445,6 @@ Detalhes adicionais:
 <translation id="8460854335417802511">Ativar</translation>
 <translation id="8461694314515752532">Encriptar dados sincronizados com a sua própria frase de acesso de sincronização</translation>
 <translation id="8461973047386722744">Nenhuma palavra-passe encontrada</translation>
-<translation id="8465128304789431677">Pague com o Pix diretamente no Chrome</translation>
 <translation id="8467494337615822642">Aceda à página da verificação de segurança do Chrome nas definições</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8469428721212363950">Comércio de retalho</translation>

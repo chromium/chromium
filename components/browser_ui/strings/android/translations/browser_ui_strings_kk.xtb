@@ -121,6 +121,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}}</translation>
 <translation id="2410940059315936967">Сіз кірген сайт басқа сайттардан алынған контентті (мысалы, суреттерді, жарнамаларды және мәтінді) ендіре алады. Осындай басқа сайттар орнатқан cookie файлдары үшінші тарап cookie файлдары деп аталады.</translation>
+<translation id="2411116727035790889">Жылдам пәрмендерді қосу</translation>
 <translation id="2433507940547922241">Көрініс</translation>
 <translation id="2434158240863470628"><ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /> жүктеп алынды</translation>
 <translation id="2438120137003069591">Сіз бұл сайтқа үшінші тарап cookie файлдарын пайдалануға уақытша рұқсат бердіңіз. Бұл жағдайда қорғаныс дәрежесі төмендейді, бірақ сайт функцияларының ойдағыдай жұмыс істеу ықтималдығы артады. <ph name="BEGIN_LINK" />Пікір жіберу<ph name="END_LINK" /></translation>
@@ -611,7 +612,6 @@
 <translation id="8186479265534291036">Сайт жұмыс істемей ме? Үшінші тарап cookie файлдары блокталған</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> үшін рұқсат етілген.</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
-<translation id="8206354486702514201">Бұл параметрді әкімші күштеп орнатқан.</translation>
 <translation id="8211406090763984747">Қауіпсіз байланыс</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8249310407154411074">Басына жылжыту</translation>
@@ -622,6 +622,7 @@
 <translation id="8324158725704657629">Қайта сұралмасын</translation>
 <translation id="8362795839483915693">Сіз кірген сайттарды ұлғайтуға немесе кішірейтуге болады</translation>
 <translation id="8372893542064058268">Белгілі бір сайт үшін фондық синхрондауға рұқсат беру.</translation>
+<translation id="8378714024927312812">Ұйым басқарады</translation>
 <translation id="83792324527827022">Сайт камера мен микрофонды пайдаланып жатыр.</translation>
 <translation id="8380167699614421159">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі</translation>
 <translation id="8394832520002899662">Сайтқа оралу үшін түртіңіз.</translation>
