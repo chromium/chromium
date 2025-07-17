@@ -4,17 +4,33 @@
 
 module composebox.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// Information about a file selected by the user in the WebUI.
+struct SelectedFileInfo {
+  // Name of the file.
+  string file_name;
+  // Mime type of the file.
+  string mime_type;
+  // Time that the file was selected at.
+  mojo_base.mojom.JSTime selection_time;
+};
+
 // Browser-side handler for requests from NTP Composebox UI.
 interface ComposeboxPageHandler {
-    // Called when a user has started a composebox session.
-    NotifySessionStarted();
-    // Called when a user ends a composebox session.
-    NotifySessionAbandoned();
-    // Called when a user submits a query with valid input.
-    SubmitQuery(string query_text,
-                uint8 mouse_button,
-                bool alt_key,
-                bool ctrl_key,
-                bool meta_key,
-                bool shift_key);
+  // Called when a user has started a composebox session.
+  NotifySessionStarted();
+  // Called when a user ends a composebox session.
+  NotifySessionAbandoned();
+  // Called when a user submits a query with valid input.
+  SubmitQuery(string query_text,
+              uint8 mouse_button,
+              bool alt_key,
+              bool ctrl_key,
+              bool meta_key,
+              bool shift_key);
+  // File management.
+  // Upload a file to the server.
+  AddFile(SelectedFileInfo file_info, mojo_base.mojom.BigBuffer file_bytes);
 };

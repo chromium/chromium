@@ -31,6 +31,8 @@ class ComposeboxHandler : public composebox::mojom::ComposeboxPageHandler {
                    bool ctrl_key,
                    bool meta_key,
                    bool shift_key) override;
+  void AddFile(composebox::mojom::SelectedFileInfoPtr file_info,
+               mojo_base::BigBuffer file_bytes) override;
 
  private:
   void OpenUrl(GURL url, const WindowOpenDisposition disposition);

@@ -23,6 +23,7 @@ source_set("composebox") {
 mojom("mojo_bindings") {
   sources = [ "composebox.mojom" ]
   webui_module_path = "/"
+  public_deps = [ "//mojo/public//mojom/base" ]
 }
 
 source_set("unit_tests") {
