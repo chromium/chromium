@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -14,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/optimization_guide/model_execution/chrome_on_device_model_service_controller.h"
+#include "chrome/browser/optimization_guide/model_execution/chrome_model_broker_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -689,17 +690,21 @@ class OnDeviceModelExecutionEnabledBrowserTest
         {});
   }
 
+  ChromeModelBrokerState* broker_state() {
+    // Ensure keyed service is created, which should create and hold state.
+    GetOptimizationGuideKeyedService();
+    return ChromeModelBrokerState::CreateOrGet().get();
+  }
+
   void SetUpGlobalAssets() {
     model_execution::prefs::RecordFeatureUsage(
         g_browser_process->local_state(), ModelBasedCapabilityKey::kCompose);
-    base_model_asset_.SetReadyIn(
-        *OnDeviceModelComponentStateManager::GetInstanceForTesting());
+    base_model_asset_.SetReadyIn(broker_state()->component_state_manager());
   }
 
   // Set up assets which are registered per-profile.
   void SetUpProfileAssets() {
-    compose_asset_.SendTo(
-        *ChromeOnDeviceModelServiceController::GetSingleInstanceMayBeNull());
+    compose_asset_.SendTo(*broker_state()->service_controller());
   }
 
  private:

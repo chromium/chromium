@@ -16,8 +16,6 @@ namespace optimization_guide {
 
 namespace {
 
-ChromeOnDeviceModelServiceController* g_instance = nullptr;
-
 void LaunchService(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         pending_receiver) {
@@ -39,21 +37,10 @@ ChromeOnDeviceModelServiceController::ChromeOnDeviceModelServiceController(
           std::make_unique<OnDeviceModelAccessController>(
               *g_browser_process->local_state()),
           std::move(on_device_component_state_manager),
-          base::BindRepeating(&LaunchService)) {
-  CHECK_EQ(nullptr, g_instance);
-  g_instance = this;
-}
+          base::BindRepeating(&LaunchService)) {}
 
-// static
-ChromeOnDeviceModelServiceController*
-ChromeOnDeviceModelServiceController::GetSingleInstanceMayBeNull() {
-  return g_instance;
-}
-
-ChromeOnDeviceModelServiceController::~ChromeOnDeviceModelServiceController() {
-  CHECK_EQ(this, g_instance);
-  g_instance = nullptr;
-}
+ChromeOnDeviceModelServiceController::~ChromeOnDeviceModelServiceController() =
+    default;
 
 void ChromeOnDeviceModelServiceController::
     RegisterPerformanceClassSyntheticTrial(
