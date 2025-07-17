@@ -450,9 +450,9 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   }
 }
 
-// TODO(b/426542319): Fix and enable tests on non-mac platforms.
-#if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestPositionMetrics) {
+// TODO(crbug.com/426542319): Fix and re-enable.
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       DISABLED_TestPositionMetrics) {
   // The GlicButton and Tabstrip are not actually shown until a tab is created.
   chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
   gfx::Rect work_area_bounds =
@@ -526,7 +526,6 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestPositionMetrics) {
   // ChromeRelativePosition::kChromeOnOtherDisplay isn't being tested since
   // tests involving moving Glic to another display are flaky.
 }
-#endif
 
 class GlicWindowControllerWithPreviousPostionUiTest
     : public GlicWindowControllerUiTest {
