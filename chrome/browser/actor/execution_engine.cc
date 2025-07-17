@@ -116,10 +116,10 @@ void ExecutionEngine::SetState(State state) {
   static const base::NoDestructor<base::StateTransitions<State>> transitions(
       base::StateTransitions<State>({
           {State::kInit, {State::kStartAction, State::kComplete}},
-          {State::kStartAction, {State::kUiPreTool, State::kComplete}},
-          {State::kUiPreTool, {State::kToolController, State::kComplete}},
-          {State::kToolController, {State::kUiPostTool, State::kComplete}},
-          {State::kUiPostTool, {State::kComplete, State::kStartAction}},
+          {State::kStartAction, {State::kUiPreInvoke, State::kComplete}},
+          {State::kUiPreInvoke, {State::kToolInvoke, State::kComplete}},
+          {State::kToolInvoke, {State::kUiPostInvoke, State::kComplete}},
+          {State::kUiPostInvoke, {State::kComplete, State::kStartAction}},
           {State::kComplete, {State::kStartAction}},
       }));
   DCHECK_STATE_TRANSITION(transitions, state_, state);
@@ -133,12 +133,12 @@ std::string ExecutionEngine::StateToString(State state) {
       return "INIT";
     case State::kStartAction:
       return "START_ACTION";
-    case State::kUiPreTool:
-      return "UI_PRE_TOOL";
-    case State::kToolController:
-      return "TOOL_CONTROLLER";
-    case State::kUiPostTool:
-      return "UI_POST_TOOL";
+    case State::kUiPreInvoke:
+      return "UI_PRE_INVOKE";
+    case State::kToolInvoke:
+      return "TOOL_INVOKE";
+    case State::kUiPostInvoke:
+      return "UI_POST_INVOKE";
     case State::kComplete:
       return "COMPLETE";
   }
@@ -157,7 +157,7 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
 void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(reason, mojom::ActionResultCode::kOk);
-  if (state_ != State::kToolController) {
+  if (state_ != State::kToolInvoke) {
     return;
   }
 
@@ -224,7 +224,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 
 void ExecutionEngine::KickOffNextAction(
     mojom::ActionResultPtr init_hooks_result) {
-  DCHECK(state_ == State::kInit || state_ == State::kUiPostTool ||
+  DCHECK(state_ == State::kInit || state_ == State::kUiPostInvoke ||
          state_ == State::kComplete)
       << "Current state is " << StateToString(state_);
   CHECK_LT(next_action_index_, action_sequence_.size());
@@ -318,27 +318,27 @@ void ExecutionEngine::ExecuteNextAction() {
 
   ++next_action_index_;
 
-  SetState(State::kUiPreTool);
+  SetState(State::kUiPreInvoke);
   ui_event_dispatcher_->OnPreTool(
       GetInProgressAction(),
-      base::BindOnce(&ExecutionEngine::FinishedUiPreTool, GetWeakPtr()));
+      base::BindOnce(&ExecutionEngine::FinishedUiPreInvoke, GetWeakPtr()));
 }
 
-void ExecutionEngine::FinishedUiPreTool(mojom::ActionResultPtr result) {
-  DCHECK_EQ(state_, State::kUiPreTool);
+void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
+  DCHECK_EQ(state_, State::kUiPreInvoke);
   if (!IsOk(*result)) {
     CompleteActions(std::move(result), InProgressActionIndex());
     return;
   }
 
-  SetState(State::kToolController);
+  SetState(State::kToolInvoke);
   tool_controller_->Invoke(
       GetInProgressAction(), last_observed_page_content_.get(),
-      base::BindOnce(&ExecutionEngine::FinishedToolController, GetWeakPtr()));
+      base::BindOnce(&ExecutionEngine::FinishedToolInvoke, GetWeakPtr()));
 }
 
-void ExecutionEngine::FinishedToolController(mojom::ActionResultPtr result) {
-  DCHECK_EQ(state_, State::kToolController);
+void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
+  DCHECK_EQ(state_, State::kToolInvoke);
   // The current action errored out. Stop the chain.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason;
   std::swap(external_tool_failure_reason, external_tool_failure_reason_);
@@ -352,14 +352,14 @@ void ExecutionEngine::FinishedToolController(mojom::ActionResultPtr result) {
     return;
   }
 
-  SetState(State::kUiPostTool);
+  SetState(State::kUiPostInvoke);
   ui_event_dispatcher_->OnPostTool(
       GetInProgressAction(),
-      base::BindOnce(&ExecutionEngine::FinishedUiPostTool, GetWeakPtr()));
+      base::BindOnce(&ExecutionEngine::FinishedUiPostInvoke, GetWeakPtr()));
 }
 
-void ExecutionEngine::FinishedUiPostTool(mojom::ActionResultPtr result) {
-  DCHECK_EQ(state_, State::kUiPostTool);
+void ExecutionEngine::FinishedUiPostInvoke(mojom::ActionResultPtr result) {
+  DCHECK_EQ(state_, State::kUiPostInvoke);
   CHECK(!action_sequence_.empty());
 
   if (!IsOk(*result)) {
@@ -421,8 +421,8 @@ const ToolRequest& ExecutionEngine::GetNextAction() const {
 }
 
 size_t ExecutionEngine::InProgressActionIndex() const {
-  CHECK(state_ == State::kUiPreTool || state_ == State::kToolController ||
-        state_ == State::kUiPostTool)
+  CHECK(state_ == State::kUiPreInvoke || state_ == State::kToolInvoke ||
+        state_ == State::kUiPostInvoke)
       << "Current state is " << StateToString(state_);
   CHECK_GT(next_action_index_, 0ul);
   return next_action_index_ - 1;

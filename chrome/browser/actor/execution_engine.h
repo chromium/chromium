@@ -55,17 +55,17 @@ class ExecutionEngine {
   //    Init
   //     |
   //     v
-  // StartAction -> UiPreTool -> ToolController -> UiPostTool -> Complete
-  //     ^                                            |                |
-  //     |____________________________________________|________________|
+  // StartAction -> UiPreInvoke -> ToolInvoke -> UiPostInvoke -> Complete
+  //     ^                                            |              |
+  //     |____________________________________________|______________|
   //
   // Complete may also be reached directly from other states in case of error.
   enum class State {
     kInit = 0,
     kStartAction,
-    kUiPreTool,
-    kToolController,
-    kUiPostTool,
+    kUiPreInvoke,
+    kToolInvoke,
+    kUiPostInvoke,
     kComplete,
   };
 
@@ -138,9 +138,9 @@ class ExecutionEngine {
   void ExecuteNextAction();
 
   // Called each time an action finishes.
-  void FinishedUiPreTool(mojom::ActionResultPtr result);
-  void FinishedToolController(mojom::ActionResultPtr result);
-  void FinishedUiPostTool(mojom::ActionResultPtr result);
+  void FinishedUiPreInvoke(mojom::ActionResultPtr result);
+  void FinishedToolInvoke(mojom::ActionResultPtr result);
+  void FinishedUiPostInvoke(mojom::ActionResultPtr result);
 
   void CompleteActions(mojom::ActionResultPtr result,
                        std::optional<size_t> action_index);
