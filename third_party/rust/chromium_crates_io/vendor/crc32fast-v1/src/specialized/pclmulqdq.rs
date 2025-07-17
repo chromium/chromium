@@ -1,3 +1,12 @@
+//! Specialized checksum code for the x86 CPU architecture, based on the efficient algorithm described
+//! in the following whitepaper:
+//!
+//! Gopal, V., Ozturk, E., Guilford, J., Wolrich, G., Feghali, W., Dixon, M., & Karakoyunlu, D. (2009).
+//! _Fast CRC computation for generic polynomials using PCLMULQDQ instruction_. Intel.
+//! (Mirror link: <https://fossies.org/linux/zlib-ng/doc/crc-pclmulqdq.pdf>, accessed 2024-05-20)
+//!
+//! Throughout the code, this work is referred to as "the paper".
+
 #[cfg(target_arch = "x86")]
 use core::arch::x86 as arch;
 #[cfg(target_arch = "x86_64")]
@@ -52,7 +61,7 @@ impl State {
     }
 
     pub fn combine(&mut self, other: u32, amount: u64) {
-        self.state = ::combine::combine(self.state, other, amount);
+        self.state = crate::combine::combine(self.state, other, amount);
     }
 }
 
@@ -65,35 +74,13 @@ const K5: i64 = 0x163cd6124;
 const P_X: i64 = 0x1DB710641;
 const U_PRIME: i64 = 0x1F7011641;
 
-#[cfg(feature = "std")]
-unsafe fn debug(s: &str, a: arch::__m128i) -> arch::__m128i {
-    if false {
-        union A {
-            a: arch::__m128i,
-            b: [u8; 16],
-        }
-        let x = A { a }.b;
-        print!(" {:20} | ", s);
-        for x in x.iter() {
-            print!("{:02x} ", x);
-        }
-        println!();
-    }
-    return a;
-}
-
-#[cfg(not(feature = "std"))]
-unsafe fn debug(_s: &str, a: arch::__m128i) -> arch::__m128i {
-    a
-}
-
 #[target_feature(enable = "pclmulqdq", enable = "sse2", enable = "sse4.1")]
 unsafe fn calculate(crc: u32, mut data: &[u8]) -> u32 {
     // In theory we can accelerate smaller chunks too, but for now just rely on
     // the fallback implementation as it's too much hassle and doesn't seem too
     // beneficial.
     if data.len() < 128 {
-        return ::baseline::update_fast_16(crc, data);
+        return crate::baseline::update_fast_16(crc, data);
     }
 
     // Step 1: fold by 4 loop
@@ -122,8 +109,6 @@ unsafe fn calculate(crc: u32, mut data: &[u8]) -> u32 {
     while data.len() >= 16 {
         x = reduce128(x, get(&mut data), k3k4);
     }
-
-    debug("128 > 64 init", x);
 
     // Perform step 3, reduction from 128 bits to 64 bits. This is
     // significantly different from the paper and basically doesn't follow it
@@ -155,7 +140,6 @@ unsafe fn calculate(crc: u32, mut data: &[u8]) -> u32 {
         ),
         arch::_mm_srli_si128(x, 4),
     );
-    debug("128 > 64 xx", x);
 
     // Perform a Barrett reduction from our now 64 bits to 32 bits. The
     // algorithm for this is described at the end of the paper, and note that
@@ -181,7 +165,7 @@ unsafe fn calculate(crc: u32, mut data: &[u8]) -> u32 {
     let c = arch::_mm_extract_epi32(arch::_mm_xor_si128(x, t2), 1) as u32;
 
     if !data.is_empty() {
-        ::baseline::update_fast_16(!c, data)
+        crate::baseline::update_fast_16(!c, data)
     } else {
         !c
     }
@@ -197,12 +181,12 @@ unsafe fn get(a: &mut &[u8]) -> arch::__m128i {
     debug_assert!(a.len() >= 16);
     let r = arch::_mm_loadu_si128(a.as_ptr() as *const arch::__m128i);
     *a = &a[16..];
-    return r;
+    r
 }
 
 #[cfg(test)]
 mod test {
-    quickcheck! {
+    quickcheck::quickcheck! {
         fn check_against_baseline(init: u32, chunks: Vec<(Vec<u8>, usize)>) -> bool {
             let mut baseline = super::super::super::baseline::State::new(init);
             let mut pclmulqdq = super::State::new(init).expect("not supported");

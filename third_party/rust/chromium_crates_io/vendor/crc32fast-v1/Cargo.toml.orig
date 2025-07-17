@@ -1,6 +1,7 @@
 [package]
 name = "crc32fast"
-version = "1.4.2"
+version = "1.5.0"
+edition = "2021"
 license = "MIT OR Apache-2.0"
 authors = [
   "Sam Rijs <srijs@airpost.net>",
@@ -9,7 +10,9 @@ authors = [
 description = "Fast, SIMD-accelerated CRC32 (IEEE) checksum computation"
 repository = "https://github.com/srijs/rust-crc32fast"
 readme = "README.md"
-keywords = ["checksum", "crc", "crc32", "simd", "fast"]
+keywords = ["hash", "crc", "crc32", "simd", "fast"]
+categories = ["algorithms", "no-std"]
+rust-version = "1.63"
 
 [dependencies]
 cfg-if = "1.0"

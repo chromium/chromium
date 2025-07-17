@@ -10,26 +10,48 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
+edition = "2021"
+rust-version = "1.63"
 name = "crc32fast"
-version = "1.4.2"
+version = "1.5.0"
 authors = [
     "Sam Rijs <srijs@airpost.net>",
     "Alex Crichton <alex@alexcrichton.com>",
 ]
+build = "build.rs"
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Fast, SIMD-accelerated CRC32 (IEEE) checksum computation"
 readme = "README.md"
 keywords = [
-    "checksum",
+    "hash",
     "crc",
     "crc32",
     "simd",
     "fast",
 ]
+categories = [
+    "algorithms",
+    "no-std",
+]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/srijs/rust-crc32fast"
 
+[features]
+default = ["std"]
+nightly = []
+std = []
+
+[lib]
+name = "crc32fast"
+path = "src/lib.rs"
+
 [[bench]]
 name = "bench"
+path = "benches/bench.rs"
 harness = false
 
 [dependencies.cfg-if]
@@ -44,8 +66,3 @@ default-features = false
 
 [dev-dependencies.rand]
 version = "0.8"
-
-[features]
-default = ["std"]
-nightly = []
-std = []

@@ -205,14 +205,13 @@ extensions/browser
 extensions/common
 extensions/common/api
 extensions/common/manifest_handlers
-extensions/renderer/api/messaging
-extensions/shell/common
 google_apis/gaia
 gpu/config
 infra
 infra/config/generated/luci
 infra/config/generators
 infra/config/gn_args
+infra/config/subprojects/chrome
 infra/config/subprojects/webrtc/consoles
 ios/build/bots/scripts
 ios/chrome/browser/reader_mode/model/resources
@@ -246,8 +245,6 @@ net/proxy_resolution
 net/socket
 net/tools/crash_cache
 net/tools/stress_cache
-net/tools/testserver/dist
-ppapi/generators
 sandbox/linux/suid/client
 sandbox/policy/linux
 services/device/serial
@@ -286,7 +283,6 @@ third_party/afl/src/docs
 third_party/afl/src/llvm_mode
 third_party/afl/src/qemu_mode
 third_party/android_build_tools/json
-third_party/android_deps/autorolled/committed/libs/com_google_auto_service_auto_service_annotations
 third_party/android_deps/autorolled/committed/libs/com_google_errorprone_error_prone_annotations
 third_party/android_deps/autorolled/committed/libs/com_google_protobuf_protobuf_javalite
 third_party/android_deps/buildSrc/src/main/groovy
