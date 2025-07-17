@@ -56,7 +56,7 @@ UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
   regional_capabilities::RegionalCapabilitiesService* regional_capabilities =
       ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
   if (!base::FeatureList::IsEnabled(kUpdatedFirstRunSequence) ||
-      regional_capabilities->IsInEeaCountry()) {
+      regional_capabilities->IsInSearchEngineChoiceScreenRegion()) {
     return UpdatedFRESequenceVariationType::kDisabled;
   }
   return static_cast<UpdatedFRESequenceVariationType>(

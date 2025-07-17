@@ -83,20 +83,30 @@ class RegionalCapabilitiesService : public KeyedService {
       std::unique_ptr<Client> regional_capabilities_client);
   ~RegionalCapabilitiesService() override;
 
-  // Returns the country ID to use in the context of regional checks.
-  // Can be overridden using `switches::kSearchEngineChoiceCountry`.
-  // Note: Access to the raw value is restricted, see `CountryIdHolder` for
-  // more details.
-  CountryIdHolder GetCountryId();
+  // -- Getters for regional capabilities -------------------------------------
 
   std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
   GetRegionalPrepopulatedEngines();
+
+  // Returns whether the profile is associated with a region in which we can
+  // show a search engine choice screen.
+  bool IsInSearchEngineChoiceScreenRegion();
+
+  // -- Internal utils & deprecated getters -----------------------------------
 
   // Returns whether the profile country is a EEA member.
   //
   // Testing note: To control the value this returns in manual or automated
   // tests, see `switches::kSearchEngineChoiceCountry`.
+  // DEPRECATED: Prefer using getters for regional capabilities above.
+  // TODO(crbug.com/394235956): Migrate callsites and remove this.
   bool IsInEeaCountry();
+
+  // Returns the country ID to use in the context of regional checks.
+  // Can be overridden using `switches::kSearchEngineChoiceCountry`.
+  // Note: Access to the raw value is restricted, see `CountryIdHolder` for
+  // more details.
+  CountryIdHolder GetCountryId();
 
   // Clears the country id cache to be able to change countries multiple times
   // in tests.

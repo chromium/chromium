@@ -163,6 +163,15 @@ std::pair<CountryId, LoadedCountrySource> SelectCountryId(
 }
 
 const ProgramSettings* CountryIdToProgram(CountryId country_id) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(switches::kTaiyaki)) {
+    // Not final logic.
+    // TODO(crbug.com/423882950): Update logic for iOS.
+    // TODO(crbug.com/423883216): Update logic for Android.
+    return &kTaiyakiSettings;
+  }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
   if (regional_capabilities::IsEeaCountry(country_id)) {
     return &kWaffleSettings;
   }
@@ -213,10 +222,6 @@ RegionalCapabilitiesService::~RegionalCapabilitiesService() {
 #endif
 }
 
-CountryIdHolder RegionalCapabilitiesService::GetCountryId() {
-  return CountryIdHolder(GetCountryIdInternal());
-}
-
 std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
 RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
   if (HasSearchEngineCountryListOverride()) {
@@ -236,6 +241,10 @@ RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
       GetActiveProgramSettings().search_engine_list_type);
 }
 
+bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion() {
+  return GetActiveProgramSettings().can_show_search_engine_choice_screen;
+}
+
 bool RegionalCapabilitiesService::IsInEeaCountry() {
   // Feature behaviour was directly based on the current country, as a
   // decentralised way to express a concept we are now framing as "program
@@ -245,6 +254,10 @@ bool RegionalCapabilitiesService::IsInEeaCountry() {
   // TODO(crbug.com/328040066): Introduce granular program settings APIs and
   // deprecate `IsInEeaCountry()` in favour of these.
   return &GetActiveProgramSettings() == &kWaffleSettings;
+}
+
+CountryIdHolder RegionalCapabilitiesService::GetCountryId() {
+  return CountryIdHolder(GetCountryIdInternal());
 }
 
 const ProgramSettings& RegionalCapabilitiesService::GetActiveProgramSettings() {

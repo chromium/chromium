@@ -241,7 +241,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_firstList.size() > 0) {
     [model addSectionWithIdentifier:SectionIdentifierFirstList];
 
-    if (_regionalCapabilitiesService->IsInEeaCountry()) {
+    if (_regionalCapabilitiesService->IsInSearchEngineChoiceScreenRegion()) {
       TableViewTextHeaderFooterItem* header =
           [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
       header.subtitle =

@@ -316,7 +316,7 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
-  if (!regional_capabilities_service_->IsInEeaCountry()) {
+  if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion()) {
     return SearchEngineChoiceScreenConditions::kNotInRegionalScope;
   }
 
@@ -480,8 +480,7 @@ void SearchEngineChoiceService::RecordChoiceMade(
 
   ClearSearchEngineChoiceInvalidation(*profile_prefs_);
 
-  // Don't modify the pref if the user is not in the EEA region.
-  if (!regional_capabilities_service_->IsInEeaCountry()) {
+  if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion()) {
     return;
   }
 
@@ -686,7 +685,7 @@ SearchEngineChoiceService::GetClientForTesting() {
 
 bool SearchEngineChoiceService::IsDsePropagationAllowedForGuest() const {
   if (client_->IsProfileEligibleForDseGuestPropagation()) {
-    return regional_capabilities_service_->IsInEeaCountry();
+    return regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion();
   }
   return false;
 }

@@ -19,9 +19,11 @@ enum class SearchEngineListType {
 // Describes how features should adjust themselves based on the program.
 struct ProgramSettings {
   SearchEngineListType search_engine_list_type;
+  bool can_show_search_engine_choice_screen;
 };
 
 extern const ProgramSettings kWaffleSettings;
+extern const ProgramSettings kTaiyakiSettings;
 extern const ProgramSettings kDefaultSettings;
 
 }  // namespace regional_capabilities

@@ -112,8 +112,8 @@ extern const char kWelcomeBackInFirstRunParam[];
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType();
 
 // Returns which variation of the kUpdatedFirstRunSequence feature is enabled or
-// `kDisabled` if the feature is disabled. This feature is disabled for EEA
-// countries.
+// `kDisabled` if the feature is disabled. This feature is disabled for profiles
+// that can be eligible to search engine choice screens.
 UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
     ProfileIOS* profile);
 
