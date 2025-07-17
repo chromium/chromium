@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -62,6 +64,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     private static final int TAB_OUTSIDE_OF_GROUP_ID_2 = 4;
     private static final int NON_URL_TAB_ID = 4;
     private static final Token TAB_GROUP_ID = Token.createRandom();
+    private static final String COLLABORATION_ID = "CollaborationId";
     private static final GURL EXAMPLE_URL = new GURL("https://example.com");
     private static final GURL CHROME_SCHEME_URL = new GURL("chrome://history");
 
@@ -118,8 +121,10 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         when(mTab1.getId()).thenReturn(TAB_1_ID);
         when(mTab2.getId()).thenReturn(TAB_2_ID);
 
+        when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab1.getUrl()).thenReturn(EXAMPLE_URL);
+        when(mTabGroupModelFilter.isTabInTabGroup(mTab2)).thenReturn(true);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getUrl()).thenReturn(EXAMPLE_URL);
         when(mTabOutsideOfGroup1.getTabGroupId()).thenReturn(null);
@@ -167,6 +172,14 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         return mWeakReferenceActivity.get().getResources().getQuantityString(resId, quantity);
     }
 
+    /**
+     * Helper to assert menu item properties when the title is a string.
+     *
+     * @param modelList The model list for the menu.
+     * @param index The index of the item to check.
+     * @param expectedTitle The expected title.
+     * @param expectedMenuItemId The expected menu item ID.
+     */
     private void assertMenuItemTitle(
             ModelList modelList, int index, String expectedTitle, int expectedMenuItemId) {
         assertEquals(
@@ -179,11 +192,64 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 modelList.get(index).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
+    /**
+     * Helper to assert menu item properties when the title is a string resource.
+     *
+     * @param modelList The model list for the menu.
+     * @param index The index of the item to check.
+     * @param expectedTitleId The expected title resource ID.
+     * @param expectedMenuItemId The expected menu item ID.
+     */
+    private void assertMenuItemTitleId(
+            ModelList modelList, int index, int expectedTitleId, int expectedMenuItemId) {
+        assertEquals(
+                "Menu item title ID is incorrect.",
+                expectedTitleId,
+                modelList.get(index).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                "Menu item ID is incorrect.",
+                expectedMenuItemId,
+                modelList.get(index).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    /**
+     * Helper to assert menu item string style.
+     *
+     * @param modelList The model list for the menu.
+     * @param index The index of the item to check.
+     */
+    private void assertStringStyleForIncognito(ModelList modelList, int index) {
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
+                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                modelList.get(index).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+    }
+
     @Test
     public void testListMenuItems_tabInGroup() {
         var modelList = new ModelList();
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
                 modelList, List.of(TAB_1_ID, TAB_2_ID));
+        assertEquals("Number of items in the list menu is incorrect", 2, modelList.size());
+
+        // List item 1
+        assertMenuItemTitle(
+                modelList,
+                0,
+                getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
+                R.id.add_to_tab_group);
+
+        // List item 2
+        assertMenuItemTitleId(
+                modelList, 1, R.string.remove_tabs_from_group, R.id.remove_from_tab_group);
+    }
+
+    @Test
+    public void testListMenuItems_tabsOutsideOfGroup() {
+        var modelList = new ModelList();
+        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2));
         assertEquals("Number of items in the list menu is incorrect", 1, modelList.size());
 
         // List item 1
@@ -195,12 +261,11 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testListMenuItems_tabOutsideOfGroup() {
+    public void testListMenuItems_someTabsInGroup() {
         var modelList = new ModelList();
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
-                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2));
-
-        assertEquals("Number of items in the list menu is incorrect", 1, modelList.size());
+                modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
+        assertEquals("Number of items in the list menu is incorrect", 2, modelList.size());
 
         // List item 1
         assertMenuItemTitle(
@@ -208,5 +273,54 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 0,
                 getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
                 R.id.add_to_tab_group);
+
+        // List item 2
+        assertMenuItemTitleId(
+                modelList, 1, R.string.remove_tabs_from_group, R.id.remove_from_tab_group);
+    }
+
+    @Test
+    public void testListMenuItems_incognito() {
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        var modelList = new ModelList();
+        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+                modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
+
+        assertEquals("Number of items in the list menu is incorrect", 2, modelList.size());
+
+        // List item 1
+        assertMenuItemTitle(
+                modelList,
+                0,
+                getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
+                R.id.add_to_tab_group);
+        assertStringStyleForIncognito(modelList, 0);
+        // List item 2
+        assertMenuItemTitleId(
+                modelList, 1, R.string.remove_tabs_from_group, R.id.remove_from_tab_group);
+        assertStringStyleForIncognito(modelList, 1);
+    }
+
+    @Test
+    public void testAddToTabsGroup_newTabGroup() {
+        List<Integer> tabIds = List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1);
+        List<Tab> tabs = List.of(mTab1, mTabOutsideOfGroup1);
+        mOnItemClickedCallback.onClick(
+                R.id.add_to_tab_group, tabIds, COLLABORATION_ID, /* listViewTouchTracker= */ null);
+        verify(mBottomSheetCoordinator, times(1)).showBottomSheet(tabs);
+    }
+
+    @Test
+    public void testRemoveTabsFromGroup() {
+        List<Integer> tabIds = List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1);
+        // Internally, tabs not part of a group are filtered out.
+        List<Tab> groupedTabs = List.of(mTab1);
+        mOnItemClickedCallback.onClick(
+                R.id.remove_from_tab_group,
+                tabIds,
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+        verify(mTabUngrouper, times(1)).ungroupTabs(groupedTabs, true, true);
     }
 }

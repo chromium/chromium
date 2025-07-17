@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.res.Resources;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
@@ -30,10 +32,12 @@ import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,6 +49,7 @@ public class MultiSelectedTabsContextMenuCoordinator
         extends TabOverflowMenuCoordinator<List<Integer>> {
     private final TabModel mTabModel;
     private final WindowAndroid mWindowAndroid;
+    private final TabGroupModelFilter mTabGroupModelFilter;
 
     private MultiSelectedTabsContextMenuCoordinator(
             TabModel tabModel,
@@ -67,6 +72,7 @@ public class MultiSelectedTabsContextMenuCoordinator
                 windowAndroid.getActivity().get());
         mTabModel = tabModel;
         mWindowAndroid = windowAndroid;
+        mTabGroupModelFilter = tabGroupModelFilter;
     }
 
     /**
@@ -118,6 +124,12 @@ public class MultiSelectedTabsContextMenuCoordinator
             if (menuId == R.id.add_to_tab_group) {
                 // The bottom sheet will handle ungrouping any grouped tabs.
                 tabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
+            } else if (menuId == R.id.remove_from_tab_group) {
+                List<Tab> groupedTabs = getGroupedTabs(tabGroupModelFilter, tabs);
+                assert !groupedTabs.isEmpty() : "No grouped tabs in the list.";
+                tabGroupModelFilter
+                        .getTabUngrouper()
+                        .ungroupTabs(groupedTabs, /* trailing= */ true, /* allowDialog= */ true);
             }
         };
     }
@@ -157,6 +169,25 @@ public class MultiSelectedTabsContextMenuCoordinator
                         .withMenuId(R.id.add_to_tab_group)
                         .withIsIncognito(isIncognito)
                         .build());
+
+        // Remove tabs from group.
+        if (isAnyTabGrouped(TabModelUtils.getTabsById(ids, mTabModel, false))) {
+            // Show the option if any selected tab is part of a group.
+            itemList.add(
+                    buildListItem(
+                            R.string.remove_tabs_from_group,
+                            R.id.remove_from_tab_group,
+                            isIncognito));
+        }
+    }
+
+    private static ListItem buildListItem(
+            @StringRes int titleRes, @IdRes int menuId, boolean isIncognito) {
+        return new ListItemBuilder()
+                .withTitleRes(titleRes)
+                .withMenuId(menuId)
+                .withIsIncognito(isIncognito)
+                .build();
     }
 
     @Override
@@ -171,5 +202,35 @@ public class MultiSelectedTabsContextMenuCoordinator
     protected @Nullable String getCollaborationIdOrNull(List<Integer> ids) {
         // Multi-select does not support collaboration yet.
         return null;
+    }
+
+    /**
+     * Checks if any tab in the provided list is part of a tab group.
+     *
+     * @param tabs The {@link List} of {@link Tab}s to check.
+     * @return {@code true} if at least one tab in the list belongs to a group, {@code false}
+     *     otherwise.
+     */
+    private boolean isAnyTabGrouped(List<Tab> tabs) {
+        for (Tab tab : tabs) {
+            if (mTabGroupModelFilter.isTabInTabGroup(tab)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Filters the given list of tabs, returning a new list containing only the tabs that are part
+     * of a tab group.
+     *
+     * @param filter The {@link TabGroupModelFilter} used to find grouped tabs.
+     * @param tabs The list of {@link Tab}s to filter.
+     * @return A new list of {@link Tab}s that are in a tab group.
+     */
+    private static List<Tab> getGroupedTabs(TabGroupModelFilter filter, List<Tab> tabs) {
+        List<Tab> groupedTabs = new ArrayList<>();
+        for (Tab tab : tabs) {
+            if (filter.isTabInTabGroup(tab)) groupedTabs.add(tab);
+        }
+        return groupedTabs;
     }
 }
