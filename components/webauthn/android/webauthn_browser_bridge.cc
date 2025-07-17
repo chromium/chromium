@@ -129,7 +129,7 @@ void WebauthnBrowserBridge::OnCredentialsDetailsListReceived(
                                              &credentials_metadata);
 
   base::RepeatingCallback<void()> hybrid_callback;
-  if (jhybrid_callback != nullptr) {
+  if (!jhybrid_callback.is_null()) {
     hybrid_callback = base::BindRepeating(
         &OnHybridAssertionInvoked,
         ScopedJavaGlobalRef<jobject>(env, jhybrid_callback));

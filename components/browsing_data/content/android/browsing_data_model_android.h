@@ -30,7 +30,7 @@ class BrowsingDataModelAndroid {
 
   void RemoveBrowsingData(
       JNIEnv* env,
-      const jstring host,
+      const base::android::JavaRef<jstring>& host,
       const base::android::JavaParamRef<jobject>& java_callback);
 
   // Destroys the BrowsingDataModelAndroid object. This needs to be called on

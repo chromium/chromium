@@ -39,8 +39,9 @@ AutofillSaveCardInfoBar::AutofillSaveCardInfoBar(
 
 AutofillSaveCardInfoBar::~AutofillSaveCardInfoBar() = default;
 
-void AutofillSaveCardInfoBar::OnLegalMessageLinkClicked(JNIEnv* env,
-                                                        jstring url) {
+void AutofillSaveCardInfoBar::OnLegalMessageLinkClicked(
+    JNIEnv* env,
+    const base::android::JavaRef<jstring>& url) {
   GetSaveCardDelegate()->OnLegalMessageLinkClicked(
       GURL(base::android::ConvertJavaStringToUTF16(env, url)));
 }

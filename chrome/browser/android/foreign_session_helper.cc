@@ -364,7 +364,7 @@ jint ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
   std::vector<int> session_tab_ids;
   base::android::JavaIntArrayToIntVector(env, j_session_tab_ids,
                                          &session_tab_ids);
-  int tabs_android_count = env->GetArrayLength(j_session_tab_ids);
+  int tabs_android_count = env->GetArrayLength(j_session_tab_ids.obj());
 
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab);
   if (!tab_android) {

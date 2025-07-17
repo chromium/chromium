@@ -39,9 +39,10 @@ namespace content {
 // TODO(dcheng): File a bug. This class incorrectly passes just a frame ID,
 // which is not sufficient to identify a frame (since frame IDs are scoped per
 // render process, and so may collide).
-WebContentsObserverProxy::WebContentsObserverProxy(JNIEnv* env,
-                                                   jobject obj,
-                                                   WebContents* web_contents)
+WebContentsObserverProxy::WebContentsObserverProxy(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj,
+    WebContents* web_contents)
     : WebContentsObserver(web_contents) {
   DCHECK(obj);
   java_observer_.Reset(env, obj);

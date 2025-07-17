@@ -26,7 +26,7 @@ namespace android {
 class ThinWebView : public content::WebContentsObserver {
  public:
   ThinWebView(JNIEnv* env,
-              jobject obj,
+              const base::android::JavaRef<jobject>& obj,
               CompositorView* compositor_view,
               ui::WindowAndroid* window_android);
 

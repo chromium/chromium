@@ -69,7 +69,7 @@ ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::GetBrowsingDataInfo(
 
 void BrowsingDataModelAndroid::RemoveBrowsingData(
     JNIEnv* env,
-    const jstring host,
+    const base::android::JavaRef<jstring>& host,
     const JavaParamRef<jobject>& java_callback) {
   browsing_data_model_->RemoveBrowsingData(
       ConvertJavaStringToUTF8(env, host),

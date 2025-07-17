@@ -828,8 +828,7 @@ void MediaDrmBridge::OnProvisionRequest(
 
   std::string request_data;
   JavaByteArrayToString(env, j_request_data, &request_data);
-  std::string default_url;
-  ConvertJavaStringToUTF8(env, j_default_url, &default_url);
+  std::string default_url = ConvertJavaStringToUTF8(env, j_default_url);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MediaDrmBridge::SendProvisioningRequest,
                                 weak_factory_.GetWeakPtr(), GURL(default_url),

@@ -1720,7 +1720,7 @@ void BookmarkBridge::ReadingListChanged() {
 void BookmarkBridge::ReorderChildren(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_bookmark_id_obj,
-    jlongArray arr) {
+    const base::android::JavaRef<jlongArray>& arr) {
   DCHECK(IsLoaded());
   // get the BookmarkNode* for the "parent" bookmark parameter
   const long bookmark_id = JavaBookmarkIdGetId(env, j_bookmark_id_obj);
@@ -1730,8 +1730,8 @@ void BookmarkBridge::ReorderChildren(
 
   // populate a vector
   std::vector<const BookmarkNode*> ordered_nodes;
-  jsize arraySize = env->GetArrayLength(arr);
-  jlong* elements = env->GetLongArrayElements(arr, 0);
+  jsize arraySize = env->GetArrayLength(arr.obj());
+  jlong* elements = env->GetLongArrayElements(arr.obj(), 0);
 
   // iterate through array, adding the BookmarkNode*s of the objects
   for (int i = 0; i < arraySize; ++i) {

@@ -17,7 +17,7 @@ namespace android {
 class DistilledPagePrefsAndroid {
  public:
   DistilledPagePrefsAndroid(JNIEnv* env,
-                            jobject obj,
+                            const base::android::JavaRef<jobject>& obj,
                             DistilledPagePrefs* distilled_page_prefs_ptr);
 
   DistilledPagePrefsAndroid(const DistilledPagePrefsAndroid&) = delete;
@@ -46,7 +46,8 @@ class DistilledPagePrefsAndroid {
 
 class DistilledPagePrefsObserverAndroid : public DistilledPagePrefs::Observer {
  public:
-  DistilledPagePrefsObserverAndroid(JNIEnv* env, jobject obj);
+  DistilledPagePrefsObserverAndroid(JNIEnv* env,
+                                    const base::android::JavaRef<jobject>& obj);
   ~DistilledPagePrefsObserverAndroid() override;
 
   // DistilledPagePrefs::Observer implementation.

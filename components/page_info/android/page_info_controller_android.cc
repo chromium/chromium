@@ -65,7 +65,7 @@ static jlong JNI_PageInfoController_Init(
 
 PageInfoControllerAndroid::PageInfoControllerAndroid(
     JNIEnv* env,
-    jobject java_page_info_pop,
+    const base::android::JavaRef<jobject>& java_page_info_pop,
     content::WebContents* web_contents) {
   content::NavigationEntry* nav_entry =
       web_contents->GetController().GetVisibleEntry();

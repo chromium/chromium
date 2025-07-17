@@ -21,7 +21,7 @@ namespace external_intents {
 TestChildFrameNavigationObserver::TestChildFrameNavigationObserver(
     WebContents* web_contents,
     JNIEnv* env,
-    jobject java_test_observer)
+    const JavaParamRef<jobject>& java_test_observer)
     : WebContentsObserver(web_contents),
       WebContentsUserData<TestChildFrameNavigationObserver>(*web_contents) {
   DCHECK(java_test_observer);
@@ -34,7 +34,7 @@ TestChildFrameNavigationObserver::~TestChildFrameNavigationObserver() = default;
 void TestChildFrameNavigationObserver::CreateForWebContents(
     WebContents* web_contents,
     JNIEnv* env,
-    jobject java_test_observer) {
+    const JavaParamRef<jobject>& java_test_observer) {
   WebContentsUserData<TestChildFrameNavigationObserver>::CreateForWebContents(
       web_contents, env, java_test_observer);
 }

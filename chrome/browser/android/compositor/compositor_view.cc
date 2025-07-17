@@ -72,7 +72,7 @@ jlong JNI_CompositorView_Init(
 }
 
 CompositorView::CompositorView(JNIEnv* env,
-                               jobject obj,
+                               const base::android::JavaRef<jobject>& obj,
                                jboolean low_mem_device,
                                ui::WindowAndroid* window_android,
                                TabContentManager* tab_content_manager)

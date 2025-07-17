@@ -162,8 +162,6 @@ class JavaParamRef : public JavaRef<T> {
   JavaParamRef& operator=(const JavaParamRef&) = delete;
 
   ~JavaParamRef() {}
-
-  operator T() const { return JavaRef<T>::obj(); }
 };
 
 // Holds a local reference to a Java object. The local reference is scoped
@@ -294,13 +292,6 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
   JNIEnv* env_ = nullptr;
 
-  // Prevent ScopedJavaLocalRef(JNIEnv*, T obj) from being used to take
-  // ownership of a JavaParamRef's underlying object - parameters are not
-  // allowed to be deleted and so should not be owned by ScopedJavaLocalRef.
-  // TODO(torne): this can be removed once JavaParamRef no longer has an
-  // implicit conversion back to T.
-  ScopedJavaLocalRef(JNIEnv* env, const JavaParamRef<T>& other);
-
   // Friend required to get env_ from conversions.
   template <typename U>
   friend class ScopedJavaLocalRef;
@@ -403,9 +394,7 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
   void Reset(const JavaRef<T>& other) { Reset(nullptr, other.obj()); }
 
   // Deprecated. You can just use Reset(const JavaRef&).
-  void Reset(JNIEnv* env, const JavaParamRef<T>& other) {
-    Reset(env, other.obj());
-  }
+  void Reset(JNIEnv* env, const JavaRef<T>& other) { Reset(env, other.obj()); }
 
   // Deprecated. Don't use bare jobjects; use a JavaRef as the input.
   void Reset(JNIEnv* env, T obj) { JavaRef<T>::SetNewGlobalRef(env, obj); }

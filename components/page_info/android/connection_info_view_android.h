@@ -25,9 +25,10 @@ class PageInfoClient;
 // connection and certificate information for the website.
 class ConnectionInfoViewAndroid : public PageInfoUI {
  public:
-  ConnectionInfoViewAndroid(JNIEnv* env,
-                            jobject java_page_info,
-                            content::WebContents* web_contents);
+  ConnectionInfoViewAndroid(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& java_page_info,
+      content::WebContents* web_contents);
 
   ConnectionInfoViewAndroid(const ConnectionInfoViewAndroid&) = delete;
   ConnectionInfoViewAndroid& operator=(const ConnectionInfoViewAndroid&) =

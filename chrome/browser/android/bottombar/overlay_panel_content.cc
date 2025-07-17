@@ -31,7 +31,9 @@ using base::android::JavaParamRef;
 
 // This class manages the native behavior of the panel.
 // Instances of this class are owned by the Java OverlayPanelContentl.
-OverlayPanelContent::OverlayPanelContent(JNIEnv* env, jobject obj) {
+OverlayPanelContent::OverlayPanelContent(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj) {
   java_manager_.Reset(env, obj);
 }
 

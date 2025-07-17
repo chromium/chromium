@@ -178,7 +178,7 @@ void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
 
   // |byte_buffer| may be null if authentication failed.
   if (byte_buffer) {
-    auto span = base::android::JavaByteBufferToSpan(env, byte_buffer.obj());
+    auto span = base::android::JavaByteBufferToSpan(env, byte_buffer);
     blink::mojom::MakeCredentialAuthenticatorResponse::Deserialize(
         span.data(), span.size(), &response);
   }
@@ -200,7 +200,7 @@ void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
 
   // |byte_buffer| may be null if authentication failed.
   if (byte_buffer) {
-    auto span = base::android::JavaByteBufferToSpan(env, byte_buffer.obj());
+    auto span = base::android::JavaByteBufferToSpan(env, byte_buffer);
     blink::mojom::GetAssertionAuthenticatorResponse::Deserialize(
         span.data(), span.size(), &response);
   }

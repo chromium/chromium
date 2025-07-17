@@ -39,7 +39,7 @@ static jlong JNI_PageInfoConnectionSecurityController_Init(
 
 ConnectionSecurityControllerAndroid::ConnectionSecurityControllerAndroid(
     JNIEnv* env,
-    jobject java_controller_obj,
+    const base::android::JavaRef<jobject>& java_controller_obj,
     content::WebContents* web_contents) {
   page_info_client_ = page_info::GetPageInfoClient();
   DCHECK(page_info_client_);

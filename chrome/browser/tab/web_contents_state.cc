@@ -50,7 +50,7 @@ WebContentsStateByteBuffer::WebContentsStateByteBuffer(
     : state_version(saved_state_version) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_buffer.Reset(web_contents_byte_buffer_result);
-  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer.obj());
+  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer);
 }
 
 WebContentsStateByteBuffer::WebContentsStateByteBuffer(
@@ -336,9 +336,9 @@ ScopedJavaLocalRef<jobject> WriteNavigationsAsByteBuffer(
 
 std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
     JNIEnv* env,
-    jstring title,
-    jstring url,
-    jstring referrer_url,
+    const base::android::JavaRef<jstring>& title,
+    const base::android::JavaRef<jstring>& url,
+    const base::android::JavaRef<jstring>& referrer_url,
     jint referrer_policy,
     const base::android::JavaParamRef<jobject>& jinitiator_origin,
     jboolean is_off_the_record) {
@@ -477,7 +477,7 @@ ScopedJavaLocalRef<jstring> WebContentsState::GetVirtualUrlFromByteBuffer(
 
 ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     JNIEnv* env,
-    jobject state,
+    const base::android::JavaRef<jobject>& state,
     jint saved_state_version,
     jboolean initially_hidden,
     jboolean no_renderer) {
@@ -607,9 +607,9 @@ bool WebContentsState::ExtractNavigationEntries(
 ScopedJavaLocalRef<jobject>
 WebContentsState::CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
-    jstring title,
-    jstring url,
-    jstring referrer_url,
+    const base::android::JavaRef<jstring>& title,
+    const base::android::JavaRef<jstring>& url,
+    const base::android::JavaRef<jstring>& referrer_url,
     jint referrer_policy,
     const base::android::JavaParamRef<jobject>& jinitiator_origin,
     jboolean is_off_the_record) {
@@ -650,9 +650,9 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
     JNIEnv* env,
     base::span<const uint8_t> buffer,
     int saved_state_version,
-    jstring title,
-    jstring url,
-    jstring referrer_url,
+    const base::android::JavaRef<jstring>& title,
+    const base::android::JavaRef<jstring>& url,
+    const base::android::JavaRef<jstring>& referrer_url,
     jint referrer_policy,
     const base::android::JavaParamRef<jobject>& jinitiator_origin,
     jboolean jis_off_the_record) {

@@ -33,7 +33,7 @@ SkBitmap ExtractImage(JNIEnv* env,
                       const JavaParamRef<jobjectArray>& j_resources,
                       int index) {
   ScopedJavaLocalRef<jobject> j_image(
-      env, env->GetObjectArrayElement(j_resources, index));
+      env, env->GetObjectArrayElement(j_resources.obj(), index));
   return j_image.is_null()
              ? SkBitmap()
              : CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(j_image));
@@ -44,7 +44,7 @@ std::vector<blink::NotificationResources> ParseResources(
     const JavaParamRef<jobjectArray>& j_resources) {
   // Resources is an array of bitmaps with the following order:
   // [icon, badge, image, icon, badge, image, ...]
-  int resource_count = env->GetArrayLength(j_resources);
+  int resource_count = env->GetArrayLength(j_resources.obj());
   DCHECK(resource_count % 3 == 0);
 
   std::vector<blink::NotificationResources> resources;

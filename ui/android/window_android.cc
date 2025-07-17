@@ -88,7 +88,7 @@ WindowAndroid* WindowAndroid::FromJavaWindowAndroid(
 }
 
 WindowAndroid::WindowAndroid(JNIEnv* env,
-                             jobject obj,
+                             const base::android::JavaRef<jobject>& obj,
                              int display_id,
                              float scroll_factor,
                              bool window_is_wide_color_gamut)
