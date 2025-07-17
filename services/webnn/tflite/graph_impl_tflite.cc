@@ -55,7 +55,7 @@
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 #include "third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
-#include "third_party/xnnpack/src/include/xnnpack.h"
+#include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
