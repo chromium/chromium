@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
@@ -18,6 +19,7 @@
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
+#include "components/permissions/test/enums_to_string.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -208,6 +210,12 @@ class PermissionChipUnitTest : public TestWithBrowserView {
                                     gfx::Point(), ui::EventTimeForNow(),
                                     ui::EF_LEFT_MOUSE_BUTTON, 0));
     base::RunLoop().RunUntilIdle();
+  }
+
+  void ClickOnAcceptPermissionRequestQuietChip(ChipController* controller) {
+    auto* bubble = controller->GetContentSettingBubbleContentsForTesting();
+    EXPECT_NE(bubble, nullptr);
+    bubble->AsDialogDelegate()->Accept();
   }
 
   void ClickOnChipAllowForThisSiteButton(PermissionChipView& chip) {
@@ -544,17 +552,23 @@ TEST_F(PermissionPromiseLifetimeModulationTest,
   EXPECT_TRUE(delegate.IsRequestInProgress());
   delegate.ClearRequests();
 }
-using PermissionPromiseLifetimeModulationQuietUiTestCase =
+
+template <class ParamType>
+std::string TestNameGenerator(const testing::TestParamInfo<ParamType>& info) {
+  return base::StrCat({test::ToString(std::get<0>(info.param)), "For",
+                       test::ToString(std::get<1>(info.param))});
+}
+
+using QuietUiReasonsTestCase =
     std::tuple<permissions::RequestType, QuietUiReason>;
 
-class PermissionPromiseLifetimeModulationQuietUiTest
+class QuietUiPreignoreTest
     : public PermissionPromiseLifetimeModulationTest,
-      public testing::WithParamInterface<
-          PermissionPromiseLifetimeModulationQuietUiTestCase> {};
+      public testing::WithParamInterface<QuietUiReasonsTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    TestQuietUiReasons,
-    PermissionPromiseLifetimeModulationQuietUiTest,
+    TestCases,
+    QuietUiPreignoreTest,
     Combine(Values(permissions::RequestType::kGeolocation,
                    permissions::RequestType::kNotifications),
             Values(QuietUiReason::kEnabledInPrefs,
@@ -565,16 +579,9 @@ INSTANTIATE_TEST_SUITE_P(
                    QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant,
                    QuietUiReason::kTriggeredDueToDisruptiveBehavior)),
     /*name_generator=*/
-    [](const testing::TestParamInfo<
-        PermissionPromiseLifetimeModulationQuietUiTest::ParamType>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) == permissions::RequestType::kNotifications
-               ? "Notification"
-               : "Geolocation",
-           "QuietUiReason", base::ToString(std::get<1>(info.param))});
-    });
+    TestNameGenerator<QuietUiPreignoreTest::ParamType>);
 
-TEST_P(PermissionPromiseLifetimeModulationQuietUiTest,
+TEST_P(QuietUiPreignoreTest,
        PermissionRequestsForAllQuietUiReasonsGetPreignored) {
   auto [request_type, quiet_ui_reason] = GetParam();
 
@@ -587,4 +594,85 @@ TEST_P(PermissionPromiseLifetimeModulationQuietUiTest,
   });
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   delegate.ClearRequests();
+}
+
+class QuietUiAbusiveRequestsTest
+    : public PermissionPromiseLifetimeModulationTest,
+      public testing::WithParamInterface<QuietUiReasonsTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    TestCases,
+    QuietUiAbusiveRequestsTest,
+    Combine(Values(permissions::RequestType::kNotifications),
+            Values(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                   QuietUiReason::kTriggeredDueToAbusiveContent,
+                   QuietUiReason::kTriggeredDueToDisruptiveBehavior)),
+    /*name_generator=*/
+    TestNameGenerator<QuietUiAbusiveRequestsTest::ParamType>);
+
+TEST_P(QuietUiAbusiveRequestsTest, GetsDenied) {
+  auto [request_type, quiet_ui_reason] = GetParam();
+
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {request_type}, true, quiet_ui_reason,
+      web_contents_);
+
+  EXPECT_CALL(delegate, PreIgnoreQuietPrompt()).WillOnce([&delegate]() {
+    return delegate.PermissionRequestManager::PreIgnoreQuietPrompt();
+  });
+  PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  // Open a permission popup bubble.
+  ClickOnChip(chip_controller);
+  ASSERT_TRUE(chip_controller->IsBubbleShowing());
+
+  EXPECT_CALL(delegate, Deny()).WillOnce([&delegate]() {
+    delegate.ClearRequests();
+  });
+
+  EXPECT_TRUE(delegate.IsRequestInProgress());
+  ClickOnAcceptPermissionRequestQuietChip(chip_controller);
+  EXPECT_FALSE(delegate.IsRequestInProgress());
+}
+
+class QuietUiNonAbusiveRequestsTest
+    : public PermissionPromiseLifetimeModulationTest,
+      public testing::WithParamInterface<QuietUiReasonsTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    TestCases,
+    QuietUiNonAbusiveRequestsTest,
+    Combine(Values(permissions::RequestType::kGeolocation,
+                   permissions::RequestType::kNotifications),
+            Values(QuietUiReason::kEnabledInPrefs)),
+    /*name_generator=*/
+    TestNameGenerator<QuietUiNonAbusiveRequestsTest::ParamType>);
+
+TEST_P(QuietUiNonAbusiveRequestsTest, GetsAccepted) {
+  auto [request_type, quiet_ui_reason] = GetParam();
+
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {request_type}, true, quiet_ui_reason,
+      web_contents_);
+
+  EXPECT_CALL(delegate, PreIgnoreQuietPrompt()).WillOnce([&delegate]() {
+    return delegate.PermissionRequestManager::PreIgnoreQuietPrompt();
+  });
+  PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  // Open a permission popup bubble.
+  ClickOnChip(chip_controller);
+  ASSERT_TRUE(chip_controller->IsBubbleShowing());
+
+  EXPECT_CALL(delegate, Accept()).WillOnce([&delegate]() {
+    delegate.ClearRequests();
+  });
+
+  EXPECT_TRUE(delegate.IsRequestInProgress());
+  ClickOnAcceptPermissionRequestQuietChip(chip_controller);
+  EXPECT_FALSE(delegate.IsRequestInProgress());
 }

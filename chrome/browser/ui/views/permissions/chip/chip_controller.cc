@@ -800,3 +800,14 @@ PermissionPromptBubbleBaseView* ChipController::GetPromptBubbleView() {
   auto* view = bubble_tracker_.view();
   return view ? static_cast<PermissionPromptBubbleBaseView*>(view) : nullptr;
 }
+
+ContentSettingBubbleContents*
+ChipController::GetContentSettingBubbleContentsForTesting() {
+  CHECK_IS_TEST();
+  // The tracked bubble view is a `ContentSettingBubbleContents` only when
+  // `kQuietChip` is used.
+  CHECK_EQ(permission_prompt_model_->GetPromptStyle(),
+           PermissionPromptStyle::kQuietChip);
+  auto* view = bubble_tracker_.view();
+  return view ? static_cast<ContentSettingBubbleContents*>(view) : nullptr;
+}
