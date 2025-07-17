@@ -23,6 +23,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.identitymanager.IdentityManagerImplJni;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link ProfileDataCache} */
@@ -43,8 +44,7 @@ public class ProfileDataCacheUnitTest {
 
     @Mock private ProfileDataCache.Observer mObserverMock;
 
-    private final IdentityManagerImpl mIdentityManager =
-            IdentityManagerImpl.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
+    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
     private ProfileDataCache mProfileDataCache;
 
@@ -74,7 +74,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertNull(
                 mProfileDataCache.getProfileDataOrDefault(ACCOUNT.getEmail()).getFullName());
 
-        mIdentityManager.onExtendedAccountInfoUpdated(accountWithFullName);
+        mIdentityManager.addOrUpdateExtendedAccountInfo(accountWithFullName);
 
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
         Assert.assertEquals(
@@ -92,7 +92,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertNull(
                 mProfileDataCache.getProfileDataOrDefault(ACCOUNT.getEmail()).getGivenName());
 
-        mIdentityManager.onExtendedAccountInfoUpdated(accountWithGivenName);
+        mIdentityManager.addOrUpdateExtendedAccountInfo(accountWithGivenName);
 
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
         Assert.assertEquals(
@@ -110,7 +110,7 @@ public class ProfileDataCacheUnitTest {
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
 
-        mIdentityManager.onExtendedAccountInfoUpdated(ACCOUNT);
+        mIdentityManager.addOrUpdateExtendedAccountInfo(ACCOUNT);
 
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
     }
