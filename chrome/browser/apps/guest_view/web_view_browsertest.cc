@@ -7491,8 +7491,16 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest, ZoomFencedFrame) {
                    content::GetPendingZoomLevel(embedder_rwh));
 }
 
+// TODO(crbug.com/432394750): Flaky on linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FencedFrameInGuestHasGuestSiteInstance \
+  DISABLED_FencedFrameInGuestHasGuestSiteInstance
+#else
+#define MAYBE_FencedFrameInGuestHasGuestSiteInstance \
+  FencedFrameInGuestHasGuestSiteInstance
+#endif
 IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
-                       FencedFrameInGuestHasGuestSiteInstance) {
+                       MAYBE_FencedFrameInGuestHasGuestSiteInstance) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
 
   TestHelper("testAddFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
