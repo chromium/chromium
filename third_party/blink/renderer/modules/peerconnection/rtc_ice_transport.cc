@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/webrtc/api/ice_transport_factory.h"
 #include "third_party/webrtc/api/ice_transport_interface.h"
-#include "third_party/webrtc/api/jsep_ice_candidate.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 #include "third_party/webrtc/p2p/base/transport_description.h"
