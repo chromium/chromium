@@ -48,6 +48,7 @@ class TabListBridge : public TabListInterface {
   void DiscardTab(tabs::TabHandle tab) override;
   void DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;
+  int GetIndexOfTab(tabs::TabHandle tab) override;
   void HighlightTabs(tabs::TabHandle tab_to_activate,
                      const std::set<tabs::TabHandle>& tabs) override;
   void MoveTab(tabs::TabHandle tab, int index) override;
@@ -62,10 +63,6 @@ class TabListBridge : public TabListInterface {
   void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override;
 
  private:
-  // Returns the index of the given `tab`, if it exists in the tab strip.
-  // Otherwise, returns -1.
-  int GetIndexOfTab(tabs::TabHandle tab);
-
   raw_ref<TabStripModel> tab_strip_;
   ui::ScopedUnownedUserData<TabListBridge> scoped_data_holder_;
 };

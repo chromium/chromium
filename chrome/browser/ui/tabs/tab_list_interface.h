@@ -60,6 +60,10 @@ class TabListInterface {
   // if the index is out-of-bounds.
   virtual tabs::TabInterface* GetTab(int index) = 0;
 
+  // Returns the index of the given `tab`, if it exists in the tab strip.
+  // Otherwise, returns -1.
+  virtual int GetIndexOfTab(tabs::TabHandle tab) = 0;
+
   // Highlights a set of tabs, adding them to the multi-selection set and
   // activating one of them. This is an additive operation; it does not clear
   // other currently selected tabs. The `tab_to_activate` becomes the active

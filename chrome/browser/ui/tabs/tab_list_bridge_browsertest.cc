@@ -153,3 +153,35 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, PinAndUnpin) {
   tab_list_interface->UnpinTab(tab->GetHandle());
   EXPECT_FALSE(tab->IsPinned());
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetIndexOfTab) {
+  const GURL url("http://example.com");
+
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  tabs::TabInterface* tab0 = tab_list_interface->GetActiveTab();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* tab1 = tab_list_interface->GetActiveTab();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* tab2 = tab_list_interface->GetActiveTab();
+
+  EXPECT_EQ(0, tab_list_interface->GetIndexOfTab(tab0->GetHandle()));
+  EXPECT_EQ(1, tab_list_interface->GetIndexOfTab(tab1->GetHandle()));
+  EXPECT_EQ(2, tab_list_interface->GetIndexOfTab(tab2->GetHandle()));
+
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  TabListInterface* new_tab_list_interface = TabListBridge::From(new_browser);
+  ASSERT_TRUE(new_tab_list_interface);
+
+  tabs::TabInterface* new_tab = new_tab_list_interface->GetActiveTab();
+
+  EXPECT_EQ(-1, tab_list_interface->GetIndexOfTab(new_tab->GetHandle()));
+  EXPECT_EQ(-1, new_tab_list_interface->GetIndexOfTab(tab0->GetHandle()));
+}

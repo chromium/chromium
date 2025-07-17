@@ -293,6 +293,21 @@ tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
   return GetTabAt(index);
 }
 
+int TabModelJniBridge::GetIndexOfTab(tabs::TabHandle tab) {
+  tabs::TabInterface* tab_interface = tab.Get();
+  if (!tab_interface) {
+    return -1;
+  }
+  int count = GetTabCount();
+  for (int i = 0; i < count; ++i) {
+    if (GetTabAt(i) == tab_interface) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
 void TabModelJniBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
                                       const std::set<tabs::TabHandle>& tabs) {
   std::vector<TabAndroid*> tabs_to_highlight = GetAllTabsFromHandles(tabs);

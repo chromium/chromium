@@ -141,6 +141,11 @@ tabs::TabInterface* TestTabModel::GetTab(int index) {
   return nullptr;
 }
 
+int TestTabModel::GetIndexOfTab(tabs::TabHandle tab) {
+  NOTIMPLEMENTED();
+  return -1;
+}
+
 void TestTabModel::HighlightTabs(tabs::TabHandle tab_to_activate,
                                  const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
@@ -344,6 +349,11 @@ void OwningTestTabModel::DuplicateTab(tabs::TabHandle tab) {
 tabs::TabInterface* OwningTestTabModel::GetTab(int index) {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+int OwningTestTabModel::GetIndexOfTab(tabs::TabHandle tab) {
+  NOTIMPLEMENTED();
+  return -1;
 }
 
 void OwningTestTabModel::HighlightTabs(tabs::TabHandle tab_to_activate,

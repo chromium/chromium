@@ -38,6 +38,10 @@ tabs::TabInterface* TabListBridge::GetTab(int index) {
   return tab_strip_->GetTabAtIndex(index);
 }
 
+int TabListBridge::GetIndexOfTab(tabs::TabHandle tab) {
+  return tab_strip_->GetIndexOfTab(tab.Get());
+}
+
 void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
                                   const std::set<tabs::TabHandle>& tabs) {}
 
@@ -78,10 +82,6 @@ std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
 void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {}
 
 void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {}
-
-int TabListBridge::GetIndexOfTab(tabs::TabHandle tab) {
-  return tab_strip_->GetIndexOfTab(tab.Get());
-}
 
 // static
 // From //chrome/browser/ui/tabs/tab_list_interface.h
