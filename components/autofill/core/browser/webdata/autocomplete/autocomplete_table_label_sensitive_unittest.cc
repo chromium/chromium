@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -297,41 +298,46 @@ TEST_F(AddFormFieldValuesTest, InsertsNullTerminatedValuesAsIs) {
             1);
 }
 
-// Check if additional form fields with identical name/label signature are
-// ignored by AddFormFieldValues.
-TEST_F(AddFormFieldValuesTest, InsertsOnlyOneEntryPerUniqueFieldName) {
-  // Add multiple values for "firstname" and "lastname" names.  Test that only
-  // first value of each gets added. Related to security issue:
-  // http://crbug.com/51727.
+// Check if AddFormFieldValues ignores a field if the name AND/OR label
+// of the field already appeared in the form before.
+TEST_F(AddFormFieldValuesTest, IgnoresIdenticalNameOrLabel) {
+  // Will be added to the database.
+  auto field1 = test::CreateTestFormField(u"label", u"name", u"Superman",
+                                          FormControlType::kInputText);
 
-  std::vector<FormFieldData> elements = {
-      CreateTestFormField(u"First Name", u"first_name", u"Joe",
-                          FormControlType::kInputText),
-      CreateTestFormField(u"First Name", u"first_name", u"Jane",
-                          FormControlType::kInputText),
-      CreateTestFormField(u"Last Name", u"last_name", u"Smith",
-                          FormControlType::kInputText),
-      CreateTestFormField(u"Last Name", u"last_name", u"Jones",
-                          FormControlType::kInputText)};
+  // Ignored due to an identical name.
+  auto field2 = test::CreateTestFormField(u"label123", u"name", u"Superman",
+                                          FormControlType::kInputText);
 
-  ASSERT_TRUE(SubmitFormFields(elements));
+  // Ignored due to an identical label.
+  auto field3 = test::CreateTestFormField(u"label", u"name123", u"Superman",
+                                          FormControlType::kInputText);
+
+  // Ignored due to identical name and label.
+  auto field4 = test::CreateTestFormField(u"label", u"name", u"Superman",
+                                          FormControlType::kInputText);
+
+  ASSERT_TRUE(SubmitFormFields({field1, field2, field3, field4}));
 
   EXPECT_THAT(changes(),
-              ElementsAre(AutocompleteChangeLabelSensitive(
-                              AutocompleteChangeLabelSensitive::ADD,
-                              AutocompleteKeyLabelSensitive(
-                                  u"first_name", u"First Name", u"Joe")),
-                          AutocompleteChangeLabelSensitive(
-                              AutocompleteChangeLabelSensitive::ADD,
-                              AutocompleteKeyLabelSensitive(
-                                  u"last_name", u"Last Name", u"Smith"))));
+              UnorderedElementsAre(AutocompleteChangeLabelSensitive(
+                  AutocompleteChangeLabelSensitive::ADD,
+                  AutocompleteKeyLabelSensitive(field1.name(), field1.label(),
+                                                field1.value()))));
+}
 
-  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
-                u"first_name", u"First Name", u"Joe", &db()),
-            1);
-  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(u"last_name", u"Last Name",
-                                                    u"Smith", &db()),
-            1);
+// Check if AddFormFieldValues inserts at most 256 entries.
+TEST_F(AddFormFieldValuesTest, InsertsAtMost256Entries) {
+  std::vector<FormFieldData> elements;
+  for (int i = 0; i < 300; ++i) {
+    elements.push_back(test::CreateTestFormField(
+        u"name" + base::NumberToString16(i),
+        u"label" + base::NumberToString16(i),
+        u"Superman" + base::NumberToString16(i), FormControlType::kInputText));
+  }
+  ASSERT_TRUE(SubmitFormFields(elements));
+
+  EXPECT_EQ(changes().size(), 256U);
 }
 
 using GetFormValuesForElementNameAndLabelTest =

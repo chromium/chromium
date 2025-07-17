@@ -127,21 +127,27 @@ bool AutocompleteTableLabelSensitive::AddFormFieldValues(
     const std::vector<FormFieldData>& elements,
     std::vector<AutocompleteChangeLabelSensitive>* changes) {
   const base::Time now = AutofillClock::Now();
-  // Only add one new entry for each unique element name and label pair.  Use
-  // `seen_name_label_pairs` to track this.  Add up to `kMaximumUniquePairs`
-  // unique entries per form.
-  const size_t kMaximumUniquePairs = 256;
-  std::set<std::pair<std::u16string, std::u16string>>
-      seen_name_label_pairs;
+  const size_t kMaximumFields = 256;
+
+  std::set<std::u16string> seen_names;
+  std::set<std::u16string> seen_labels;
+
   for (const FormFieldData& element : elements) {
-    if (!seen_name_label_pairs
-             .insert(std::make_pair(element.name(), element.label()))
-             .second) {
-      continue;
-    }
-    if (seen_name_label_pairs.size() == kMaximumUniquePairs) {
+    // Add at most kMaximumFields
+    if (seen_names.size() >= kMaximumFields) {
       break;
     }
+
+    // If a field has a name OR labels that we've already seen in the current
+    // form, skip it.
+    if (seen_names.contains(element.name()) ||
+        seen_labels.contains(element.label())) {
+      continue;
+    }
+
+    seen_names.insert(element.name());
+    seen_labels.insert(element.label());
+
     if (!AddFormFieldValueTime(element, now, changes)) {
       return false;
     }
