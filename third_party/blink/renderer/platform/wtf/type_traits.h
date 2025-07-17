@@ -228,6 +228,9 @@ using WTF::IsStackAllocatedTypeV;
 using WTF::IsTraceable;
 using WTF::IsWeak;
 using WTF::IsWeakMemberType;
+using WTF::kWeakHandlingTrait;
+using WTF::TraceInCollectionTrait;
+using WTF::WeakHandlingFlag;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TYPE_TRAITS_H_

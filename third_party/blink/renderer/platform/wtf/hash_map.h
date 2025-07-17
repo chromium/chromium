@@ -209,7 +209,7 @@ class HashMap {
   void clear();
   template <typename Collection>
   void RemoveAll(const Collection& to_be_removed) {
-    WTF::RemoveAll(*this, to_be_removed);
+    blink::RemoveAll(*this, to_be_removed);
   }
 
   MappedType Take(KeyPeekInType);  // efficient combination of get with remove

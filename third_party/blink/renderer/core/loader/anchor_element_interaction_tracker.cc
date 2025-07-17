@@ -450,7 +450,7 @@ void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
     next_fire_time =
         std::min(next_fire_time, hover_event_candidate.value.timestamp);
   }
-  WTF::RemoveAll(hover_event_candidates_, to_be_erased);
+  RemoveAll(hover_event_candidates_, to_be_erased);
   if (!next_fire_time.is_max()) {
     hover_timer_.StartOneShot(next_fire_time - now, FROM_HERE);
   }

@@ -380,15 +380,15 @@ class BlinkVectorPrinter:
         return 'array'
 
 
-class WTFHashTablePrinter:
-    """Pretty printer for a WTF::HashTable.
+class BlinkHashTablePrinter:
+    """Pretty printer for a blink::HashTable.
 
     The output of this pretty printer is similar to the output of
     std::unordered_map's pretty printer, which is bundled with gcc.
 
     An example gdb session should look like:
     (gdb) print m
-    $1 = {impl_ = WTF::HashTable with 2 elements = {
+    $1 = {impl_ = blink::HashTable with 2 elements = {
         ["a-start"] = 0, ["a-end"] = 1}}
     """
 
@@ -435,12 +435,12 @@ class WTFHashTablePrinter:
         # HashSets use a HashTable where the value and key are the same so the
         # iteration needs to know whether to look for an explicit key or not.
         extractor_name = self.val.type.template_argument(2).name
-        is_keyval = extractor_name != 'WTF::IdentityExtractor'
+        is_keyval = extractor_name != 'blink::IdentityExtractor'
         return self.Iterator(start, start + self.val['table_size_'], is_keyval)
 
     def to_string(self):
         return ('%s with %d elements' %
-                ('WTF::HashTable', self.val['key_count_']))
+                ('blink::HashTable', self.val['key_count_']))
 
     def display_hint(self):
         return 'array'
@@ -490,9 +490,9 @@ class CcPaintOpBufferPrinter:
 
 def add_pretty_printers():
     pretty_printers = (
-        (re.compile("^WTF::HashTable<.*>$"), WTFHashTablePrinter),
         (re.compile("^blink::AtomicString$"), BlinkAtomicStringPrinter),
         (re.compile("^blink::FixedPoint<.*>$"), blinkFixedPointPrinter),
+        (re.compile("^blink::HashTable<.*>$"), BlinkHashTablePrinter),
         (re.compile("^blink::KURL$"), blinkKURLPrinter),
         (re.compile("^blink::LayoutUnit$"), blinkLayoutUnitPrinter),
         (re.compile("^blink::LayoutPoint$"), blinkLayoutPointPrinter),

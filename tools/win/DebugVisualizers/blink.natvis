@@ -104,7 +104,7 @@
       </ArrayItems>
     </Expand>
   </Type>
-  <Type Name="WTF::HashTable&lt;*&gt;">
+  <Type Name="blink::HashTable&lt;*&gt;">
     <DisplayString>keyCount={key_count_}, tableSize={table_size_}</DisplayString>
     <Expand>
       <ArrayItems Condition="table_size_>0">

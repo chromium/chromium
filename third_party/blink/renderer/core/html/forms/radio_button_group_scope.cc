@@ -53,7 +53,7 @@ class RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
   // The map records the 'required' state of each (button) element.
   using Members = HeapHashMap<Member<HTMLInputElement>, bool>;
 
-  using MemberKeyValue = WTF::KeyValuePair<Member<HTMLInputElement>, bool>;
+  using MemberKeyValue = KeyValuePair<Member<HTMLInputElement>, bool>;
 
   void UpdateRequiredButton(MemberKeyValue&, bool is_required);
 

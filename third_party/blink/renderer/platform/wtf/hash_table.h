@@ -105,7 +105,7 @@ GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
 #endif
 #endif
 
-namespace WTF {
+namespace blink {
 
 #if DUMP_HASHTABLE_STATS || DUMP_HASHTABLE_STATS_PER_TABLE
 struct WTF_EXPORT HashTableStats {
@@ -524,8 +524,6 @@ std::ostream& operator<<(std::ostream& stream,
                                                  Allocator>& iterator) {
   return iterator.PrintTo(stream);
 }
-
-using std::swap;
 
 template <typename T,
           typename Allocator,
@@ -1980,7 +1978,7 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-struct WeakProcessingHashTableHelper<kWeakHandling,
+struct WeakProcessingHashTableHelper<WeakHandlingFlag::kWeakHandling,
                                      Key,
                                      Value,
                                      Extractor,
@@ -2008,8 +2006,8 @@ struct WeakProcessingHashTableHelper<kWeakHandling,
     for (ValueType* element = table->table_ + table->table_size_ - 1;
          element >= table->table_; element--) {
       if (!HashTableType::IsEmptyOrDeletedBucket(*element)) {
-        if (!TraceInCollectionTrait<kWeakHandling, ValueType, Traits>::IsAlive(
-                info, *element)) {
+        if (!TraceInCollectionTrait<WeakHandlingFlag::kWeakHandling, ValueType,
+                                    Traits>::IsAlive(info, *element)) {
           table->RegisterModification();
           HashTableType::DeleteBucket(*element);  // Also calls the destructor.
           table->deleted_count_++;
@@ -2344,12 +2342,6 @@ inline void RemoveAll(Collection1& collection,
     collection.erase(*it);
 }
 
-}  // namespace WTF
-
-namespace blink {
-using WTF::HashTable;
-using WTF::HashTableConstIteratorAdapter;
-using WTF::HashTableIteratorAdapter;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TABLE_H_

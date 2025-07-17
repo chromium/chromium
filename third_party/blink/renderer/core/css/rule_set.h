@@ -303,8 +303,7 @@ class RuleMap {
     RobinHoodMap<AtomicString, Extent>::const_iterator sub_it;
     const RuleMap* rule_map;
 
-    WTF::KeyValuePair<AtomicString, base::span<const RuleData>> operator*()
-        const {
+    KeyValuePair<AtomicString, base::span<const RuleData>> operator*() const {
       return {sub_it->key, rule_map->GetRulesFromExtent(sub_it->value)};
     }
     bool operator==(const ConstIterator& other) const {

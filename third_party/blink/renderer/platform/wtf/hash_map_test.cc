@@ -51,7 +51,6 @@ namespace blink {
 
 using WTF::DestructCounter;
 using WTF::DummyRefCounted;
-using WTF::KeyValuePair;
 
 namespace {
 
@@ -638,7 +637,7 @@ TEST(HashMapTest, EraseIf) {
   HashMap<int, int> map{{1, 1}, {2, 3}, {5, 8}, {13, 21}, {34, 56}};
   map.erase(2);
   int num_buckets_seen = 0;
-  map.erase_if([&num_buckets_seen](const WTF::KeyValuePair<int, int>& bucket) {
+  map.erase_if([&num_buckets_seen](const KeyValuePair<int, int>& bucket) {
     auto [key, value] = bucket;
     ++num_buckets_seen;
     EXPECT_TRUE(key == 1 || key == 5 || key == 13 || key == 34)

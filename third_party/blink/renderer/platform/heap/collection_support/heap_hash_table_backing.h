@@ -106,7 +106,7 @@ struct ThreadingTrait<HeapHashTableBacking<Table>> {
 };
 
 template <typename First, typename Second>
-struct ThreadingTrait<WTF::KeyValuePair<First, Second>> {
+struct ThreadingTrait<KeyValuePair<First, Second>> {
   STATIC_ONLY(ThreadingTrait);
   static constexpr ThreadAffinity kAffinity =
       (ThreadingTrait<First>::kAffinity == kMainThreadOnly) &&
@@ -159,14 +159,14 @@ class ConcurrentBucket {
 };
 
 template <typename Key, typename Value>
-class ConcurrentBucket<KeyValuePair<Key, Value>> {
-  using KeyExtractionCallback = void (*)(const KeyValuePair<Key, Value>&,
+class ConcurrentBucket<blink::KeyValuePair<Key, Value>> {
+  using KeyExtractionCallback = void (*)(const blink::KeyValuePair<Key, Value>&,
                                          void*);
 
  public:
   using BucketType = ConcurrentBucket;
 
-  ConcurrentBucket(const KeyValuePair<Key, Value>& pair,
+  ConcurrentBucket(const blink::KeyValuePair<Key, Value>& pair,
                    KeyExtractionCallback extract_key)
       : value_(&pair.value) {
     extract_key(pair, &buf_);
@@ -254,11 +254,11 @@ struct TraceInCollectionTrait<kWeakHandling,
 template <typename Key, typename Value, typename Traits>
 struct TraceInCollectionTrait<
     kNoWeakHandling,
-    internal::ConcurrentBucket<KeyValuePair<Key, Value>>,
+    internal::ConcurrentBucket<blink::KeyValuePair<Key, Value>>,
     Traits> {
   static void Trace(
       blink::Visitor* visitor,
-      const internal::ConcurrentBucket<KeyValuePair<Key, Value>>& self) {
+      const internal::ConcurrentBucket<blink::KeyValuePair<Key, Value>>& self) {
     blink::internal::KeyValuePairInCollectionTrait<kNoWeakHandling, Key, Value,
                                                    Traits>::Trace(visitor,
                                                                   self.key(),
@@ -269,11 +269,11 @@ struct TraceInCollectionTrait<
 template <typename Key, typename Value, typename Traits>
 struct TraceInCollectionTrait<
     kWeakHandling,
-    internal::ConcurrentBucket<KeyValuePair<Key, Value>>,
+    internal::ConcurrentBucket<blink::KeyValuePair<Key, Value>>,
     Traits> {
   static void Trace(
       blink::Visitor* visitor,
-      const internal::ConcurrentBucket<KeyValuePair<Key, Value>>& self) {
+      const internal::ConcurrentBucket<blink::KeyValuePair<Key, Value>>& self) {
     blink::internal::KeyValuePairInCollectionTrait<kWeakHandling, Key, Value,
                                                    Traits>::Trace(visitor,
                                                                   self.key(),
@@ -366,7 +366,7 @@ struct TraceTrait<blink::HeapHashTableBacking<Table>> {
 
   // Specialization for WTF::KeyValuePair, which is default bucket storage type.
   template <typename K, typename V>
-  struct GetWeakTraceDescriptorImpl<WTF::KeyValuePair<K, V>> {
+  struct GetWeakTraceDescriptorImpl<blink::KeyValuePair<K, V>> {
     static TraceDescriptor GetWeakTraceDescriptor(const void* backing) {
       return GetWeakTraceDescriptorKVPImpl<K, V>::GetWeakTraceDescriptor(
           backing);

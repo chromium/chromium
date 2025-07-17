@@ -36,7 +36,7 @@ void GenerationalBarrierForBacking(
 template <typename K, typename V>
 void GenerationalBarrierForBacking(
     const cppgc::subtle::HeapConsistency::WriteBarrierParams& params,
-    WTF::KeyValuePair<K, V>* slot_in_backing);
+    KeyValuePair<K, V>* slot_in_backing);
 
 class PLATFORM_EXPORT HeapAllocator {
   STATIC_ONLY(HeapAllocator);
@@ -312,7 +312,7 @@ void GenerationalBarrierForBacking(
 template <typename K, typename V>
 void GenerationalBarrierForBacking(
     const cppgc::subtle::HeapConsistency::WriteBarrierParams& params,
-    WTF::KeyValuePair<K, V>* slot_in_backing) {
+    KeyValuePair<K, V>* slot_in_backing) {
   GenerationalBarrierForBacking(params, &slot_in_backing->key);
   GenerationalBarrierForBacking(params, &slot_in_backing->value);
 }

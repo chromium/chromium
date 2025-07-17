@@ -160,7 +160,7 @@ template <WTF::WeakHandlingFlag WeakHandling,
           typename Traits>
 struct KeyValuePairInCollectionTrait {
   static bool IsAlive(const blink::LivenessBroker& info,
-                      const WTF::KeyValuePair<Key, Value>& kvp) {
+                      const blink::KeyValuePair<Key, Value>& kvp) {
     // Needed for Weak/Weak, Strong/Weak (reverse ephemeron), and Weak/Strong
     // (ephemeron). Order of invocation does not matter as `IsAlive()` does not
     // have any side effects.
@@ -179,7 +179,7 @@ struct KeyValuePairInCollectionTrait {
   }
 
   static void Trace(blink::Visitor* visitor,
-                    const WTF::KeyValuePair<Key, Value>& kvp) {
+                    const blink::KeyValuePair<Key, Value>& kvp) {
     TraceImpl::Trace(visitor, &kvp.key, &kvp.value);
   }
 
@@ -244,12 +244,16 @@ namespace WTF {
 // Trait for strong treatment of KeyValuePair. This is used to handle regular
 // KVP but also for strongification of otherwise weakly handled KVPs.
 template <typename Key, typename Value, typename Traits>
-struct TraceInCollectionTrait<kNoWeakHandling, KeyValuePair<Key, Value>, Traits>
+struct TraceInCollectionTrait<kNoWeakHandling,
+                              blink::KeyValuePair<Key, Value>,
+                              Traits>
     : public blink::internal::
           KeyValuePairInCollectionTrait<kNoWeakHandling, Key, Value, Traits> {};
 
 template <typename Key, typename Value, typename Traits>
-struct TraceInCollectionTrait<kWeakHandling, KeyValuePair<Key, Value>, Traits>
+struct TraceInCollectionTrait<kWeakHandling,
+                              blink::KeyValuePair<Key, Value>,
+                              Traits>
     : public blink::internal::
           KeyValuePairInCollectionTrait<kWeakHandling, Key, Value, Traits> {};
 
