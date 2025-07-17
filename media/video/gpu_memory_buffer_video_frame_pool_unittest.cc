@@ -239,9 +239,6 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   uint32_t as_xr30(uint32_t r, uint32_t g, uint32_t b) {
     return (3 << 30) | (r << 20) | (g << 10) | b;
   }
-  uint32_t as_xb30(uint32_t r, uint32_t g, uint32_t b) {
-    return (3 << 30) | (b << 20) | (g << 10) | r;
-  }
 
  protected:
   static constexpr uint8_t kYValue = 210;
