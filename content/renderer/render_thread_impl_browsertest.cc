@@ -123,8 +123,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
         GetIOThreadTaskRunner({});
 
     InitializeMojo();
-    process_host_ =
-        ChildProcessHost::Create(this, ChildProcessHost::IpcMode::kNormal);
+    process_host_ = ChildProcessHost::Create(this);
     process_host_->CreateChannelMojo();
 
     CHECK(!process_.get());

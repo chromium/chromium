@@ -38,6 +38,11 @@ class ChildProcessHostDelegate;
 // This represents a non-browser process. This can include traditional child
 // processes like plugins, or an embedder could even use this for long lived
 // processes that run independent of the browser process.
+//
+// Every ChildProcessHost provides a single primordial Mojo message pipe to
+// the launched child process, with the other end held by the ChildProcessHost
+// (the primordial pipe is a content.mojom.ChildProcess pipe).
+//
 class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
  public:
   ~ChildProcessHost() override;
@@ -47,33 +52,9 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // RenderProcessHost::GetDeprecatedID().
   enum : int { kInvalidUniqueID = kInvalidChildProcessUniqueId };
 
-  // Every ChildProcessHost provides a single primordial Mojo message pipe to
-  // the launched child process, with the other end held by the
-  // ChildProcessHost.
-  //
-  // This enum (given to |Create()|) determines how the ChildProcessHost uses
-  // the pipe.
-  enum class IpcMode {
-    // In this mode, the primordial pipe is a content.mojom.ChildProcess pipe.
-    // The ChildProcessHost is fully functional in this mode, and all new
-    // process hosts should prefer to use this mode.
-    kNormal,
-
-    // In this mode, the primordial pipe is a legacy IPC Channel bootstrapping
-    // pipe (IPC.mojom.ChannelBootstrap). This should be used when the child
-    // process only uses legacy Chrome IPC (e.g. Chrome's NaCl processes.)
-    //
-    // In this mode, ChildProcessHost methods like |BindReceiver()| are not
-    // functional.
-    //
-    // DEPRECATED: Do not introduce new uses of this mode.
-    kLegacy,
-  };
-
   // Used to create a child process host. The delegate must outlive this object.
   static std::unique_ptr<ChildProcessHost> Create(
-      ChildProcessHostDelegate* delegate,
-      IpcMode ipc_mode);
+      ChildProcessHostDelegate* delegate);
 
   // Returns a unique ID to identify a child process. Used by both child
   // processes that are derived from ChildProcessHost, but also used to generate

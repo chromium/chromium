@@ -44,8 +44,7 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
   // embedder-defined value.
   static std::unique_ptr<BrowserChildProcessHost> Create(
       content::ProcessType process_type,
-      BrowserChildProcessHostDelegate* delegate,
-      ChildProcessHost::IpcMode ipc_mode);
+      BrowserChildProcessHostDelegate* delegate);
 
   // Returns the child process host with unique id |child_process_id|, or
   // nullptr if it doesn't exist. |child_process_id| is NOT the process ID, but

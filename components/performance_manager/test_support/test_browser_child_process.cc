@@ -16,10 +16,7 @@ namespace performance_manager {
 
 TestBrowserChildProcess::TestBrowserChildProcess(
     content::ProcessType process_type)
-    : host_(content::BrowserChildProcessHost::Create(
-          process_type,
-          this,
-          content::ChildProcessHost::IpcMode::kNormal)) {}
+    : host_(content::BrowserChildProcessHost::Create(process_type, this)) {}
 
 TestBrowserChildProcess::~TestBrowserChildProcess() {
   if (is_connected) {

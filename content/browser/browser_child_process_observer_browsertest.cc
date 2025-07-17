@@ -196,10 +196,7 @@ class TestProcessHost : public BrowserChildProcessHostDelegate {
   }
 
   TestProcessHost()
-      : process_(BrowserChildProcessHost::Create(
-            PROCESS_TYPE_UTILITY,
-            this,
-            ChildProcessHost::IpcMode::kNormal)) {}
+      : process_(BrowserChildProcessHost::Create(PROCESS_TYPE_UTILITY, this)) {}
   ~TestProcessHost() override = default;
 
   // Returns the ID of the child process.

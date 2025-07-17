@@ -177,8 +177,8 @@ UtilityProcessHost::UtilityProcessHost(Options options,
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
       client_(std::move(client)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  process_ = std::make_unique<BrowserChildProcessHostImpl>(
-      PROCESS_TYPE_UTILITY, this, ChildProcessHost::IpcMode::kNormal);
+  process_ =
+      std::make_unique<BrowserChildProcessHostImpl>(PROCESS_TYPE_UTILITY, this);
 }
 
 UtilityProcessHost::~UtilityProcessHost() {

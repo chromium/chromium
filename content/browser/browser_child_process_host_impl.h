@@ -68,8 +68,7 @@ class BrowserChildProcessHostImpl
  public:
   // Constructs a process host with |ipc_mode| determining how IPC is done.
   BrowserChildProcessHostImpl(content::ProcessType process_type,
-                              BrowserChildProcessHostDelegate* delegate,
-                              ChildProcessHost::IpcMode ipc_mode);
+                              BrowserChildProcessHostDelegate* delegate);
 
   ~BrowserChildProcessHostImpl() override;
 
