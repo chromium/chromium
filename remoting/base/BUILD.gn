@@ -439,6 +439,10 @@ source_set("unit_tests") {
   if (is_win || is_chromeos) {
     deps += [ "//third_party/breakpad:client" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("remoting_protobuf_http_stream_parser_fuzzer") {

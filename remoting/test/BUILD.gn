@@ -72,6 +72,10 @@ static_library("test_support") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (enable_remoting_host && !is_android && !is_chromeos) {
