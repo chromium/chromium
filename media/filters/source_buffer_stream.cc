@@ -1352,6 +1352,9 @@ void SourceBufferStream::GetTimestampInterval(const BufferQueue& buffers,
 
 bool SourceBufferStream::IsNextGopAdjacentToEndOfCurrentAppendSequence(
     base::TimeDelta next_gop_timestamp) const {
+  if (highest_timestamp_in_append_sequence_ == kNoTimestamp) {
+    return false;
+  }
   base::TimeDelta upper_bound = highest_timestamp_in_append_sequence_ +
                                 ComputeFudgeRoom(GetMaxInterbufferDistance());
   DVLOG(4) << __func__ << " " << GetStreamTypeName()

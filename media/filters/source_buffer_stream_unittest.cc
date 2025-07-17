@@ -5768,4 +5768,10 @@ TEST_F(SourceBufferStreamTest,
   CheckNoNextBuffer();
 }
 
+TEST_F(SourceBufferStreamTest, SignalCodedFrameGroupWithoutCurrentRange) {
+  NewCodedFrameGroupAppend("1000D100K 30000D100K");
+  SignalStartOfCodedFrameGroup(base::Milliseconds(400));
+  SignalStartOfCodedFrameGroup(base::Milliseconds(1000));
+}
+
 }  // namespace media
