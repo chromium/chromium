@@ -15,6 +15,7 @@ _proto_files = [
   "entity_info.proto",
   "groups.proto",
   "navigational_intent.proto",
+  "ntp_composebox_config.proto",
   "rich_answer_template.proto",
   "rich_suggest_template.proto",
   "search_context.proto",
