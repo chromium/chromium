@@ -161,14 +161,15 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
   CHECK(web_contents);
   auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
       web_contents->GetPrimaryPage());
-
   std::set<PermissionName> permission_names;
-  std::ranges::transform(
-      permissions, std::inserter(permission_names, permission_names.begin()),
-      [](const auto& p) { return p->name; });
-  if (permissions.size() != permission_names.size()) {
-    ReceivedBadMessage();
-    return;
+  for (const auto& permission : permissions) {
+    // Ensure all requested permissions are device permissions and check for
+    // duplicates.
+    if (!PermissionUtil::IsDevicePermission(permission) ||
+        !permission_names.insert(permission->name).second) {
+      ReceivedBadMessage();
+      return;
+    }
   }
 
   checker->CheckPageEmbeddedPermission(
