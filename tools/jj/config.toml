@@ -6,6 +6,18 @@
 
 [git]
 auto-local-bookmark = false
+# This is unrelated to gerrit change IDs.
+# It will eventually be supported by gerrit instead of the Change-ID footer.
+write-change-id-header = true
+
+[templates]
+# This is a little awkward to use during `jj split` operations.
+# Two commits will share the same gerrit change-ID
+# We should be able to remove this once gerrit supports git headers.
+# See https://github.com/jj-vcs/jj/issues/4387#issuecomment-2865171741
+commit_trailers = '''
+if(!trailers.contains_key("Change-Id"), format_gerrit_change_id_trailer(self))
+'''
 
 # For users of jj-on-piper, this is enabled by default for *all* repos.
 # We want chrome's formatters, not google3's.
