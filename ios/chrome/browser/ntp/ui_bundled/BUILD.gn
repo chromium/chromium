@@ -249,6 +249,7 @@ source_set("ntp_internal") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/alert_view/ui_bundled",
     "//ios/chrome/browser/browser_view/model",
     "//ios/chrome/browser/bubble/ui_bundled",

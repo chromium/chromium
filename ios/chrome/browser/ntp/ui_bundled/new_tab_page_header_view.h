@@ -129,8 +129,8 @@
 // and defocus animations.
 - (UIView*)fakeboxButtonsSnapshot;
 
-// Whether MIA is allowed from a policy perspective.
-- (void)setMIAAllowedByPolicy:(BOOL)policyAllowed;
+// Whether AIM is allowed.
+- (void)setAIMAllowed:(BOOL)allowed;
 
 // Updates the NTP’s header view background using the given color palette.
 // Pass `nil` to clear any previously applied background colors.

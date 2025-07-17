@@ -136,8 +136,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   NSLayoutConstraint* _identityDiscTrailingConstraint;
   // Constraint for the identity disc button's capsule-style width.
   NSLayoutConstraint* _identityDiscCapsuleWidthConstraint;
-  // Whether MIA is allowed by policy.
-  BOOL _MIAAllowedByPolicy;
+  // Whether AIM is allowed.
+  BOOL _isAIMAllowed;
   // The logo for the default search engine. This is owned by the caching system
   // backing this logo.
   __weak UIImage* _dseLogo;
@@ -330,7 +330,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     self.headerView = [[NewTabPageHeaderView alloc]
         initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
-    [self.headerView setMIAAllowedByPolicy:_MIAAllowedByPolicy];
+    [self.headerView setAIMAllowed:_isAIMAllowed];
     self.headerView.NTPShortcutsHandler = self.NTPShortcutsHandler;
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
@@ -924,9 +924,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
 
-- (void)setMIAAllowedByPolicy:(BOOL)policyAllowed {
-  [_headerView setMIAAllowedByPolicy:policyAllowed];
-  _MIAAllowedByPolicy = policyAllowed;
+- (void)setAIMAllowed:(BOOL)allowed {
+  [_headerView setAIMAllowed:allowed];
+  _isAIMAllowed = allowed;
 }
 
 - (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {

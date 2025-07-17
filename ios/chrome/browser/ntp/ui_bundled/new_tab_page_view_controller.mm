@@ -188,8 +188,8 @@ CGFloat SpaceBetweenModules() {
   // The view controller holding the NTP quick actions buttons.
   // Only created when the fakebox buttons are replaced.
   NewTabPageQuickActionsViewController* _quickActionsViewController;
-  // Whether MIA is allowed by policy.
-  BOOL _MIAAllowedByPolicy;
+  // Whether AIM is allowed.
+  BOOL _isAIMAllowed;
 }
 
 // Properties synthesized from NewTabPageConsumer.
@@ -844,8 +844,8 @@ CGFloat SpaceBetweenModules() {
   }
 }
 
-- (void)setMIAAllowedByPolicy:(BOOL)policyAllowed {
-  _MIAAllowedByPolicy = policyAllowed;
+- (void)setAIMAllowed:(BOOL)allowed {
+  _isAIMAllowed = allowed;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1111,8 +1111,7 @@ CGFloat SpaceBetweenModules() {
 
 // Whether the quick actions button row is visible.
 - (BOOL)quickActionsVisible {
-  return self.headerViewController.isGoogleDefaultSearchEngine &&
-         ShouldShowQuickActionsRow() && _MIAAllowedByPolicy;
+  return _isAIMAllowed && ShouldShowQuickActionsRow();
 }
 
 // Returns YES if scroll should be skipped when focusing the omnibox.

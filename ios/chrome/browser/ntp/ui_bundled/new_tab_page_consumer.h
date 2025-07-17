@@ -60,8 +60,8 @@
 // Pass `nil` to clear any previously applied background colors.
 - (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette;
 
-// Whether MIA is allowed from a policy perspective.
-- (void)setMIAAllowedByPolicy:(BOOL)policyAllowed;
+// Whether AIM is allowed.
+- (void)setAIMAllowed:(BOOL)allowed;
 
 @end
 

@@ -25,6 +25,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/aim/model/aim_availability.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer_bridge.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
@@ -308,10 +309,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
         std::make_unique<HomeBackgroundCustomizationServiceObserverBridge>(
             _backgroundCustomizationService, self);
   }
-
-  BOOL miaPolicyAllowed = omnibox::IsAimAllowedByPolicy(_prefService);
-  [self.consumer setMIAAllowedByPolicy:miaPolicyAllowed];
-  [self.headerConsumer setMIAAllowedByPolicy:miaPolicyAllowed];
+  [self updateAIMAvailability];
 }
 
 - (void)shutdown {
@@ -446,6 +444,8 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
     return;
   }
   _defaultSearchEngine = updatedDefaultSearchEngine;
+  // AIM availability must be updated before default search engine.
+  [self updateAIMAvailability];
   [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
                                             self.templateURLService)];
   [self.feedControlDelegate updateFeedForDefaultSearchEngineChanged];
@@ -525,6 +525,12 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 }
 
 #pragma mark - Private
+
+- (void)updateAIMAvailability {
+  BOOL aimAllowed = IsAIMAvailable(_prefService, self.templateURLService);
+  [self.consumer setAIMAllowed:aimAllowed];
+  [self.headerConsumer setAIMAllowed:aimAllowed];
+}
 
 // Fetches and update user's avatar on NTP, or use default avatar if user is
 // not signed in.

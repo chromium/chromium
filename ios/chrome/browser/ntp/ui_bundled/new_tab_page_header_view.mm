@@ -292,8 +292,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   // Maintains the MIA circle animation.
   id<LottieAnimation> _miaAnimation;
   UIView* _miaAnimationView;
-  // Whether MIA is allowed by policy.
-  BOOL _MIAAllowedByPolicy;
+  // Whether AIM is allowed.
+  BOOL _isAIMAllowed;
 
   // The current NTP color palette.
   NewTabPageColorPalette* _colorPalette;
@@ -841,8 +841,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   return [_buttonStack snapshotViewAfterScreenUpdates:NO];
 }
 
-- (void)setMIAAllowedByPolicy:(BOOL)policyAllowed {
-  _MIAAllowedByPolicy = policyAllowed;
+- (void)setAIMAllowed:(BOOL)allowed {
+  _isAIMAllowed = allowed;
 }
 
 - (void)updateBackgroundWithColorPalette:(NewTabPageColorPalette*)colorPalette {
@@ -1228,14 +1228,13 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 #pragma mark - MIA
 
 - (BOOL)useInlineMIA {
-  return self.isGoogleDefaultSearchEngine && _MIAAllowedByPolicy &&
+  return _isAIMAllowed &&
          GetNTPMIAEntrypointVariation() ==
              NTPMIAEntrypointVariation::kOmniboxContainedInline;
 }
 
 - (BOOL)useSingleButtonMIA {
-  return self.isGoogleDefaultSearchEngine && _MIAAllowedByPolicy &&
-         ShowOnlyMIAEntrypointInNTPFakebox();
+  return _isAIMAllowed && ShowOnlyMIAEntrypointInNTPFakebox();
 }
 
 - (BOOL)shouldShowMIAEntrypoint {
