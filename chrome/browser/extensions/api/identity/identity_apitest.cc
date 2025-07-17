@@ -51,6 +51,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -78,6 +79,9 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -464,8 +468,9 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
     bool fixed_auth_error = false;
     for (const auto& account_info : accounts) {
       CoreAccountId account_id = account_info.account_id;
-      if (account_id == primary_id)
+      if (account_id == primary_id) {
         continue;
+      }
       if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
               account_id)) {
         identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
@@ -518,10 +523,11 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
   void ShowRemoteConsentDialog(
       const RemoteConsentResolutionData& resolution_data) override {
     scope_ui_shown_ = true;
-    if (!scope_ui_async_)
+    if (!scope_ui_async_) {
       CompleteRemoteConsentDialog();
-    else
+    } else {
       std::move(on_scope_ui_shown_).Run();
+    }
   }
 
   void CompleteRemoteConsentDialog() {
@@ -617,13 +623,11 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
 
  protected:
   // Signs in and returns the account ID of the primary account.
-  CoreAccountId SignIn(
-      const std::string& email,
-      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin) {
-    auto account_info =
-        identity_test_env()->MakePrimaryAccountAvailable(email, consent_level);
+  CoreAccountId SignIn(const std::string& email) {
+    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSignin);
     EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-        consent_level));
+        signin::ConsentLevel::kSignin));
     return account_info.account_id;
   }
 
@@ -659,8 +663,9 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     }
     const base::Value::List* callback_arguments_list =
         func->GetResultListForTest();
-    if (!callback_arguments_list)
+    if (!callback_arguments_list) {
       return GenerateFailureResult(gaia_ids, nullptr) << "NULL result";
+    }
 
     if (callback_arguments_list->size() != 1u) {
       return GenerateFailureResult(gaia_ids, nullptr)
@@ -668,8 +673,9 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
              << callback_arguments_list->size();
     }
 
-    if (!(*callback_arguments_list)[0].is_list())
+    if (!(*callback_arguments_list)[0].is_list()) {
       GenerateFailureResult(gaia_ids, nullptr) << "Result was not an array";
+    }
     const base::Value::List& results = (*callback_arguments_list)[0].GetList();
 
     std::vector<std::string> result_ids;
@@ -796,11 +802,22 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
   EXPECT_TRUE(info->id.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, SignedIn) {
-  SignIn("president@example.com", signin::ConsentLevel::kSync);
+IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, ExtensionSync) {
+  constexpr char kEmail[] = "president@example.com";
+#if BUILDFLAG(IS_CHROMEOS)
+  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
+                                                   signin::ConsentLevel::kSync);
+#else
+  SignIn(kEmail);
+  SyncServiceFactory::GetForProfile(browser()->profile())
+      ->GetUserSettings()
+      ->SetSelectedTypes(
+          /*sync_everything=*/false,
+          /*types=*/{syncer::UserSelectableType::kExtensions});
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
-  EXPECT_EQ("president@example.com", info->email);
+  EXPECT_EQ(kEmail, info->email);
   EXPECT_EQ("gaia_id_for_president_example.com", info->id);
 }
 
@@ -864,11 +881,22 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
-    SignedIn) {
-  SignIn("test@example.com", signin::ConsentLevel::kSync);
+    ExtensionSync) {
+  constexpr char kEmail[] = "test@example.com";
+#if BUILDFLAG(IS_CHROMEOS)
+  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
+                                                   signin::ConsentLevel::kSync);
+#else
+  SignIn(kEmail);
+  SyncServiceFactory::GetForProfile(browser()->profile())
+      ->GetUserSettings()
+      ->SetSelectedTypes(
+          /*sync_everything=*/false,
+          /*types=*/{syncer::UserSelectableType::kExtensions});
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
-  EXPECT_EQ("test@example.com", info->email);
+  EXPECT_EQ(kEmail, info->email);
   EXPECT_EQ("gaia_id_for_test_example.com", info->id);
 }
 
@@ -947,8 +975,9 @@ class GetAuthTokenFunctionTest
 
     OAuth2Info& oauth2_info =
         const_cast<OAuth2Info&>(OAuth2ManifestHandler::GetOAuth2Info(*ext));
-    if ((fields_to_set & CLIENT_ID) != 0)
+    if ((fields_to_set & CLIENT_ID) != 0) {
       oauth2_info.client_id = "client1";
+    }
     if ((fields_to_set & SCOPES) != 0) {
       oauth2_info.scopes.push_back("scope1");
       oauth2_info.scopes.push_back("scope2");
@@ -1097,8 +1126,9 @@ class GetAuthTokenFunctionTest
   void OnAccessTokenRequested(const CoreAccountId& account_id,
                               const std::string& consumer_id,
                               const signin::ScopeSet& scopes) override {
-    if (on_access_token_requested_.is_null())
+    if (on_access_token_requested_.is_null()) {
       return;
+    }
     std::move(on_access_token_requested_).Run();
   }
 
@@ -2610,8 +2640,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        MultiSecondaryNonInteractiveMintFailure) {
   // This test is only relevant if extensions see all accounts.
-  if (id_api()->AreExtensionsRestrictedToPrimaryAccount())
+  if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     return;
+  }
 
   SignIn("primary@example.com");
   identity_test_env()->MakeAccountAvailable("secondary@example.com");
@@ -2635,8 +2666,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        MultiSecondaryNonInteractiveLoginAccessTokenFailure) {
   // This test is only relevant if extensions see all accounts.
-  if (id_api()->AreExtensionsRestrictedToPrimaryAccount())
+  if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     return;
+  }
 
   SignIn("primary@example.com");
   identity_test_env()->MakeAccountAvailable("secondary@example.com");
@@ -2658,8 +2690,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        MultiSecondaryInteractiveApprovalAborted) {
   // This test is only relevant if extensions see all accounts.
-  if (id_api()->AreExtensionsRestrictedToPrimaryAccount())
+  if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     return;
+  }
 
   SignIn("primary@example.com");
   identity_test_env()->MakeAccountAvailable("secondary@example.com");
@@ -3382,8 +3415,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
                        MultipleAccounts) {
   // This test requires the use of a secondary account. If extensions are
   // restricted to primary account only, this test wouldn't make too much sense.
-  if (id_api()->AreExtensionsRestrictedToPrimaryAccount())
+  if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     return;
+  }
 
   auto extension = base::WrapRefCounted(CreateExtension(CLIENT_ID | SCOPES));
   SignIn("primary@example.com");
@@ -3405,8 +3439,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
                        RequestedAccountAvailable) {
   // This test requires the use of a secondary account. If extensions are
   // restricted to primary account only, this test wouldn't make too much sense.
-  if (id_api()->AreExtensionsRestrictedToPrimaryAccount())
+  if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     return;
+  }
 
   auto extension = base::WrapRefCounted(CreateExtension(CLIENT_ID | SCOPES));
   SignIn("primary@example.com");
@@ -3432,8 +3467,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
                        RequestedAccountUnavailable) {
   // This test requires the use of a secondary account. If extensions are
   // restricted to primary account only, this test wouldn't make too much sense.
-  if (id_api()->AreExtensionsRestrictedToPrimaryAccount())
+  if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     return;
+  }
 
   auto extension = base::WrapRefCounted(CreateExtension(CLIENT_ID | SCOPES));
   SignIn("primary@example.com");
@@ -3459,8 +3495,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
                        RequestedAccountLogin) {
   // This test requires the use of a secondary account. If extensions are
   // restricted to primary account only, this test wouldn't make too much sense.
-  if (id_api()->AreExtensionsRestrictedToPrimaryAccount())
+  if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
     return;
+  }
 
   auto extension = base::WrapRefCounted(CreateExtension(CLIENT_ID | SCOPES));
   SignIn("primary@example.com");
@@ -4223,8 +4260,9 @@ class OnSignInChangedEventTest : public IdentityTestWithSignin {
       EXPECT_EQ(expected_event->event_name, event->event_name);
 
       const auto& expected_event_args = expected_event->event_args;
-      if (event_args != expected_event_args)
+      if (event_args != expected_event_args) {
         continue;
+      }
 
       expected_events_.erase(expected_event);
       found_event = true;
@@ -4266,8 +4304,9 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignIn) {
 // account does not result in its refresh token being removed and hence does
 // not trigger an event to fire.
 IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignOut) {
-  if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile()))
+  if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile())) {
     return;
+  }
 
   api::identity::AccountInfo account_info;
   account_info.id = "gaia_id_for_primary_example.com";
