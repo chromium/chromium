@@ -1820,7 +1820,7 @@ void RenderWidgetHostViewAndroid::UpdateBackgroundColor() {
 }
 
 bool RenderWidgetHostViewAndroid::HasFallbackSurface() const {
-  return delegated_frame_host_ && delegated_frame_host_->HasFallbackSurface();
+  return delegated_frame_host_->HasFallbackSurface();
 }
 
 void RenderWidgetHostViewAndroid::CopyFromSurface(
@@ -1838,7 +1838,6 @@ void RenderWidgetHostViewAndroid::CopyFromSurface(
     return;
   }
 
-  DCHECK(delegated_frame_host_);
   delegated_frame_host_->CopyFromCompositingSurface(
       src_subrect, output_size,
       base::BindOnce(
@@ -1935,8 +1934,7 @@ void RenderWidgetHostViewAndroid::ClearFallbackSurfaceForCommitPending() {
 }
 
 void RenderWidgetHostViewAndroid::ResetFallbackToFirstNavigationSurface() {
-  if (delegated_frame_host_)
-    delegated_frame_host_->ResetFallbackToFirstNavigationSurface();
+  delegated_frame_host_->ResetFallbackToFirstNavigationSurface();
 }
 
 bool RenderWidgetHostViewAndroid::RequestRepaintOnNewSurface() {
@@ -2273,8 +2271,7 @@ void RenderWidgetHostViewAndroid::HideInternal() {
 
   if (hide_frontbuffer) {
     view_.GetLayer()->SetHideLayerAndSubtree(true);
-    if (delegated_frame_host_)
-      delegated_frame_host_->WasHidden();
+    delegated_frame_host_->WasHidden();
   }
 
   if (stop_observing_root_window) {
@@ -2334,8 +2331,7 @@ void RenderWidgetHostViewAndroid::StopObservingRootWindow() {
   view_.GetWindowAndroid()->RemoveObserver(this);
   // If the DFH has already been destroyed, it will have cleaned itself up.
   // This happens in some WebView cases.
-  if (delegated_frame_host_)
-    delegated_frame_host_->DetachFromCompositor();
+  delegated_frame_host_->DetachFromCompositor();
 }
 
 bool RenderWidgetHostViewAndroid::Animate(base::TimeTicks frame_time) {
@@ -2376,13 +2372,11 @@ const viz::LocalSurfaceId&
 RenderWidgetHostViewAndroid::IncrementSurfaceIdForNavigation() {
   local_surface_id_allocator_.GenerateId();
 
-  if (delegated_frame_host_) {
-    delegated_frame_host_->EmbedSurface(
-        local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-        GetCompositorViewportPixelSize(),
-        cc::DeadlinePolicy::UseDefaultDeadline(),
-        host()->delegate()->IsFullscreen());
-  }
+  delegated_frame_host_->EmbedSurface(
+      local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
+      GetCompositorViewportPixelSize(),
+      cc::DeadlinePolicy::UseDefaultDeadline(),
+      host()->delegate()->IsFullscreen());
 
   return local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 }
@@ -2702,9 +2696,6 @@ void RenderWidgetHostViewAndroid::DidOverscroll(
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewAndroid::GetFrameSinkId() const {
-  if (!delegated_frame_host_)
-    return viz::FrameSinkIdAllocator::InvalidFrameSinkId();
-
   return delegated_frame_host_->GetFrameSinkId();
 }
 
