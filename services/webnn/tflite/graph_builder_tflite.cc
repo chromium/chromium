@@ -465,6 +465,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
   static constexpr SupportedDataTypes kFloat16To32AndInt8To32AndUint8{
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
+  static constexpr SupportedDataTypes kFloat16To32AndInt8To64{
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt64, OperandDataType::kInt32, OperandDataType::kInt8};
   static constexpr SupportedDataTypes kFloat16To32AndInt8To64AndUint8{
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt64,   OperandDataType::kInt32,
@@ -541,8 +544,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*div_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(5)},
        // MAX and MIN are limited to 5D when broadcasting is required:
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/maximum_minimum.h
-       /*max_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(5)},
-       /*min_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(5)},
+       /*max_input=*/{kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(5)},
+       /*min_input=*/{kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(5)},
        // Limited to 4D when broadcasting is required:
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/pow.cc
        /*pow_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(4)},
@@ -708,7 +711,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*reduce_sum_square_input=*/
        {kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
        /*relu_input=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
+       {kFloat16To32AndInt8To64, SupportedRanks::UpTo(8)},
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/resize_bilinear.h
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/resize_nearest_neighbor.h
        /*resample2d_input=*/
@@ -6916,19 +6919,56 @@ auto GraphBuilderTflite::SerializeReduceSumSquare(
 
 auto GraphBuilderTflite::SerializeRelu(const mojom::Relu& relu)
     -> base::expected<OperatorOffset, std::string> {
-  // TODO(crbug.com/354625677): Support 32-bit signed integer with
-  // TFL::MaximumOp
-  // https://www.tensorflow.org/mlir/tfl_ops#tflmaximum_tflmaximumop.
+  const OperandDescriptor& input_descriptor =
+      GetOperand(relu.input_operand_id).descriptor;
   CHECK(context_properties_.data_type_limits.relu_input.Supports(
-      GetOperand(relu.input_operand_id).descriptor));
+      input_descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(relu.input_operand_id));
   const TensorIndex output_tensor_index =
       SerializeOutputTensorInfo(relu.output_operand_id).index;
-
-  return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator::BuiltinOperator_RELU, input_tensor_info.index,
-      output_tensor_index);
+  switch (input_descriptor.data_type()) {
+    case OperandDataType::kFloat16:
+      // The float16 data type has been cast to float32.
+      [[fallthrough]];
+    case OperandDataType::kFloat32:
+      return SerializeUnaryOperation(
+          ::tflite::BuiltinOperator::BuiltinOperator_RELU,
+          input_tensor_info.index, output_tensor_index);
+    case OperandDataType::kInt8: {
+      const TensorIndex zero_value_tensor_index =
+          SerializeTensorWithBuffer<int8_t>(
+              /*buffer=*/std::array<int8_t, 1>{0},
+              /*dimensions=*/{});
+      return SerializeBinaryOperation(
+          ::tflite::BuiltinOperator_MAXIMUM, zero_value_tensor_index,
+          input_tensor_info.index, output_tensor_index);
+    }
+    case OperandDataType::kInt32: {
+      const TensorIndex zero_value_tensor_index =
+          SerializeTensorWithBuffer<int32_t>(
+              /*buffer=*/std::array<int32_t, 1>{0},
+              /*dimensions=*/{});
+      return SerializeBinaryOperation(
+          ::tflite::BuiltinOperator_MAXIMUM, zero_value_tensor_index,
+          input_tensor_info.index, output_tensor_index);
+    }
+    case OperandDataType::kInt64: {
+      const TensorIndex zero_value_tensor_index =
+          SerializeTensorWithBuffer<int64_t>(
+              /*buffer=*/std::array<int64_t, 1>{0},
+              /*dimensions=*/{});
+      return SerializeBinaryOperation(
+          ::tflite::BuiltinOperator_MAXIMUM, zero_value_tensor_index,
+          input_tensor_info.index, output_tensor_index);
+    }
+    case OperandDataType::kUint32:
+    case OperandDataType::kUint8:
+    case OperandDataType::kUint64:
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4:
+      NOTREACHED() << "This data type is not supported by relu.";
+  }
 }
 
 auto GraphBuilderTflite::SerializeResample2d(
@@ -7578,7 +7618,7 @@ auto GraphBuilderTflite::SerializeTriangular(
   TensorIndex mask_tensor_index;
   switch (input_descriptor.data_type()) {
     case OperandDataType::kFloat16:
-      // The float16 data type has been casted to float32.
+      // The float16 data type has been cast to float32.
       [[fallthrough]];
     case OperandDataType::kFloat32:
       mask_tensor_index = SerializeTensorWithBuffer<float>(
