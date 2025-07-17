@@ -140,6 +140,13 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       SharedImageUsageSet usage,
       std::string debug_label);
 
+  bool CreateSwapChainInternal(
+      Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D>& back_buffer_texture,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D>& front_buffer_texture,
+      viz::SharedImageFormat format,
+      const gfx::Size& size);
+
   bool SupportsBGRA8UnormStorage();
 
   // D3D11 device used for creating textures. This is also Skia's D3D11 device.

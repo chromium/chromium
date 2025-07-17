@@ -275,15 +275,12 @@ bool D3DImageBackingFactory::ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
   return ClearD3D11TextureToColor(d3d11_texture, color);
 }
 
-D3DImageBackingFactory::SwapChainBackings
-D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
-                                        const Mailbox& back_buffer_mailbox,
-                                        viz::SharedImageFormat format,
-                                        const gfx::Size& size,
-                                        const gfx::ColorSpace& color_space,
-                                        GrSurfaceOrigin surface_origin,
-                                        SkAlphaType alpha_type,
-                                        gpu::SharedImageUsageSet usage) {
+bool D3DImageBackingFactory::CreateSwapChainInternal(
+    Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>& back_buffer_texture,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D>& front_buffer_texture,
+    viz::SharedImageFormat format,
+    const gfx::Size& size) {
   DXGI_FORMAT swap_chain_format;
   if ((format == viz::SinglePlaneFormat::kRGBA_8888) ||
       (format == viz::SinglePlaneFormat::kRGBX_8888) ||
@@ -294,7 +291,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   } else {
     LOG(ERROR) << format.ToString()
                << " format is not supported by swap chain.";
-    return {nullptr, nullptr};
+    return false;
   }
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
@@ -327,13 +324,12 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   desc.AlphaMode = format.HasAlpha() ? DXGI_ALPHA_MODE_PREMULTIPLIED
                                      : DXGI_ALPHA_MODE_IGNORE;
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
   HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
       d3d11_device_.Get(), &desc, nullptr, &swap_chain);
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateSwapChainForComposition failed with error " << std::hex
                << hr;
-    return {nullptr, nullptr};
+    return false;
   }
 
   gl::LabelSwapChainAndBuffers(swap_chain.Get(), kD3DImageBackingLabel);
@@ -351,7 +347,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   // Explicitly clear front and back buffers to ensure that there are no
   // uninitialized pixels.
   if (!ClearBackBufferToColor(swap_chain.Get(), SkColors::kBlack)) {
-    return {nullptr, nullptr};
+    return false;
   }
 
   DXGI_PRESENT_PARAMETERS params = {};
@@ -360,23 +356,41 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   hr = swap_chain->Present1(/*interval=*/0, /*flags=*/0, &params);
   if (FAILED(hr)) {
     LOG(ERROR) << "Present1 failed with error " << std::hex << hr;
-    return {nullptr, nullptr};
+    return false;
   }
 
   if (!ClearBackBufferToColor(swap_chain.Get(), SkColors::kBlack)) {
-    return {nullptr, nullptr};
+    return false;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture;
   hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer_texture));
   if (FAILED(hr)) {
     LOG(ERROR) << "GetBuffer failed with error " << std::hex;
-    return {nullptr, nullptr};
+    return false;
   }
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture;
+
   hr = swap_chain->GetBuffer(1, IID_PPV_ARGS(&front_buffer_texture));
   if (FAILED(hr)) {
     LOG(ERROR) << "GetBuffer failed with error " << std::hex;
+    return false;
+  }
+  return true;
+}
+
+D3DImageBackingFactory::SwapChainBackings
+D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
+                                        const Mailbox& back_buffer_mailbox,
+                                        viz::SharedImageFormat format,
+                                        const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        GrSurfaceOrigin surface_origin,
+                                        SkAlphaType alpha_type,
+                                        gpu::SharedImageUsageSet usage) {
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture;
+  if (!CreateSwapChainInternal(swap_chain, back_buffer_texture,
+                               front_buffer_texture, format, size)) {
     return {nullptr, nullptr};
   }
 
