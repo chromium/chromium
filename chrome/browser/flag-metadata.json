@@ -1488,11 +1488,6 @@
     "expiry_milestone": 180
   },
   {
-    "name": "cct-minimized",
-    "owners": ["katzz@google.com", "sinansahin@google.com", "kgrosu@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "cct-nested-security-icon",
     "owners": ["sinansahin@google.com"],
     "expiry_milestone": 140

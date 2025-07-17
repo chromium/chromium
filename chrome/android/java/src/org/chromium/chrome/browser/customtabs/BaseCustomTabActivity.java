@@ -635,8 +635,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getActivityTabProvider(),
                         getIntentDataProvider(),
                         this::getSavedInstanceState,
-                        getLifecycleDispatcher(),
-                        getCustomTabFeatureOverridesManager());
+                        getLifecycleDispatcher());
 
         CloseButtonNavigator closeButtonNavigator =
                 new CloseButtonNavigator(
@@ -1195,8 +1194,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     @Override
     protected boolean wasInPictureInPictureForMinimizedCustomTabs() {
-        if (!MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
-                this, getCustomTabFeatureOverridesManager())) {
+        if (!MinimizedFeatureUtils.isMinimizedCustomTabAvailable(this)) {
             return false;
         }
         return mLastPipMode == PictureInPictureMode.MINIMIZED_CUSTOM_TAB;

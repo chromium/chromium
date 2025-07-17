@@ -2911,9 +2911,6 @@ extern const char kCCTEphemeralModeDescription[];
 extern const char kCCTIncognitoAvailableToThirdPartyName[];
 extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 
-extern const char kCCTMinimizedName[];
-extern const char kCCTMinimizedDescription[];
-
 extern const char kCCTNestedSecurityIconName[];
 extern const char kCCTNestedSecurityIconDescription[];
 

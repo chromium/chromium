@@ -21,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.OnNewWidthMeasuredListener;
@@ -62,15 +61,13 @@ class CustomTabToolbarButtonsMediator
             Activity activity,
             CustomTabMinimizeDelegate minimizeDelegate,
             BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabFeatureOverridesManager featureOverridesManager,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ActivityTabProvider tabProvider) {
         mModel = model;
         mView = view;
         mActivity = activity;
         mMinimizeButtonAvailable =
-                getMinimizeButtonAvailable(
-                        activity, minimizeDelegate, intentDataProvider, featureOverridesManager);
+                getMinimizeButtonAvailable(activity, minimizeDelegate, intentDataProvider);
         mMinimizeDelegate = minimizeDelegate;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -154,10 +151,8 @@ class CustomTabToolbarButtonsMediator
     private static boolean getMinimizeButtonAvailable(
             Activity activity,
             CustomTabMinimizeDelegate minimizeDelegate,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabFeatureOverridesManager featureOverridesManager) {
-        return MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
-                        activity, featureOverridesManager)
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        return MinimizedFeatureUtils.isMinimizedCustomTabAvailable(activity)
                 && MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(intentDataProvider)
                 && minimizeDelegate != null;
     }

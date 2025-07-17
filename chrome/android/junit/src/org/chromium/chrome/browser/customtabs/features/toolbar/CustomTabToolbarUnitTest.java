@@ -443,7 +443,6 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
     public void testMinimizeButtonEnabled() {
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();
@@ -480,27 +479,6 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CCT_MINIMIZED})
-    public void testMinimizeButtonDisabled() {
-        ImageButton minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
-        ImageButton closeButton = mToolbar.findViewById(R.id.close_button);
-
-        // Button on left side
-        assertNull("Minimize button should never be initialized", minimizeButton);
-        assertEquals("Close button should still be present", mToolbar.getChildAt(0), closeButton);
-
-        // Button on right side
-        mToolbar.setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END);
-        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-        assertNull("Minimize button should never be initialized", minimizeButton);
-        assertEquals(
-                "Close button should still be present",
-                mToolbar.getChildAt(mToolbar.getChildCount() - 1),
-                closeButton);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
     public void testMinimizeButtonEnabled_MultiWindowMode() {
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();

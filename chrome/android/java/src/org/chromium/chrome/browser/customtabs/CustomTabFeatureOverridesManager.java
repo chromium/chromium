@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,8 +26,7 @@ import java.util.Set;
  */
 public class CustomTabFeatureOverridesManager {
     private static final String TAG = "CTFeatureOvrdMgr";
-    private static final Set<String> ALLOWED_FEATURES =
-            new HashSet<>(Arrays.asList(ChromeFeatureList.CCT_MINIMIZED));
+    private static final Set<String> ALLOWED_FEATURES = new HashSet<>();
 
     private static Set<String> sAllowedFeaturesForTesting;
 

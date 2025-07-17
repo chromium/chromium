@@ -33,20 +33,17 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils.MinimizedFeatureAvailability;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtilsUnitTest.ShadowSysUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Unit tests for {@link MinimizedFeatureUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowSysUtils.class})
-@EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
 public class MinimizedFeatureUtilsUnitTest {
     @Implements(SysUtils.class)
     static class ShadowSysUtils {
@@ -97,7 +94,7 @@ public class MinimizedFeatureUtilsUnitTest {
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM, MinimizedFeatureAvailability.AVAILABLE)) {
-            assertTrue(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext, null));
+            assertTrue(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
         }
     }
 
@@ -107,7 +104,7 @@ public class MinimizedFeatureUtilsUnitTest {
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext, null));
+            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
         }
     }
 
@@ -118,7 +115,7 @@ public class MinimizedFeatureUtilsUnitTest {
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext, null));
+            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
         }
     }
 
@@ -130,7 +127,7 @@ public class MinimizedFeatureUtilsUnitTest {
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext, null));
+            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
         }
     }
 

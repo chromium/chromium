@@ -12,19 +12,15 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.Collections;
@@ -63,26 +59,13 @@ public class MinimizedFeatureUtils {
     private static boolean sIsDeviceEligibleForMinimizedCustomTabForTesting;
 
     /**
-     * Computes the availability of the Minimized Custom Tab feature based on multiple signals and
-     * emits histograms accordingly.
+     * Computes the availability of the Minimized Custom Tab feature.
      *
      * @param context The {@link Context}.
-     * @param featureOverridesManager The {@link CustomTabFeatureOverridesManager} to check
-     *     overridden features.
      * @return Whether the Minimized Custom Tab feature is available.
      */
-    public static boolean isMinimizedCustomTabAvailable(
-            Context context, @Nullable CustomTabFeatureOverridesManager featureOverridesManager) {
-        if (!isDeviceEligibleForMinimizedCustomTab(context)) return false;
-        if (!ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
-            return ChromeFeatureList.sCctMinimized.isEnabled();
-        }
-        if (featureOverridesManager == null) return ChromeFeatureList.sCctMinimized.isEnabled();
-
-        Boolean override =
-                featureOverridesManager.isFeatureEnabled(ChromeFeatureList.CCT_MINIMIZED);
-        if (override != null) return override;
-        return ChromeFeatureList.sCctMinimized.isEnabled();
+    public static boolean isMinimizedCustomTabAvailable(Context context) {
+        return isDeviceEligibleForMinimizedCustomTab(context);
     }
 
     /**
@@ -151,12 +134,6 @@ public class MinimizedFeatureUtils {
         sIsDeviceEligibleForMinimizedCustomTabForTesting = eligibility;
         ResettersForTesting.register(
                 () -> sIsDeviceEligibleForMinimizedCustomTabForTesting = false);
-    }
-
-    public static @DrawableRes int getMinimizeIcon() {
-        return ChromeFeatureList.sCctMinimizedIconVariant.getValue() == 1
-                ? R.drawable.ic_pip_24dp
-                : R.drawable.ic_minimize;
     }
 
     /**

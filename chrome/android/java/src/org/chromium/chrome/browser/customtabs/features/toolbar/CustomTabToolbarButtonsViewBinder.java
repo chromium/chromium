@@ -36,7 +36,6 @@ import androidx.annotation.Px;
 
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.UiUtils;
@@ -174,7 +173,7 @@ public class CustomTabToolbarButtonsViewBinder
             var d =
                     UiUtils.getTintedDrawable(
                             context,
-                            MinimizedFeatureUtils.getMinimizeIcon(),
+                            R.drawable.ic_minimize,
                             ChromeColors.getPrimaryIconTint(context, model.get(IS_INCOGNITO)));
             minimizeButton.setTag(R.id.custom_tabs_toolbar_tintable, true);
             minimizeButton.setImageDrawable(d);
