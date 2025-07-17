@@ -130,10 +130,6 @@ const CGFloat kMIACircleAnimationSizeNormal = 40.0;
 // the fakebox.
 const CGFloat kMIACircleAnimationSizeEnlarged = 48.0;
 
-// The amount of invisible padding added to the MIA button when displayed as a
-// single button to avoid missing touches.
-const CGFloat kMIAButtonTouchAreaExtend = 5.0;
-
 // Returns the top color of the Fakebox's gradient background.
 UIColor* FakeboxTopColor() {
   return UIAccessibilityIsReduceTransparencyEnabled()
@@ -219,6 +215,33 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 }  // namespace
+
+// `UIStackView` that allows the extended tap area of it's arranged subviews to
+// overflow it's touch area.
+@interface TouchAreaOverflowStackView : UIStackView
+
+@end
+
+@implementation TouchAreaOverflowStackView
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
+  for (UIView* subview in self.arrangedSubviews) {
+    // We consider a touch valid and allow it to propagate if it falls within
+    // the bounds of any subview.
+    // This means that even if a touch visually appears outside the stack view,
+    // the `pointInside:withEvent:` method can correctly register it within a
+    // subview's touch area, especially where subviews might extend beyond and
+    // overflow the stack view's visual limits.
+    CGPoint convertedPoint = [self convertPoint:point toView:subview];
+    if ([subview pointInside:convertedPoint withEvent:event]) {
+      return YES;
+    }
+  }
+
+  return NO;
+}
+
+@end
 
 @interface NewTabPageHeaderView ()
 
@@ -444,7 +467,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  _buttonStack = [[UIStackView alloc] init];
+  // To ensure touch events are correctly forwarded to the buttons within the
+  // stack view use a stack view implementation that propagates touches to its
+  // subviews.
+  // Otherwise the stack view would 'clip' the extended touch areas of its inner
+  // buttons, preventing them from registering touches properly.
+  _buttonStack = [[TouchAreaOverflowStackView alloc] init];
   _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
   _buttonStack.alignment = UIStackViewAlignmentCenter;
   _buttonStack.spacing = kButtonSpacing;
@@ -945,8 +973,13 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // Adds the necessary buttons to the fakebox stack.
 - (void)addFakeboxButtonsToStack {
   if (self.shouldShowMIAEntrypoint) {
-    self.miaButton =
+    ExtendedTouchTargetButton* miaButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    if (self.useSingleButtonMIA) {
+      miaButton.minimumDiameter = sqrt(2) * [self miaAnimationSize].width;
+    }
+    self.miaButton = miaButton;
+
     [self.miaButton
         setAccessibilityLabel:l10n_util::GetNSString(IDS_IOS_ACCNAME_MIA)];
     [self.miaButton setAccessibilityIdentifier:kNTPMIAIdentifier];
@@ -1202,27 +1235,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       [self updateAnimationOnMIAButton];
     }
   }
-}
-
-- (UIView*)hitTest:(CGPoint)point withEvent:(UIEvent*)event {
-  // When MIA appears as a solitary button, expand its active touch zone to
-  // ensure all nearby taps are registered.
-  if (self.useSingleButtonMIA) {
-    CGRect miaButtonFrameInHeader = [self.miaButton convertRect:self.bounds
-                                                         toView:self];
-    UIEdgeInsets touchAreaExtend = UIEdgeInsetsMake(
-        -kMIAButtonTouchAreaExtend, -kMIAButtonTouchAreaExtend,
-        -kMIAButtonTouchAreaExtend, -kMIAButtonTouchAreaExtend);
-
-    CGRect extendedTouchArea =
-        UIEdgeInsetsInsetRect(miaButtonFrameInHeader, touchAreaExtend);
-
-    if (CGRectContainsPoint(extendedTouchArea, point)) {
-      return self.miaButton;
-    }
-  }
-
-  return [super hitTest:point withEvent:event];
 }
 
 #pragma mark - MIA
