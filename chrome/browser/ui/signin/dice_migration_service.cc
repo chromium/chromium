@@ -24,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/user_education_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -121,7 +122,15 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
                                       kCancelButtonElementId);
 
 DiceMigrationService::DiceMigrationService(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  if (IsUserEligibleForDiceMigration(profile_)) {
+    dialog_trigger_timer_.Start(
+        FROM_HERE, user_education::features::GetSessionStartGracePeriod(),
+        base::BindOnce(
+            &DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible,
+            base::Unretained(this)));
+  }
+}
 
 DiceMigrationService::~DiceMigrationService() {
   if (dialog_widget_) {
@@ -215,6 +224,10 @@ bool DiceMigrationService::IsDialogShowing() {
 
 views::Widget* DiceMigrationService::GetDialogWidgetForTesting() {
   return dialog_widget_.get();
+}
+
+base::OneShotTimer& DiceMigrationService::GetDialogTriggerTimerForTesting() {
+  return dialog_trigger_timer_;
 }
 
 void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {

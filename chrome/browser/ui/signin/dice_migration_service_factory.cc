@@ -22,7 +22,14 @@ DiceMigrationServiceFactory::~DiceMigrationServiceFactory() = default;
 DiceMigrationService* DiceMigrationServiceFactory::GetForProfile(
     Profile* profile) {
   return static_cast<DiceMigrationService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+// static
+DiceMigrationService* DiceMigrationServiceFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<DiceMigrationService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
 
 // static

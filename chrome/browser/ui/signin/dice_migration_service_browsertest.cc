@@ -27,7 +27,10 @@ class DiceMigrationServiceBrowserTest : public SyncTest {
   DiceMigrationServiceBrowserTest() : SyncTest(SINGLE_CLIENT) {}
 
   DiceMigrationService* GetDiceMigrationService() {
-    return DiceMigrationServiceFactory::GetForProfile(GetProfile(0));
+    DiceMigrationService* service =
+        DiceMigrationServiceFactory::GetForProfileIfExists(GetProfile(0));
+    EXPECT_TRUE(service);
+    return service;
   }
 
   signin::IdentityManager* GetIdentityManager() {
@@ -340,6 +343,61 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, FinalDialogVariant) {
         views::Widget::ClosedReason::kCloseButtonClicked);
     waiter.Wait();
   }
+}
+
+// Account setup is done in the PRE test because the timer is started right upon
+// profile creation when the service is created.
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, PRE_StartTimer) {
+  ASSERT_TRUE(SetupClients());
+
+  // Implicitly sign in.
+  signin::MakeAccountAvailable(
+      GetIdentityManager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          // `kWebSignin` is not explicit signin.
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build(GetAccountEmail()));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, StartTimer) {
+  ASSERT_TRUE(SetupClients());
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
+      prefs::kExplicitBrowserSignin));
+
+  base::OneShotTimer& timer =
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
+  ASSERT_FALSE(GetDiceMigrationService()->IsDialogShowing());
+  EXPECT_TRUE(timer.IsRunning());
+
+  // Simulate the timer firing.
+  timer.FireNow();
+  EXPECT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+}
+
+// Account setup is done in the PRE test because the timer is started right upon
+// profile creation when the service is created.
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       PRE_ShouldNotStartTimerIfIneligible) {
+  // Turn sync on.
+  ASSERT_TRUE(SetupSync());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       ShouldNotStartTimerIfIneligible) {
+  ASSERT_TRUE(SetupClients());
+  // The user is syncing.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // Syncing user is not eligible, thus the timer was not started.
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  ASSERT_FALSE(GetDiceMigrationService()->IsDialogShowing());
 }
 
 }  // namespace

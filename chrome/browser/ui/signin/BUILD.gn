@@ -109,6 +109,7 @@ source_set("impl") {
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/toasts",
       "//components/pref_registry",
+      "//components/user_education/common",
     ]
   }
 

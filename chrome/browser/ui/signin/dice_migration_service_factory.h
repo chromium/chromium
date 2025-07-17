@@ -13,6 +13,7 @@ class DiceMigrationService;
 class DiceMigrationServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static DiceMigrationService* GetForProfile(Profile* profile);
+  static DiceMigrationService* GetForProfileIfExists(Profile* profile);
 
   // Returns an instance of the DiceMigrationServiceFactory singleton.
   static DiceMigrationServiceFactory* GetInstance();

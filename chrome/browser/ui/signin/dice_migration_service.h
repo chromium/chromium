@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/widget_observer.h"
@@ -40,12 +41,18 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Shows the Dice migration offer dialog if the user is eligible for it.
+  // TODO(crbug.com/399838468): Mark this method as private and instead expose a
+  // test-only method instead.
   void ShowDiceMigrationOfferDialogIfUserEligible();
 
   // Returns true if the Dice migration offer dialog is currently showing.
+  // TODO(crbug.com/399838468): Remove this method since this is mostly
+  // test-only and can be replaced with `GetDialogWidgetForTesting()`.
   bool IsDialogShowing();
 
   views::Widget* GetDialogWidgetForTesting();
+
+  base::OneShotTimer& GetDialogTriggerTimerForTesting();
 
  private:
   // `views::WidgetObserver`:
@@ -55,6 +62,7 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
   void IncrementDialogShownCount();
 
   raw_ptr<Profile> profile_ = nullptr;
+  base::OneShotTimer dialog_trigger_timer_;
 
   raw_ptr<views::Widget> dialog_widget_ = nullptr;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
