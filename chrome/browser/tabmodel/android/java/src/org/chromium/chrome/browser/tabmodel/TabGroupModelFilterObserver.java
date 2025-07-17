@@ -53,10 +53,10 @@ public interface TabGroupModelFilterObserver {
     /**
      * This method is called before a group is moved.
      *
-     * @param tabModelOldIndex The old index of the {@code movedTab} in the {@link TabModel}.
-     * @param tabModelNewIndex The new index of the {@code movedTab} in the {@link TabModel}.
+     * @param tabGroupId The tab group id of the group being moved.
+     * @param currentIndex The current index of the group in the {@link TabModel}.
      */
-    default void willMoveTabGroup(int tabModelOldIndex, int tabModelNewIndex) {}
+    default void willMoveTabGroup(Token tabGroupId, int currentIndex) {}
 
     /**
      * This method is called before a tab within a group is moved out of the group.

@@ -176,16 +176,19 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     @Override
     public void moveRelatedTabs(@TabId int id, int newIndex) {
         List<Tab> tabs = getRelatedTabList(id);
+        if (tabs.isEmpty()) return;
+
         TabModel tabModel = getTabModel();
         newIndex = MathUtils.clamp(newIndex, 0, tabModel.getCount());
-        int curIndex = TabModelUtils.getTabIndexById(tabModel, tabs.get(0).getId());
+        Tab firstTab = tabs.get(0);
+        int curIndex = TabModelUtils.getTabIndexById(tabModel, firstTab.getId());
 
         if (curIndex == INVALID_TAB_INDEX || curIndex == newIndex) {
             return;
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.willMoveTabGroup(curIndex, newIndex);
+            observer.willMoveTabGroup(assumeNonNull(firstTab.getTabGroupId()), curIndex);
         }
 
         int offset = 0;

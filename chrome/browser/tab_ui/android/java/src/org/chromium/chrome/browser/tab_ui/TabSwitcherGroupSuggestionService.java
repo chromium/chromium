@@ -114,7 +114,7 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void willMoveTabGroup(int tabModelOldIndex, int tabModelNewIndex) {
+                public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
                     clearSuggestions();
                 }
 

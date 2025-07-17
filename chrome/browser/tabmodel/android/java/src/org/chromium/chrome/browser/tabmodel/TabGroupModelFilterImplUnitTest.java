@@ -1608,7 +1608,7 @@ public class TabGroupModelFilterImplUnitTest {
 
         mModelAndObserverInOrder
                 .verify(mTabGroupModelFilterObserver)
-                .willMoveTabGroup(POSITION2, startIndex);
+                .willMoveTabGroup(TAB2_TAB_GROUP_ID, POSITION2);
         mModelAndObserverInOrder.verify(mTabModel).moveTab(mTab2.getId(), startIndex);
         mModelAndObserverInOrder.verify(mTabModel).moveTab(mTab3.getId(), startIndex);
         mModelAndObserverInOrder
@@ -1627,7 +1627,7 @@ public class TabGroupModelFilterImplUnitTest {
 
         mModelAndObserverInOrder
                 .verify(mTabGroupModelFilterObserver)
-                .willMoveTabGroup(POSITION5, startIndex);
+                .willMoveTabGroup(TAB5_TAB_GROUP_ID, POSITION5);
         mModelAndObserverInOrder.verify(mTabModel).moveTab(mTab5.getId(), startIndex);
         mModelAndObserverInOrder.verify(mTabModel).moveTab(mTab6.getId(), startIndex + 1);
         mModelAndObserverInOrder
