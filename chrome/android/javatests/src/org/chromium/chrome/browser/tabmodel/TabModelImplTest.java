@@ -1141,6 +1141,7 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
+    @DisabledTest(message = "https://crbug.com/432500572")
     public void testHighlightTabs_assertionFailsWithEmptyList() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
