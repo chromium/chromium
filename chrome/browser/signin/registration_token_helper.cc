@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
+#include "chrome/browser/signin/registration_token_helper.h"
 
 #include <optional>
 #include <string_view>

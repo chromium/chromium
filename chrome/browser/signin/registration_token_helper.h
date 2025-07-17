@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_REGISTRATION_TOKEN_HELPER_H_
-#define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_REGISTRATION_TOKEN_HELPER_H_
+#ifndef CHROME_BROWSER_SIGNIN_REGISTRATION_TOKEN_HELPER_H_
+#define CHROME_BROWSER_SIGNIN_REGISTRATION_TOKEN_HELPER_H_
 
 #include <optional>
 #include <string>
@@ -137,4 +137,4 @@ class RegistrationTokenHelper {
   base::WeakPtrFactory<RegistrationTokenHelper> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_REGISTRATION_TOKEN_HELPER_H_
+#endif  // CHROME_BROWSER_SIGNIN_REGISTRATION_TOKEN_HELPER_H_

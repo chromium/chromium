@@ -7611,6 +7611,7 @@ test("unit_tests") {
       "../browser/signin/dice_web_signin_interceptor_unittest.cc",
       "../browser/signin/logout_tab_helper_unittest.cc",
       "../browser/signin/process_dice_header_delegate_impl_unittest.cc",
+      "../browser/signin/registration_token_helper_unittest.cc",
       "../browser/ui/startup/first_run_service_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
     ]
@@ -7631,7 +7632,6 @@ test("unit_tests") {
       "../browser/signin/bound_session_credentials/bound_session_registration_fetcher_param_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_request_throttled_handler_browser_impl_unittest.cc",
       "../browser/signin/bound_session_credentials/fake_keyed_unexportable_key_service_unittest.cc",
-      "../browser/signin/bound_session_credentials/registration_token_helper_unittest.cc",
       "../browser/signin/bound_session_credentials/session_binding_helper_unittest.cc",
       "../browser/signin/bound_session_credentials/throttled_gaia_auth_fetcher_unittest.cc",
       "../renderer/bound_session_credentials/bound_session_request_throttled_handler_renderer_impl_unittest.cc",

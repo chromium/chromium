@@ -16,7 +16,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
-#include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
+#include "chrome/browser/signin/registration_token_helper.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"

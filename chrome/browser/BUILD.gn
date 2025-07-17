@@ -7463,6 +7463,8 @@ static_library("browser") {
       "signin/logout_tab_helper.h",
       "signin/process_dice_header_delegate_impl.cc",
       "signin/process_dice_header_delegate_impl.h",
+      "signin/registration_token_helper.cc",
+      "signin/registration_token_helper.h",
       "signin/signin_ui_delegate_impl_dice.cc",
       "signin/signin_ui_delegate_impl_dice.h",
     ]
@@ -7516,8 +7518,6 @@ static_library("browser") {
       "signin/bound_session_credentials/keyed_unexportable_key_service.h",
       "signin/bound_session_credentials/keyed_unexportable_key_service_impl.cc",
       "signin/bound_session_credentials/keyed_unexportable_key_service_impl.h",
-      "signin/bound_session_credentials/registration_token_helper.cc",
-      "signin/bound_session_credentials/registration_token_helper.h",
       "signin/bound_session_credentials/session_binding_helper.cc",
       "signin/bound_session_credentials/session_binding_helper.h",
       "signin/bound_session_credentials/throttled_gaia_auth_fetcher.cc",

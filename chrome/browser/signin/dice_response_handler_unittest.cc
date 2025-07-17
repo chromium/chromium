@@ -16,10 +16,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/signin/registration_token_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -36,21 +38,15 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unexportable_keys/fake_unexportable_key_service.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
+#include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/unexportable_keys/fake_unexportable_key_service.h"
-#include "components/unexportable_keys/unexportable_key_id.h"
-#include "components/unexportable_keys/unexportable_key_service.h"
-#include "components/unexportable_keys/unexportable_key_task_manager.h"
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 using signin::DiceAction;
 using signin::DiceResponseParams;
@@ -67,14 +63,12 @@ constexpr char kEmail[] = "test@email.com";
 constexpr int kSessionIndex = 42;
 constexpr char kEligibleForTokenBinding[] = "ES256 RS256";
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256,
                                crypto::SignatureVerifier::RSA_PKCS1_SHA256};
 
 constexpr char kTokenBindingOutcomeHistogram[] =
     "Signin.DiceTokenBindingOutcome";
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 DiceResponseParams::AccountInfo GetDiceResponseParamsAccountInfo(
     const std::string& email) {
@@ -123,7 +117,6 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
   raw_ptr<GaiaAuthConsumer> consumer_;
 };
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 class MockRegistrationTokenHelper : public RegistrationTokenHelper {
  public:
   MockRegistrationTokenHelper()
@@ -150,7 +143,6 @@ class MockRegistrationTokenHelper : public RegistrationTokenHelper {
  private:
   unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
 };
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 class DiceResponseHandlerTest : public testing::Test,
                                 public AccountReconcilor::Observer {
@@ -255,7 +247,6 @@ class DiceResponseHandlerTest : public testing::Test,
       const CoreAccountId& primary_account,
       bool invalid_primary_account);
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   void EnableRegistrationTokenHelperFactory() {
     dice_response_handler_->SetRegistrationTokenHelperFactoryForTesting(
         mock_registration_token_helper_factory_.Get());
@@ -288,7 +279,6 @@ class DiceResponseHandlerTest : public testing::Test,
     ASSERT_FALSE(node.empty());
     std::move(node.mapped()).Run(std::move(result));
   }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   // AccountReconcilor::Observer:
   void OnBlockReconcile() override { ++reconcilor_blocked_count_; }
@@ -314,7 +304,6 @@ class DiceResponseHandlerTest : public testing::Test,
   CoreAccountInfo enable_sync_account_info_;
   GoogleServiceAuthError auth_error_;
   std::string auth_error_email_;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableChromeRefreshTokenBinding};
   std::map<
@@ -325,7 +314,6 @@ class DiceResponseHandlerTest : public testing::Test,
       base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
       mock_registration_token_helper_factory_;
   base::HistogramTester histogram_tester_;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 };
 
 class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
@@ -451,15 +439,12 @@ TEST_F(DiceResponseHandlerTest, Signin) {
   EXPECT_EQ(
       identity_test_env_.GetNumCallsToPrepareForFetchingAccountCapabilities(),
       1);
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   histogram_tester_.ExpectUniqueSample(
       kTokenBindingOutcomeHistogram,
       DiceResponseHandler::TokenBindingOutcome::kNotBoundNotSupported,
       /*expected_bucket_count=*/1);
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // Checks that a SIGNIN action triggers a token exchange request.
 TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   EnableRegistrationTokenHelperFactory();
@@ -881,7 +866,6 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
           kNotBoundRegistrationTokenGenerationFailed,
       /*expected_bucket_count=*/1);
 }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 // Checks that the account reconcilor is blocked when where was OAuth
 // outage in Dice, and unblocked after the timeout.

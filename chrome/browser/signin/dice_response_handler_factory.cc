@@ -7,10 +7,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
-#include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/dice_response_handler.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/registration_token_helper.h"
 #include "components/signin/public/base/signin_switches.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
