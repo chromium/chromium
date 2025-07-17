@@ -211,6 +211,7 @@ body {
 
 /* Font settings */
 
+<if expr="not(is_ios)">
 .serif {
   font-family: serif;
 }
@@ -222,6 +223,21 @@ body {
 .monospace {
   font-family: monospace;
 }
+</if>
+
+<if expr="is_ios">
+.serif {
+  font-family: -apple-system-ui-serif, ui-serif, 'Georgia', serif;
+}
+
+.sans-serif {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.monospace {
+  font-family: ui-monospace, SFMono-Regular, ui-monospace, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+</if>
 
 /* Define vertical rhythm (baseline grid of 4px). */
 
