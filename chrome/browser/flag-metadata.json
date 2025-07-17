@@ -7131,6 +7131,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "omnibox-drs-prototype",
+    "owners": ["stkhapugin@chromium.org", "christianxu@chromium.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "omnibox-dynamic-max-autocomplete",
     "owners": [ "stkhapugin@chromium.org", "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

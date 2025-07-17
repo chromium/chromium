@@ -2769,6 +2769,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"aim-prototype-ios", flag_descriptions::kAIMPrototypeName,
      flag_descriptions::kAIMPrototypeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAIMPrototype)},
+    {"omnibox-drs-prototype", flag_descriptions::kOmniboxDRSPrototypeName,
+     flag_descriptions::kOmniboxDRSPrototypeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kOmniboxDRSPrototype)},
+
     {"ios-omnibox-aim-shortcut", flag_descriptions::kIOSOmniboxAimShortcutName,
      flag_descriptions::kIOSOmniboxAimShortcutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSOmniboxAimShortcut)},

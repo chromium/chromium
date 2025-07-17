@@ -310,6 +310,9 @@ BASE_DECLARE_FEATURE(kNTPMIAEntrypoint);
 // contains temporary UI exploration for AIM.
 BASE_DECLARE_FEATURE(kAIMPrototype);
 
+// Feature for the DRS prototype.
+BASE_DECLARE_FEATURE(kOmniboxDRSPrototype);
+
 // Feature flag to enable UITraitCollection workaround for fixing incorrect
 // trait propagation.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);

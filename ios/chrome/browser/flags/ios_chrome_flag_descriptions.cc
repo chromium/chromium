@@ -1068,6 +1068,10 @@ const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";
 
+const char kOmniboxDRSPrototypeName[] = "Enable the Omnibox DRS prototype";
+const char kOmniboxDRSPrototypeDescription[] =
+    "Enables the omnibox dynamic response system prototype";
+
 const char kOmniboxGroupingFrameworkForZPSName[] =
     "Omnibox Grouping Framework for ZPS";
 const char kOmniboxGroupingFrameworkForZPSDescription[] =
