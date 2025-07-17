@@ -610,7 +610,6 @@ public class InstanceSwitcherCoordinator {
         negativeButton.setOnClickListener(
                 v -> {
                     dialog.dismiss();
-                    dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                 });
         dialog.show();
     }

@@ -834,10 +834,10 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isDisplayed()));
 
         onView(withText(R.string.cancel)).perform(click());
-        // The cancel button closes the instance switcher and opens the last opened window/tab
+        // The cancel button does not close the instance switcher dialog.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(false));
+                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(true));
                 });
     }
 
