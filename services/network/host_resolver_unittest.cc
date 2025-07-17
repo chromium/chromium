@@ -445,7 +445,7 @@ TEST_F(HostResolverTest, Source) {
 
 // Make host resolve requests specifying https scheme and
 // test that a resolver successfully gets https record information.
-TEST_F(HostResolverTest, GetEndpointResultsWithMetadata) {
+TEST_F(HostResolverTest, GetAlternativeEndpoints) {
   using RuleResolver = net::MockHostResolverBase::RuleResolver;
 
   constexpr char kWithoutHttpsDomain[] = "without_https_record.test";

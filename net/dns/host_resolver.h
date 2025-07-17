@@ -629,8 +629,7 @@ class NET_EXPORT HostResolver {
   // Helper for squashing error code to a small set of DNS error codes.
   static int SquashErrorCode(int error);
 
-  // Builds an AddressList from the first non-protocol endpoint found in
-  // `endpoints`.
+  // Builds an AddressList from the first authority endpoint in `endpoints`.
   //
   // TODO(crbug.com/40203587): Delete once `AddressList` usage is fully replaced
   // in `HostResolver` and results.
@@ -638,25 +637,25 @@ class NET_EXPORT HostResolver {
       base::span<const HostResolverEndpointResult> endpoints,
       const std::set<std::string>& aliases);
 
-  // Returns whether there is at least one protocol endpoint in `endpoints`, and
-  // all such endpoints have ECH parameters. This can be used to implement the
-  // guidance in section 3 of RFC9460.
+  // Returns whether there is at least one alternative endpoint in `endpoints`,
+  // and all such endpoints have ECH parameters. This can be used to implement
+  // the guidance in section 5.1 of draft-ietf-tls-svcb-ech-08.
   template <typename T>
-  static bool AllProtocolEndpointsHaveEch(base::span<const T> endpoints)
+  static bool AllAlternativeEndpointsHaveEch(base::span<const T> endpoints)
     requires HasConnectionEndpointMetadata<T>
   {
-    bool has_svcb = false;
+    bool has_alternative = false;
     for (const auto& endpoint : endpoints) {
-      if (!endpoint.metadata.supported_protocol_alpns.empty()) {
-        has_svcb = true;
+      if (endpoint.metadata.IsAlternative()) {
+        has_alternative = true;
         if (endpoint.metadata.ech_config_list.empty()) {
           return false;  // There is a non-ECH SVCB/HTTPS route.
         }
       }
     }
-    // Either there were no SVCB/HTTPS records (should be SVCB-optional), or
+    // Either there were no alternative endpoints (should be SVCB-optional), or
     // there were and all supported ECH (should be SVCB-reliant).
-    return has_svcb;
+    return has_alternative;
   }
 
   // Returns true if NAT64 can be used in place of an IPv4 address during host

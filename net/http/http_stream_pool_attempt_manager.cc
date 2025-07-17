@@ -332,9 +332,10 @@ bool HttpStreamPool::AttemptManager::IsSvcbOptional() {
     return true;
   }
 
+  // See Section 5.1 of draft-ietf-tls-svcb-ech-08.
   base::span<const ServiceEndpoint> endpoints =
       service_endpoint_request_->GetEndpointResults();
-  return !HostResolver::AllProtocolEndpointsHaveEch(endpoints);
+  return !HostResolver::AllAlternativeEndpointsHaveEch(endpoints);
 }
 
 bool HttpStreamPool::AttemptManager::HasEnoughTcpBasedAttemptsForSlowIPEndPoint(

@@ -150,10 +150,6 @@ class FailingServiceEndpointRequestImpl
   const int error_;
 };
 
-bool EndpointResultIsNonProtocol(const HostResolverEndpointResult& result) {
-  return result.metadata.supported_protocol_alpns.empty();
-}
-
 void GetTimeDeltaFromDictString(const base::Value::Dict& args,
                                 std::string_view key,
                                 base::TimeDelta* out) {
@@ -585,12 +581,14 @@ AddressList HostResolver::EndpointResultToAddressList(
     const std::set<std::string>& aliases) {
   AddressList list;
 
-  auto non_protocol_endpoint =
-      std::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
-  if (non_protocol_endpoint == endpoints.end())
+  auto authority_endpoint = std::ranges::find_if_not(
+      endpoints,
+      [](const auto& endpoint) { return endpoint.metadata.IsAlternative(); });
+  if (authority_endpoint == endpoints.end()) {
     return list;
+  }
 
-  list.endpoints() = non_protocol_endpoint->ip_endpoints;
+  list.endpoints() = authority_endpoint->ip_endpoints;
 
   std::vector<std::string> aliases_vector(aliases.begin(), aliases.end());
   list.SetDnsAliases(std::move(aliases_vector));

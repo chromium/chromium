@@ -14229,7 +14229,7 @@ TEST_P(QuicSessionPoolTest, RequireDnsHttpsAlpnMatch) {
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {
       quic::AlpnForVersion(version_)};
-  // Add a final non-protocol endpoint at the end.
+  // Add a final authority endpoint (no protocols specified) at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/true);
 }
@@ -14238,7 +14238,7 @@ TEST_P(QuicSessionPoolTest, RequireDnsHttpsAlpnUnknownAlpn) {
   std::vector<HostResolverEndpointResult> endpoints(2);
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {"unknown"};
-  // Add a final non-protocol endpoint at the end.
+  // Add a final authority endpoint (no protocols specified) at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/false);
 }
@@ -14248,7 +14248,7 @@ TEST_P(QuicSessionPoolTest, RequireDnsHttpsAlpnUnknownAndSupportedAlpn) {
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {
       "unknown", quic::AlpnForVersion(version_)};
-  // Add a final non-protocol endpoint at the end.
+  // Add a final authority endpoint (no protocols specified) at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/true);
 }
@@ -14260,7 +14260,7 @@ TEST_P(QuicSessionPoolTest, RequireDnsHttpsNotAlpnName) {
   endpoints[0].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoints[0].metadata.supported_protocol_alpns = {
       quic::ParsedQuicVersionToString(version_)};
-  // Add a final non-protocol endpoint at the end.
+  // Add a final authority endpoint (no protocols specified) at the end.
   endpoints[1].ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   TestRequireDnsHttpsAlpn(std::move(endpoints), /*expect_success=*/false);
 }

@@ -526,8 +526,8 @@ void TransportConnectJob::ChangePriorityInternal(RequestPriority priority) {
 bool TransportConnectJob::IsSvcbOptional(
     base::span<const HostResolverEndpointResult> results) const {
   // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all routes
-  // support ECH, disable the A/AAAA fallback. See Section 10.1 of
-  // draft-ietf-dnsop-svcb-https-08.
+  // support ECH, disable the A/AAAA fallback. See Section 5.1 of
+  // draft-ietf-tls-svcb-ech-08.
 
   auto* scheme_host_port =
       std::get_if<url::SchemeHostPort>(&params_->destination());
@@ -540,26 +540,25 @@ bool TransportConnectJob::IsSvcbOptional(
     return true;  // ECH is not supported for this request.
   }
 
-  return !HostResolver::AllProtocolEndpointsHaveEch(results);
+  return !HostResolver::AllAlternativeEndpointsHaveEch(results);
 }
 
 bool TransportConnectJob::IsEndpointResultUsable(
     const HostResolverEndpointResult& result,
     bool svcb_optional) const {
-  // A `HostResolverEndpointResult` with no ALPN protocols is the fallback
-  // A/AAAA route. This is always compatible. We assume the ALPN-less option is
-  // TCP-based.
-  if (result.metadata.supported_protocol_alpns.empty()) {
-    // See draft-ietf-dnsop-svcb-https-08, Section 3.
+  // We assume the authority endpoint (i.e. not from SVCB/HTTPS) is TCP-based,
+  // so an authority endpoint.
+  if (!result.metadata.IsAlternative()) {
+    // See RFC 9460, Section 3.
     return svcb_optional;
   }
 
-  // See draft-ietf-dnsop-svcb-https-08, Section 7.1.2. Routes are usable if
-  // there is an overlap between the route's ALPN protocols and the configured
-  // ones. This ensures we do not, e.g., connect to a QUIC-only route with TCP.
+  // See RFC 9460, Section 7.1.2. Alternative endpoints are usable if there is
+  // an overlap between the endpoint's ALPN protocols and the configured ones.
+  // This ensures we do not, e.g., connect to a QUIC-only endpoint with TCP.
   // Note that, if `params_` did not specify any ALPN protocols, no
-  // SVCB/HTTPS-based routes will match and we will effectively ignore all but
-  // plain A/AAAA routes.
+  // SVCB/HTTPS-based endpoints will match and we will effectively ignore all
+  // but plain A/AAAA endpoints.
   for (const auto& alpn : result.metadata.supported_protocol_alpns) {
     if (params_->supported_alpns().contains(alpn)) {
       return true;

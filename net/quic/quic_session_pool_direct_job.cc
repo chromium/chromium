@@ -243,13 +243,13 @@ void QuicSessionPool::DirectJob::OnSessionAttemptComplete(int rv) {
 bool QuicSessionPool::DirectJob::IsSvcbOptional(
     base::span<const HostResolverEndpointResult> results) const {
   // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all
-  // routes support ECH, disable the A/AAAA fallback. See Section 10.1 of
-  // draft-ietf-dnsop-svcb-https-11.
+  // alternative endpoints support ECH, disable the A/AAAA fallback. See
+  // Section 5.1 of draft-ietf-tls-svcb-ech-08.
   if (!pool_->ssl_config_service_->GetSSLContextConfig().ech_enabled) {
     return true;  // ECH is not supported for this request.
   }
 
-  return !HostResolver::AllProtocolEndpointsHaveEch(results);
+  return !HostResolver::AllAlternativeEndpointsHaveEch(results);
 }
 
 }  // namespace net

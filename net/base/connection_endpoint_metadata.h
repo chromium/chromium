@@ -46,8 +46,15 @@ struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
   static std::optional<ConnectionEndpointMetadata> FromValue(
       const base::Value& value);
 
+  // Returns true if this metadata describes an alternative endpoint (that is,
+  // from an HTTPS/SVCB record) and false if it is an authority endpoint (that
+  // is, fetching A/AAAA from the host directory). "Authority" in here refers to
+  // the addresses coming directly from the authority portion of the URL. See
+  // Section 1.3 of RFC 9460.
+  bool IsAlternative() const { return !supported_protocol_alpns.empty(); }
+
   // ALPN strings for protocols supported by the endpoint. Empty for default
-  // non-protocol endpoint.
+  // authority endpoint, i.e. fetching A/AAAA directly without HTTPS/SVCB.
   std::vector<std::string> supported_protocol_alpns;
 
   // If not empty, TLS Encrypted Client Hello config for the service.

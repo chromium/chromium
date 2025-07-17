@@ -96,7 +96,7 @@ int ResolveHostRequest::Start(
   if (rv != net::ERR_IO_PENDING) {
     response_client->OnComplete(rv, GetResolveErrorInfo(),
                                 base::OptionalFromPtr(GetAddressResults()),
-                                GetEndpointResultsWithMetadata());
+                                GetAlternativeEndpoints());
     return rv;
   }
 
@@ -134,7 +134,7 @@ void ResolveHostRequest::OnComplete(int error) {
   SignalNonAddressResults();
   response_client_->OnComplete(error, GetResolveErrorInfo(),
                                base::OptionalFromPtr(GetAddressResults()),
-                               GetEndpointResultsWithMetadata());
+                               GetAlternativeEndpoints());
 
   response_client_.reset();
   // Invoke completion callback last as it may delete |this|.
@@ -160,32 +160,37 @@ const net::AddressList* ResolveHostRequest::GetAddressResults() const {
 }
 
 std::optional<net::HostResolverEndpointResults>
-ResolveHostRequest::GetEndpointResultsWithMetadata() const {
+ResolveHostRequest::GetAlternativeEndpoints() const {
   if (cancelled_) {
     return std::nullopt;
   }
 
   DCHECK(internal_request_);
-  const net::HostResolverEndpointResults* endpoint_results =
+  const net::HostResolverEndpointResults* endpoints =
       internal_request_->GetEndpointResults();
 
-  if (!endpoint_results) {
+  if (!endpoints) {
     return std::nullopt;
   }
 
-  net::HostResolverEndpointResults endpoint_results_with_metadata;
-
-  // The last element of endpoint_results has only resolved IP
-  // addresses(non-protocol endpoints), and this information is passed as
-  // another parameter at least in OnComplete method, so drop that here to avoid
-  // providing redundant information.
+  // `endpoints` contains both alternative endpoints (from HTTPS/SVCB) and
+  // authority endpoints (from A/AAAA directly). The authority endpoints are
+  // redundant with `AddressList`, so return only the alternative endpoints.
+  //
+  // TODO(crbug.com/40203587): This is the opposite of the design taken
+  // everywhere else in the DNS logic, where we aimed to migrate `AddressList`
+  // to `HostResolverEndpointResult`.
+  //
+  // TODO(crbug.com/40256843): The rest of the Mojo interface uses the
+  // non-standard `endpoint_results_with_metadata` naming. Rename everything to
+  // match the specification.
+  net::HostResolverEndpointResults alternative_endpoints;
   std::ranges::copy_if(
-      *endpoint_results, std::back_inserter(endpoint_results_with_metadata),
-      [](const auto& result) {
-        return !result.metadata.supported_protocol_alpns.empty();
-      });
-
-  return endpoint_results_with_metadata;
+      *endpoints, std::back_inserter(alternative_endpoints),
+      [](const auto& endpoint) { return endpoint.metadata.IsAlternative(); });
+  return alternative_endpoints.empty()
+             ? std::nullopt
+             : std::make_optional(alternative_endpoints);
 }
 
 void ResolveHostRequest::SignalNonAddressResults() {
