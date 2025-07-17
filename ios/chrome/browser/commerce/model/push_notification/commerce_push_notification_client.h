@@ -33,7 +33,9 @@ class CommercePushNotificationClient : public PushNotificationClient {
   CommercePushNotificationClient();
   ~CommercePushNotificationClient() override;
 
-  // Override PushNotificationClient::
+  // PushNotificationClient overrides:
+  std::optional<NotificationType> GetNotificationType(
+      UNNotification* notification) override;
   bool CanHandleNotification(UNNotification* notification) override;
   bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;

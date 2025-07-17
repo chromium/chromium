@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -76,6 +77,15 @@ CommercePushNotificationClient::CommercePushNotificationClient()
 }
 
 CommercePushNotificationClient::~CommercePushNotificationClient() = default;
+
+std::optional<NotificationType>
+CommercePushNotificationClient::GetNotificationType(
+    UNNotification* notification) {
+  if (CanHandleNotification(notification)) {
+    return NotificationType::kCommerce;
+  }
+  return std::nullopt;
+}
 
 // static
 std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
