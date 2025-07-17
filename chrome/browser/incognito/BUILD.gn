@@ -110,6 +110,7 @@ android_library("incognito_java_tests") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:test_support_java",
     "//components/browser_ui/widget/android:java",
