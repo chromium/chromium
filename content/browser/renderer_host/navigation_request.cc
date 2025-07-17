@@ -10760,14 +10760,38 @@ void NavigationRequest::SendDeferredConsoleMessages() {
 
 std::optional<AgentClusterKey::CrossOriginIsolationKey>
 NavigationRequest::ComputeCrossOriginIsolationKey() {
-  // If the final security policies have not been computed yet, return an empty
-  // CrossOriginIsolationKey. This is because we cannot compute the proper
-  // CrossOriginIsolationKey for the navigation yet.
-  // TODO(crbug.com/343914483): When navigating between same-origin documents,
-  // consider passing the CrossOriginIsolationKey of the current document to
-  // avoid creating spurious speculative RFH when navigating between two
-  // same-origin documents with crossOriginIsolation.
+  // If the navigation doesn't have an origin, we cannot create a
+  // CrossOriginIsolationKey for it, since it must be tied to an origin.
+  url::Origin origin;
+  if (state_ < WILL_PROCESS_RESPONSE) {
+    origin = GetTentativeOriginAtRequestTime();
+  } else {
+    std::optional<url::Origin> origin_to_commit = GetOriginToCommit();
+    if (!origin_to_commit.has_value()) {
+      return std::nullopt;
+    }
+    origin = origin_to_commit.value();
+  }
+
+  // If the final security policies have not been computed yet, return our best
+  // guess of what the final CrossOriginIsolationKey will be. This is because
+  // we cannot compute the proper CrossOriginIsolationKey for the navigation
+  // yet. However, if we return an empty CrossOriginIsolationKey, we might
+  // create a spurious speculative RFH due to CrossOriginIsolationKey
+  // differences. To avoid this, we return the current CrossOriginIsolationKey
+  // if the navigation is same-origin.
   if (!policy_container_builder_->HasComputedPolicies()) {
+    if (origin.IsSameOriginWith(frame_tree_node_->current_origin()) &&
+        frame_tree_node_->current_frame_host()
+            ->GetSiteInstance()
+            ->GetSiteInfo()
+            .agent_cluster_key()) {
+      return frame_tree_node_->current_frame_host()
+          ->GetSiteInstance()
+          ->GetSiteInfo()
+          .agent_cluster_key()
+          ->GetCrossOriginIsolationKey();
+    }
     return std::nullopt;
   }
 
@@ -10800,19 +10824,6 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
                 .document_isolation_policy.value ==
             network::mojom::DocumentIsolationPolicyValue::
                 kIsolateAndCredentialless);
-
-  // If the navigation doesn't have an origin, we cannot create a
-  // CrossOriginIsolationKey for it, since it must be tied to an origin.
-  url::Origin origin;
-  if (state_ < WILL_PROCESS_RESPONSE) {
-    origin = GetTentativeOriginAtRequestTime();
-  } else {
-    std::optional<url::Origin> origin_to_commit = GetOriginToCommit();
-    if (!origin_to_commit.has_value()) {
-      return std::nullopt;
-    }
-    origin = origin_to_commit.value();
-  }
 
   // Inform the PolicyContainer that DocumentIsolationPolicy has enabled
   // crossOriginIsolation for the document.
