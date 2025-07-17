@@ -438,10 +438,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // No-op if the Lens Overlay is off or closing. If the Lens Overlay is in the
   // process of opening, the request will be queued until the overlay is fully
   // opened.
-  // TODO(crbug.com/403629222): Revisit if it makes sense to pass the
-  // destination URL instead of the query text directly.
   void IssueContextualSearchRequest(
-      const GURL& destination_url,
+      std::string query_text,
+      std::map<std::string, std::string> additional_query_parameters,
       lens::LensOverlayQueryController* lens_overlay_query_controller,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
@@ -922,7 +921,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Callback to run when the page context has been updated and the suggestion
   // query should now be issued.
   void OnPageContextUpdatedForSuggestion(
-      const GURL& destination_url,
+      std::string query_text,
+      std::map<std::string, std::string> additional_query_parameters,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
       lens::LensOverlayInvocationSource invocation_source);

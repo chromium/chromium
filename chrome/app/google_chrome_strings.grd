@@ -1989,6 +1989,12 @@ Google Chrome is unable to recover your settings.
             Always show Google Lens shortcut
           </message>
         </if>
+
+        <!-- CSB Strings -->
+        <message name="IDS_LENS_CONTEXTUAL_SEARCH_DEFAULT_QUERY"
+          desc="Default query for Lens searchbox to request help with the current page context.">
+          help me with this
+        </message>
       </if>
 
       <!-- OOBE -->

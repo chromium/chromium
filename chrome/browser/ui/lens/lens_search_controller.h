@@ -124,6 +124,17 @@ class LensSearchController {
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion);
 
+  // Issues a contextual search request for Lens to fulfill using query text.
+  // Starts contextualization flow if its not already in progress. If the Lens
+  // Overlay is in the process of opening, the request will be queued until the
+  // overlay is fully opened.
+  void IssueContextualSearchRequestWithQuery(
+      lens::LensOverlayInvocationSource invocation_source,
+      std::string query_text,
+      std::map<std::string, std::string> additional_query_parameters,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion);
+
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:
   //   (1) Close the side panel

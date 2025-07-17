@@ -10,6 +10,7 @@
 #include "chrome/browser/lens/core/mojom/lens_ghost_loader.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
@@ -26,9 +27,6 @@
 #include "url/gurl.h"
 
 namespace {
-// The url query param key for the search query.
-inline constexpr char kTextQueryParameterKey[] = "q";
-
 // The size of the thumbnail to send to the searchbox.
 inline constexpr float kMaxThumbnailWidth = 100.0f;
 inline constexpr float kMaxThumbnailHeight = 100.0f;
@@ -283,21 +281,9 @@ void LensSearchboxController::OnSuggestionAccepted(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion) {
   base::Time query_start_time = base::Time::Now();
-  std::string query_text = "";
-  std::map<std::string, std::string> additional_query_parameters;
-
-  net::QueryIterator query_iterator(destination_url);
-  while (!query_iterator.IsAtEnd()) {
-    std::string_view key = query_iterator.GetKey();
-    std::string_view value = query_iterator.GetUnescapedValue();
-    if (kTextQueryParameterKey == key) {
-      query_text = value;
-    } else {
-      additional_query_parameters.insert(std::make_pair(
-          query_iterator.GetKey(), query_iterator.GetUnescapedValue()));
-    }
-    query_iterator.Advance();
-  }
+  std::string query_text = GetTextQueryParameterValue(destination_url);
+  std::map<std::string, std::string> additional_query_parameters =
+      GetParametersMapWithoutQuery(destination_url);
 
   // TODO(crbug.com/413138792): Move the logic to issue a searchbox query to
   // this class.

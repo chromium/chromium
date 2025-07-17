@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
+#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
@@ -34,7 +35,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
-
 void CheckInitialized(bool initialized) {
   CHECK(initialized)
       << "The LensSearchController has not been initialized. Initialize() must "
@@ -205,13 +205,37 @@ void LensSearchController::IssueContextualSearchRequest(
   CHECK(invocation_source ==
         lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion);
 
+  std::string query_text = lens::GetTextQueryParameterValue(destination_url);
+  std::map<std::string, std::string> additional_query_parameters =
+      lens::GetParametersMapWithoutQuery(destination_url);
+
+  IssueContextualSearchRequestWithQuery(invocation_source, query_text,
+                                        additional_query_parameters, match_type,
+                                        is_zero_prefix_suggestion);
+}
+
+void LensSearchController::IssueContextualSearchRequestWithQuery(
+    lens::LensOverlayInvocationSource invocation_source,
+    std::string query_text,
+    std::map<std::string, std::string> additional_query_parameters,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion) {
+  // This method should only be used by the omnibox contextual suggestion flow
+  // or the homework action chip flow. There is no dependency on the callers, so
+  // this check is solely to ensure a new flow is not accidentally added.
+  CHECK(invocation_source ==
+            lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion ||
+        invocation_source ==
+            lens::LensOverlayInvocationSource::kHomeworkActionChip);
+
   // If the eligibility checks fail, do not procced with opening any UI.
   if (!RunLensEligibilityChecks(
           invocation_source,
           /*permission_granted_callback=*/base::BindRepeating(
-              &LensSearchController::IssueContextualSearchRequest,
-              weak_ptr_factory_.GetWeakPtr(), invocation_source,
-              destination_url, match_type, is_zero_prefix_suggestion))) {
+              &LensSearchController::IssueContextualSearchRequestWithQuery,
+              weak_ptr_factory_.GetWeakPtr(), invocation_source, query_text,
+              additional_query_parameters, match_type,
+              is_zero_prefix_suggestion))) {
     return;
   }
 
@@ -223,7 +247,8 @@ void LensSearchController::IssueContextualSearchRequest(
   // TODO(crbug.com/404941800): This flow should not start the overlay once
   // contextualization is separated from the overlay.
   lens_overlay_controller_->IssueContextualSearchRequest(
-      destination_url, lens_overlay_query_controller_.get(), match_type,
+      query_text, additional_query_parameters,
+      lens_overlay_query_controller_.get(), match_type,
       is_zero_prefix_suggestion, invocation_source);
 }
 

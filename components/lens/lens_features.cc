@@ -143,6 +143,10 @@ BASE_FEATURE(kLensSearchNotFoundOnPageToast,
              "kLensSearchNotFoundOnPageToast",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayStraightToSrp,
+             "LensOverlayStraightToSrp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -562,6 +566,9 @@ const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic{
 
 constexpr base::FeatureParam<int> kLensSearchSidePanelDefaultWidth{
     &kLensSearchSidePanelDefaultWidthChange, "lens-panel-default-width", 440};
+
+constexpr base::FeatureParam<std::string> kLensOverlayStraightToSrpQuery{
+    &kLensOverlayStraightToSrp, "query", ""};
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
@@ -1183,6 +1190,14 @@ bool IsLensOverlayBackToPageEnabled() {
 
 bool IsLensSearchNotFoundOnPageToastEnabled() {
   return base::FeatureList::IsEnabled(kLensSearchNotFoundOnPageToast);
+}
+
+bool IsLensOverlayStraightToSrpEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayStraightToSrp);
+}
+
+std::string GetStraightToSrpQuery() {
+  return kLensOverlayStraightToSrpQuery.Get();
 }
 
 }  // namespace lens::features

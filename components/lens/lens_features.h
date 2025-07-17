@@ -145,6 +145,10 @@ BASE_DECLARE_FEATURE(kLensOverlayBackToPage);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchNotFoundOnPageToast);
 
+// Enables straight to SRP flows are enabled in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayStraightToSrp);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -937,6 +941,14 @@ extern bool IsLensOverlayBackToPageEnabled();
 // Whether to enable the not found on page toast.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSearchNotFoundOnPageToastEnabled();
+
+// Whether straight to SRP flows are enabled in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayStraightToSrpEnabled();
+
+// If set, overrides the query text used in the Straight to SRP flow.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetStraightToSrpQuery();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

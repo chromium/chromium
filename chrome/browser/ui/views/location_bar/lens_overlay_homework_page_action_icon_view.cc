@@ -19,6 +19,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metrics.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -160,8 +161,20 @@ void LensOverlayHomeworkPageActionIconView::OnExecuting(
       LensSearchController::FromTabWebContents(GetWebContents());
   CHECK(controller);
 
-  controller->OpenLensOverlay(
-      lens::LensOverlayInvocationSource::kHomeworkActionChip);
+  if (lens::features::IsLensOverlayStraightToSrpEnabled()) {
+    std::string query_text =
+        lens::features::GetStraightToSrpQuery().empty()
+            ? l10n_util::GetStringUTF8(IDS_LENS_CONTEXTUAL_SEARCH_DEFAULT_QUERY)
+            : lens::features::GetStraightToSrpQuery();
+    controller->IssueContextualSearchRequestWithQuery(
+        lens::LensOverlayInvocationSource::kHomeworkActionChip, query_text,
+        /*additional_query_parameters=*/{},
+        AutocompleteMatchType::Type::SEARCH_SUGGEST,
+        /*is_zero_prefix_suggestion=*/false);
+  } else {
+    controller->OpenLensOverlay(
+        lens::LensOverlayInvocationSource::kHomeworkActionChip);
+  }
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       GetWebContents()->GetBrowserContext(), lens::features::kLensOverlay);
 
