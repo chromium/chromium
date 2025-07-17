@@ -4,6 +4,7 @@
 
 #include "media/cast/encoding/media_video_encoder_wrapper.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -17,8 +18,10 @@
 #include "media/base/encoder_status.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_encoder.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
+#include "media/cast/cast_config.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
@@ -177,7 +180,10 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
       status_change_cb_(std::move(status_change_cb)),
       gpu_factories_(gpu_factories),
       is_hardware_encoder_(video_config.use_hardware_encoder),
-      codec_(video_config.video_codec()) {
+      codec_(video_config.video_codec()),
+      encoder_(nullptr,
+               base::OnTaskRunnerDeleter(cast_environment_->GetTaskRunner(
+                   CastEnvironment::ThreadId::kVideo))) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   CHECK(metrics_provider_);
   CHECK(status_change_cb_);
@@ -200,11 +206,6 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
 
 MediaVideoEncoderWrapper::~MediaVideoEncoderWrapper() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-
-  if (encoder_) {
-    cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kVideo)
-        ->DeleteSoon(FROM_HERE, encoder_.release());
-  }
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -231,6 +232,7 @@ bool MediaVideoEncoderWrapper::EncodeVideoFrame(
     // encoder at a different frame size. For example, software VP8, VP9, and
     // AV1 allow re-use if the new frame size is smaller.
   }
+  CHECK(encoder_);
 
   recent_metadata_.emplace(CachedMetadata{
       video_frame->metadata().capture_begin_time,
@@ -341,7 +343,7 @@ void MediaVideoEncoderWrapper::OnEncoderInfo(
 void MediaVideoEncoderWrapper::SetEncoderForTesting(
     std::unique_ptr<media::VideoEncoder> encoder) {
   encoder_is_overridden_for_testing_ = true;
-  encoder_ = std::move(encoder);
+  SetEncoder(std::move(encoder));
 }
 
 MediaVideoEncoderWrapper::CachedMetadata::CachedMetadata(
@@ -372,13 +374,13 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
 
   if (is_hardware_encoder_) {
     CHECK(gpu_factories_);
-    encoder_ = CreateHardwareEncoder(
+    SetEncoder(CreateHardwareEncoder(
         *gpu_factories_,
-        cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain));
+        cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain)));
   } else if (encoder_is_overridden_for_testing_) {
     // Don't construct a new encoder if it is overridden for testing.
   } else {
-    encoder_ = CreateSoftwareEncoder(codec_);
+    SetEncoder(CreateSoftwareEncoder(codec_));
   }
   CHECK(encoder_);
 
@@ -391,6 +393,13 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
       CreateCallback(&MediaVideoEncoderWrapper::OnEncoderInfo),
       CreateCallback(&MediaVideoEncoderWrapper::OnEncodedFrame),
       CreateCallback(&MediaVideoEncoderWrapper::OnEncoderStatus)));
+}
+
+void MediaVideoEncoderWrapper::SetEncoder(
+    std::unique_ptr<media::VideoEncoder> encoder) {
+  // This unusual syntax unwraps `encoder`, which has a default deleter, and
+  // transfers ownership to `encoder_`, which has a base::OnTaskRunnerDeleter.
+  encoder_.reset(encoder.release());
 }
 
 base::TimeDelta MediaVideoEncoderWrapper::GetFrameDuration(
