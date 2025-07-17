@@ -11,6 +11,25 @@
 
 class TabStripModel;
 
+// This class is a bridge between the TabListInterface, a cross-platform
+// abstract class representing a collection of tabs, and the implementations
+// that exist on classic desktop platforms -- specifically, TabStripModel.
+// TabListInterface is designed to be used on code that is shared between
+// classic desktop platforms and the experimental desktop android platform;
+// this allows us to use a single interface for code that runs on both.
+//
+// When possible, the behavior of this class should closely match the behavior
+// Android's implementation (in TabModel), and, ideally, the existing analogous
+// methods in TabStripModel. This makes migration easier and allows for similar
+// behaviors between platforms.
+//
+// One exception to the above is that this class assumes (and CHECK()s) that
+// tab operations are valid. This is different from Android's implementation,
+// which is more forgiving. The stricter approach is used because it matches
+// the classic desktop implementation and also because it leads to more
+// deterministic behavior. Callers should validate the presence of a tab before
+// trying to perform operations on it, and callers can gracefully handle the
+// case of a tab being missing (if it's expected).
 class TabListBridge : public TabListInterface {
  public:
   DECLARE_USER_DATA(TabListBridge);
