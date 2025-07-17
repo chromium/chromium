@@ -14,8 +14,9 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextualSearchContext_jni.h"
 
-NativeContextualSearchContext::NativeContextualSearchContext(JNIEnv* env,
-                                                             jobject obj) {
+NativeContextualSearchContext::NativeContextualSearchContext(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj) {
   java_object_.Reset(env, obj);
 }
 

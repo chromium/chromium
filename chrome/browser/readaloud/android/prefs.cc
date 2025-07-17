@@ -71,7 +71,8 @@ void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,
       prefs->GetDict(prefs::kReadAloudVoiceSettings);
   for (auto [language, value] : dict) {
     env->CallObjectMethod(
-        j_output_map, map_put_id, ConvertUTF8ToJavaString(env, language).obj(),
+        j_output_map.obj(), map_put_id,
+        ConvertUTF8ToJavaString(env, language).obj(),
         ConvertUTF8ToJavaString(env, value.GetString()).obj());
   }
 }

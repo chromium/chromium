@@ -218,8 +218,8 @@ ContentSetting GetPermissionSettingForOrigin(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     ContentSettingsType content_type,
-    jstring origin,
-    jstring embedder) {
+    const base::android::JavaRef<jstring>& origin,
+    const base::android::JavaRef<jstring>& embedder) {
   GURL requesting_origin(ConvertJavaStringToUTF8(env, origin));
   std::string embedder_str = ConvertJavaStringToUTF8(env, embedder);
   GURL embedding_origin;
@@ -261,8 +261,8 @@ void SetPermissionSettingForOrigin(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     ContentSettingsType content_type,
-    jstring origin,
-    jstring embedder,
+    const base::android::JavaRef<jstring>& origin,
+    const base::android::JavaRef<jstring>& embedder,
     ContentSetting setting) {
   GURL origin_url(ConvertJavaStringToUTF8(env, origin));
   GURL embedder_url =

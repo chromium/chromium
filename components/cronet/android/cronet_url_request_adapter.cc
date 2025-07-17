@@ -112,7 +112,7 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
 CronetURLRequestAdapter::CronetURLRequestAdapter(
     CronetContextAdapter* context,
     JNIEnv* env,
-    jobject jurl_request,
+    const base::android::JavaParamRef<jobject>& jurl_request,
     const GURL& url,
     net::RequestPriority priority,
     jboolean jdisable_cache,

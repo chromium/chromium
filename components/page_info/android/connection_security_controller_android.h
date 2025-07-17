@@ -25,9 +25,10 @@ class WebContents;
 // handled in C++).
 class ConnectionSecurityControllerAndroid : public PageInfoUI {
  public:
-  ConnectionSecurityControllerAndroid(JNIEnv* env,
-                                      jobject java_page_info,
-                                      content::WebContents* web_contents);
+  ConnectionSecurityControllerAndroid(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& java_page_info,
+      content::WebContents* web_contents);
   ConnectionSecurityControllerAndroid(
       const ConnectionSecurityControllerAndroid&) = delete;
   ConnectionSecurityControllerAndroid& operator=(

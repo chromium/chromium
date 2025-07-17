@@ -40,8 +40,9 @@ void AndroidSmsOtpFetchReceiverBridge::SetConsumer(
   consumer_ = std::move(consumer);
 }
 
-void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrieved(JNIEnv* env,
-                                                           jstring otp_value) {
+void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrieved(
+    JNIEnv* env,
+    const base::android::JavaRef<jstring>& otp_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!consumer_) {
     return;

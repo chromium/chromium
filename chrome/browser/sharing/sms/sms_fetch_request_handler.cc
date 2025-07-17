@@ -123,9 +123,10 @@ void SmsFetchRequestHandler::AskUserPermission(
       reinterpret_cast<intptr_t>(this));
 }
 
-void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
-                                       std::u16string top_origin,
-                                       jstring j_embedded_origin) {
+void SmsFetchRequestHandler::OnConfirm(
+    JNIEnv* env,
+    std::u16string top_origin,
+    const base::android::JavaRef<jstring>& j_embedded_origin) {
   std::vector<std::u16string> origins;
   if (j_embedded_origin) {
     std::u16string embedded_origin =
@@ -138,9 +139,10 @@ void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
   request->SendSuccessMessage();
 }
 
-void SmsFetchRequestHandler::OnDismiss(JNIEnv* env,
-                                       std::u16string top_origin,
-                                       jstring j_embedded_origin) {
+void SmsFetchRequestHandler::OnDismiss(
+    JNIEnv* env,
+    std::u16string top_origin,
+    const base::android::JavaRef<jstring>& j_embedded_origin) {
   std::vector<std::u16string> origins;
   if (j_embedded_origin) {
     std::u16string embedded_origin =

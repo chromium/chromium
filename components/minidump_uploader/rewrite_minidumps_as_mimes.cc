@@ -298,8 +298,8 @@ static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
     const base::android::JavaParamRef<jstring>& j_dest_dir) {
   std::vector<std::string> anr_strings;
   base::android::AppendJavaStringArrayToStringVector(env, j_anrs, &anr_strings);
-  std::string dest_dir;
-  base::android::ConvertJavaStringToUTF8(env, j_dest_dir, &dest_dir);
+  std::string dest_dir =
+      base::android::ConvertJavaStringToUTF8(env, j_dest_dir);
 
   for (size_t i = 0; i < anr_strings.size(); i += 4) {
     std::string anr_proto_file_path = anr_strings.at(i);
@@ -331,9 +331,9 @@ static void JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEs(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_src_dir,
     const base::android::JavaParamRef<jstring>& j_dest_dir) {
-  std::string src_dir, dest_dir;
-  base::android::ConvertJavaStringToUTF8(env, j_src_dir, &src_dir);
-  base::android::ConvertJavaStringToUTF8(env, j_dest_dir, &dest_dir);
+  std::string src_dir = base::android::ConvertJavaStringToUTF8(env, j_src_dir);
+  std::string dest_dir =
+      base::android::ConvertJavaStringToUTF8(env, j_dest_dir);
 
   RewriteMinidumpsAsMIMEs(base::FilePath(src_dir), base::FilePath(dest_dir),
                           nullptr);
@@ -344,9 +344,9 @@ JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEsAndGetCrashKeys(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_src_dir,
     const base::android::JavaParamRef<jstring>& j_dest_dir) {
-  std::string src_dir, dest_dir;
-  base::android::ConvertJavaStringToUTF8(env, j_src_dir, &src_dir);
-  base::android::ConvertJavaStringToUTF8(env, j_dest_dir, &dest_dir);
+  std::string src_dir = base::android::ConvertJavaStringToUTF8(env, j_src_dir);
+  std::string dest_dir =
+      base::android::ConvertJavaStringToUTF8(env, j_dest_dir);
 
   std::vector<std::string> key_value_arr;
   RewriteMinidumpsAsMIMEs(base::FilePath(src_dir), base::FilePath(dest_dir),

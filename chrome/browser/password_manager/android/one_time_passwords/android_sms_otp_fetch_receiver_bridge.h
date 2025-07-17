@@ -35,7 +35,8 @@ class AndroidSmsOtpFetchReceiverBridge {
 
   // Implements consumer interface. Called via JNI when OTP value retrieval
   // succeeds.
-  void OnOtpValueRetrieved(JNIEnv* env, jstring otp_value);
+  void OnOtpValueRetrieved(JNIEnv* env,
+                           const base::android::JavaRef<jstring>& otp_value);
 
   // Implements consumer interface. Called via JNI when OTP value retrieval
   // fails.

@@ -13,7 +13,8 @@
 // are managed by the associated Java object.
 class NativeContextualSearchContext final : public ContextualSearchContext {
  public:
-  NativeContextualSearchContext(JNIEnv* env, jobject obj);
+  NativeContextualSearchContext(JNIEnv* env,
+                                const base::android::JavaRef<jobject>& obj);
 
   NativeContextualSearchContext(const NativeContextualSearchContext&) = delete;
   NativeContextualSearchContext& operator=(

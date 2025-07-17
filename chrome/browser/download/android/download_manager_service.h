@@ -61,7 +61,7 @@ class DownloadManagerService
   // it means only a minimal browser is launched. OnProfileAdded() will
   // be called later when the profile is added.
   void Init(JNIEnv* env,
-            const JavaParamRef<jobject>& obj,
+            const base::android::JavaRef<jobject>& obj,
             bool is_profile_added);
 
   // Called when the profile is added to the ProfileManager and fully

@@ -22,7 +22,9 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-GURL JNI_UrlFormatter_ConvertJavaStringToGURL(JNIEnv* env, jstring url) {
+GURL JNI_UrlFormatter_ConvertJavaStringToGURL(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& url) {
   return url ? GURL(base::android::ConvertJavaStringToUTF8(env, url)) : GURL();
 }
 
@@ -34,7 +36,7 @@ namespace android {
 
 static ScopedJavaLocalRef<jobject> JNI_UrlFormatter_FixupUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const base::android::JavaParamRef<jstring>& url) {
   DCHECK(url);
   GURL fixed_url = url_formatter::FixupURL(
       base::android::ConvertJavaStringToUTF8(env, url), std::string());
@@ -45,7 +47,7 @@ static ScopedJavaLocalRef<jobject> JNI_UrlFormatter_FixupUrl(
 static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatUrlForDisplayOmitScheme(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const base::android::JavaParamRef<jstring>& url) {
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
@@ -57,7 +59,7 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitScheme(
 static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatUrlForDisplayOmitHTTPScheme(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const base::android::JavaParamRef<jstring>& url) {
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
@@ -68,7 +70,7 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitHTTPScheme(
 static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatUrlForDisplayOmitUsernamePassword(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const base::android::JavaParamRef<jstring>& url) {
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
@@ -79,7 +81,7 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitUsernamePassword(
 
 static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForCopy(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const base::android::JavaParamRef<jstring>& url) {
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
@@ -90,7 +92,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForCopy(
 static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatStringUrlForSecurityDisplay(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url,
+    const base::android::JavaParamRef<jstring>& url,
     jint scheme_display) {
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
@@ -100,7 +102,7 @@ JNI_UrlFormatter_FormatStringUrlForSecurityDisplay(
 
 static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForSecurityDisplay(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_gurl,
+    const base::android::JavaParamRef<jobject>& j_gurl,
     jint scheme_display) {
   DCHECK(j_gurl);
   GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
@@ -112,7 +114,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForSecurityDisplay(
 static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatOriginForSecurityDisplay(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_origin,
+    const base::android::JavaParamRef<jobject>& j_origin,
     jint scheme_display) {
   DCHECK(j_origin);
   url::Origin origin = url::Origin::FromJavaObject(env, j_origin);
@@ -124,7 +126,7 @@ JNI_UrlFormatter_FormatOriginForSecurityDisplay(
 static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const base::android::JavaParamRef<jstring>& url) {
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
@@ -137,7 +139,7 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
 static ScopedJavaLocalRef<jstring>
 JNI_UrlFormatter_FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_gurl) {
+    const base::android::JavaParamRef<jobject>& j_gurl) {
   DCHECK(j_gurl);
   GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   return base::android::ConvertUTF16ToJavaString(

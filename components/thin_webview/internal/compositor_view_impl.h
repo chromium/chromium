@@ -33,7 +33,7 @@ class CompositorViewImpl : public CompositorView,
                            public content::CompositorClient {
  public:
   CompositorViewImpl(JNIEnv* env,
-                     jobject obj,
+                     const base::android::JavaRef<jobject>& obj,
                      ui::WindowAndroid* window_android,
                      int64_t java_background_color);
 

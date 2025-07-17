@@ -253,7 +253,8 @@ int CronetContextAdapter::default_load_flags() const {
 static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& javaSerializedProto) {
-  const int serializedProtoLength = env->GetArrayLength(javaSerializedProto);
+  const int serializedProtoLength =
+      env->GetArrayLength(javaSerializedProto.obj());
   cronet::proto::RequestContextConfigOptions configOptions;
 
   std::vector<uint8_t> serializedProto;

@@ -286,7 +286,7 @@ void VideoCaptureDeviceAndroid::SetPhotoOptions(
 
 void VideoCaptureDeviceAndroid::OnFrameAvailable(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& data,
+    const base::android::JavaRef<jbyteArray>& data,
     jint length,
     jint rotation) {
   if (!IsClientConfigured())
@@ -305,7 +305,7 @@ void VideoCaptureDeviceAndroid::OnFrameAvailable(
     return;
   }
 
-  jbyte* buffer = env->GetByteArrayElements(data, NULL);
+  jbyte* buffer = env->GetByteArrayElements(data.obj(), NULL);
   if (!buffer) {
     LOG(ERROR) << "VideoCaptureDeviceAndroid::OnFrameAvailable: "
                   "failed to GetByteArrayElements";
@@ -321,20 +321,21 @@ void VideoCaptureDeviceAndroid::OnFrameAvailable(
   SendIncomingDataToClient(reinterpret_cast<uint8_t*>(buffer), length, rotation,
                            current_time, capture_time);
 
-  env->ReleaseByteArrayElements(data, buffer, JNI_ABORT);
+  env->ReleaseByteArrayElements(data.obj(), buffer, JNI_ABORT);
 }
 
-void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
-                                                     jobject y_buffer,
-                                                     jint y_stride,
-                                                     jobject u_buffer,
-                                                     jobject v_buffer,
-                                                     jint uv_row_stride,
-                                                     jint uv_pixel_stride,
-                                                     jint width,
-                                                     jint height,
-                                                     jint rotation,
-                                                     jlong timestamp) {
+void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& y_buffer,
+    jint y_stride,
+    const base::android::JavaRef<jobject>& u_buffer,
+    const base::android::JavaRef<jobject>& v_buffer,
+    jint uv_row_stride,
+    jint uv_pixel_stride,
+    jint width,
+    jint height,
+    jint rotation,
+    jlong timestamp) {
   if (!IsClientConfigured())
     return;
   const int64_t absolute_micro =
@@ -351,13 +352,13 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
   }
 
   uint8_t* const y_src =
-      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(y_buffer));
+      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(y_buffer.obj()));
   CHECK(y_src);
   uint8_t* const u_src =
-      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(u_buffer));
+      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(u_buffer.obj()));
   CHECK(u_src);
   uint8_t* const v_src =
-      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(v_buffer));
+      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(v_buffer.obj()));
   CHECK(v_src);
 
   const int y_plane_length = width * height;
@@ -375,9 +376,10 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
                            capture_time);
 }
 
-void VideoCaptureDeviceAndroid::OnError(JNIEnv* env,
-                                        int android_video_capture_error,
-                                        const JavaParamRef<jstring>& message) {
+void VideoCaptureDeviceAndroid::OnError(
+    JNIEnv* env,
+    int android_video_capture_error,
+    const base::android::JavaRef<jstring>& message) {
   SetErrorState(
       static_cast<media::VideoCaptureError>(android_video_capture_error),
       FROM_HERE, base::android::ConvertJavaStringToUTF8(env, message));
@@ -398,16 +400,17 @@ void VideoCaptureDeviceAndroid::OnFrameDropped(
       android_video_capture_frame_drop_reason));
 }
 
-void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(JNIEnv* env,
-                                                            jlong callback_id,
-                                                            jobject result) {
+void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
+    JNIEnv* env,
+    jlong callback_id,
+    const base::android::JavaRef<jobject>& result) {
   base::AutoLock lock(photo_callbacks_lock_);
 
   const auto reference_it = get_photo_state_callbacks_.find(callback_id);
   if (reference_it == get_photo_state_callbacks_.end()) {
     NOTREACHED() << "|callback_id| not found.";
   }
-  if (result == nullptr) {
+  if (result.is_null()) {
     get_photo_state_callbacks_.erase(reference_it);
     return;
   }
@@ -552,7 +555,7 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(JNIEnv* env,
 void VideoCaptureDeviceAndroid::OnPhotoTaken(
     JNIEnv* env,
     jlong callback_id,
-    const base::android::JavaParamRef<jbyteArray>& data) {
+    const base::android::JavaRef<jbyteArray>& data) {
   DCHECK(callback_id);
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                        "VideoCaptureDeviceAndroid::OnPhotoTaken",
@@ -571,12 +574,12 @@ void VideoCaptureDeviceAndroid::OnPhotoTaken(
     // Since it only happens when an error occurs with the camera device, you
     // won't get `OnPhotoTaken` with the same `callback_id` invoked with photo
     // data twice.
-    if (data != nullptr) {
+    if (!data.is_null()) {
       NOTREACHED() << "|callback_id| not found.";
     }
     return;
   }
-  if (data != nullptr) {
+  if (!data.is_null()) {
     mojom::BlobPtr blob = mojom::Blob::New();
     base::android::JavaByteArrayToByteVector(env, data, &blob->data);
     blob->mime_type = blob->data.empty() ? "" : "image/jpeg";

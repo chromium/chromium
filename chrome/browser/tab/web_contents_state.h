@@ -101,7 +101,7 @@ class WebContentsState {
   // Restores a WebContents from the passed in state using JNI parameters.
   static base::android::ScopedJavaLocalRef<jobject>
   RestoreContentsFromByteBuffer(JNIEnv* env,
-                                jobject state,
+                                const base::android::JavaRef<jobject>& state,
                                 jint saved_state_version,
                                 jboolean initially_hidden,
                                 jboolean no_renderer);
@@ -126,9 +126,9 @@ class WebContentsState {
   static base::android::ScopedJavaLocalRef<jobject>
   CreateSingleNavigationStateAsByteBuffer(
       JNIEnv* env,
-      jstring title,
-      jstring url,
-      jstring referrer_url,
+      const base::android::JavaRef<jstring>& title,
+      const base::android::JavaRef<jstring>& url,
+      const base::android::JavaRef<jstring>& referrer_url,
       jint referrer_policy,
       const base::android::JavaParamRef<jobject>& initiator_origin,
       jboolean is_off_the_record);
@@ -147,9 +147,9 @@ class WebContentsState {
       JNIEnv* env,
       base::span<const uint8_t> buffer,
       int saved_state_version,
-      jstring title,
-      jstring url,
-      jstring referrer_url,
+      const base::android::JavaRef<jstring>& title,
+      const base::android::JavaRef<jstring>& url,
+      const base::android::JavaRef<jstring>& referrer_url,
       jint referrer_policy,
       const base::android::JavaParamRef<jobject>& initiator_origin,
       jboolean is_off_the_record);
