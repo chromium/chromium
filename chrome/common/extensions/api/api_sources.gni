@@ -30,6 +30,7 @@ schema_sources_ = [
   "reading_list.idl",
   "scripting.idl",
   "tabs.json",
+  "web_authentication_proxy.idl",
 
   # Despite the name, these APIs do not rely on any WebRTC-specific bits and
   # as such do not belong in a conditional.
@@ -86,7 +87,6 @@ if (enable_extensions) {
     "system_private.json",
     "tab_capture.idl",
     "tab_groups.json",
-    "web_authentication_proxy.idl",
     "web_navigation.json",
 
     # Despite the name, these APIs do not rely on any WebRTC-specific bits and
