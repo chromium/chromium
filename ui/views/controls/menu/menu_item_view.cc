@@ -800,23 +800,17 @@ ProposedLayout MenuItemView::CalculateProposedLayout(
 
     // Position the icons.
     const MenuConfig& config = MenuConfig::instance();
-    const int icon_x = GetContentStart();
+
     if (radio_check_image_view_) {
+      const int x = CalculateIconX(radio_check_image_view_);
       const int y = (layout.host_size.height() - kMenuCheckSize) / 2;
       layout.child_layouts.emplace_back(
           radio_check_image_view_.get(), radio_check_image_view_->GetVisible(),
-          gfx::Rect(icon_x, y, kMenuCheckSize, kMenuCheckSize));
+          gfx::Rect(x, y, kMenuCheckSize, kMenuCheckSize));
     }
     if (icon_view_) {
       const gfx::Size preferred_size = icon_view_->GetPreferredSize({});
-      int x = (config.icons_in_label ? submenu->label_start() : icon_x) +
-              ((submenu->icon_area_width() - preferred_size.width()) / 2);
-      // If this is a checkbox or radio, then it needs space for both the
-      // radio/check image and an icon, so move the icon to where the label
-      // would start.
-      if (type_ == Type::kCheckbox || type_ == Type::kRadio) {
-        x = submenu->label_start();
-      }
+      const int x = CalculateIconX(icon_view_);
       const int y = (layout.host_size.height() - preferred_size.height()) / 2;
       layout.child_layouts.emplace_back(
           icon_view_.get(), icon_view_->GetVisible(),
@@ -1071,6 +1065,26 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   PaintBackground(canvas, mode, paint_as_selected);
 
   const Colors colors = CalculateColors(paint_as_selected);
+
+  // Paint the icon for drag handles. In normal mode, the icon is painted by
+  // View::PaintChildren().
+  if (icon_view_ && icon_view_->GetVisible() && mode == PaintMode::kForDrag) {
+    const gfx::Size preferred_size = icon_view_->GetPreferredSize({});
+    // Use the shared helper function to determine the X coordinate.
+    const int x = CalculateIconX(icon_view_);
+    const int y = (height() - preferred_size.height()) / 2;
+    gfx::Rect icon_bounds(x, y, preferred_size.width(),
+                          preferred_size.height());
+    AdjustBoundsForRTLUI(&icon_bounds);
+
+    const gfx::ImageSkia image =
+        icon_view_->GetImageModel().Rasterize(GetColorProvider());
+    if (!image.isNull()) {
+      cc::PaintFlags paint_flags;
+      canvas->DrawImageInt(image, icon_bounds.x(), icon_bounds.y(),
+                           paint_flags);
+    }
+  }
 
   const gfx::FontList& font_list = GetFontList();
 
@@ -1593,6 +1607,51 @@ bool MenuItemView::IsScheduledForDeletion() const {
   return parent_menu_item_ &&
          (base::Contains(parent_menu_item_->removed_items_, this) ||
           parent_menu_item_->IsScheduledForDeletion());
+}
+
+int MenuItemView::CalculateIconX(const ImageView* icon_view) const {
+  DCHECK(icon_view);
+
+  const SubmenuView* const submenu = GetContainingSubmenu();
+
+  // Case 1: The check or radio icon (primary icon for checkbox/radio items).
+  if (icon_view == radio_check_image_view_) {
+    // The check/radio icon is always placed at the start of the content area
+    // (the gutter), aligned left.
+    return GetContentStart();
+  }
+
+  // Case 2: The standard icon (icon_view_).
+  CHECK_EQ(icon_view, icon_view_);
+
+  // If this is a checkbox or radio item that also has a secondary icon
+  // (icon_view_), the primary icon (radio_check_image_view_) occupies the
+  // standard icon slot (Case 1), and this secondary icon is moved to where the
+  // label starts.
+  if (type_ == Type::kCheckbox || type_ == Type::kRadio) {
+    return submenu->label_start();
+  }
+
+  // For other item types (kNormal, kSubMenu, etc.), calculate the standard icon
+  // position.
+  const MenuConfig& config = MenuConfig::instance();
+
+  int icon_area_start_x;
+  if (config.icons_in_label) {
+    // Icons start where the label starts.
+    icon_area_start_x = submenu->label_start();
+  } else {
+    // Icons start at the beginning of the content area (the gutter).
+    icon_area_start_x = GetContentStart();
+  }
+
+  // Center the icon within the designated icon area width for the submenu.
+  const gfx::Size preferred_size = icon_view->GetPreferredSize({});
+  const int icon_area_width = submenu->icon_area_width();
+  const int icon_width = preferred_size.width();
+  const int centering_offset = (icon_area_width - icon_width) / 2;
+
+  return icon_area_start_x + centering_offset;
 }
 
 int MenuItemView::GetVerticalMargin() const {
