@@ -100,14 +100,16 @@ config("hide_all_but_jni") {
       [ "-Wl,--version-script=" + rebase_path(_version_script, root_build_dir) ]
 }
 
-config("lld_pack_relocations") {
-  ldflags = [ "-Wl,--pack-dyn-relocs=android" ]
-}
-
-config("lld_relr_relocations") {
+config("relr_relocations") {
   # RELR supported API 30+, but supported 28+ with --use-android-relr-tags.
   # https://android.googlesource.com/platform/bionic/+/master/android-changes-for-ndk-developers.md#relative-relocations-relr
   ldflags = [ "-Wl,--pack-dyn-relocs=relr,--use-android-relr-tags" ]
+}
+
+config("default_relr_relocations") {
+  if (default_min_sdk_version >= 28) {
+    configs = [ ":relr_relocations" ]
+  }
 }
 
 config("lld_branch_target_hardening") {

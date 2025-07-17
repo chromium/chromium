@@ -13,17 +13,6 @@ import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-declare_args() {
-  # Compile libmonochrome.so with RELR relocations, which are smaller and more
-  # efficient, but supported only on API 28+.
-  # This is not permanently enabled for Trichrome because it shares its native
-  # library with Monochrome.
-  # Restricted to official builds to avoid turning off is_high_end_android
-  # explicitly on all relevant non-official bots. TODO(crbug.com/41488915):
-  # Always use RELR when Android O (and O_MR1) is no longer supported.
-  use_relr_relocations = is_high_end_android && is_official_build
-}
-
 # This template contains all common configuration for native shared libraries,
 # including libchrome, monochrome, standalone webview (also called monochrome),
 # and libchromefortest (used by chrome_public_test_apk).
@@ -134,14 +123,6 @@ template("chrome_common_shared_library") {
           deps += _module_desc.native_deps
         }
       }
-    }
-
-    # Compress relocations if needed.
-    if (use_relr_relocations) {
-      configs += [ "//build/config/android:lld_relr_relocations" ]
-    } else if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
-               use_lld) {
-      configs += [ "//build/config/android:lld_pack_relocations" ]
     }
 
     if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
