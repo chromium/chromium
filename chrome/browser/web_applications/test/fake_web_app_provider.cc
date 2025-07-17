@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
@@ -310,6 +311,7 @@ void FakeWebAppProvider::CreateFakeSubsystems() {
   SetWebAppUiManager(std::make_unique<FakeWebAppUiManager>());
 
   IwaIdentityValidator::CreateSingleton();
+  ChromeIwaClient::CreateSingleton();
 
   // Do not create real subsystems here. That will be done already by
   // WebAppProvider::CreateSubsystems in the WebAppProvider constructor.

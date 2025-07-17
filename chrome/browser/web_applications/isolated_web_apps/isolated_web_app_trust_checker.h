@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
+#include "base/types/expected.h"
 
 namespace web_package {
 class SignedWebBundleId;
@@ -45,26 +46,16 @@ namespace web_app {
 // Apps that were countersigned by a trusted distributor/store.
 class IsolatedWebAppTrustChecker {
  public:
-  struct Result {
-    enum class Status {
-      kTrusted,
-      kErrorUnsupportedWebBundleIdType,
-      kErrorPublicKeysNotTrusted,
-    };
-
-    Status status;
-    std::string message;
-  };
-
   // Checks whether the user agent trusts the Isolated Web App identified by the
   // `web_bundle_id`. Returns with `Result::Type::kTrusted` if the Isolated Web
   // App is trusted.
   //
   // Whether or not Isolated Web App developer mode is enabled in the browser is
   // only taken into account when `is_dev_mode_bundle` is set to `true`.
-  static Result IsTrusted(Profile& profile,
-                          const web_package::SignedWebBundleId& web_bundle_id,
-                          bool is_dev_mode_bundle);
+  static base::expected<void, std::string> IsTrusted(
+      Profile& profile,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      bool is_dev_mode_bundle);
 };
 
 // Used in tests to pretend that the given Web Bundle IDs are trusted.

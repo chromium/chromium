@@ -16,8 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -26,13 +25,14 @@
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
+#include "components/webapps/isolated_web_apps/reading/validator.h"
 
 namespace web_app {
 
 namespace {
 
 base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlockAndMetadata(
-    Profile& profile,
+    Profile* profile,
     const SignedWebBundleReader& reader,
     const web_package::SignedWebBundleId& web_bundle_id,
     bool dev_mode) {
@@ -129,7 +129,7 @@ void IsolatedWebAppResponseReaderFactory::OnReaderCreated(
   });
 
   RETURN_IF_ERROR(
-      ValidateIntegrityBlockAndMetadata(*profile_, *reader, web_bundle_id,
+      ValidateIntegrityBlockAndMetadata(&profile_.get(), *reader, web_bundle_id,
                                         flags.Has(Flag::kDevModeBundle)),
       [&](const auto& error) {
         UmaLogExpectedStatus<UnusableSwbnFileError>(

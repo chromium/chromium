@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_VALIDATOR_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_VALIDATOR_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_VALIDATOR_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_VALIDATOR_H_
 
 #include <memory>
 #include <optional>
@@ -12,14 +12,16 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
-
-class GURL;
-class Profile;
+#include "url/gurl.h"
 
 namespace web_package {
 class SignedWebBundleId;
 class SignedWebBundleIntegrityBlock;
 }  // namespace web_package
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace web_app {
 
@@ -35,7 +37,7 @@ class IsolatedWebAppValidator {
   // checks whether the public keys associated with these signatures correspond
   // to trusted parties.
   static base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlock(
-      Profile& profile,
+      content::BrowserContext* browser_context,
       const web_package::SignedWebBundleId& expected_web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       bool dev_mode);
@@ -50,4 +52,4 @@ class IsolatedWebAppValidator {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_VALIDATOR_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_VALIDATOR_H_

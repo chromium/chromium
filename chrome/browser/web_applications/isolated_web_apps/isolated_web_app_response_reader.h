@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
@@ -75,7 +75,7 @@ class IsolatedWebAppResponseReader {
     // Returns `base::ok` if the trust checker result indicates success. Returns
     // an error otherwise.
     static base::expected<void, Error> FromTrustCheckerResult(
-        const IsolatedWebAppTrustChecker::Result& result);
+        base::expected<void, std::string> result);
 
     Type type;
     std::string message;
@@ -101,9 +101,6 @@ class IsolatedWebAppResponseReader {
 // read and validated integrity block and metadata.
 class IsolatedWebAppResponseReaderImpl : public IsolatedWebAppResponseReader {
  public:
-  using TrustChecker =
-      base::RepeatingCallback<IsolatedWebAppTrustChecker::Result()>;
-
   explicit IsolatedWebAppResponseReaderImpl(
       std::unique_ptr<SignedWebBundleReader> reader,
       Profile& profile,

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -29,6 +27,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -136,7 +135,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest,
   auto integrity_block = MakeIntegrityBlock({kPublicKey2});
 
   EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
-                  profile_, kWebBundleId1, integrity_block,
+                  &profile_, kWebBundleId1, integrity_block,
                   /*dev_mode=*/false),
               UnusableSwbnErrorIs(Error::kIntegrityBlockValidationError,
                                   "does not match the expected Web Bundle ID"));
@@ -147,7 +146,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsTrusted) {
   SetTrustedWebBundleIdsForTesting({kWebBundleId1});
 
   EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
-                  profile_, kWebBundleId1, integrity_block,
+                  &profile_, kWebBundleId1, integrity_block,
                   /*dev_mode=*/false),
               HasValue());
 }
@@ -157,7 +156,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
   SetTrustedWebBundleIdsForTesting({});
 
   EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
-                  profile_, kWebBundleId1, integrity_block,
+                  &profile_, kWebBundleId1, integrity_block,
                   /*dev_mode=*/false),
               UnusableSwbnErrorIs(Error::kIntegrityBlockValidationError,
                                   "public key(s) are not trusted"));

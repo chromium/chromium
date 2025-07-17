@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -52,12 +52,12 @@ IsolatedWebAppResponseReaderImpl::GetIntegrityBlock() {
 void IsolatedWebAppResponseReaderImpl::ReadResponse(
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
-  RETURN_IF_ERROR(
-      Error::FromTrustCheckerResult(IsolatedWebAppTrustChecker::IsTrusted(
-          *profile_, web_bundle_id_, dev_mode_)),
-      [&callback](Error error) {
-        std::move(callback).Run(base::unexpected(std::move(error)));
-      });
+  RETURN_IF_ERROR(Error::FromTrustCheckerResult(
+                      web_app::IwaClient::GetInstance()->ValidateTrust(
+                          &profile_.get(), web_bundle_id_, dev_mode_)),
+                  [&callback](Error error) {
+                    std::move(callback).Run(base::unexpected(std::move(error)));
+                  });
 
   // Remove query parameters from the request URL, if it has any. Resources
   // within Signed Web Bundles used for Isolated Web Apps never have username,
@@ -148,15 +148,10 @@ IsolatedWebAppResponseReader::Error::FromSignedWebBundleReaderError(
 // static
 base::expected<void, IsolatedWebAppResponseReader::Error>
 IsolatedWebAppResponseReader::Error::FromTrustCheckerResult(
-    const IsolatedWebAppTrustChecker::Result& result) {
-  using Status = IsolatedWebAppTrustChecker::Result::Status;
-  switch (result.status) {
-    case Status::kTrusted:
-      return base::ok();
-    case Status::kErrorPublicKeysNotTrusted:
-    case Status::kErrorUnsupportedWebBundleIdType:
-      return base::unexpected(Error(Error::Type::kNotTrusted, result.message));
-  }
+    base::expected<void, std::string> result) {
+  return result.transform_error([](const std::string& error) {
+    return Error(Error::Type::kNotTrusted, error);
+  });
 }
 
 }  // namespace web_app

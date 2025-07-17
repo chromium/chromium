@@ -4,6 +4,8 @@
 
 source_set("isolated_web_apps") {
   sources = [
+    "client.cc",
+    "client.h",
     "error/uma_logging.cc",
     "error/uma_logging.h",
     "error/unusable_swbn_file_error.cc",
@@ -15,6 +17,8 @@ source_set("isolated_web_apps") {
     "iwa_key_distribution_info_provider.h",
     "reading/signed_web_bundle_reader.cc",
     "reading/signed_web_bundle_reader.h",
+    "reading/validator.cc",
+    "reading/validator.h",
     "types/source.cc",
     "types/source.h",
     "types/storage_location.cc",

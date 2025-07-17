@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "components/webapps/isolated_web_apps/reading/validator.h"
 
 #include <optional>
 #include <string>
@@ -12,13 +12,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/identity_validator.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -28,7 +25,7 @@ namespace web_app {
 namespace {
 
 base::expected<void, std::string> ValidateIntegrityBlockImpl(
-    Profile& profile,
+    content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block,
     bool dev_mode) {
@@ -51,12 +48,8 @@ base::expected<void, std::string> ValidateIntegrityBlockImpl(
           derived_web_bundle_id.id(),
           integrity_block.signature_stack().public_keys()));
 
-  IsolatedWebAppTrustChecker::Result result =
-      IsolatedWebAppTrustChecker::IsTrusted(profile, expected_web_bundle_id,
-                                            dev_mode);
-  if (result.status != IsolatedWebAppTrustChecker::Result::Status::kTrusted) {
-    return base::unexpected(result.message);
-  }
+  RETURN_IF_ERROR(IwaClient::GetInstance()->ValidateTrust(
+      browser_context, expected_web_bundle_id, dev_mode));
 
   return base::ok();
 }
@@ -76,14 +69,12 @@ base::expected<void, std::string> ValidateMetadataImpl(
   // Verify that the bundle only contains isolated-app:// URLs using the
   // Signed Web Bundle ID as their host.
   for (const GURL& entry : entries) {
-    ASSIGN_OR_RETURN(
-        IsolatedWebAppUrlInfo url_info, IsolatedWebAppUrlInfo::Create(entry),
-        [](std::string error) {
-          return "The URL of an exchange is invalid: " + std::move(error);
-        });
-
-    const web_package::SignedWebBundleId& entry_web_bundle_id =
-        url_info.web_bundle_id();
+    ASSIGN_OR_RETURN(web_package::SignedWebBundleId entry_web_bundle_id,
+                     IwaClient::GetInstance()->CreateWebBundleIdFromURL(entry),
+                     [](std::string error) {
+                       return "The URL of an exchange is invalid: " +
+                              std::move(error);
+                     });
     if (entry_web_bundle_id != web_bundle_id) {
       return base::unexpected(
           "The URL of an exchange contains the wrong Signed Web Bundle ID: " +
@@ -109,11 +100,11 @@ base::expected<void, std::string> ValidateMetadataImpl(
 // static
 base::expected<void, UnusableSwbnFileError>
 IsolatedWebAppValidator::ValidateIntegrityBlock(
-    Profile& profile,
+    content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block,
     bool dev_mode) {
-  return ValidateIntegrityBlockImpl(profile, expected_web_bundle_id,
+  return ValidateIntegrityBlockImpl(browser_context, expected_web_bundle_id,
                                     integrity_block, dev_mode)
       .transform_error([](const auto& error) {
         return UnusableSwbnFileError(
