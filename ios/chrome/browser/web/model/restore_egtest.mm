@@ -28,6 +28,7 @@ using chrome_test_util::ForwardButton;
 using chrome_test_util::NTPCollectionView;
 using chrome_test_util::OmniboxText;
 using chrome_test_util::ShowTabsButton;
+using chrome_test_util::ToolsMenuButton;
 
 namespace {
 
@@ -331,7 +332,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
                                             grey_sufficientlyVisible(), nil)]
         assertWithMatcher:grey_notNil()];
 
-    [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
+    [[EarlGrey selectElementWithMatcher:ToolsMenuButton()]
         performAction:grey_tap()];
   }
   [self triggerRestore];
@@ -347,7 +348,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
                                             grey_sufficientlyVisible(), nil)]
         assertWithMatcher:grey_notNil()];
 
-    [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
+    [[EarlGrey selectElementWithMatcher:ToolsMenuButton()]
         performAction:grey_tap()];
   }
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
