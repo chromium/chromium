@@ -65,15 +65,13 @@ class TypeTool : public ToolBase {
   struct TargetAndKeys {
     TargetAndKeys(const gfx::PointF& coordinate,
                   std::vector<KeyParams> key_sequence);
-    TargetAndKeys(const blink::WebElement& element,
-                  std::vector<KeyParams> key_sequence);
     ~TargetAndKeys();
     TargetAndKeys(const TargetAndKeys&);
     TargetAndKeys& operator=(const TargetAndKeys&);
     TargetAndKeys(TargetAndKeys&&);
     TargetAndKeys& operator=(TargetAndKeys&&);
 
-    std::variant<gfx::PointF, blink::WebElement> target;
+    gfx::PointF target;
     std::vector<KeyParams> key_sequence;
   };
   using ValidatedResult = base::expected<TargetAndKeys, mojom::ActionResultPtr>;

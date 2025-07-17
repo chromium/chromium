@@ -40,7 +40,8 @@ class ToolBase {
     // The node identified by the target. May be null if the node has been
     // removed from DOM.
     blink::WebNode node;
-    // The interaction point in viewport coordinates.
+    // The interaction point of node in viewport coordinates. Currently defaults
+    // to center point of node's bounding rect.
     gfx::PointF point;
   };
 

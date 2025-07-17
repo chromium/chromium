@@ -128,10 +128,6 @@ TypeTool::TargetAndKeys::TargetAndKeys(const gfx::PointF& coordinate,
                                        std::vector<KeyParams> key_sequence)
     : target(coordinate), key_sequence(std::move(key_sequence)) {}
 
-TypeTool::TargetAndKeys::TargetAndKeys(const blink::WebElement& element,
-                                       std::vector<KeyParams> key_sequence)
-    : target(element), key_sequence(std::move(key_sequence)) {}
-
 TypeTool::TargetAndKeys::~TargetAndKeys() = default;
 TypeTool::TargetAndKeys::TargetAndKeys(const TargetAndKeys&) = default;
 TypeTool::TargetAndKeys& TypeTool::TargetAndKeys::operator=(
@@ -304,22 +300,16 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  // Injecting a click to get focus if given a coordinate.
-  if (std::holds_alternative<gfx::PointF>(validated_result->target)) {
-    const gfx::PointF& coordinate =
-        std::get<gfx::PointF>(validated_result->target);
-    mojom::ActionResultPtr result = CreateAndDispatchClick(
-        blink::WebMouseEvent::Button::kLeft, 1, coordinate,
-        frame_->GetWebFrame()->FrameWidget());
+  // Injecting a click to get focus.
+  gfx::PointF coordinate = validated_result->target;
+  mojom::ActionResultPtr click_result =
+      CreateAndDispatchClick(blink::WebMouseEvent::Button::kLeft, 1, coordinate,
+                             frame_->GetWebFrame()->FrameWidget());
 
-    // Cancel rest of typing if initial click failed.
-    if (!IsOk(*result)) {
-      std::move(callback).Run(std::move(result));
-      return;
-    }
-  } else {
-    WebElement element = std::get<blink::WebElement>(validated_result->target);
-    element.Focus();
+  // Cancel rest of typing if initial click failed.
+  if (!IsOk(*click_result)) {
+    std::move(callback).Run(std::move(click_result));
+    return;
   }
 
   // Note: Focus and preparing the target performs actions which lead to
@@ -430,6 +420,23 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
     return base::unexpected(std::move(resolved_target.error()));
   }
 
+  if (target_->is_dom_node_id()) {
+    const WebNode& node = resolved_target->node;
+    if (!node.IsElementNode()) {
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kTypeTargetNotElement));
+    }
+
+    WebElement element = node.To<WebElement>();
+    if (WebFormControlElement form_control =
+            element.DynamicTo<WebFormControlElement>()) {
+      if (!form_control.IsEnabled()) {
+        return base::unexpected(
+            MakeResult(mojom::ActionResultCode::kElementDisabled));
+      }
+    }
+  }
+
   // Perform typing specific validation.
   if (!base::IsStringASCII(action_->text)) {
     // TODO(crbug.com/409032824): Add support beyond ASCII.
@@ -454,32 +461,7 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
     key_sequence.push_back(GetEnterKeyParams());
   }
 
-  if (target_->is_coordinate()) {
-    return TargetAndKeys{resolved_target->point, std::move(key_sequence)};
-  } else {
-    const WebNode& node = resolved_target->node;
-    if (!node.IsElementNode()) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kTypeTargetNotElement));
-    }
-
-    WebElement element = node.To<WebElement>();
-
-    if (WebFormControlElement form_control =
-            element.DynamicTo<WebFormControlElement>()) {
-      if (!form_control.IsEnabled() || form_control.IsReadOnly()) {
-        return base::unexpected(
-            MakeResult(mojom::ActionResultCode::kElementDisabled));
-      }
-    }
-
-    if (!element.IsFocusable()) {
-      return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kTypeTargetNotFocusable));
-    }
-
-    return TargetAndKeys{element, std::move(key_sequence)};
-  }
+  return TargetAndKeys{resolved_target->point, std::move(key_sequence)};
 }
 
 }  // namespace actor

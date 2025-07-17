@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
             EvalJs(web_contents(), "document.getElementById('input').value"));
 }
 
-// TypeTool fails when target is disabled or readonly input.
+// TypeTool fails when target is disabled.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -579,8 +579,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
               EvalJs(web_contents(), "document.getElementById('input').value"));
   }
 
-  // Reenable the input and set it to readOnly, the action should also fail
-  // disabled in this case.
+  // Reenable the input and set it to readOnly, the action should now pass but
+  // the input value won't change.
 
   ASSERT_TRUE(ExecJs(web_contents(),
                      "document.getElementById('input').disabled = false"));
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
                         /*follow_by_enter=*/true);
     TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
+    ExpectOkResult(result);
     EXPECT_EQ("",
               EvalJs(web_contents(), "document.getElementById('input').value"));
   }
@@ -784,6 +784,38 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FocusMovesFocus) {
             EvalJs(web_contents(), "document.getElementById('input').value"));
   EXPECT_EQ(typed_string,
             EvalJs(web_contents(), "document.getElementById('input2').value"));
+}
+
+// Ensure that if the page creates and focus on to a new input upon focusing on
+// the original target (even if the original target is readonly), type tool will
+// continue on to the new input.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInputAtNewlyCreatedNode) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/type_dynamic_input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // #input3 is set up to be readonly with a click handler that will spawn a
+  // clone of itself (#input3-clone) in its place without the readonly tag
+  // that's focused and ready to accept input.
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+
+  std::string typed_string = "abc";
+  std::unique_ptr<ToolRequest> action =
+      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
+                      /*follow_by_enter=*/false);
+
+  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  // The input should go to the cloned input while original input remains
+  // readonly.
+  EXPECT_EQ("",
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+  EXPECT_EQ(
+      typed_string,
+      EvalJs(web_contents(), "document.getElementById('inputclone').value"));
 }
 
 // Basic test of the TypeTool coordinate target - ensure typed string is entered
@@ -984,26 +1016,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonEditable) {
       // c
       "keydown[c],keypress[c],keyup[c]",
       EvalJs(web_contents(), "input_event_log.join(',')"));
-}
-
-// Ensure the type tool fails if targeting a non-focusable DOMNodeId.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonFocusable) {
-  const GURL url = embedded_test_server()->GetURL("/actor/type_non_input.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  // The log starts empty.
-  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
-
-  std::string typed_string = "abc";
-  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#unfocusableDiv");
-  ASSERT_TRUE(input_id);
-  std::unique_ptr<ToolRequest> action =
-      MakeTypeRequest(*main_frame(), input_id.value(), typed_string,
-                      /*follow_by_enter=*/false);
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kTypeTargetNotFocusable);
-  EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
 // Ensure the type tool emits events at the expected intervals when typing
