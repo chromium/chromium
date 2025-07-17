@@ -196,6 +196,17 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
   const auto& start_length = To<InterpolableLength>(*start);
   const auto& end_length = To<InterpolableLength>(*end);
 
+  // Some properties allow multiple value types that cannot be interpolated.
+  // For example, stroke with may be <length> <percentage> or <number>. The
+  // use as a number is non-standard, but supported. Interpolation relies on
+  // being able to add fractional contributions of the start and end value,
+  // which in turn requires compatible types.
+  CSSMathType start_type(start_length.AsExpression());
+  CSSMathType end_type(end_length.AsExpression());
+  if (!(start_type + end_type).IsValid()) {
+    return false;
+  }
+
   // Implement the rules in
   // https://drafts.csswg.org/css-values-5/#interp-calc-size, but
   // without actually writing the implicit conversion of the "other"
