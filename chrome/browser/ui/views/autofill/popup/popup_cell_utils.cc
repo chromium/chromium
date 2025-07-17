@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -563,7 +564,10 @@ void AddSuggestionContentToView(
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
   if (!subtext_views.empty() ||
-      kSuggestionTypesWithDoubleHeight.contains(suggestion.type)) {
+      kSuggestionTypesWithDoubleHeight.contains(suggestion.type) ||
+      (suggestion.type == SuggestionType::kCreditCardEntry &&
+       base::FeatureList::IsEnabled(
+           autofill::features::kAutofillEnableNewFopDisplayDesktop))) {
     row_height += kAutofillPopupAdditionalDoubleRowHeight;
   }
   content_view.SetMinimumCrossAxisSize(row_height);
