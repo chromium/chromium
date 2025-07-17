@@ -70,6 +70,17 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   }
 }
 
+// Returns the color to use for the view's background.
+UIColor* GetBackgroundColor() {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    return UIColor.clearColor;
+  }
+#endif
+
+  return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+}
+
 }  // namespace
 
 @interface ExpandedManualFillViewController ()
@@ -146,8 +157,7 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier = manual_fill::kExpandedManualFillViewID;
-  self.view.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.view.backgroundColor = GetBackgroundColor();
 
   // Set the view's frame to get the right height initially. Once the view's
   // window is loaded in `viewDidAppear`, the view's height will be

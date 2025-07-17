@@ -74,6 +74,19 @@ bool ShouldResizeViewForPopover(
          modal_presentation_style == UIModalPresentationPopover;
 }
 
+// Returns the color to use for the table view's background.
+UIColor* GetBackgroundColor() {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    return UIColor.clearColor;
+  }
+#endif
+
+  return [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled()
+                                 ? kGroupedPrimaryBackgroundColor
+                                 : kBackgroundColor];
+}
+
 }  // namespace
 
 @interface FallbackViewController ()
@@ -115,10 +128,7 @@ bool ShouldResizeViewForPopover(
 - (void)viewDidLoad {
   // Super's `viewDidLoad` uses `styler.tableViewBackgroundColor` so it needs to
   // be set before.
-  self.styler.tableViewBackgroundColor =
-      [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled()
-                              ? kGroupedPrimaryBackgroundColor
-                              : kBackgroundColor];
+  self.styler.tableViewBackgroundColor = GetBackgroundColor();
 
   [super viewDidLoad];
 
