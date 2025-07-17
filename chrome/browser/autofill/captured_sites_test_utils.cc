@@ -377,6 +377,9 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   std::string json_text;
   if (!base::ReadFileToString(config_file_path, &json_text)) {
     LOG(WARNING) << "Could not read json file: " << config_file_path;
+    LOG(WARNING)
+        << "Did you forget to set checkout_chromium_autofill_test_dependencies "
+           "to True in .gclient and gclient sync?";
     return sites;
   }
   // Parse json text content to json value node.
