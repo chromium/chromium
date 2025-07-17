@@ -126,6 +126,12 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual('testWebIdl', loaded[0]['namespace'])
     self.idl_basics = loaded[0]
 
+  def testFunctionBasics(self):
+    function = getFunction(self.idl_basics, 'returnsUndefined')
+    self.assertEqual('returnsUndefined', function.get('name'))
+    self.assertEqual([], function.get('parameters'))
+    self.assertEqual('function', function.get('type'))
+
   def testFunctionReturnTypes(self):
     schema = self.idl_basics
     # Test basic types.

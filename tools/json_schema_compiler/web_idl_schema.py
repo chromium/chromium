@@ -513,8 +513,9 @@ class Operation:
     self.node = node
 
   def process(self) -> dict:
-    properties = OrderedDict()
+    properties = {}
     properties['name'] = self.node.GetName()
+    properties['type'] = 'function'
 
     description_data = ProcessNodeDescription(self.node)
     if (description_data.description):
