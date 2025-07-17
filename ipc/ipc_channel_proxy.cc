@@ -527,14 +527,6 @@ void ChannelProxy::SendInternal(Message* message) {
   // TODO(alexeypa): add DCHECK(CalledOnValidThread()) here. Currently there are
   // tests that call Send() from a wrong thread. See http://crbug.com/163523.
 
-#ifdef ENABLE_IPC_FUZZER
-  // In IPC fuzzing builds, it is possible to define a filter to apply to
-  // outgoing messages. It will either rewrite the message and return a new
-  // one, freeing the original, or return the message unchanged.
-  if (outgoing_message_filter())
-    message = outgoing_message_filter()->Rewrite(message);
-#endif
-
   context_->Send(message);
 }
 

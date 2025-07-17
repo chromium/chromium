@@ -81,15 +81,6 @@ class UrgentMessageObserver;
 //
 class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
  public:
-#if defined(ENABLE_IPC_FUZZER)
-  // Interface for a filter to be imposed on outgoing messages which can
-  // re-write the message. Used for testing.
-  class OutgoingMessageFilter {
-   public:
-    virtual Message* Rewrite(Message* message) = 0;
-  };
-#endif
-
   // Initializes a channel proxy.  The channel_handle and mode parameters are
   // passed directly to the underlying IPC::Channel.  The listener is called on
   // the thread that creates the ChannelProxy.  The filter's OnMessageReceived
@@ -209,12 +200,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   void GetRemoteAssociatedInterface(mojo::AssociatedRemote<Interface>* proxy) {
     GetRemoteAssociatedInterface(proxy->BindNewEndpointAndPassReceiver());
   }
-
-#if defined(ENABLE_IPC_FUZZER)
-  void set_outgoing_message_filter(OutgoingMessageFilter* filter) {
-    outgoing_message_filter_ = filter;
-  }
-#endif
 
   // Creates a SharedAssociatedRemote for |Interface|. This object may be used
   // to send messages on the interface from any thread and those messages will
@@ -408,12 +393,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
 
   Context* context() { return context_.get(); }
 
-#if defined(ENABLE_IPC_FUZZER)
-  OutgoingMessageFilter* outgoing_message_filter() const {
-    return outgoing_message_filter_;
-  }
-#endif
-
   bool did_init() const { return did_init_; }
 
   // A Send() which doesn't DCHECK if the message is synchronous.
@@ -439,10 +418,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
 
   // Whether the channel has been initialized.
   bool did_init_ = false;
-
-#if defined(ENABLE_IPC_FUZZER)
-  raw_ptr<OutgoingMessageFilter> outgoing_message_filter_ = nullptr;
-#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
