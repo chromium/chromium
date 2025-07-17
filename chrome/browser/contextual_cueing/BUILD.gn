@@ -52,6 +52,7 @@ source_set("impl") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/pdf/common:constants",
     "//components/prefs",
+    "//components/variations/service",
     "//pdf:buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",

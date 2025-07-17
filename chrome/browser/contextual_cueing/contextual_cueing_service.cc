@@ -133,11 +133,8 @@ ContextualCueingService::ContextualCueingService(
       template_url_service_(template_url_service),
       mes_url_(optimization_guide::switches::GetModelExecutionServiceURL()) {
   CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) ||
-        base::FeatureList::IsEnabled(
-            contextual_cueing::kGlicZeroStateSuggestions));
-  if (optimization_guide_keyed_service_ &&
-      base::FeatureList::IsEnabled(
-          contextual_cueing::kGlicZeroStateSuggestions)) {
+        IsZeroStateSuggestionsEnabled());
+  if (optimization_guide_keyed_service_ && IsZeroStateSuggestionsEnabled()) {
     optimization_guide_keyed_service_->RegisterOptimizationTypes(
         {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS});
   }
@@ -308,7 +305,7 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+  if (!IsZeroStateSuggestionsEnabled()) {
     return;
   }
 
@@ -368,7 +365,7 @@ void ContextualCueingService::
         GlicSuggestionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+  if (!IsZeroStateSuggestionsEnabled()) {
     std::move(callback).Run({});
     return;
   }
@@ -410,7 +407,7 @@ void ContextualCueingService::
         GlicSuggestionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+  if (!IsZeroStateSuggestionsEnabled()) {
     std::move(callback).Run({});
     return;
   }

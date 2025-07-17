@@ -543,8 +543,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicActor);
     state->enable_scroll_to =
         base::FeatureList::IsEnabled(features::kGlicScrollTo);
-    state->enable_zero_state_suggestions = base::FeatureList::IsEnabled(
-        contextual_cueing::kGlicZeroStateSuggestions);
+    state->enable_zero_state_suggestions =
+        contextual_cueing::IsZeroStateSuggestionsEnabled();
 
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(
@@ -1124,8 +1124,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void GetZeroStateSuggestionsForFocusedTab(
       std::optional<bool> is_fre,
       GetZeroStateSuggestionsForFocusedTabCallback callback) override {
-    if (!base::FeatureList::IsEnabled(
-            contextual_cueing::kGlicZeroStateSuggestions)) {
+    if (!contextual_cueing::IsZeroStateSuggestionsEnabled()) {
       receiver_.ReportBadMessage(
           "Client should not call "
           "GetZeroStateSuggestionsForFocusedTab "

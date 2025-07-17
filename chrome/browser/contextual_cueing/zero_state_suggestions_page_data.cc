@@ -73,7 +73,7 @@ namespace contextual_cueing {
 
 ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
     : content::PageUserData<ZeroStateSuggestionsPageData>(page) {
-  CHECK(base::FeatureList::IsEnabled(kGlicZeroStateSuggestions));
+  CHECK(IsZeroStateSuggestionsEnabled());
   CHECK(kExtractInnerTextForZeroStateSuggestions.Get() ||
         kExtractAnnotatedPageContentForZeroStateSuggestions.Get());
 

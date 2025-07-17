@@ -101,7 +101,7 @@ class ContextualCueingServiceTestCapCountAndMinPageCount
           {{"NudgeCapCount", "3"},
            {"MinPageCountBetweenNudges", "3"},
            {"MinTimeBetweenNudges", "0h"}}}},
-        /*disabled_features=*/{});
+        {contextual_cueing::kGlicZeroStateSuggestions});
   }
 };
 
@@ -275,7 +275,7 @@ class ContextualCueingServiceTestMinPageCountBetweenNudges
            {"NudgeCapTime", "0h"},
            {"MinPageCountBetweenNudges", "3"},
            {"MinTimeBetweenNudges", "0h"}}}},
-        /*disabled_features=*/{});
+        {contextual_cueing::kGlicZeroStateSuggestions});
   }
 };
 
@@ -315,7 +315,7 @@ class ContextualCueingServiceTestPerDomainLimits
            {"MinTimeBetweenNudges", "0h"},
            {"NudgeCapTimePerDomain", "24h"},
            {"NudgeCapCountPerDomain", "1"}}}},
-        /*disabled_features=*/{});
+        {contextual_cueing::kGlicZeroStateSuggestions});
   }
 };
 

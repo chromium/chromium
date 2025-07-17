@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
@@ -21,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/service/variations_service.h"
 
 namespace glic {
 
@@ -93,6 +95,13 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   }
 
   return result;
+}
+
+// static
+bool GlicEnabling::IsInRolloutLocation() {
+  auto* variations_service = g_browser_process->variations_service();
+  return variations_service->GetStoredPermanentCountry() == "us" &&
+         g_browser_process->GetApplicationLocale() == "en-US";
 }
 
 bool GlicEnabling::IsEnabledByFlags() {

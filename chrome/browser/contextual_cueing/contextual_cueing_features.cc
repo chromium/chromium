@@ -5,9 +5,12 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_features.h"
+#include "components/variations/service/variations_service.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -20,6 +23,26 @@ BASE_FEATURE(kContextualCueing,
 BASE_FEATURE(kGlicZeroStateSuggestions,
              "GlicZeroStateSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsZeroStateSuggestionsEnabled() {
+#if BUILDFLAG(ENABLE_GLIC)
+  // If the feature is overridden (e.g. via server-side config or command-line),
+  // use that state.
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list &&
+      feature_list->IsFeatureOverridden(kGlicZeroStateSuggestions.name)) {
+    // Important: If a server-side config applies to this client (i.e. after
+    // accounting for its filters), but the client gets assigned to the default
+    // group, they will still take this code path and receive the state
+    // specified via BASE_FEATURE() above.
+    return base::FeatureList::IsEnabled(kGlicZeroStateSuggestions);
+  }
+
+  return glic::GlicEnabling::IsInRolloutLocation();
+#else
+  return false;
+#endif
+}
 
 const base::FeatureParam<base::TimeDelta> kBackoffTime(&kContextualCueing,
                                                        "BackoffTime",
