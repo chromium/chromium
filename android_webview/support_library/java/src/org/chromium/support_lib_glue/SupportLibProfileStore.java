@@ -9,6 +9,7 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.webview.chromium.Profile;
 import com.android.webview.chromium.ProfileStore;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -44,8 +45,12 @@ public class SupportLibProfileStore implements ProfileStoreBoundaryInterface {
     @Nullable
     public /* ProfileBoundaryInterface */ InvocationHandler getProfile(@NonNull String name) {
         recordApiCall(ApiCall.GET_PROFILE);
+        final Profile profile = mImpl.getProfile(name);
+        if (profile == null) {
+            return null;
+        }
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                new SupportLibProfile(mImpl.getProfile(name)));
+                new SupportLibProfile(profile));
     }
 
     @Override
