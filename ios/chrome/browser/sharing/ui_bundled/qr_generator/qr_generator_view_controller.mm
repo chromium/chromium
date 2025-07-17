@@ -37,9 +37,8 @@ constexpr CGFloat kSymbolSize = 22;
 
 @property(nonatomic, copy) NSString* pageTitle;
 
-@property(nonatomic, strong) NSArray* regularHeightToolbarItems;
-@property(nonatomic, strong) NSArray* compactHeightToolbarItems;
-@property(nonatomic, strong) UIToolbar* topToolbar;
+@property(nonatomic, strong) NSArray<UIBarButtonItem*>* regularHeightLeftItems;
+@property(nonatomic, strong) NSArray<UIBarButtonItem*>* compactHeightLeftItems;
 
 @property(nonatomic, strong)
     NSLayoutConstraint* regularHeightScrollViewBottomVerticalConstraint;
@@ -73,11 +72,14 @@ constexpr CGFloat kSymbolSize = 22;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  [self createLeftItems];
 
-  UIToolbar* topToolbar = [self createTopToolbar];
-  self.topToolbar = topToolbar;
-  [self.view addSubview:topToolbar];
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(didTapDismissBarButton)];
+
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -98,11 +100,6 @@ constexpr CGFloat kSymbolSize = 22;
   UIView* primaryActionButton = [self createPrimaryActionButton];
   _primaryActionButton = primaryActionButton;
   [self.view addSubview:primaryActionButton];
-
-  // Toolbar constraints to the top.
-  AddSameConstraintsToSides(
-      topToolbar, self.view.safeAreaLayoutGuide,
-      LayoutSides::kTrailing | LayoutSides::kTop | LayoutSides::kLeading);
 
   // Content size of the scrollview.
   AddSameConstraintsWithInsets(stackView, scrollView,
@@ -131,7 +128,8 @@ constexpr CGFloat kSymbolSize = 22;
 
   [NSLayoutConstraint activateConstraints:@[
     [scrollView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:topToolbar.bottomAnchor],
+        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                                 .topAnchor],
     [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [scrollView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
@@ -164,31 +162,12 @@ constexpr CGFloat kSymbolSize = 22;
                                                 .bottomAnchor
                                    constant:-8];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-    [self registerForTraitChanges:traits
-                       withTarget:self.view
-                           action:@selector(setNeedsUpdateConstraints)];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits
+                     withTarget:self.view
+                         action:@selector(setNeedsUpdateConstraints)];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  // Update constraints for different size classes.
-  BOOL hasNewVerticalSizeClass = previousTraitCollection.verticalSizeClass !=
-                                 self.traitCollection.verticalSizeClass;
-
-  if (hasNewVerticalSizeClass) {
-    [self.view setNeedsUpdateConstraints];
-  }
-}
-#endif
 
 - (void)updateViewConstraints {
   BOOL isVerticalCompact =
@@ -202,23 +181,16 @@ constexpr CGFloat kSymbolSize = 22;
     oldBottomConstraint = self.regularHeightScrollViewBottomVerticalConstraint;
     newBottomConstraint = self.compactHeightScrollViewBottomVerticalConstraint;
 
-    // Use setItems:animated method instead of setting the items property, as
-    // that causes issues with the Done button. See crbug.com/1082723
-    [self.topToolbar setItems:self.compactHeightToolbarItems animated:YES];
+    self.navigationItem.leftBarButtonItems = self.compactHeightLeftItems;
   } else {
     oldBottomConstraint = self.compactHeightScrollViewBottomVerticalConstraint;
     newBottomConstraint = self.regularHeightScrollViewBottomVerticalConstraint;
 
-    // Use setItems:animated method instead of setting the items property, as
-    // that causes issues with the Done button. See crbug.com/1082723
-    [self.topToolbar setItems:self.regularHeightToolbarItems animated:YES];
+    self.navigationItem.leftBarButtonItems = self.regularHeightLeftItems;
   }
 
   [NSLayoutConstraint deactivateConstraints:@[ oldBottomConstraint ]];
   [NSLayoutConstraint activateConstraints:@[ newBottomConstraint ]];
-
-  // Allow toolbar to update its height based on new layout.
-  [self.topToolbar invalidateIntrinsicContentSize];
 
   [super updateViewConstraints];
 }
@@ -231,14 +203,8 @@ constexpr CGFloat kSymbolSize = 22;
   return GenerateQRCode(urlData, kQRCodeImageSize);
 }
 
-// Helper to create the top toolbar.
-- (UIToolbar*)createTopToolbar {
-  UIToolbar* topToolbar = [[UIToolbar alloc] init];
-  topToolbar.translucent = NO;
-  [topToolbar setShadowImage:[[UIImage alloc] init]
-          forToolbarPosition:UIBarPositionAny];
-  [topToolbar setBarTintColor:[UIColor colorNamed:kBackgroundColor]];
-
+// Helper to create the toolbar items.
+- (void)createLeftItems {
   NSMutableArray* regularHeightItems = [[NSMutableArray alloc] init];
   NSMutableArray* compactHeightItems = [[NSMutableArray alloc] init];
   UIImage* helpImage = DefaultSymbolWithPointSize(kHelpSymbol, kSymbolSize);
@@ -258,14 +224,6 @@ constexpr CGFloat kSymbolSize = 22;
   // popover anchor.
   _helpButton = helpButton;
 
-  // Add margin with help button.
-  UIBarButtonItem* fixedSpacer = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                           target:nil
-                           action:nil];
-  fixedSpacer.width = 15.0f;
-  [compactHeightItems addObject:fixedSpacer];
-
   UIBarButtonItem* primaryActionBarButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                            target:self
@@ -274,26 +232,8 @@ constexpr CGFloat kSymbolSize = 22;
   // Only shows up in constraint height mode.
   [compactHeightItems addObject:primaryActionBarButton];
 
-  UIBarButtonItem* spacer = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
-  [regularHeightItems addObject:spacer];
-  [compactHeightItems addObject:spacer];
-
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self
-                           action:@selector(didTapDismissBarButton)];
-  [regularHeightItems addObject:dismissButton];
-  [compactHeightItems addObject:dismissButton];
-
-  topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
-
-  self.regularHeightToolbarItems = regularHeightItems;
-  self.compactHeightToolbarItems = compactHeightItems;
-
-  return topToolbar;
+  self.regularHeightLeftItems = regularHeightItems;
+  self.compactHeightLeftItems = compactHeightItems;
 }
 
 // Handles taps on the dismiss button.

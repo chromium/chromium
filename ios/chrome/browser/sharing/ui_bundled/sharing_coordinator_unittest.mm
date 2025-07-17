@@ -170,10 +170,19 @@ TEST_F(SharingCoordinatorTest, GenerateQRCode) {
                           params:params
                       originView:fake_origin_view_];
 
+  __block UIViewController* presented_view_controller;
+
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
-  [[vc_partial_mock expect] presentViewController:[OCMArg any]
-                                         animated:YES
-                                       completion:nil];
+  [[vc_partial_mock expect]
+      presentViewController:[OCMArg checkWithBlock:^BOOL(id arg) {
+        if (![arg isKindOfClass:UIViewController.class]) {
+          return false;
+        }
+        presented_view_controller = arg;
+        return true;
+      }]
+                   animated:YES
+                 completion:nil];
 
   auto handler = static_cast<id<QRGenerationCommands>>(coordinator);
   [handler showQRCode:[[GenerateQRCodeCommand alloc]
@@ -181,6 +190,10 @@ TEST_F(SharingCoordinatorTest, GenerateQRCode) {
                                 title:@"Some Title"]];
 
   EXPECT_OCMOCK_VERIFY(vc_partial_mock);
+
+  id presented_partial_mock = OCMPartialMock(presented_view_controller);
+  OCMStub([presented_partial_mock presentingViewController])
+      .andReturn(base_view_controller_);
 
   [[vc_partial_mock expect] dismissViewControllerAnimated:YES completion:nil];
 

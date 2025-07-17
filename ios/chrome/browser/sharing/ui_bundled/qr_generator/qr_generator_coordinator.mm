@@ -44,7 +44,9 @@
 
 @end
 
-@implementation QRGeneratorCoordinator
+@implementation QRGeneratorCoordinator {
+  UINavigationController* _navigationController;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -67,17 +69,24 @@
       initWithTitle:self.title
             pageURL:net::NSURLWithGURL(_URL)];
 
-  [self.viewController setModalPresentationStyle:UIModalPresentationFormSheet];
   [self.viewController setActionHandler:self];
 
-  [self.baseViewController presentViewController:self.viewController
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.viewController];
+
+  [_navigationController
+      setModalPresentationStyle:UIModalPresentationFormSheet];
+
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
   [super start];
 }
 
 - (void)stop {
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
   self.viewController = nil;
   self.learnMoreViewController = nil;
 

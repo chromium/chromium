@@ -51,6 +51,17 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
                                        mock_qr_generation_commands_handler_];
   }
 
+  QRGeneratorViewController* GetQRGeneratorViewController() {
+    UINavigationController* nav_controller =
+        base::apple::ObjCCastStrict<UINavigationController>(
+            base_view_controller_.presentedViewController);
+
+    QRGeneratorViewController* view_controller =
+        base::apple::ObjCCastStrict<QRGeneratorViewController>(
+            nav_controller.topViewController);
+    return view_controller;
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
@@ -72,13 +83,10 @@ TEST_F(QRGeneratorCoordinatorTest, Done_DispatchesCommand) {
 
   [coordinator_ start];
 
-  ASSERT_TRUE(base_view_controller_.presentedViewController);
   ASSERT_TRUE([base_view_controller_.presentedViewController
-      isKindOfClass:[QRGeneratorViewController class]]);
+      isKindOfClass:[UINavigationController class]]);
 
-  QRGeneratorViewController* viewController =
-      base::apple::ObjCCastStrict<QRGeneratorViewController>(
-          base_view_controller_.presentedViewController);
+  QRGeneratorViewController* viewController = GetQRGeneratorViewController();
 
   // Mimick click on done button.
   [viewController.actionHandler confirmationAlertDismissAction];
@@ -102,9 +110,7 @@ TEST_F(QRGeneratorCoordinatorTest, Done_DispatchesCommand) {
 TEST_F(QRGeneratorCoordinatorTest, ShareAction) {
   [coordinator_ start];
 
-  QRGeneratorViewController* viewController =
-      base::apple::ObjCCastStrict<QRGeneratorViewController>(
-          base_view_controller_.presentedViewController);
+  QRGeneratorViewController* viewController = GetQRGeneratorViewController();
 
   id vcPartialMock = OCMPartialMock(viewController);
   [[vcPartialMock expect]
@@ -126,9 +132,7 @@ TEST_F(QRGeneratorCoordinatorTest, ShareAction) {
 TEST_F(QRGeneratorCoordinatorTest, LearnMore) {
   [coordinator_ start];
 
-  QRGeneratorViewController* viewController =
-      base::apple::ObjCCastStrict<QRGeneratorViewController>(
-          base_view_controller_.presentedViewController);
+  QRGeneratorViewController* viewController = GetQRGeneratorViewController();
 
   __block PopoverLabelViewController* popoverViewController;
   id vcPartialMock = OCMPartialMock(viewController);
