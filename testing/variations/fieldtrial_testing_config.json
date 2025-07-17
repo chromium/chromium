@@ -14982,49 +14982,6 @@
             ]
         }
     ],
-    "MerchantTrust": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250130",
-                    "params": {
-                        "en_site_id": "pnM2xW83W0ugnJ3q1cK0WyyikxbT",
-                        "probability": "1.0"
-                    },
-                    "enable_features": [
-                        "MerchantTrust",
-                        "MerchantTrustEvaluationExperimentSurvey",
-                        "MerchantTrustLearnSurvey"
-                    ],
-                    "disable_features": [
-                        "MerchantTrustEvaluationControlSurvey"
-                    ]
-                },
-                {
-                    "name": "EnabledWithControlSurvey_20250130",
-                    "params": {
-                        "en_site_id": "YdFFpSNzs0ugnJ3q1cK0TuMcibft",
-                        "probability": "1.0"
-                    },
-                    "enable_features": [
-                        "MerchantTrustEvaluationControlSurvey"
-                    ],
-                    "disable_features": [
-                        "MerchantTrust",
-                        "MerchantTrustEvaluationExperimentSurvey",
-                        "MerchantTrustLearnSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "MessagesPreinstall": [
         {
             "platforms": [
