@@ -215,6 +215,11 @@ DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     return nullptr;
   }
 
+  VLOG(1) << "enterprise.data_protection: same document navigation: "
+          << navigation_handle->IsSameDocument();
+  VLOG(1) << "enterprise.data_protection: URL to scan: "
+          << navigation_handle->GetURL();
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // The Data protection settings need to be cleared if:
   // 1. This is a skipped URL. This is needed to handle for example navigating
