@@ -51,6 +51,14 @@ ReminderNotificationClient::ReminderNotificationClient(ProfileIOS* profile)
 
 ReminderNotificationClient::~ReminderNotificationClient() = default;
 
+std::optional<NotificationType> ReminderNotificationClient::GetNotificationType(
+    UNNotification* notification) {
+  if (CanHandleNotification(notification)) {
+    return NotificationType::kReminder;
+  }
+  return std::nullopt;
+}
+
 bool ReminderNotificationClient::CanHandleNotification(
     UNNotification* notification) {
   return [notification.request.identifier

@@ -1379,6 +1379,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="unknown type"/>
   <int value="15" label="Send Tab"/>
   <int value="16" label="Trusted Vault Key Retrieval [Tip]"/>
+  <int value="17" label="Reminder"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->

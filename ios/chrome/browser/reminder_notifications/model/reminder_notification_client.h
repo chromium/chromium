@@ -25,6 +25,8 @@ class ReminderNotificationClient : public PushNotificationClient {
   ~ReminderNotificationClient() override;
 
   // Override PushNotificationClient::
+  std::optional<NotificationType> GetNotificationType(
+      UNNotification* notification) override;
   bool CanHandleNotification(UNNotification* notification) override;
   bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
