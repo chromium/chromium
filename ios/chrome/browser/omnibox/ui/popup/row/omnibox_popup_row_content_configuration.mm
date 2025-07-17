@@ -117,7 +117,8 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   } else if (_suggestion.isSearchWithAim &&
              base::FeatureList::IsEnabled(kIOSOmniboxAimShortcut)) {
     self.trailingIconType = TrailingIconType::kSearchWithAim;
-    /// TODO(crbug.com/431223257) Add a11y label for aim icon.
+    trailingButtonActionName =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POPUP_SEARCH_WITH_AIM);
   } else if (_suggestion.isAppendable) {
     self.trailingIconType = TrailingIconType::kRefineQuery;
     trailingButtonActionName =

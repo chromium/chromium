@@ -3872,6 +3872,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OMNIBOX_POPUP_APPEND" desc="Label for the accessibility action for the address and search bar autocomplete suggestion. It replaces the text in the search bar by the suggestion. [Read by Text-to-Speech]">
         Refine
       </message>
+      <message name="IDS_IOS_OMNIBOX_POPUP_SEARCH_WITH_AIM" desc="Label for the accessibility action for the address and search bar autocomplete suggestion. Using this will invoke AI Mode with a query corresponding to the suggestion text. [Read by Text-to-Speech]">
+        Search with AI Mode
+      </message>
       <message name="IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB" desc="Label for the accessibility action for the address and search bar autocomplete suggestion. Using this will switch to the already opened tab corresponding to the suggestion. [Read by Text-to-Speech]">
         Switch to existing tab
       </message>
