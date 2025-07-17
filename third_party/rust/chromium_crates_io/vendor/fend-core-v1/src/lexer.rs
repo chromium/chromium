@@ -337,38 +337,39 @@ fn parse_basic_number<'a, I: Interrupt>(
 	}
 
 	// parse dice syntax
-	if is_integer && base.base_as_u8() <= 10 {
-		if let Ok(((), remaining)) = parse_fixed_char(input, 'd') {
-			// peek to see if there's a digit immediately after the `d`:
-			if parse_ascii_digit(remaining, base).is_ok() {
-				let dice_count: u32 = if is_dice_with_no_count {
-					1
-				} else {
-					convert::TryFrom::try_from(res.try_as_usize(decimal_separator, int)?)
-						.map_err(|_| FendError::InvalidDiceSyntax)?
-				};
-				let mut face_count = 0_u32;
-				let ((), remaining2) = parse_integer(
-					remaining,
-					false,
-					base,
-					decimal_separator,
-					&mut |digit| -> FResult<()> {
-						face_count = face_count
-							.checked_mul(base.base_as_u8().into())
-							.ok_or(FendError::InvalidDiceSyntax)?
-							.checked_add(digit.into())
-							.ok_or(FendError::InvalidDiceSyntax)?;
-						Ok(())
-					},
-				)?;
-				if dice_count == 0 || face_count == 0 {
-					return Err(FendError::InvalidDiceSyntax);
-				}
-				res = Number::new_die(dice_count, face_count, int)?;
-				res = res.with_base(base);
-				return Ok((res, remaining2));
+	if is_integer
+		&& base.base_as_u8() <= 10
+		&& let Ok(((), remaining)) = parse_fixed_char(input, 'd')
+	{
+		// peek to see if there's a digit immediately after the `d`:
+		if parse_ascii_digit(remaining, base).is_ok() {
+			let dice_count: u32 = if is_dice_with_no_count {
+				1
+			} else {
+				convert::TryFrom::try_from(res.try_as_usize(decimal_separator, int)?)
+					.map_err(|_| FendError::InvalidDiceSyntax)?
+			};
+			let mut face_count = 0_u32;
+			let ((), remaining2) = parse_integer(
+				remaining,
+				false,
+				base,
+				decimal_separator,
+				&mut |digit| -> FResult<()> {
+					face_count = face_count
+						.checked_mul(base.base_as_u8().into())
+						.ok_or(FendError::InvalidDiceSyntax)?
+						.checked_add(digit.into())
+						.ok_or(FendError::InvalidDiceSyntax)?;
+					Ok(())
+				},
+			)?;
+			if dice_count == 0 || face_count == 0 {
+				return Err(FendError::InvalidDiceSyntax);
 			}
+			res = Number::new_die(dice_count, face_count, int)?;
+			res = res.with_base(base);
+			return Ok((res, remaining2));
 		}
 	}
 
@@ -436,20 +437,19 @@ fn parse_basic_number<'a, I: Interrupt>(
 			.chars()
 			.next()
 			.is_some_and(|c| SUPERSCRIPT_DIGITS.contains(&c))
+		&& let Ok((mut power_digits, remaining)) = parse_power_number(input)
 	{
-		if let Ok((mut power_digits, remaining)) = parse_power_number(input) {
-			let mut exponent = Number::zero_with_base(base);
+		let mut exponent = Number::zero_with_base(base);
 
-			power_digits.reverse();
+		power_digits.reverse();
 
-			for (i, digit) in power_digits.into_iter().enumerate() {
-				let num = digit * 10u64.pow(u32::try_from(i).unwrap());
-				exponent = exponent.add(num.into(), decimal_separator, int)?;
-			}
-
-			res = res.pow(exponent, decimal_separator, int)?;
-			input = remaining;
+		for (i, digit) in power_digits.into_iter().enumerate() {
+			let num = digit * 10u64.pow(u32::try_from(i).unwrap());
+			exponent = exponent.add(num.into(), decimal_separator, int)?;
 		}
+
+		res = res.pow(exponent, decimal_separator, int)?;
+		input = remaining;
 	}
 
 	Ok((res, input))
@@ -750,20 +750,20 @@ fn parse_string_literal(input: &str, terminator: char) -> FResult<(Token, &str)>
 // parses a unit beginning with ' or "
 fn parse_quote_unit(input: &str) -> (Token, &str) {
 	let mut split_idx = 1;
-	if let Some(ch) = input.split_at(1).1.chars().next() {
-		if ch.is_alphabetic() {
-			split_idx += ch.len_utf8();
-			let mut prev = ch;
-			let (_, mut remaining) = input.split_at(split_idx);
-			while let Some(next) = remaining.chars().next() {
-				if !is_valid_in_ident(next, Some(prev)) {
-					break;
-				}
-				split_idx += next.len_utf8();
-				prev = next;
-				let (_, remaining2) = input.split_at(split_idx);
-				remaining = remaining2;
+	if let Some(ch) = input.split_at(1).1.chars().next()
+		&& ch.is_alphabetic()
+	{
+		split_idx += ch.len_utf8();
+		let mut prev = ch;
+		let (_, mut remaining) = input.split_at(split_idx);
+		while let Some(next) = remaining.chars().next() {
+			if !is_valid_in_ident(next, Some(prev)) {
+				break;
 			}
+			split_idx += next.len_utf8();
+			prev = next;
+			let (_, remaining2) = input.split_at(split_idx);
+			remaining = remaining2;
 		}
 	}
 	let (a, b) = input.split_at(split_idx);
@@ -789,12 +789,12 @@ fn skip_whitespace_and_comments(input: &mut &str) {
 			}
 			*input = "";
 			return;
-		} else if let Some(ch) = input.chars().next() {
-			if ch.is_whitespace() {
-				let (_, remaining) = input.split_at(ch.len_utf8());
-				*input = remaining;
-				continue;
-			}
+		} else if let Some(ch) = input.chars().next()
+			&& ch.is_whitespace()
+		{
+			let (_, remaining) = input.split_at(ch.len_utf8());
+			*input = remaining;
+			continue;
 		}
 		break;
 	}

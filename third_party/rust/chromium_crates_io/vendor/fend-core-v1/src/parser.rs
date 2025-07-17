@@ -86,13 +86,13 @@ fn parse_number(input: &[Token]) -> ParseResult<'_> {
 fn parse_ident(input: &[Token]) -> ParseResult<'_> {
 	match parse_token(input)? {
 		(Token::Ident(ident), remaining) => {
-			if ident.as_str() == "light" {
-				if let Ok((ident2, remaining2)) = parse_ident(remaining) {
-					return Ok((
-						Expr::Apply(Box::new(Expr::Ident(ident)), Box::new(ident2)),
-						remaining2,
-					));
-				}
+			if ident.as_str() == "light"
+				&& let Ok((ident2, remaining2)) = parse_ident(remaining)
+			{
+				return Ok((
+					Expr::Apply(Box::new(Expr::Ident(ident)), Box::new(ident2)),
+					remaining2,
+				));
 			}
 			if let Ok(((), remaining2)) = parse_fixed_symbol(remaining, Symbol::Of) {
 				let (inner, remaining3) = parse_parens_or_literal(remaining2)?;
@@ -187,10 +187,10 @@ fn parse_apply_cont<'a>(input: &'a [Token], lhs: &Expr) -> ParseResult<'a> {
 				Expr::Literal(Value::Num(_)) | Expr::UnaryMinus(_) | Expr::ApplyMul(_, _),
 				Expr::Literal(Value::Num(_)),
 			) => {
-				if let Expr::UnaryMinus(b) = &lhs {
-					if !matches!(b.as_ref(), Expr::Literal(Value::Num(_))) {
-						return Ok((Expr::Apply(Box::new(lhs.clone()), Box::new(rhs)), input));
-					}
+				if let Expr::UnaryMinus(b) = &lhs
+					&& !matches!(b.as_ref(), Expr::Literal(Value::Num(_)))
+				{
+					return Ok((Expr::Apply(Box::new(lhs.clone()), Box::new(rhs)), input));
 				}
 				// this may later be parsed as a compound fraction, e.g. 1 2/3
 				// or as an addition, e.g. 6 feet 1 inch

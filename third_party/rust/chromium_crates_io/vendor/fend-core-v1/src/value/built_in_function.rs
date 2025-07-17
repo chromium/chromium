@@ -41,6 +41,8 @@ pub(crate) enum BuiltInFunction {
 	Ceil,
 	Round,
 	Fibonacci,
+	Print,
+	Println,
 }
 
 impl BuiltInFunction {
@@ -108,6 +110,8 @@ impl BuiltInFunction {
 			Self::Ceil => "ceil",
 			Self::Round => "round",
 			Self::Fibonacci => "fibonacci",
+			Self::Print => "print",
+			Self::Println => "println",
 		}
 	}
 
@@ -137,6 +141,8 @@ impl BuiltInFunction {
 			"real" => Self::Real,
 			"imag" => Self::Imag,
 			"fibonacci" => Self::Fibonacci,
+			"print" => Self::Print,
+			"prinln" => Self::Println,
 			_ => return Err(FendError::DeserializationError),
 		})
 	}

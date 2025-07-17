@@ -83,11 +83,15 @@ impl Dist {
 	}
 
 	#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-	pub(crate) fn sample<I: Interrupt>(self, ctx: &crate::Context, int: &I) -> FResult<Self> {
+	pub(crate) fn sample<I: Interrupt>(self, ctx: &mut crate::Context, int: &I) -> FResult<Self> {
 		if self.parts.len() == 1 {
 			return Ok(self);
 		}
-		let mut random = ctx.random_u32.ok_or(FendError::RandomNumbersNotAvailable)?();
+		let mut random = ctx
+			.random_u32
+			.as_mut()
+			.ok_or(FendError::RandomNumbersNotAvailable)?
+			.get_random_u32();
 		let mut res = None;
 		for (k, v) in self.parts {
 			random = random.saturating_sub((v.into_f64(int)? * f64::from(u32::MAX)) as u32);

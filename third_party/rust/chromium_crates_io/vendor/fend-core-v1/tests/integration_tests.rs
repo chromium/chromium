@@ -18,7 +18,7 @@ fn test_serialization_roundtrip(context: &mut Context) {
 #[track_caller]
 fn test_eval_simple(input: &str, expected: &str) {
 	let mut context = Context::new();
-	context.set_exchange_rate_handler_v1(fend_core::test_utils::dummy_currency_handler);
+	context.set_exchange_rate_handler_v2(fend_core::test_utils::DummyCurrencyHandler);
 	assert_eq!(
 		evaluate(input, &mut context).unwrap().get_main_result(),
 		expected
@@ -32,7 +32,7 @@ fn test_eval_simple(input: &str, expected: &str) {
 #[track_caller]
 fn test_eval(input: &str, expected: &str) {
 	let mut context = Context::new();
-	context.set_exchange_rate_handler_v1(fend_core::test_utils::dummy_currency_handler);
+	context.set_exchange_rate_handler_v2(fend_core::test_utils::DummyCurrencyHandler);
 	assert_eq!(
 		evaluate(input, &mut context).unwrap().get_main_result(),
 		expected
@@ -1251,7 +1251,7 @@ fn exponent_too_large() {
 #[test]
 fn i_powers() {
 	for (i, result) in (0..=100).zip(["1", "i", "-1", "-i"].iter().cycle()) {
-		test_eval(&format!("i^{}", i), result);
+		test_eval(&format!("i^{i}"), result);
 	}
 }
 
@@ -5537,18 +5537,18 @@ fn test_invalid_dice_syntax_5() {
 
 #[test]
 fn unit_literal() {
-	test_eval("()", "()");
+	test_eval("()", "");
 }
 
 #[test]
 fn empty_statements() {
 	test_eval("1234;", "1234");
 	test_eval(";432", "432");
-	test_eval(";", "()");
+	test_eval(";", "");
 	test_eval(";;3", "3");
 	test_eval("34;;;", "34");
 	test_eval(";2;;3;a=4;;4a", "16");
-	test_eval(";2;;3;a=4;;4a;;;()", "()");
+	test_eval(";2;;3;a=4;;4a;;;()", "");
 }
 
 #[test]
@@ -6114,12 +6114,37 @@ impl std::error::Error for TestError {
 	}
 }
 
+struct ErrorCurrencyHandler;
+impl fend_core::ExchangeRateFnV2 for ErrorCurrencyHandler {
+	fn relative_to_base_currency(
+		&self,
+		_currency: &str,
+		_options: &fend_core::ExchangeRateFnV2Options,
+	) -> Result<f64, Box<dyn std::error::Error + Send + Sync + 'static>> {
+		Err(TestError("inner error".into()).into())
+	}
+}
+
 #[test]
 fn test_nested_exchange_rate_error() {
 	let mut context = Context::new();
-	context.set_exchange_rate_handler_v1(|_: &str| Err(TestError("inner error".into()).into()));
+	context.set_exchange_rate_handler_v2(ErrorCurrencyHandler);
 	assert_eq!(
 		evaluate("usd to eur", &mut context).unwrap_err(),
 		"failed to retrieve EUR exchange rate: my error: inner error",
+	);
+}
+
+#[test]
+fn decimal_separator_comma() {
+	let mut context = Context::new();
+	context.set_decimal_separator_style(fend_core::DecimalSeparatorStyle::Comma);
+	assert_eq!(
+		evaluate("e", &mut context).unwrap().get_main_result(),
+		"approx. 2,7182818284"
+	);
+	assert_eq!(
+		evaluate("1' to m", &mut context).unwrap().get_main_result(),
+		"0,3048 m"
 	);
 }

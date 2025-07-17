@@ -6,7 +6,7 @@ use crate::{error::FendError, result::FResult};
 /// interrupt the current calculation and return `Err(FendError::Interrupted)`.
 ///
 /// This can be used to implement timeouts or user interrupts via e.g. Ctrl-C.
-pub trait Interrupt {
+pub trait Interrupt: Sync {
 	/// Returns `true` if the current calculation should be interrupted.
 	fn should_interrupt(&self) -> bool;
 }

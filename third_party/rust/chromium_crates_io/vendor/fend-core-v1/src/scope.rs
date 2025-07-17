@@ -2,7 +2,7 @@ use crate::ident::Ident;
 use crate::result::FResult;
 use crate::serialize::{Deserialize, Serialize};
 use crate::value::Value;
-use crate::{Attrs, Context};
+use crate::{Attrs, Context, Span};
 use crate::{ast::Expr, error::Interrupt};
 use std::io;
 use std::sync::Arc;
@@ -28,12 +28,14 @@ impl ScopeValue {
 	fn eval<I: Interrupt>(
 		&self,
 		attrs: Attrs,
+		spans: &mut Vec<Span>,
 		context: &mut crate::Context,
 		int: &I,
 	) -> FResult<Value> {
 		match self {
 			Self::LazyVariable(expr, scope) => {
-				let value = crate::ast::evaluate(expr.clone(), scope.clone(), attrs, context, int)?;
+				let value =
+					crate::ast::evaluate(expr.clone(), scope.clone(), attrs, spans, context, int)?;
 				Ok(value)
 			}
 		}
@@ -146,16 +148,18 @@ impl Scope {
 		&self,
 		ident: &Ident,
 		attrs: Attrs,
+		spans: &mut Vec<Span>,
 		context: &mut crate::Context,
 		int: &I,
 	) -> FResult<Option<Value>> {
 		if self.ident.as_str() == ident.as_str() {
-			let value = self.value.eval(attrs, context, int)?;
+			let value = self.value.eval(attrs, spans, context, int)?;
 			Ok(Some(value))
 		} else {
-			self.inner
-				.as_ref()
-				.map_or_else(|| Ok(None), |inner| inner.get(ident, attrs, context, int))
+			self.inner.as_ref().map_or_else(
+				|| Ok(None),
+				|inner| inner.get(ident, attrs, spans, context, int),
+			)
 		}
 	}
 }

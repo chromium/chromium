@@ -586,7 +586,7 @@ const CGS_UNITS: &[UnitTuple] = &[
 	("maxwell", "maxwells", "10^-8 weber", ""),
 	("phot", "phots", "10000 lux", ""),
 	("stilb", "stilbs", "10000 candela/m^2", ""),
-	// abbrevations
+	// abbreviations
 	("gallileo", "gallileos", "gal", ""),
 	("dyn", "dyns", "dyne", ""),
 	("Ba", "", "barye", ""),
@@ -970,7 +970,7 @@ mod tests {
 
 	fn test_group(group: &[UnitTuple]) {
 		let mut ctx = crate::Context::new();
-		ctx.set_exchange_rate_handler_v1(crate::test_utils::dummy_currency_handler);
+		ctx.set_exchange_rate_handler_v2(crate::test_utils::DummyCurrencyHandler);
 		for (s, p, _, _) in group {
 			test_str(s, &mut ctx);
 			test_str(p, &mut ctx);

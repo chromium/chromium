@@ -509,7 +509,7 @@ impl Ord for ContinuedFraction {
 			.zip(iter2)
 			.take_while(|x| x != &(Err(()), Err(())))
 			.enumerate()
-			.map(|(i, (a, b))| if i % 2 == 0 { (b, a) } else { (a, b) })
+			.map(|(i, (a, b))| if i.is_multiple_of(2) { (b, a) } else { (a, b) })
 			.map(|(a, b)| a.cmp(&b))
 			.take(MAX_ITERATIONS)
 			.try_for_each(|o| match o {
@@ -839,7 +839,7 @@ mod tests {
 	}
 
 	#[test]
-	#[ignore]
+	#[ignore = "doesn't work"]
 	fn addition() {
 		let a = cf!(4);
 		let b = cf!(3);

@@ -27,7 +27,7 @@ pub(crate) enum RangeBound<T> {
 	Closed(T),
 }
 
-impl<T: fmt::Display + fmt::Debug + 'static> RangeBound<T> {
+impl<T: fmt::Display + fmt::Debug + Send + Sync + 'static> RangeBound<T> {
 	fn into_dyn(self) -> RangeBound<Box<dyn crate::format::DisplayDebug>> {
 		match self {
 			Self::None => RangeBound::None,
@@ -75,7 +75,10 @@ impl<T: fmt::Display> fmt::Display for Range<T> {
 	}
 }
 
-fn out_of_range<T: fmt::Display + fmt::Debug + 'static, U: fmt::Display + fmt::Debug + 'static>(
+fn out_of_range<
+	T: fmt::Display + fmt::Debug + Send + Sync + 'static,
+	U: fmt::Display + fmt::Debug + Send + Sync + 'static,
+>(
 	value: T,
 	range: Range<U>,
 ) -> FendError {

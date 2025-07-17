@@ -234,9 +234,15 @@ impl Value {
 	) -> FResult<Self> {
 		for (lhs_unit, rhs_unit) in crate::units::IMPLICIT_UNIT_MAP {
 			if self.unit.equal_to(lhs_unit, int)? && rhs.is_unitless(int)? {
-				let inches =
-					ast::resolve_identifier(&Ident::new_str(rhs_unit), None, attrs, context, int)?
-						.expect_num()?;
+				let inches = ast::resolve_identifier(
+					&Ident::new_str(rhs_unit),
+					None,
+					attrs,
+					&mut vec![],
+					context,
+					int,
+				)?
+				.expect_num()?;
 				return rhs.mul(inches, int);
 			}
 		}
@@ -577,7 +583,7 @@ impl Value {
 		})
 	}
 
-	pub(crate) fn sample<I: Interrupt>(self, ctx: &crate::Context, int: &I) -> FResult<Self> {
+	pub(crate) fn sample<I: Interrupt>(self, ctx: &mut crate::Context, int: &I) -> FResult<Self> {
 		Ok(Self {
 			value: self.value.sample(ctx, int)?,
 			..self
@@ -598,9 +604,15 @@ impl Value {
 		context: &mut crate::Context,
 		int: &I,
 	) -> FResult<Self> {
-		let radians =
-			ast::resolve_identifier(&Ident::new_str("radians"), scope, attrs, context, int)?
-				.expect_num()?;
+		let radians = ast::resolve_identifier(
+			&Ident::new_str("radians"),
+			scope,
+			attrs,
+			&mut vec![],
+			context,
+			int,
+		)?
+		.expect_num()?;
 		self.convert_to(radians, context.decimal_separator, int)
 	}
 

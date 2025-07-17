@@ -8,6 +8,7 @@ pub(crate) fn evaluate_to_value<I: Interrupt>(
 	input: &str,
 	scope: Option<Arc<Scope>>,
 	attrs: Attrs,
+	spans: &mut Vec<Span>,
 	context: &mut crate::Context,
 	int: &I,
 ) -> FResult<Value> {
@@ -25,7 +26,7 @@ pub(crate) fn evaluate_to_value<I: Interrupt>(
 		tokens.insert(0, lexer::Token::Symbol(lexer::Symbol::OpenParens));
 	}
 	let parsed = parser::parse_tokens(&tokens)?;
-	let result = ast::evaluate(parsed, scope, attrs, context, int)?;
+	let result = ast::evaluate(parsed, scope, attrs, spans, context, int)?;
 	Ok(result)
 }
 
@@ -77,20 +78,21 @@ pub(crate) fn evaluate_to_spans<I: Interrupt>(
 	scope: Option<Arc<Scope>>,
 	context: &mut crate::Context,
 	int: &I,
-) -> FResult<(Vec<Span>, bool, Attrs)> {
+) -> FResult<(Vec<Span>, Attrs)> {
 	let (attrs, input) = parse_attrs(input);
-	let value = evaluate_to_value(input, scope, attrs, context, int)?;
+	let mut spans = vec![];
+	let value = evaluate_to_value(input, scope, attrs, &mut spans, context, int)?;
 	context.variables.insert("_".to_string(), value.clone());
 	context.variables.insert("ans".to_string(), value.clone());
 	Ok((
 		if attrs.debug {
 			vec![Span::from_string(format!("{value:?}"))]
 		} else {
-			let mut spans = vec![];
-			value.format(0, &mut spans, attrs, context, int)?;
+			if context.echo_result {
+				value.format(0, &mut spans, attrs, false, context, int)?;
+			}
 			spans
 		},
-		value.is_unit(),
 		attrs,
 	))
 }

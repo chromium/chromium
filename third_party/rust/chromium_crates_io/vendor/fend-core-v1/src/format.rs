@@ -15,6 +15,6 @@ pub(crate) trait Format {
 	}
 }
 
-pub(crate) trait DisplayDebug: fmt::Display + fmt::Debug {}
+pub(crate) trait DisplayDebug: fmt::Display + fmt::Debug + Send + Sync {}
 
-impl<T: fmt::Display + fmt::Debug> DisplayDebug for T {}
+impl<T: fmt::Display + fmt::Debug + Send + Sync> DisplayDebug for T {}

@@ -1,11 +1,11 @@
 use std::borrow::Cow;
 
-use crate::Attrs;
 use crate::error::{FendError, Interrupt};
 use crate::eval::evaluate_to_value;
 use crate::num::Number;
 use crate::result::FResult;
 use crate::value::Value;
+use crate::{Attrs, DecimalSeparatorStyle};
 
 mod builtin;
 
@@ -39,11 +39,16 @@ fn expr_unit<I: Interrupt>(
 	let (singular, plural, definition) = unit_def;
 	let mut definition = definition.trim();
 	if definition == "$CURRENCY" {
-		let Some(exchange_rate_fn) = &context.get_exchange_rate else {
+		let Some(exchange_rate_fn) = &context.get_exchange_rate_v2 else {
 			return Err(FendError::NoExchangeRatesAvailable);
 		};
 		let one_base_in_currency = exchange_rate_fn
-			.relative_to_base_currency(&singular)
+			.relative_to_base_currency(
+				&singular,
+				&crate::ExchangeRateFnV2Options {
+					is_preview: context.is_preview,
+				},
+			)
 			.map_err(|e| {
 				FendError::Wrap(format!("failed to retrieve {singular} exchange rate"), e)
 			})?;
@@ -51,6 +56,7 @@ fn expr_unit<I: Interrupt>(
 			format!("(1/{one_base_in_currency}) BASE_CURRENCY").as_str(),
 			None,
 			attrs,
+			&mut vec![],
 			context,
 			int,
 		)?
@@ -105,7 +111,11 @@ fn expr_unit<I: Interrupt>(
 		.map_or((false, definition), |remaining| (true, remaining));
 	// long prefixes like `hecto` are always treated as aliases
 	let alias = alias || rule == PrefixRule::LongPrefix;
-	let mut num = evaluate_to_value(definition, None, attrs, context, int)?.expect_num()?;
+	let sep = context.decimal_separator;
+	context.decimal_separator = DecimalSeparatorStyle::Dot;
+	let mut num =
+		evaluate_to_value(definition, None, attrs, &mut vec![], context, int)?.expect_num()?;
+	context.decimal_separator = sep;
 
 	// There are three cases to consider:
 	//   1. Unitless aliases (e.g. `million` or `mega`) should be treated as an

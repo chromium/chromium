@@ -432,10 +432,10 @@ impl BigUint {
 	}
 
 	pub(crate) fn mul<I: Interrupt>(mut self, other: &Self, int: &I) -> FResult<Self> {
-		if let (Small(a), Small(b)) = (&self, &other) {
-			if let Some(res) = a.checked_mul(*b) {
-				return Ok(Self::from(res));
-			}
+		if let (Small(a), Small(b)) = (&self, &other)
+			&& let Some(res) = a.checked_mul(*b)
+		{
+			return Ok(Self::from(res));
 		}
 		self.mul_internal(other, int)?;
 		Ok(self)
@@ -658,7 +658,7 @@ impl BigUint {
 
 		let mut i = num.len();
 		while i > 0 {
-			let start = if i >= 3 { i - 3 } else { 0 };
+			let start = i.saturating_sub(3);
 			chunks.push(&num[start..i]);
 			i = start;
 		}
@@ -741,7 +741,7 @@ fn convert_below_1000(num: usize, result: &mut String) {
 	if num >= 100 {
 		result.push_str(SMALL_NUMBERS[num / 100]);
 		result.push_str(" hundred");
-		if num % 100 != 0 {
+		if !num.is_multiple_of(100) {
 			result.push_str(" and ");
 		}
 	}
@@ -752,7 +752,7 @@ fn convert_below_1000(num: usize, result: &mut String) {
 		result.push_str(SMALL_NUMBERS[remainder]);
 	} else if remainder >= 20 {
 		result.push_str(TENS[remainder / 10]);
-		if remainder % 10 != 0 {
+		if !remainder.is_multiple_of(10) {
 			result.push('-');
 			result.push_str(SMALL_NUMBERS[remainder % 10]);
 		}

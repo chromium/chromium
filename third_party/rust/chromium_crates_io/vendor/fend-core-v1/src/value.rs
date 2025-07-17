@@ -226,10 +226,6 @@ impl Value {
 		}
 	}
 
-	pub(crate) fn is_unit(&self) -> bool {
-		matches!(self, Self::Unit)
-	}
-
 	pub(crate) fn handle_num(
 		self,
 		eval_fn: impl FnOnce(Number) -> FResult<Number>,
@@ -266,19 +262,20 @@ impl Value {
 		})
 	}
 
+	#[allow(clippy::too_many_arguments)]
 	pub(crate) fn apply<I: Interrupt>(
 		self,
 		other: Expr,
 		apply_mul_handling: ApplyMulHandling,
 		scope: Option<Arc<Scope>>,
 		attrs: Attrs,
+		spans: &mut Vec<Span>,
 		context: &mut crate::Context,
 		int: &I,
 	) -> FResult<Self> {
-		let stringified_self = self.format_to_plain_string(0, attrs, context, int)?;
 		Ok(match self {
 			Self::Num(n) => {
-				let other = crate::ast::evaluate(other, scope.clone(), attrs, context, int)?;
+				let other = crate::ast::evaluate(other, scope.clone(), attrs, spans, context, int)?;
 				if matches!(other, Self::Dp) {
 					let num = Self::Num(n)
 						.expect_num()?
@@ -297,7 +294,7 @@ impl Value {
 				if apply_mul_handling == ApplyMulHandling::OnlyApply {
 					let self_ = Self::Num(n);
 					return Err(FendError::IsNotAFunction(
-						self_.format_to_plain_string(0, attrs, context, int)?,
+						self_.format_to_plain_string(0, attrs, true, context, int)?,
 					));
 				}
 				let n2 = n.clone();
@@ -308,13 +305,23 @@ impl Value {
 				)?
 			}
 			Self::BuiltInFunction(func) => {
-				Self::apply_built_in_function(func, other, scope, attrs, context, int)?
+				Self::apply_built_in_function(func, other, scope, attrs, spans, context, int)?
 			}
 			Self::Fn(param, expr, custom_scope) => {
 				let new_scope = Scope::with_variable(param, other, scope, custom_scope);
-				return crate::ast::evaluate(*expr, Some(Arc::new(new_scope)), attrs, context, int);
+				return crate::ast::evaluate(
+					*expr,
+					Some(Arc::new(new_scope)),
+					attrs,
+					spans,
+					context,
+					int,
+				);
 			}
-			_ => return Err(FendError::IsNotAFunctionOrNumber(stringified_self)),
+			_ => {
+				let stringified_self = self.format_to_plain_string(0, attrs, true, context, int)?;
+				return Err(FendError::IsNotAFunctionOrNumber(stringified_self));
+			}
 		})
 	}
 
@@ -323,10 +330,11 @@ impl Value {
 		arg: Expr,
 		scope: Option<Arc<Scope>>,
 		attrs: Attrs,
+		spans: &mut Vec<Span>,
 		context: &mut crate::Context,
 		int: &I,
 	) -> FResult<Self> {
-		let arg = crate::ast::evaluate(arg, scope.clone(), attrs, context, int)?;
+		let arg = crate::ast::evaluate(arg, scope.clone(), attrs, spans, context, int)?;
 		Ok(Self::Num(Box::new(match func {
 			BuiltInFunction::Approximately => arg.expect_num()?.make_approximate(),
 			BuiltInFunction::Abs => arg.expect_num()?.abs(int)?,
@@ -366,6 +374,18 @@ impl Value {
 			BuiltInFunction::Fibonacci => arg
 				.expect_num()?
 				.fibonacci(context.decimal_separator, int)?,
+			BuiltInFunction::Print => {
+				arg.format(0, spans, attrs, false, context, int)?;
+				return Ok(Self::Unit);
+			}
+			BuiltInFunction::Println => {
+				arg.format(0, spans, attrs, false, context, int)?;
+				spans.push(Span {
+					string: "\n".to_string(),
+					kind: SpanKind::Whitespace,
+				});
+				return Ok(Self::Unit);
+			}
 		})))
 	}
 
@@ -373,11 +393,12 @@ impl Value {
 		&self,
 		indent: usize,
 		attrs: Attrs,
+		explicit_unit_type: bool,
 		ctx: &mut crate::Context,
 		int: &I,
 	) -> FResult<String> {
 		let mut spans = vec![];
-		self.format(indent, &mut spans, attrs, ctx, int)?;
+		self.format(indent, &mut spans, attrs, explicit_unit_type, ctx, int)?;
 		let mut res = String::new();
 		for span in spans {
 			res.push_str(&span.string);
@@ -390,6 +411,7 @@ impl Value {
 		indent: usize,
 		spans: &mut Vec<Span>,
 		attrs: Attrs,
+		explicit_unit_type: bool,
 		ctx: &mut crate::Context,
 		int: &I,
 	) -> FResult<()> {
@@ -457,7 +479,7 @@ impl Value {
 						spans.push(Span::from_string(" ".to_string()));
 					}
 					spans.push(Span::from_string(format!("{k}: ")));
-					v.format(indent + 4, spans, attrs, ctx, int)?;
+					v.format(indent + 4, spans, attrs, true, ctx, int)?;
 				}
 				spans.push(Span::from_string("\n}".to_string()));
 			}
@@ -468,10 +490,12 @@ impl Value {
 				});
 			}
 			Self::Unit => {
-				spans.push(crate::Span {
-					string: "()".to_string(),
-					kind: crate::SpanKind::Ident,
-				});
+				if explicit_unit_type {
+					spans.push(crate::Span {
+						string: "()".to_string(),
+						kind: crate::SpanKind::Ident,
+					});
+				}
 			}
 			Self::Bool(b) => spans.push(crate::Span {
 				string: b.to_string(),

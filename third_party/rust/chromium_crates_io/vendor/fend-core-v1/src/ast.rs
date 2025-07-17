@@ -7,7 +7,7 @@ use crate::result::FResult;
 use crate::scope::Scope;
 use crate::serialize::{Deserialize, Serialize};
 use crate::value::{ApplyMulHandling, Value, built_in_function::BuiltInFunction};
-use crate::{Attrs, Context, DecimalSeparatorStyle};
+use crate::{Attrs, Context, DecimalSeparatorStyle, Span};
 use std::borrow::Cow;
 use std::sync::Arc;
 use std::{borrow, cmp, fmt, io};
@@ -321,7 +321,7 @@ impl Expr {
 	) -> FResult<String> {
 		Ok(match self {
 			Self::Literal(Value::String(s)) => format!(r#""{}""#, s.as_ref()),
-			Self::Literal(v) => v.format_to_plain_string(0, attrs, ctx, int)?,
+			Self::Literal(v) => v.format_to_plain_string(0, attrs, true, ctx, int)?,
 			Self::Ident(ident) => ident.to_string(),
 			Self::Parens(x) => format!("({})", x.format(attrs, ctx, int)?),
 			Self::UnaryMinus(x) => format!("(-{})", x.format(attrs, ctx, int)?),
@@ -379,19 +379,17 @@ impl Expr {
 /// returns true if rhs is '-1' or '(-1)'
 fn should_compute_inverse<I: Interrupt>(rhs: &Expr, int: &I) -> FResult<bool> {
 	if let Expr::UnaryMinus(inner) = rhs {
-		if let Expr::Literal(Value::Num(n)) = &**inner {
-			if n.is_unitless_one(int)? {
-				return Ok(true);
-			}
+		if let Expr::Literal(Value::Num(n)) = &**inner
+			&& n.is_unitless_one(int)?
+		{
+			return Ok(true);
 		}
-	} else if let Expr::Parens(inner) = rhs {
-		if let Expr::UnaryMinus(inner2) = &**inner {
-			if let Expr::Literal(Value::Num(n)) = &**inner2 {
-				if n.is_unitless_one(int)? {
-					return Ok(true);
-				}
-			}
-		}
+	} else if let Expr::Parens(inner) = rhs
+		&& let Expr::UnaryMinus(inner2) = &**inner
+		&& let Expr::Literal(Value::Num(n)) = &**inner2
+		&& n.is_unitless_one(int)?
+	{
+		return Ok(true);
 	}
 	Ok(false)
 }
@@ -401,18 +399,19 @@ pub(crate) fn evaluate<I: Interrupt>(
 	expr: Expr,
 	scope: Option<Arc<Scope>>,
 	attrs: Attrs,
+	spans: &mut Vec<Span>,
 	context: &mut crate::Context,
 	int: &I,
 ) -> FResult<Value> {
 	macro_rules! eval {
 		($e:expr) => {
-			evaluate($e, scope.clone(), attrs, context, int)
+			evaluate($e, scope.clone(), attrs, spans, context, int)
 		};
 	}
 	test_int(int)?;
 	Ok(match expr {
 		Expr::Literal(v) => v,
-		Expr::Ident(ident) => resolve_identifier(&ident, scope, attrs, context, int)?,
+		Expr::Ident(ident) => resolve_identifier(&ident, scope, attrs, spans, context, int)?,
 		Expr::Parens(x) => eval!(*x)?,
 		Expr::UnaryMinus(x) => eval!(*x)?.handle_num(|x| Ok(-x), Expr::UnaryMinus, scope)?,
 		Expr::UnaryPlus(x) => eval!(*x)?.handle_num(Ok, Expr::UnaryPlus, scope)?,
@@ -445,6 +444,7 @@ pub(crate) fn evaluate<I: Interrupt>(
 					ApplyMulHandling::OnlyApply,
 					scope,
 					attrs,
+					spans,
 					context,
 					int,
 				)?,
@@ -508,28 +508,44 @@ pub(crate) fn evaluate<I: Interrupt>(
 						Expr::UnaryDiv,
 						scope.clone(),
 					)?
-					.apply(*expr, ApplyMulHandling::Both, scope, attrs, context, int)?,
-				(a, b) => eval!(a)?.apply(b, ApplyMulHandling::Both, scope, attrs, context, int)?,
+					.apply(
+						*expr,
+						ApplyMulHandling::Both,
+						scope,
+						attrs,
+						spans,
+						context,
+						int,
+					)?,
+				(a, b) => {
+					eval!(a)?.apply(b, ApplyMulHandling::Both, scope, attrs, spans, context, int)?
+				}
 			}
 		}
-		Expr::ApplyFunctionCall(a, b) => {
-			eval!(*a)?.apply(*b, ApplyMulHandling::OnlyApply, scope, attrs, context, int)?
-		}
-		Expr::As(a, b) => evaluate_as(*a, *b, scope, attrs, context, int)?,
+		Expr::ApplyFunctionCall(a, b) => eval!(*a)?.apply(
+			*b,
+			ApplyMulHandling::OnlyApply,
+			scope,
+			attrs,
+			spans,
+			context,
+			int,
+		)?,
+		Expr::As(a, b) => evaluate_as(*a, *b, scope, attrs, spans, context, int)?,
 		Expr::Fn(a, b) => Value::Fn(a, b, scope),
 		Expr::Of(a, b) => eval!(*b)?.get_object_member(&a)?,
 		Expr::Assign(a, b) => {
-			let rhs = evaluate(*b, scope, attrs, context, int)?;
+			let rhs = evaluate(*b, scope, attrs, spans, context, int)?;
 			context.variables.insert(a.to_string(), rhs.clone());
 			rhs
 		}
 		Expr::Statements(a, b) => {
-			let _lhs = evaluate(*a, scope.clone(), attrs, context, int)?;
-			evaluate(*b, scope, attrs, context, int)?
+			let _lhs = evaluate(*a, scope.clone(), attrs, spans, context, int)?;
+			evaluate(*b, scope, attrs, spans, context, int)?
 		}
 		Expr::Equality(is_equals, a, b) => {
-			let lhs = evaluate(*a, scope.clone(), attrs, context, int)?;
-			let rhs = evaluate(*b, scope, attrs, context, int)?;
+			let lhs = evaluate(*a, scope.clone(), attrs, spans, context, int)?;
+			let rhs = evaluate(*b, scope, attrs, spans, context, int)?;
 			Value::Bool(match lhs.compare(&rhs, context, int)? {
 				Some(cmp::Ordering::Equal) => is_equals,
 				Some(cmp::Ordering::Greater | cmp::Ordering::Less) | None => !is_equals,
@@ -589,17 +605,18 @@ fn evaluate_as<I: Interrupt>(
 	b: Expr,
 	scope: Option<Arc<Scope>>,
 	attrs: Attrs,
+	spans: &mut Vec<Span>,
 	context: &mut crate::Context,
 	int: &I,
 ) -> FResult<Value> {
 	if let Expr::Ident(ident) = &b {
 		match ident.as_str() {
 			"bool" | "boolean" => {
-				let num = evaluate(a, scope, attrs, context, int)?.expect_num()?;
+				let num = evaluate(a, scope, attrs, spans, context, int)?.expect_num()?;
 				return Ok(Value::Bool(!num.is_zero(int)?));
 			}
 			"date" => {
-				let a = evaluate(a, scope, attrs, context, int)?;
+				let a = evaluate(a, scope, attrs, spans, context, int)?;
 				return if let Value::String(s) = a {
 					Ok(Value::Date(crate::date::Date::parse(s.as_ref())?))
 				} else {
@@ -608,13 +625,13 @@ fn evaluate_as<I: Interrupt>(
 			}
 			"string" | "text" => {
 				return Ok(Value::String(
-					evaluate(a, scope, attrs, context, int)?
-						.format_to_plain_string(0, attrs, context, int)?
+					evaluate(a, scope, attrs, spans, context, int)?
+						.format_to_plain_string(0, attrs, true, context, int)?
 						.into(),
 				));
 			}
 			"codepoint" => {
-				let a = evaluate(a, scope, attrs, context, int)?;
+				let a = evaluate(a, scope, attrs, spans, context, int)?;
 				if let Value::String(s) = a {
 					let ch = s
 						.as_ref()
@@ -632,7 +649,7 @@ fn evaluate_as<I: Interrupt>(
 				return Err(FendError::ExpectedAString);
 			}
 			"char" | "character" => {
-				let a = evaluate(a, scope, attrs, context, int)?;
+				let a = evaluate(a, scope, attrs, spans, context, int)?;
 				if let Value::Num(v) = a {
 					let n = v.try_as_usize(context.decimal_separator, int)?;
 					let ch = n
@@ -646,7 +663,7 @@ fn evaluate_as<I: Interrupt>(
 				return Err(FendError::ExpectedANumber);
 			}
 			"roman" | "roman_numeral" => {
-				let a = evaluate(a, scope, attrs, context, int)?
+				let a = evaluate(a, scope, attrs, spans, context, int)?
 					.expect_num()?
 					.try_as_usize(context.decimal_separator, int)?;
 				if a == 0 {
@@ -665,7 +682,7 @@ fn evaluate_as<I: Interrupt>(
 				return Ok(Value::String(borrow::Cow::Owned(to_roman(a, true))));
 			}
 			"words" => {
-				let uint = evaluate(a, scope, attrs, context, int)?
+				let uint = evaluate(a, scope, attrs, spans, context, int)?
 					.expect_num()?
 					.into_unitless_complex(context.decimal_separator, int)?
 					.try_as_real()?
@@ -675,52 +692,56 @@ fn evaluate_as<I: Interrupt>(
 			_ => (),
 		}
 	}
-	Ok(match evaluate(b, scope.clone(), attrs, context, int)? {
-		Value::Num(b) => Value::Num(Box::new(
-			evaluate(a, scope, attrs, context, int)?
-				.expect_num()?
-				.convert_to(*b, context.decimal_separator, int)?,
-		)),
-		Value::Format(fmt) => Value::Num(Box::new(
-			evaluate(a, scope, attrs, context, int)?
-				.expect_num()?
-				.with_format(fmt),
-		)),
-		Value::Dp => {
-			return Err(FendError::SpecifyNumDp);
-		}
-		Value::Sf => {
-			return Err(FendError::SpecifyNumSf);
-		}
-		Value::Base(base) => Value::Num(Box::new(
-			evaluate(a, scope, attrs, context, int)?
-				.expect_num()?
-				.with_base(base),
-		)),
-		other => {
-			return Err(FendError::CannotConvertValueTo(other.type_name()));
-		}
-	})
+	Ok(
+		match evaluate(b, scope.clone(), attrs, spans, context, int)? {
+			Value::Num(b) => Value::Num(Box::new(
+				evaluate(a, scope, attrs, spans, context, int)?
+					.expect_num()?
+					.convert_to(*b, context.decimal_separator, int)?,
+			)),
+			Value::Format(fmt) => Value::Num(Box::new(
+				evaluate(a, scope, attrs, spans, context, int)?
+					.expect_num()?
+					.with_format(fmt),
+			)),
+			Value::Dp => {
+				return Err(FendError::SpecifyNumDp);
+			}
+			Value::Sf => {
+				return Err(FendError::SpecifyNumSf);
+			}
+			Value::Base(base) => Value::Num(Box::new(
+				evaluate(a, scope, attrs, spans, context, int)?
+					.expect_num()?
+					.with_base(base),
+			)),
+			other => {
+				return Err(FendError::CannotConvertValueTo(other.type_name()));
+			}
+		},
+	)
 }
 
 pub(crate) fn resolve_identifier<I: Interrupt>(
 	ident: &Ident,
 	scope: Option<Arc<Scope>>,
 	attrs: Attrs,
+	spans: &mut Vec<Span>,
 	context: &mut crate::Context,
 	int: &I,
 ) -> FResult<Value> {
 	let cloned_scope = scope.clone();
-	if let Some(ref scope) = cloned_scope {
-		if let Some(val) = scope.get(ident, attrs, context, int)? {
-			return Ok(val);
-		}
+	if let Some(ref scope) = cloned_scope
+		&& let Some(val) = scope.get(ident, attrs, spans, context, int)?
+	{
+		return Ok(val);
 	}
 	if let Some(val) = context.variables.get(ident.as_str()) {
 		return Ok(val.clone());
 	}
 
-	let builtin_result = resolve_builtin_identifier(ident, cloned_scope, attrs, context, int);
+	let builtin_result =
+		resolve_builtin_identifier(ident, cloned_scope, attrs, spans, context, int);
 	if !matches!(builtin_result, Err(FendError::IdentifierNotFound(_))) {
 		return builtin_result;
 	}
@@ -740,6 +761,7 @@ pub(crate) fn resolve_identifier<I: Interrupt>(
 		&ident.as_str().to_ascii_lowercase().into(),
 		scope,
 		attrs,
+		spans,
 		context,
 		int,
 	);
@@ -751,6 +773,7 @@ fn resolve_builtin_identifier<I: Interrupt>(
 	ident: &Ident,
 	scope: Option<Arc<Scope>>,
 	attrs: Attrs,
+	spans: &mut Vec<Span>,
 	context: &mut crate::Context,
 	int: &I,
 ) -> FResult<Value> {
@@ -760,6 +783,7 @@ fn resolve_builtin_identifier<I: Interrupt>(
 				$input,
 				scope.clone(),
 				attrs,
+				spans,
 				context,
 				int,
 			)?)
@@ -768,15 +792,22 @@ fn resolve_builtin_identifier<I: Interrupt>(
 	Ok(match ident.as_str() {
 		"pi" | "\u{3c0}" => Value::Num(Box::new(Number::pi())),
 		"tau" | "\u{3c4}" => Value::Num(Box::new(Number::pi().mul(2.into(), int)?)),
-		"e" => evaluate_to_value("approx. 2.718281828459045235", scope, attrs, context, int)?,
-		"phi" => evaluate_to_value("(1 + sqrt(5))/2", scope, attrs, context, int)?,
+		"e" => evaluate_to_value(
+			"approx. 2718281828459045235/1000000000000000000",
+			scope,
+			attrs,
+			spans,
+			context,
+			int,
+		)?,
+		"phi" => evaluate_to_value("(1 + sqrt(5))/2", scope, attrs, spans, context, int)?,
 		"i" => Value::Num(Box::new(Number::i())),
 		"true" => Value::Bool(true),
 		"false" => Value::Bool(false),
 		"sample" | "roll" => Value::BuiltInFunction(BuiltInFunction::Sample),
 		"mean" | "average" => Value::BuiltInFunction(BuiltInFunction::Mean),
-		"sqrt" => evaluate_to_value("x: x^(1/2)", scope, attrs, context, int)?,
-		"cbrt" => evaluate_to_value("x: x^(1/3)", scope, attrs, context, int)?,
+		"sqrt" => evaluate_to_value("x: x^(1/2)", scope, attrs, spans, context, int)?,
+		"cbrt" => evaluate_to_value("x: x^(1/3)", scope, attrs, spans, context, int)?,
 		"real" | "re" | "Re" => Value::BuiltInFunction(BuiltInFunction::Real),
 		"imag" | "im" | "Im" => Value::BuiltInFunction(BuiltInFunction::Imag),
 		"conjugate" => Value::BuiltInFunction(BuiltInFunction::Conjugate),
@@ -802,6 +833,7 @@ fn resolve_builtin_identifier<I: Interrupt>(
 			"theta => cos theta + i * sin theta",
 			scope,
 			attrs,
+			spans,
 			context,
 			int,
 		)?,
@@ -810,7 +842,7 @@ fn resolve_builtin_identifier<I: Interrupt>(
 		"log" | "log10" => Value::BuiltInFunction(BuiltInFunction::Log10),
 		"not" => Value::BuiltInFunction(BuiltInFunction::Not),
 		"fib" | "fibonacci" => Value::BuiltInFunction(BuiltInFunction::Fibonacci),
-		"exp" => evaluate_to_value("x: e^x", scope, attrs, context, int)?,
+		"exp" => evaluate_to_value("x: e^x", scope, attrs, spans, context, int)?,
 		"approx." | "approximately" => Value::BuiltInFunction(BuiltInFunction::Approximately),
 		"auto" => Value::Format(FormattingStyle::Auto),
 		"exact" => Value::Format(FormattingStyle::Exact),
@@ -827,8 +859,8 @@ fn resolve_builtin_identifier<I: Interrupt>(
 		"senary" | "seximal" => Value::Base(Base::from_plain_base(6)?),
 		"oct" | "octal" => Value::Base(Base::from_plain_base(8)?),
 		"version" => Value::String(crate::get_version_as_str().into()),
-		"square" => evaluate_to_value("x: x^2", scope, attrs, context, int)?,
-		"cubic" => evaluate_to_value("x: x^3", scope, attrs, context, int)?,
+		"square" => evaluate_to_value("x: x^2", scope, attrs, spans, context, int)?,
+		"cubic" => evaluate_to_value("x: x^3", scope, attrs, spans, context, int)?,
 		"earth" => Value::Object(vec![
 			("axial_tilt".into(), eval_box!("23.4392811 degrees")),
 			("eccentricity".into(), eval_box!("0.0167086")),
@@ -837,6 +869,8 @@ fn resolve_builtin_identifier<I: Interrupt>(
 			("mass".into(), eval_box!("5.97237e24 kg")),
 			("volume".into(), eval_box!("1.08321e12 km^3")),
 		]),
+		"print" => Value::BuiltInFunction(BuiltInFunction::Print),
+		"println" => Value::BuiltInFunction(BuiltInFunction::Println),
 		"today" => Value::Date(crate::date::Date::today(context)?),
 		"tomorrow" => Value::Date(crate::date::Date::today(context)?.next()),
 		"yesterday" => Value::Date(crate::date::Date::today(context)?.prev()),

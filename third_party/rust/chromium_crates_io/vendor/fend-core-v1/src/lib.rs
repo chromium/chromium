@@ -30,6 +30,7 @@ mod ident;
 mod inline_substitutions;
 mod interrupt;
 /// This module is not meant to be used by other crates. It may change or be removed at any point.
+#[doc(hidden)]
 pub mod json;
 mod lexer;
 mod num;
@@ -42,6 +43,7 @@ mod value;
 
 use std::error::Error;
 use std::fmt::Write;
+use std::mem;
 use std::sync::Arc;
 use std::{collections::HashMap, fmt, io};
 
@@ -56,7 +58,6 @@ use serialize::{Deserialize, Serialize};
 pub struct FendResult {
 	plain_result: String,
 	span_result: Vec<Span>,
-	is_unit: bool, // is this the () type
 	attrs: eval::Attrs,
 }
 
@@ -123,18 +124,24 @@ impl FendResult {
 		})
 	}
 
-	/// Returns whether or not the result is the `()` type. It can sometimes
-	/// be useful to hide these values.
 	#[must_use]
+	#[deprecated(note = "use `output_is_empty()` instead")]
 	pub fn is_unit_type(&self) -> bool {
-		self.is_unit
+		self.output_is_empty()
+	}
+
+	/// Returns whether the output should be hidden by default. This is set
+	/// if the output would just be the unit `()` type. It's useful to hide this
+	/// by default.
+	#[must_use]
+	pub fn output_is_empty(&self) -> bool {
+		self.span_result.is_empty()
 	}
 
 	fn empty() -> Self {
 		Self {
 			plain_result: String::new(),
 			span_result: vec![],
-			is_unit: true,
 			attrs: Attrs::default(),
 		}
 	}
@@ -167,6 +174,7 @@ enum OutputMode {
 }
 
 /// An exchange rate handler.
+#[deprecated(note = "Use `ExchangeRateFnV2` instead")]
 pub trait ExchangeRateFn {
 	/// Returns the value of a currency relative to the base currency.
 	/// The base currency depends on your implementation. fend-core can work
@@ -175,12 +183,14 @@ pub trait ExchangeRateFn {
 	/// # Errors
 	/// This function errors out if the currency was not found or the
 	/// conversion is impossible for any reason (HTTP request failed, etc.)
+	#[deprecated(note = "Use `ExchangeRateFnV2::relative_to_base_currency` instead")]
 	fn relative_to_base_currency(
 		&self,
 		currency: &str,
 	) -> Result<f64, Box<dyn std::error::Error + Send + Sync + 'static>>;
 }
 
+#[allow(deprecated)]
 impl<T> ExchangeRateFn for T
 where
 	T: Fn(&str) -> Result<f64, Box<dyn std::error::Error + Send + Sync + 'static>>,
@@ -190,6 +200,73 @@ where
 		currency: &str,
 	) -> Result<f64, Box<dyn std::error::Error + Send + Sync + 'static>> {
 		self(currency)
+	}
+}
+
+/// Options passed to an exchange rate handler function
+pub struct ExchangeRateFnV2Options {
+	is_preview: bool,
+}
+
+impl ExchangeRateFnV2Options {
+	/// Whether or not this is a preview rather than a standard calculation.
+	#[must_use]
+	pub fn is_preview(&self) -> bool {
+		self.is_preview
+	}
+}
+
+/// An exchange rate handler.
+pub trait ExchangeRateFnV2 {
+	/// Returns the value of a currency relative to the base currency.
+	/// The base currency depends on your implementation. fend-core can work
+	/// with any base currency as long as it is consistent.
+	///
+	/// If `options.is_preview()` returns true, implementors are
+	/// encouraged to only return cached or pre-fetched results. Blocking the
+	/// thread for an extended period of time is not ideal if this calculation
+	/// is merely for a preview.
+	///
+	/// # Errors
+	/// This function errors out if the currency was not found or the
+	/// conversion is impossible for any reason (HTTP request failed, etc.)
+	fn relative_to_base_currency(
+		&self,
+		currency: &str,
+		options: &ExchangeRateFnV2Options,
+	) -> Result<f64, Box<dyn std::error::Error + Send + Sync + 'static>>;
+}
+
+struct ExchangeRateV1CompatWrapper {
+	#[allow(deprecated)]
+	get_exchange_rate_v1: Arc<dyn ExchangeRateFn + Send + Sync>,
+}
+
+impl ExchangeRateFnV2 for ExchangeRateV1CompatWrapper {
+	fn relative_to_base_currency(
+		&self,
+		currency: &str,
+		options: &ExchangeRateFnV2Options,
+	) -> Result<f64, Box<dyn std::error::Error + Send + Sync + 'static>> {
+		if options.is_preview {
+			return Err(FendError::NoExchangeRatesAvailable.into());
+		}
+		#[allow(deprecated)]
+		self.get_exchange_rate_v1
+			.relative_to_base_currency(currency)
+	}
+}
+
+pub mod random {
+	pub trait RandomSource: Send + Sync {
+		fn get_random_u32(&mut self) -> u32;
+	}
+
+	pub(crate) struct RandomSourceFn(pub(crate) fn() -> u32);
+	impl RandomSource for RandomSourceFn {
+		fn get_random_u32(&mut self) -> u32 {
+			(self.0)()
+		}
 	}
 }
 
@@ -228,29 +305,48 @@ impl DecimalSeparatorStyle {
 /// preserved, but you can also manually serialise all variables
 /// and recreate the context for every calculation, depending on
 /// which is easier.
-#[derive(Clone)]
 pub struct Context {
 	current_time: Option<CurrentTimeInfo>,
 	variables: HashMap<String, value::Value>,
 	fc_mode: FCMode,
-	random_u32: Option<fn() -> u32>,
+	random_u32: Option<Box<dyn random::RandomSource>>,
 	output_mode: OutputMode,
-	get_exchange_rate: Option<Arc<dyn ExchangeRateFn + Send + Sync>>,
+	echo_result: bool, // whether to automatically print the result
+	get_exchange_rate_v2: Option<Arc<dyn ExchangeRateFnV2 + Send + Sync>>,
 	custom_units: Vec<(String, String, String)>,
 	decimal_separator: DecimalSeparatorStyle,
+	is_preview: bool,
+}
+
+impl Clone for Context {
+	fn clone(&self) -> Self {
+		Self {
+			current_time: self.current_time.clone(),
+			variables: self.variables.clone(),
+			fc_mode: self.fc_mode.clone(),
+			random_u32: None,
+			output_mode: self.output_mode.clone(),
+			echo_result: self.echo_result,
+			get_exchange_rate_v2: self.get_exchange_rate_v2.clone(),
+			custom_units: self.custom_units.clone(),
+			decimal_separator: self.decimal_separator,
+			is_preview: self.is_preview,
+		}
+	}
 }
 
 impl fmt::Debug for Context {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		// we can't derive Debug because of the get_exchange_rate field
+		// we can't derive Debug because of the get_exchange_rate and random_u32 fields
 		f.debug_struct("Context")
 			.field("current_time", &self.current_time)
 			.field("variables", &self.variables)
 			.field("fc_mode", &self.fc_mode)
-			.field("random_u32", &self.random_u32)
 			.field("output_mode", &self.output_mode)
+			.field("echo_result", &self.echo_result)
 			.field("custom_units", &self.custom_units)
-			.field("decimal_separator_style", &self.decimal_separator)
+			.field("decimal_separator", &self.decimal_separator)
+			.field("is_preview", &self.is_preview)
 			.finish_non_exhaustive()
 	}
 }
@@ -271,9 +367,11 @@ impl Context {
 			fc_mode: FCMode::CelsiusFahrenheit,
 			random_u32: None,
 			output_mode: OutputMode::SimpleText,
-			get_exchange_rate: None,
+			echo_result: true,
+			get_exchange_rate_v2: None,
 			custom_units: vec![],
 			decimal_separator: DecimalSeparatorStyle::default(),
+			is_preview: false,
 		}
 	}
 
@@ -283,7 +381,7 @@ impl Context {
 	///
 	/// The first argument (`ms_since_1970`) must be the number of elapsed milliseconds
 	/// since January 1, 1970 at midnight UTC, ignoring leap seconds in the same way
-	/// as unix time.
+	/// as Unix time.
 	///
 	/// The second argument (`tz_offset_secs`) is the current time zone
 	/// offset to UTC, in seconds.
@@ -301,14 +399,26 @@ impl Context {
 		self.fc_mode = FCMode::CoulombFarad;
 	}
 
-	/// Set a random number generator
+	/// Configure random number generator using a function pointer
 	pub fn set_random_u32_fn(&mut self, random_u32: fn() -> u32) {
-		self.random_u32 = Some(random_u32);
+		self.random_u32 = Some(Box::new(random::RandomSourceFn(random_u32)));
+	}
+
+	/// Configure random number generator using a custom type
+	pub fn set_random_u32_trait(&mut self, random_u32: impl random::RandomSource + 'static) {
+		self.random_u32 = Some(Box::new(random_u32));
 	}
 
 	/// Clear the random number generator after setting it with via [`Self::set_random_u32_fn`]
 	pub fn disable_rng(&mut self) {
 		self.random_u32 = None;
+	}
+
+	/// Whether to automatically print the resulting value of this calculation.
+	/// This option is enabled by default. If disabled, only values printed
+	/// with the `print` or `println` functions will be shown in the output.
+	pub fn set_echo_result(&mut self, echo_result: bool) {
+		self.echo_result = echo_result;
 	}
 
 	/// Change the output mode to fixed-width terminal style. This enables ASCII
@@ -365,11 +475,23 @@ impl Context {
 	}
 
 	/// Set a handler function for loading exchange rates.
+	#[deprecated(note = "Use `set_exchange_rate_handler_v2` instead")]
+	#[allow(deprecated)]
 	pub fn set_exchange_rate_handler_v1<T: ExchangeRateFn + 'static + Send + Sync>(
 		&mut self,
 		get_exchange_rate: T,
 	) {
-		self.get_exchange_rate = Some(Arc::new(get_exchange_rate));
+		self.get_exchange_rate_v2 = Some(Arc::new(ExchangeRateV1CompatWrapper {
+			get_exchange_rate_v1: Arc::new(get_exchange_rate),
+		}));
+	}
+
+	/// Set a handler function for loading exchange rates.
+	pub fn set_exchange_rate_handler_v2<T: ExchangeRateFnV2 + 'static + Send + Sync>(
+		&mut self,
+		get_exchange_rate: T,
+	) {
+		self.get_exchange_rate_v2 = Some(Arc::new(get_exchange_rate));
 	}
 
 	pub fn define_custom_unit_v1(
@@ -436,7 +558,7 @@ fn evaluate_with_interrupt_internal(
 		// no or blank input: return no output
 		return Ok(FendResult::empty());
 	}
-	let (result, is_unit, attrs) = match eval::evaluate_to_spans(input, None, context, int) {
+	let (result, attrs) = match eval::evaluate_to_spans(input, None, context, int) {
 		Ok(value) => value,
 		Err(e) => {
 			let mut error: &dyn Error = &e;
@@ -455,7 +577,6 @@ fn evaluate_with_interrupt_internal(
 	Ok(FendResult {
 		plain_result,
 		span_result: result,
-		is_unit,
 		attrs,
 	})
 }
@@ -482,27 +603,27 @@ pub fn evaluate_with_interrupt(
 /// does not mutate the passed-in context, and only returns results suitable
 /// for displaying as a live preview: overly long output, multi-line output,
 /// unit types etc. are all filtered out. RNG functions (e.g. `roll d6`) are
-/// also disabled. Currency conversions (exchange rates) are disabled.
+/// also disabled.
 pub fn evaluate_preview_with_interrupt(
 	input: &str,
-	context: &mut Context,
+	context: &Context,
 	int: &impl Interrupt,
 ) -> FendResult {
 	let empty = FendResult::empty();
 	// unfortunately making a complete copy of the context is necessary
 	// because we want variables to still work in multi-statement inputs
 	// like `a = 2; 5a`.
-	let context_clone = context.clone();
-	context.random_u32 = None;
-	context.get_exchange_rate = None;
-	let result = evaluate_with_interrupt_internal(input, context, int);
-	*context = context_clone;
+	let mut context_clone = context.clone();
+	context_clone.random_u32 = None;
+	context_clone.is_preview = true;
+	let result = evaluate_with_interrupt_internal(input, &mut context_clone, int);
+	mem::drop(context_clone);
 	let Ok(result) = result else {
 		return empty;
 	};
 	let s = result.get_main_result();
 	if s.is_empty()
-		|| result.is_unit_type()
+		|| result.output_is_empty()
 		|| s.len() > 50
 		|| s.trim() == input.trim()
 		|| s.contains(|c| c < ' ')
@@ -585,25 +706,26 @@ static GREEK_UPPERCASE_LETTERS: [(&str, &str); 24] = [
 
 #[must_use]
 pub fn get_completions_for_prefix(mut prefix: &str) -> (usize, Vec<Completion>) {
-	if let Some((prefix, letter)) = prefix.rsplit_once('\\') {
-		if letter.starts_with(|c: char| c.is_ascii_alphabetic()) && letter.len() <= 7 {
-			return if letter.starts_with(|c: char| c.is_ascii_uppercase()) {
-				GREEK_UPPERCASE_LETTERS
-			} else {
-				GREEK_LOWERCASE_LETTERS
-			}
-			.iter()
-			.find(|l| l.0 == letter)
-			.map_or((0, vec![]), |l| {
-				(
-					prefix.len(),
-					vec![Completion {
-						display: prefix.to_string(),
-						insert: l.1.to_string(),
-					}],
-				)
-			});
+	if let Some((prefix, letter)) = prefix.rsplit_once('\\')
+		&& letter.starts_with(|c: char| c.is_ascii_alphabetic())
+		&& letter.len() <= 7
+	{
+		return if letter.starts_with(|c: char| c.is_ascii_uppercase()) {
+			GREEK_UPPERCASE_LETTERS
+		} else {
+			GREEK_LOWERCASE_LETTERS
 		}
+		.iter()
+		.find(|l| l.0 == letter)
+		.map_or((0, vec![]), |l| {
+			(
+				prefix.len(),
+				vec![Completion {
+					display: prefix.to_string(),
+					insert: l.1.to_string(),
+				}],
+			)
+		});
 	}
 
 	let mut prepend = "";
@@ -636,7 +758,10 @@ pub fn get_version() -> String {
 }
 
 /// Used by unit and integration tests
+#[doc(hidden)]
 pub mod test_utils {
+	use crate::ExchangeRateFnV2;
+
 	/// A simple currency handler used in unit and integration tests. Not intended
 	/// to be used outside of `fend_core`.
 	///
@@ -645,18 +770,25 @@ pub mod test_utils {
 	///
 	/// # Errors
 	/// Panics on error, so it never needs to return Err(_)
-	pub fn dummy_currency_handler(
-		currency: &str,
-	) -> Result<f64, Box<dyn std::error::Error + Send + Sync + 'static>> {
-		Ok(match currency {
-			"EUR" | "USD" => 1.0,
-			"GBP" => 0.9,
-			"NZD" => 1.5,
-			"HKD" => 8.0,
-			"AUD" => 1.3,
-			"PLN" => 0.2,
-			"JPY" => 149.9,
-			_ => panic!("unknown currency {currency}"),
-		})
+	#[doc(hidden)]
+	pub struct DummyCurrencyHandler;
+
+	impl ExchangeRateFnV2 for DummyCurrencyHandler {
+		fn relative_to_base_currency(
+			&self,
+			currency: &str,
+			_options: &crate::ExchangeRateFnV2Options,
+		) -> Result<f64, Box<dyn std::error::Error + Send + Sync + 'static>> {
+			Ok(match currency {
+				"EUR" | "USD" => 1.0,
+				"GBP" => 0.9,
+				"NZD" => 1.5,
+				"HKD" => 8.0,
+				"AUD" => 1.3,
+				"PLN" => 0.2,
+				"JPY" => 149.9,
+				_ => panic!("unknown currency {currency}"),
+			})
+		}
 	}
 }

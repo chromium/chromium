@@ -189,7 +189,7 @@ impl Real {
 				}
 				if let Ok(integer) = n.clone().mul(&6.into(), int)?.try_as_usize(int) {
 					// values from https://en.wikipedia.org/wiki/Exact_trigonometric_values
-					if integer % 6 == 0 {
+					if integer.is_multiple_of(6) {
 						return Ok(Exact::new(Self::from(0), true));
 					} else if integer % 12 == 3 {
 						return Ok(Exact::new(Self::from(1), true));
@@ -298,10 +298,11 @@ impl Real {
 		int: &I,
 	) -> FResult<Exact<Formatted>> {
 		let mut pi = false;
-		if style == FormattingStyle::Exact && !self.is_zero() {
-			if let Pattern::Pi(_) = self.pattern {
-				pi = true;
-			}
+		if style == FormattingStyle::Exact
+			&& !self.is_zero()
+			&& let Pattern::Pi(_) = self.pattern
+		{
+			pi = true;
 		}
 
 		let term = match (imag, pi) {
@@ -353,17 +354,17 @@ impl Real {
 
 	pub(crate) fn pow<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Exact<Self>> {
 		// x^1 == x
-		if let Pattern::Simple(n) = &rhs.pattern {
-			if n == &1.into() {
-				return Ok(Exact::new(self, true));
-			}
+		if let Pattern::Simple(n) = &rhs.pattern
+			&& n == &1.into()
+		{
+			return Ok(Exact::new(self, true));
 		}
 
 		// 1^x == 1
-		if let Pattern::Simple(n) = &self.pattern {
-			if n == &1.into() {
-				return Ok(Exact::new(1.into(), true));
-			}
+		if let Pattern::Simple(n) = &self.pattern
+			&& n == &1.into()
+		{
+			return Ok(Exact::new(1.into(), true));
 		}
 
 		if let (Pattern::Simple(a), Pattern::Simple(b)) =

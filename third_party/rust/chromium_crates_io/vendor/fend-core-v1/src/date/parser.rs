@@ -58,10 +58,10 @@ fn parse_yyyymmdd(s: &str) -> Result<(Date, &str), ()> {
 
 pub(crate) fn parse_date(s: &str) -> FResult<Date> {
 	let trimmed = s.trim();
-	if let Ok((date, remaining)) = parse_yyyymmdd(trimmed) {
-		if remaining.is_empty() {
-			return Ok(date);
-		}
+	if let Ok((date, remaining)) = parse_yyyymmdd(trimmed)
+		&& remaining.is_empty()
+	{
+		return Ok(date);
 	}
 	Err(FendError::ParseDateError(s.to_string()))
 }
