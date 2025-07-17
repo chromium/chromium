@@ -442,11 +442,15 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     const GLFormatCaps& gl_format_caps,
     bool is_back_buffer) {
   DCHECK(format.is_single_plane());
-  return base::WrapUnique(new D3DImageBacking(
+  auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       "SwapChainBuffer", std::move(d3d11_texture),
       /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
-      /*array_slice=*/0u, std::move(swap_chain), is_back_buffer));
+      /*array_slice=*/0u));
+  backing->swap_chain_ = std::move(swap_chain);
+  backing->is_back_buffer_ = is_back_buffer;
+
+  return backing;
 }
 
 // static
@@ -487,8 +491,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
       std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
-      array_slice, /*swap_chain=*/nullptr,
-      /*is_back_buffer=*/false, use_update_subresource1, want_dcomp_texture,
+      array_slice, use_update_subresource1, want_dcomp_texture,
       is_thread_safe));
   return backing;
 }
@@ -507,8 +510,6 @@ D3DImageBacking::D3DImageBacking(
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    bool is_back_buffer,
     bool use_update_subresource1,
     bool want_dcomp_texture,
     bool is_thread_safe)
@@ -532,8 +533,6 @@ D3DImageBacking::D3DImageBacking(
       gl_format_caps_(gl_format_caps),
       texture_target_(texture_target),
       array_slice_(array_slice),
-      swap_chain_(std::move(swap_chain)),
-      is_back_buffer_(is_back_buffer),
       use_update_subresource1_(use_update_subresource1),
       angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()),
       dawn_shared_texture_cache_(
@@ -563,7 +562,6 @@ D3DImageBacking::D3DImageBacking(
       d3d12_resource_(std::move(d3d12_resource)),
       texture_target_(0),
       array_slice_(0),
-      is_back_buffer_(false),
       use_update_subresource1_(false),
       dawn_shared_texture_cache_(
           base::MakeRefCounted<DawnSharedTextureCache>()) {}

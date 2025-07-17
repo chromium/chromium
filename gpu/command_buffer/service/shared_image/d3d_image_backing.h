@@ -248,8 +248,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   const GLFormatCaps& gl_format_caps,
                   GLenum texture_target = GL_TEXTURE_2D,
                   size_t array_slice = 0u,
-                  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
-                  bool is_back_buffer = false,
                   bool use_update_subresource1 = false,
                   bool want_dcomp_texture = false,
                   bool is_thread_safe = false);
@@ -381,10 +379,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   const size_t array_slice_;
 
   // Swap chain corresponding to this backing.
-  const Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
 
   // Set if this backing corresponds to the back buffer of |swap_chain_|.
-  const bool is_back_buffer_;
+  bool is_back_buffer_ = false;
 
   // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
   const bool use_update_subresource1_;
