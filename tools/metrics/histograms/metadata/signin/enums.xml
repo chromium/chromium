@@ -666,6 +666,14 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Token binding challenge success"/>
 </enum>
 
+<!-- LINT.IfChange(OAuthConsumerId) -->
+
+<enum name="OAuthConsumerId">
+  <int value="0" label="Sync"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->
+
 <!-- LINT.IfChange(OAuthMultiloginResponseStatus) -->
 
 <enum name="OAuthMultiloginResponseStatus">

@@ -13,6 +13,7 @@
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
+#include "components/signin/internal/identity_manager/oauth_consumer_registry.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
@@ -191,6 +192,32 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
       std::move(callback), mode, require_sync_consent_for_scope_verification_);
 }
 
+std::unique_ptr<AccessTokenFetcher>
+IdentityManager::CreateAccessTokenFetcherForAccount(
+    const CoreAccountId& account_id,
+    OAuthConsumerId oauth_consumer_id,
+    AccessTokenFetcher::TokenCallback callback,
+    AccessTokenFetcher::Mode mode,
+    AccessTokenFetcher::Source token_source) {
+  return std::make_unique<AccessTokenFetcher>(
+      account_id, oauth_consumer_id, token_service_.get(),
+      primary_account_manager_.get(), std::move(callback), mode,
+      require_sync_consent_for_scope_verification_, token_source);
+}
+
+std::unique_ptr<AccessTokenFetcher>
+IdentityManager::CreateAccessTokenFetcherForAccount(
+    const CoreAccountId& account_id,
+    OAuthConsumerId oauth_consumer_id,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    AccessTokenFetcher::TokenCallback callback,
+    AccessTokenFetcher::Mode mode) {
+  return std::make_unique<AccessTokenFetcher>(
+      account_id, oauth_consumer_id, token_service_.get(),
+      primary_account_manager_.get(), url_loader_factory, std::move(callback),
+      mode, require_sync_consent_for_scope_verification_);
+}
+
 #if BUILDFLAG(IS_IOS)
 void IdentityManager::GetRefreshTokenFromDevice(
     const CoreAccountId& account_id,
@@ -205,6 +232,14 @@ void IdentityManager::RemoveAccessTokenFromCache(
     const CoreAccountId& account_id,
     const ScopeSet& scopes,
     const std::string& access_token) {
+  token_service_->InvalidateAccessToken(account_id, scopes, access_token);
+}
+
+void IdentityManager::RemoveAccessTokenFromCache(
+    const CoreAccountId& account_id,
+    OAuthConsumerId oauth_consumer_id,
+    const std::string& access_token) {
+  ScopeSet scopes = GetOAuthConsumerFromId(oauth_consumer_id).GetScopes();
   token_service_->InvalidateAccessToken(account_id, scopes, access_token);
 }
 

@@ -35,6 +35,7 @@ source_set("identity_manager") {
     "identity_utils.cc",
     "identity_utils.h",
     "load_credentials_state.h",
+    "oauth_consumer_ids.h",
     "primary_account_access_token_fetcher.cc",
     "primary_account_access_token_fetcher.h",
     "primary_account_change_event.cc",

@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/scope_set.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -19,8 +19,6 @@
 namespace syncer {
 
 namespace {
-
-constexpr char kSyncOAuthConsumerName[] = "sync";
 
 constexpr net::BackoffEntry::Policy
     kIgnoreFirstErrorRequestAccessTokenBackoffPolicy = {
@@ -253,8 +251,8 @@ void SyncAuthManager::InvalidateAccessToken() {
   }
 
   identity_manager_->RemoveAccessTokenFromCache(
-      sync_account_.account_info.account_id,
-      signin::ScopeSet{GaiaConstants::kChromeSyncOAuth2Scope}, access_token_);
+      sync_account_.account_info.account_id, signin::OAuthConsumerId::kSync,
+      access_token_);
 
   access_token_.clear();
   delegate_->SyncAuthCredentialsChanged();
@@ -481,8 +479,7 @@ void SyncAuthManager::RequestAccessToken() {
   partial_token_status_.token_response_time = base::Time();
   ongoing_access_token_fetch_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          sync_account_.account_info.account_id, kSyncOAuthConsumerName,
-          {GaiaConstants::kChromeSyncOAuth2Scope},
+          sync_account_.account_info.account_id, signin::OAuthConsumerId::kSync,
           base::BindOnce(&SyncAuthManager::AccessTokenFetched,
                          base::Unretained(this)),
           signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);

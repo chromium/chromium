@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/signin/public/base/consent_level.h"
@@ -15,6 +16,37 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+// LINT.IfChange(ErrorToString)
+std::string ErrorToString(GoogleServiceAuthError::State error_state) {
+  switch (error_state) {
+    case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
+      return "InvalidGaiaCredentials";
+    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
+      return "UserNotSignedUp";
+    case GoogleServiceAuthError::CONNECTION_FAILED:
+      return "ConnectionFailed";
+    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
+      return "ServiceUnavailable";
+    case GoogleServiceAuthError::REQUEST_CANCELED:
+      return "RequestCanceled";
+    case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
+      return "UnexpectedServiceResponse";
+    case GoogleServiceAuthError::SERVICE_ERROR:
+      return "ServiceError";
+    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+      return "ScopeLimitedUnrecoverableError";
+    case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
+      return "ChallengeResponseRequired";
+    default:
+      NOTREACHED() << "Unexpected error state: " << error_state;
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:AccessTokenFetchFailureError)
+
+}  // namespace
 
 namespace signin {
 
@@ -79,6 +111,68 @@ AccessTokenFetcher::AccessTokenFetcher(
   // when this object is destroyed.
   token_service_observation_.Observe(token_service_.get());
 }
+
+AccessTokenFetcher::AccessTokenFetcher(
+    const CoreAccountId& account_id,
+    OAuthConsumerId oauth_consumer_id,
+    ProfileOAuth2TokenService* token_service,
+    PrimaryAccountManager* primary_account_manager,
+    TokenCallback callback,
+    Mode mode,
+    bool require_sync_consent_for_scope_verification,
+    Source token_source)
+    : AccessTokenFetcher(account_id,
+                         oauth_consumer_id,
+                         token_service,
+                         primary_account_manager,
+                         /*url_loader_factory=*/nullptr,
+                         std::move(callback),
+                         mode,
+                         require_sync_consent_for_scope_verification,
+                         token_source) {}
+
+AccessTokenFetcher::AccessTokenFetcher(
+    const CoreAccountId& account_id,
+    OAuthConsumerId oauth_consumer_id,
+    ProfileOAuth2TokenService* token_service,
+    PrimaryAccountManager* primary_account_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    TokenCallback callback,
+    Mode mode,
+    bool require_sync_consent_for_scope_verification,
+    Source token_source)
+    : AccessTokenFetcher(account_id,
+                         GetOAuthConsumerFromId(oauth_consumer_id),
+                         token_service,
+                         primary_account_manager,
+                         url_loader_factory,
+                         std::move(callback),
+                         mode,
+                         require_sync_consent_for_scope_verification,
+                         token_source) {
+  oauth_consumer_id_ = oauth_consumer_id;
+}
+
+AccessTokenFetcher::AccessTokenFetcher(
+    const CoreAccountId& account_id,
+    const OAuthConsumer& oauth_consumer,
+    ProfileOAuth2TokenService* token_service,
+    PrimaryAccountManager* primary_account_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    TokenCallback callback,
+    Mode mode,
+    bool require_sync_consent_for_scope_verification,
+    Source token_source)
+    : AccessTokenFetcher(account_id,
+                         oauth_consumer.GetName(),
+                         token_service,
+                         primary_account_manager,
+                         url_loader_factory,
+                         oauth_consumer.GetScopes(),
+                         std::move(callback),
+                         mode,
+                         require_sync_consent_for_scope_verification,
+                         token_source) {}
 
 AccessTokenFetcher::~AccessTokenFetcher() = default;
 
@@ -219,6 +313,10 @@ void AccessTokenFetcher::OnGetTokenSuccess(
   std::unique_ptr<OAuth2AccessTokenManager::Request> request_deleter(
       std::move(access_token_request_));
 
+  if (oauth_consumer_id_.has_value()) {
+    base::UmaHistogramEnumeration("Signin.AccessTokenFetch.Success",
+                                  oauth_consumer_id_.value());
+  }
   RunCallbackAndMaybeDie(
       GoogleServiceAuthError::AuthErrorNone(),
       AccessTokenInfo(token_response.access_token,
@@ -234,6 +332,13 @@ void AccessTokenFetcher::OnGetTokenFailure(
   std::unique_ptr<OAuth2AccessTokenManager::Request> request_deleter(
       std::move(access_token_request_));
 
+  if (oauth_consumer_id_.has_value()) {
+    CHECK(error.state() != GoogleServiceAuthError::NONE);
+    std::string error_str = ErrorToString(error.state());
+    base::UmaHistogramEnumeration(
+        "Signin.AccessTokenFetch.Failure." + error_str,
+        oauth_consumer_id_.value());
+  }
   RunCallbackAndMaybeDie(error, AccessTokenInfo());
 
   // Potentially dead after the above invocation; nothing to do except return.
