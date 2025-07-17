@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -113,6 +114,7 @@ public class TabContextMenuItemDelegateTest {
                     mContextMenuDelegate =
                             new TabContextMenuItemDelegate(
                                     cta,
+                                    ActivityType.TABBED,
                                     tab,
                                     tabModelSelector,
                                     ephemeralTabCoordinatorSupplier,

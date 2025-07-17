@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.download.ChromeDownloadDelegate;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -67,6 +68,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final Activity mActivity;
+    private final @ActivityType int mActivityType;
     private final TabImpl mTab;
     private final TabModelSelector mTabModelSelector;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
@@ -77,6 +79,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     /** Builds a {@link TabContextMenuItemDelegate} instance. */
     public TabContextMenuItemDelegate(
             Activity activity,
+            @ActivityType int activityType,
             Tab tab,
             TabModelSelector tabModelSelector,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
@@ -84,6 +87,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             Supplier<SnackbarManager> snackbarManagerSupplier,
             Supplier<BottomSheetController> bottomSheetControllerSupplier) {
         mActivity = activity;
+        mActivityType = activityType;
         mTab = (TabImpl) tab;
         mTabModelSelector = tabModelSelector;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
@@ -386,7 +390,13 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         }
         mEphemeralTabCoordinatorSupplier
                 .get()
-                .requestOpenSheet(url, null, title, mTab.getProfile());
+                .requestOpenSheet(
+                        url,
+                        null,
+                        title,
+                        mTab.getProfile(),
+                        mActivityType == ActivityType.TABBED
+                                || mActivityType == ActivityType.CUSTOM_TAB);
     }
 
     /**

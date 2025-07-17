@@ -57,7 +57,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final Supplier<TabCreator> mTabCreator;
     private final BottomSheetController mBottomSheetController;
     private final EphemeralTabMediator mMediator;
-    private final boolean mCanPromoteToNewTab;
+    private boolean mCanPromoteToNewTab;
 
     private @Nullable WebContents mWebContents;
     private @Nullable ContentView mContentView;
@@ -79,7 +79,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param tabProvider Provider of the current activity tab.
      * @param tabCreator Supplier for {@link TabCreator} handling a new tab creation.
      * @param bottomSheetController {@link BottomSheetController} as the container of the tab.
-     * @param canPromoteToNewTab Whether the tab can be promoted to a normal tab.
      */
     public EphemeralTabCoordinator(
             Context context,
@@ -87,15 +86,13 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             View layoutView,
             Supplier<Tab> tabProvider,
             Supplier<TabCreator> tabCreator,
-            BottomSheetController bottomSheetController,
-            boolean canPromoteToNewTab) {
+            BottomSheetController bottomSheetController) {
         mContext = context;
         mWindow = window;
         mLayoutView = layoutView;
         mTabProvider = tabProvider;
         mTabCreator = tabCreator;
         mBottomSheetController = bottomSheetController;
-        mCanPromoteToNewTab = canPromoteToNewTab;
 
         float topControlsHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
@@ -139,11 +136,17 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      *     page.
      * @param title The title to be shown.
      * @param profile Profile associated with the ephemeral tab.
+     * @param canPromoteToNewTab Whether the tab can be promoted to a normal tab.
      */
     public void requestOpenSheet(
-            GURL url, @Nullable GURL fullPageUrl, String title, Profile profile) {
+            GURL url,
+            @Nullable GURL fullPageUrl,
+            String title,
+            Profile profile,
+            boolean canPromoteToNewTab) {
         mUrl = url;
         mFullPageUrl = fullPageUrl;
+        mCanPromoteToNewTab = canPromoteToNewTab;
         if (mWebContents == null) {
             assert mSheetContent == null;
             createWebContents(profile);

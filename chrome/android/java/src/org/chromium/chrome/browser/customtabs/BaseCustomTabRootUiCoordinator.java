@@ -511,11 +511,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    protected boolean canPreviewPromoteToTab() {
-        return mActivityType == ActivityType.CUSTOM_TAB;
-    }
-
-    @Override
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
 

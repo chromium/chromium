@@ -495,6 +495,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         return new TabContextMenuItemDelegate(
                 mActivity,
+                mActivityType,
                 tab,
                 tabModelSelector,
                 mEphemeralTabCoordinatorSupplier,

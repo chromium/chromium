@@ -918,8 +918,7 @@ public class RootUiCoordinator
                             mActivity.getWindow().getDecorView(),
                             mActivityTabProvider,
                             tabCreator,
-                            getBottomSheetController(),
-                            canPreviewPromoteToTab()));
+                            getBottomSheetController()));
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
@@ -964,11 +963,6 @@ public class RootUiCoordinator
                             mCompositorViewHolderSupplier.get(),
                             mBackPressManager);
         }
-    }
-
-    /** Preview Tab can be promoted to a normal tab by default. */
-    protected boolean canPreviewPromoteToTab() {
-        return true;
     }
 
     protected boolean isContextualSearchEnabled() {

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
@@ -166,6 +167,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         return new ChromeContextMenuPopulatorFactory(
                 new TabContextMenuItemDelegate(
                         mActivity,
+                        ActivityType.TABBED,
                         tab,
                         mTabModelSelectorSupplier.get(),
                         mEphemeralTabCoordinatorSupplier,
