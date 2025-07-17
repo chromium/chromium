@@ -9,10 +9,11 @@
 
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/optimization_guide/core/delivery/profile_download_service_tracker.h"
+
+class ProfileManager;
 
 namespace optimization_guide {
 

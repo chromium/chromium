@@ -8,6 +8,7 @@
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/download/public/background_service/background_download_service.h"
 
 namespace optimization_guide {
