@@ -370,7 +370,7 @@ public class ContextualSearchPanel extends OverlayPanel {
                     && isCoordinateInsideActionTarget(x)) {
                 getSearchBarControl()
                         .getQuickActionControl()
-                        .sendIntent(getCurrentTabSupplier().get());
+                        .sendIntent(assumeNonNull(getCurrentTabSupplier().get()));
             } else {
                 // super takes care of expanding the Panel when peeking.
                 super.handleBarClick(x, y);

@@ -90,7 +90,7 @@ public class ViewResourceInflater {
             int viewId,
             Context context,
             @Nullable ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable DynamicResourceLoader resourceLoader) {
         mLayoutId = layoutId;
         mViewId = viewId;
         mContext = context;

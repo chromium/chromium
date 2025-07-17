@@ -53,8 +53,8 @@ public class ContextualSearchCalloutControl extends OverlayPanelInflater {
     public ContextualSearchCalloutControl(
             ContextualSearchPanel panel,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader,
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader,
             CalloutListener listener) {
         super(
                 panel,

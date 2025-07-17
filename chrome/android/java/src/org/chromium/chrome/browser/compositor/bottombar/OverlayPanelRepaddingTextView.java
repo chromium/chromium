@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -47,8 +48,8 @@ public abstract class OverlayPanelRepaddingTextView extends OverlayPanelInflater
             int layoutResource,
             int layoutId,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader,
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader,
             int peekedDimension,
             int expandedDimension) {
         super(panel, layoutResource, layoutId, context, container, resourceLoader);

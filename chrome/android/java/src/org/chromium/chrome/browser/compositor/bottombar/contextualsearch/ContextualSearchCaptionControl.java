@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
@@ -23,18 +27,16 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * Controls the Caption View that is shown at the bottom of the {@link ContextualSearchBarControl}
  * and used as a dynamic resource.
  */
+@NullMarked
 public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater {
     private static final float ANIMATION_PERCENTAGE_ZERO = 0.f;
     private static final float ANIMATION_PERCENTAGE_COMPLETE = 1.f;
 
     /** The caption View. */
-    private TextView mCaption;
+    private @Nullable TextView mCaption;
 
     /** Whether there is a caption when the Bar is peeking. */
     private boolean mHasPeekingCaption;
-
-    /** Whether the caption for the expanded Bar is showing. */
-    private boolean mShowingExpandedCaption;
 
     /** The caption visibility. */
     private boolean mIsVisible;
@@ -47,7 +49,7 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
     private float mAnimationPercentage = ANIMATION_PERCENTAGE_ZERO;
 
     /** The animator responsible for transitioning the caption. */
-    private CompositorAnimator mTransitionAnimator;
+    private @Nullable CompositorAnimator mTransitionAnimator;
 
     /**
      * Whether a new snapshot has been captured by the system yet - this is false when we have
@@ -64,8 +66,8 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
     public ContextualSearchCaptionControl(
             ContextualSearchPanel panel,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader) {
         super(
                 panel,
                 R.layout.contextual_search_caption_view,
@@ -83,16 +85,14 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      * @param caption The string displayed as a caption to help explain results, e.g. a Quick
      *     Answer.
      */
-    public void setCaption(String caption) {
+    public void setCaption(@Nullable String caption) {
         mHasPeekingCaption = true;
-
-        if (mShowingExpandedCaption) return;
 
         mDidCapture = false;
 
         inflate();
 
-        mCaption.setText(sanitizeText(caption));
+        assumeNonNull(mCaption).setText(sanitizeText(caption));
 
         invalidate();
         show();
@@ -150,7 +150,7 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      * @return The text currently showing in the caption view.
      */
     public CharSequence getCaptionText() {
-        return mCaption.getText();
+        return assumeNonNull(mCaption).getText();
     }
 
     /** @return whether there's already a visible caption. */
@@ -163,7 +163,7 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      */
     @Px
     int getTextViewHeight() {
-        return getIsVisible() ? mCaption.getHeight() : 0;
+        return getIsVisible() ? assumeNonNull(mCaption).getHeight() : 0;
     }
 
     // ========================================================================================
@@ -171,7 +171,7 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
     // ========================================================================================
 
     @Override
-    protected TextView getTextView() {
+    protected @Nullable TextView getTextView() {
         return mCaption;
     }
 
@@ -183,7 +183,7 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        View view = getView();
+        View view = assumeNonNull(getView());
         mCaption = view.findViewById(R.id.contextual_search_caption);
     }
 

@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
@@ -40,6 +43,7 @@ import java.util.List;
  * TODO(donnd): consider further extracting the common pattern used for this class
  * and the Help and Promo classes.
  */
+@NullMarked
 public class RelatedSearchesControl {
     private static final int INVALID_VIEW_ID = 0;
     private static final int NO_SELECTED_CHIP = -1;
@@ -54,10 +58,10 @@ public class RelatedSearchesControl {
     private final Context mContext;
 
     /** The container View used to inflate the View. */
-    private final ViewGroup mViewContainer;
+    private final @Nullable ViewGroup mViewContainer;
 
     /** The resource loader that will handle the snapshot capturing. */
-    private final DynamicResourceLoader mResourceLoader;
+    private final @Nullable DynamicResourceLoader mResourceLoader;
 
     private final OverlayPanel mOverlayPanel;
 
@@ -71,7 +75,7 @@ public class RelatedSearchesControl {
      * The inflated View, or {@code null} if the associated Feature is not enabled,
      * or {@link #destroy} has been called.
      */
-    @Nullable private RelatedSearchesControlView mControlView;
+    private @Nullable RelatedSearchesControlView mControlView;
 
     /** The query suggestions for this feature, or {@code null} if we don't have any. */
     private @Nullable List<String> mRelatedSearchesSuggestions;
@@ -117,8 +121,8 @@ public class RelatedSearchesControl {
             OverlayPanel panel,
             RelatedSearchesSectionHost panelSectionHost,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader) {
         mContext = context;
         mViewContainer = container;
         mResourceLoader = resourceLoader;
@@ -247,8 +251,7 @@ public class RelatedSearchesControl {
     }
 
     @VisibleForTesting
-    @Nullable
-    List<String> getRelatedSearchesSuggestions() {
+    @Nullable List<String> getRelatedSearchesSuggestions() {
         return mRelatedSearchesSuggestions;
     }
 
@@ -261,7 +264,7 @@ public class RelatedSearchesControl {
     }
 
     public ModelList getChipsForTest() {
-        return mControlView.getChipsForTest(); // IN-TEST
+        return assumeNonNull(mControlView).getChipsForTest(); // IN-TEST
     }
 
     public int getSelectedChipForTest() {
@@ -461,7 +464,7 @@ public class RelatedSearchesControl {
                 suggestionIndex >= INDEX_OF_THE_FIRST_RELATED_SEARCHES;
         ContextualSearchUma.logAllSearches(isRelatedSearchesSuggestion);
 
-        mControlView.smoothScrollToPosition(suggestionIndex);
+        assumeNonNull(mControlView).smoothScrollToPosition(suggestionIndex);
     }
 
     // ============================================================================================
@@ -471,7 +474,9 @@ public class RelatedSearchesControl {
     public void updateChips() {
         Callback<PropertyModel> selectedCallback = (model) -> handleChipTapped(model);
 
-        if (mChips.size() == 0 && hasReleatedSearchesToShow()) {
+        if (mChips.size() == 0
+                && hasReleatedSearchesToShow()
+                && mRelatedSearchesSuggestions != null) {
             for (String suggestion : mRelatedSearchesSuggestions) {
                 final int index = mChips.size();
                 ListItem chip =
@@ -529,8 +534,8 @@ public class RelatedSearchesControl {
         RelatedSearchesControlView(
                 OverlayPanel panel,
                 Context context,
-                ViewGroup container,
-                DynamicResourceLoader resourceLoader,
+                @Nullable ViewGroup container,
+                @Nullable DynamicResourceLoader resourceLoader,
                 int layoutId,
                 int viewId,
                 int controlId) {
@@ -591,7 +596,7 @@ public class RelatedSearchesControl {
         }
 
         /** Returns the view for this control. */
-        View getControlView() {
+        @Nullable View getControlView() {
             View view = getView();
             if (view == null) return null;
 
@@ -599,7 +604,7 @@ public class RelatedSearchesControl {
         }
 
         @Override
-        public View getView() {
+        public @Nullable View getView() {
             return super.getView();
         }
 
@@ -631,7 +636,8 @@ public class RelatedSearchesControl {
             RecyclerView recyclerView = (RecyclerView) mChipsCoordinator.getView();
             LinearLayoutManager layoutManager =
                     (LinearLayoutManager) recyclerView.getLayoutManager();
-            int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+            int lastVisibleItemPosition =
+                    assumeNonNull(layoutManager).findLastVisibleItemPosition();
             if (lastVisibleItemPosition != RecyclerView.NO_POSITION) {
                 RelatedSearchesUma.logCarouselLastVisibleItemPosition(lastVisibleItemPosition);
             }

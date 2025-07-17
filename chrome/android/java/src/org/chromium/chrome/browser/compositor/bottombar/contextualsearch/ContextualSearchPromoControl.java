@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -15,6 +17,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
@@ -36,6 +40,7 @@ import org.chromium.ui.text.SpanApplier;
  * Controls the Contextual Search Opt-in/out privacy Promo that shows within the Panel just below
  * the Bar for users that have not yet accepted or declined our privacy policy.
  */
+@NullMarked
 public class ContextualSearchPromoControl extends OverlayPanelInflater {
     // The percentage that inicates we've reached full size (for this mode) and are now stationary.
     private static final float STATIONARY_PERCENTAGE = 1.0f;
@@ -85,8 +90,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
             OverlayPanel panel,
             ContextualSearchPromoHost host,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader) {
         super(
                 panel,
                 R.layout.contextual_search_promo_view,
@@ -314,7 +319,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        View view = getView();
+        View view = assumeNonNull(getView());
 
         // "Allow" button.
         Button allowButton = view.findViewById(R.id.contextual_search_allow_button);
@@ -376,7 +381,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
                                 SettingsNavigation settingsNavigation =
                                         SettingsNavigationFactory.createSettingsNavigation();
                                 settingsNavigation.startSettings(
-                                        getContext(), ContextualSearchSettingsFragment.class);
+                                        assumeNonNull(getContext()),
+                                        ContextualSearchSettingsFragment.class);
                             }
                         });
     }

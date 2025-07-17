@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchHeuristics;
@@ -18,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
  * ContextualSearchPanel}. Typically this consists of tracking user activity logging that to UMA
  * when the interaction ends as the panel is dismissed.
  */
+@NullMarked
 public class ContextualSearchPanelMetrics {
     private boolean mWasSearchContentViewSeen;
     private boolean mIsPromoActive;
@@ -33,7 +36,7 @@ public class ContextualSearchPanelMetrics {
     // Used to log total time the panel is showing (not closed).
     private long mFirstPeekTimeNs;
     // The current set of heuristics that should be logged with results seen when the panel closes.
-    private ContextualSearchHeuristics mResultsSeenExperiments;
+    private @Nullable ContextualSearchHeuristics mResultsSeenExperiments;
 
     /** Whether the Search was prefetched or not. */
     private boolean mWasPrefetch;

@@ -40,8 +40,8 @@ public abstract class OverlayPanelInflater extends ViewResourceInflater {
             int layoutId,
             int viewId,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader) {
         super(layoutId, viewId, context, container, resourceLoader);
 
         mOverlayPanel = panel;
@@ -66,7 +66,7 @@ public abstract class OverlayPanelInflater extends ViewResourceInflater {
      * @param text The text to be sanitized.
      * @return The sanitized text.
      */
-    public static @Nullable String sanitizeText(String text) {
+    public static @Nullable String sanitizeText(@Nullable String text) {
         if (text == null) return null;
         return text.replace(OBJ_CHARACTER, " ").trim();
     }

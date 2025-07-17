@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -48,8 +49,8 @@ public abstract class OverlayPanelTextViewInflater extends OverlayPanelRepadding
             int layoutId,
             int viewId,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader,
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader,
             int peekedDimension,
             int expandedDimension) {
         super(
@@ -88,7 +89,7 @@ public abstract class OverlayPanelTextViewInflater extends OverlayPanelRepadding
      * Subclasses must override to return the {@link TextView} once it's inflated.
      * @return The {@link TextView} or {@code null} if not yet inflated.
      */
-    protected abstract TextView getTextView();
+    protected abstract @Nullable TextView getTextView();
 
     // ========================================================================================
     // OverlayPanelInflater overrides

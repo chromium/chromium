@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.text.TextUtils;
@@ -10,6 +12,8 @@ import android.view.animation.Interpolator;
 
 import androidx.core.view.animation.PathInterpolatorCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -18,6 +22,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
  * Controls the image shown in the {@link ContextualSearchBarControl}. Owns animating between the
  * search provider icon and custom image (either a thumbnail or card icon) for the current query.
  */
+@NullMarked
 public class ContextualSearchImageControl {
 
     interface ImageListener {
@@ -96,7 +101,7 @@ public class ContextualSearchImageControl {
     // ============================================================================================
 
     /** The URL of the thumbnail to display. */
-    private String mThumbnailUrl;
+    private @Nullable String mThumbnailUrl;
 
     /** Whether the thumbnail is visible. */
     private boolean mThumbnailVisible;
@@ -202,9 +207,9 @@ public class ContextualSearchImageControl {
     // Thumbnail Animation
     // ============================================================================================
 
-    private CompositorAnimator mImageVisibilityAnimator;
+    private @Nullable CompositorAnimator mImageVisibilityAnimator;
 
-    private Interpolator mCustomImageVisibilityInterpolator;
+    private @Nullable Interpolator mCustomImageVisibilityInterpolator;
 
     private void animateCustomImageVisibility(boolean visible) {
         // If the panel is expanded then #onUpdateFromPeekToExpand() is responsible for setting
@@ -234,7 +239,7 @@ public class ContextualSearchImageControl {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         if (mCustomImageVisibilityPercentage == 0.f) onCustomImageHidden();
-                        mImageVisibilityAnimator.removeAllListeners();
+                        assumeNonNull(mImageVisibilityAnimator).removeAllListeners();
                         mImageVisibilityAnimator = null;
                     }
                 });

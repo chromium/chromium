@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.ViewResourceInflater;
@@ -33,7 +34,8 @@ public class ContextualSearchCardIconControl extends ViewResourceInflater {
      * @param context The Android Context used to inflate the View.
      * @param resourceLoader The resource loader that will handle the snapshot capturing.
      */
-    public ContextualSearchCardIconControl(Context context, DynamicResourceLoader resourceLoader) {
+    public ContextualSearchCardIconControl(
+            Context context, @Nullable DynamicResourceLoader resourceLoader) {
         super(
                 R.layout.contextual_search_card_icon_view,
                 R.id.contextual_search_card_icon_view,

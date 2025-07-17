@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
@@ -27,9 +31,10 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * control. If there's no access to page context then the selection is the Search Term.
  * <p>This is used as a dynamic resource within the {@link ContextualSearchBarControl}.
  */
+@NullMarked
 public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
     /** The search term View. */
-    private TextView mSearchTerm;
+    private @Nullable TextView mSearchTerm;
 
     /**
      * @param panel             The panel.
@@ -40,8 +45,8 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
     public ContextualSearchTermControl(
             OverlayPanel panel,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader) {
         super(
                 panel,
                 R.layout.contextual_search_term_view,
@@ -60,7 +65,7 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
     public void setSearchTerm(String searchTerm) {
         inflate();
 
-        mSearchTerm.setText(sanitizeText(searchTerm));
+        assumeNonNull(mSearchTerm).setText(sanitizeText(searchTerm));
 
         invalidate();
     }
@@ -79,7 +84,7 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        View view = getView();
+        View view = assumeNonNull(getView());
         mSearchTerm = view.findViewById(R.id.contextual_search_term);
     }
 
@@ -88,7 +93,7 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
     // ========================================================================================
 
     @Override
-    protected TextView getTextView() {
+    protected @Nullable TextView getTextView() {
         return mSearchTerm;
     }
 }
