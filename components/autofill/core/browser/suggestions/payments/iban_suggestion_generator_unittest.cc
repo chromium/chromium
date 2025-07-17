@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_iban_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -112,7 +113,7 @@ class IbanSuggestionGeneratorTest : public testing::Test,
 
   // Get an IBAN suggestion with the given `iban`.
   Suggestion GetSuggestionForIban(const Iban& iban) {
-    Suggestion iban_suggestion;
+    Suggestion iban_suggestion(SuggestionType::kIbanEntry);
     const std::u16string iban_identifier =
         iban.GetIdentifierStringForAutofillDisplay();
 #if BUILDFLAG(IS_ANDROID)
@@ -133,7 +134,6 @@ class IbanSuggestionGeneratorTest : public testing::Test,
     }
 #endif
 
-    iban_suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kServerIban) {
       iban_suggestion.payload = Suggestion::InstrumentId(iban.instrument_id());
     } else {
@@ -142,16 +142,10 @@ class IbanSuggestionGeneratorTest : public testing::Test,
     return iban_suggestion;
   }
 
-  Suggestion SetUpSeparator() {
-    Suggestion separator;
-    separator.type = SuggestionType::kSeparator;
-    return separator;
-  }
-
   Suggestion SetUpFooterManagePaymentMethods() {
     Suggestion footer_suggestion(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-    footer_suggestion.type = SuggestionType::kManageIban;
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS),
+        SuggestionType::kManageIban);
     footer_suggestion.icon = Suggestion::Icon::kSettings;
     return footer_suggestion;
   }
@@ -189,7 +183,7 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
   Suggestion server_iban_suggestion_1 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12346, /*prefix=*/"BE71", /*suffix=*/"6769",
       kNickname_1));
-  Suggestion separator_suggestion = SetUpSeparator();
+  Suggestion separator_suggestion(SuggestionType::kSeparator);
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
   base::MockCallback<base::OnceCallback<void(

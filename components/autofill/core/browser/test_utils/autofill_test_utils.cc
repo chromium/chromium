@@ -1062,7 +1062,8 @@ void GenerateTestAutofillPopup(
       /*update_datalist=*/false);
 
   std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion(u"Test suggestion"));
+  suggestions.emplace_back(u"Test suggestion",
+                           SuggestionType::kAutocompleteEntry);
   autofill_metrics::SuggestionRankingContext context;
   autofill_external_delegate->OnSuggestionsReturned(
       field.global_id(), suggestions, std::move(context));
@@ -1189,17 +1190,17 @@ void AddFieldPredictionsToForm(
 Suggestion CreateAutofillSuggestion(SuggestionType type,
                                     const std::u16string& main_text_value,
                                     const Suggestion::Payload& payload) {
-  Suggestion suggestion;
-  suggestion.type = type;
+  Suggestion suggestion(type);
   suggestion.main_text.value = main_text_value;
   suggestion.payload = payload;
   return suggestion;
 }
 
-Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
+Suggestion CreateAutofillSuggestion(SuggestionType type,
+                                    const std::u16string& main_text_value,
                                     const std::u16string& minor_text_value,
                                     bool has_deactivated_style) {
-  Suggestion suggestion;
+  Suggestion suggestion(type);
   suggestion.main_text.value = main_text_value;
   suggestion.minor_texts.emplace_back(minor_text_value);
   suggestion.acceptability =

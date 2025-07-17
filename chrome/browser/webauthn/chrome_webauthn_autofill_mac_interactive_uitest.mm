@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -123,28 +124,21 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
     controller = autofill_client->suggestion_controller_for_testing();
   }
 
-  auto suggestions = controller->GetSuggestions();
-  size_t suggestion_index;
-  autofill::Suggestion webauthn_entry;
-  for (suggestion_index = 0; suggestion_index < suggestions.size();
-       ++suggestion_index) {
-    if (suggestions[suggestion_index].type ==
-        autofill::SuggestionType::kWebauthnCredential) {
-      webauthn_entry = suggestions[suggestion_index];
-      break;
-    }
-  }
-  ASSERT_LT(suggestion_index, suggestions.size()) << "WebAuthn entry not found";
-  EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
+  std::vector<autofill::Suggestion> suggestions = controller->GetSuggestions();
+  auto it = std::ranges::find(suggestions,
+                              autofill::SuggestionType::kWebauthnCredential,
+                              &autofill::Suggestion::type);
+  ASSERT_NE(it, suggestions.end()) << "WebAuthn entry not found";
+  EXPECT_EQ(it->main_text.value, u"flandre");
+  EXPECT_EQ(it->labels.at(0).at(0).value,
             l10n_util::GetStringUTF16(
                 IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE));
-  EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
+  EXPECT_EQ(it->icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
   test_api(static_cast<autofill::AutofillPopupControllerImpl&>(*controller))
       .DisableThreshold(true);
-  controller->AcceptSuggestion(suggestion_index);
+  controller->AcceptSuggestion(it - suggestions.begin());
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");

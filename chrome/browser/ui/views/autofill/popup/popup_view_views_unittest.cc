@@ -115,20 +115,12 @@ bool IsClickable(SuggestionType id) {
 }
 
 Suggestion CreateSuggestionWithChildren(
-    const SuggestionType suggestion_type,
+    SuggestionType suggestion_type,
     std::vector<Suggestion> children,
     const std::u16string& name = u"Suggestion") {
-  Suggestion parent(name);
-  parent.type = suggestion_type;
+  Suggestion parent(name, suggestion_type);
   parent.children = std::move(children);
   return parent;
-}
-
-Suggestion CreateSuggestionWithChildren(
-    std::vector<Suggestion> children,
-    const std::u16string& name = u"Suggestion") {
-  return CreateSuggestionWithChildren(SuggestionType::kAddressEntry,
-                                      std::move(children), name);
 }
 
 class TestPopupViewViews : public PopupViewViews {
@@ -330,7 +322,8 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
             PopupViewViews*>
   OpenSubView(PopupViewViews& view,
               const std::vector<Suggestion>& suggestions = {
-                  Suggestion(u"Suggestion")}) {
+                  Suggestion(u"Suggestion",
+                             SuggestionType::kAutocompleteEntry)}) {
     auto sub_controller =
         std::make_unique<NiceMock<MockAutofillPopupController>>();
     sub_controller->set_suggestions(suggestions);
@@ -638,21 +631,21 @@ TEST_F(PopupViewViewsTest, CursorUpDownForSelectableCells) {
 
 TEST_F(PopupViewViewsTest, CursorUpWithNonSelectableCells) {
   // Set up the popup.
-  Suggestion disabledSuggestion1 =
-      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #1")});
+  Suggestion disabledSuggestion1(u"Virtual Card #1",
+                                 SuggestionType::kVirtualCreditCardEntry);
   disabledSuggestion1.acceptability =
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
-  Suggestion acceptableSuggestion1 =
-      CreateSuggestionWithChildren({Suggestion(u"Credit Card #1")});
-  Suggestion disabledSuggestion2 =
-      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #2")});
+  Suggestion acceptableSuggestion1(u"Credit Card #1",
+                                   SuggestionType::kCreditCardEntry);
+  Suggestion disabledSuggestion2(u"Virtual Card #2",
+                                 SuggestionType::kVirtualCreditCardEntry);
   disabledSuggestion2.acceptability =
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
 
-  Suggestion acceptableSuggestion2 =
-      CreateSuggestionWithChildren({Suggestion(u"Credit Card #2")});
-  Suggestion acceptableSuggestion3 =
-      CreateSuggestionWithChildren({Suggestion(u"Credit Card #3")});
+  Suggestion acceptableSuggestion2(u"Credit Card #2",
+                                   SuggestionType::kCreditCardEntry);
+  Suggestion acceptableSuggestion3(u"Credit Card #3",
+                                   SuggestionType::kCreditCardEntry);
   controller().set_suggestions({disabledSuggestion1, acceptableSuggestion1,
                                 disabledSuggestion2, acceptableSuggestion2,
                                 acceptableSuggestion3});
@@ -681,20 +674,20 @@ TEST_F(PopupViewViewsTest, CursorUpWithNonSelectableCells) {
 
 TEST_F(PopupViewViewsTest, CursorDownWithNonSelectableCells) {
   // Set up the popup.
-  Suggestion disabledSuggestion1 =
-      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #1")});
+  Suggestion disabledSuggestion1(u"Virtual Card #1",
+                                 SuggestionType::kVirtualCreditCardEntry);
   disabledSuggestion1.acceptability =
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
-  Suggestion acceptableSuggestion1 =
-      CreateSuggestionWithChildren({Suggestion(u"Credit Card #1")});
-  Suggestion disabledSuggestion2 =
-      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #2")});
+  Suggestion acceptableSuggestion1(u"Credit Card #1",
+                                   SuggestionType::kCreditCardEntry);
+  Suggestion disabledSuggestion2(u"Virtual Card #2",
+                                 SuggestionType::kVirtualCreditCardEntry);
   disabledSuggestion2.acceptability =
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
-  Suggestion acceptableSuggestion2 =
-      CreateSuggestionWithChildren({Suggestion(u"Credit Card #2")});
-  Suggestion acceptableSuggestion3 =
-      CreateSuggestionWithChildren({Suggestion(u"Credit Card #3")});
+  Suggestion acceptableSuggestion2(u"Credit Card #2",
+                                   SuggestionType::kCreditCardEntry);
+  Suggestion acceptableSuggestion3(u"Credit Card #3",
+                                   SuggestionType::kCreditCardEntry);
   controller().set_suggestions({disabledSuggestion1, acceptableSuggestion1,
                                 disabledSuggestion2, acceptableSuggestion2,
                                 acceptableSuggestion3});
@@ -718,18 +711,18 @@ TEST_F(PopupViewViewsTest, CursorDownWithNonSelectableCells) {
 
 TEST_F(PopupViewViewsTest, OverflowWithNonSelectableCells) {
   // Set up the popup.
-  Suggestion disabledSuggestion1 =
-      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #1")});
+  Suggestion disabledSuggestion1(u"Virtual Card #1",
+                                 SuggestionType::kVirtualCreditCardEntry);
   disabledSuggestion1.acceptability =
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
-  Suggestion acceptableSuggestion1 =
-      CreateSuggestionWithChildren({Suggestion(u"Credit Card #1")});
-  Suggestion disabledSuggestion2 =
-      CreateSuggestionWithChildren({Suggestion(u"Virtual Card #2")});
+  Suggestion acceptableSuggestion1(u"Credit Card #1",
+                                   SuggestionType::kCreditCardEntry);
+  Suggestion disabledSuggestion2(u"Virtual Card #2",
+                                 SuggestionType::kVirtualCreditCardEntry);
   disabledSuggestion2.acceptability =
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
-  Suggestion acceptableSuggestion2 =
-      CreateSuggestionWithChildren({Suggestion(u"Credit Card #2")});
+  Suggestion acceptableSuggestion2(u"Credit Card #2",
+                                   SuggestionType::kCreditCardEntry);
   controller().set_suggestions({disabledSuggestion1, acceptableSuggestion1,
                                 acceptableSuggestion2, disabledSuggestion2});
   CreateAndShowView();
@@ -745,8 +738,11 @@ TEST_F(PopupViewViewsTest, OverflowWithNonSelectableCells) {
 
 TEST_F(PopupViewViewsTest, SelectingSuggestionWithNoControlResetsToContent) {
   controller().set_suggestions(
-      {CreateSuggestionWithChildren({Suggestion(u"Child suggestion")}),
-       Suggestion(u"Suggestion without control")});
+      {CreateSuggestionWithChildren(
+           SuggestionType::kAddressEntry,
+           {Suggestion(u"Child suggestion", SuggestionType::kAddressEntry)}),
+       Suggestion(u"Suggestion without control",
+                  SuggestionType::kAddressEntry)});
   CreateAndShowView();
 
   view().SetSelectedCell(CellIndex{0, CellType::kControl},
@@ -764,8 +760,9 @@ TEST_F(PopupViewViewsTest, SelectingSuggestionWithNoControlResetsToContent) {
 
 TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandled) {
   // The control cell is present in suggestions with children.
-  controller().set_suggestions(
-      {CreateSuggestionWithChildren({Suggestion(u"Child #1")})});
+  controller().set_suggestions({CreateSuggestionWithChildren(
+      SuggestionType::kAddressEntry,
+      {Suggestion(u"Child #1", SuggestionType::kAddressEntry)})});
   CreateAndShowView();
   view().SetSelectedCell(CellIndex{0, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
@@ -788,8 +785,9 @@ TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledForRTL) {
   base::i18n::SetRTLForTesting(true);
 
   // The control cell is present in suggestions with children.
-  controller().set_suggestions(
-      {CreateSuggestionWithChildren({Suggestion(u"Child #1")})});
+  controller().set_suggestions({CreateSuggestionWithChildren(
+      SuggestionType::kAddressEntry,
+      {Suggestion(u"Child #1", SuggestionType::kAddressEntry)})});
   CreateAndShowView();
   view().SetSelectedCell(CellIndex{0, CellType::kControl},
                          PopupCellSelectionSource::kNonUserInput);
@@ -912,8 +910,10 @@ TEST_F(PopupViewViewsTest, MovingSelectionSkipsInsecureFormWarning) {
 
 TEST_F(PopupViewViewsTest, EscClosesSubPopup) {
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
-      Suggestion(u"Suggestion #2"),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
+      Suggestion(u"Suggestion #2", SuggestionType::kAddressEntry),
   });
   CreateAndShowView();
 
@@ -1061,7 +1061,8 @@ TEST_F(PopupViewViewsTest, ComposeSuggestion_ShiftTabDoesNotAffect) {
 
 TEST_F(PopupViewViewsTest, ComposeSuggestion_LeftAndRightKeyEventsAreHandled) {
   controller().set_suggestions({CreateSuggestionWithChildren(
-      SuggestionType::kComposeProactiveNudge, {Suggestion(u"Child #1")})});
+      SuggestionType::kComposeProactiveNudge,
+      {Suggestion(u"Child #1", SuggestionType::kComposeGoToSettings)})});
   CreateAndShowView();
   view().SetSelectedCell(CellIndex{0, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
@@ -1085,7 +1086,8 @@ TEST_F(PopupViewViewsTest,
   base::i18n::SetRTLForTesting(true);
 
   controller().set_suggestions({CreateSuggestionWithChildren(
-      SuggestionType::kComposeProactiveNudge, {Suggestion(u"Child #1")})});
+      SuggestionType::kComposeProactiveNudge,
+      {Suggestion(u"Child #1", SuggestionType::kComposeGoToSettings)})});
   CreateAndShowView();
   view().SetSelectedCell(CellIndex{0, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
@@ -1175,7 +1177,8 @@ TEST_F(
     PopupViewViewsTest,
     ComposeSuggestion_SubPopupOpen_ShiftTabClosesSubpopupAndSelectsContentCell) {
   controller().set_suggestions({CreateSuggestionWithChildren(
-      SuggestionType::kComposeProactiveNudge, {Suggestion(u"Child #1")})});
+      SuggestionType::kComposeProactiveNudge,
+      {Suggestion(u"Child #1", SuggestionType::kComposeGoToSettings)})});
   CreateAndShowView();
 
   CellIndex cell_content = CellIndex{0, CellType::kContent};
@@ -1214,7 +1217,7 @@ TEST_F(PopupViewViewsTest, ComposeSuggestion_EscapeClosesComposePopup) {
 TEST_F(PopupViewViewsTest, VoiceOverTest) {
   const std::u16string voice_over_value = u"Password for user@gmail.com";
   // Create a realistic suggestion for a password.
-  Suggestion suggestion(u"user@gmail.com");
+  Suggestion suggestion(u"user@gmail.com", SuggestionType::kAutocompleteEntry);
   suggestion.voice_over = voice_over_value;
   suggestion.labels = {{Suggestion::Text(u"\u2022\u2022\u2022\u2022")}};
   suggestion.additional_label = u"example.com";
@@ -1366,8 +1369,10 @@ TEST_F(PopupViewViewsTest, SubViewIsClosedWithParent) {
 
 TEST_F(PopupViewViewsTest, CellOpensClosesSubPopupWithDelay) {
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
-      Suggestion(u"Suggestion #2"),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
+      Suggestion(u"Suggestion #2", SuggestionType::kAddressEntry),
   });
   CreateAndShowView();
 
@@ -1389,8 +1394,10 @@ TEST_F(PopupViewViewsTest, CellOpensClosesSubPopupWithDelay) {
 
 TEST_F(PopupViewViewsTest, CellSubPopupResetAfterSuggestionsUpdates) {
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
-      Suggestion(u"Suggestion #2"),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
+      Suggestion(u"Suggestion #2", SuggestionType::kAddressEntry),
   });
   CreateAndShowView();
 
@@ -1417,8 +1424,8 @@ TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
   NiceMock<MockAutofillPopupController> controller;
   controller.set_suggestions({
       // Regular suggestion with no children,
-      Suggestion(u"Suggestion #1"),
-      Suggestion(u"Suggestion #2"),
+      Suggestion(u"Suggestion #1", SuggestionType::kAutocompleteEntry),
+      Suggestion(u"Suggestion #2", SuggestionType::kAutocompleteEntry),
   });
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
@@ -1446,8 +1453,10 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
                             gfx::Point(), ui::EventTimeForNow(),
                             ui::EF_IS_SYNTHESIZED, 0);
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
-      Suggestion(u"Suggestion #2"),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
+      Suggestion(u"Suggestion #2", SuggestionType::kAddressEntry),
   });
   CreateAndShowView();
   CellIndex cell{0, CellType::kControl};
@@ -1457,7 +1466,10 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
   ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
 
   auto [sub_controller, sub_view] = OpenSubView(
-      view(), {CreateSuggestionWithChildren({Suggestion(u"Sub Child #1")})});
+      view(),
+      {CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Sub Child #1", SuggestionType::kAddressEntry)})});
   view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
   sub_view->SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
@@ -1465,7 +1477,9 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
 
   auto [sub_sub_controller, sub_sub_view] = OpenSubView(
       *sub_view,
-      {CreateSuggestionWithChildren({Suggestion(u"Sub Sub Child #1")})});
+      {CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Sub Sub Child #1", SuggestionType::kAddressEntry)})});
   sub_view->SetSelectedCell(std::nullopt,
                             PopupCellSelectionSource::kNonUserInput);
   sub_sub_view->SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
@@ -1482,8 +1496,10 @@ TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
 
 TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
-      Suggestion(u"Suggestion #2"),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
+      Suggestion(u"Suggestion #2", SuggestionType::kAddressEntry),
   });
   CreateAndShowView();
   CellIndex cell{0, CellType::kControl};
@@ -1492,7 +1508,10 @@ TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {
   ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
 
   auto [sub_controller, sub_view] = OpenSubView(
-      view(), {CreateSuggestionWithChildren({Suggestion(u"Sub Child #1")})});
+      view(),
+      {CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Sub Child #1", SuggestionType::kAddressEntry)})});
   view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
 
   // This triggers the no-selection hiding timer.
@@ -1509,8 +1528,10 @@ TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {
 
 TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnParentHiding) {
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
-      Suggestion(u"Suggestion #2"),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
+      Suggestion(u"Suggestion #2", SuggestionType::kAddressEntry),
   });
   CreateAndShowView();
   CellIndex cell{0, CellType::kControl};
@@ -1529,8 +1550,10 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
                             gfx::Point(), ui::EventTimeForNow(),
                             ui::EF_IS_SYNTHESIZED, 0);
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
-      Suggestion(u"Suggestion #2"),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
+      Suggestion(u"Suggestion #2", SuggestionType::kAddressEntry),
   });
   CreateAndShowView();
   CellIndex cell{0, CellType::kControl};
@@ -1540,7 +1563,10 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
   ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
 
   auto [sub_controller, sub_view] = OpenSubView(
-      view(), {CreateSuggestionWithChildren({Suggestion(u"Sub Child #1")})});
+      view(),
+      {CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Sub Child #1", SuggestionType::kAddressEntry)})});
   view().SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
   sub_view->SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
   task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
@@ -1548,7 +1574,9 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
 
   auto [sub_sub_controller, sub_sub_view] = OpenSubView(
       *sub_view,
-      {CreateSuggestionWithChildren({Suggestion(u"Sub Sub Child #1")})});
+      {CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Sub Sub Child #1", SuggestionType::kAddressEntry)})});
   sub_view->SetSelectedCell(std::nullopt,
                             PopupCellSelectionSource::kNonUserInput);
   sub_sub_view->SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
@@ -1570,7 +1598,9 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
 
 TEST_F(PopupViewViewsTest, SubPopupOpensWithNoAutoselectByMouse) {
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
   });
   CreateAndShowView();
 
@@ -1584,7 +1614,9 @@ TEST_F(PopupViewViewsTest, SubPopupOpensWithNoAutoselectByMouse) {
 
 TEST_F(PopupViewViewsTest, SubPopupOpensWithAutoselectByRightKey) {
   controller().set_suggestions({
-      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+      CreateSuggestionWithChildren(
+          SuggestionType::kAddressEntry,
+          {Suggestion(u"Child #1", SuggestionType::kAddressEntry)}),
   });
   CreateAndShowView();
 
@@ -1597,7 +1629,9 @@ TEST_F(PopupViewViewsTest, SubPopupOpensWithAutoselectByRightKey) {
 }
 
 TEST_F(PopupViewViewsTest, SubPopupOpensForNonSelectableContentSelection) {
-  Suggestion suggestion = CreateSuggestionWithChildren({Suggestion(u"Child")});
+  Suggestion suggestion = CreateSuggestionWithChildren(
+      SuggestionType::kAddressEntry,
+      {Suggestion(u"Child", SuggestionType::kAddressEntry)});
   suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   controller().set_suggestions({suggestion});
   CreateAndShowView();
@@ -1610,7 +1644,9 @@ TEST_F(PopupViewViewsTest, SubPopupOpensForNonSelectableContentSelection) {
 }
 
 TEST_F(PopupViewViewsTest, SubPopupNotOpenForSelectableContentSelection) {
-  Suggestion suggestion = CreateSuggestionWithChildren({Suggestion(u"Child")});
+  Suggestion suggestion = CreateSuggestionWithChildren(
+      SuggestionType::kAddressEntry,
+      {Suggestion(u"Child", SuggestionType::kAddressEntry)});
   suggestion.acceptability = Suggestion::Acceptability::kAcceptable;
   controller().set_suggestions({suggestion});
   CreateAndShowView();
@@ -1624,7 +1660,9 @@ TEST_F(PopupViewViewsTest, SubPopupNotOpenForSelectableContentSelection) {
 
 TEST_F(PopupViewViewsTest,
        SubPopupNotOpenForMerchantOptedOutVcnContentSelection) {
-  Suggestion suggestion = CreateSuggestionWithChildren({Suggestion(u"Child")});
+  Suggestion suggestion = CreateSuggestionWithChildren(
+      SuggestionType::kAddressEntry,
+      {Suggestion(u"Child", SuggestionType::kAddressEntry)});
   suggestion.acceptability =
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
   controller().set_suggestions({suggestion});
@@ -1757,7 +1795,7 @@ TEST_F(PopupViewViewsTest, PopupPositioning) {
 #endif  // BUILDFLAG(IS_LINUX)
 
 TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
-  Suggestion suggestion(u"dummy_main_text");
+  Suggestion suggestion(u"dummy_main_text", SuggestionType::kAutocompleteEntry);
   suggestion.iph_metadata = Suggestion::IPHMetadata(
       &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature);
   controller().set_suggestions({suggestion});
@@ -1768,7 +1806,7 @@ TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
 }
 
 TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
-  Suggestion suggestion(u"dummy_main_text");
+  Suggestion suggestion(u"dummy_main_text", SuggestionType::kAutocompleteEntry);
   suggestion.iph_metadata = Suggestion::IPHMetadata(
       &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   controller().set_suggestions({suggestion});

@@ -14,6 +14,7 @@
 #include "base/strings/to_string.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
@@ -85,7 +86,7 @@ FakePlusAddressService::GetSuggestionsFromPlusAddresses(
 
 autofill::Suggestion FakePlusAddressService::GetManagePlusAddressSuggestion()
     const {
-  return Suggestion();
+  return Suggestion(autofill::SuggestionType::kManagePlusAddress);
 }
 
 void FakePlusAddressService::RecordAutofillSuggestionEvent(

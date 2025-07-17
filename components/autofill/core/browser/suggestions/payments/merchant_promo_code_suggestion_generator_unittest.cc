@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -50,12 +51,6 @@ class MerchantPromoCodeSuggestionGeneratorTest : public testing::Test {
         .test_payments_data_manager();
   }
 
-  Suggestion SetUpSeparator() {
-    Suggestion separator;
-    separator.type = SuggestionType::kSeparator;
-    return separator;
-  }
-
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -81,10 +76,13 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
           std::make_unique<AutofillOfferData>(testPromoCodeOfferData));
   std::string promo_code = testPromoCodeOfferData.GetPromoCode();
 
-  Suggestion promo_code_suggestion = Suggestion(base::ASCIIToUTF16(promo_code));
-  Suggestion separator_suggestion = SetUpSeparator();
-  Suggestion footer_suggestion = Suggestion(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
+  Suggestion promo_code_suggestion = Suggestion(
+      base::ASCIIToUTF16(promo_code), SuggestionType::kMerchantPromoCodeEntry);
+  Suggestion separator_suggestion = Suggestion(SuggestionType::kSeparator);
+  Suggestion footer_suggestion =
+      Suggestion(l10n_util::GetStringUTF16(
+                     IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT),
+                 SuggestionType::kSeePromoCodeDetails);
 
   base::MockCallback<base::OnceCallback<void(
       std::pair<FillingProduct,

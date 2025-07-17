@@ -383,7 +383,8 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
 }
 
 TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
-  Suggestion suggestion(u"Open the pod bay doors, HAL");
+  Suggestion suggestion(u"Open the pod bay doors, HAL",
+                        SuggestionType::kAutocompleteEntry);
   suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   ShowSuggestions(manager(), {std::move(suggestion)});
 
@@ -393,7 +394,8 @@ TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
 }
 
 TEST_F(AutofillPopupControllerImplTest, DoesNotSelectUnacceptableSuggestions) {
-  Suggestion suggestion(u"I'm sorry, Dave. I'm afraid I can't do that.");
+  Suggestion suggestion(u"I'm sorry, Dave. I'm afraid I can't do that.",
+                        SuggestionType::kAutocompleteEntry);
   suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   ShowSuggestions(manager(), {std::move(suggestion)});
 
@@ -547,7 +549,8 @@ TEST_F(AutofillPopupControllerImplTest, HideInMainFrameOnZoomChange) {
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_NoFilteringByDefault) {
   AutofillPopupController& controller = client().popup_controller(manager());
-  ShowSuggestions(manager(), {Suggestion(u"abc")});
+  ShowSuggestions(manager(),
+                  {Suggestion(u"abc", SuggestionType::kAutocompleteEntry)});
 
   EXPECT_EQ(controller.GetSuggestions().size(), 1u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
@@ -556,10 +559,11 @@ TEST_F(AutofillPopupControllerImplTest,
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_SuggestionChangeNotifications) {
   AutofillPopupController& controller = client().popup_controller(manager());
-  ShowSuggestions(manager(), {
-                                 Suggestion(u"abc"),
-                                 Suggestion(u"axx"),
-                             });
+  ShowSuggestions(manager(),
+                  {
+                      Suggestion(u"abc", SuggestionType::kAutocompleteEntry),
+                      Suggestion(u"axx", SuggestionType::kAutocompleteEntry),
+                  });
 
   EXPECT_CALL(*client().popup_view(),
               OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true));
@@ -572,11 +576,12 @@ TEST_F(AutofillPopupControllerImplTest,
 
 TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
   AutofillPopupController& controller = client().popup_controller(manager());
-  ShowSuggestions(manager(), {
-                                 Suggestion(u"abc"),
-                                 Suggestion(u"abx"),
-                                 Suggestion(u"axx"),
-                             });
+  ShowSuggestions(manager(),
+                  {
+                      Suggestion(u"abc", SuggestionType::kAutocompleteEntry),
+                      Suggestion(u"abx", SuggestionType::kAutocompleteEntry),
+                      Suggestion(u"axx", SuggestionType::kAutocompleteEntry),
+                  });
 
   EXPECT_EQ(controller.GetSuggestions().size(), 3u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
@@ -605,11 +610,12 @@ TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_SuggestionIsDeletedFromFilteredList) {
   AutofillPopupController& controller = client().popup_controller(manager());
-  ShowSuggestions(manager(), {
-                                 Suggestion(u"abc"),
-                                 Suggestion(u"abx"),
-                                 Suggestion(u"axx"),
-                             });
+  ShowSuggestions(manager(),
+                  {
+                      Suggestion(u"abc", SuggestionType::kAutocompleteEntry),
+                      Suggestion(u"abx", SuggestionType::kAutocompleteEntry),
+                      Suggestion(u"axx", SuggestionType::kAutocompleteEntry),
+                  });
 
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);

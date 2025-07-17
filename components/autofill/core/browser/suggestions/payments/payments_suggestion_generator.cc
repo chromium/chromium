@@ -66,12 +66,6 @@ namespace {
 constexpr uint64_t kCentsPerDollar = 100;
 constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
 
-Suggestion CreateSeparator() {
-  Suggestion suggestion;
-  suggestion.type = SuggestionType::kSeparator;
-  return suggestion;
-}
-
 Suggestion CreateUndoOrClearFormSuggestion() {
 #if BUILDFLAG(IS_IOS)
   std::u16string value =
@@ -662,7 +656,7 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
     footer_suggestions.push_back(scan_credit_card);
   }
-  footer_suggestions.push_back(CreateSeparator());
+  footer_suggestions.emplace_back(SuggestionType::kSeparator);
   if (is_autofilled) {
     footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
   }
@@ -847,11 +841,8 @@ Suggestion CreateCreditCardSuggestion(
     bool virtual_card_option,
     bool card_linked_offer_available,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
-  Suggestion suggestion;
+  Suggestion suggestion(SuggestionType::kCreditCardEntry);
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();
-  // First layer manual fallback entries can't fill forms and thus can't be
-  // selected by the user.
-  suggestion.type = SuggestionType::kCreditCardEntry;
   suggestion.acceptability = IsCardSuggestionAcceptable(credit_card, client)
                                  ? Suggestion::Acceptability::kAcceptable
                                  : Suggestion::Acceptability::kUnacceptable;
@@ -970,11 +961,8 @@ std::u16string GetBnplPriceLowerBound(
 // BNPL issuers.
 Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers,
                                 uint64_t extracted_amount_in_micros) {
-  Suggestion bnpl_suggestion;
-
+  Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
   bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
-  bnpl_suggestion.type = SuggestionType::kBnplEntry;
-
   bnpl_suggestion.main_text =
       Suggestion::Text(l10n_util::GetStringUTF16(
                            IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_MAIN_TEXT),
@@ -1250,9 +1238,8 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
     }
     const std::u16string& virtual_card_last_four = *it->second;
 
-    Suggestion suggestion;
+    Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
     suggestion.icon = credit_card.CardIconForAutofillSuggestion();
-    suggestion.type = SuggestionType::kVirtualCreditCardEntry;
     suggestion.payload = Suggestion::Guid(credit_card.guid());
     suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature);
@@ -1356,7 +1343,10 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(credit_cards);
   for (const CreditCard& credit_card : credit_cards) {
-    Suggestion suggestion;
+    Suggestion suggestion(credit_card.record_type() ==
+                                  CreditCard::RecordType::kVirtualCard
+                              ? SuggestionType::kVirtualCreditCardEntry
+                              : SuggestionType::kCreditCardEntry);
     bool should_display_terms_available = false;
     std::u16string display_name = GetDisplayNicknameForCreditCard(
         credit_card, client.GetPersonalDataManager().payments_data_manager());
@@ -1402,7 +1392,6 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
         Suggestion::Guid(credit_card.guid()),
         credit_card.record_type() == CreditCard::RecordType::kLocalCard);
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
-      suggestion.type = SuggestionType::kVirtualCreditCardEntry;
       bool acceptable = IsCardSuggestionAcceptable(credit_card, client);
       suggestion.acceptability =
           acceptable
@@ -1414,7 +1403,6 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
                   ? IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE
                   : IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE))});
     } else {
-      suggestion.type = SuggestionType::kCreditCardEntry;
       suggestion.labels.push_back(
           std::vector<Suggestion::Text>{Suggestion::Text(credit_card.GetInfo(
               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, client.GetPersonalDataManager()
@@ -1462,13 +1450,12 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(ibans.size() + 2);
   for (const Iban& iban : ibans) {
-    Suggestion suggestion;
+    Suggestion suggestion(SuggestionType::kIbanEntry);
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             ShouldUseNewFopDisplay() ? IDR_AUTOFILL_IBAN
                                      : IDR_AUTOFILL_IBAN_OLD);
     suggestion.icon = Suggestion::Icon::kIban;
-    suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kLocalIban) {
       suggestion.payload = Suggestion::Guid(iban.guid());
     } else {
@@ -1501,7 +1488,7 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
     suggestions.push_back(suggestion);
   }
 
-  suggestions.push_back(CreateSeparator());
+  suggestions.emplace_back(SuggestionType::kSeparator);
   suggestions.push_back(CreateManageIbansSuggestion());
   return suggestions;
 }
@@ -1514,7 +1501,8 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     // For each promo code, create a suggestion.
     suggestions.emplace_back(
-        base::ASCIIToUTF16(promo_code_offer->GetPromoCode()));
+        base::ASCIIToUTF16(promo_code_offer->GetPromoCode()),
+        SuggestionType::kMerchantPromoCodeEntry);
     Suggestion& suggestion = suggestions.back();
     if (!promo_code_offer->GetDisplayStrings().value_prop_text.empty()) {
       suggestion.labels = {{Suggestion::Text(base::ASCIIToUTF16(
@@ -1522,7 +1510,6 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     }
     suggestion.payload =
         Suggestion::Guid(base::NumberToString(promo_code_offer->GetOfferId()));
-    suggestion.type = SuggestionType::kMerchantPromoCodeEntry;
 
     // Every offer for a given merchant leads to the same GURL, so we grab the
     // first offer's offer details url as the payload for the footer to set
@@ -1540,14 +1527,15 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
   if (!footer_offer_details_url.is_empty()) {
     // Add the footer separator since we will now have a footer in the offers
     // suggestions popup.
-    suggestions.push_back(CreateSeparator());
+    suggestions.emplace_back(SuggestionType::kSeparator);
 
     // Add the footer suggestion that navigates the user to the promo code
     // details page in the offers suggestions popup.
-    suggestions.emplace_back(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
+    suggestions.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT),
+        SuggestionType::kSeePromoCodeDetails);
     Suggestion& suggestion = suggestions.back();
-    suggestion.type = SuggestionType::kSeePromoCodeDetails;
 
     // We set the payload for the footer as |footer_offer_details_url|, which is
     // the offer details url of the first offer we had for this merchant. We

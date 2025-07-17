@@ -387,8 +387,6 @@ struct Suggestion {
   // constructors. Some expect UTF16 strings and others UTF8, while internally
   // we only use UTF16. The ones expecting UTF8 are only used by tests and could
   // be easily refactored.
-  Suggestion();
-  explicit Suggestion(std::u16string main_text);
   explicit Suggestion(SuggestionType type);
   Suggestion(std::u16string main_text, SuggestionType type);
   // Constructor for unit tests. It will convert the strings from UTF-8 to
@@ -475,7 +473,7 @@ struct Suggestion {
   Payload payload;
 
   // Determines popup identifier for the suggestion.
-  SuggestionType type = SuggestionType::kAutocompleteEntry;
+  SuggestionType type;
 
   // The texts that will be displayed on the first line in a suggestion. The
   // order of showing the two texts on the first line depends on whether it is

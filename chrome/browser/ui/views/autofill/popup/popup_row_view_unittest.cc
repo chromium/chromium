@@ -83,14 +83,14 @@ class PopupRowViewTest : public ChromeViewsTestBase {
                 bool has_control,
                 bool is_acceptable = true,
                 SuggestionType type = SuggestionType::kAddressEntry) {
-    std::vector<Suggestion> suggestions(line_number + 1);
+    std::vector<Suggestion> suggestions(line_number + 1, Suggestion(type));
     suggestions[line_number].type = type;
     suggestions[line_number].acceptability =
         is_acceptable ? Suggestion::Acceptability::kAcceptable
                       : Suggestion::Acceptability::kUnacceptable;
     suggestions[line_number].main_text = Suggestion::Text(u"Suggestion");
     if (has_control) {
-      suggestions[line_number].children = {Suggestion()};
+      suggestions[line_number].children = {Suggestion(type)};
     }
     ShowView(line_number, std::move(suggestions));
   }
@@ -174,7 +174,8 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 // `PopupRowContentView` are updated correctly when the content cell is
 // selected.
 TEST_F(PopupRowViewTest, BackgroundColorOnContentSelect) {
-  ShowView(/*line_number=*/0, {Suggestion(u"Some entry")});
+  ShowView(/*line_number=*/0,
+           {Suggestion(u"Some entry", SuggestionType::kAutocompleteEntry)});
   ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
   EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
   EXPECT_FALSE(row_view().GetContentView().GetBackground());

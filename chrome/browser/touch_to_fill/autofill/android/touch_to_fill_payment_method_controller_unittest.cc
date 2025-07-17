@@ -166,10 +166,12 @@ class TouchToFillPaymentMethodControllerTest
       test::CreateLoyaltyCard()};
   const std::vector<Suggestion> suggestions_{
       test::CreateAutofillSuggestion(
+          SuggestionType::kCreditCardEntry,
           credit_cards_[0].CardNameForAutofillDisplay(),
           credit_cards_[0].ObfuscatedNumberWithVisibleLastFourDigits(),
           /*has_deactivated_style=*/false),
       test::CreateAutofillSuggestion(
+          SuggestionType::kCreditCardEntry,
           credit_cards_[1].CardNameForAutofillDisplay(),
           credit_cards_[1].ObfuscatedNumberWithVisibleLastFourDigits(),
           /*has_deactivated_style=*/false)};

@@ -140,7 +140,6 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
              .begin()
              ->second->ToFormData();
 
-  std::vector<Suggestion> suggestions = {Suggestion(u"John Doe")};
   TestAutofillExternalDelegate* delegate =
       static_cast<TestAutofillExternalDelegate*>(
           test_api(

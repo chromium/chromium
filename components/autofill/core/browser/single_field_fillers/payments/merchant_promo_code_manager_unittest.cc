@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -131,9 +132,12 @@ class MerchantPromoCodeManagerTest : public testing::Test {
 TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   std::string promo_code = SetUpPromoCodeOffer(
       "https://www.example.com", GURL("https://offer-details-url.com/"));
-  Suggestion promo_code_suggestion = Suggestion(base::ASCIIToUTF16(promo_code));
-  Suggestion footer_suggestion = Suggestion(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
+  Suggestion promo_code_suggestion = Suggestion(
+      base::ASCIIToUTF16(promo_code), SuggestionType::kMerchantPromoCodeEntry);
+  Suggestion footer_suggestion =
+      Suggestion(l10n_util::GetStringUTF16(
+                     IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT),
+                 SuggestionType::kSeePromoCodeDetails);
 
   // Setting up mock to verify that the handler is returned a list of
   // promo-code-based suggestions and the promo code details line.

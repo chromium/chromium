@@ -313,30 +313,25 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     }
 
     // Find the webauthn credential on the suggestions list.
-    auto suggestions = suggestion_controller->GetSuggestions();
-    size_t suggestion_index = 0;
-    size_t webauthn_entry_count = 0;
-    autofill::Suggestion webauthn_entry;
-    for (size_t i = 0; i < suggestions.size(); ++i) {
-      if (suggestions[i].type ==
-          autofill::SuggestionType::kWebauthnCredential) {
-        webauthn_entry = suggestions[i];
-        suggestion_index = i;
-        webauthn_entry_count++;
-      }
-    }
-    ASSERT_EQ(webauthn_entry_count, 1u);
-    ASSERT_LT(suggestion_index, suggestions.size())
-        << "WebAuthn entry not found";
-    EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-    EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, GetDeviceString());
-    EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
+    std::vector<autofill::Suggestion> suggestions =
+        suggestion_controller->GetSuggestions();
+    auto it = std::ranges::find(suggestions,
+                                autofill::SuggestionType::kWebauthnCredential,
+                                &autofill::Suggestion::type);
+    ASSERT_EQ(std::ranges::count(suggestions,
+                                 autofill::SuggestionType::kWebauthnCredential,
+                                 &autofill::Suggestion::type),
+              1u);
+    ASSERT_NE(it, suggestions.end()) << "WebAuthn entry not found";
+    EXPECT_EQ(it->main_text.value, u"flandre");
+    EXPECT_EQ(it->labels.at(0).at(0).value, GetDeviceString());
+    EXPECT_EQ(it->icon, autofill::Suggestion::Icon::kGlobe);
 
     // Click the credential.
     test_api(static_cast<autofill::AutofillPopupControllerImpl&>(
                  *suggestion_controller))
         .DisableThreshold(true);
-    suggestion_controller->AcceptSuggestion(suggestion_index);
+    suggestion_controller->AcceptSuggestion(it - suggestions.begin());
     std::string result;
     ASSERT_TRUE(message_queue.WaitForMessage(&result));
     EXPECT_EQ(result, "\"webauthn: OK\"");
@@ -367,22 +362,15 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     }
 
     // Find the webauthn credential on the suggestions list.
-    auto suggestions = suggestion_controller->GetSuggestions();
-    size_t suggestion_index;
-    autofill::Suggestion webauthn_entry;
-    for (suggestion_index = 0; suggestion_index < suggestions.size();
-         ++suggestion_index) {
-      if (suggestions[suggestion_index].type ==
-          autofill::SuggestionType::kWebauthnCredential) {
-        webauthn_entry = suggestions[suggestion_index];
-        break;
-      }
-    }
-    ASSERT_LT(suggestion_index, suggestions.size())
-        << "WebAuthn entry not found";
-    EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-    EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, GetDeviceString());
-    EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
+    std::vector<autofill::Suggestion> suggestions =
+        suggestion_controller->GetSuggestions();
+    auto it = std::ranges::find(suggestions,
+                                autofill::SuggestionType::kWebauthnCredential,
+                                &autofill::Suggestion::type);
+    ASSERT_NE(it, suggestions.end()) << "WebAuthn entry not found";
+    EXPECT_EQ(it->main_text.value, u"flandre");
+    EXPECT_EQ(it->labels.at(0).at(0).value, GetDeviceString());
+    EXPECT_EQ(it->icon, autofill::Suggestion::Icon::kGlobe);
 
     // Abort the request.
     content::ExecuteScriptAsync(web_contents,

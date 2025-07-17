@@ -232,12 +232,12 @@ std::vector<Suggestion> UpdateSuggestionsFromDataList(
   }
 
   // Prepend the parameters to the suggestions we already have.
-  suggestions.insert(suggestions.begin(), options.size(), Suggestion());
+  suggestions.insert(suggestions.begin(), options.size(),
+                     Suggestion(SuggestionType::kDatalistEntry));
   for (size_t i = 0; i < options.size(); i++) {
     suggestions[i].main_text =
         Suggestion::Text(options[i].value, Suggestion::Text::IsPrimary(true));
     suggestions[i].labels = {{Suggestion::Text(options[i].text)}};
-    suggestions[i].type = SuggestionType::kDatalistEntry;
   }
   return suggestions;
 }

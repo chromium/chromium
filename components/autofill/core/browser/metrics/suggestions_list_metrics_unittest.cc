@@ -73,8 +73,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
                    .autocomplete_attribute = "cc-number"}}});
   autofill_manager().OnFormsSeen({form}, {});
   {
-    Suggestion address_suggestion;
-    address_suggestion.type = SuggestionType::kAddressEntry;
+    Suggestion address_suggestion(SuggestionType::kAddressEntry);
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().front().global_id());
     base::HistogramTester histogram_tester;
@@ -83,8 +82,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
         "Autofill.SuggestionAcceptedIndex.Profile", 1, 1);
   }
   {
-    Suggestion credit_card_suggestion;
-    credit_card_suggestion.type = SuggestionType::kCreditCardEntry;
+    Suggestion credit_card_suggestion(SuggestionType::kCreditCardEntry);
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().back().global_id());
     base::HistogramTester histogram_tester;
@@ -106,8 +104,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
   test_api(form).field(-1).set_value(std::u16string(2, 'a'));
   autofill_manager().OnFormsSeen({form}, {});
   {
-    Suggestion address_suggestion;
-    address_suggestion.type = SuggestionType::kAddressEntry;
+    Suggestion address_suggestion(SuggestionType::kAddressEntry);
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().front().global_id());
     base::HistogramTester histogram_tester;
@@ -117,8 +114,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
         "Autofill.Suggestion.AcceptanceFieldValueLength.Address", 3, 1);
   }
   {
-    Suggestion credit_card_suggestion;
-    credit_card_suggestion.type = SuggestionType::kCreditCardEntry;
+    Suggestion credit_card_suggestion(SuggestionType::kCreditCardEntry);
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().back().global_id());
     base::HistogramTester histogram_tester;

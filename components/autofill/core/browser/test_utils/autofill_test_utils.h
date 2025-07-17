@@ -458,7 +458,8 @@ Suggestion CreateAutofillSuggestion(
     const std::u16string& main_text_value = std::u16string(),
     const Suggestion::Payload& payload = Suggestion::Payload());
 
-Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
+Suggestion CreateAutofillSuggestion(SuggestionType type,
+                                    const std::u16string& main_text_value,
                                     const std::u16string& minor_text_value,
                                     bool has_deactivated_style);
 

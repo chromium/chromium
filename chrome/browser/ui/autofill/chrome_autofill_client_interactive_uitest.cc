@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -111,7 +112,7 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
     return client()->ShowAutofillSuggestions(
         ChromeAutofillClient::PopupOpenArgs(
             bounds, base::i18n::TextDirection::LEFT_TO_RIGHT,
-            {Suggestion(u"test")},
+            {Suggestion(u"test", SuggestionType::kAutocompleteEntry)},
             AutofillSuggestionTriggerSource::kFormControlElementClicked,
             /*form_control_ax_id=*/0, PopupAnchorType::kField),
         test_api(browser_autofill_manager())
@@ -194,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest, SuggestionUiSessionId) {
   // updating the suggestions is synchronous.
   const int old_count = suggestion_show_counter();
   client()->UpdateAutofillSuggestions(
-      {Suggestion(u"other text")}, FillingProduct::kAutocomplete,
+      {Suggestion(u"other text", SuggestionType::kAutocompleteEntry)},
+      FillingProduct::kAutocomplete,
       AutofillSuggestionTriggerSource::kUnspecified);
   EXPECT_GT(suggestion_show_counter(), old_count);
   EXPECT_THAT(client()->GetSessionIdForCurrentAutofillSuggestions(),

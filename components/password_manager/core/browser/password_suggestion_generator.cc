@@ -163,7 +163,10 @@ void AppendSuggestionIfMatching(
                        base::CompareCase::SENSITIVE)) {
     bool replaced_username;
     Suggestion suggestion(
-        ReplaceEmptyUsername(credential.username_value, &replaced_username));
+        ReplaceEmptyUsername(credential.username_value, &replaced_username),
+        credential.uses_account_store
+            ? SuggestionType::kAccountStoragePasswordEntry
+            : SuggestionType::kPasswordEntry);
     suggestion.main_text.is_primary =
         Suggestion::Text::IsPrimary(!replaced_username);
     suggestion.labels = {{autofill::Suggestion::Text(
@@ -179,9 +182,6 @@ void AppendSuggestionIfMatching(
       *suggestion.voice_over += u", ";
       *suggestion.voice_over += suggestion.additional_label;
     }
-    suggestion.type = credential.uses_account_store
-                          ? SuggestionType::kAccountStoragePasswordEntry
-                          : SuggestionType::kPasswordEntry;
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = Suggestion::Icon::kGlobe;
@@ -348,13 +348,12 @@ void CreateEntryForPendingStateSignin(std::vector<Suggestion>& suggestions) {
     suggestions.push_back(std::move(separator));
   }
 
-  Suggestion suggestion;
+  Suggestion suggestion(SuggestionType::kPendingStateSignin);
   suggestion.main_text = Suggestion::Text(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PENDING_STATE),
       Suggestion::Text::IsPrimary(true),
       Suggestion::Text::ShouldTruncate(false));
   suggestion.icon = Suggestion::Icon::kGoogle;
-  suggestion.type = SuggestionType::kPendingStateSignin;
 
   suggestions.emplace_back(std::move(suggestion));
 }

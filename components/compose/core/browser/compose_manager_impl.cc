@@ -176,7 +176,10 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   }
   std::u16string suggestion_text;
   std::u16string label_text;
-  Suggestion suggestion;
+  Suggestion suggestion(
+      trigger_source == AutofillSuggestionTriggerSource::kComposeDialogLostFocus
+          ? SuggestionType::kComposeSavedStateNotification
+          : SuggestionType::kComposeResumeNudge);
   // State is saved as a `ComposeSession` in the `ComposeClient`. A user can
   // resume where they left off in a field if the `ComposeClient` has a
   // `ComposeSession` for that field.
@@ -188,11 +191,6 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
         l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
         Suggestion::Text::IsPrimary(true));
     label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_LABEL);
-    suggestion.type =
-        trigger_source ==
-                AutofillSuggestionTriggerSource::kComposeDialogLostFocus
-            ? SuggestionType::kComposeSavedStateNotification
-            : SuggestionType::kComposeResumeNudge;
     suggestion.feature_for_new_badge = &features::kEnableComposeSavedStateNudge;
   } else {
     // Text for a new Compose session.

@@ -68,12 +68,6 @@ struct ProfileWithText {
   std::u16string text;
 };
 
-Suggestion CreateSeparator() {
-  Suggestion suggestion;
-  suggestion.type = SuggestionType::kSeparator;
-  return suggestion;
-}
-
 Suggestion CreateUndoOrClearFormSuggestion() {
 #if BUILDFLAG(IS_IOS)
   std::u16string value =
@@ -393,7 +387,7 @@ void RemoveDisusedSuggestions(std::vector<ProfileWithText>& profiles) {
 // add suggestion for clearing all autofilled fields.
 std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) {
   std::vector<Suggestion> footer_suggestions;
-  footer_suggestions.push_back(CreateSeparator());
+  footer_suggestions.emplace_back(SuggestionType::kSeparator);
   if (is_autofilled) {
     footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
   }
@@ -546,14 +540,14 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           profile, app_locale,
           ShouldUseNationalFormatPhoneNumber(trigger_field_type));
     }
-    Suggestion& suggestion = suggestions.emplace_back(main_text);
+    Suggestion& suggestion =
+        suggestions.emplace_back(main_text, suggestion_type);
     if (!labels[i].empty()) {
       suggestion.labels.emplace_back(std::move(labels[i]));
     }
     suggestion.payload = std::move(payloads[i]);
     suggestion.acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
-    suggestion.type = suggestion_type;
     suggestion.acceptability = Suggestion::Acceptability::kAcceptable;
     if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
       suggestion.field_by_field_filling_type_used =

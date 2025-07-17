@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -348,7 +349,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        DoesNotAcceptUnacceptableSuggestions) {
-  Suggestion suggestion(u"Open the pod bay doors, HAL");
+  Suggestion suggestion(u"Open the pod bay doors, HAL",
+                        SuggestionType::kAutocompleteEntry);
   suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   ShowSuggestions(manager(), {std::move(suggestion)});
   task_environment()->FastForwardBy(base::Milliseconds(500));

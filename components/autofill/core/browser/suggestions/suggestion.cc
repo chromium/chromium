@@ -352,11 +352,6 @@ Suggestion::Text& Suggestion::Text::operator=(Text&& other) = default;
 
 Suggestion::Text::~Text() = default;
 
-Suggestion::Suggestion() = default;
-
-Suggestion::Suggestion(std::u16string main_text)
-    : main_text(std::move(main_text), Text::IsPrimary(true)) {}
-
 Suggestion::Suggestion(SuggestionType type) : type(type) {}
 
 Suggestion::Suggestion(std::u16string main_text, SuggestionType type)

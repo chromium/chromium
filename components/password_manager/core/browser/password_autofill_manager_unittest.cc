@@ -1842,10 +1842,10 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
               HideAutofillSuggestions(
                   autofill::SuggestionHidingReason::kAcceptSuggestion));
 
-  Suggestion suggestion;
+  Suggestion suggestion(
+      autofill::SuggestionType::kWebauthnSignInWithAnotherDevice);
   suggestion.main_text.value =
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY);
-  suggestion.type = autofill::SuggestionType::kWebauthnSignInWithAnotherDevice;
   suggestion.payload = autofill::Suggestion::Payload();
   password_autofill_manager_->DidAcceptSuggestion(suggestion,
                                                   SuggestionPosition{.row = 0});

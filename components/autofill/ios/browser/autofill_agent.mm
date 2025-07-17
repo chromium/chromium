@@ -377,10 +377,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
           autofill::SuggestionType::kAddressFieldByFieldFilling) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_suggestionDelegate) {
-      autofill::Suggestion autofill_suggestion;
+      autofill::Suggestion autofill_suggestion(suggestion.type);
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
-      autofill_suggestion.type = suggestion.type;
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
       const std::string guid =

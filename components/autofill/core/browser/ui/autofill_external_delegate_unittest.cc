@@ -671,8 +671,7 @@ TEST_F(AutofillExternalDelegateTest, UpdateDataListWhileShowingPopup) {
   EXPECT_CALL(client(), ShowAutofillSuggestions(
                             PopupOpenArgsAre(kExpectedSuggestions), _));
   std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back();
-  autofill_item[0].type = SuggestionType::kAddressEntry;
+  autofill_item.emplace_back(SuggestionType::kAddressEntry);
   OnSuggestionsReturned(queried_field().global_id(), autofill_item);
 
   // This would normally get called from ShowAutofillSuggestions, but it is
@@ -709,11 +708,10 @@ TEST_F(AutofillExternalDelegateTest, DuplicateAutofillDatalistValues) {
 
   // Have an Autofill item that is identical to one of the datalist entries.
   std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back();
+  autofill_item.emplace_back(SuggestionType::kAddressEntry);
   autofill_item[0].main_text =
       Suggestion::Text(u"Rick", Suggestion::Text::IsPrimary(true));
   autofill_item[0].labels = {{Suggestion::Text(u"Deckard")}};
-  autofill_item[0].type = SuggestionType::kAddressEntry;
   OnSuggestionsReturned(queried_field().global_id(), autofill_item);
 }
 
@@ -742,14 +740,12 @@ TEST_F(AutofillExternalDelegateTest, DuplicateAutocompleteDatalistValues) {
   // Have an Autocomplete item that is identical to one of the datalist entries
   // and one that is distinct.
   std::vector<Suggestion> autocomplete_items;
-  autocomplete_items.emplace_back();
+  autocomplete_items.emplace_back(SuggestionType::kAutocompleteEntry);
   autocomplete_items[0].main_text =
       Suggestion::Text(u"Rick", Suggestion::Text::IsPrimary(true));
-  autocomplete_items[0].type = SuggestionType::kAutocompleteEntry;
-  autocomplete_items.emplace_back();
+  autocomplete_items.emplace_back(SuggestionType::kAutocompleteEntry);
   autocomplete_items[1].main_text =
       Suggestion::Text(u"Cain", Suggestion::Text::IsPrimary(true));
-  autocomplete_items[1].type = SuggestionType::kAutocompleteEntry;
   OnSuggestionsReturned(queried_field().global_id(), autocomplete_items);
 }
 
@@ -823,9 +819,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillWarnings) {
 
   // This should call ShowAutofillSuggestions.
   std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back();
-  autofill_item[0].type =
-      SuggestionType::kInsecureContextPaymentDisabledMessage;
+  autofill_item.emplace_back(
+      SuggestionType::kInsecureContextPaymentDisabledMessage);
   OnSuggestionsReturned(queried_field().global_id(), autofill_item);
 
   EXPECT_THAT(open_args.suggestions,
@@ -846,12 +841,11 @@ TEST_F(AutofillExternalDelegateTest, AutofillWarningsNotShown_WithSuggestions) {
                                           SuggestionType::kAutocompleteEntry)),
                                       _));
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back();
-  suggestions[0].type = SuggestionType::kInsecureContextPaymentDisabledMessage;
-  suggestions.emplace_back();
+  suggestions.emplace_back(
+      SuggestionType::kInsecureContextPaymentDisabledMessage);
+  suggestions.emplace_back(SuggestionType::kAutocompleteEntry);
   suggestions[1].main_text =
       Suggestion::Text(u"Rick", Suggestion::Text::IsPrimary(true));
-  suggestions[1].type = SuggestionType::kAutocompleteEntry;
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 }
 
@@ -2496,8 +2490,7 @@ TEST_F(AutofillExternalDelegateTest, IgnoreAutocompleteOffForAutofill) {
                               kDefaultTriggerSource, /*update_datalist=*/false);
 
   std::vector<Suggestion> autofill_items;
-  autofill_items.emplace_back();
-  autofill_items[0].type = SuggestionType::kAutocompleteEntry;
+  autofill_items.emplace_back(SuggestionType::kAutocompleteEntry);
 
   // Ensure the popup tries to show itself, despite autocomplete="off".
   EXPECT_CALL(client(), ShowAutofillSuggestions);
@@ -2709,8 +2702,8 @@ TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_Autocomplete) {
               OnRemoveCurrentSingleFieldSuggestion);
   client().set_single_field_fill_router(
       std::move(mock_single_field_fill_router));
-  EXPECT_TRUE(
-      external_delegate().RemoveSuggestion(Suggestion(u"autocomplete")));
+  EXPECT_TRUE(external_delegate().RemoveSuggestion(
+      Suggestion(u"autocomplete", SuggestionType::kAutocompleteEntry)));
 }
 
 TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_Address) {
@@ -2785,8 +2778,10 @@ TEST_F(AutofillExternalDelegateTest, RecordSuggestionTypeOnSuggestionAccepted) {
 TEST_F(AutofillExternalDelegateTest, UpdateSuggestions) {
   IssueOnQuery();
 
-  std::vector<Suggestion> suggestions1 = {Suggestion(u"Some suggestion")};
-  std::vector<Suggestion> suggestions2 = {Suggestion(u"Other suggestion")};
+  std::vector<Suggestion> suggestions1 = {
+      Suggestion(u"Some suggestion", SuggestionType::kAutocompleteEntry)};
+  std::vector<Suggestion> suggestions2 = {
+      Suggestion(u"Other suggestion", SuggestionType::kAutocompleteEntry)};
 
   {
     InSequence s;
