@@ -166,6 +166,12 @@
   opacity: 30%;
 }
 
+#submitIcon:focus-visible:focus {
+  box-shadow: none;
+  outline: 2px solid var(--color-searchbox-results-icon-focused-outline);
+  outline-offset: 2px;
+}
+
 :host([submit-enabled_]) #submitIcon {
   cursor: pointer;
   opacity: 100%;
