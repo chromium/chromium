@@ -236,7 +236,7 @@ impl<'a, R: Read> ZipFileReader<'a, R> {
             ZipFileReader::NoReader => invalid_state(),
             ZipFileReader::Raw(r) => Ok(r),
             ZipFileReader::Compressed(r) => {
-                Ok(r.into_inner().into_inner().into_inner().into_inner())
+                Ok(r.into_inner().into_inner()?.into_inner().into_inner())
             }
         }
     }

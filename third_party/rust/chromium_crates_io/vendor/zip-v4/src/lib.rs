@@ -24,6 +24,7 @@
 //! | ZStandard | ✅ | ✅ |
 //! | LZMA | ✅ | |
 //! | XZ | ✅ | |
+//! | PPMd | ✅ | ✅ |
 //! | AES encryption | ✅ | ✅ |
 //! | ZipCrypto deprecated encryption | ✅ | ✅ |
 //!

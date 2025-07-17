@@ -41,6 +41,9 @@ pub enum CompressionMethod {
     /// Compress the file using XZ
     #[cfg(feature = "xz")]
     Xz,
+    /// Compress the file using PPMd
+    #[cfg(feature = "ppmd")]
+    Ppmd,
     /// Unsupported compression method
     #[cfg_attr(
         not(fuzzing),
@@ -89,6 +92,9 @@ impl CompressionMethod {
     pub const XZ: Self = CompressionMethod::Unsupported(95);
     pub const JPEG: Self = CompressionMethod::Unsupported(96);
     pub const WAVPACK: Self = CompressionMethod::Unsupported(97);
+    #[cfg(feature = "ppmd")]
+    pub const PPMD: Self = CompressionMethod::Ppmd;
+    #[cfg(not(feature = "ppmd"))]
     pub const PPMD: Self = CompressionMethod::Unsupported(98);
     #[cfg(feature = "aes-crypto")]
     pub const AES: Self = CompressionMethod::Aes;
@@ -111,6 +117,8 @@ impl CompressionMethod {
             95 => CompressionMethod::Xz,
             #[cfg(feature = "zstd")]
             93 => CompressionMethod::Zstd,
+            #[cfg(feature = "ppmd")]
+            98 => CompressionMethod::Ppmd,
             #[cfg(feature = "aes-crypto")]
             99 => CompressionMethod::Aes,
             #[allow(deprecated)]
@@ -144,6 +152,8 @@ impl CompressionMethod {
             CompressionMethod::Lzma => 14,
             #[cfg(feature = "xz")]
             CompressionMethod::Xz => 95,
+            #[cfg(feature = "ppmd")]
+            CompressionMethod::Ppmd => 98,
             #[allow(deprecated)]
             CompressionMethod::Unsupported(v) => v,
         }
@@ -189,6 +199,8 @@ pub const SUPPORTED_COMPRESSION_METHODS: &[CompressionMethod] = &[
     CompressionMethod::Zstd,
     #[cfg(feature = "xz")]
     CompressionMethod::Xz,
+    #[cfg(feature = "ppmd")]
+    CompressionMethod::Ppmd,
 ];
 
 pub(crate) enum Decompressor<R: io::BufRead> {
@@ -205,6 +217,14 @@ pub(crate) enum Decompressor<R: io::BufRead> {
     Lzma(liblzma::bufread::XzDecoder<R>),
     #[cfg(feature = "xz")]
     Xz(liblzma::bufread::XzDecoder<R>),
+    #[cfg(feature = "ppmd")]
+    Ppmd(Ppmd<R>),
+}
+
+#[cfg(feature = "ppmd")]
+pub(crate) enum Ppmd<R: io::BufRead> {
+    Uninitialized(Option<R>),
+    Initialized(Box<ppmd_rust::Ppmd8Decoder<R>>),
 }
 
 impl<R: io::BufRead> io::Read for Decompressor<R> {
@@ -223,6 +243,49 @@ impl<R: io::BufRead> io::Read for Decompressor<R> {
             Decompressor::Lzma(r) => r.read(buf),
             #[cfg(feature = "xz")]
             Decompressor::Xz(r) => r.read(buf),
+            #[cfg(feature = "ppmd")]
+            Decompressor::Ppmd(r) => match r {
+                Ppmd::Uninitialized(reader) => {
+                    let mut reader = reader.take().ok_or_else(|| {
+                        io::Error::other("Reader was not set while reading PPMd data")
+                    })?;
+
+                    let mut buffer = [0; 2];
+                    reader.read_exact(&mut buffer)?;
+                    let parameters = u16::from_le_bytes(buffer);
+
+                    let order = ((parameters & 0x0F) + 1) as u32;
+                    let memory_size = 1024 * 1024 * (((parameters >> 4) & 0xFF) + 1) as u32;
+                    let restoration_method = (parameters >> 12) & 0x0F;
+
+                    let mut decompressor = ppmd_rust::Ppmd8Decoder::new(
+                        reader,
+                        order,
+                        memory_size,
+                        restoration_method.into(),
+                    )
+                    .map_err(|error| match error {
+                        ppmd_rust::Error::RangeDecoderInitialization => io::Error::new(
+                            io::ErrorKind::InvalidData,
+                            "PPMd range coder initialization failed",
+                        ),
+                        ppmd_rust::Error::InvalidParameter => {
+                            io::Error::new(io::ErrorKind::InvalidInput, "Invalid PPMd parameter")
+                        }
+                        ppmd_rust::Error::IoError(io_error) => io_error,
+                        ppmd_rust::Error::MemoryAllocation => {
+                            io::Error::new(io::ErrorKind::OutOfMemory, "Memory allocation failed")
+                        }
+                    })?;
+
+                    let read = decompressor.read(buf)?;
+
+                    *r = Ppmd::Initialized(Box::new(decompressor));
+
+                    Ok(read)
+                }
+                Ppmd::Initialized(decompressor) => decompressor.read(buf),
+            },
         }
     }
 }
@@ -250,6 +313,8 @@ impl<R: io::BufRead> Decompressor<R> {
             )),
             #[cfg(feature = "xz")]
             CompressionMethod::Xz => Decompressor::Xz(liblzma::bufread::XzDecoder::new(reader)),
+            #[cfg(feature = "ppmd")]
+            CompressionMethod::Ppmd => Decompressor::Ppmd(Ppmd::Uninitialized(Some(reader))),
             _ => {
                 return Err(crate::result::ZipError::UnsupportedArchive(
                     "Compression method not supported",
@@ -259,8 +324,9 @@ impl<R: io::BufRead> Decompressor<R> {
     }
 
     /// Consumes this decoder, returning the underlying reader.
-    pub fn into_inner(self) -> R {
-        match self {
+    #[allow(clippy::infallible_destructuring_match)]
+    pub fn into_inner(self) -> io::Result<R> {
+        let inner = match self {
             Decompressor::Stored(r) => r,
             #[cfg(feature = "deflate-flate2")]
             Decompressor::Deflated(r) => r.into_inner(),
@@ -274,7 +340,15 @@ impl<R: io::BufRead> Decompressor<R> {
             Decompressor::Lzma(r) => r.into_inner(),
             #[cfg(feature = "xz")]
             Decompressor::Xz(r) => r.into_inner(),
-        }
+            #[cfg(feature = "ppmd")]
+            Decompressor::Ppmd(r) => match r {
+                Ppmd::Uninitialized(mut reader) => reader
+                    .take()
+                    .ok_or_else(|| io::Error::other("Reader was not set"))?,
+                Ppmd::Initialized(decoder) => decoder.into_inner(),
+            },
+        };
+        Ok(inner)
     }
 }
 

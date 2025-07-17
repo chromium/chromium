@@ -22,6 +22,7 @@ Supported compression formats:
 * zstd
 * lzma (decompression only)
 * xz (decompression only)
+* ppmd
 
 Currently unsupported zip extensions:
 
@@ -42,18 +43,19 @@ The features available are:
 * `deflate64`: Enables the deflate64 compression algorithm. Only decompression is supported.
 * `lzma`: Enables the LZMA compression algorithm. Only decompression is supported.
 * `bzip2`: Enables the BZip2 compression algorithm.
+* `ppmd`: Enables the PPMd compression algorithm.
 * `time`: Enables features using the [time](https://github.com/rust-lang-deprecated/time) crate.
 * `chrono`: Enables converting last-modified `zip::DateTime` to and from `chrono::NaiveDateTime`.
 * `jiff-02`: Enables converting last-modified `zip::DateTime` to and from `jiff::civil::DateTime`.
 * `nt-time`: Enables returning timestamps stored in the NTFS extra field as `nt_time::FileTime`.
 * `zstd`: Enables the Zstandard compression algorithm.
 
-By default `aes-crypto`, `bzip2`, `deflate`, `deflate64`, `lzma`, `time` and `zstd` are enabled.
+By default `aes-crypto`, `bzip2`, `deflate`, `deflate64`, `lzma`, `ppmd`, `time` and `zstd` are enabled.
 
 MSRV
 ----
 
-Our current Minimum Supported Rust Version is **1.75**. When adding features,
+Our current Minimum Supported Rust Version is **1.82**. When adding features,
 we will follow these guidelines:
 
 - We will always support a minor Rust version that has been stable for at least 6 months.

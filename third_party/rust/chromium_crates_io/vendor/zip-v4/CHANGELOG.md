@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.3.0](https://github.com/zip-rs/zip2/compare/v4.2.0...v4.3.0) - 2025-07-09
+
+### <!-- 0 -->🚀 Features
+
+- Add support for PPMd ([#370](https://github.com/zip-rs/zip2/pull/370))
+
 ## [4.2.0](https://github.com/zip-rs/zip2/compare/v4.1.0...v4.2.0) - 2025-06-21
 
 ### <!-- 0 -->🚀 Features

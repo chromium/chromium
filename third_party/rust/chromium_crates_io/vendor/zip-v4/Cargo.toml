@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.75.0"
+rust-version = "1.82.0"
 name = "zip"
-version = "4.2.0"
+version = "4.3.0"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -71,6 +71,7 @@ default = [
     "deflate64",
     "deflate",
     "lzma",
+    "ppmd",
     "time",
     "zstd",
     "xz",
@@ -98,6 +99,7 @@ deflate-zopfli = [
 jiff-02 = ["dep:jiff"]
 lzma = ["dep:liblzma"]
 nt-time = ["dep:nt-time"]
+ppmd = ["dep:ppmd-rust"]
 unreserved = []
 xz = ["dep:liblzma"]
 
@@ -125,7 +127,7 @@ version = "0.8"
 optional = true
 
 [dependencies.bzip2]
-version = "0.5.0"
+version = "0.6.0"
 optional = true
 
 [dependencies.chrono]
@@ -150,10 +152,7 @@ default-features = false
 
 [dependencies.getrandom]
 version = "0.3.1"
-features = [
-    "wasm_js",
-    "std",
-]
+features = ["std"]
 optional = true
 
 [dependencies.hmac]
@@ -182,6 +181,10 @@ default-features = false
 
 [dependencies.pbkdf2]
 version = "0.12"
+optional = true
+
+[dependencies.ppmd-rust]
+version = "1.2"
 optional = true
 
 [dependencies.sha1]
