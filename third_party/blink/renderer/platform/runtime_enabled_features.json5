@@ -5168,6 +5168,10 @@
       status: "stable",
     },
     {
+      name: "ViewTransitionInheritAnimationProperties",
+      status: "experimental",
+    },
+    {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
       status: "test",
     },

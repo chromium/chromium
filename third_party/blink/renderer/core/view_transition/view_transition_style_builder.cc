@@ -218,6 +218,19 @@ void ViewTransitionStyleBuilder::AddFlagGuardedDefaultAnimationStyles() {
     AddRules(NewImageTagName(), "*", "animation-delay: inherit;");
     AddRules(OldImageTagName(), "*", "animation-delay: inherit;");
   }
+  if (RuntimeEnabledFeatures::
+          ViewTransitionInheritAnimationPropertiesEnabled()) {
+    String animation_inherit = R"CSS(
+      animation-timing-function: inherit;
+      animation-iteration-count: inherit;
+      animation-direction: inherit;
+      animation-play-state: inherit;
+    )CSS";
+
+    AddRules(ImagePairTagName(), "*", animation_inherit);
+    AddRules(NewImageTagName(), "*", animation_inherit);
+    AddRules(OldImageTagName(), "*", animation_inherit);
+  }
 }
 
 }  // namespace blink
