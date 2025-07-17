@@ -129,7 +129,7 @@ class RegionalCapabilitiesService : public KeyedService {
   country_codes::CountryId GetCountryIdInternal();
 
   void EnsureRegionalScopeCacheInitialized();
-  std::optional<country_codes::CountryId> GetPersistedCountryId();
+  country_codes::CountryId GetPersistedCountryId();
   void TrySetPersistedCountryId(country_codes::CountryId country_id);
 
   const raw_ref<PrefService> profile_prefs_;

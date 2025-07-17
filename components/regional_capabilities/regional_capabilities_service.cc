@@ -49,7 +49,8 @@ enum class UnknownCountryIdStored {
   // kDontClearInvalidCountry = 1, // Deprecated.
   kClearedPref = 2,
   kValidDynamicCountryId = 3,
-  kMaxValue = kValidDynamicCountryId,
+  kClearedDynamicPref = 4,
+  kMaxValue = kClearedDynamicPref,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:UnknownCountryIdStored)
 
@@ -112,23 +113,10 @@ RegionalCapabilitiesService::Client::CountryIdCallback DispatchCountryId(
 //   4. return invalid CountryID
 // in other words, fetched > persisted > fallback.
 std::pair<CountryId, LoadedCountrySource> SelectCountryId(
-    std::optional<CountryId> persisted_country_optional,
+    CountryId persisted_country,
     CountryId current_country,
     bool is_current_country_from_fallback) {
-  if (!persisted_country_optional.has_value()) {
-    if (current_country.IsValid()) {
-      return {current_country, LoadedCountrySource::kCurrentOnly};
-    } else {
-      return {CountryId(), LoadedCountrySource::kNoneAvailable};
-    }
-  }
-
-  // At this point `persisted_country_optional` has value, so introducing
-  // a new variable `persisted_country` which should be used instead.
-  DCHECK(persisted_country_optional.has_value());
-  const CountryId persisted_country = persisted_country_optional.value();
-
-  // Let's check all possible combinations when `persisted_country`
+  // Let's check first all possible combinations when `persisted_country`
   // and/or `current_country` might be invalid.
 
   if (!persisted_country.IsValid() && !current_country.IsValid()) {
@@ -290,7 +278,7 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
     return;
   }
 
-  std::optional<CountryId> persisted_country_id = GetPersistedCountryId();
+  CountryId persisted_country_id = GetPersistedCountryId();
 
   // Fetches the device country using `Client::FetchCountryId()`. Upon
   // completion, makes it available through `country_id_receiver` and also
@@ -316,8 +304,7 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
   }
 
   RecordVariationsCountryMatching(client_->GetVariationsLatestCountryId(),
-                                  persisted_country_id.value_or(CountryId()),
-                                  current_country,
+                                  persisted_country_id, current_country,
                                   is_current_country_from_fallback);
 
   const std::pair<CountryId, LoadedCountrySource> selected_country_and_source =
@@ -336,7 +323,7 @@ void RegionalCapabilitiesService::ClearCountryIdCacheForTesting() {
   country_id_cache_.reset();
 }
 
-std::optional<CountryId> RegionalCapabilitiesService::GetPersistedCountryId() {
+CountryId RegionalCapabilitiesService::GetPersistedCountryId() {
   // Prefer `prefs::kCountryID` if available and valid, otherwise fallback to
   // `prefs::kCountryIDAtInstall`.
   if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry) &&
@@ -353,10 +340,15 @@ std::optional<CountryId> RegionalCapabilitiesService::GetPersistedCountryId() {
           UnknownCountryIdStored::kValidDynamicCountryId);
       return persisted_dynamic_country_id;
     }
+
+    // Clear dynamic pref CountryID as it is invalid.
+    base::UmaHistogramEnumeration(kUnknownCountryIdStored,
+                                  UnknownCountryIdStored::kClearedDynamicPref);
+    profile_prefs_->ClearPref(prefs::kCountryID);
   }
 
   if (!profile_prefs_->HasPrefPath(prefs::kCountryIDAtInstall)) {
-    return std::nullopt;
+    return CountryId();
   }
 
   CountryId persisted_country_id = CountryId::Deserialize(
@@ -369,10 +361,11 @@ std::optional<CountryId> RegionalCapabilitiesService::GetPersistedCountryId() {
     return persisted_country_id;
   }
 
+  // Clear static pref CountryID as it is invalid.
   profile_prefs_->ClearPref(prefs::kCountryIDAtInstall);
   base::UmaHistogramEnumeration(kUnknownCountryIdStored,
                                 UnknownCountryIdStored::kClearedPref);
-  return std::nullopt;
+  return CountryId();
 }
 
 void RegionalCapabilitiesService::TrySetPersistedCountryId(

@@ -323,13 +323,13 @@ TEST_F(RegionalCapabilitiesServiceTest,
   std::unique_ptr<RegionalCapabilitiesService> service =
       InitService(kFallbackCountryId);
 
-  // CountryID at install pref is preferred because CountryID pref is invalid.
+  // Static pref is preferred because the dynamic pref is unset.
   SetPrefCountryIDAtInstall(kPolandCountryId);
 
   // We didn't get a response from the device API call before `GetCountryId`
   // was invoked, so the persisted country should be used.
   EXPECT_EQ(GetCountryId(*service), kPolandCountryId);
-  // The pref should NOT be updated.
+  // The static pref should NOT be updated.
   EXPECT_EQ(GetPrefSerializedCountryIDAtInstall(),
             kPolandCountryId.Serialize());
   EXPECT_EQ(GetPrefSerializedCountryID(), std::nullopt);
@@ -368,17 +368,18 @@ TEST_F(RegionalCapabilitiesServiceTest,
   std::unique_ptr<RegionalCapabilitiesService> service =
       InitService(kFallbackCountryId);
 
-  // CountryID at install pref is preferred because CountryID pref is unset.
+  // Static pref is preferred because the dynamic pref is invalid.
   SetPrefCountryIDAtInstall(kPolandCountryId);
   SetPrefCountryID(CountryId("usa"));
 
   // We didn't get a response from the device API call before `GetCountryId`
   // was invoked, so the fallback country should be used.
   EXPECT_EQ(GetCountryId(*service), kPolandCountryId);
-  // The pref should NOT be updated.
+  // The static pref should NOT be updated as it is valid.
   EXPECT_EQ(GetPrefSerializedCountryIDAtInstall(),
             kPolandCountryId.Serialize());
-  EXPECT_EQ(GetPrefSerializedCountryID(), CountryId().Serialize());
+  // The dynamic pref should be cleared.
+  EXPECT_EQ(GetPrefSerializedCountryID(), std::nullopt);
 
   // Simulate a response arriving after the first `GetCountryId` call.
   client()->SetFetchedCountry(kBelgiumCountryId);
@@ -550,8 +551,10 @@ TEST_F(RegionalCapabilitiesServiceTest,
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
 }
 
-TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry) {
+TEST_F(RegionalCapabilitiesServiceTest,
+       ClearPrefForUnknownCountry_BothPrefsInvalid) {
   SetPrefCountryIDAtInstall(CountryId());
+  SetPrefCountryID(CountryId());
   std::unique_ptr<RegionalCapabilitiesService> service =
       InitService(kBelgiumCountryId);
 
@@ -563,13 +566,20 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry) {
       "Search.ChoiceDebug.UnknownCountryIdStored", 0);
 
   EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
-  histogram_tester().ExpectUniqueSample(
-      "Search.ChoiceDebug.UnknownCountryIdStored", 2 /* kClearedPref */, 1);
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          "Search.ChoiceDebug.UnknownCountryIdStored"),
+      testing::ElementsAre(base::Bucket(2 /* kClearedPref */, 1),
+                           base::Bucket(4 /* kClearedDynamicPref */, 1)));
+
   EXPECT_EQ(GetPrefSerializedCountryIDAtInstall(),
             kBelgiumCountryId.Serialize());
+  EXPECT_EQ(GetPrefSerializedCountryID(), kBelgiumCountryId.Serialize());
 }
 
-TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
+TEST_F(RegionalCapabilitiesServiceTest,
+       ClearPrefForUnknownCountry_StaticValid) {
   SetPrefCountryIDAtInstall(kBelgiumCountryId);
   std::unique_ptr<RegionalCapabilitiesService> service = InitService();
 
@@ -581,6 +591,21 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
       "Search.ChoiceDebug.UnknownCountryIdStored", 0 /* kValidCountryId */, 1);
   EXPECT_EQ(GetPrefSerializedCountryIDAtInstall(),
             kBelgiumCountryId.Serialize());
+}
+
+TEST_F(RegionalCapabilitiesServiceTest,
+       ClearPrefForUnknownCountry_DynamicValid) {
+  SetPrefCountryID(kBelgiumCountryId);
+  std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+
+  histogram_tester().ExpectTotalCount(
+      "Search.ChoiceDebug.UnknownCountryIdStored", 0);
+
+  EXPECT_EQ(GetCountryId(*service), kBelgiumCountryId);
+  histogram_tester().ExpectUniqueSample(
+      "Search.ChoiceDebug.UnknownCountryIdStored",
+      3 /* kValidDynamicCountryId */, 1);
+  EXPECT_EQ(GetPrefSerializedCountryID(), kBelgiumCountryId.Serialize());
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
