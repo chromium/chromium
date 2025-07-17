@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
@@ -203,40 +202,13 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
     OptimizationTargetModelObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // A limited number of targets support multiple registrations. In general
-  // multiple registrations are disallowed to mitigate the risk of subtle,
-  // conflicting behavior between two different uses of the same model file. If
-  // adding a target to this set, please document below why it's necessary.
-  constexpr auto kAllowedMultipleRegistrations =
-      base::MakeFixedFlatSet<proto::OptimizationTarget>({
-          // In addition to use by Translate's language detection features, this
-          // model is also needed by the On-Device Model service process, and
-          // ModelExecutionManager monitors for updates on its behalf.
-          proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      });
+  CHECK(!model_metadata ||
+        IsModelMetadataTypeOnServerAllowlist(*model_metadata));
 
-  DCHECK(base::Contains(kAllowedMultipleRegistrations, optimization_target) ||
-         !base::Contains(model_registration_info_map_, optimization_target));
-  DCHECK(!model_metadata ||
-         IsModelMetadataTypeOnServerAllowlist(*model_metadata));
-
-  // As DCHECKS don't run in the wild, just do not register the observer if
-  // something is already registered for the type. Otherwise, file reads may
-  // blow up.
-  if (!base::Contains(kAllowedMultipleRegistrations, optimization_target) &&
-      base::Contains(model_registration_info_map_, optimization_target)) {
-    DLOG(ERROR) << "Did not add observer for optimization target "
-                << static_cast<int>(optimization_target)
-                << " since an observer for the target was already registered ";
-    return;
-  }
-
-  auto [it, registered] = model_registration_info_map_.emplace(
+  auto it = model_registration_info_map_.emplace(
       std::piecewise_construct, std::forward_as_tuple(optimization_target),
       std::forward_as_tuple(model_metadata));
-  DCHECK(registered ||
-         base::Contains(kAllowedMultipleRegistrations, optimization_target));
-  it->second.model_observers.AddObserver(observer);
+  it.first->second.model_observers.AddObserver(observer);
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_MANAGEMENT,

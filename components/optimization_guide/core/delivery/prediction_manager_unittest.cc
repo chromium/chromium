@@ -723,44 +723,65 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
 
 TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelAddAnotherObserverForSameTarget) {
-  // Fails under "threadsafe" mode.
-  GTEST_FLAG_SET(death_test_style, "fast");
-
   CreatePredictionManager();
 
   FakeOptimizationTargetModelObserver observer1;
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/std::nullopt, &observer1);
-  SetStoreInitialized(/* load_models= */ false,
-                      /* have_models_in_store= */ false);
+  SetStoreInitialized(/*load_models=*/false,
+                      /*have_models_in_store=*/false);
 
   // Ensure observer is hooked up.
-  auto base_model_dir =
+  auto base_model_dir1 =
       GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  prediction_manager()->OnModelReady(
-      base_model_dir, CreatePredictionModelForModelStore(
-                          proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  auto model1 = CreatePredictionModelForModelStore(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model1.mutable_model_info()->set_version(1);
+  prediction_manager()->OnModelReady(base_model_dir1, model1);
   RunUntilIdle();
 
-  EXPECT_EQ(base_model_dir.Append(GetBaseFileNameForModels()),
+  EXPECT_EQ(base_model_dir1.Append(GetBaseFileNameForModels()),
             observer1
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
                 ->GetModelFilePath());
 
-#if !BUILDFLAG(IS_WIN)
-  // Do not run the DCHECK death test on Windows since there's some weird
-  // behavior there.
-
-  // Now, register a new observer - it should die.
+  // Now, register a new observer. It should get the model.
   FakeOptimizationTargetModelObserver observer2;
-  EXPECT_DCHECK_DEATH(
-      prediction_manager()->AddObserverForOptimizationTargetModel(
-          proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-          /*model_metadata=*/std::nullopt, &observer2));
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/std::nullopt, &observer2);
   RunUntilIdle();
-#endif
+  EXPECT_EQ(base_model_dir1.Append(GetBaseFileNameForModels()),
+            observer2
+                .last_received_model_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->GetModelFilePath());
+
+  // Now send a new model and make sure both get it.
+  auto base_model_dir2 =
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+          .AppendASCII("new_model");
+  auto model2 = CreatePredictionModelForModelStore(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model2.mutable_model_info()->set_version(2);
+  model2.mutable_model()->set_download_url(
+      FilePathToString(base_model_dir2.Append(GetBaseFileNameForModels())));
+
+  prediction_manager()->OnModelReady(base_model_dir2, model2);
+  RunUntilIdle();
+
+  EXPECT_EQ(base_model_dir2.Append(GetBaseFileNameForModels()),
+            observer1
+                .last_received_model_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->GetModelFilePath());
+  EXPECT_EQ(base_model_dir2.Append(GetBaseFileNameForModels()),
+            observer2
+                .last_received_model_for_target(
+                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+                ->GetModelFilePath());
 }
 
 // See crbug/1227996.
