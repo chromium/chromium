@@ -18,12 +18,15 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
@@ -109,6 +112,13 @@ public class MultiSelectedTabsContextMenuCoordinator
             MultiInstanceManager multiInstanceManager) {
         return (menuId, tabIds, collaborationId, listViewTouchTracker) -> {
             assert !tabIds.isEmpty() : "Empty tab id list provided";
+            TabModel tabModel = tabModelSupplier.get();
+            List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
+
+            if (menuId == R.id.add_to_tab_group) {
+                // The bottom sheet will handle ungrouping any grouped tabs.
+                tabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
+            }
         };
     }
 
@@ -134,7 +144,19 @@ public class MultiSelectedTabsContextMenuCoordinator
     @Override
     protected void buildMenuActionItems(ModelList itemList, List<Integer> ids) {
         assert !ids.isEmpty() : "Empty ids list provided";
-        assert mTabModel != null : "TabModel cannot be null";
+        boolean isIncognito = mTabModel.isIncognitoBranded();
+
+        Resources res = assumeNonNull(mWindowAndroid.getActivity().get()).getResources();
+        String title;
+
+        // Add tabs to group.
+        title = res.getQuantityString(R.plurals.add_tab_to_group_menu_item, ids.size());
+        itemList.add(
+                new ListItemBuilder()
+                        .withTitle(title)
+                        .withMenuId(R.id.add_to_tab_group)
+                        .withIsIncognito(isIncognito)
+                        .build());
     }
 
     @Override

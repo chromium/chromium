@@ -131,7 +131,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
+import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -6155,8 +6157,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING})
-    @Feature("Tab Context Menu")
-    public void testTabContextMenu_MultipleTabsSelected() {
+    public void testMultiSelectedTabsContextMenu_MultipleTabsSelected() {
         // Setup
         initializeTest(false, false, 0, 5);
         mStripLayoutHelper.onSizeChanged(
@@ -6193,6 +6194,27 @@ public class StripLayoutHelperTest {
         List<Integer> expectedTabIds =
                 List.of(tabs[0].getTabId(), tabs[1].getTabId(), tabs[3].getTabId());
         verify(mMultiSelectedTabsContextMenuCoordinator).showMenu(any(), eq(expectedTabIds));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING})
+    public void testMultiSelectedTabsContextMenu_AddToGroup_MultipleTabs() {
+        initializeTest(false, false, 0, 5);
+        TabGroupListBottomSheetCoordinator bottomSheetCoordinator =
+                mock(TabGroupListBottomSheetCoordinator.class);
+        TabOverflowMenuCoordinator.OnItemClickedCallback<List<Integer>> callback =
+                MultiSelectedTabsContextMenuCoordinator.getMenuItemClickedCallback(
+                        () -> mModel,
+                        mTabGroupModelFilter,
+                        bottomSheetCoordinator,
+                        mMultiInstanceManager);
+        List<Tab> tabsToGroup = List.of(mModel.getTabAt(0), mModel.getTabAt(2));
+        List<Integer> tabIdsToGroup =
+                List.of(tabsToGroup.get(0).getId(), tabsToGroup.get(1).getId());
+
+        callback.onClick(R.id.add_to_tab_group, tabIdsToGroup, null, null);
+        // Verify
+        verify(bottomSheetCoordinator).showBottomSheet(eq(tabsToGroup));
     }
 
     private float getClickCoordinateForTabAtIndex(StripLayoutView[] stripViews, int i) {

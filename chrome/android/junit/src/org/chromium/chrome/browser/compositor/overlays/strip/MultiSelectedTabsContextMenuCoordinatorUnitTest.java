@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +24,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -43,6 +45,8 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -50,13 +54,13 @@ import java.util.List;
 
 /** Unit tests for {@link MultiSelectedTabsContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.DATA_SHARING})
+@EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
 public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     private static final int TAB_1_ID = 1;
     private static final int TAB_2_ID = 2;
-    private static final int TAB_3_ID = 3;
-    private static final int TAB_OUTSIDE_OF_GROUP_ID = 4;
-    private static final int NON_URL_TAB_ID = 5;
+    private static final int TAB_OUTSIDE_OF_GROUP_ID_1 = 3;
+    private static final int TAB_OUTSIDE_OF_GROUP_ID_2 = 4;
+    private static final int NON_URL_TAB_ID = 4;
     private static final Token TAB_GROUP_ID = Token.createRandom();
     private static final GURL EXAMPLE_URL = new GURL("https://example.com");
     private static final GURL CHROME_SCHEME_URL = new GURL("chrome://history");
@@ -72,8 +76,8 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
     private MockTabModel mTabModel;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
-    @Mock private Tab mTab3;
-    @Mock private Tab mTabOutsideOfGroup;
+    @Mock private Tab mTabOutsideOfGroup1;
+    @Mock private Tab mTabOutsideOfGroup2;
     @Mock private Tab mNonUrlTab;
     @Mock private TabRemover mTabRemover;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
@@ -105,24 +109,23 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModel.getTabById(TAB_1_ID)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_2_ID)).thenReturn(mTab2);
-        when(mTabModel.getTabById(TAB_3_ID)).thenReturn(mTab3);
-        when(mTabModel.getTabById(TAB_OUTSIDE_OF_GROUP_ID)).thenReturn(mTabOutsideOfGroup);
+        when(mTabModel.getTabById(TAB_OUTSIDE_OF_GROUP_ID_1)).thenReturn(mTabOutsideOfGroup1);
+        when(mTabModel.getTabById(TAB_OUTSIDE_OF_GROUP_ID_2)).thenReturn(mTabOutsideOfGroup2);
         when(mTabModel.getTabById(NON_URL_TAB_ID)).thenReturn(mNonUrlTab);
         mTabModel.setTabRemoverForTesting(mTabRemover);
         mTabModel.setTabCreatorForTesting(mTabCreator);
 
         when(mTab1.getId()).thenReturn(TAB_1_ID);
         when(mTab2.getId()).thenReturn(TAB_2_ID);
-        when(mTab3.getId()).thenReturn(TAB_3_ID);
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab1.getUrl()).thenReturn(EXAMPLE_URL);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getUrl()).thenReturn(EXAMPLE_URL);
-        when(mTab3.getTabGroupId()).thenReturn(null);
-        when(mTab3.getUrl()).thenReturn(EXAMPLE_URL);
-        when(mTabOutsideOfGroup.getTabGroupId()).thenReturn(null);
-        when(mTabOutsideOfGroup.getUrl()).thenReturn(EXAMPLE_URL);
+        when(mTabOutsideOfGroup1.getTabGroupId()).thenReturn(null);
+        when(mTabOutsideOfGroup1.getUrl()).thenReturn(EXAMPLE_URL);
+        when(mTabOutsideOfGroup2.getTabGroupId()).thenReturn(null);
+        when(mTabOutsideOfGroup2.getUrl()).thenReturn(EXAMPLE_URL);
         when(mNonUrlTab.getTabGroupId()).thenReturn(null);
         when(mNonUrlTab.getUrl()).thenReturn(CHROME_SCHEME_URL);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
@@ -153,8 +156,57 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                         mWindowAndroid);
     }
 
+    /**
+     * Helper to retrieve a quantity string.
+     *
+     * @param resId The resource ID of the string.
+     * @param quantity The quantity.
+     * @return The formatted string.
+     */
+    private String getQuantityString(int resId, int quantity) {
+        return mWeakReferenceActivity.get().getResources().getQuantityString(resId, quantity);
+    }
+
+    private void assertMenuItemTitle(
+            ModelList modelList, int index, String expectedTitle, int expectedMenuItemId) {
+        assertEquals(
+                "Menu item title is incorrect.",
+                expectedTitle,
+                modelList.get(index).model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                "Menu item ID is incorrect.",
+                expectedMenuItemId,
+                modelList.get(index).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
     @Test
-    public void fakeTest() {
-        // This is just to appease CQ. will be removed once context menu gets fleshed out.
+    public void testListMenuItems_tabInGroup() {
+        var modelList = new ModelList();
+        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+                modelList, List.of(TAB_1_ID, TAB_2_ID));
+        assertEquals("Number of items in the list menu is incorrect", 1, modelList.size());
+
+        // List item 1
+        assertMenuItemTitle(
+                modelList,
+                0,
+                getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
+                R.id.add_to_tab_group);
+    }
+
+    @Test
+    public void testListMenuItems_tabOutsideOfGroup() {
+        var modelList = new ModelList();
+        mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
+                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2));
+
+        assertEquals("Number of items in the list menu is incorrect", 1, modelList.size());
+
+        // List item 1
+        assertMenuItemTitle(
+                modelList,
+                0,
+                getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
+                R.id.add_to_tab_group);
     }
 }
