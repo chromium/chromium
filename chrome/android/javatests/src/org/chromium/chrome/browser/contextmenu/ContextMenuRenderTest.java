@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.createAdapter;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.createAdapter;
 
 import android.app.Activity;
 import android.graphics.Bitmap;

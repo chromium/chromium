@@ -6,21 +6,20 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_MENU_ID;
-import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.SUBMENU_ITEMS;
-import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.TITLE;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.addRunnableToCallback;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.hasClickListener;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.setupSubmenuParent;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
 import android.app.Activity;
-import android.view.View.OnClickListener;
 import android.widget.ListView;
 
 import androidx.annotation.IdRes;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.listmenu.ContextMenuSubmenuHeaderItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -49,7 +48,7 @@ public class ContextMenuMediator {
      * @param onItemClicked A callback that takes the MENU_ITEM_ID of an item, to use on click.
      * @param dismissDialog The {@link Runnable} to use to dismiss the context menu.
      */
-    ContextMenuMediator(
+    /* package */ ContextMenuMediator(
             Activity activity,
             ContextMenuHeaderCoordinator headerCoordinator,
             Callback<Integer> onItemClicked,
@@ -117,7 +116,7 @@ public class ContextMenuMediator {
                 continue;
             }
             if (item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU) {
-                setupSubmenuParent(item, mDismissDialog);
+                setupSubmenuParent(mModelList, item, mDismissDialog);
                 continue;
             }
             // Usual case handling
@@ -136,103 +135,6 @@ public class ContextMenuMediator {
         }
 
         return mModelList;
-    }
-
-    /**
-     * Sets up a submenu parent item in the context menu.
-     *
-     * @param item The {@link ListItem} to configure.
-     * @param dismissDialog The {@link Runnable} to dismiss the dialog.
-     */
-    private void setupSubmenuParent(ListItem item, Runnable dismissDialog) {
-        item.model.set(CLICK_LISTENER, (unusedView) -> onSubmenuParentClick(item));
-        setupCallbacksRecursively(item, dismissDialog);
-    }
-
-    /**
-     * Callback to use when a menu item of type CONTEXT_MENU_ITEM_WITH_SUBMENU is clicked.
-     *
-     * @param item The menu item which was clicked.
-     */
-    private void onSubmenuParentClick(ListItem item) {
-        ModelList parentModelList = shallowCopy(mModelList);
-        mModelList.clear();
-        // Add the clicked item as a header to the submenu.
-        final PropertyModel model =
-                new PropertyModel.Builder(ContextMenuSubmenuHeaderItemProperties.ALL_KEYS)
-                        .with(ContextMenuSubmenuHeaderItemProperties.TITLE, item.model.get(TITLE))
-                        .with(ENABLED, true)
-                        .with(CLICK_LISTENER, (unusedView) -> setModelListContent(parentModelList))
-                        .build();
-        mModelList.add(new ListItem(ListItemType.CONTEXT_MENU_SUBMENU_HEADER, model));
-
-        for (ListItem listItem : item.model.get(SUBMENU_ITEMS)) {
-            mModelList.add(listItem);
-        }
-    }
-
-    private void setModelListContent(ModelList target) {
-        mModelList.clear();
-        for (ListItem item : target) {
-            mModelList.add(item);
-        }
-    }
-
-    /** Returns a shallow copy of {@param modelList}. */
-    private static ModelList shallowCopy(ModelList modelList) {
-        ModelList result = new ModelList();
-        for (ListItem item : modelList) {
-            result.add(item);
-        }
-        return result;
-    }
-
-    /** Returns whether {@param item} has a click listener. */
-    private static boolean hasClickListener(ListItem item) {
-        return item.model != null
-                && item.model.containsKey(CLICK_LISTENER)
-                && item.model.get(CLICK_LISTENER) != null;
-    }
-
-    /**
-     * Makes {@param dismissDialog} run at the end of the callback of {@param item}.
-     *
-     * @param item The item to which we would add {@param runnable}.
-     * @param dismissDialog The {@link Runnable} to run to dismiss the dialog.
-     */
-    private static void addRunnableToCallback(ListItem item, Runnable dismissDialog) {
-        if (hasClickListener(item)) {
-            OnClickListener oldListener = item.model.get(CLICK_LISTENER);
-            item.model.set(
-                    CLICK_LISTENER,
-                    (view) -> {
-                        oldListener.onClick(view);
-                        dismissDialog.run();
-                    });
-        }
-    }
-
-    /**
-     * Runs {@param dismissDialog} at the end of each callback, recursively (through submenu items).
-     *
-     * @param item The item to start with.
-     * @param dismissDialog The {@link Runnable} to run.
-     */
-    private void setupCallbacksRecursively(ListItem item, Runnable dismissDialog) {
-        if (item.model.containsKey(SUBMENU_ITEMS)) {
-            item.model.set(CLICK_LISTENER, (unusedView) -> onSubmenuParentClick(item));
-            for (ListItem submenuItem :
-                    PropertyModel.getFromModelOrDefault(item.model, SUBMENU_ITEMS, List.of())) {
-                setupCallbacksRecursively(submenuItem, dismissDialog);
-            }
-        } else {
-            // Note: CONTEXT_MENU_SUBMENU_HEADER items should be (and are) excluded by this,
-            // because CONTEXT_MENU_SUBMENU_HEADER items aren't in the model's SUBMENU_ITEMS.
-            // CONTEXT_MENU_ITEM_WITH_SUBMENU items should also not be included.
-            // The rationale for excluding these is that we don't want to dismiss the dialog when we
-            // are navigating through submenus.
-            addRunnableToCallback(item, dismissDialog);
-        }
     }
 
     /* package= */ void clickItemForTesting(int id, boolean enabled) {
