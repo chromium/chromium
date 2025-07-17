@@ -16,6 +16,9 @@
 
 namespace {
 
+// Symbol size for symbols on the keyboard accessory.
+constexpr CGFloat kSymbolImagePointSize = 24;
+
 // Default height for the keyboard accessory.
 constexpr CGFloat kDefaultAccessoryHeight = 44;
 
@@ -50,6 +53,19 @@ constexpr CGFloat ManualFillCloseButtonBottomInset = 4;
 
 // The height for the top and bottom sepparator lines.
 constexpr CGFloat ManualFillSeparatorHeight = 0.5;
+
+// Symbols used by FormInputAccessoryView.
+NSString* const kChevronDownSymbol = @"chevron.down";
+NSString* const kChevronUpSymbol = @"chevron.up";
+
+// Returns the image of the symbol with the provided name.
+UIImage* SymbolNamed(NSString* imageName) {
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolImagePointSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  return [UIImage systemImageNamed:imageName withConfiguration:configuration];
+}
 
 }  // namespace
 
@@ -440,14 +456,12 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
             accessibilityLabel:(NSString*)accessibilityLabel {
   UIButton* imageButton = [UIButton buttonWithType:UIButtonTypeSystem];
   [imageButton setImage:image forState:UIControlStateNormal];
-  if (_largeAccessoryViewEnabled) {
-    [imageButton.widthAnchor
-        constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
-        .active = YES;
-    [imageButton.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
-        .active = YES;
-  }
+  [imageButton.widthAnchor
+      constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
+      .active = YES;
+  [imageButton.heightAnchor
+      constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
+      .active = YES;
   [imageButton addTarget:self
                   action:action
         forControlEvents:UIControlEventTouchUpInside];
@@ -535,7 +549,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Create the previous button.
 - (UIButton*)createPreviousButtonWithText:
     (FormInputAccessoryViewTextData*)textData {
-  return [self createImageButton:[UIImage imageNamed:@"mf_arrow_up"]
+  return [self createImageButton:SymbolNamed(kChevronUpSymbol)
                           action:@selector(previousButtonTapped)
               accessibilityLabel:textData.previousButtonAccessibilityLabel];
 }
@@ -543,7 +557,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Create the next button.
 - (UIButton*)createNextButtonWithText:
     (FormInputAccessoryViewTextData*)textData {
-  return [self createImageButton:[UIImage imageNamed:@"mf_arrow_down"]
+  return [self createImageButton:SymbolNamed(kChevronDownSymbol)
                           action:@selector(nextButtonTapped)
               accessibilityLabel:textData.nextButtonAccessibilityLabel];
 }
