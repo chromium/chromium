@@ -307,7 +307,7 @@ ProductSpecificationsServerProxy::CreateEndpointFetcher(
       .SetAuthType(endpoint_fetcher::OAUTH)
       .SetOauthScopes(
           std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope})
-      .SetConsentLevel(signin::ConsentLevel::kSync)
+      .SetConsentLevel(signin::ConsentLevel::kSignin)
       .SetTimeout(base::Milliseconds(kTimeoutMs))
       .SetOauthConsumerName(kOAuthName)
       .SetPostData(post_data);

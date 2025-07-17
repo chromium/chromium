@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
+#include "components/signin/public/base/consent_level.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -44,7 +45,8 @@ class SubscriptionsServerProxy {
  public:
   SubscriptionsServerProxy(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::ConsentLevel consent_level);
   SubscriptionsServerProxy(const SubscriptionsServerProxy&) = delete;
   SubscriptionsServerProxy& operator=(const SubscriptionsServerProxy&) = delete;
   virtual ~SubscriptionsServerProxy();
@@ -115,6 +117,7 @@ class SubscriptionsServerProxy {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  const signin::ConsentLevel consent_level_;
 
   base::WeakPtrFactory<SubscriptionsServerProxy> weak_ptr_factory_;
 };

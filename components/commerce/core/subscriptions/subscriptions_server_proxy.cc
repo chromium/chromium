@@ -22,6 +22,7 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -77,9 +78,11 @@ namespace commerce {
 
 SubscriptionsServerProxy::SubscriptionsServerProxy(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::ConsentLevel consent_level)
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager),
+      consent_level_(consent_level),
       weak_ptr_factory_(this) {}
 SubscriptionsServerProxy::~SubscriptionsServerProxy() = default;
 
@@ -290,12 +293,6 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
     const endpoint_fetcher::HttpMethod http_method,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
-  // If ReplaceSyncPromosWithSignInPromos is enabled - ConsentLevel::kSync is no
-  // longer attainable. See crbug.com/1503156 for details.
-  signin::ConsentLevel consent_level =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
   EndpointFetcher::RequestParams::Builder request_params =
       EndpointFetcher::RequestParams::Builder(http_method, annotation_tag);
   request_params.SetUrl(url)
@@ -303,7 +300,7 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
       .SetAuthType(endpoint_fetcher::OAUTH)
       .SetOauthScopes(
           std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope})
-      .SetConsentLevel(consent_level)
+      .SetConsentLevel(consent_level_)
       .SetTimeout(base::Milliseconds(kTimeoutMs.Get()))
       .SetOauthConsumerName(kOAuthName)
       .SetPostData(post_data);

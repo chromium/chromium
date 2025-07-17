@@ -62,7 +62,10 @@ namespace commerce {
 
 class MockSubscriptionsServerProxy : public SubscriptionsServerProxy {
  public:
-  MockSubscriptionsServerProxy() : SubscriptionsServerProxy(nullptr, nullptr) {}
+  MockSubscriptionsServerProxy()
+      : SubscriptionsServerProxy(nullptr,
+                                 nullptr,
+                                 signin::ConsentLevel::kSignin) {}
   MockSubscriptionsServerProxy(const MockSubscriptionsServerProxy&) = delete;
   MockSubscriptionsServerProxy operator=(const MockSubscriptionsServerProxy&) =
       delete;

@@ -38,12 +38,14 @@ SubscriptionsManager::SubscriptionsManager(
     SessionProtoStorage<
         commerce_subscription_db::CommerceSubscriptionContentProto>*
         subscription_proto_db,
-    AccountChecker* account_checker)
+    AccountChecker* account_checker,
+    signin::ConsentLevel consent_level)
     : SubscriptionsManager(
           identity_manager,
           std::make_unique<SubscriptionsServerProxy>(
               identity_manager,
-              std::move(url_loader_factory)),
+              std::move(url_loader_factory),
+              consent_level),
           std::make_unique<SubscriptionsStorage>(subscription_proto_db),
           account_checker) {}
 

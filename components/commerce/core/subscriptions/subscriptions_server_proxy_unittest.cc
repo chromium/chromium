@@ -20,6 +20,7 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_storage.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -115,7 +116,8 @@ class SpySubscriptionsServerProxy : public SubscriptionsServerProxy {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : SubscriptionsServerProxy(identity_manager,
-                                 std::move(url_loader_factory)) {}
+                                 std::move(url_loader_factory),
+                                 signin::ConsentLevel::kSignin) {}
   SpySubscriptionsServerProxy(const SpySubscriptionsServerProxy&) = delete;
   SpySubscriptionsServerProxy operator=(const SpySubscriptionsServerProxy&) =
       delete;
