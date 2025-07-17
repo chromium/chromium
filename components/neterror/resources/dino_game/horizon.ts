@@ -82,7 +82,7 @@ export class Horizon {
         this.obstacleTypes[i]!.multipleSpeed =
             this.obstacleTypes[i]!.multipleSpeed / 2;
         this.obstacleTypes[i]!.minGap *= 1.5;
-        this.obstacleTypes[i]!.minSpeed = this.obstacleTypes[i]!.minSpeed! / 2;
+        this.obstacleTypes[i]!.minSpeed = this.obstacleTypes[i]!.minSpeed / 2;
 
         // Convert variable y position obstacles to fixed.
         const obstacleYpos = this.obstacleTypes[i]!.yPos;
@@ -110,10 +110,10 @@ export class Horizon {
     this.obstacleTypes = runnerSpriteDefinition.obstacles;
     this.adjustObstacleSpeed();
 
-    setMaxObstacleGapCoefficient(runnerSpriteDefinition.maxGapCoefficient!);
-    setMaxObstacleLength(runnerSpriteDefinition.maxObstacleLength!);
+    setMaxObstacleGapCoefficient(runnerSpriteDefinition.maxGapCoefficient);
+    setMaxObstacleLength(runnerSpriteDefinition.maxObstacleLength);
 
-    setBackgroundElGlobalConfig(runnerSpriteDefinition.backgroundElConfig!);
+    setBackgroundElGlobalConfig(runnerSpriteDefinition.backgroundElConfig);
 
     this.horizonLines = [];
     for (let i = 0; i < runnerSpriteDefinition.lines.length; i++) {
@@ -258,19 +258,18 @@ export class Horizon {
 
     // Check for multiples of the same type of obstacle.
     // Also check obstacle is available at current speed.
-    if ((obstacleCount > 0 &&
-         this.duplicateObstacleCheck(obstacleType.type!)) ||
-        currentSpeed < obstacleType.minSpeed!) {
+    if ((obstacleCount > 0 && this.duplicateObstacleCheck(obstacleType.type)) ||
+        currentSpeed < obstacleType.minSpeed) {
       this.addNewObstacle(currentSpeed);
     } else {
-      const obstacleSpritePos = this.spritePos[obstacleType.type!]!;
+      const obstacleSpritePos = this.spritePos[obstacleType.type];
 
       this.obstacles.push(new Obstacle(
           this.canvasCtx, obstacleType, obstacleSpritePos, this.dimensions,
-          this.gapCoefficient, currentSpeed, obstacleType.width!,
+          this.gapCoefficient, currentSpeed, obstacleType.width,
           this.altGameModeActive));
 
-      this.obstacleHistory.unshift(obstacleType.type!);
+      this.obstacleHistory.unshift(obstacleType.type);
 
       if (this.obstacleHistory.length > 1) {
         const maxObstacleDuplicationValue =
@@ -294,7 +293,7 @@ export class Horizon {
     const maxObstacleDuplicationValue =
         Runner.getInstance().getConfig().maxObstacleDuplication;
     assert(maxObstacleDuplicationValue);
-    return duplicateCount >= maxObstacleDuplicationValue!;
+    return duplicateCount >= maxObstacleDuplicationValue;
   }
 
   /**

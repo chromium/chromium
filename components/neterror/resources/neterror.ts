@@ -230,7 +230,7 @@ function onDocumentLoad() {
 }
 
 function onTemplateDataReceived(newData: TemplateData) {
-  lastData = newData as TemplateData;
+  lastData = newData;
   render(getHtml(lastData, showingDetails), getRequiredElement('content'));
 
   if (!isSubFrame && newData.iconClass === 'icon-offline') {
