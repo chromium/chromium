@@ -84,15 +84,21 @@ class CORE_EXPORT FlexLayoutAlgorithm
       wtf_size_t flex_line_idx,
       LogicalOffset offset);
 
-  // Computes and updates the row adjustment for the line at `flex_line_idx` to
-  // account for gap suppression in a row-based flex container during
-  // fragmentation. When a row does not fit in the current fragmentainer, this
-  // function calculates the gap that would otherwise appear at the top of the
-  // next fragmentainer.
+  // Computes and updates the adjustment for `flex_line` to account for gap
+  // suppression during fragmentation. In column-based flex containers, `gap`
+  // represents the item gap. In row-based flex containers, it represents the
+  // row gap. The `previous_content_block_end` indicates the end offset of the
+  // previous item (in column flex) or the previous row/line (in row flex). The
+  // previous row block end accounts for any additional space available before a
+  // gap due to alignment.
+  //
+  // When an item or row overflows the current fragmentainer, this function
+  // calculates and suppresses the gap that would otherwise appear at the top of
+  // the next fragmentainer.
   void UpdateOffsetAdjustmentForSuppressedRowGap(
-      LayoutUnit offset_in_stitched_container,
-      wtf_size_t flex_line_idx,
-      FlexLineVector* flex_lines) const;
+      LayoutUnit gap,
+      LayoutUnit previous_content_block_end,
+      FlexLine* flex_line) const;
 
   StyleContentAlignmentData ResolvedJustifyContent() const;
 

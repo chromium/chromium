@@ -2725,8 +2725,19 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           if (row_break_status == BreakStatus::kBrokeBefore) {
             // If a gap overlaps a break, or is the last content before a break,
             // suppress it.
-            UpdateOffsetAdjustmentForSuppressedRowGap(
-                offset_in_stitched_container, flex_line_idx, flex_lines);
+            if (flex_line_idx > 0) {
+              // The available space should be dependent on previous row's block
+              // end relative to this fragmentainer. This allows us to determine
+              // the actual available space and how much of the gap is actually
+              // consumed in this fragmentainer.
+              LayoutUnit prev_flex_line_end =
+                  (*flex_lines)[flex_line_idx - 1].LineCrossEnd() -
+                  offset_in_stitched_container;
+              UpdateOffsetAdjustmentForSuppressedRowGap(
+                  gap_between_lines_,
+                  /*previous_content_block_end=*/prev_flex_line_end,
+                  &flex_line);
+            }
 
             ConsumeRemainingFragmentainerSpace(offset_in_stitched_container,
                                                &flex_line);
@@ -2793,6 +2804,13 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     if (break_status == BreakStatus::kBrokeBefore) {
+      // For column flex containers, suppress the row gap (i.e.
+      // `gap_between_items_`) that may be split across fragmentainer breaks.
+      if (is_column_ && flex_item_idx > 0) {
+        UpdateOffsetAdjustmentForSuppressedRowGap(
+            gap_between_items_,
+            /*previous_content_block_end=*/intrinsic_block_size_, &flex_line);
+      }
       ConsumeRemainingFragmentainerSpace(offset_in_stitched_container,
                                          &flex_line, current_column_break_info);
       // For column flex containers, continue to the next column. For rows,
@@ -3022,13 +3040,12 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
 }
 
 void FlexLayoutAlgorithm::UpdateOffsetAdjustmentForSuppressedRowGap(
-    LayoutUnit offset_in_stitched_container,
-    wtf_size_t flex_line_idx,
-    FlexLineVector* flex_lines) const {
-  CHECK(!is_column_);
-  // Return early if this is the first row or there are no row gaps specified
-  // since there will be no gaps to suppress.
-  if (flex_line_idx == 0 || gap_between_lines_ == LayoutUnit()) {
+    LayoutUnit gap,
+    LayoutUnit previous_content_block_end,
+    FlexLine* flex_line) const {
+  // Return early if there are no gaps specified since there will be nothing to
+  // suppress.
+  if (gap == LayoutUnit()) {
     return;
   }
 
@@ -3041,33 +3058,37 @@ void FlexLayoutAlgorithm::UpdateOffsetAdjustmentForSuppressedRowGap(
       To<BlockBreakToken>(container_builder_.LastChildBreakToken())
           ->IsForcedBreak();
 
-  // Here, the current row could not fit in this fragmentainer, so we want to
-  // suppress the gap that would appear at the start of the subsequent
-  // fragmentainer. We'll factor this gap into the flex line's item
-  // offset adjustment, allowing it to be applied during layout in the
-  // subsequent fragmentainer.
+  // Here, the current row or item could not fit in this fragmentainer, so we
+  // want to suppress the gap that would appear at the start of the subsequent
+  // fragmentainer. We'll factor this gap into the flex line's item offset
+  // adjustment, allowing it to be applied during layout in the subsequent
+  // fragmentainer.
   if (is_forced_break) {
-    // For a forced break, the entire row gap is deferred to the next
-    // fragmentainer, so we subtract the full gap from the item offset
-    // adjustment.
-    (*flex_lines)[flex_line_idx].item_offset_adjustment -= gap_between_lines_;
-  } else {
-    // If the break isn't forced, part of the row gap may have already been
-    // consumed in this fragmentainer. We only suppress the unconsumed portion.
+    // For a forced break, the entire gap is deferred to the next fragmentainer,
+    // so we subtract the full gap from the item offset adjustment.
+    flex_line->item_offset_adjustment -= gap;
+    return;
+  }
 
-    // The available space should be dependent on previous row's block end
-    // relative to this fragmentainer. This allows us to determine the actual
-    // available space and how much of the gap is actually consumed in this
-    // fragmentainer.
-    LayoutUnit prev_flex_line_end =
-        (*flex_lines)[flex_line_idx - 1].LineCrossEnd() -
-        offset_in_stitched_container;
-    LayoutUnit available_space =
-        (FragmentainerSpaceLeftForChildren() - prev_flex_line_end)
-            .ClampNegativeToZero();
-    CHECK_GE(gap_between_lines_, available_space);
-    (*flex_lines)[flex_line_idx].item_offset_adjustment -=
-        (gap_between_lines_ - available_space);
+  LayoutUnit available_space =
+      FragmentainerSpaceAvailable(previous_content_block_end);
+  // If the break isn't forced, part of the gap may have already been consumed
+  // in this fragmentainer. We only suppress the unconsumed portion.
+  if (gap > available_space) {
+    // If the gap is larger than the available space, we need to adjust the
+    // item offset adjustment to account for the unconsumed portion of the gap.
+    // For row flex containers, the gap will always be greater than or equal to
+    // the available space in a non-forced break scenario. This is because the
+    // available space is based on the previous row's end.
+    flex_line->item_offset_adjustment -= (gap - available_space);
+  } else {
+    // In column flex containers, we may encounter a case where the available
+    // space is larger than the gap, yet an item still doesn't fit. In such
+    // cases, the entire gap has already been consumed in this fragmentainer, so
+    // no adjustment is needed. Adjustments should only be made when the gap
+    // exceeds the available space which means that part of the gap may appear
+    // in the next fragmentainer.
+    CHECK(is_column_);
   }
 }
 
