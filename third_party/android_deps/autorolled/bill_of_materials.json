@@ -22,7 +22,7 @@
     {
         "name": "annotation-experimental",
         "group": "androidx.annotation",
-        "version": "1.5.0"
+        "version": "1.5.1"
     },
     {
         "name": "annotation-jvm",
@@ -322,12 +322,12 @@
     {
         "name": "concurrent-futures",
         "group": "androidx.concurrent",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "concurrent-futures-ktx",
         "group": "androidx.concurrent",
-        "version": "1.3.0-SNAPSHOT"
+        "version": "1.3.0"
     },
     {
         "name": "constraintlayout",
@@ -382,7 +382,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.6.0-alpha03"
+        "version": "1.6.0-alpha04"
     },
     {
         "name": "credentials-play-services-auth",
@@ -582,7 +582,7 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.9.1"
+        "version": "2.9.2"
     },
     {
         "name": "lifecycle-runtime",
