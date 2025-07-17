@@ -169,6 +169,10 @@ source_set("sandbox_linux_unittests_sources") {
   if (use_seccomp_bpf && compile_syscall_broker) {
     sources += [ "integration_tests/seccomp_broker_process_unittest.cc" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 action("bpf_dsl_golden") {
