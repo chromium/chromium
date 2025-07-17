@@ -941,7 +941,10 @@ class SessionRestoreImpl : public BrowserListObserver {
           tab_index_list.push_back(
               browser->GetTabStripModel()->GetIndexOfTab(tab));
         }
-        if (!tab_contents_list.empty()) {
+
+        // The number of supported split tabs is 2. Do not attempt to restore
+        // more than this to future proof it.
+        if (tab_contents_list.size() == 2) {
           browser->tab_strip_model()->RestoreSplit(
               split_id, tab_index_list, split_tabs::SplitTabVisualData());
         }

@@ -139,6 +139,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -1730,10 +1731,11 @@ void Browser::OnSplitTabChanged(const SplitTabChange& change) {
       UpdateSplitTabSessionVisualData(change.split_id);
       break;
     }
+
     case SplitTabChange::Type::kVisualsChanged: {
-      // Update for ratio is done from resize from multicontent view delegate.
-      if (change.GetVisualsChange()->reason() !=
-          SplitTabChange::SplitVisualChangeReason::kRatioUpdated) {
+      // Update for resize from the handle is done from multicontent view
+      // delegate.
+      if (!GetBrowserView().multi_contents_view()->IsSplitResizing()) {
         UpdateSplitTabSessionVisualData(change.split_id);
       }
       break;

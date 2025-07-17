@@ -108,6 +108,11 @@ class MultiContentsView : public views::View,
   // If in a split view, swaps the order of the two contents views.
   void OnSwap();
 
+  // If the split view is being resized.
+  bool IsSplitResizing() const {
+    return initial_start_width_on_resize_.has_value();
+  }
+
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
 
