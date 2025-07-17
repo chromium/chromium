@@ -9935,6 +9935,8 @@ from previous Chrome versions.
   <int value="-1515835427"
       label="NTPRealboxContextualAndTrendingSuggestions:enabled"/>
   <int value="-1515415104" label="top-document-isolation:disabled"/>
+  <int value="-1515383488"
+      label="SafetyHubDisruptiveNotificationRevocation:disabled"/>
   <int value="-1515198913" label="AllowPolyDevicePairing:disabled"/>
   <int value="-1514943439" label="ash-enable-swipe-to-close-in-overview-mode"/>
   <int value="-1514717827" label="ConvertTrackpadEventsToMouse:enabled"/>
@@ -16489,6 +16491,8 @@ from previous Chrome versions.
   <int value="904047636"
       label="UnifiedPasswordManagerLocalPasswordsAndroidWithMigration:disabled"/>
   <int value="904159815" label="VideoPlayerAppHidden:disabled"/>
+  <int value="904214177"
+      label="SafetyHubDisruptiveNotificationRevocation:enabled"/>
   <int value="904437796" label="OmniboxBlurWithEscape:disabled"/>
   <int value="904441371" label="LocalNetworkAccessChecksWebRTC:disabled"/>
   <int value="904811479" label="query-tiles-enable-trending"/>

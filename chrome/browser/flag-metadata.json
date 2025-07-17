@@ -8583,6 +8583,14 @@
     "expiry_milestone": 137
   },
   {
+    "name": "safety-hub-disruptive-notification-revocation",
+    "owners": [
+      "olesiamarukhno@google.com",
+      "antoniosartori@chromium.org"
+    ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "safety-hub-followup",
     "owners": [
       "zalmashni@google.com",

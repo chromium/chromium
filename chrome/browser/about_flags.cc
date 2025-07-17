@@ -4701,6 +4701,34 @@ const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
 };
 // LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:DataSharingVersioningChoices)
 
+const FeatureEntry::FeatureParam
+    kSafetyHubDisruptiveNotificationRevocationVariations_RevokeAll[] = {
+        {"shadow_run", "false"},
+        {"max_engagement_score", "100.0"},
+        {"min_notification_count", "0"},
+        {"waiting_time_as_proposed", "0d"},
+        {"waiting_for_metrics_days", "0"}};
+const FeatureEntry::FeatureParam
+    kSafetyHubDisruptiveNotificationRevocationVariations_Moderate[] = {
+        {"shadow_run", "false"},
+        {"max_engagement_score", "0.0"},
+        {"min_notification_count", "4"},
+        {"waiting_time_as_proposed", "4d"},
+        {"waiting_for_metrics_days", "0"}};
+const FeatureEntry::FeatureVariation
+    kSafetyHubDisruptiveNotificationRevocationVariations[] = {
+        {"- Revoke all for testing",
+         kSafetyHubDisruptiveNotificationRevocationVariations_RevokeAll,
+         std::size(
+             kSafetyHubDisruptiveNotificationRevocationVariations_RevokeAll),
+         nullptr},
+        {"- Moderate",
+         kSafetyHubDisruptiveNotificationRevocationVariations_Moderate,
+         std::size(
+             kSafetyHubDisruptiveNotificationRevocationVariations_Moderate),
+         nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -12828,6 +12856,15 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLensOverlayEduActionChipVariations,
                                     "LensOverlayEduActionChip")},
 #endif
+
+    {"safety-hub-disruptive-notification-revocation",
+     flag_descriptions::kSafetyHubDisruptiveNotificationRevocationName,
+     flag_descriptions::kSafetyHubDisruptiveNotificationRevocationDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kSafetyHubDisruptiveNotificationRevocation,
+         kSafetyHubDisruptiveNotificationRevocationVariations,
+         "SafetyHubDisruptiveNotificationRevocation")},
 
     // Add new entries above this line.
 

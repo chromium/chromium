@@ -3776,6 +3776,12 @@ const char kSafetyHubName[] = "Safety Check v2";
 const char kSafetyHubDescription[] =
     "When enabled, Safety Check v2 will be visible in settings.";
 
+const char kSafetyHubDisruptiveNotificationRevocationName[] =
+    "Safety Hub - Disruptive notification revocation";
+const char kSafetyHubDisruptiveNotificationRevocationDescription[] =
+    "Enables autorevoking notifications with high volume and low site "
+    "engagement score";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kSafetyHubMagicStackName[] = "Safety Check v2 - Magic Stack";
 const char kSafetyHubMagicStackDescription[] =
