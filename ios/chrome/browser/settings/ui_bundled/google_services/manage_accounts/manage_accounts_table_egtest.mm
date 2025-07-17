@@ -237,8 +237,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
 
   // Cancel it.
-  if ([ChromeEarlGrey isIPadIdiom] || iOS26_OR_ABOVE()) {
-    // There is no Cancel button on ipad and on newer iOS versions.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // There is no Cancel button on ipad.
     // Tap on Remove fakeIdentity1 button to dismiss the alert.
     [[EarlGrey
         selectElementWithMatcher:
