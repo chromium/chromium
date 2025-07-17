@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "base/timer/timer.h"
 #import "components/security_interstitials/core/insecure_form_util.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
@@ -1687,37 +1688,63 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return;
   }
 
-  if (policy != web::CERT_ACCEPT_POLICY_ALLOW &&
-      SecTrustGetCertificateCount(trust)) {
-    // The cert is invalid and the user has not agreed to proceed. Cache the
-    // cert verification result in `_certVerificationErrors`, so that it can
-    // later be reused inside `didFailProvisionalNavigation:`.
-    // The leaf cert is used as the key, because the chain provided by
-    // `didFailProvisionalNavigation:` will differ (it is the server-supplied
-    // chain), thus if intermediates were considered, the keys would mismatch.
+  // SecTrustEvaluate performs trust evaluation synchronously, possibly making
+  // network requests. The UI thread should not be blocked by that operation.
+  __weak __typeof(self) weakSelf = self;
+  auto verify_certificate = ^{
+    if (policy != web::CERT_ACCEPT_POLICY_ALLOW &&
+        SecTrustGetCertificateCount(trust)) {
+      // The cert is invalid and the user has not agreed to proceed. Cache
+      // the cert verification result in `_certVerificationErrors`, so that
+      // it can later be reused inside `didFailProvisionalNavigation:`. The
+      // leaf cert is used as the key, because the chain provided by
+      // `didFailProvisionalNavigation:` will differ (it is the
+      // server-supplied chain), thus if intermediates were considered, the
+      // keys would mismatch.
 
-    scoped_refptr<net::X509Certificate> leafCert = nil;
-    base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
-        SecTrustCopyCertificateChain(trust));
-    SecCertificateRef secCertificate =
-        base::apple::CFCastStrict<SecCertificateRef>(
-            CFArrayGetValueAtIndex(certificateChain.get(), 0));
-    leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
-        base::apple::ScopedCFTypeRef<SecCertificateRef>(
-            secCertificate, base::scoped_policy::RETAIN),
-        {});
+      scoped_refptr<net::X509Certificate> leafCert = nil;
+      base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
+          SecTrustCopyCertificateChain(trust));
+      SecCertificateRef secCertificate =
+          base::apple::CFCastStrict<SecCertificateRef>(
+              CFArrayGetValueAtIndex(certificateChain.get(), 0));
+      leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
+          base::apple::ScopedCFTypeRef<SecCertificateRef>(
+              secCertificate, base::scoped_policy::RETAIN),
+          {});
 
-    if (leafCert) {
-      bool is_recoverable =
-          policy == web::CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_UNDECIDED_BY_USER;
-      std::string host =
-          base::SysNSStringToUTF8(challenge.protectionSpace.host);
-      _certVerificationErrors->Put(
-          web::CertHostPair(leafCert, host),
-          web::CertVerificationError(is_recoverable, certStatus));
+      if (leafCert) {
+        bool is_recoverable =
+            policy ==
+            web::CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_UNDECIDED_BY_USER;
+        std::string host =
+            base::SysNSStringToUTF8(challenge.protectionSpace.host);
+
+        // TODO(crbug.com/40588591): This should use PostTask to post to
+        // WebThread::UI with BLOCK_SHUTDOWN once shutdown behaviors are
+        // supported on the UI thread. BLOCK_SHUTDOWN is necessary because
+        // WKWebView throws an exception if the completion handler doesn't
+        // run.
+        dispatch_async(dispatch_get_main_queue(), ^{
+          __strong __typeof(self) strongSelf = weakSelf;
+          if (strongSelf) {
+            strongSelf->_certVerificationErrors->Put(
+                web::CertHostPair(leafCert, host),
+                web::CertVerificationError(is_recoverable, certStatus));
+          }
+          completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace,
+                            nil);
+        });
+        return;
+      }
     }
-  }
-  completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace, nil);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace, nil);
+    });
+  };
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                             base::BindOnce(verify_certificate));
 }
 
 // Used in webView:didReceiveAuthenticationChallenge:completionHandler: to reply
