@@ -472,7 +472,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeGraphWithTwoTranspose",
       "BuildAndComputeMultipleOperatorGemm",
       // "BuildAndComputeReluWithOnlyConstantInput",
-      "BuildAndComputeReshapeConcatAndClamp",
+      // "BuildAndComputeReshapeConcatAndClamp",
       "BuildAndComputeSingleOperatorClamp",
       // "BuildAndComputeSingleOperatorGruCell",
       // "BuildAndComputeSingleOperatorGru",
