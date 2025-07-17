@@ -279,10 +279,13 @@ void PageLifecycleStateManager::OnPageLifecycleStateChanged(
 
   last_acknowledged_state_ = std::move(acknowledged_state);
 
-  // We can get here in the `kEntered` state a unrelated lifecycle state change
-  // arrives when we are already in back/forward-cache.
-  if (last_acknowledged_state_->is_in_back_forward_cache &&
-      back_forward_cache_entered_ != BackForwardCacheEntered::kEntered) {
+  // The renderer's acked state is moving from `is_in_back_forward_cache` false
+  // to true. This should only happen as a result of a response to
+  // `SendPageLifecycleUpdate`. We ignore updates that are not changing the
+  // `is_in_back_forward_cache` state.
+  if (!old_state->is_in_back_forward_cache &&
+      last_acknowledged_state_->is_in_back_forward_cache) {
+    CHECK(set_page_lifecycle_state_response);
     SCOPED_CRASH_KEY_NUMBER("bfcache", "current_entered_",
                             static_cast<int>(back_forward_cache_entered_));
     SCOPED_CRASH_KEY_NUMBER("bfcache", "splsr",
