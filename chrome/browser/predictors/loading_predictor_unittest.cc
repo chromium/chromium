@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/predictors/loading_test_util.h"
+#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -47,7 +48,7 @@ const char kUrl3[] =
 
 class MockPreconnectManager : public PreconnectManager {
  public:
-  MockPreconnectManager(base::WeakPtr<Delegate> delegate, Profile* profile);
+  MockPreconnectManager() = default;
 
   MOCK_METHOD2(StartProxy,
                void(const GURL& url,
@@ -76,15 +77,17 @@ class MockPreconnectManager : public PreconnectManager {
                observer_client));
   MOCK_METHOD1(Stop, void(const GURL& url));
 
+  MOCK_METHOD0(GetWeakPtr, base::WeakPtr<PreconnectManager>());
+  MOCK_METHOD1(SetNetworkContextForTesting,
+               void(network::mojom::NetworkContext* network_context));
+  MOCK_METHOD1(SetObserverForTesting, void(Observer* observer));
+
   void Start(const GURL& url,
              std::vector<PreconnectRequest> requests) override {
     StartProxy(url, requests);
   }
 };
 
-MockPreconnectManager::MockPreconnectManager(base::WeakPtr<Delegate> delegate,
-                                             Profile* profile)
-    : PreconnectManager(delegate, profile) {}
 
 LoadingPredictorConfig CreateConfig() {
   LoadingPredictorConfig config;
@@ -168,8 +171,7 @@ class LoadingPredictorPreconnectTest : public LoadingPredictorTest {
 void LoadingPredictorPreconnectTest::SetUp() {
   LoadingPredictorTest::SetUp();
   auto mock_preconnect_manager =
-      std::make_unique<StrictMock<MockPreconnectManager>>(
-          predictor_->GetWeakPtr(), profile_.get());
+      std::make_unique<StrictMock<MockPreconnectManager>>();
   mock_preconnect_manager_ = mock_preconnect_manager.get();
   predictor_->set_mock_preconnect_manager(std::move(mock_preconnect_manager));
 }

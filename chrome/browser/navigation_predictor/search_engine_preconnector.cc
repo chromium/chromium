@@ -289,7 +289,7 @@ void SearchEnginePreconnector::StartPreconnectWithDelay(
 predictors::PreconnectManager&
 SearchEnginePreconnector::GetPreconnectManager() {
   if (!preconnect_manager_) {
-    preconnect_manager_ = std::make_unique<predictors::PreconnectManager>(
+    preconnect_manager_ = predictors::PreconnectManager::Create(
         GetWeakPtr(), Profile::FromBrowserContext(browser_context_));
   }
 

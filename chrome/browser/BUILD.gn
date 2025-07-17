@@ -1198,6 +1198,8 @@ static_library("browser") {
     "predictors/perform_network_context_prefetch.h",
     "predictors/preconnect_manager.cc",
     "predictors/preconnect_manager.h",
+    "predictors/preconnect_manager_impl.cc",
+    "predictors/preconnect_manager_impl.h",
     "predictors/predictor_database.cc",
     "predictors/predictor_database.h",
     "predictors/predictor_database_factory.cc",
