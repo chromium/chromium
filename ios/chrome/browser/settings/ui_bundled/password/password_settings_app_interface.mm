@@ -426,6 +426,12 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
       password_manager::prefs::kCredentialsEnableService);
 }
 
++ (BOOL)isAutomaticPasskeyUpgradesEnabled {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  return profile->GetPrefs()->GetBoolean(
+      password_manager::prefs::kAutomaticPasskeyUpgrades);
+}
+
 + (void)setFakeBulkLeakCheckBufferedState:
     (password_manager::BulkLeakCheckServiceInterface::State)state {
   FakeBulkLeakCheckService* fakeBulkLeakCheckService =

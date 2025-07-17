@@ -102,6 +102,9 @@
 // Returns YES if credential service is enabled.
 + (BOOL)isCredentialsServiceEnabled;
 
+// Returns YES if automatic passkey upgrades are enabled
++ (BOOL)isAutomaticPasskeyUpgradesEnabled;
+
 // Sets the FakeBulkLeakCheck's buffered state.
 + (void)setFakeBulkLeakCheckBufferedState:
     (password_manager::BulkLeakCheckServiceInterface::State)state;
