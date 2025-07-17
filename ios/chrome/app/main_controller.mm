@@ -228,6 +228,9 @@ NSString* const kDefaultBrowserStatusCheck = @"DefaultBrowserStatusCheck";
 NSString* const kShareExtensionForMultiprofileKey =
     @"ShareExtensionForMultiprofileKey";
 
+// Constant for enabling  multi-profile.
+NSString* const kMultiprofileKey = @"MultiprofileKey";
+
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
   component_updater::ComponentUpdateService* cus =
@@ -1466,6 +1469,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     },
     kShareExtensionForMultiprofileKey : @{
       kFieldTrialValueKey : @(IsShareExtensionForMultiprofileEnabled()),
+      kFieldTrialVersionKey : @1,
+    },
+    kMultiprofileKey : @{
+      kFieldTrialValueKey : @(AreSeparateProfilesForManagedAccountsEnabled()),
       kFieldTrialVersionKey : @1,
     },
   };
