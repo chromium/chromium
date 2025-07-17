@@ -1,4 +1,4 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++ListView clickable CollectionInfo:[selection_mode_single, rows=2, cols=1] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
-++++View contentDescription:"1" clickable focusable selected CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
-++++View contentDescription:"2" clickable focusable CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
+++++View text:"1" clickable focusable selected CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
+++++View text:"2" clickable focusable CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]

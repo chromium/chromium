@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/android/accessibility_state.h"
@@ -1051,7 +1052,9 @@ std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
 }
 
 bool BrowserAccessibilityAndroid::IsAccessibleNameFromAttribute() const {
-  return HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) &&
+  return base::FeatureList::IsEnabled(
+             features::kAccessibilityPopulateSupplementalDescriptionApi) &&
+         HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) &&
          GetNameFrom() == ax::mojom::NameFrom::kAttribute;
 }
 

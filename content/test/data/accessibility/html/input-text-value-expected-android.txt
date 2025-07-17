@@ -4,12 +4,12 @@ android.webkit.WebView focusable focused
 ++++android.widget.EditText clickable editable_text focusable interesting hint='l1' input_type=1
 ++++android.view.View interesting name='l2'
 ++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='value' hint='l2' input_type=1 text_change_added_count=5
-++++android.widget.EditText clickable editable_text focusable interesting supplemental_description='l2' input_type=1
-++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='value  *' supplemental_description='l2' input_type=1 text_change_added_count=8
+++++android.widget.EditText clickable editable_text focusable interesting hint='l2' input_type=1
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='value  *' hint='l2' input_type=1 text_change_added_count=8
 ++++android.view.View interesting name='Email'
 ++++android.widget.TextView
 ++++android.widget.EditText clickable editable_text focusable interesting hint='Email' input_type=1
 ++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='value' hint='Email' input_type=1 text_change_added_count=5
-++++android.widget.EditText clickable editable_text focusable multiline interesting supplemental_description='l5'
-++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline interesting name='Value' supplemental_description='l6' text_change_added_count=5
-++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='value' tooltip_text='Description' supplemental_description='Name' input_type=1 text_change_added_count=5
+++++android.widget.EditText clickable editable_text focusable multiline interesting hint='l5'
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline interesting name='Value' hint='l6' text_change_added_count=5
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='value' hint='Name' tooltip_text='Description' input_type=1 text_change_added_count=5

@@ -1,23 +1,23 @@
 android.webkit.WebView focusable focused
-++android.view.View role_description='log' interesting supplemental_description='Atomic illegal' live_region_type=1
-++android.widget.EditText clickable editable_text interesting supplemental_description='Autocomplete illegal'
-++android.view.View role_description='log' interesting supplemental_description='Busy illegal' live_region_type=1
-++android.view.View role_description='tree item' checkable clickable collection_item interesting content_description='Checked illegal' checked=1
-++android.view.View interesting state_description='current item' supplemental_description='Current illegal'
-++android.view.View disabled interesting supplemental_description='Disabled illegal'
-++android.view.View role_description='tree item' clickable collection_item expanded interesting content_description='Expanded illegal' expanded_state=3
-++android.widget.Button role_description='button' clickable interesting content_description='Haspopup illegal'
-++android.view.View content_invalid interesting supplemental_description='Invalid illegal'
-++android.view.View role_description='log' interesting supplemental_description='Live illegal'
-++android.app.Dialog role_description='dialog' interesting supplemental_description='Modal illegal'
-++android.widget.EditText clickable editable_text multiline interesting supplemental_description='Multiline illegal'
-++android.widget.GridView role_description='table' collection multiselectable interesting state_description='multiselectable, none selected.' supplemental_description='Multiselectable illegal' selection_mode=2
-++android.widget.SeekBar role_description='slider' clickable range interesting name='50' supplemental_description='Orientation illegal' item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.widget.ToggleButton role_description='toggle button' checkable clickable interesting state_description='On' supplemental_description='Pressed illegal' checked=1
-++android.widget.EditText clickable disabled editable_text interesting supplemental_description='Readonly illegal'
-++android.view.View role_description='log' interesting supplemental_description='Relevant illegal' live_region_type=1
-++android.widget.EditText clickable editable_text required interesting supplemental_description='Required illegal'
+++android.view.View role_description='log' interesting name='Atomic illegal' live_region_type=1
+++android.widget.EditText clickable editable_text interesting hint='Autocomplete illegal'
+++android.view.View role_description='log' interesting name='Busy illegal' live_region_type=1
+++android.view.View role_description='tree item' checkable clickable collection_item interesting name='Checked illegal' checked=1
+++android.view.View interesting name='Current illegal' state_description='current item'
+++android.view.View disabled interesting name='Disabled illegal'
+++android.view.View role_description='tree item' clickable collection_item expanded interesting name='Expanded illegal' expanded_state=3
+++android.widget.Button role_description='button' clickable interesting name='Haspopup illegal'
+++android.view.View content_invalid interesting name='Invalid illegal'
+++android.view.View role_description='log' interesting name='Live illegal'
+++android.app.Dialog role_description='dialog' interesting name='Modal illegal'
+++android.widget.EditText clickable editable_text multiline interesting hint='Multiline illegal'
+++android.widget.GridView role_description='table' collection multiselectable interesting name='Multiselectable illegal' state_description='multiselectable, none selected.' selection_mode=2
+++android.widget.SeekBar role_description='slider' clickable range interesting name='50, Orientation illegal' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.ToggleButton role_description='toggle button' checkable clickable interesting name='Pressed illegal' state_description='On' checked=1
+++android.widget.EditText clickable disabled editable_text interesting hint='Readonly illegal'
+++android.view.View role_description='log' interesting name='Relevant illegal' live_region_type=1
+++android.widget.EditText clickable editable_text required interesting hint='Required illegal'
 ++android.view.View role_description='tree' collection hierarchical multiselectable interesting state_description='multiselectable, 1 of 1 selected.' item_count=1 row_count=1 selection_mode=2
-++++android.view.View role_description='tree item' clickable collection_item selected content_description='Selected illegal'
+++++android.view.View role_description='tree item' clickable collection_item selected name='Selected illegal'
 ++android.widget.GridView role_description='table' collection
-++++android.view.View role_description='column header' collection_item interesting table_header content_description='Sort illegal' row_span=1 column_span=1
+++++android.view.View role_description='column header' collection_item interesting table_header name='Sort illegal' row_span=1 column_span=1

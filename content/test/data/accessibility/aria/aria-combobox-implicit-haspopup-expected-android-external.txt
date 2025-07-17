@@ -1,5 +1,5 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View supplementalDescription:"ComboBoxGrouping" canOpenPopUp actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="comboBoxGrouping"]
+++View hint:"ComboBoxGrouping" canOpenPopUp actions:[AX_FOCUS] bundle:[chromeRole="comboBoxGrouping", hint="ComboBoxGrouping"]
 ++++EditText clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
-++EditText supplementalDescription:"TextFieldWithComboBox" canOpenPopUp clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300"]
-++Spinner text:"Select" supplementalDescription:"ComboBoxMenuButton" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="comboBoxMenuButton"]
+++EditText hint:"TextFieldWithComboBox" canOpenPopUp clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300", hint="TextFieldWithComboBox"]
+++Spinner text:"Select" hint:"ComboBoxMenuButton" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="comboBoxMenuButton", hint="ComboBoxMenuButton"]

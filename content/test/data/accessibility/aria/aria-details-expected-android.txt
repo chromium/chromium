@@ -7,4 +7,4 @@ android.webkit.WebView focusable focused
 ++++android.widget.TextView interesting name='text'
 ++++android.widget.TextView interesting name=' has details'
 ++android.view.View interesting name='Text details'
-++android.widget.Image role_description='graphic' interesting supplemental_description='Image details'
+++android.widget.Image role_description='graphic' interesting name='Image details'

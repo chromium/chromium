@@ -7,4 +7,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++TextView text:"text" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
 ++++TextView text:" has details" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++View text:"Text details" viewIdResName:"details2" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++Image viewIdResName:"details3" supplementalDescription:"Image details" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic"]
+++Image text:"Image details" viewIdResName:"details3" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic"]

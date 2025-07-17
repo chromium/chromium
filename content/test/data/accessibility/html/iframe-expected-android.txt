@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.view.View focusable interesting container_title='Empty iframe'
+++++android.view.View focusable interesting
 ++++++android.view.View

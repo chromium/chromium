@@ -1,7 +1,7 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++TextView text:"Before frame" viewIdResName:"s1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++View containerTitle:"Cross-process iframe" focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="iframe"]
+++++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="iframe"]
 ++++++View actions:[AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++++++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++++++++TextView text:"Text in iframe" viewIdResName:"s1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

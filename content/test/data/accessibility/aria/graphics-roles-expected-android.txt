@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused
-++android.view.View role_description='graphics document' interesting supplemental_description='graphics-document'
-++android.view.View role_description='graphics object' interesting supplemental_description='graphics-object'
-++android.view.View role_description='graphics symbol' interesting supplemental_description='graphics-symbol'
+++android.view.View role_description='graphics document' interesting name='graphics-document'
+++android.view.View role_description='graphics object' interesting name='graphics-object'
+++android.view.View role_description='graphics symbol' interesting name='graphics-symbol'

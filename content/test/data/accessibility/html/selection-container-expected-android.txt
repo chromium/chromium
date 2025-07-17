@@ -1,8 +1,8 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting supplemental_description='selection_list' expanded_state=1
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='selection_list' expanded_state=1
 ++++++android.view.View collection invisible item_count=4 row_count=4 column_count=1
-++++++++android.view.View invisible supplemental_description='Enabled' selection_mode=1
+++++++++android.view.View invisible name='Enabled' selection_mode=1
 ++++++++++android.view.View clickable collection_item focusable invisible name='One'
 ++++++++++android.view.View clickable collection_item focusable invisible name='Two' item_index=1 row_index=1
 ++++++++++android.view.View clickable collection_item focusable invisible name='Three' item_index=2 row_index=2

@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.Button role_description='button' clickable focusable interesting name='Submit'
-++android.view.View container_title='Name'
+++android.view.View name='Name'
 ++++android.widget.Button role_description='button' clickable focusable interesting name='Submit'

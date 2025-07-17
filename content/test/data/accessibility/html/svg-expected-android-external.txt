@@ -1,4 +1,4 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
-++++Image tooltipText:"SVG Title Tag" supplementalDescription:"svg" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
+++++Image text:"svg" tooltipText:"SVG Title Tag" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
 ++++++TextView text:"Test" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

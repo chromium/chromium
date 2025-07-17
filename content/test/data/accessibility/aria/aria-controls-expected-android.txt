@@ -2,6 +2,6 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='menu bar' collection item_count=2 row_count=2 column_count=1
 ++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='File'
 ++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Edit' item_index=1 row_index=1
-++android.view.View role_description='menu' collection supplemental_description='File' item_count=2 row_count=2 column_count=1
+++android.view.View role_description='menu' collection name='File' item_count=2 row_count=2 column_count=1
 ++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='New'
 ++++android.view.MenuItem role_description='menu item' clickable collection_item interesting name='Open' item_index=1 row_index=1

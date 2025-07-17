@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.widget.TextView interesting name='The nav element defines a set of navigation links:'
-++com.google.android.material.navigation.NavigationView role_description='navigation' container_title='programming languages'
+++com.google.android.material.navigation.NavigationView role_description='navigation' name='programming languages'
 ++++android.view.View role_description='link' clickable focusable link interesting name='HTML'
 ++++++android.widget.TextView name='HTML'
 ++++android.widget.TextView interesting name=' | '

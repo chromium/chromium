@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.widget.TextView interesting supplemental_description='span-2'
+++++android.widget.TextView interesting name='span-2'
 ++++android.widget.TextView interesting name='span-4'
 ++++android.view.View interesting name='span-1'
 ++++android.view.View interesting name='span-2'

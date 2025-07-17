@@ -2,4 +2,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++View text:"span-A4" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++++View text:"span-A2" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++++TextView supplementalDescription:"span-C" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++++TextView text:"span-C" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

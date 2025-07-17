@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused
-++android.view.View role_description='region' focusable interesting container_title='test-label'
+++android.view.View role_description='region' focusable interesting name='test-label'
 ++++android.widget.TextView role_description='heading 3' heading interesting name='Test'
 ++++android.widget.TextView interesting name='This is test content within a section, tab index negative 1. I am missing on Android.'
-++android.view.View role_description='region' container_title='test-label-2'
+++android.view.View role_description='region' name='test-label-2'
 ++++android.widget.TextView role_description='heading 3' heading interesting name='Test'
 ++++android.widget.TextView interesting name='This is test content within a section, no tab index.'
