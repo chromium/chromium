@@ -1764,11 +1764,6 @@ const char kEnableCanvasNoiseDescription[] =
     "Enable noising pixels when the contents of a canvas are read back by a "
     "script.";
 
-const char kEnableInputDeviceSettingsSplitName[] =
-    "Enable input device settings split";
-const char kEnableInputDeviceSettingsSplitDescription[] =
-    "Enable input device settings to be split per-device.";
-
 const char kEnablePeripheralCustomizationName[] =
     "Enable peripheral customization";
 const char kEnablePeripheralCustomizationDescription[] =

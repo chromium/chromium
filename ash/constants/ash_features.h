@@ -214,8 +214,6 @@ BASE_DECLARE_FEATURE(kDeviceActiveClientChurnObservationCheckMembership);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kInputDeviceSettingsSplit);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInputMethodDeadKeyFixForNoInputField);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInputMethodDeadKeyFix);
@@ -1032,7 +1030,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool Is16DesksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOnDeviceAppControlsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdjustSplitViewForVKEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowScrollSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsEapDefaultCasWithoutSubjectVerificationAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAltClickAndSixPackCustomizationEnabled();
@@ -1119,7 +1116,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsDemoModeSecondaryGoogleAccountSigninAllowedFalse();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskTemplateSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayPerformanceModeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputDeviceSettingsSplitEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralCustomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralsLoggingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayAlignmentAssistanceEnabled();

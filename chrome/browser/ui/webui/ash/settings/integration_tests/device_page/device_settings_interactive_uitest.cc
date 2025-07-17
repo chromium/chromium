@@ -114,12 +114,10 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
     webcontents_id_ = kOsSettingsWebContentsId;
 
-    feature_list_.InitWithFeatures(
-        {features::kInputDeviceSettingsSplit,
-         features::kAltClickAndSixPackCustomization,
-         features::kPeripheralCustomization,
-         ::features::kSupportF11AndF12KeyShortcuts},
-        {});
+    feature_list_.InitWithFeatures({features::kAltClickAndSixPackCustomization,
+                                    features::kPeripheralCustomization,
+                                    ::features::kSupportF11AndF12KeyShortcuts},
+                                   {});
   }
 
   DeviceSettingsInteractiveUiTest(const DeviceSettingsInteractiveUiTest&) =
@@ -499,8 +497,7 @@ class DeviceSettingsSwapPrimaryMouseButtonInteractiveUiTest
  public:
   DeviceSettingsSwapPrimaryMouseButtonInteractiveUiTest() {
     feature_list_.Reset();
-    feature_list_.InitWithFeatures({features::kInputDeviceSettingsSplit},
-                                   {features::kPeripheralCustomization});
+    feature_list_.InitWithFeatures({}, {features::kPeripheralCustomization});
   }
   // Query to pierce through Shadow DOM to find the mouse row.
   const DeepQuery kMouseRowQuery{
@@ -1039,8 +1036,7 @@ class DeviceSettingsBrightnessInteractiveUiTest
   DeviceSettingsBrightnessInteractiveUiTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {features::kInputDeviceSettingsSplit,
-         features::kPeripheralCustomization,
+        {features::kPeripheralCustomization,
          features::kEnableBrightnessControlInSettings},
         {});
   }

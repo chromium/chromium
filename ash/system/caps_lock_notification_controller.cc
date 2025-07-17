@@ -37,12 +37,6 @@ const char kCapsLockNotificationId[] = "capslock";
 const char kNotifierCapsLock[] = "ash.caps-lock";
 
 int GetMessageStringId() {
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    return CapsLockNotificationController::IsSearchKeyMappedToCapsLock()
-               ? IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_SEARCH
-               : IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_ALT_SEARCH;
-  }
-
   const ash::mojom::Keyboard* keyboard =
       Shell::Get()
           ->input_device_settings_controller()
@@ -111,23 +105,6 @@ CapsLockNotificationController::CapsLockNotificationController() {
 
 CapsLockNotificationController::~CapsLockNotificationController() {
   Shell::Get()->ime_controller()->RemoveObserver(this);
-}
-
-// static
-bool CapsLockNotificationController::IsSearchKeyMappedToCapsLock() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  // Null early in mash startup.
-  if (!prefs)
-    return false;
-
-  // Don't bother to observe for the pref changing because the system tray
-  // menu is rebuilt every time it is opened and the user has to close the
-  // menu to open settings to change the pref. It's not worth the complexity
-  // to worry about sync changing the pref while the menu or notification is
-  // visible.
-  return prefs->GetInteger(prefs::kLanguageRemapSearchKeyTo) ==
-         static_cast<int>(ui::mojom::ModifierKey::kCapsLock);
 }
 
 void CapsLockNotificationController::OnCapsLockChanged(bool enabled) {

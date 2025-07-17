@@ -845,10 +845,6 @@ void KeyboardPrefHandlerImpl::InitializeLoginScreenKeyboardSettings(
     const AccountId& account_id,
     const mojom::KeyboardPolicies& keyboard_policies,
     mojom::Keyboard* keyboard) {
-  // Verify if the flag is enabled.
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    return;
-  }
   CHECK(local_state);
 
   const auto* settings_dict = GetLoginScreenSettingsDict(

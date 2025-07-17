@@ -1978,9 +1978,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(AcceleratorControllerTest, PressAndReleasePowerButtonWithFunctionKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kModifierSplit, features::kPeripheralCustomization,
-       features::kInputDeviceSettingsSplit},
-      {});
+      {features::kModifierSplit, features::kPeripheralCustomization}, {});
 
   const int kKeyboardDeviceIdWithFunction = 123;
   const int kKeyboardDeviceId = 456;
@@ -2048,7 +2046,7 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kModifierSplit, features::kShortcutStateMachines,
-       features::kPeripheralCustomization, features::kInputDeviceSettingsSplit},
+       features::kPeripheralCustomization},
       {});
 
   AnchoredNudgeManagerImpl* nudge_manager =

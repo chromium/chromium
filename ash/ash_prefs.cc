@@ -63,7 +63,6 @@
 #include "ash/system/input_device_settings/input_device_settings_metadata_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
-#include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/mahi/mahi_nudge_controller.h"
@@ -171,7 +170,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   LogoutConfirmationController::RegisterProfilePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
   KeyboardControllerImpl::RegisterProfilePrefs(registry, country);
-  KeyboardModifierMetricsRecorder::RegisterProfilePrefs(registry, for_test);
   MahiNudgeController::RegisterProfilePrefs(registry);
   MediaControllerImpl::RegisterProfilePrefs(registry);
   MessageCenterController::RegisterProfilePrefs(registry);

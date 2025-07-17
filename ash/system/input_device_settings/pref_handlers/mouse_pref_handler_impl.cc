@@ -412,10 +412,6 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
     const AccountId& account_id,
     const mojom::MousePolicies& mouse_policies,
     mojom::Mouse* mouse) {
-  // Verify if the flag is enabled.
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    return;
-  }
   CHECK(local_state);
 
   const auto* settings_dict = GetLoginScreenSettingsDict(

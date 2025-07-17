@@ -203,9 +203,7 @@ InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
     return;
   }
 
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    controller->AddObserver(this);
-  }
+  controller->AddObserver(this);
 
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
@@ -219,16 +217,13 @@ InputDeviceSettingsProvider::InputDeviceSettingsProvider() {
 }
 
 InputDeviceSettingsProvider::~InputDeviceSettingsProvider() {
-  auto* controller = InputDeviceSettingsController::Get();
-
-  if (features::IsPeripheralCustomizationEnabled() && controller) {
-    controller->StopObservingButtons();
-    if (widget_) {
-      widget_->RemoveObserver(this);
+  if (auto* controller = InputDeviceSettingsController::Get()) {
+    if (features::IsPeripheralCustomizationEnabled()) {
+      controller->StopObservingButtons();
+      if (widget_) {
+        widget_->RemoveObserver(this);
+      }
     }
-  }
-
-  if (features::IsInputDeviceSettingsSplitEnabled() && controller) {
     controller->RemoveObserver(this);
   }
 
@@ -339,7 +334,6 @@ void InputDeviceSettingsProvider::StopObserving() {
 
 void InputDeviceSettingsProvider::BindInterface(
     mojo::PendingReceiver<mojom::InputDeviceSettingsProvider> receiver) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   if (receiver_.is_bound()) {
     receiver_.reset();
   }
@@ -348,7 +342,6 @@ void InputDeviceSettingsProvider::BindInterface(
 
 void InputDeviceSettingsProvider::RestoreDefaultKeyboardRemappings(
     uint32_t device_id) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   InputDeviceSettingsController::Get()->RestoreDefaultKeyboardRemappings(
       device_id);
@@ -357,7 +350,6 @@ void InputDeviceSettingsProvider::RestoreDefaultKeyboardRemappings(
 void InputDeviceSettingsProvider::SetKeyboardSettings(
     uint32_t device_id,
     ::ash::mojom::KeyboardSettingsPtr settings) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   if (!InputDeviceSettingsController::Get()->SetKeyboardSettings(
           device_id, std::move(settings))) {
@@ -368,7 +360,6 @@ void InputDeviceSettingsProvider::SetKeyboardSettings(
 void InputDeviceSettingsProvider::SetPointingStickSettings(
     uint32_t device_id,
     ::ash::mojom::PointingStickSettingsPtr settings) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   if (!InputDeviceSettingsController::Get()->SetPointingStickSettings(
           device_id, std::move(settings))) {
@@ -379,7 +370,6 @@ void InputDeviceSettingsProvider::SetPointingStickSettings(
 void InputDeviceSettingsProvider::SetMouseSettings(
     uint32_t device_id,
     ::ash::mojom::MouseSettingsPtr settings) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   if (!InputDeviceSettingsController::Get()->SetMouseSettings(
           device_id, std::move(settings))) {
@@ -390,7 +380,6 @@ void InputDeviceSettingsProvider::SetMouseSettings(
 void InputDeviceSettingsProvider::SetTouchpadSettings(
     uint32_t device_id,
     ::ash::mojom::TouchpadSettingsPtr settings) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   if (!InputDeviceSettingsController::Get()->SetTouchpadSettings(
           device_id, std::move(settings))) {
@@ -451,7 +440,6 @@ void InputDeviceSettingsProvider::OnReceiveKeyboardAmbientLightSensorEnabled(
 
 void InputDeviceSettingsProvider::ObserveKeyboardSettings(
     mojo::PendingRemote<mojom::KeyboardSettingsObserver> observer) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = keyboard_settings_observers_.Add(std::move(observer));
   auto* keyboard_settings_observer = keyboard_settings_observers_.Get(id);
@@ -463,7 +451,6 @@ void InputDeviceSettingsProvider::ObserveKeyboardSettings(
 
 void InputDeviceSettingsProvider::ObserveTouchpadSettings(
     mojo::PendingRemote<mojom::TouchpadSettingsObserver> observer) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = touchpad_settings_observers_.Add(std::move(observer));
   touchpad_settings_observers_.Get(id)->OnTouchpadListUpdated(
@@ -473,7 +460,6 @@ void InputDeviceSettingsProvider::ObserveTouchpadSettings(
 
 void InputDeviceSettingsProvider::ObservePointingStickSettings(
     mojo::PendingRemote<mojom::PointingStickSettingsObserver> observer) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = pointing_stick_settings_observers_.Add(std::move(observer));
   pointing_stick_settings_observers_.Get(id)->OnPointingStickListUpdated(
@@ -483,7 +469,6 @@ void InputDeviceSettingsProvider::ObservePointingStickSettings(
 
 void InputDeviceSettingsProvider::ObserveMouseSettings(
     mojo::PendingRemote<mojom::MouseSettingsObserver> observer) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = mouse_settings_observers_.Add(std::move(observer));
   auto* mouse_settings_observer = mouse_settings_observers_.Get(id);
@@ -495,7 +480,6 @@ void InputDeviceSettingsProvider::ObserveMouseSettings(
 
 void InputDeviceSettingsProvider::ObserveGraphicsTabletSettings(
     mojo::PendingRemote<mojom::GraphicsTabletSettingsObserver> observer) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = graphics_tablet_settings_observers_.Add(std::move(observer));
   auto* graphics_tablet_settings_observer =

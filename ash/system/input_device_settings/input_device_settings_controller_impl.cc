@@ -257,14 +257,10 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
           keyboard);
   mojom_keyboard->is_external =
       keyboard.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
-  // Enable only when flag is enabled to avoid crashing while problem is
-  // addressed. See b/272960076
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    mojom_keyboard->modifier_keys =
-        Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
-    mojom_keyboard->meta_key =
-        Shell::Get()->keyboard_capability()->GetMetaKey(keyboard);
-  }
+  mojom_keyboard->modifier_keys =
+      Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
+  mojom_keyboard->meta_key =
+      Shell::Get()->keyboard_capability()->GetMetaKey(keyboard);
   if (::features::AreF11AndF12ShortcutsEnabled()) {
     mojom_keyboard->top_row_action_keys = GetTopRowActionKeys(keyboard);
   }
@@ -615,40 +611,6 @@ T* FindDevice(InputDeviceSettingsControllerImpl::DeviceId id,
   }
 
   return nullptr;
-}
-
-void DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
-    PrefService* local_state) {
-  // local_state could be null in tests.
-  if (!local_state) {
-    return;
-  }
-  user_manager::KnownUser known_user(local_state);
-  AccountId account_id =
-      Shell::Get()->session_controller()->GetActiveAccountId();
-
-  known_user.SetPath(account_id, prefs::kMouseLoginScreenInternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id, prefs::kMouseLoginScreenExternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kKeyboardLoginScreenInternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kKeyboardLoginScreenExternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kPointingStickLoginScreenInternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kPointingStickLoginScreenExternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kTouchpadLoginScreenInternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kTouchpadLoginScreenExternalSettingsPref,
-                     std::nullopt);
 }
 
 void DeleteLoginScreenButtonRemappingListPrefWhenPeripheralCustomizationDisabled(
@@ -1073,27 +1035,6 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     if (local_state_) {
       local_state_->ClearPref(prefs::kDeviceImagesDictPref);
     }
-  }
-
-  // If the flag is disabled, clear all the settings dictionaries.
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    active_pref_service_ = nullptr;
-    pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref, {});
-    pref_service->SetDict(prefs::kMouseDeviceSettingsDictPref, {});
-    pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
-    pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
-    pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
-    pref_service->SetList(prefs::kMouseDeviceImpostersListPref, {});
-
-    pref_service->ClearPref(prefs::kKeyboardInternalSettings);
-    pref_service->ClearPref(prefs::kKeyboardUpdateSettingsMetricInfo);
-    pref_service->ClearPref(prefs::kMouseUpdateSettingsMetricInfo);
-    pref_service->ClearPref(prefs::kTouchpadUpdateSettingsMetricInfo);
-    pref_service->ClearPref(prefs::kPointingStickUpdateSettingsMetricInfo);
-
-    DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
-        local_state_);
-    return;
   }
 
   // If the flag is disabled, clear the new touchpad and keyboard settings from

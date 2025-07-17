@@ -1122,9 +1122,6 @@ extern const char kEnablePrintingMarginsAndScaleDescription[];
 extern const char kEnableSuspendStateMachineName[];
 extern const char kEnableSuspendStateMachineDescription[];
 
-extern const char kEnableInputDeviceSettingsSplitName[];
-extern const char kEnableInputDeviceSettingsSplitDescription[];
-
 extern const char kExperimentalRgbKeyboardPatternsName[];
 extern const char kExperimentalRgbKeyboardPatternsDescription[];
 

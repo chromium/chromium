@@ -18,27 +18,8 @@ constexpr int kDeviceId1 = 1001;
 constexpr int kDeviceId2 = 1002;
 }  // namespace
 
-TEST(MouseButtonMapTest, SharedDeviceSettingsMapping) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kInputDeviceSettingsSplit);
-  ui::MouseButtonMapEvdev mouse_button_map;
-
-  // By default, should be identity map.
-  EXPECT_EQ(BTN_LEFT, mouse_button_map.GetMappedButton(kDeviceId1, BTN_LEFT));
-  EXPECT_EQ(BTN_LEFT, mouse_button_map.GetMappedButton(kDeviceId2, BTN_LEFT));
-
-  mouse_button_map.SetPrimaryButtonRight(std::nullopt, true);
-  EXPECT_EQ(BTN_RIGHT, mouse_button_map.GetMappedButton(kDeviceId1, BTN_LEFT));
-  EXPECT_EQ(BTN_RIGHT, mouse_button_map.GetMappedButton(kDeviceId2, BTN_LEFT));
-
-  mouse_button_map.SetPrimaryButtonRight(std::nullopt, false);
-  EXPECT_EQ(BTN_LEFT, mouse_button_map.GetMappedButton(kDeviceId1, BTN_LEFT));
-  EXPECT_EQ(BTN_LEFT, mouse_button_map.GetMappedButton(kDeviceId2, BTN_LEFT));
-}
-
 TEST(MouseButtonMapTest, PerDeviceMapping) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kInputDeviceSettingsSplit);
   ui::MouseButtonMapEvdev mouse_button_map;
 
   // By default, should be identity map.
@@ -60,7 +41,6 @@ TEST(MouseButtonMapTest, PerDeviceMapping) {
 
 TEST(MouseButtonMapTest, RemoveDeviceFromSettings) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kInputDeviceSettingsSplit);
   ui::MouseButtonMapEvdev mouse_button_map;
 
   mouse_button_map.SetPrimaryButtonRight(kDeviceId1, true);

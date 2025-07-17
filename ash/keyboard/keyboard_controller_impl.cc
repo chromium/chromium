@@ -298,13 +298,9 @@ KeyboardControllerImpl::GetKeyRepeatSettings() {
 }
 
 bool KeyboardControllerImpl::AreTopRowKeysFunctionKeys() {
-  if (ash::features::IsInputDeviceSettingsSplitEnabled()) {
-    return Shell::Get()
-        ->input_device_settings_controller()
-        ->GetGeneralizedTopRowAreFKeys();
-  }
-  PrefService* prefs = pref_change_registrar_->prefs();
-  return prefs->GetBoolean(ash::prefs::kSendFunctionKeys);
+  return Shell::Get()
+      ->input_device_settings_controller()
+      ->GetGeneralizedTopRowAreFKeys();
 }
 
 void KeyboardControllerImpl::SetSmartVisibilityEnabled(bool enabled) {

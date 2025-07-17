@@ -54,8 +54,7 @@ std::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     // If the input device settings controlled does not recognize the device as
     // a keyboard, skip it.
-    if (features::IsInputDeviceSettingsSplitEnabled() &&
-        Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+    if (Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
             keyboard.id) == nullptr) {
       continue;
     }
@@ -89,8 +88,7 @@ std::optional<ui::KeyboardDevice> GetInternalKeyboard() {
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     // If the input device settings controlled does not recognize the device as
     // a keyboard, skip it.
-    if (features::IsInputDeviceSettingsSplitEnabled() &&
-        Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+    if (Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
             keyboard.id) == nullptr) {
       continue;
     }
@@ -165,10 +163,6 @@ bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
 }
 
 bool MetaFKeyRewritesAreSuppressed(const ui::InputDevice& keyboard) {
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    return false;
-  }
-
   const auto* settings =
       Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
           keyboard.id);
@@ -176,12 +170,6 @@ bool MetaFKeyRewritesAreSuppressed(const ui::InputDevice& keyboard) {
 }
 
 bool AreTopRowFKeys(const ui::InputDevice& keyboard) {
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    PrefService* pref_service =
-        Shell::Get()->session_controller()->GetActivePrefService();
-    return pref_service && pref_service->GetBoolean(prefs::kSendFunctionKeys);
-  }
-
   const auto* settings =
       Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
           keyboard.id);
@@ -242,8 +230,7 @@ ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifier(
 ui::mojom::ExtendedFkeysModifier GetExtendedFkeysModifier(
     ui::KeyboardCode key_code,
     std::optional<int> device_id) {
-  if (!features::IsInputDeviceSettingsSplitEnabled() ||
-      !::features::AreF11AndF12ShortcutsEnabled() || !device_id.has_value() ||
+  if (!::features::AreF11AndF12ShortcutsEnabled() || !device_id.has_value() ||
       !ui::KeyboardCapability::IsF11OrF12(key_code)) {
     return ui::mojom::ExtendedFkeysModifier::kDisabled;
   }
@@ -265,10 +252,6 @@ ui::mojom::ExtendedFkeysModifier GetExtendedFkeysModifier(
 }
 
 bool HasQuickInsertKeyViaModifierRemapping(const ui::KeyboardDevice& keyboard) {
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    return false;
-  }
-
   auto* settings =
       Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
           keyboard.id);

@@ -126,15 +126,13 @@ void TouchpadScrollScreen::OnScrollUpdate(bool is_reverse_scroll) {
   // The pref is true if touchpad reverse scroll is enabled.
   profile->GetPrefs()->SetBoolean(prefs::kNaturalScroll, is_reverse_scroll);
 
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    const auto touchpads =
-        InputDeviceSettingsController::Get()->GetConnectedTouchpads();
-    for (const auto& touchpad : touchpads) {
-      const auto old_settings = std::move(touchpad->settings);
-      old_settings->reverse_scrolling = is_reverse_scroll;
-      InputDeviceSettingsController::Get()->SetTouchpadSettings(
-          touchpad->id, old_settings->Clone());
-    }
+  const auto touchpads =
+      InputDeviceSettingsController::Get()->GetConnectedTouchpads();
+  for (const auto& touchpad : touchpads) {
+    const auto old_settings = std::move(touchpad->settings);
+    old_settings->reverse_scrolling = is_reverse_scroll;
+    InputDeviceSettingsController::Get()->SetTouchpadSettings(
+        touchpad->id, old_settings->Clone());
   }
 }
 

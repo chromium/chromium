@@ -184,7 +184,6 @@ class KeyAccessibilityEnabler;
 class KeyboardBacklightColorController;
 class KeyboardBrightnessControlDelegate;
 class KeyboardControllerImpl;
-class KeyboardModifierMetricsRecorder;
 class LaserPointerController;
 class LobsterController;
 class LocalAuthenticationRequestController;
@@ -625,9 +624,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   KeyboardControllerImpl* keyboard_controller() {
     return keyboard_controller_.get();
   }
-  KeyboardModifierMetricsRecorder* keyboard_modifier_metrics_recorder() {
-    return keyboard_modifier_metrics_recorder_.get();
-  }
   TouchscreenMetricsRecorder* touchscreen_metrics_recorder() {
     return touchscreen_metrics_recorder_.get();
   }
@@ -1016,8 +1012,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<InputDeviceSettingsDispatcher>
       input_device_settings_dispatcher_;
   std::unique_ptr<InputDeviceTracker> input_device_tracker_;
-  std::unique_ptr<KeyboardModifierMetricsRecorder>
-      keyboard_modifier_metrics_recorder_;
   std::unique_ptr<TouchscreenMetricsRecorder> touchscreen_metrics_recorder_;
   std::unique_ptr<InputDeviceKeyAliasManager> input_device_key_alias_manager_;
   std::unique_ptr<ShortcutInputHandler> shortcut_input_handler_;

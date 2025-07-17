@@ -23,16 +23,10 @@ namespace ash {
 
 InputDeviceTracker::InputDeviceTracker() {
   Shell::Get()->session_controller()->AddObserver(this);
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->input_device_settings_controller()->AddObserver(this);
-  }
 }
 
 InputDeviceTracker::~InputDeviceTracker() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
-  }
 }
 
 void InputDeviceTracker::RegisterProfilePrefs(
@@ -50,69 +44,20 @@ void InputDeviceTracker::ResetPrefMembers() {
   pointing_stick_observed_devices_ = std::make_unique<StringListPrefMember>();
 }
 
-void InputDeviceTracker::OnKeyboardConnected(const mojom::Keyboard& keyboard) {
-  RecordDeviceConnected(InputDeviceCategory::kKeyboard, keyboard.device_key);
-}
-
-void InputDeviceTracker::OnTouchpadConnected(const mojom::Touchpad& touchpad) {
-  RecordDeviceConnected(InputDeviceCategory::kTouchpad, touchpad.device_key);
-}
-
-void InputDeviceTracker::OnMouseConnected(const mojom::Mouse& mouse) {
-  RecordDeviceConnected(InputDeviceCategory::kMouse, mouse.device_key);
-}
-
-void InputDeviceTracker::OnPointingStickConnected(
-    const mojom::PointingStick& pointing_stick) {
-  RecordDeviceConnected(InputDeviceCategory::kPointingStick,
-                        pointing_stick.device_key);
-}
-
 void InputDeviceTracker::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // When the user's `pref_service` changes, we need to re-initialize our
   // `StringListPrefMember`s and record that we have seen all currently
   // connected devices.
   Init(pref_service);
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    RecordConnectedDevices();
-  }
 }
 
 bool InputDeviceTracker::WasDevicePreviouslyConnected(
     InputDeviceCategory category,
     std::string_view device_key) const {
   const auto* observed_devices = GetObservedDevicesForCategory(category);
-  return observed_devices
-             ? base::Contains(observed_devices->GetValue(), device_key)
-             : false;
-}
-
-void InputDeviceTracker::RecordConnectedDevices() {
-  const auto keyboards =
-      Shell::Get()->input_device_settings_controller()->GetConnectedKeyboards();
-  for (const auto& keyboard : keyboards) {
-    OnKeyboardConnected(*keyboard);
-  }
-
-  const auto touchpads =
-      Shell::Get()->input_device_settings_controller()->GetConnectedTouchpads();
-  for (const auto& touchpad : touchpads) {
-    OnTouchpadConnected(*touchpad);
-  }
-
-  const auto mice =
-      Shell::Get()->input_device_settings_controller()->GetConnectedMice();
-  for (const auto& mouse : mice) {
-    OnMouseConnected(*mouse);
-  }
-
-  const auto pointing_sticks = Shell::Get()
-                                   ->input_device_settings_controller()
-                                   ->GetConnectedPointingSticks();
-  for (const auto& pointing_stick : pointing_sticks) {
-    OnPointingStickConnected(*pointing_stick);
-  }
+  return observed_devices &&
+         base::Contains(observed_devices->GetValue(), device_key);
 }
 
 void InputDeviceTracker::Init(PrefService* pref_service) {
@@ -125,47 +70,6 @@ void InputDeviceTracker::Init(PrefService* pref_service) {
                                    pref_service);
   pointing_stick_observed_devices_->Init(
       prefs::kPointingStickObservedDevicesPref, pref_service);
-}
-
-void InputDeviceTracker::RecordDeviceConnected(InputDeviceCategory category,
-                                               std::string_view device_key) {
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    return;
-  }
-
-  auto* const observed_devices = GetObservedDevicesForCategory(category);
-  // If `observed_devices` is null, that means we are not yet in a valid chrome
-  // session.
-  if (!observed_devices) {
-    return;
-  }
-
-  std::vector<std::string> previously_observed_devices =
-      observed_devices->GetValue();
-
-  if (!base::Contains(previously_observed_devices, device_key) &&
-      !HasSeenPrimaryDeviceKeyAlias(previously_observed_devices, device_key)) {
-    previously_observed_devices.emplace_back(device_key);
-    observed_devices->SetValue(previously_observed_devices);
-  }
-}
-
-bool InputDeviceTracker::HasSeenPrimaryDeviceKeyAlias(
-    const std::vector<std::string>& previously_observed_devices,
-    std::string_view device_key) {
-  const auto* aliases = Shell::Get()
-                            ->input_device_key_alias_manager()
-                            ->GetAliasesForPrimaryDeviceKey(device_key);
-  if (!aliases) {
-    return false;
-  }
-
-  for (const auto& alias : *aliases) {
-    if (base::Contains(previously_observed_devices, alias)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 StringListPrefMember* InputDeviceTracker::GetObservedDevicesForCategory(

@@ -20,7 +20,7 @@ constexpr int kSharedSettingsDeviceId = -1;
 
 bool ShouldEnablePerDeviceSettings() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return ash::features::IsInputDeviceSettingsSplitEnabled();
+  return true;
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -134,8 +134,7 @@ class InputDeviceSettingsDispatcherTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kInputDeviceSettingsSplit,
-                                           features::kPeripheralCustomization},
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
                                           {});
 
     AshTestBase::SetUp();

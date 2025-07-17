@@ -24,8 +24,6 @@ class ASH_EXPORT CapsLockNotificationController
 
   virtual ~CapsLockNotificationController();
 
-  static bool IsSearchKeyMappedToCapsLock();
-
   // ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}

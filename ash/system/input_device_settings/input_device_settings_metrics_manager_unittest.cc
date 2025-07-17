@@ -106,7 +106,6 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {
-            features::kInputDeviceSettingsSplit,
             features::kAltClickAndSixPackCustomization,
             ::features::kSupportF11AndF12KeyShortcuts,
         },

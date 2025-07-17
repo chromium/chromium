@@ -414,8 +414,6 @@ KeyboardModifierEventRewriter::GetRemappedPhysicalCode(DomCode code,
       // No remapping.
       return std::nullopt;
   }
-  CHECK(!pref_name.empty() ||
-        ash::features::IsInputDeviceSettingsSplitEnabled());
 
   auto modifier_value = delegate_->GetKeyboardRemappedModifierValue(
       device_id, modifier_key, std::string(pref_name));

@@ -36,11 +36,9 @@ bool ShouldModifiersBeBlockedForKeyEventsWithRestriction(
 InputDeviceSettingsDispatcher::InputDeviceSettingsDispatcher(
     ui::InputController* input_controller)
     : input_controller_(input_controller) {
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    input_device_settings_controller_ =
-        Shell::Get()->input_device_settings_controller();
-    input_device_settings_controller_->AddObserver(this);
-  }
+  input_device_settings_controller_ =
+      Shell::Get()->input_device_settings_controller();
+  input_device_settings_controller_->AddObserver(this);
 
   if (features::IsPeripheralCustomizationEnabled()) {
     duplicate_id_finder_ =
@@ -50,9 +48,7 @@ InputDeviceSettingsDispatcher::InputDeviceSettingsDispatcher(
 }
 
 InputDeviceSettingsDispatcher::~InputDeviceSettingsDispatcher() {
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    input_device_settings_controller_->RemoveObserver(this);
-  }
+  input_device_settings_controller_->RemoveObserver(this);
 
   if (features::IsPeripheralCustomizationEnabled()) {
     duplicate_id_finder_->RemoveObserver(this);

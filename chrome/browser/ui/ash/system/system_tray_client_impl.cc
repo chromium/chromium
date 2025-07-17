@@ -839,7 +839,6 @@ void SystemTrayClientImpl::ShowKeyboardSettings() {
 }
 
 void SystemTrayClientImpl::ShowTouchpadSettings() {
-  DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
   base::RecordAction(base::UserMetricsAction("ShowTouchpadSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath);
@@ -858,7 +857,6 @@ void SystemTrayClientImpl::ShowNearbyShareSettings() {
 }
 
 void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
-  DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
   base::RecordAction(base::UserMetricsAction("ShowRemapKeysSettingsSubpage"));
   ShowSettingsSubPageForActiveUser(base::StrCat({
       chromeos::settings::mojom::kPerDeviceKeyboardRemapKeysSubpagePath,

@@ -3184,11 +3184,6 @@ BASE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata,
              "DeviceActiveClientChurnObservationNewDeviceMetadata",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables settings to be split per device.
-BASE_FEATURE(kInputDeviceSettingsSplit,
-             "InputDeviceSettingsSplit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables bug fix for dead keys where there's no input field.
 // When enabled, keys are forwarded without dead key processing when there's no
 // input field.
@@ -3286,13 +3281,8 @@ bool IsAllowAmbientEQEnabled() {
   return base::FeatureList::IsEnabled(kAllowAmbientEQ);
 }
 
-bool IsAllowScrollSettingsEnabled() {
-  return IsInputDeviceSettingsSplitEnabled();
-}
-
 bool IsAltClickAndSixPackCustomizationEnabled() {
-  return IsInputDeviceSettingsSplitEnabled() &&
-         base::FeatureList::IsEnabled(kAltClickAndSixPackCustomization);
+  return base::FeatureList::IsEnabled(kAltClickAndSixPackCustomization);
 }
 
 bool IsAmbientEQDefaultOff() {
@@ -3553,13 +3543,8 @@ bool IsDisplayPerformanceModeEnabled() {
   return base::FeatureList::IsEnabled(kDisplayPerformanceMode);
 }
 
-bool IsInputDeviceSettingsSplitEnabled() {
-  return base::FeatureList::IsEnabled(kInputDeviceSettingsSplit);
-}
-
 bool IsPeripheralCustomizationEnabled() {
-  return base::FeatureList::IsEnabled(kPeripheralCustomization) &&
-         IsInputDeviceSettingsSplitEnabled();
+  return base::FeatureList::IsEnabled(kPeripheralCustomization);
 }
 
 bool IsPeripheralsLoggingEnabled() {
@@ -4148,13 +4133,11 @@ bool IsOobeJellyEnabled() {
 }
 
 bool IsModifierSplitEnabled() {
-  return IsInputDeviceSettingsSplitEnabled() &&
-         base::FeatureList::IsEnabled(kModifierSplit);
+  return base::FeatureList::IsEnabled(kModifierSplit);
 }
 
 bool IsMouseImposterCheckEnabled() {
-  return base::FeatureList::IsEnabled(kMouseImposterCheck) &&
-         IsInputDeviceSettingsSplitEnabled();
+  return base::FeatureList::IsEnabled(kMouseImposterCheck);
 }
 
 bool IsSplitKeyboardRefactorEnabled() {

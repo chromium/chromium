@@ -638,10 +638,8 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_page_closed) {
   }
 
   user_selection_screen_->OnBeforeShow();
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    InputDeviceSettingsController::Get()->OnLoginScreenFocusedPodChanged(
-        focused_pod_account_id_);
-  }
+  InputDeviceSettingsController::Get()->OnLoginScreenFocusedPodChanged(
+      focused_pod_account_id_);
   HideDialog();
   // Update wallpaper once a new OobeDialogState is propagated.
   UpdateWallpaper(focused_pod_account_id_);
@@ -789,10 +787,8 @@ void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
   user_selection_screen_->HandleFocusPod(account_id);
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
   Shell::Get()->color_palette_controller()->SelectLocalAccount(account_id);
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    InputDeviceSettingsController::Get()->OnLoginScreenFocusedPodChanged(
-        account_id);
-  }
+  InputDeviceSettingsController::Get()->OnLoginScreenFocusedPodChanged(
+      account_id);
 
   if (focused_pod_account_id_ != account_id) {
     MaybeUpdateOfflineLoginLinkVisibility(account_id);

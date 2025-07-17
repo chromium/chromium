@@ -8369,11 +8369,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOAuthIppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableOAuthIpp)},
 
-    {"enable-input-device-settings-split",
-     flag_descriptions::kEnableInputDeviceSettingsSplitName,
-     flag_descriptions::kEnableInputDeviceSettingsSplitDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kInputDeviceSettingsSplit)},
-
     {"enable-peripheral-customization",
      flag_descriptions::kEnablePeripheralCustomizationName,
      flag_descriptions::kEnablePeripheralCustomizationDescription, kOsCrOS,

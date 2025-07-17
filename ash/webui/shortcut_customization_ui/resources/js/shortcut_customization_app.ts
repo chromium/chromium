@@ -41,8 +41,7 @@ import type {AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayo
 import {AcceleratorConfigResult} from './shortcut_types.js';
 import {getAcceleratorId, getCategoryNameStringId, isCustomizationAllowed} from './shortcut_utils.js';
 
-const oldKeyboardSettingsLink = 'chrome://os-settings/keyboard-overlay';
-const newKeyboardSettingsLink = 'chrome://os-settings/per-device-keyboard';
+const keyboardSettingsLink = 'chrome://os-settings/per-device-keyboard'
 
 export interface ShortcutCustomizationAppElement {
   $: {
@@ -131,7 +130,7 @@ export class ShortcutCustomizationAppElement extends
   protected dialogAction: number;
   protected dialogSource: AcceleratorSource;
   protected showEditDialog: boolean;
-  protected keyboardSettingsLink: string;
+  protected keyboardSettingsLink: string = keyboardSettingsLink;
   protected isCustomizationAllowedByPolicy: boolean;
   protected acceleratorUpdateInProgress: boolean = false;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
@@ -174,11 +173,6 @@ export class ShortcutCustomizationAppElement extends
     this.addEventListener(
         'request-update-accelerator', this.onRequestUpdateAccelerators);
     this.addEventListener('scroll-to-top', this.onScollToTop);
-
-    this.keyboardSettingsLink =
-        loadTimeData.getBoolean('isInputDeviceSettingsSplitEnabled') ?
-        newKeyboardSettingsLink :
-        oldKeyboardSettingsLink;
 
     Router.getInstance().addObserver(this);
   }

@@ -257,8 +257,7 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
       "isCustomizationAllowed",
       Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   html_source->AddBoolean("isJellyEnabledForShortcutCustomization", true);
-  html_source->AddBoolean("isInputDeviceSettingsSplitEnabled",
-                          features::IsInputDeviceSettingsSplitEnabled());
+  html_source->AddBoolean("isInputDeviceSettingsSplitEnabled", true);
   html_source->AddBoolean(
       "hasFunctionKey",
       Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard());

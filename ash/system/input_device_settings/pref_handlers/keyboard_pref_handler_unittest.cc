@@ -130,12 +130,8 @@ class KeyboardPrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    // scoped_feature_list_.InitAndEnableFeature(
-    //     features::kInputDeviceSettingsSplit);
-
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kInputDeviceSettingsSplit,
-                              features::kAltClickAndSixPackCustomization,
+        /*enabled_features=*/{features::kAltClickAndSixPackCustomization,
                               ::features::kSupportF11AndF12KeyShortcuts},
         /*disabled_features=*/{});
 
@@ -488,22 +484,6 @@ TEST_F(KeyboardPrefHandlerTest, UpdateLoginScreenKeyboardSettings) {
                                        updated_settings_dict);
 }
 
-TEST_F(KeyboardPrefHandlerTest,
-       LoginScreenPrefsNotPersistedWhenFlagIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
-  mojom::Keyboard keyboard1;
-  keyboard1.device_key = kKeyboardKey1;
-  keyboard1.is_external = false;
-  mojom::Keyboard keyboard2;
-  keyboard2.device_key = kKeyboardKey2;
-  keyboard2.is_external = true;
-  CallInitializeLoginScreenKeyboardSettings(account_id_1, keyboard1);
-  CallInitializeLoginScreenKeyboardSettings(account_id_1, keyboard2);
-  EXPECT_FALSE(HasInternalLoginScreenSettingsDict(account_id_1));
-  EXPECT_FALSE(HasExternalLoginScreenSettingsDict(account_id_1));
-}
-
 TEST_F(KeyboardPrefHandlerTest, PreservesOldSettings) {
   CallUpdateKeyboardSettings(kKeyboardKey1, kKeyboardSettings1,
                              /*is_external=*/true);
@@ -746,7 +726,6 @@ TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
 TEST_F(KeyboardPrefHandlerTest, KeyboardObserveredInTransitionPeriod) {
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
-  Shell::Get()->input_device_tracker()->OnKeyboardConnected(keyboard);
   // Initialize keyboard settings for the device and check that the global
   // prefs were used as defaults.
   mojom::KeyboardSettingsPtr settings =
@@ -754,60 +733,6 @@ TEST_F(KeyboardPrefHandlerTest, KeyboardObserveredInTransitionPeriod) {
   ASSERT_EQ(settings->top_row_are_fkeys, kGlobalSendFunctionKeys);
   ASSERT_EQ(settings->suppress_meta_fkey_rewrites,
             kDefaultSuppressMetaFKeyRewrites);
-}
-
-TEST_F(KeyboardPrefHandlerTest,
-       KeyboardSendFunctionKeysTransitionPrefAlwaysConsistent) {
-  mojom::Keyboard keyboard;
-  keyboard.is_external = true;
-  keyboard.meta_key = ui::mojom::MetaKey::kExternalMeta;
-  keyboard.device_key = kKeyboardKey1;
-  {
-    base::test::ScopedFeatureList disable_settings_split_feature_list;
-    disable_settings_split_feature_list.InitAndDisableFeature(
-        features::kInputDeviceSettingsSplit);
-    Shell::Get()->input_device_tracker()->OnKeyboardConnected(keyboard);
-  }
-
-  // Initialize keyboard settings for the device and check that the global
-  // prefs were used as defaults even though the `kSendFunctionKeys` pref was
-  // never changed and it goes against the default since the keyboard is
-  // external.
-  mojom::KeyboardSettingsPtr settings =
-      CallInitializeKeyboardSettings(keyboard);
-  ASSERT_EQ(settings->top_row_are_fkeys, kGlobalSendFunctionKeys);
-  ASSERT_EQ(settings->suppress_meta_fkey_rewrites,
-            kDefaultSuppressMetaFKeyRewrites);
-}
-
-TEST_F(KeyboardPrefHandlerTest, ModifierRemappingsFromGlobalPrefs) {
-  // Disable flag in this test since `InputDeviceTracker` only records
-  // connected devices when the settings split flag is disabled.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
-  mojom::Keyboard keyboard;
-  keyboard.device_key = kKeyboardKey1;
-  keyboard.modifier_keys = {
-      ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kControl,
-      ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kBackspace,
-      ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kEscape};
-  keyboard.meta_key = ui::mojom::MetaKey::kSearch;
-  // Remap Alt + Meta keys.
-  pref_service_->SetInteger(
-      ::prefs::kLanguageRemapAltKeyTo,
-      static_cast<int>(ui::mojom::ModifierKey::kCapsLock));
-  pref_service_->SetInteger(::prefs::kLanguageRemapSearchKeyTo,
-                            static_cast<int>(ui::mojom::ModifierKey::kEscape));
-
-  Shell::Get()->input_device_tracker()->OnKeyboardConnected(keyboard);
-  mojom::KeyboardSettingsPtr settings =
-      CallInitializeKeyboardSettings(keyboard);
-
-  ASSERT_EQ(settings->modifier_remappings.size(), 2u);
-  ASSERT_EQ(settings->modifier_remappings.at(ui::mojom::ModifierKey::kAlt),
-            ui::mojom::ModifierKey::kCapsLock);
-  ASSERT_EQ(settings->modifier_remappings.at(ui::mojom::ModifierKey::kMeta),
-            ui::mojom::ModifierKey::kEscape);
 }
 
 TEST_F(KeyboardPrefHandlerTest, SwitchControlAndCommandForAppleKeyboard) {

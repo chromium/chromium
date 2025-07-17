@@ -1310,25 +1310,7 @@ suite('shortcutCustomizationAppTest', function() {
         !!navContentInDrawer, 'Bottom nav content in drawer should exist');
   });
 
-  test('LaunchOldKeyboardSettings', async () => {
-    loadTimeData.overrideValues({
-      isInputDeviceSettingsSplitEnabled: false,
-    });
-    page = initShortcutCustomizationAppElement();
-    await flushTasks();
-    const actualLink =
-        getPage()
-            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
-            .shadowRoot!.querySelector('#keyboardSettingsLinkContainer')!
-            .querySelector<HTMLLinkElement>('#keyboardSettingsLink');
-    assertTrue(!!actualLink);
-    assertEquals('chrome://os-settings/keyboard-overlay', actualLink.href);
-  });
-
-  test('LaunchNewKeyboardSettings', async () => {
-    loadTimeData.overrideValues({
-      isInputDeviceSettingsSplitEnabled: true,
-    });
+  test('LaunchKeyboardSettings', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
     const actualLink =

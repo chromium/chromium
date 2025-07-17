@@ -67,8 +67,7 @@ ui::KeyEvent CreateFnKeyEvent(bool pressed) {
 class ShortcutInputProviderTest : public AshTestBase {
  public:
   ShortcutInputProviderTest() {
-    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization,
-                                           features::kInputDeviceSettingsSplit},
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
                                           {});
   }
 
