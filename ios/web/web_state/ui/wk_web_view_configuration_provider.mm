@@ -56,6 +56,7 @@ NSUUID* ToNSUUID(const base::Uuid& uuid) {
 // Helper function to log errors from static list compilation.
 void LogStaticListRegistrationError(const char* key, NSError* error) {
   if (error) {
+    SCOPED_CRASH_KEY_STRING64("WKWebViewConfigurationProvider", "key", key);
     SCOPED_CRASH_KEY_STRING256("WKWebViewConfigurationProvider", "error",
                                base::SysNSStringToUTF8(error.description));
     base::debug::DumpWithoutCrashing();

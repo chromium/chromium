@@ -7,8 +7,6 @@
 #import <WebKit/WebKit.h>
 
 #import "base/check.h"
-#import "base/debug/crash_logging.h"
-#import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/sequence_checker.h"
@@ -44,8 +42,6 @@ void WKContentRuleListProvider::UpdateRuleList(RuleListKey key,
   NSString* identifier = base::SysUTF8ToNSString(key);
   NSString* rules = base::SysUTF8ToNSString(json_rules);
 
-  // The completion handler is now bound to a private member function. The
-  // WeakPtr ensures that if `this` is destroyed, the callback is not run.
   void (^completion_handler)(WKContentRuleList*, NSError*) =
       base::CallbackToBlock(base::BindOnce(
           &WKContentRuleListProvider::OnRuleListCompiled,
@@ -91,8 +87,7 @@ void WKContentRuleListProvider::SetIdleCallbackForTesting(
   // If the provider is already idle at the time the callback is set,
   // the caller should be notified.
   if (pending_operations_count_ == 0u && idle_callback_for_testing_) {
-    // Post as a task to the current message loop to avoid re-entrancy and
-    // maintain a consistent asynchronous feel for the callback.
+    // Post as a task to the current message loop to avoid re-entrancy.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, idle_callback_for_testing_);
   }
@@ -104,14 +99,19 @@ void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
                                                    OperationCallback callback,
                                                    WKContentRuleList* rule_list,
                                                    NSError* error) {
-  if (error || !rule_list) {
-    SCOPED_CRASH_KEY_BOOL("WKContentRuleListProvider", "rule_list",
-                          rule_list != nullptr);
-    SCOPED_CRASH_KEY_STRING64("WKContentRuleListProvider", "key", key);
-    SCOPED_CRASH_KEY_STRING256("WKContentRuleListProvider", "error",
-                               base::SysNSStringToUTF8(error.description));
-    base::debug::DumpWithoutCrashing();
-  } else {
+  // This case is not expected. WebKit should return either a list or an
+  // error.
+  if (!rule_list && !error) {
+    error = [NSError
+        errorWithDomain:WKErrorDomain
+                   code:WKErrorUnknown
+               userInfo:@{
+                 NSLocalizedDescriptionKey :
+                     @"Rule list compilation returned no list and no error."
+               }];
+  }
+
+  if (!error) {
     // If a list for this key already exists, it's an update. Remove the
     // old one from the controller before adding the new one.
     auto it = compiled_lists_.find(key);
