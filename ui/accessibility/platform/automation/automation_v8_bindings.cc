@@ -24,6 +24,7 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/mojom/ax_action_data.mojom.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/platform/automation/automation_position.h"
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"

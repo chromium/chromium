@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
+#include "ui/accessibility/mojom/ax_tree_data.mojom.h"
 
 namespace ui {
 namespace {

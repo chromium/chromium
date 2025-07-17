@@ -14,6 +14,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/accessibility/platform/ax_platform.h"

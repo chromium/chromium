@@ -18,6 +18,7 @@ namespace ui {
 
 class AutomationV8Router;
 class AutomationTreeManagerOwner;
+struct AXActionData;
 
 // Class that creates V8 bindings for Automation. This class should contain
 // logic about converting to/from V8 values but should not contain logic about
