@@ -3,12 +3,14 @@
 ++[push button] name='prev' controller-for=[section]
 ++[push button] name='next' controller-for=[section]
 ++[push button] name='down' controller-for=[section]
-++[section] controlled-by=[page tab list,push button,push button,push button,push button]
-++++[scroll pane] details-for=[page tab]
+++[section] controlled-by=[landmark,push button,push button,push button,push button]
+++++[section] details-for=[link]
 ++++++[static] name='One'
-++++[static] name='Two'
-++++[static] name='Three'
-++[page tab list] horizontal controller-for=[section]
-++++[page tab] selectable selected details=[scroll pane] details-from:css-scroll-marker-pseudo-element
-++++[page tab] selectable details=[scroll pane] details-from:css-scroll-marker-pseudo-element
-++++[page tab] selectable details=[scroll pane] details-from:css-scroll-marker-pseudo-element
+++++[section] details-for=[link]
+++++++[static] name='Two'
+++++[section] details-for=[link]
+++++++[static] name='Three'
+++[landmark] controller-for=[section]
+++++[link] details=[section] details-from:css-scroll-marker-pseudo-element
+++++[link] details=[section] details-from:css-scroll-marker-pseudo-element
+++++[link] details=[section] details-from:css-scroll-marker-pseudo-element

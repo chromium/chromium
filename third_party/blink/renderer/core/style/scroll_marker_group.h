@@ -16,7 +16,7 @@ class ScrollMarkerGroup : public GarbageCollected<ScrollMarkerGroup> {
   enum class ScrollMarkerMode { kTabs, kLinks };
 
   explicit ScrollMarkerGroup(ScrollMarkerPosition position,
-                             ScrollMarkerMode mode = ScrollMarkerMode::kTabs)
+                             ScrollMarkerMode mode = ScrollMarkerMode::kLinks)
       : mode_(mode), position_(position) {}
 
   ScrollMarkerGroup(const ScrollMarkerGroup&) = delete;

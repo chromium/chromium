@@ -2455,10 +2455,11 @@ class ComputedStyle final : public ComputedStyleBase {
     return GetScrollMarkerGroup() && GetScrollMarkerGroup()->PositionAfter();
   }
 
-  ScrollMarkerGroup::ScrollMarkerMode ScrollMarkerGroupMode() const {
-    // The default value is `links`.
+  // Empty value means scroll-marker-group: none.
+  std::optional<ScrollMarkerGroup::ScrollMarkerMode> ScrollMarkerGroupMode()
+      const {
     if (!GetScrollMarkerGroup()) {
-      return ScrollMarkerGroup::ScrollMarkerMode::kLinks;
+      return std::nullopt;
     }
     return GetScrollMarkerGroup()->Mode();
   }

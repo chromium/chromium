@@ -2583,7 +2583,6 @@ data/accessibility/event/caret-move.html
 data/accessibility/event/carousel-with-links-expected-android.txt
 data/accessibility/event/carousel-with-links.html
 data/accessibility/event/carousel-with-tabs-expected-android.txt
-data/accessibility/event/carousel-with-tabs-expected-auralinux.txt
 data/accessibility/event/carousel-with-tabs.html
 data/accessibility/event/checkbox-validity-expected-android.txt
 data/accessibility/event/checkbox-validity-expected-auralinux.txt
