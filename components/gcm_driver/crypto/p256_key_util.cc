@@ -13,7 +13,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -25,42 +25,9 @@ namespace {
 // A P-256 field element consists of 32 bytes.
 const size_t kFieldBytes = 32;
 
-// A P-256 point in uncompressed form consists of 0x04 (to denote that the point
-// is uncompressed per SEC1 2.3.3) followed by two, 32-byte field elements.
-const size_t kUncompressedPointBytes = 1 + 2 * kFieldBytes;
-
 }  // namespace
 
-bool GetRawPublicKey(const crypto::ECPrivateKey& key, std::string* public_key) {
-  DCHECK(public_key);
-  std::string candidate_public_key;
-
-  // ECPrivateKey::ExportRawPublicKey() returns the EC point in the uncompressed
-  // point format.
-  if (!key.ExportRawPublicKey(&candidate_public_key) ||
-      candidate_public_key.size() != kUncompressedPointBytes) {
-    DLOG(ERROR) << "Unable to export the public key.";
-    return false;
-  }
-  public_key->erase();
-  public_key->reserve(kUncompressedPointBytes);
-  public_key->append(candidate_public_key);
-  return true;
-}
-
-// TODO(peter): Get rid of this once all key management code has been updated
-// to use ECPrivateKey instead of std::string.
-bool GetRawPrivateKey(const crypto::ECPrivateKey& key,
-                      std::string* private_key) {
-  DCHECK(private_key);
-  std::vector<uint8_t> private_key_vector;
-  if (!key.ExportPrivateKey(&private_key_vector))
-    return false;
-  private_key->assign(private_key_vector.begin(), private_key_vector.end());
-  return true;
-}
-
-bool ComputeSharedP256Secret(crypto::ECPrivateKey& key,
+bool ComputeSharedP256Secret(crypto::keypair::PrivateKey key,
                              std::string_view peer_public_key,
                              std::string* out_shared_secret) {
   DCHECK(out_shared_secret);

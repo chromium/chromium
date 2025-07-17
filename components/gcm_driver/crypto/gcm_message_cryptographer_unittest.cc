@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -244,10 +244,9 @@ bool ComputeSharedP256SecretFromPrivateKeyStr(std::string_view private_key,
                                               std::string_view peer_public_key,
                                               std::string* out_shared_secret) {
   DCHECK(out_shared_secret);
-  std::unique_ptr<crypto::ECPrivateKey> local_key(
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
-          std::vector<uint8_t>(private_key.begin(), private_key.end())));
-  if (!local_key) {
+  auto local_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
+      base::as_byte_span(private_key));
+  if (!local_key || !local_key->IsEc()) {
     DLOG(ERROR) << "Unable to create the local key";
     return false;
   }
@@ -284,11 +283,10 @@ class GCMMessageCryptographerTestBase : public ::testing::Test {
 
     std::string recipient_private_key(std::begin(kCommonRecipientPrivateKey),
                                       std::end(kCommonRecipientPrivateKey));
-    std::vector<uint8_t> recipient_private_key_vec(
-      recipient_private_key.begin(), recipient_private_key.end());
-    std::unique_ptr<crypto::ECPrivateKey> recipient_key =
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(recipient_private_key_vec);
+    auto recipient_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
+        base::as_byte_span(recipient_private_key));
     ASSERT_TRUE(recipient_key);
+    ASSERT_TRUE(recipient_key->IsEc());
     ASSERT_TRUE(ComputeSharedP256Secret(
         *recipient_key, sender_public_key_, &ecdh_shared_secret_));
 

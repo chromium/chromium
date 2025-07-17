@@ -18,7 +18,7 @@
 #include "components/gcm_driver/crypto/proto/gcm_encryption_data.pb.h"
 #include "components/gcm_driver/gcm_delayed_task_controller.h"
 #include "components/leveldb_proto/public/proto_database.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -36,7 +36,7 @@ namespace gcm {
 class GCMKeyStore {
  public:
   using KeysCallback =
-      base::OnceCallback<void(std::unique_ptr<crypto::ECPrivateKey> key,
+      base::OnceCallback<void(std::optional<crypto::keypair::PrivateKey> key,
                               const std::string& auth_secret)>;
 
   GCMKeyStore(
@@ -90,7 +90,7 @@ class GCMKeyStore {
   void DidInitialize(leveldb_proto::Enums::InitStatus status);
   void DidLoadKeys(bool success,
                    std::unique_ptr<std::vector<EncryptionData>> entries);
-  void DidStoreKeys(std::unique_ptr<crypto::ECPrivateKey> key,
+  void DidStoreKeys(crypto::keypair::PrivateKey key,
                     const std::string& auth_secret,
                     KeysCallback callback,
                     bool success);
@@ -137,7 +137,7 @@ class GCMKeyStore {
   // Nested map from app_id to a map from authorized_entity to the loaded key
   // pair and authentication secrets.
   using KeyPairAndAuthSecret =
-      std::pair<std::unique_ptr<crypto::ECPrivateKey>, std::string>;
+      std::pair<crypto::keypair::PrivateKey, std::string>;
   std::unordered_map<std::string,
                      std::unordered_map<std::string, KeyPairAndAuthSecret>>
       key_data_;

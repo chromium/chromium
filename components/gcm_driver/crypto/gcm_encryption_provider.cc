@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/crypto/encryption_header_parsers.h"
@@ -22,7 +23,7 @@
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/gcm_driver/crypto/proto/gcm_encryption_data.pb.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
 
 namespace gcm {
@@ -89,7 +90,7 @@ void GCMEncryptionProvider::DidGetEncryptionInfo(
     const std::string& app_id,
     const std::string& authorized_entity,
     EncryptionInfoCallback callback,
-    std::unique_ptr<crypto::ECPrivateKey> key,
+    std::optional<crypto::keypair::PrivateKey> key,
     const std::string& auth_secret) {
   if (!key) {
     key_store_->CreateKeys(
@@ -99,10 +100,8 @@ void GCMEncryptionProvider::DidGetEncryptionInfo(
     return;
   }
 
-  std::string public_key;
-  const bool success = GetRawPublicKey(*key, &public_key);
-  DCHECK(success);
-  std::move(callback).Run(public_key, auth_secret);
+  std::string uncompressed(base::as_string_view(key->ToUncompressedForm()));
+  std::move(callback).Run(std::move(uncompressed), auth_secret);
 }
 
 void GCMEncryptionProvider::RemoveEncryptionInfo(
@@ -273,7 +272,7 @@ void GCMEncryptionProvider::EncryptMessage(const std::string& app_id,
 
 void GCMEncryptionProvider::DidCreateEncryptionInfo(
     EncryptionInfoCallback callback,
-    std::unique_ptr<crypto::ECPrivateKey> key,
+    std::optional<crypto::keypair::PrivateKey> key,
     const std::string& auth_secret) {
   if (!key) {
     std::move(callback).Run(std::string() /* p256dh */,
@@ -281,10 +280,8 @@ void GCMEncryptionProvider::DidCreateEncryptionInfo(
     return;
   }
 
-  std::string public_key;
-  const bool success = GetRawPublicKey(*key, &public_key);
-  DCHECK(success);
-  std::move(callback).Run(public_key, auth_secret);
+  std::string uncompressed(base::as_string_view(key->ToUncompressedForm()));
+  std::move(callback).Run(std::move(uncompressed), auth_secret);
 }
 
 void GCMEncryptionProvider::DecryptMessageWithKey(
@@ -297,7 +294,7 @@ void GCMEncryptionProvider::DecryptMessageWithKey(
     const std::string& ciphertext,
     GCMMessageCryptographer::Version version,
     DecryptMessageCallback callback,
-    std::unique_ptr<crypto::ECPrivateKey> key,
+    std::optional<crypto::keypair::PrivateKey> key,
     const std::string& auth_secret) {
   if (!key) {
     DLOG(ERROR) << "Unable to retrieve the keys for the incoming message.";
@@ -318,9 +315,8 @@ void GCMEncryptionProvider::DecryptMessageWithKey(
 
   GCMMessageCryptographer cryptographer(version);
 
-  std::string exported_public_key;
-  const bool success = GetRawPublicKey(*key, &exported_public_key);
-  DCHECK(success);
+  std::string exported_public_key(
+      base::as_string_view(key->ToUncompressedForm()));
   if (!cryptographer.Decrypt(exported_public_key, public_key, shared_secret,
                              auth_secret, salt, ciphertext, record_size,
                              &plaintext)) {
@@ -354,7 +350,7 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
     const std::string& auth_secret,
     const std::string& message,
     EncryptMessageCallback callback,
-    std::unique_ptr<crypto::ECPrivateKey> key,
+    std::optional<crypto::keypair::PrivateKey> key,
     const std::string& sender_auth_secret) {
   if (!key) {
     DLOG(ERROR) << "Unable to retrieve the keys for the outgoing message.";
@@ -381,9 +377,8 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
   GCMMessageCryptographer cryptographer(
       GCMMessageCryptographer::Version::DRAFT_08);
 
-  std::string sender_public_key;
-  bool success = GetRawPublicKey(*key, &sender_public_key);
-  DCHECK(success);
+  std::string sender_public_key(
+      base::as_string_view(key->ToUncompressedForm()));
   if (!cryptographer.Encrypt(p256dh, sender_public_key, shared_secret,
                              auth_secret, salt, message, &record_size,
                              &ciphertext)) {

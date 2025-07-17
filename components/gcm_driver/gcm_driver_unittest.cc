@@ -21,7 +21,7 @@
 #include "components/gcm_driver/gcm_driver_desktop.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
