@@ -135,9 +135,6 @@ declare_args() {
   use_ml_inliner = host_os == "linux" && is_android &&
                    !llvm_android_mainline  # https://crbug.com/1468680
 
-  # Set to true to use the android unwinder V2 implementation.
-  use_android_unwinder_v2 = true
-
   # Whether we should consider the profile we're using to be accurate. Accurate
   # profiles have the benefit of (potentially substantial) binary size
   # reductions, by instructing the compiler to optimize cold and uncovered

@@ -160,7 +160,6 @@ PYTHON_UNIT_TEST_SUITES = {
             'java_cpp_enum_tests',
             'java_cpp_strings_tests',
             'java_google_api_keys_tests',
-            'extract_unwind_tables_tests',
         ]
     },
 }

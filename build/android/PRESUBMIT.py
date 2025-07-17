@@ -92,7 +92,6 @@ def CommonChecks(input_api, output_api, *, is_upload):
       J('gyp', 'compile_java_tests.py'),
       J('gyp', 'create_unwind_table_tests.py'),
       J('gyp', 'dex_test.py'),
-      J('gyp', 'extract_unwind_tables_tests.py'),
       J('gyp', 'gcc_preprocess_tests.py'),
       J('gyp', 'java_cpp_enum_tests.py'),
       J('gyp', 'java_cpp_features_tests.py'),

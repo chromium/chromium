@@ -5,7 +5,6 @@
 import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/create_unwind_table.gni")
-import("//build/config/android/extract_unwind_tables.gni")
 import("//build/config/android/linker_version_script.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
@@ -159,16 +158,8 @@ template("chrome_common_shared_library") {
       invoker.define_unwind_table_target) {
     _library_target = ":$target_name"
 
-    # TODO(crbug.com/40833600): Remove generation of v1 unwind asset when
-    # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroid`.
-    unwind_table_v1("${target_name}_unwind_table_v1") {
+    unwind_table_v2("${target_name}_unwind_table_v2") {
       library_target = _library_target
-    }
-
-    if (use_android_unwinder_v2) {
-      unwind_table_v2("${target_name}_unwind_table_v2") {
-        library_target = _library_target
-      }
     }
   }
 }
