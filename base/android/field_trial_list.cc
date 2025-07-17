@@ -6,11 +6,11 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_jni/FieldTrialList_jni.h"
@@ -43,8 +43,10 @@ class TrialLogger : public base::FieldTrialList::Observer {
   ~TrialLogger() override = default;
 };
 
-base::LazyInstance<TrialLogger>::Leaky g_trial_logger =
-    LAZY_INSTANCE_INITIALIZER;
+TrialLogger* GetTrialLogger() {
+  static base::NoDestructor<TrialLogger> trial_logger;
+  return trial_logger.get();
+}
 
 }  // namespace
 
@@ -92,11 +94,12 @@ class AndroidFieldTrialListLogActiveTrialsFriendHelper {
 };
 
 static void JNI_FieldTrialList_LogActiveTrials(JNIEnv* env) {
-  DCHECK(!g_trial_logger.IsCreated());  // This need only be called once.
+  static int called_count = 0;
+  DCHECK_EQ(called_count++, 0);  // This need only be called once.
 
   LOG(INFO) << "Logging active field trials...";
   AndroidFieldTrialListLogActiveTrialsFriendHelper::AddObserver(
-      &g_trial_logger.Get());
+      GetTrialLogger());
 
   // Log any trials that were already active before adding the observer.
   std::vector<base::FieldTrial::ActiveGroup> active_groups;

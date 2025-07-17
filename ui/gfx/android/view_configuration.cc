@@ -5,7 +5,7 @@
 #include "ui/gfx/android/view_configuration.h"
 
 #include "base/android/jni_android.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -126,9 +126,10 @@ struct ViewConfigurationData {
   int min_scaling_span_in_dips_;
 };
 
-// Leaky to allow access from any thread.
-base::LazyInstance<ViewConfigurationData>::Leaky g_view_configuration =
-    LAZY_INSTANCE_INITIALIZER;
+ViewConfigurationData& GetViewConfigurationData() {
+  static base::NoDestructor<ViewConfigurationData> view_configuration;
+  return *view_configuration;
+}
 
 }  // namespace
 
@@ -139,41 +140,41 @@ static void JNI_ViewConfigurationHelper_UpdateSharedViewConfiguration(
     jfloat touch_slop,
     jfloat double_tap_slop,
     jfloat min_scaling_span) {
-  g_view_configuration.Get().SynchronizedUpdate(
+  GetViewConfigurationData().SynchronizedUpdate(
       maximum_fling_velocity, minimum_fling_velocity, touch_slop,
       double_tap_slop, min_scaling_span);
 }
 
 int ViewConfiguration::GetDoubleTapTimeoutInMs() {
-  return g_view_configuration.Get().double_tap_timeout_in_ms();
+  return GetViewConfigurationData().double_tap_timeout_in_ms();
 }
 
 int ViewConfiguration::GetLongPressTimeoutInMs() {
-  return g_view_configuration.Get().long_press_timeout_in_ms();
+  return GetViewConfigurationData().long_press_timeout_in_ms();
 }
 
 int ViewConfiguration::GetTapTimeoutInMs() {
-  return g_view_configuration.Get().tap_timeout_in_ms();
+  return GetViewConfigurationData().tap_timeout_in_ms();
 }
 
 int ViewConfiguration::GetMaximumFlingVelocityInDipsPerSecond() {
-  return g_view_configuration.Get().max_fling_velocity_in_dips_s();
+  return GetViewConfigurationData().max_fling_velocity_in_dips_s();
 }
 
 int ViewConfiguration::GetMinimumFlingVelocityInDipsPerSecond() {
-  return g_view_configuration.Get().min_fling_velocity_in_dips_s();
+  return GetViewConfigurationData().min_fling_velocity_in_dips_s();
 }
 
 int ViewConfiguration::GetTouchSlopInDips() {
-  return g_view_configuration.Get().touch_slop_in_dips();
+  return GetViewConfigurationData().touch_slop_in_dips();
 }
 
 int ViewConfiguration::GetDoubleTapSlopInDips() {
-  return g_view_configuration.Get().double_tap_slop_in_dips();
+  return GetViewConfigurationData().double_tap_slop_in_dips();
 }
 
 int ViewConfiguration::GetMinScalingSpanInDips() {
-  return g_view_configuration.Get().min_scaling_span_in_dips();
+  return GetViewConfigurationData().min_scaling_span_in_dips();
 }
 
 }  // namespace gfx

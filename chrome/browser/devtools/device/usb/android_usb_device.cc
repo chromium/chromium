@@ -18,8 +18,8 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -44,13 +44,17 @@ const uint32_t kVersion = 0x01000000;
 static const char kHostConnectMessage[] = "host::";
 
 // Stores android wrappers around claimed usb devices on caller thread.
-base::LazyInstance<std::vector<AndroidUsbDevice*>>::Leaky g_devices =
-    LAZY_INSTANCE_INITIALIZER;
+std::vector<AndroidUsbDevice*>& GetDevices() {
+  static base::NoDestructor<std::vector<AndroidUsbDevice*>> devices;
+  return *devices;
+}
 
 // Stores the GUIDs of devices that are currently opened so that they are not
 // re-probed.
-base::LazyInstance<std::vector<std::string>>::Leaky g_open_devices =
-    LAZY_INSTANCE_INITIALIZER;
+std::vector<std::string>& GetOpenDevices() {
+  static base::NoDestructor<std::vector<std::string>> open_devices;
+  return *open_devices;
+}
 
 uint32_t Checksum(const std::string& data) {
   unsigned char* x = (unsigned char*)data.data();
@@ -95,23 +99,23 @@ void OnProbeFinished(AndroidUsbDevicesCallback callback,
 
   // Add raw pointers to the newly claimed devices.
   for (const scoped_refptr<AndroidUsbDevice>& device : *devices) {
-    g_devices.Get().push_back(device.get());
+    GetDevices().push_back(device.get());
   }
 
   // Return all claimed devices.
-  AndroidUsbDevices result(g_devices.Get().begin(), g_devices.Get().end());
+  AndroidUsbDevices result(GetDevices().begin(), GetDevices().end());
   std::move(callback).Run(result);
 }
 
 void OnDeviceClosed(const std::string& guid,
                     mojo::Remote<device::mojom::UsbDevice> device) {
-  std::erase(g_open_devices.Get(), guid);
+  std::erase(GetOpenDevices(), guid);
 }
 
 void OnDeviceClosedWithBarrier(const std::string& guid,
                                mojo::Remote<device::mojom::UsbDevice> device,
                                const base::RepeatingClosure& barrier) {
-  std::erase(g_open_devices.Get(), guid);
+  std::erase(GetOpenDevices(), guid);
   barrier.Run();
 }
 
@@ -159,7 +163,7 @@ void OnDeviceOpened(AndroidUsbDevices* devices,
         base::BindOnce(&CreateDeviceOnInterfaceClaimed, devices, rsa_key,
                        android_device_info, std::move(device), barrier));
   } else {
-    std::erase(g_open_devices.Get(), android_device_info.guid);
+    std::erase(GetOpenDevices(), android_device_info.guid);
     barrier.Run();
   }
 }
@@ -174,13 +178,13 @@ void OpenAndroidDevices(crypto::RSAPrivateKey* rsa_key,
       base::BindOnce(&OnProbeFinished, std::move(callback), devices));
 
   for (const auto& device_info : device_info_list) {
-    if (base::Contains(g_open_devices.Get(), device_info.guid)) {
+    if (base::Contains(GetOpenDevices(), device_info.guid)) {
       // This device is already open, do not make parallel attempts to connect
       // to it.
       barrier.Run();
       continue;
     }
-    g_open_devices.Get().push_back(device_info.guid);
+    GetOpenDevices().push_back(device_info.guid);
 
     mojo::Remote<device::mojom::UsbDevice> device;
     UsbDeviceManagerHelper::GetInstance()->GetDevice(
@@ -497,15 +501,16 @@ void AndroidUsbDevice::TransferError(UsbTransferStatus status) {
 void AndroidUsbDevice::Terminate() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  // Remove this AndroidUsbDevice from |g_devices|.
-  auto it = std::ranges::find(g_devices.Get(), this);
-  if (it != g_devices.Get().end())
-    g_devices.Get().erase(it);
+  // Remove this AndroidUsbDevice from GetDevices().
+  auto it = std::ranges::find(GetDevices(), this);
+  if (it != GetDevices().end()) {
+    GetDevices().erase(it);
+  }
 
   // For connection error, remove the guid from recored opening/opened list.
   // For transfer errors, we'll do this after releasing the interface.
   if (!device_) {
-    std::erase(g_open_devices.Get(), android_device_info_.guid);
+    std::erase(GetOpenDevices(), android_device_info_.guid);
     return;
   }
 

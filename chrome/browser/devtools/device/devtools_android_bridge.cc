@@ -19,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"

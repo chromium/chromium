@@ -10,7 +10,7 @@
 #include "base/android/unguessable_token_android.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "components/input/android/input_token_forwarder.h"
 #include "content/child/child_thread_impl.h"
@@ -39,13 +39,13 @@ namespace {
 class ChildProcessSurfaceManager : public gpu::GpuSurfaceLookup,
                                    public input::InputTokenForwarder {
  public:
-  ChildProcessSurfaceManager() {}
+  ChildProcessSurfaceManager() = default;
 
   ChildProcessSurfaceManager(const ChildProcessSurfaceManager&) = delete;
   ChildProcessSurfaceManager& operator=(const ChildProcessSurfaceManager&) =
       delete;
 
-  ~ChildProcessSurfaceManager() override {}
+  ~ChildProcessSurfaceManager() override = default;
 
   // |service_impl| is the instance of
   // org.chromium.content.app.ChildProcessService.
@@ -95,13 +95,14 @@ class ChildProcessSurfaceManager : public gpu::GpuSurfaceLookup,
   }
 
  private:
-  friend struct base::LazyInstanceTraitsBase<ChildProcessSurfaceManager>;
   // The instance of org.chromium.content.app.ChildProcessService.
   base::android::ScopedJavaGlobalRef<jobject> service_impl_;
 };
 
-base::LazyInstance<ChildProcessSurfaceManager>::Leaky
-    g_child_process_surface_manager = LAZY_INSTANCE_INITIALIZER;
+ChildProcessSurfaceManager* GetChildProcessSurfaceManager() {
+  static base::NoDestructor<ChildProcessSurfaceManager> manager;
+  return manager.get();
+}
 
 // Chrome actually uses the renderer code path for all of its child
 // processes such as renderers, plugins, etc.
@@ -113,12 +114,10 @@ void JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
   // Set the CPU properties.
   android_setCpu(cpu_count, cpu_features);
 
-  g_child_process_surface_manager.Get().SetServiceImpl(service_impl);
+  GetChildProcessSurfaceManager()->SetServiceImpl(service_impl);
 
-  gpu::GpuSurfaceLookup::InitInstance(
-      g_child_process_surface_manager.Pointer());
-  input::InputTokenForwarder::SetInstance(
-      g_child_process_surface_manager.Pointer());
+  gpu::GpuSurfaceLookup::InitInstance(GetChildProcessSurfaceManager());
+  input::InputTokenForwarder::SetInstance(GetChildProcessSurfaceManager());
 }
 
 }  // namespace

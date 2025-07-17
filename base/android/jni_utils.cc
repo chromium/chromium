@@ -7,7 +7,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
-#include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 

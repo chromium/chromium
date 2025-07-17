@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "components/sessions/core/session_id.h"
 
@@ -66,7 +67,7 @@ class TabModelList {
   base::ObserverList<TabModelListObserver>::Unchecked observers_;
   TabModelVector models_;
 
-  friend base::LazyInstanceTraitsBase<TabModelList>;
+  friend base::NoDestructor<TabModelList>;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_LIST_H_

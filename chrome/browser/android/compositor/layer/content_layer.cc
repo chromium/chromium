@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/lazy_instance.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"

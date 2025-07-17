@@ -13,11 +13,14 @@ namespace content {
 namespace android {
 
 namespace {
-base::LazyInstance<LauncherThread>::Leaky g_launcher_thread;
+LauncherThread& GetInstance() {
+  static base::NoDestructor<LauncherThread> launcher_thread;
+  return *launcher_thread;
+}
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> LauncherThread::GetTaskRunner() {
-  return g_launcher_thread.Get().java_handler_thread_.task_runner();
+  return GetInstance().java_handler_thread_.task_runner();
 }
 
 LauncherThread::LauncherThread()
@@ -27,7 +30,7 @@ LauncherThread::LauncherThread()
   java_handler_thread_.Start();
 }
 
-LauncherThread::~LauncherThread() {}
+LauncherThread::~LauncherThread() = default;
 
 }  // namespace android
 }  // namespace content

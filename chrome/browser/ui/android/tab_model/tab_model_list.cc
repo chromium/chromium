@@ -16,8 +16,10 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
-base::LazyInstance<TabModelList>::Leaky tab_model_list_ =
-    LAZY_INSTANCE_INITIALIZER;
+TabModelList& GetInstance() {
+  static base::NoDestructor<TabModelList> tab_model_list;
+  return *tab_model_list;
+}
 }  // namespace
 
 static TabModel* archived_tab_model_ = nullptr;
@@ -27,16 +29,16 @@ TabModelList::~TabModelList() = default;
 
 void TabModelList::AddTabModel(TabModel* tab_model) {
   DCHECK(tab_model);
-  tab_model_list_.Get().models_.push_back(tab_model);
+  GetInstance().models_.push_back(tab_model);
 
-  for (TabModelListObserver& observer : tab_model_list_.Get().observers_) {
+  for (TabModelListObserver& observer : GetInstance().observers_) {
     observer.OnTabModelAdded(tab_model);
   }
 }
 
 void TabModelList::RemoveTabModel(TabModel* tab_model) {
   DCHECK(tab_model);
-  auto& tab_models = tab_model_list_.Get().models_;
+  auto& tab_models = GetInstance().models_;
 
   TabModelList::iterator remove_tab_model =
       std::ranges::find(tab_models, tab_model);
@@ -45,17 +47,17 @@ void TabModelList::RemoveTabModel(TabModel* tab_model) {
     tab_models.erase(remove_tab_model);
   }
 
-  for (TabModelListObserver& observer : tab_model_list_.Get().observers_) {
+  for (TabModelListObserver& observer : GetInstance().observers_) {
     observer.OnTabModelRemoved(tab_model);
   }
 }
 
 void TabModelList::AddObserver(TabModelListObserver* observer) {
-  tab_model_list_.Get().observers_.AddObserver(observer);
+  GetInstance().observers_.AddObserver(observer);
 }
 
 void TabModelList::RemoveObserver(TabModelListObserver* observer) {
-  tab_model_list_.Get().observers_.RemoveObserver(observer);
+  GetInstance().observers_.RemoveObserver(observer);
 }
 
 void TabModelList::HandlePopupNavigation(NavigateParams* params) {
@@ -147,7 +149,7 @@ bool TabModelList::IsOffTheRecordSessionActive() {
 
 // static
 const TabModelList::TabModelVector& TabModelList::models() {
-  return tab_model_list_.Get().models_;
+  return GetInstance().models_;
 }
 
 // static

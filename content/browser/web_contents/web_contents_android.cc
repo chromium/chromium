@@ -19,9 +19,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "cc/input/android/offset_tag_android.h"
@@ -80,8 +80,11 @@ namespace {
 
 // Track all WebContentsAndroid objects here so that we don't deserialize a
 // destroyed WebContents object.
-base::LazyInstance<std::unordered_set<WebContentsAndroid*>>::Leaky
-    g_allocated_web_contents_androids = LAZY_INSTANCE_INITIALIZER;
+std::unordered_set<WebContentsAndroid*>& GetAllocatedWebContentsAndroids() {
+  static base::NoDestructor<std::unordered_set<WebContentsAndroid*>>
+      allocated_web_contents_androids;
+  return *allocated_web_contents_androids;
+}
 
 void JavaScriptResultCallback(const ScopedJavaGlobalRef<jobject>& callback,
                               base::Value result) {
@@ -229,8 +232,8 @@ ScopedJavaLocalRef<jobject> JNI_WebContentsImpl_FromNativePtr(
     return ScopedJavaLocalRef<jobject>();
 
   // Check to make sure this object hasn't been destroyed.
-  if (g_allocated_web_contents_androids.Get().find(web_contents_android) ==
-      g_allocated_web_contents_androids.Get().end()) {
+  if (GetAllocatedWebContentsAndroids().find(web_contents_android) ==
+      GetAllocatedWebContentsAndroids().end()) {
     return ScopedJavaLocalRef<jobject>();
   }
 
@@ -240,7 +243,7 @@ ScopedJavaLocalRef<jobject> JNI_WebContentsImpl_FromNativePtr(
 WebContentsAndroid::WebContentsAndroid(WebContentsImpl* web_contents)
     : web_contents_(web_contents),
       navigation_controller_(&(web_contents->GetController())) {
-  g_allocated_web_contents_androids.Get().insert(this);
+  GetAllocatedWebContentsAndroids().insert(this);
   JNIEnv* env = AttachCurrentThread();
   obj_.Reset(env,
              Java_WebContentsImpl_create(env, reinterpret_cast<intptr_t>(this),
@@ -249,9 +252,9 @@ WebContentsAndroid::WebContentsAndroid(WebContentsImpl* web_contents)
 }
 
 WebContentsAndroid::~WebContentsAndroid() {
-  DCHECK(g_allocated_web_contents_androids.Get().find(this) !=
-      g_allocated_web_contents_androids.Get().end());
-  g_allocated_web_contents_androids.Get().erase(this);
+  DCHECK(GetAllocatedWebContentsAndroids().find(this) !=
+         GetAllocatedWebContentsAndroids().end());
+  GetAllocatedWebContentsAndroids().erase(this);
   offset_tag_mediator_ = nullptr;
   for (auto& observer : destruction_observers_)
     observer.WebContentsAndroidDestroyed(this);

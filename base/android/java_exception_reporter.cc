@@ -9,8 +9,8 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_minimal_jni/JavaExceptionReporter_jni.h"
@@ -27,8 +27,10 @@ JavaExceptionCallback g_java_exception_callback;
 using JavaExceptionFilter =
     base::RepeatingCallback<bool(const JavaRef<jthrowable>&)>;
 
-LazyInstance<JavaExceptionFilter>::Leaky g_java_exception_filter =
-    LAZY_INSTANCE_INITIALIZER;
+JavaExceptionFilter& GetJavaExceptionFilter() {
+  static base::NoDestructor<JavaExceptionFilter> java_exception_filter;
+  return *java_exception_filter;
+}
 
 }  // namespace
 
@@ -57,7 +59,7 @@ void InitJavaExceptionReporterForChildProcess() {
 }
 
 void SetJavaExceptionFilter(JavaExceptionFilter java_exception_filter) {
-  g_java_exception_filter.Get() = std::move(java_exception_filter);
+  GetJavaExceptionFilter() = std::move(java_exception_filter);
 }
 
 void SetJavaExceptionCallback(JavaExceptionCallback callback) {
@@ -82,7 +84,7 @@ void JNI_JavaExceptionReporter_ReportJavaException(
     jboolean crash_after_report,
     const JavaRef<jthrowable>& e) {
   std::string exception_info = base::android::GetJavaExceptionInfo(env, e);
-  bool should_report_exception = g_java_exception_filter.Get().Run(e);
+  bool should_report_exception = GetJavaExceptionFilter().Run(e);
   if (should_report_exception) {
     SetJavaException(exception_info.c_str());
   }
