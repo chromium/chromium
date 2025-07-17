@@ -67,7 +67,11 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
     if (image_details->rect) {
       const auto& rect = *image_details->rect;
       source_rect.SetRect(rect.x, rect.y, rect.width, rect.height);
-      float scale = view->GetDeviceScaleFactor();
+      float scale = image_details->scale ? *image_details->scale
+                                         : view->GetDeviceScaleFactor();
+      // For extremely large scale values, this can result in an empty
+      // source_rect due to integer overflow clamping. In turn, this will cause
+      // `CopyFromSurface` to capture the entire visible surface.
       source_rect = gfx::ScaleToEnclosingRect(source_rect, scale);
     }
   }

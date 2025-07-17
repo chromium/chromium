@@ -34,6 +34,7 @@ declare namespace chrome {
       format?: ImageFormat;
       quality?: number;
       rect?: Rect;
+      scale?: number;
     }
 
     export enum RunAt {

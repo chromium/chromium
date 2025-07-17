@@ -83,6 +83,13 @@
             "optional": true,
             "description": "An object specifying the area of the document to capture, in CSS pixels, relative to the page. If omitted, the currently visible viewport is captured.",
             "nodoc": true
+          },
+          "scale": {
+            "type": "number",
+            "optional": true,
+            "minimum": 0,
+            "description": "The scale factor to apply to the image. Defaults to devicePixelRatio.",
+            "nodoc": true
           }
         }
       },

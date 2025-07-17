@@ -41,10 +41,25 @@ chrome.extensionTypes.ImageFormat = {
 };
 
 /**
- * Details about the format and quality of an image.
+ * An object specifying the area of the document to capture, in CSS pixels,
+ * relative to the page. All properties default to 0.
+ * @typedef {{
+ *   x: number,
+ *   y: number,
+ *   width: number,
+ *   height: number
+ * }}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-Rect
+ */
+chrome.extensionTypes.Rect;
+
+/**
+ * Details about the format, quality, and area of an image.
  * @typedef {{
  *   format: (!chrome.extensionTypes.ImageFormat|undefined),
- *   quality: (number|undefined)
+ *   quality: (number|undefined),
+ *   rect: (!chrome.extensionTypes.Rect|undefined),
+ *   scale: (number|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/extensionTypes#type-ImageDetails
  */

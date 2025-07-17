@@ -175,6 +175,95 @@ loadScript.then(() => {
             }));
       },
 
+      function captureVisibleTabWithRectAndScale() {
+        const rect = {x: 10, y: 20, width: 80, height: 60};
+        const scale = 2.0;
+        createWindow(
+            [fixPort(kURLBaseA + 'text.html')], kWindowRect,
+            pass(function(winId, tabIds) {
+              waitForAllTabs(pass(function() {
+                chrome.tabs.query(
+                    {active: true, windowId: winId}, pass(function(tabs) {
+                      assertEq('complete', tabs[0].status);
+
+                      // The captured image will be in physical pixels, so
+                      // we need to scale our expected dimensions by the
+                      // scale factor.
+                      chrome.tabs.captureVisibleTab(
+                          winId, {format: 'png', rect: rect, scale: scale},
+                          pass(function(imgDataUrl) {
+                            assertIsStringWithPrefix(
+                                'data:image/png;base64,', imgDataUrl);
+                            // The captured region of text.html should be
+                            // all white.
+                            testPixelsAreExpectedColor(
+                                imgDataUrl, {
+                                  'width': Math.ceil(rect.width * scale),
+                                  'height': Math.ceil(rect.height * scale)
+                                },
+                                '255,255,255,255');  // White.
+                          }));
+                    }));
+              }));
+            }));
+      },
+
+      function captureVisibleTabWithRectAndLargeScale_CheckNoOverflow() {
+        const rect = {x: 10, y: 20, width: 80, height: 60};
+        const scale = 2000000000;
+        createWindow(
+            [fixPort(kURLBaseA + 'white.html')], kWindowRect,
+            pass(function(winId, tabIds) {
+              waitForAllTabs(pass(function() {
+                chrome.tabs.query(
+                    {active: true, windowId: winId}, pass(function(tabs) {
+                      assertEq('complete', tabs[0].status);
+
+                      // Since the scale factor is extremely large, the C++
+                      // browser-side code will clamp the requested image
+                      // dimensions to a safe maximum (INT_MAX). This results
+                      // in an empty source rectangle, which is a special case
+                      // that triggers a capture of the entire visible tab.
+                      chrome.test.sendMessage(
+                          'get_device_pixel_ratio',
+                          pass(function(devicePixelRatioStr) {
+                            const devicePixelRatio =
+                                parseFloat(devicePixelRatioStr);
+
+                            chrome.tabs.captureVisibleTab(
+                                winId,
+                                {format: 'png', rect: rect, scale: scale},
+                                function(imgDataUrl) {
+                                  assertIsStringWithPrefix(
+                                      'data:image/png;base64,', imgDataUrl);
+
+                                  fetch(imgDataUrl)
+                                      .then(res => res.blob())
+                                      .then(blob => createImageBitmap(blob))
+                                      .then(pass(imageBitmap => {
+                                        assertEq(
+                                            Math.ceil(
+                                                kWindowRect.width *
+                                                devicePixelRatio),
+                                            imageBitmap.width,
+                                            'Image width should match window width');
+                                        assertEq(
+                                            Math.ceil(
+                                                kWindowRect.height *
+                                                devicePixelRatio),
+                                            imageBitmap.height,
+                                            'Image height should match window height');
+                                      }))
+                                      .catch(fail(e => {
+                                        return 'Checking image dimensions failed: ' +
+                                            e;
+                                      }));
+                                });
+                          }));
+                    }));
+              }));
+            }));
+      },
     ])
   });
 });
