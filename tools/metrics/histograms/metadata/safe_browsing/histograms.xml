@@ -3931,16 +3931,6 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.WarningBypassAllowlist.SchemeOnWrite"
-    enum="SafeBrowsingUrlScheme" expires_after="2025-08-24">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the scheme of the URL used when writing to the warning bypass
-    allowlist.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.WebView.AppOptIn" enum="SafeBrowsingAppOptIn"
     expires_after="2025-01-05">
   <owner>ntfschr@chromium.org</owner>

@@ -537,8 +537,6 @@ void BaseUIManager::AddToAllowlistUrlSet(
   if (allowlist_url.is_empty())
     return;
 
-  safe_browsing::scheme_logger::LogScheme(
-      allowlist_url, "SafeBrowsing.WarningBypassAllowlist.SchemeOnWrite");
   if (pending) {
     site_list->InsertPending(allowlist_url, navigation_id, threat_type);
   } else {
