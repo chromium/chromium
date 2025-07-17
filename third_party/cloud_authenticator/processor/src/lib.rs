@@ -1224,7 +1224,7 @@ mod tests {
         [3u8; recovery_key_store::COUNTER_ID_LEN];
     pub const TEST_VAULT_HANDLE_WITHOUT_TYPE: [u8; recovery_key_store::VAULT_HANDLE_LEN - 1] =
         [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1];
-    pub const TEST_CERT_XML_SERIAL_NUMBER: i64 = 42;
+    pub const TEST_CERT_XML_SERIAL_NUMBER: i64 = 10016;
     pub const TEST_COHORT_PUBLIC_KEY: [u8; 32] = [4u8; 32];
 
     fn bytes(b: Vec<u8>) -> Value {
@@ -2810,5 +2810,56 @@ mod tests {
             RequestAuthentication::Required,
             &configs,
         );
+    }
+
+    #[test]
+    fn test_rewrap_updates_wrapped_pin_with_cohort_details() {
+        let mut metrics = MetricsUpdate::default();
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+            vault_cohort_details: None,
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
+        let (output, _) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            sign_request(cbor!({
+                CMD: "recovery_key_store/rewrap",
+                CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
+                SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
+                WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+                WRAPPED_PIN_DATA: wrapped_pin_data,
+            })),
+        )
+        .unwrap();
+        let Value::Map(result) = ok_value(&output).unwrap() else {
+            panic!("{:?}", output);
+        };
+        let Value::Bytestring(wrapped_pin) = result
+            .get(&MapKeyRef::Str("wrapped_pin") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("{:?}", result);
+        };
+        let result_pin_data =
+            pin::Data::from_wrapped(wrapped_pin, SAMPLE_SECURITY_DOMAIN_SECRET).unwrap();
+        assert_eq!(result_pin_data.pin_hash, pin_data.pin_hash);
+        assert_eq!(result_pin_data.claim_key, pin_data.claim_key);
+        assert_eq!(result_pin_data.counter_id, pin_data.counter_id);
+        assert_eq!(
+            result_pin_data.vault_handle_without_type,
+            pin_data.vault_handle_without_type
+        );
+        let vault_cohort_details = result_pin_data.vault_cohort_details.unwrap();
+        assert_eq!(
+            vault_cohort_details.cert_xml_serial_number,
+            TEST_CERT_XML_SERIAL_NUMBER
+        );
+        assert!(!vault_cohort_details.cohort_public_key.is_empty());
     }
 }

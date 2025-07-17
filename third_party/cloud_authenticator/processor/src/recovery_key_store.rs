@@ -16,8 +16,10 @@
 //! recovery key store, also called Vault internally.
 
 use crate::{
-    debug, get_secret_from_request, pin, Authentication, DirtyFlag, MetricsUpdate, ParsedState,
-    Reauth, RequestError, COUNTER_ID_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
+    debug, get_secret_from_request,
+    pin::{self, VaultCohortDetails},
+    Authentication, DirtyFlag, MetricsUpdate, ParsedState, Reauth, RequestError, COUNTER_ID_KEY,
+    VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
 };
 use alloc::collections::BTreeMap;
 use alloc::string::String;
@@ -1556,6 +1558,22 @@ fn include_security_domain_member_fields(
     }))
 }
 
+fn include_security_domain_member_fields_with_pin(
+    wrapped: Wrapped,
+    pin: pin::Data,
+    security_domain_secret: &[u8; 32],
+) -> Result<cbor::Value, RequestError> {
+    let cbor = include_security_domain_member_fields(wrapped, &security_domain_secret)?;
+    let Value::Map(mut cbor) = cbor else {
+        return debug("cbor not a map");
+    };
+    cbor.insert(
+        MapKey::String(String::from("wrapped_pin")),
+        Value::from(pin.encrypt(security_domain_secret)),
+    );
+    Ok(Value::Map(cbor))
+}
+
 /// Check that the given serial number is at least equal to the greatest serial
 /// number used by the given device before. This is done so that devices cannot
 /// request rewrapping of PIN hashes under older recovery key store cohorts,
@@ -1714,7 +1732,7 @@ pub(crate) fn do_rewrap(
         return debug("wrapped PIN required");
     };
     let (security_domain_secret, _) = get_secret_from_request(state, &request, device_id)?;
-    let pin_data = pin::Data::from_wrapped(wrapped_pin_data, &security_domain_secret)?;
+    let mut pin_data = pin::Data::from_wrapped(wrapped_pin_data, &security_domain_secret)?;
     let wrapped = wrap(
         &pin_data.pin_hash,
         cert_xml,
@@ -1723,9 +1741,15 @@ pub(crate) fn do_rewrap(
         current_time_epoch_millis,
     )
     .map_err(RequestError::Debug)?;
+    // The cohort and serial number may have changed as a result of rewrapping,
+    // or the details may not have been set yet. Update the PIN with the values.
+    pin_data.vault_cohort_details = Some(VaultCohortDetails {
+        cert_xml_serial_number: wrapped.serial,
+        cohort_public_key: wrapped.cohort_public_key.to_vec(),
+    });
     enforce_cert_highwater(state, device_id, wrapped.serial)?;
     metrics.recovery_key_store_rewrap += 1;
-    include_security_domain_member_fields(wrapped, &security_domain_secret)
+    include_security_domain_member_fields_with_pin(wrapped, pin_data, &security_domain_secret)
 }
 
 #[cfg(test)]
