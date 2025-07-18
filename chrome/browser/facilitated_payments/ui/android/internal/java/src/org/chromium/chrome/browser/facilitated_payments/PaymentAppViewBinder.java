@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.ON_PAYMENT_APP_CLICK_ACTION;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_ICON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_NAME;
 
 import android.view.LayoutInflater;
@@ -13,8 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties;
@@ -49,11 +47,9 @@ class PaymentAppViewBinder {
         if (propertyKey == PAYMENT_APP_NAME) {
             TextView paymentAppName = view.findViewById(R.id.payment_app_name);
             paymentAppName.setText(model.get(PAYMENT_APP_NAME));
-        } else if (propertyKey == PAYMENT_APP_DRAWABLE_ID) {
+        } else if (propertyKey == PAYMENT_APP_ICON) {
             ImageView paymentAppIcon = view.findViewById(R.id.payment_app_icon);
-            paymentAppIcon.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                            view.getContext(), model.get(PAYMENT_APP_DRAWABLE_ID)));
+            paymentAppIcon.setImageDrawable(model.get(PAYMENT_APP_ICON));
         } else if (propertyKey == ON_PAYMENT_APP_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_PAYMENT_APP_CLICK_ACTION).run());
         } else {

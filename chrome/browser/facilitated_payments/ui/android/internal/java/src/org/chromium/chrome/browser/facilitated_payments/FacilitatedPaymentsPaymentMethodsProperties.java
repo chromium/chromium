@@ -158,12 +158,12 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     static class PaymentAppProperties {
         static final ReadableObjectPropertyKey<String> PAYMENT_APP_NAME =
                 new ReadableObjectPropertyKey("payment_app_name");
-        static final ReadableIntPropertyKey PAYMENT_APP_DRAWABLE_ID =
-                new ReadableIntPropertyKey("payment_app_drawable_id");
+        static final ReadableObjectPropertyKey<Drawable> PAYMENT_APP_ICON =
+                new ReadableObjectPropertyKey<>("payment_app_icon");
         static final ReadableObjectPropertyKey<Runnable> ON_PAYMENT_APP_CLICK_ACTION =
                 new ReadableObjectPropertyKey<>("on_payment_app_click_action");
         static final PropertyKey[] NON_TRANSFORMING_KEYS = {
-            PAYMENT_APP_NAME, PAYMENT_APP_DRAWABLE_ID, ON_PAYMENT_APP_CLICK_ACTION
+            PAYMENT_APP_NAME, PAYMENT_APP_ICON, ON_PAYMENT_APP_CLICK_ACTION
         };
 
         private PaymentAppProperties() {}
