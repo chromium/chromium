@@ -41,6 +41,11 @@ struct ScopedActiveAutofillExperiments {
   ~ScopedActiveAutofillExperiments();
 };
 
+enum class CrowdsourcingRequestType {
+  kRequestQuery,
+  kRequestUpload,
+};
+
 // Obtains Autofill server predictions and upload votes for generating them.
 class AutofillCrowdsourcingManager {
  public:
@@ -149,6 +154,14 @@ class AutofillCrowdsourcingManager {
       FormRequestData request_data,
       base::TimeTicks request_start,
       std::unique_ptr<std::string> response_body);
+
+  // Records the number of requests of a given `request_type` in the last minute
+  static void RecordRequestsInLastMinute(CrowdsourcingRequestType request_type);
+
+  // Returns the timestamps at which requests of type `request_type` were sent
+  // recently.
+  static std::deque<base::TimeTicks>& GetRecentRequestTimestamps(
+      CrowdsourcingRequestType request_type);
 
   // The AutofillClient that this instance will use. Must not be null, and must
   // outlive this instance.

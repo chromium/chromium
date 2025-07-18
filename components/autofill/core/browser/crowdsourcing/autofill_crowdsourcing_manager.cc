@@ -126,11 +126,6 @@ const base::FeatureParam<int> kAutofillMaxServerAttempts(
     "max-attempts",
     5);
 
-enum class RequestType {
-  kRequestQuery,
-  kRequestUpload,
-};
-
 // Used in `ShouldThrottleUpload` to specify which part of the upload is
 // checked for throttling.
 enum class UploadType {
@@ -190,12 +185,13 @@ bool IsAutofillExperimentId(int id) {
   });
 }
 
-std::string GetMetricName(RequestType request_type, std::string_view suffix) {
-  auto TypeToName = [](RequestType type) -> std::string_view {
+std::string GetMetricName(CrowdsourcingRequestType request_type,
+                          std::string_view suffix) {
+  auto TypeToName = [](CrowdsourcingRequestType type) -> std::string_view {
     switch (type) {
-      case RequestType::kRequestQuery:
+      case CrowdsourcingRequestType::kRequestQuery:
         return "Query";
-      case RequestType::kRequestUpload:
+      case CrowdsourcingRequestType::kRequestUpload:
         return "Upload";
     }
     NOTREACHED();
@@ -204,9 +200,9 @@ std::string GetMetricName(RequestType request_type, std::string_view suffix) {
 }
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
-    RequestType request_type) {
+    CrowdsourcingRequestType request_type) {
   switch (request_type) {
-    case RequestType::kRequestQuery:
+    case CrowdsourcingRequestType::kRequestQuery:
       return net::DefineNetworkTrafficAnnotation("autofill_query", R"(
         semantics {
           sender: "Autofill"
@@ -257,7 +253,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             }
           }
         })");
-    case RequestType::kRequestUpload:
+    case CrowdsourcingRequestType::kRequestUpload:
       return net::DefineNetworkTrafficAnnotation("autofill_upload", R"(
       semantics {
         sender: "Autofill"
@@ -510,20 +506,20 @@ std::optional<std::string> GetUploadPayloadForApi(
 // Gets an API method URL given its type (query or upload), an optional
 // resource ID, and the HTTP method to be used.
 // Example usage:
-// * GetAPIMethodUrl(RequestType::kRequestQuery, "1234", "GET") will return
-//   "/v1/pages/1234".
-// * GetAPIMethodUrl(RequestType::kRequestQuery, "1234", "POST") will return
-//   "/v1/pages:get".
-// * GetAPIMethodUrl(RequestType::kRequestUpload, "", "POST") will return
-//   "/v1/forms:vote".
-std::string GetAPIMethodUrl(RequestType type,
+// * GetAPIMethodUrl(CrowdsourcingRequestType::kRequestQuery, "1234", "GET")
+// will return "/v1/pages/1234".
+// * GetAPIMethodUrl(CrowdsourcingRequestType::kRequestQuery, "1234", "POST")
+// will return "/v1/pages:get".
+// * GetAPIMethodUrl(CrowdsourcingRequestType::kRequestUpload, "", "POST")
+// will return "/v1/forms:vote".
+std::string GetAPIMethodUrl(CrowdsourcingRequestType type,
                             std::string_view resource_id,
                             std::string_view method) {
   const char* api_method_url = [&] {
     switch (type) {
-      case RequestType::kRequestQuery:
+      case CrowdsourcingRequestType::kRequestQuery:
         return method == "POST" ? "/v1/pages:get" : "/v1/pages";
-      case RequestType::kRequestUpload:
+      case CrowdsourcingRequestType::kRequestUpload:
         return "/v1/forms:vote";
     }
     NOTREACHED();
@@ -536,9 +532,9 @@ std::string GetAPIMethodUrl(RequestType type,
 
 // Gets HTTP body payload for API POST request.
 std::optional<std::string> GetAPIBodyPayload(std::string payload,
-                                             RequestType type) {
+                                             CrowdsourcingRequestType type) {
   // Don't do anything for payloads not related to Query.
-  if (type != RequestType::kRequestQuery) {
+  if (type != CrowdsourcingRequestType::kRequestQuery) {
     return std::move(payload);
   }
   // Wrap query payload in a request proto to interface with API Query method.
@@ -665,7 +661,7 @@ class ScopedCallbackRunner<R(Args...)> final {
 struct AutofillCrowdsourcingManager::FormRequestData {
   ScopedCallbackRunner<void(std::optional<QueryResponse>)> callback;
   std::vector<FormSignature> form_signatures;
-  RequestType request_type;
+  CrowdsourcingRequestType request_type;
   std::optional<net::IsolationInfo> isolation_info;
   std::string payload;
   int num_attempts = 0;
@@ -779,7 +775,7 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
   return StartRequest(FormRequestData{
       .callback = std::move(scoped_callback_runner),
       .form_signatures = std::move(queried_form_signatures),
-      .request_type = RequestType::kRequestQuery,
+      .request_type = CrowdsourcingRequestType::kRequestQuery,
       .isolation_info = std::move(isolation_info),
       .payload = std::move(payload).value(),
   });
@@ -874,7 +870,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
 
     return StartRequest(FormRequestData{
         .form_signatures = {form_signature},
-        .request_type = RequestType::kRequestUpload,
+        .request_type = CrowdsourcingRequestType::kRequestUpload,
         .isolation_info = std::nullopt,
         .payload = std::move(payload).value(),
     });
@@ -908,7 +904,7 @@ std::tuple<GURL, std::string> AutofillCrowdsourcingManager::GetRequestURLAndMeth
   std::string resource_id;
   std::string method = "POST";
 
-  if (request_data.request_type == RequestType::kRequestQuery) {
+  if (request_data.request_type == CrowdsourcingRequestType::kRequestQuery) {
     if (GetPayloadLength(request_data.payload) <= kMaxQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
@@ -937,15 +933,16 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
 #if BUILDFLAG(IS_IOS)
   DCHECK(!request_data.isolation_info);
 #else
-  DCHECK((request_data.request_type == RequestType::kRequestUpload) ==
-         !request_data.isolation_info);
+  DCHECK(
+      (request_data.request_type == CrowdsourcingRequestType::kRequestUpload) ==
+      !request_data.isolation_info);
 #endif
   // Get the URL and method to use for this request.
   auto [request_url, method] = GetRequestURLAndMethod(request_data);
 
   // Track the URL length for GET queries because the URL length can be in the
   // thousands when rich metadata is enabled.
-  if (request_data.request_type == RequestType::kRequestQuery &&
+  if (request_data.request_type == CrowdsourcingRequestType::kRequestQuery &&
       method == "GET") {
     base::UmaHistogramCounts100000(kUmaGetUrlLength,
                                    request_url.spec().length());
@@ -1091,6 +1088,11 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
       GetMetricName(request_data.request_type, "RequestDuration"),
       base::TimeTicks::Now() - request_start);
 
+  if (!simple_loader->LoadedFromCache()) {
+    AutofillCrowdsourcingManager::RecordRequestsInLastMinute(
+        request_data.request_type);
+  }
+
   if (!success) {
     std::string error_message =
         (response_body != nullptr) ? *response_body : "";
@@ -1122,7 +1124,7 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
     return;
   }
 
-  if (request_data.request_type != RequestType::kRequestQuery) {
+  if (request_data.request_type != CrowdsourcingRequestType::kRequestQuery) {
     return;
   }
 
@@ -1134,6 +1136,44 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
         .Run(QueryResponse(std::move(*response_body),
                            std::move(request_data.form_signatures)));
   }
+}
+
+// static
+void AutofillCrowdsourcingManager::RecordRequestsInLastMinute(
+    CrowdsourcingRequestType request_type) {
+  std::deque<base::TimeTicks>& timestamps =
+      GetRecentRequestTimestamps(request_type);
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks cutoff_time = now - base::Minutes(1);
+  timestamps.push_back(now);
+  while (!timestamps.empty() && timestamps.front() < cutoff_time) {
+    timestamps.pop_front();
+  }
+  base::UmaHistogramCounts10000(
+      GetMetricName(request_type, "RequestsInLastMinute"), timestamps.size());
+}
+
+// static
+std::deque<base::TimeTicks>&
+AutofillCrowdsourcingManager::GetRecentRequestTimestamps(
+    CrowdsourcingRequestType request_type) {
+  // Recent query timestamps, used to measure the number of requests sent in a
+  // sliding time window.
+  static base::NoDestructor<std::deque<base::TimeTicks>>
+      recent_query_timestamps;
+  // Recent upload timestamps, used to measure the number of requests sent in a
+  // sliding time window.
+  static base::NoDestructor<std::deque<base::TimeTicks>>
+      recent_upload_timestamps;
+
+  switch (request_type) {
+    case CrowdsourcingRequestType::kRequestQuery:
+      return *recent_query_timestamps;
+    case CrowdsourcingRequestType::kRequestUpload:
+      return *recent_upload_timestamps;
+  }
+  NOTREACHED();
 }
 
 }  // namespace autofill

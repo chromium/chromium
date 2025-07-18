@@ -39,6 +39,16 @@ class AutofillCrowdsourcingManagerTestApi {
     manager_->max_form_cache_size_ = max_form_cache_size;
   }
 
+  // Clear recent statistics of query and upload requests
+  void reset_request_timestamps() {
+    manager_
+        ->GetRecentRequestTimestamps(CrowdsourcingRequestType::kRequestQuery)
+        .clear();
+    manager_
+        ->GetRecentRequestTimestamps(CrowdsourcingRequestType::kRequestUpload)
+        .clear();
+  }
+
  private:
   const raw_ref<AutofillCrowdsourcingManager> manager_;
 };

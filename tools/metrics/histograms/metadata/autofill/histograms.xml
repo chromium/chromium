@@ -5586,6 +5586,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>The duration of a network request for a query.</summary>
 </histogram>
 
+<histogram name="Autofill.Query.RequestsInLastMinute" units="requests"
+    expires_after="2026-07-07">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of query requests sent to the Autofill server in a sliding
+    60-second window. This is recorded with every request that is not served
+    from cache.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Query.WasInCache" enum="BooleanCacheHit"
     expires_after="2025-12-14">
   <owner>battre@chromium.org</owner>
@@ -7203,6 +7214,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The duration of a network request for an upload.</summary>
+</histogram>
+
+<histogram name="Autofill.Upload.RequestsInLastMinute" units="requests"
+    expires_after="2026-07-07">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of upload requests sent to the Autofill server in a sliding
+    60-second window. This is recorded with every request that is not served
+    from cache.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.UploadAcceptedCardOrigin"
