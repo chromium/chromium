@@ -38,7 +38,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.SigninFeatures;
@@ -132,8 +134,8 @@ public class AccountPickerBottomSheetRenderTest {
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -141,6 +143,7 @@ public class AccountPickerBottomSheetRenderTest {
     private final CustomAccountPickerDelegate mAccountPickerDelegate =
             new CustomAccountPickerDelegate();
 
+    private WebPageStation mPage;
     private @SigninAccessPoint int mSigninAccessPoint;
     private AccountPickerBottomSheetCoordinator mCoordinator;
 
@@ -161,7 +164,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Before
     public void setUp() {
         mSigninAccessPoint = SigninAccessPoint.WEB_SIGNIN;
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     @AfterClass

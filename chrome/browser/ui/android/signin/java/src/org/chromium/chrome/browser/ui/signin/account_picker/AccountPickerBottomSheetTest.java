@@ -50,7 +50,6 @@ import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,9 +76,10 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -112,13 +112,9 @@ public class AccountPickerBottomSheetTest {
 
     private static final String DOMAIN1 = "Domain1";
 
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     // Use spy() instead of @Spy to immediately initialize, so the object can be injected in
     // AccountManagerTestRule below.
@@ -142,6 +138,7 @@ public class AccountPickerBottomSheetTest {
 
     @Captor private ArgumentCaptor<Callback<Boolean>> mUpdateCredentialsSuccessCallbackCaptor;
 
+    private WebPageStation mPage;
     private AccountPickerBottomSheetCoordinator mCoordinator;
     private SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private boolean mIsAccountManaged;
@@ -149,6 +146,7 @@ public class AccountPickerBottomSheetTest {
 
     @Before
     public void setUp() {
+        mPage = mActivityTestRule.startOnBlankPage();
         mAutoTestRule.setIsAutomotive(false);
         mSigninAccessPoint = SigninAccessPoint.WEB_SIGNIN;
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -266,7 +264,7 @@ public class AccountPickerBottomSheetTest {
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
-                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -292,7 +290,7 @@ public class AccountPickerBottomSheetTest {
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
-                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -525,7 +523,7 @@ public class AccountPickerBottomSheetTest {
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
-                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -1180,7 +1178,7 @@ public class AccountPickerBottomSheetTest {
         clickContinueButtonAndClearDeviceLock(bottomSheetView);
 
         String text =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getString(R.string.managed_signin_with_user_policy_subtitle, DOMAIN1);
         assertTrue(text.contains(DOMAIN1));
@@ -1234,7 +1232,7 @@ public class AccountPickerBottomSheetTest {
         clickContinueButtonAndClearDeviceLock(bottomSheetView);
 
         String text =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getString(R.string.managed_signin_with_user_policy_subtitle, DOMAIN1);
         assertTrue(text.contains(DOMAIN1));
@@ -1419,7 +1417,7 @@ public class AccountPickerBottomSheetTest {
             onVisibleView(withText(accountInfo.getFullName())).check(matches(isDisplayed()));
         }
         String continueAsText =
-                sActivityTestRule
+                mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1448,7 +1446,7 @@ public class AccountPickerBottomSheetTest {
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
-                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
@@ -1497,7 +1495,7 @@ public class AccountPickerBottomSheetTest {
     }
 
     private BottomSheetController getBottomSheetController() {
-        return sActivityTestRule
+        return mActivityTestRule
                 .getActivity()
                 .getRootUiCoordinatorForTesting()
                 .getBottomSheetController();
