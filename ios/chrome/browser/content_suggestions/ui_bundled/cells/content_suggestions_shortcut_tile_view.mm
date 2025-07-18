@@ -4,8 +4,12 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_shortcut_tile_view.h"
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -38,9 +42,14 @@ const CGFloat kCountBorderWidth = 24;
       [_iconView.heightAnchor constraintEqualToAnchor:_iconView.widthAnchor],
     ]];
 
-    self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
     if (@available(iOS 17, *)) {
       [self registerViewForTraitChanges];
+    }
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self applyBackgroundColors];
+    } else {
+      self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
     }
   }
   return self;
@@ -168,11 +177,32 @@ const CGFloat kCountBorderWidth = 24;
       @[ UITraitPreferredContentSizeCategory.class ]);
   [self registerForTraitChanges:traits
                      withAction:@selector(updateTitleLabelFontOnTraitChange)];
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    NSArray<UITrait>* colorTraits =
+        TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
+    [self registerForTraitChanges:colorTraits
+                       withAction:@selector(applyBackgroundColors)];
+  }
 }
 
 // Update the `titleLabel` font when the device's content size changes.
 - (void)updateTitleLabelFontOnTraitChange {
   self.titleLabel.font = [self titleLabelFont];
+}
+
+// Sets the background using the current color palette, or defaults if none is
+// set.
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+
+  if (colorPalette) {
+    self.imageBackgroundView.tintColor = colorPalette.tertiaryColor;
+    self.iconView.tintColor = colorPalette.tintColor;
+  } else {
+    self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
+    self.iconView.tintColor = nil;
+  }
 }
 
 @end

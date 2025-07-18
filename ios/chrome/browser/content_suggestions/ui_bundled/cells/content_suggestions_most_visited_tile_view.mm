@@ -11,7 +11,10 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_menu_elements_provider.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -34,8 +37,13 @@
   self = [super initWithFrame:frame
                      tileType:ContentSuggestionsTileType::kMostVisited];
   if (self) {
-    self.imageContainerView.backgroundColor =
-        [UIColor colorNamed:kGrey100Color];
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self applyBackgroundColors];
+    } else {
+      self.imageContainerView.backgroundColor =
+          [UIColor colorNamed:kGrey100Color];
+    }
+
     self.imageContainerView.layer.cornerRadius =
         kMagicStackImageContainerWidth / 2;
     self.imageContainerView.layer.masksToBounds = NO;
@@ -97,6 +105,7 @@
       [self addInteraction:[[UIContextMenuInteraction alloc]
                                initWithDelegate:self]];
     }
+    [self registerViewForTraitChanges];
   }
   return self;
 }
@@ -185,6 +194,34 @@
   DCHECK(self.commandHandler);
   [self.commandHandler removeMostVisited:self.config];
   return YES;
+}
+
+#pragma mark - Private
+
+// Registers a list of UITraits to observe and invokes the
+// `applyBackgroundColors` function whenever one of the observed trait's values
+// change.
+- (void)registerViewForTraitChanges {
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    NSArray<UITrait>* colorTraits =
+        TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
+    [self registerForTraitChanges:colorTraits
+                       withAction:@selector(applyBackgroundColors)];
+  }
+}
+
+// Sets the background using the current color palette, or defaults if none is
+// set.
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+
+  if (colorPalette) {
+    self.imageContainerView.backgroundColor = colorPalette.tertiaryColor;
+  } else {
+    self.imageContainerView.backgroundColor =
+        [UIColor colorNamed:kGrey100Color];
+  }
 }
 
 @end
