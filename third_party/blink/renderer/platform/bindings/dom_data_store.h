@@ -222,7 +222,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   // other hand, if this method returns false, nothing is guaranteed (we might
   // be in the main world).
   static bool CanUseInlineStorageForWrapper() {
-    return !WTF::MayNotBeMainThread() &&
+    return !MayNotBeMainThread() &&
            !DOMWrapperWorld::NonMainWorldsExistInMainThread();
   }
 

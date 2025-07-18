@@ -1006,7 +1006,7 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
           v8::Isolate::kMessageInfo | v8::Isolate::kMessageDebug |
           v8::Isolate::kMessageLog);
 
-  isolate->SetStackLimit(WTF::GetCurrentStackPosition() - kWorkerMaxStackSize);
+  isolate->SetStackLimit(GetCurrentStackPosition() - kWorkerMaxStackSize);
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInWorker);
   isolate->SetExceptionPropagationCallback(ExceptionPropagationCallback);
   isolate->SetModifyCodeGenerationFromStringsCallback(

@@ -48,7 +48,7 @@ void WorldSafeV8ReferenceInternal::MaybeCheckCreationContext(
 
   // Fast bailout: If we are on the main thread and only a single world exists,
   // we know that all contexts belong to this particular world.
-  if (!WTF::MayNotBeMainThread() &&
+  if (!MayNotBeMainThread() &&
       !DOMWrapperWorld::NonMainWorldsExistInMainThread()) {
     return;
   }

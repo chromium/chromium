@@ -118,7 +118,7 @@ class ThreadStateStorageFor<kAnyThread> {
   static ThreadStateStorage* GetState() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     // Perform a fast on main thread check on platforms with expensive TLS.
-    if (!WTF::MayNotBeMainThread()) {
+    if (!MayNotBeMainThread()) {
       return ThreadStateStorage::MainThreadStateStorage();
     }
 #endif  // BUILDFLAG(IS_MAC)

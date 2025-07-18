@@ -1015,7 +1015,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
     if constexpr (Allocator::kIsGarbageCollected) {
       const bool is_zeroed =
           std::ranges::all_of(inline_buffer_, [](char c) { return c == 0; });
-      DCHECK(is_zeroed || WTF::IsOnStack(inline_buffer_));
+      DCHECK(is_zeroed || IsOnStack(inline_buffer_));
     }
   }
 

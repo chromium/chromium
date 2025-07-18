@@ -114,7 +114,7 @@ inline ThreadSpecific<T>::operator T*() {
 #else
   const bool kMainThreadAlwaysChecksTLS = false;
   T** ptr = &main_thread_storage_;
-  if (WTF::MayNotBeMainThread()) [[unlikely]] {
+  if (MayNotBeMainThread()) [[unlikely]] {
     off_thread_ptr = static_cast<T*>(Get());
     ptr = &off_thread_ptr;
   }

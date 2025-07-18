@@ -83,7 +83,7 @@ void InitializeWtf() {
 
   internal::InitializeDoubleConverter();
 
-  WTF::internal::InitializeMainThreadStackEstimate();
+  internal::InitializeMainThreadStackEstimate();
   AtomicString::Init();
   InitStringStatics();
 }

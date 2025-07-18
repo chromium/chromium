@@ -55,11 +55,11 @@ size_t Threading::ThreadStackSize() {
   // Needed to bootstrap Threading on Windows, because this value is needed
   // before the main thread data is fully initialized.
   if (!Threading::static_data_->IsSet())
-    return WTF::internal::ThreadStackSize();
+    return internal::ThreadStackSize();
 
   Threading& data = WtfThreading();
   if (!data.thread_stack_size_)
-    data.thread_stack_size_ = WTF::internal::ThreadStackSize();
+    data.thread_stack_size_ = internal::ThreadStackSize();
   return data.thread_stack_size_;
 }
 #endif

@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 WTF_EXPORT size_t GetUnderestimatedStackSize();
 WTF_EXPORT void* GetStackStart();
@@ -49,6 +49,6 @@ ALWAYS_INLINE bool MayNotBeMainThread() {
   return address_diff >= internal::g_main_thread_underestimated_stack_size;
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_STACK_UTIL_H_
