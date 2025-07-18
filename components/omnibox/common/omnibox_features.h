@@ -19,7 +19,6 @@ BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard);
 // Features that affect the "twiddle" step of AutocompleteController, e.g.,
 // deduping or `SortAndCull()`.
 BASE_DECLARE_FEATURE(kGroupingFrameworkForNonZPS);
-BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
 
 // Features below this line should be sorted alphabetically by their comments.
 

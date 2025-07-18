@@ -44,11 +44,6 @@ BASE_FEATURE(kGroupingFrameworkForNonZPS,
              "OmniboxGroupingFrameworkForNonZPS",
              enable_if(IS_ANDROID));
 
-// Demotes the relevance scores when comparing suggestions based on the
-// suggestion's |AutocompleteMatchType| and the user's |PageClassification|.
-// This feature's main job is to contain the DemoteByType parameter.
-BASE_FEATURE(kOmniboxDemoteByType, "OmniboxDemoteByType", DISABLED);
-
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
 // OmniboxUIExperimentMaxAutocompleteMatches will be used instead. If present,

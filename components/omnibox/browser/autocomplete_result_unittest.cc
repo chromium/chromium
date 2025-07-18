@@ -374,12 +374,14 @@ void AutocompleteResultTest::SortMatchesAndVerifyOrder(
                      /*can_show_contextual_suggestions=*/false,
                      /*mia_enabled*/ false);
 
-  ASSERT_EQ(expected_order.size(), result.size());
-  for (size_t i = 0; i < expected_order.size(); ++i) {
-    EXPECT_EQ(data[expected_order[i]].destination_url,
-              result.match_at(i)->destination_url.spec())
-        << "Unexpected item at position " << i;
-  }
+  std::vector<std::string> expected;
+  std::ranges::transform(expected_order, std::back_inserter(expected),
+                         [&](size_t i) { return data[i].destination_url; });
+  std::vector<std::string> actual;
+  std::ranges::transform(
+      result, std::back_inserter(actual),
+      [](const auto& match) { return match.destination_url.spec(); });
+  EXPECT_THAT(actual, testing::ElementsAreArray(expected));
 }
 
 // Assertion testing for AutocompleteResult::SwapMatchesWith.
@@ -1145,56 +1147,6 @@ TEST_F(AutocompleteResultTest, SortAndCullWithMatchDups) {
             result.match_at(1)->duplicate_matches.at(0).destination_url);
 }
 
-TEST_F(AutocompleteResultTest, SortAndCullWithDemotionsByType) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
-
-  // Add some matches.
-  ACMatches matches;
-  const AutocompleteMatchTestData data[] = {
-      {"http://history-url/", AutocompleteMatchType::HISTORY_URL},
-      {"http://search-what-you-typed/",
-       AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
-      {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE},
-      {"http://search-history/", AutocompleteMatchType::SEARCH_HISTORY},
-  };
-  PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
-
-  // Demote the search history match relevance score.
-  matches.back().relevance = 500;
-
-  // Add a rule demoting history-url and killing history-title.
-  {
-    std::map<std::string, std::string> params;
-    params[std::string(OmniboxFieldTrial::kDemoteByTypeRule) + ":3:*"] =
-        "1:50,7:100,2:0";  // 3 == HOME_PAGE
-    ASSERT_TRUE(base::AssociateFieldTrialParams(
-        OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
-  }
-  base::FieldTrialList::CreateFieldTrial(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
-
-  AutocompleteInput input(u"a", OmniboxEventProto::HOME_PAGE,
-                          TestSchemeClassifier());
-  AutocompleteResult result;
-  result.AppendMatches(matches);
-  result.SortAndCull(input, &template_url_service(),
-                     triggered_feature_service(), /*is_lens_active=*/false,
-                     /*can_show_contextual_suggestions=*/false,
-                     /*mia_enabled*/ false);
-
-  // Check the new ordering.  The history-title results should be omitted.
-  // HistoryURL should still be first because type demotion is not applied to
-  // the top match.
-  auto expected_order = std::to_array<size_t>({0, 1, 3});
-
-  ASSERT_EQ(std::size(expected_order), result.size());
-  for (size_t i = 0; i < std::size(expected_order); ++i) {
-    EXPECT_EQ(data[expected_order[i]].destination_url,
-              result.match_at(i)->destination_url.spec());
-  }
-}
-
 TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
   auto test = [&](const std::vector<TestData>& last,
                   const std::vector<TestData>& current,
@@ -1352,11 +1304,11 @@ TEST_F(AutocompleteResultTest, DemoteByType) {
   // Add some matches.
   ACMatches matches;
   const AutocompleteMatchTestData data[] = {
-      {"http://history-url/", AutocompleteMatchType::HISTORY_URL},
-      {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE},
-      {"http://search-what-you-typed/",
+      {"http://history-url/1300/", AutocompleteMatchType::HISTORY_URL},
+      {"http://history-title/1200/def", AutocompleteMatchType::HISTORY_TITLE},
+      {"http://search-what-you-typed/1100/",
        AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
-      {"http://search-history/", AutocompleteMatchType::SEARCH_HISTORY},
+      {"http://search-history/1000/def", AutocompleteMatchType::SEARCH_HISTORY},
   };
   PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
 
@@ -1365,63 +1317,60 @@ TEST_F(AutocompleteResultTest, DemoteByType) {
   matches[0].allowed_to_be_default_match = false;
   matches[2].allowed_to_be_default_match = false;
 
-  // Add a rule demoting history-title.
-  {
-    std::map<std::string, std::string> params;
-    params[std::string(OmniboxFieldTrial::kDemoteByTypeRule) + ":*:*"] = "2:50";
-    ASSERT_TRUE(base::AssociateFieldTrialParams(
-        OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params));
-  }
-  base::FieldTrialList::CreateFieldTrial(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Where Grouping suggestions by Search vs URL kicks in, search gets
   // promoted to the top of the list.
+
+  // No demotion (e.g. omnibox input)
   const std::vector<size_t> expected_natural_order{1, 2, 3, 0};
-  const std::vector<size_t> expected_demoted_order{3, 2, 0, 1};
-#elif BUILDFLAG(IS_IOS)
-  // Temporary while adaptive suggestion is still in experimentation on iOS.
-  std::vector<size_t> expected_natural_order;
-  std::vector<size_t> expected_demoted_order;
-  expected_natural_order = std::vector<size_t>{1, 0, 2, 3};
-  expected_demoted_order = std::vector<size_t>{3, 0, 2, 1};
+  // Demoting all matches (e.g. realbox, search input)
+  const std::vector<size_t> expected_demoted_all_order{3, 2, 0, 1};
+  // TODO(manukh): Flush out test so that `expected_natural_order` and
+  //   `expected_demoted_non_default_order` are different.
+  // Demoting non-default matches (e.g. realbox, URL input)
+  const std::vector<size_t> expected_demoted_non_default_order{1, 2, 3, 0};
 #else
   // Note: Android and iOS performs grouping by Search vs URL at a later stage,
   // when views are built. this means the vector below will be demoted by type,
   // but not rearranged by Search vs URL.
+
+  // No demotion (e.g. omnibox input)
   const std::vector<size_t> expected_natural_order{1, 0, 2, 3};
-  const std::vector<size_t> expected_demoted_order{3, 0, 2, 1};
+  // Demoting all matches (e.g. realbox, search input)
+  const std::vector<size_t> expected_demoted_all_order{3, 2, 0, 1};
+  // Demoting non-default matches (e.g. realbox, URL input)
+  const std::vector<size_t> expected_demoted_non_default_order{1, 2, 3, 0};
 #endif
 
-  // Because we want to ensure the highest naturally scoring
-  // allowed-to-be default suggestion is the default, make sure history-title
-  // is the default match despite demotion.
-  // Make sure history-URL is the last match due to the logic which groups
-  // searches and URLs together.
-  SortMatchesAndVerifyOrder("a", OmniboxEventProto::HOME_PAGE, matches,
-                            expected_natural_order, data);
+  // Expect no demotion on `HOME_PAGE` inputs. Expect grouping to only non-
+  // default matches. History-title is the highest scoring defaultable
+  // suggestion, so expect it 1st. Then the rest of the matches by relevance.
+  {
+    SCOPED_TRACE("SortAndCull with HOME_PAGE classification");
+    SortMatchesAndVerifyOrder("a", OmniboxEventProto::HOME_PAGE, matches,
+                              expected_natural_order, data);
+  }
 
-  // However, in the fakebox/realbox, we do want to use the demoted score when
-  // selecting the default match because we generally only expect it to be
-  // used for queries and we demote URLs strongly. So here we re-sort with a
-  // page classification of fakebox/realbox, and make sure history-title is now
-  // demoted. We also make sure history-URL is the last match due to the logic
-  // which groups searches and URLs together.
-  SortMatchesAndVerifyOrder("a", OmniboxEventProto::NTP_REALBOX, matches,
-                            expected_demoted_order, data);
-  SortMatchesAndVerifyOrder("a", OmniboxEventProto::NTP_REALBOX, matches,
-                            expected_demoted_order, data);
+  // For `NTP_REALBOX` inputs, expect demotion to occur and affect both the
+  // default and non-default matches. After demotion, search-history is the
+  // highest defaultable match, so expect it 1st. Then the SWYT match as the
+  // history matches should be demoted.
+  {
+    SCOPED_TRACE("SortAndCull with NTP_REALBOX classification");
+    SortMatchesAndVerifyOrder("a", OmniboxEventProto::NTP_REALBOX, matches,
+                              expected_demoted_all_order, data);
+  }
 
-  // Unless, the user's input looks like a URL, in which case we want to use
-  // the natural scoring again to make sure the user gets a URL if they're
-  // clearly trying to navigate. So here we re-sort with a page classification
-  // of fakebox/realbox and an input that's a URL, and make sure history-title
-  // is once again the default match.
-  SortMatchesAndVerifyOrder("www.example.com", OmniboxEventProto::NTP_REALBOX,
-                            matches, expected_natural_order, data);
-  SortMatchesAndVerifyOrder("www.example.com", OmniboxEventProto::NTP_REALBOX,
-                            matches, expected_natural_order, data);
+  // Usually, the default match is exempt of demotion. Only if the input is both
+  // a) realbox, and b) not a URL, then demotion is considered. See
+  // `AutocompleteResult::FindTopMatch()`. The lower matches will be demoted in
+  // the realbox, regardless of whether the input is a URL.
+  {
+    SCOPED_TRACE("SortAndCull with NTP_REALBOX classification and URL input");
+    SortMatchesAndVerifyOrder("www.example.com", OmniboxEventProto::NTP_REALBOX,
+                              matches, expected_demoted_non_default_order,
+                              data);
+  }
 }
 
 TEST_F(AutocompleteResultTest, SortAndCullReorderForDefaultMatch) {

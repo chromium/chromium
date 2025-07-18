@@ -140,23 +140,6 @@ bool HasDynamicFieldTrialGroupPrefix(const char* group_prefix);
 void GetActiveSuggestFieldTrialHashes(std::vector<uint32_t>* field_trial_hash);
 
 // ---------------------------------------------------------
-// For the SearchHistory experiment that's part of the bundled omnibox
-// field trial.
-
-// ---------------------------------------------------------
-// For the DemoteByType experiment that's part of the bundled omnibox field
-// trial.
-
-// If the user is in an experiment group that, in the provided
-// |current_page_classification| context, demotes the relevance scores
-// of certain types of matches, populates the |demotions_by_type| map
-// appropriately.  Otherwise, sets |demotions_by_type| to its default
-// value based on the context.
-void GetDemotionsByType(
-    metrics::OmniboxEventProto::PageClassification current_page_classification,
-    DemotionMultipliers* demotions_by_type);
-
-// ---------------------------------------------------------
 // For experiments related to the number of suggestions shown.
 
 // If the user is in an experiment group that specifies the max results for a
@@ -763,39 +746,6 @@ inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
   // If true, document suggestions will be hidden but logged for analysis.
   extern const base::FeatureParam<bool> kDocumentCounterfactual;
 */
-
-namespace internal {
-// The bundled omnibox experiment comes with a set of parameters
-// (key-value pairs).  Each key indicates a certain rule that applies in
-// a certain context.  The value indicates what the consequences of
-// applying the rule are.  For example, the value of a SearchHistory rule
-// in the context of a search results page might indicate that we should
-// prevent search history matches from inlining.
-//
-// This function returns the value associated with the |rule| that applies
-// in the current context (which currently consists of |page_classification|
-// and whether Instant Extended is enabled).  If no such rule exists in the
-// current context, fall back to the rule in various wildcard contexts and
-// return its value if found.  If the rule remains unfound in the global
-// context, returns the empty string.  For more details, including how we
-// prioritize different wildcard contexts, see the implementation.  How to
-// interpret the value is left to the caller; this is rule-dependent.
-//
-// Deprecated. Use GetValueForRuleInContextByFeature instead.
-std::string GetValueForRuleInContext(
-    const std::string& rule,
-    metrics::OmniboxEventProto::PageClassification page_classification);
-
-// Same as GetValueForRuleInContext, but by |feature| instead of the bundled
-// omnibox experiment.  Prefer to use this method over GetValueForRuleInContext
-// when possible, as it can be useful to configure parameters outside of the
-// omnibox bundled experiment.
-std::string GetValueForRuleInContextByFeature(
-    const base::Feature& feature,
-    const std::string& rule,
-    metrics::OmniboxEventProto::PageClassification page_classification);
-
-}  // namespace internal
 
 }  // namespace OmniboxFieldTrial
 
