@@ -100,19 +100,6 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
   }
 }
 
-// Returns true if signin is allowed / enabled.
-bool IsSigninEnabled(AuthenticationService* auth_service) {
-  switch (auth_service->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      return true;
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      return false;
-  }
-}
-
 // Returns `YES` if all items are complete.
 BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
   for (SetUpListItem* item in items) {
@@ -133,7 +120,7 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
   items.push_back(SetUpListItemType::kAutofill);
   items.push_back(SetUpListItemType::kNotifications);
 
-  if (IsSigninEnabled(auth_service) &&
+  if (auth_service->SigninEnabled() &&
       !sync_service->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
       !HasManagedSyncDataType(sync_service) &&

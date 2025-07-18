@@ -113,15 +113,8 @@ bool TipsNotificationCriteria::ShouldSendNotification(
 bool TipsNotificationCriteria::CanSignIn(ProfileIOS* profile) {
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  switch (auth_service->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      return !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      return false;
-  }
+  return auth_service->SigninEnabled() &&
+         !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 bool TipsNotificationCriteria::ShouldSendDefaultBrowser() {

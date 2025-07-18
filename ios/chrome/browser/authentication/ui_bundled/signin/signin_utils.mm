@@ -222,14 +222,8 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   // Sign-in can be disabled by policy or through user Settings.
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  switch (authentication_service->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-      return false;
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      break;
+  if (!authentication_service->SigninEnabled()) {
+    return false;
   }
 
   AuthenticationService* auth_service =

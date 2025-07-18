@@ -675,17 +675,9 @@ id<SystemIdentity> GetDisplayedIdentity(
                                   (AuthenticationService*)authenticationService
                                         prefService:(PrefService*)prefService {
   // Checks if user can't sign in.
-  switch (authenticationService->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      // The user is allowed to sign-in, so the sign-in/sync promo can be
-      // displayed.
-      break;
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      // The user is not allowed to sign-in. The promo cannot be displayed.
-      return NO;
+  if (!authenticationService->SigninEnabled()) {
+    // The user is not allowed to sign-in. The promo cannot be displayed.
+    return NO;
   }
 
   // Always show the feed signin promo if the experimental setting is enabled.

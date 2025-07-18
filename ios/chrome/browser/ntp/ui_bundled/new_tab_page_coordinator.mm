@@ -1292,20 +1292,7 @@
 }
 
 - (BOOL)isSignInAllowed {
-  AuthenticationService::ServiceStatus statusService =
-      self.authService->GetServiceStatus();
-  switch (statusService) {
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser: {
-      return NO;
-    }
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed: {
-      break;
-    }
-  }
-  return YES;
+  return self.authService->SigninEnabled();
 }
 
 #pragma mark - NewTabPageFollowDelegate
@@ -1527,18 +1514,12 @@
 #pragma mark - AuthenticationServiceObserving
 
 - (void)onServiceStatusChanged {
-  switch (self.authService->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      break;
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      // If sign-in becomes disabled, the sign-in promo must be disabled too.
-      // TODO(crbug.com/40280872): The sign-in promo should just be hidden
-      // instead of resetting the hierarchy.
-      [self handleChangeInModules];
-      [self setContentOffsetToTop];
+  if (!self.authService->SigninEnabled()) {
+    // If sign-in becomes disabled, the sign-in promo must be disabled too.
+    // TODO(crbug.com/40280872): The sign-in promo should just be hidden
+    // instead of resetting the hierarchy.
+    [self handleChangeInModules];
+    [self setContentOffsetToTop];
   }
 }
 

@@ -297,20 +297,14 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  switch (self.authenticationService->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      if (self.mediator.selectedIdentity) {
-        [self startSignIn];
-      } else {
-        [self triggerAddAccount];
-      }
-      break;
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      [self finishPresentingWithSignIn:NO];
-      return;
+  if (self.authenticationService->SigninEnabled()) {
+    if (self.mediator.selectedIdentity) {
+      [self startSignIn];
+    } else {
+      [self triggerAddAccount];
+    }
+  } else {
+    [self finishPresentingWithSignIn:NO];
   }
 }
 

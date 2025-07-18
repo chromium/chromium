@@ -398,16 +398,10 @@ bool DefaultBrowserPromoCompleted() {
 
 - (void)onServiceStatusChanged {
   if (_setUpList) {
-    switch (_authenticationService->GetServiceStatus()) {
-      case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-      case AuthenticationService::ServiceStatus::SigninAllowed:
-        break;
-      case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-      case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-      case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-        // Signin is now disabled, so mark the SetUpList item complete so that
-        // it cannot be used again.
-        [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
+    if (!_authenticationService->SigninEnabled()) {
+      // Signin is now disabled, so mark the SetUpList item complete so that
+      // it cannot be used again.
+      [self markSetUpListItemPrefComplete:SetUpListItemType::kSignInSync];
     }
   }
 }

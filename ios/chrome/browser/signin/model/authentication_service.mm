@@ -245,7 +245,8 @@ void AuthenticationService::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
-AuthenticationService::ServiceStatus AuthenticationService::GetServiceStatus() {
+AuthenticationService::ServiceStatus AuthenticationService::GetServiceStatus()
+    const {
   if (!account_manager_service_->IsServiceSupported()) {
     return ServiceStatus::SigninDisabledByInternal;
   }
@@ -295,6 +296,18 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
   }
 }
 
+bool AuthenticationService::SigninEnabled() const {
+  switch (GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      return YES;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      return NO;
+  }
+}
+
 void AuthenticationService::SetReauthPromptForSignInAndSync() {
   pref_service_->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, true);
 }
@@ -338,10 +351,8 @@ id<SystemIdentity> AuthenticationService::GetPrimaryIdentity(
 
 void AuthenticationService::SignIn(id<SystemIdentity> identity,
                                    signin_metrics::AccessPoint access_point) {
-  ServiceStatus status = GetServiceStatus();
-  CHECK(status == ServiceStatus::SigninAllowed ||
-        status == ServiceStatus::SigninForcedByPolicy)
-      << "Service status " << static_cast<int>(status);
+  CHECK(SigninEnabled()) << "Service status "
+                         << static_cast<int>(GetServiceStatus());
   DCHECK(account_manager_service_->IsValidIdentity(identity));
 
   primary_account_was_restricted_ = false;

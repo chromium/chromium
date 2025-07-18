@@ -336,14 +336,8 @@ enum class SigninScreenState {
 }
 
 - (void)updateConsumerIdentity {
-  switch (_authenticationService->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      break;
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      return;
+  if (!_authenticationService->SigninEnabled()) {
+    return;
   }
   id<SystemIdentity> selectedIdentity = self.selectedIdentity;
   if (!selectedIdentity) {
