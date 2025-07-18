@@ -28,6 +28,8 @@
 
 namespace extensions {
 
+// Smoke tests for the experimental desktop Android build, which supports
+// extensions. See https://crbug.com/356905053
 class DesktopAndroidExtensionsBrowserTest : public AndroidBrowserTest {
  public:
   DesktopAndroidExtensionsBrowserTest() = default;
