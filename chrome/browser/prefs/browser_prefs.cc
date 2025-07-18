@@ -1011,6 +1011,7 @@ inline constexpr char kDeviceNativeClientForceAllowed[] =
     "device_native_client_force_allowed";
 inline constexpr char kDeviceNativeClientForceAllowedCache[] =
     "device_native_client_force_allowed_cache";
+inline constexpr char kIsFirstBootForNacl[] = "is_first_boot_for_nacl";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 06/2025.
@@ -1146,6 +1147,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kNativeClientForceAllowed, false);
   registry->RegisterBooleanPref(kDeviceNativeClientForceAllowed, false);
   registry->RegisterBooleanPref(kDeviceNativeClientForceAllowedCache, false);
+  registry->RegisterBooleanPref(kIsFirstBootForNacl, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -2372,6 +2374,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kNativeClientForceAllowed);
   local_state->ClearPref(kDeviceNativeClientForceAllowed);
   local_state->ClearPref(kDeviceNativeClientForceAllowedCache);
+  local_state->ClearPref(kIsFirstBootForNacl);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
