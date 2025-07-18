@@ -12,14 +12,17 @@
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static
-void PageInfoInfoBarDelegate::Create(
+PageInfoInfoBarDelegate* PageInfoInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
-  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(new PageInfoInfoBarDelegate())));
+  auto* delegate = new PageInfoInfoBarDelegate();
+  infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(delegate)));
+  return delegate;
 }
 
 PageInfoInfoBarDelegate::PageInfoInfoBarDelegate() = default;
@@ -52,6 +55,6 @@ std::u16string PageInfoInfoBarDelegate::GetButtonLabel(
 bool PageInfoInfoBarDelegate::Accept() {
   content::WebContents* web_contents =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
-  web_contents->GetController().Reload(content::ReloadType::NORMAL, true);
+  web_contents->GetController().Reload(reload_type_, true);
   return true;
 }

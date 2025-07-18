@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_INFOBAR_DELEGATE_H_
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "content/public/browser/reload_type.h"
 
 namespace infobars {
 class ContentInfoBarManager;
@@ -23,7 +24,12 @@ class PageInfoInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Creates a page info infobar and delegate and adds the infobar to
   // |infobar_manager|.
-  static void Create(infobars::ContentInfoBarManager* infobar_manager);
+  static PageInfoInfoBarDelegate* Create(
+      infobars::ContentInfoBarManager* infobar_manager);
+
+  void set_reload_type(content::ReloadType reload_type) {
+    reload_type_ = reload_type;
+  }
 
  private:
   PageInfoInfoBarDelegate();
@@ -36,6 +42,9 @@ class PageInfoInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
+
+  // The type of reload the info bar should trigger when closed.
+  content::ReloadType reload_type_ = content::ReloadType::NORMAL;
 };
 
 #endif  // CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_INFOBAR_DELEGATE_H_

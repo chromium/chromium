@@ -23,6 +23,7 @@
 #include "components/page_info/core/page_info_action.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
 
@@ -420,6 +421,9 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // The flag that controls whether an infobar is displayed after the website
   // settings UI is closed or not.
   bool show_info_bar_;
+
+  // The type of reload the info bar should trigger when closed.
+  content::ReloadType info_bar_reload_type_ = content::ReloadType::NORMAL;
 
   // The Omnibox URL of the website for which to display site permissions and
   // site information.

@@ -60,6 +60,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/features.h"
@@ -398,6 +399,7 @@ void PageInfo::OnTrackingProtectionButtonPressed() {
           : page_info::PAGE_INFO_PRIVACY_PAGE_TRACKING_PROTECTIONS_REENABLED);
   controller_->OnTrackingProtectionsChangedForSite();
   show_info_bar_ = true;
+  info_bar_reload_type_ = content::ReloadType::BYPASSING_CACHE;
 }
 
 // static
@@ -791,7 +793,8 @@ void PageInfo::OnUIClosing(bool* reload_prompt) {
     *reload_prompt = false;
   }
   if (show_info_bar_ && web_contents_ && !web_contents_->IsBeingDestroyed()) {
-    if (delegate_->CreateInfoBarDelegate() && reload_prompt) {
+    if (delegate_->CreateInfoBarDelegate(info_bar_reload_type_) &&
+        reload_prompt) {
       *reload_prompt = true;
     }
   }
