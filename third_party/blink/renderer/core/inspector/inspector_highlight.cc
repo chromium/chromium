@@ -632,6 +632,7 @@ LayoutUnit GetPositionForTrackAt(const LayoutObject* layout_object,
                                  wtf_size_t index,
                                  GridTrackSizingDirection direction,
                                  const Vector<LayoutUnit>& positions) {
+  CHECK(index >= 0 && index < positions.size());
   if (direction == kForRows)
     return positions.at(index);
 
@@ -729,6 +730,9 @@ std::unique_ptr<protocol::ListValue> BuildGridTrackSizes(
 
   std::unique_ptr<protocol::ListValue> sizes = protocol::ListValue::create();
   wtf_size_t track_count = positions.size();
+  if (track_count == 0) {
+    return sizes;
+  }
   LayoutUnit alt_axis_pos = GetPositionForFirstTrack(
       layout_object, direction == kForRows ? kForColumns : kForRows,
       alt_axis_positions);
@@ -780,6 +784,9 @@ std::unique_ptr<protocol::ListValue> BuildGridPositiveLineNumberPositions(
       protocol::ListValue::create();
 
   wtf_size_t track_count = positions.size();
+  if (track_count == 0) {
+    return number_positions;
+  }
   LayoutUnit alt_axis_pos = GetPositionForFirstTrack(
       grid, direction == kForRows ? kForColumns : kForRows, alt_axis_positions);
 
@@ -792,7 +799,9 @@ std::unique_ptr<protocol::ListValue> BuildGridPositiveLineNumberPositions(
 
   // Go line by line, calculating the offset to fall in the middle of gaps
   // if needed.
-  for (wtf_size_t i = first_explicit_index; i < track_count; ++i) {
+  for (wtf_size_t i =
+           std::max(first_explicit_index, static_cast<wtf_size_t>(0));
+       i < track_count; ++i) {
     LayoutUnit gapOffset = grid_gap / 2;
     if (is_rtl && direction == kForColumns)
       gapOffset *= -1;
@@ -829,6 +838,9 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
       protocol::ListValue::create();
 
   wtf_size_t track_count = positions.size();
+  if (track_count == 0 || alt_axis_positions.size() == 0) {
+    return number_positions;
+  }
   LayoutUnit alt_axis_pos = GetPositionForLastTrack(
       grid, direction == kForRows ? kForColumns : kForRows, alt_axis_positions);
   if (is_rtl && direction == kForRows)
@@ -857,7 +869,8 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
 
   // Then go line by line, calculating the offset to fall in the middle of gaps
   // if needed.
-  for (wtf_size_t i = 1; i <= explicit_grid_end_track_count; i++) {
+  for (wtf_size_t i = 1;
+       i <= explicit_grid_end_track_count && i < positions.size(); i++) {
     LayoutUnit gapOffset = grid_gap / 2;
     if (is_rtl && direction == kForColumns)
       gapOffset *= -1;
@@ -914,6 +927,13 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
       const GridArea& area = item.value;
       const String& name = item.key;
 
+      if (area.columns.StartLine() >= columns.size() ||
+          area.columns.EndLine() >= columns.size() ||
+          area.rows.StartLine() >= rows.size() ||
+          area.rows.EndLine() >= rows.size()) {
+        continue;
+      }
+
       const auto start_column = GetPositionForTrackAt(
           grid, area.columns.StartLine(), kForColumns, columns);
       const auto end_column = GetPositionForTrackAt(
@@ -960,6 +980,9 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNames(
                 !grid_container_style.IsLeftToRightDirection();
 
   std::unique_ptr<protocol::ListValue> lines = protocol::ListValue::create();
+  if (alt_axis_positions.size() == 0) {
+    return lines;
+  }
 
   LayoutUnit gap = grid->GridGap(direction);
   LayoutUnit alt_axis_pos = GetPositionForFirstTrack(
@@ -970,6 +993,9 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNames(
       const String& name = item.key;
 
       for (const wtf_size_t index : item.value) {
+        if (index < 0 || index >= positions.size()) {
+          continue;
+        }
         LayoutUnit track =
             GetPositionForTrackAt(grid, index, direction, positions);
 
