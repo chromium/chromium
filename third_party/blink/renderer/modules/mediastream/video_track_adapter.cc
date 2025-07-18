@@ -29,22 +29,12 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
-
-// Template specializations of [1], needed to be able to pass WTF callbacks
-// that have VideoTrackAdapterSettings or gfx::Size parameters across threads.
-//
-// [1] third_party/blink/renderer/platform/wtf/cross_thread_copier.h.
-template <>
-struct CrossThreadCopier<VideoTrackAdapterSettings>
-    : public CrossThreadCopierPassThrough<VideoTrackAdapterSettings> {
-  STATIC_ONLY(CrossThreadCopier);
-};
 
 namespace {
 

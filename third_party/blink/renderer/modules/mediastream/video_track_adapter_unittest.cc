@@ -23,9 +23,13 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc_overrides/low_precision_timer.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 
@@ -232,9 +236,10 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
   void TearDown() override {
     if (track_added_) {
-      testing_render_thread_.task_runner()->PostTask(
-          FROM_HERE, base::BindOnce(&VideoTrackAdapter::RemoveTrack, adapter_,
-                                    null_track_.get()));
+      PostCrossThreadTask(
+          *testing_render_thread_.task_runner(), FROM_HERE,
+          CrossThreadBindOnce(&VideoTrackAdapter::RemoveTrack, adapter_,
+                              CrossThreadUnretained(null_track_.get())));
     }
     base::WaitableEvent source_deleted;
     testing_render_thread_.task_runner()->PostTask(
@@ -270,10 +275,11 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
       AddTrackInternal(null_track_.get(), adapter_settings);
       track_added_ = true;
     } else {
-      testing_render_thread_.task_runner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&VideoTrackAdapter::ReconfigureTrack, adapter_,
-                         null_track_.get(), adapter_settings));
+      PostCrossThreadTask(
+          *testing_render_thread_.task_runner(), FROM_HERE,
+          CrossThreadBindOnce(&VideoTrackAdapter::ReconfigureTrack, adapter_,
+                              CrossThreadUnretained(null_track_.get()),
+                              adapter_settings));
     }
   }
 
@@ -292,10 +298,12 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
         &VideoTrackAdapterFixtureTest::OnFrameSettings, base::Unretained(this));
     video_stream_fallbacks.sub_capture_target_version_cb = base::DoNothing();
     video_stream_fallbacks.format_cb = base::DoNothing();
-    testing_render_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VideoTrackAdapter::AddTrack, adapter_, track,
-                       std::move(video_stream_fallbacks), adapter_settings));
+    PostCrossThreadTask(
+        *testing_render_thread_.task_runner(), FROM_HERE,
+        CrossThreadBindOnce(&VideoTrackAdapter::AddTrack, adapter_,
+                            CrossThreadUnretained(track),
+                            std::move(video_stream_fallbacks),
+                            adapter_settings));
   }
 
   void SetFrameValidationCallback(VideoCaptureDeliverFrameCB callback) {
@@ -315,11 +323,10 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   void DeliverAndValidateFrame(scoped_refptr<media::VideoFrame> frame,
                                base::TimeTicks estimated_capture_time) {
     auto deliver_frame = [&]() {
-      platform_support_->GetIOTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
-                         adapter_, frame,
-                         estimated_capture_time));
+      PostCrossThreadTask(
+          *platform_support_->GetIOTaskRunner(), FROM_HERE,
+          CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnVideoTaskRunner,
+                              adapter_, frame, estimated_capture_time));
     };
 
     frame_processed_.Reset();
@@ -659,10 +666,11 @@ TEST_F(VideoTrackAdapterFixtureTest,
       base::BindLambdaForTesting(check_dimensions);
   video_stream_fallbacks.sub_capture_target_version_cb = base::DoNothing();
   video_stream_fallbacks.format_cb = base::DoNothing();
-  testing_render_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoTrackAdapter::AddTrack, adapter_, second_track.get(),
-                     std::move(video_stream_fallbacks), adapter_settings));
+  PostCrossThreadTask(
+      *testing_render_thread_.task_runner(), FROM_HERE,
+      CrossThreadBindOnce(&VideoTrackAdapter::AddTrack, adapter_,
+                          CrossThreadUnretained(second_track.get()),
+                          std::move(video_stream_fallbacks), adapter_settings));
   settings_callback_run_.Wait();
 }
 

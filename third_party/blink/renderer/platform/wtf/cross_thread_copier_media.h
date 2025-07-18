@@ -45,6 +45,21 @@ struct VideoTransformation;
 
 namespace blink {
 
+class VideoTrackAdapterSettings;
+struct MediaStreamVideoSourceCallbacks;
+
+template <>
+struct CrossThreadCopier<VideoTrackAdapterSettings>
+    : public CrossThreadCopierPassThrough<VideoTrackAdapterSettings> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<MediaStreamVideoSourceCallbacks>
+    : public CrossThreadCopierPassThrough<MediaStreamVideoSourceCallbacks> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
 template <>
 struct CrossThreadCopier<media::AudioBus>
     : public CrossThreadCopierByValuePassThrough<media::AudioBus> {
