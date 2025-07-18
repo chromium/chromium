@@ -28,7 +28,7 @@ def get_style(path: pathlib.Path):
     fname = parent / '.style.yapf'
     if fname.is_file():
       return str(fname)
-  return 'pep-8'
+  return 'pep8'
 
 
 def main(path: pathlib.Path):
