@@ -257,7 +257,8 @@ void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
 void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> content) {
   if (!content) {
-    // Fail immediately as submit element can't be identified without `content`.
+    LogPageContentCaptureFailure(password_manager::metrics_util::
+                                     PasswordChangeFlowStep::kSubmitFormStep);
     logs_uploader_->SetOpenFormUnexpectedFailure();
     std::move(callback_).Run(false);
     return;

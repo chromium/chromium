@@ -2729,6 +2729,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.FailedCapturingPageContent"
+    enum="PasswordChangeFlowStep" expires_after="2025-11-30">
+  <owner>fiorellab@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records failures in capturing annotated page content in the steps of the
+    password change flow.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.FailedInteraction"
     enum="PasswordChangeDialogAction" expires_after="2025-11-30">
   <owner>rgod@google.com</owner>

@@ -122,6 +122,8 @@ void ChangePasswordFormFinder::OnPageContentReceived(
   CHECK(callback_);
 
   if (!content) {
+    LogPageContentCaptureFailure(
+        password_manager::metrics_util::PasswordChangeFlowStep::kOpenFormStep);
     std::move(callback_).Run(nullptr);
     return;
   }

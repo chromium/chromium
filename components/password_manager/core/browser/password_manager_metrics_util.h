@@ -549,6 +549,19 @@ enum class ProcessIncomingPasswordSharingInvitationResult {
   kMaxValue = kInvalidInvitation,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep in sync with
+// PasswordChangeFlowStep in enums.xml.
+// LINT.IfChange(PasswordChangeFlowStep)
+enum PasswordChangeFlowStep {
+  // Represents the current step of the password change flow.
+  kOpenFormStep = 0,
+  kSubmitFormStep = 1,
+  kVerifySubmissionStep = 2,
+  kMaxValue = kVerifySubmissionStep,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeFlowStep)
+
 #if BUILDFLAG(IS_ANDROID)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Keep in sync with `
@@ -885,6 +898,10 @@ void LogFillSuggestionGroupedMatchAccepted(bool grouped_match_accepted);
 // histogram for both Chrome and third party requests.
 void LogCumulativeGetCredentialsMetrics(
     password_manager::CredentialManagerError error);
+
+// Logs the failure to capture annotated page content during a specific
+// step of the password change flow.
+void LogPageContentCaptureFailure(PasswordChangeFlowStep step);
 
 }  // namespace password_manager::metrics_util
 

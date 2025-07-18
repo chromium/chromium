@@ -540,6 +540,36 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
   EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 }
 
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       FailsCapturingAnnotatedPageContent) {
+  base::HistogramTester histogram_tester;
+  auto form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+  base::test::TestFuture<bool> completion_future;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(std::nullopt));
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback(),
+                     capture_annotated_page_content.Get());
+
+  // Form submission with Enter fails and triggers button search.
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+  EXPECT_CALL(driver(), SubmitFormWithEnter)
+      .WillOnce(RunOnceCallback<1>(/*success=*/false));
+  // Execution isn't triggered because page content capture failed.
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
+
+  EXPECT_FALSE(completion_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.FailedCapturingPageContent",
+      password_manager::metrics_util::PasswordChangeFlowStep::kSubmitFormStep,
+      1);
+}
+
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest, OnTimeout) {
   base::HistogramTester histogram_tester;
   auto form_manager =

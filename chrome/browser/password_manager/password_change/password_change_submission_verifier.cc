@@ -147,8 +147,9 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
   CHECK(web_contents_);
 
   if (!page_content) {
-    // TODO (crbug.com/413318086): Add metrics to handle failure of capturing
-    // annotated page content.
+    LogPageContentCaptureFailure(
+        password_manager::metrics_util::PasswordChangeFlowStep::
+            kVerifySubmissionStep);
     std::move(callback_).Run(false);
     return;
   }

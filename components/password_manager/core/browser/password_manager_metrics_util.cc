@@ -666,4 +666,9 @@ void LogCumulativeGetCredentialsMetrics(
       error == password_manager::CredentialManagerError::SUCCESS);
 }
 
+void LogPageContentCaptureFailure(PasswordChangeFlowStep step) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordChange.FailedCapturingPageContent", step);
+}
+
 }  // namespace password_manager::metrics_util

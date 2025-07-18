@@ -794,6 +794,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/password_manager/password_change_delegate.h) -->
 
+<!-- LINT.IfChange(PasswordChangeFlowStep) -->
+
+<enum name="PasswordChangeFlowStep">
+  <int value="0" label="Open form step"/>
+  <int value="1" label="Submit form step"/>
+  <int value="2" label="Verify submission step"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/password_manager_metrics_util.h:PasswordChangeFlowStep) -->
+
 <!-- LINT.IfChange(PasswordChangeRecoveryFlowState) -->
 
 <enum name="PasswordChangeRecoveryFlowState">

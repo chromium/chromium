@@ -304,6 +304,33 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
 }
 
+TEST_F(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
+  base::HistogramTester histogram_tester;
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(std::nullopt));
+
+  auto form_finder = std::make_unique<ChangePasswordFormFinder>(
+      pass_key(), web_contents(), client(), &logs_uploader, GURL(kUrlString),
+      completion_callback.Get(), capture_annotated_page_content.Get());
+  ASSERT_TRUE(form_finder->form_waiter());
+  static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
+      ->DocumentOnLoadCompletedInPrimaryMainFrame();
+
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.FailedCapturingPageContent",
+      password_manager::metrics_util::PasswordChangeFlowStep::kOpenFormStep, 1);
+}
+
 TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;

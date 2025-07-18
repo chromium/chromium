@@ -16,6 +16,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -138,6 +139,7 @@ TEST_F(PasswordChangeSubmissionVerifierTest, Failed) {
 
 TEST_F(PasswordChangeSubmissionVerifierTest,
        FailsCapturingAnnotatedPageContent) {
+  base::HistogramTester histogram_tester;
   base::MockCallback<
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
       capture_annotated_page_content;
@@ -152,4 +154,9 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
   verifier->CheckSubmissionOutcome(completion_future.GetCallback());
 
   EXPECT_FALSE(completion_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChange.FailedCapturingPageContent",
+      password_manager::metrics_util::PasswordChangeFlowStep::
+          kVerifySubmissionStep,
+      1);
 }
