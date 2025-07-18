@@ -436,7 +436,7 @@ BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
 
 BASE_FEATURE(kIOSManageAccountStorage,
              "IOSManageAccountStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeprecateFeedHeader,
              "DeprecateFeedHeader",
