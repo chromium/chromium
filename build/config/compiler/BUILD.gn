@@ -2390,6 +2390,10 @@ config("no_chromium_code") {
   if (treat_warnings_as_errors && is_clang) {
     configs += [ ":treat_warnings_as_errors" ]
   }
+
+  # A good chunk of non-Chromium code uses exit-time destructors, Abseil being
+  # one such case.
+  configs += [ ":no_exit_time_destructors" ]
 }
 
 # noshadowing -----------------------------------------------------------------
