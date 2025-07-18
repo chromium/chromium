@@ -32,11 +32,14 @@ enum OnDeviceModelPerformanceHint {
 
   ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED = 0;
 
-  // Allows for use of the highest quality model for the feature, which is only
-  // supported for "high-end" devices.
+  // Allows for use of the highest quality GPU model for the feature, which is
+  // only supported for "high-end" devices.
   ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY = 1;
 
-  // Allows for use of the smaller model for the feature, which can result in
-  // degraded quality but results in higher user reach.
+  // Allows for use of the smaller GPU model for the feature, which can result
+  // in degraded quality but results in higher user reach.
   ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE = 2;
+
+  // Allows for use of a model that can run on CPU.
+  ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU = 3;
 }

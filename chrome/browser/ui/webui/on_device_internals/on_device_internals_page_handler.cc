@@ -30,6 +30,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/on_device_model/ml/performance_class.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
@@ -60,7 +61,8 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
     model_paths.weights = model_path;
   }
 
-  if (optimization_guide::features::ForceCpuBackendForOnDeviceModel()) {
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelForceCpuBackend)) {
     model_paths.cache =
         model_paths.weights.AddExtension(FILE_PATH_LITERAL("cache"));
   }
@@ -220,7 +222,8 @@ void PageHandler::OnModelAssetsLoaded(
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->assets = std::move(assets);
   params->backend_type =
-      optimization_guide::features::ForceCpuBackendForOnDeviceModel()
+      base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelForceCpuBackend)
           ? ml::ModelBackendType::kCpuBackend
           : ml::ModelBackendType::kGpuBackend;
   params->max_tokens = 4096;

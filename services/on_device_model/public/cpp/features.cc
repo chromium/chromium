@@ -10,4 +10,12 @@ BASE_FEATURE(kUseFakeChromeML,
              "UseFakeChromeML",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceModelForceCpuBackend,
+             "OnDeviceModelForceCpuBackend",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOnDeviceModelCpuBackend,
+             "OnDeviceModelCpuBackend",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace on_device_model::features

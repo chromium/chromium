@@ -283,7 +283,8 @@ BackendImpl::CanCreate() {
     return base::unexpected(
         on_device_model::ServiceDisconnectReason::kFailedToLoadLibrary);
   }
-  if (!optimization_guide::features::ForceCpuBackendForOnDeviceModel() &&
+  if (!base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelForceCpuBackend) &&
       ml::IsGpuBlocked(chrome_ml_->api())) {
     return base::unexpected(
         on_device_model::ServiceDisconnectReason::kGpuBlocked);
@@ -577,7 +578,8 @@ LoadModelResult OnDeviceModelExecutor::Init(
   }
   // TODO(crbug.com/400998489): Cache files are experimental for now.
   data.cache_file =
-      optimization_guide::features::ForceCpuBackendForOnDeviceModel() &&
+      base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelForceCpuBackend) &&
               assets.cache.IsValid()
           ? assets.cache.TakePlatformFile()
           : base::kInvalidPlatformFile;

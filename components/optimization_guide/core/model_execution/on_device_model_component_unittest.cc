@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,8 +36,24 @@ const base::Value::Dict kTestManifestWithPerfHints = base::Value::Dict().Set(
     base::Value::Dict()
         .Set("version", "0.0.1")
         .Set("name", "Test")
+        .Set(
+            "supported_performance_hints",
+            base::Value::List()
+                .Append(
+                    proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE)
+                .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY)
+                .Append(
+                    proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE)
+                .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED)
+                .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU)));
+const base::Value::Dict kTestManifestWithCPUPerfHints = base::Value::Dict().Set(
+    "BaseModelSpec",
+    base::Value::Dict()
+        .Set("version", "0.0.1")
+        .Set("name", "Test")
         .Set("supported_performance_hints",
-             base::Value::List().Append(1).Append(2).Append(1).Append(0)));
+             base::Value::List().Append(
+                 proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU)));
 
 class StubObserver : public OnDeviceModelComponentStateManager::Observer {
  public:
@@ -610,6 +627,71 @@ TEST_F(OnDeviceModelComponentTest,
       manager()->GetState()->GetBaseModelSpec().supported_performance_hints,
       UnorderedElementsAre(
           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE));
+}
+
+TEST_F(OnDeviceModelComponentTest,
+       SetReadyManifestContainsPerformanceHintsCPUNotEnabled) {
+  manager()->OnStartup();
+  WaitForStartup();
+
+  manager()->DevicePerformanceClassChanged(
+      base::DoNothing(), OnDeviceModelPerformanceClass::kVeryLow);
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      kTestManifestWithPerfHints);
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
+  EXPECT_TRUE(manager()
+                  ->GetState()
+                  ->GetBaseModelSpec()
+                  .supported_performance_hints.empty());
+}
+
+TEST_F(OnDeviceModelComponentTest,
+       SetReadyManifestContainsPerformanceHintsCPU) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      on_device_model::features::kOnDeviceModelCpuBackend,
+      {{"on_device_cpu_ram_threshold_mb", "0"},
+       {"on_device_cpu_processor_count_threshold", "0"}});
+  manager()->OnStartup();
+  WaitForStartup();
+
+  manager()->DevicePerformanceClassChanged(
+      base::DoNothing(), OnDeviceModelPerformanceClass::kVeryLow);
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      kTestManifestWithPerfHints);
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
+  EXPECT_THAT(
+      manager()->GetState()->GetBaseModelSpec().supported_performance_hints,
+      UnorderedElementsAre(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
+}
+
+TEST_F(OnDeviceModelComponentTest,
+       SetReadyManifestContainsPerformanceHintsCPUOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      on_device_model::features::kOnDeviceModelCpuBackend,
+      {{"on_device_cpu_ram_threshold_mb", "0"},
+       {"on_device_cpu_processor_count_threshold", "0"}});
+  manager()->OnStartup();
+  WaitForStartup();
+
+  manager()->DevicePerformanceClassChanged(
+      base::DoNothing(), OnDeviceModelPerformanceClass::kHigh);
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      kTestManifestWithCPUPerfHints);
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
+  EXPECT_THAT(
+      manager()->GetState()->GetBaseModelSpec().supported_performance_hints,
+      UnorderedElementsAre(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
 }
 
 }  // namespace

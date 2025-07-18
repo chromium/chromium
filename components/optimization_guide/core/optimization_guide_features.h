@@ -394,10 +394,6 @@ double GetOnDeviceModelDefaultTemperature();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks();
 
-// Whether the on-device model should be limited to running only on the CPU.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ForceCpuBackendForOnDeviceModel();
-
 // Returns whether the icon view should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldEnableOptimizationGuideIconView();

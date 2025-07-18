@@ -63,6 +63,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -431,11 +432,11 @@ TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
   // TODO(crbug.com/400998489): Cache files are experimental for now. Stop
   // setting this feature flag once that's no longer the case.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_force_cpu_backend", "true"},
-       {"on_device_model_topk", "1"},
-       {"on_device_model_temperature", "0"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOptimizationGuideOnDeviceModel,
+        {{"on_device_model_topk", "1"}, {"on_device_model_temperature", "0"}}},
+       {on_device_model::features::kOnDeviceModelForceCpuBackend, {}}},
+      {});
 
   FakeBaseModelAsset base_model_with_cache({
       .cache_weight = 1015,

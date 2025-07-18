@@ -291,6 +291,10 @@ class OnDeviceModelComponentStateManager final {
   const std::optional<OnDeviceBaseModelSpec> ProcessBaseModelSpecFromManifest(
       const base::Value::Dict& manifest);
 
+  // Returns a list of performance hints this device supports in priority order,
+  // with highest priority first.
+  std::vector<proto::OnDeviceModelPerformanceHint> GetPossibleHints() const;
+
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);

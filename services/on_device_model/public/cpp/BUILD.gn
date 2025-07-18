@@ -8,6 +8,8 @@ import("//services/on_device_model/on_device_model.gni")
 component("cpp") {
   output_name = "on_device_model_cpp"
   sources = [
+    "cpu.cc",
+    "cpu.h",
     "features.cc",
     "features.h",
     "service_client.cc",
@@ -19,6 +21,7 @@ component("cpp") {
     ":buildflags",
     ":types",
     "//base",
+    "//components/optimization_guide/core:features",
     "//services/on_device_model/public/mojom",
   ]
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
@@ -40,7 +43,7 @@ component("types") {
     "//base",
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//services/on_device_model/public/mojom:mojom_shared",
-    "//skia:skia_core_public_headers"
+    "//skia:skia_core_public_headers",
   ]
   defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }

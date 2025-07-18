@@ -28,6 +28,8 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "services/on_device_model/public/cpp/cpu.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace optimization_guide {
 namespace {
@@ -44,11 +46,14 @@ bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
   return false;
 }
 
-bool IsDeviceCapable(const PrefService& local_state) {
+bool IsDeviceGPUCapable(const PrefService& local_state) {
   return IsPerformanceClassCompatible(
-             features::kPerformanceClassListForOnDeviceModel.Get(),
-             PerformanceClassFromPref(local_state)) ||
-         features::ForceCpuBackendForOnDeviceModel();
+      features::kPerformanceClassListForOnDeviceModel.Get(),
+      PerformanceClassFromPref(local_state));
+}
+
+bool IsDeviceCapable(const PrefService& local_state) {
+  return IsDeviceGPUCapable(local_state) || on_device_model::IsCpuCapable();
 }
 
 void LogInstallCriteria(std::string_view event_name,
@@ -469,25 +474,40 @@ OnDeviceModelComponentStateManager::
     return std::nullopt;
   }
 
+  absl::flat_hash_set<int> supported_hints;
   for (const auto& supported_performance_hint_val :
        *manifest_performance_hints) {
     std::optional<int> supported_performance_hint_int =
         supported_performance_hint_val.GetIfInt();
-
-    if (IsLowTierDevice() &&
-        *supported_performance_hint_int ==
-            proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE) {
-      return proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE;
+    if (supported_performance_hint_int) {
+      supported_hints.insert(*supported_performance_hint_int);
     }
-    // `IsDeviceCapable` is a superset of `IsLowTierDevice`, so assume that
-    // !`IsLowTier` = highest quality capable.
-    if (IsDeviceCapable(*local_state_) && !IsLowTierDevice() &&
-        *supported_performance_hint_int ==
-            proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY) {
-      return proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY;
+  }
+  for (auto hint : GetPossibleHints()) {
+    if (supported_hints.contains(hint)) {
+      return hint;
     }
   }
   return std::nullopt;
+}
+
+std::vector<proto::OnDeviceModelPerformanceHint>
+OnDeviceModelComponentStateManager::GetPossibleHints() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<proto::OnDeviceModelPerformanceHint> hints;
+  if (IsDeviceGPUCapable(*local_state_)) {
+    // Best option is highest quality for GPU device that is not low tier.
+    if (!IsLowTierDevice()) {
+      hints.push_back(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY);
+    }
+    // Other GPU capable devices get fastest inference.
+    hints.push_back(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE);
+  }
+  if (on_device_model::IsCpuCapable()) {
+    // Last option is CPU if the device is capable but not GPU capable.
+    hints.push_back(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
+  }
+  return hints;
 }
 
 OnDeviceModelComponentState::OnDeviceModelComponentState() = default;

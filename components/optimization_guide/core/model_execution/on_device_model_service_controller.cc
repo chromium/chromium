@@ -47,6 +47,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
@@ -563,7 +564,8 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
 
   // TODO(crbug.com/400998489): Cache files are experimental for now.
-  if (features::ForceCpuBackendForOnDeviceModel()) {
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelForceCpuBackend)) {
     model_paths.cache =
         model_metadata_->model_path().Append(kExperimentalCacheFile);
   }
@@ -575,9 +577,11 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     on_device_model::ModelAssets assets) {
   auto params = on_device_model::mojom::LoadModelParams::New();
-  params->backend_type = features::ForceCpuBackendForOnDeviceModel()
-                             ? ml::ModelBackendType::kCpuBackend
-                             : ml::ModelBackendType::kGpuBackend;
+  params->backend_type =
+      base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelForceCpuBackend)
+          ? ml::ModelBackendType::kCpuBackend
+          : ml::ModelBackendType::kGpuBackend;
   params->assets = std::move(assets);
   // TODO(crbug.com/302402959): Choose max_tokens based on device.
   params->max_tokens = features::GetOnDeviceModelMaxTokens();
