@@ -31,6 +31,7 @@ static_library("gpu") {
     deps += [
       "//chromeos/ash/experiences/arc/mojom:media",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
+      "//components/viz/service",
       "//gpu/command_buffer/service",
       "//services/service_manager/public/cpp",
       "//ui/ozone",

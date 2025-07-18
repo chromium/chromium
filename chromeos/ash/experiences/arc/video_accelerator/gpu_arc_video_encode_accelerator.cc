@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "gpu/ipc/service/arc_shared_image_interface.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
@@ -46,9 +47,11 @@ constexpr size_t kMaxConcurrentClients = 8;
 size_t GpuArcVideoEncodeAccelerator::client_count_ = 0;
 
 GpuArcVideoEncodeAccelerator::GpuArcVideoEncodeAccelerator(
+    scoped_refptr<gpu::ArcSharedImageInterface> sii,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
-    : gpu_preferences_(gpu_preferences),
+    : sii_(sii),
+      gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
       bitstream_buffer_serial_(0),
       client_native_pixmap_factory_(

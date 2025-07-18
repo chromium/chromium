@@ -19,6 +19,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 
+namespace gpu {
+class ArcSharedImageInterface;
+}
+
 namespace arc {
 
 // GpuArcVideoEncodeAccelerator manages life-cycle and IPC message translation
@@ -27,7 +31,11 @@ class GpuArcVideoEncodeAccelerator
     : public ::arc::mojom::VideoEncodeAccelerator,
       public media::VideoEncodeAccelerator::Client {
  public:
-  explicit GpuArcVideoEncodeAccelerator(
+  // NOTE: Null will be passed in if the creator was not able to create an
+  // ArcSII. In that case, this class should fail at Initialize() if mappable
+  // SharedImages are being used.
+  GpuArcVideoEncodeAccelerator(
+      scoped_refptr<gpu::ArcSharedImageInterface> sii,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
@@ -82,6 +90,7 @@ class GpuArcVideoEncodeAccelerator
   // |client_count_| without lock.
   static size_t client_count_;
 
+  scoped_refptr<gpu::ArcSharedImageInterface> sii_;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   std::unique_ptr<media::VideoEncodeAccelerator> accelerator_;

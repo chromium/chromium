@@ -3,6 +3,7 @@ include_rules = [
   "+gpu/config/gpu_driver_bug_workarounds.h",
   "+gpu/config/gpu_preferences.h",
   "+gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h",
+  "+gpu/ipc/service/arc_shared_image_interface.h",
   "+media/base",
   "+media/gpu",
   "+media/media_buildflags.h",
