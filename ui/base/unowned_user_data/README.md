@@ -73,7 +73,7 @@ attach your feature object to the mock tab:
     // Make sure the mock tab uses a real data host.
     EXPECT_CALL(
         mock_tab_,
-        GetUnownedUserDataHost).WillByDefault(
+        GetUnownedUserDataHost).WillRepeatedly(
             testing::ReturnRef(user_data_host_));
 
     // Create the feature object using the mock tab.
