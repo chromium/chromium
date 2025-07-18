@@ -125,3 +125,34 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest,
   ASSERT_TRUE(GetIcon());
   EXPECT_FALSE(GetIcon()->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest,
+                       BubbleIsAutomaticallyOpening) {
+  password_manager::PasswordForm non_shared_credentials;
+  non_shared_credentials.url = GURL("http://example.com/login");
+  non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
+  non_shared_credentials.username_value = u"username";
+  non_shared_credentials.password_value = u"12345";
+  non_shared_credentials.match_type =
+      password_manager::PasswordForm::MatchType::kExact;
+
+  password_manager::PasswordForm shared_credentials = non_shared_credentials;
+  shared_credentials.type =
+      password_manager::PasswordForm::Type::kReceivedViaSharing;
+  non_shared_credentials.username_value = u"username2";
+  shared_credentials.sharing_notification_displayed = false;
+  std::vector<password_manager::PasswordForm> forms = {shared_credentials,
+                                                       non_shared_credentials};
+  GetController()->OnPasswordAutofilled(
+      forms, url::Origin::Create(forms.front().url), {});
+
+  ASSERT_EQ(2u, GetController()->GetCurrentForms().size());
+  EXPECT_EQ(GetController()->GetState(),
+            password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS);
+  // With the current state of the controller a bubble should open
+  // automatically.
+  EXPECT_TRUE(GetController()->IsShowingBubble());
+  // All interactions with the bubble will close it and invoke OnBubbleHidden().
+  GetController()->OnBubbleHidden();
+  EXPECT_EQ(GetController()->GetState(), password_manager::ui::MANAGE_STATE);
+}

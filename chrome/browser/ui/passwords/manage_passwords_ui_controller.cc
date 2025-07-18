@@ -1232,6 +1232,13 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     last_page_action_state_ = state;
     last_page_action_is_blocklisted_ = is_blocklisted;
 
+    actions::ActionItem* passwords_action_item =
+        actions::ActionManager::Get().FindAction(
+            kActionShowPasswordsBubbleOrPage,
+            browser->browser_actions()->root_action_item());
+
+    controller->UpdateVisibility(state, is_blocklisted, *this,
+                                 *passwords_action_item);
     if (IsAutomaticallyOpeningBubble() ||
         bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS) {
       // This will detach any existing bubble so OnBubbleHidden() isn't called.
@@ -1240,12 +1247,6 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
       // If the bubble appeared then the status is updated in OnBubbleShown().
       ClearPopUpFlagForBubble();
     }
-    actions::ActionItem* passwords_action_item =
-        actions::ActionManager::Get().FindAction(
-            kActionShowPasswordsBubbleOrPage,
-            browser->browser_actions()->root_action_item());
-    controller->UpdateVisibility(state, is_blocklisted, *this,
-                                 *passwords_action_item);
   } else {
     browser->window()->UpdatePageActionIcon(
         PageActionIconType::kManagePasswords);
