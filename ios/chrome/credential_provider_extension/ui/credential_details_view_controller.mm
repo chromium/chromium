@@ -355,10 +355,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 // Creates a button to be displayed as accessory of the password row item.
 - (UIView*)passwordIconButton {
-  UIImage* image =
-      [UIImage imageNamed:self.clearPassword ? @"password_hide_icon"
-                                             : @"password_reveal_icon"];
-  image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImage* image = GetPasswordVisibilityIcon(self.clearPassword);
 
   HighlightButton* button = [HighlightButton buttonWithType:UIButtonTypeCustom];
   button.frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height);

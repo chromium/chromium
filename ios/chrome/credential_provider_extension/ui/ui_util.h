@@ -20,4 +20,13 @@ NSString* HostForServiceIdentifier(
 NSString* PromptForServiceIdentifiers(
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers);
 
+// Returns the icon to show or hide a password.
+UIImage* GetPasswordVisibilityIcon(bool is_visible);
+
+// Returns the credential info icon.
+UIImage* GetCredentialInfoIcon();
+
+// Returns the note error icon.
+UIImage* GetNoteErrorIcon();
+
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_UI_UTIL_H_
