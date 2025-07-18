@@ -1075,7 +1075,7 @@ public class ToolbarManager
                         this::shouldSuppressToolbarLongPress,
                         mActivityLifecycleDispatcher,
                         mWindowAndroid,
-                        () -> getUrlBarTextWithoutAutocomplete(),
+                        () -> mLocationBarModel.getUrlOfVisibleNavigationEntry(),
                         () -> getUrlBarViewRectProvider());
         OnLongClickListener onLongClickListener =
                 mToolbarLongPressMenuHandler.getOnLongClickListener();

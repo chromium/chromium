@@ -74,6 +74,7 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.UiWidgetFactory;
 import org.chromium.ui.widget.ViewRectProvider;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.function.BooleanSupplier;
@@ -113,7 +114,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     private boolean mShouldSuppress;
     private final BooleanSupplier mSuppressSupplier = () -> mShouldSuppress;
     private SharedPreferencesManager mSharedPreferencesManager;
-    private String mUrlString;
+    private GURL mUrl;
     private Configuration mConfiguration;
 
     @Before
@@ -143,7 +144,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                         mSuppressSupplier,
                         mActivityLifecycleDispatcher,
                         mWindowAndroid,
-                        () -> mUrlString,
+                        () -> mUrl,
                         () -> mViewRectProvider);
         mUrlBar.setOnLongClickListener(mToolbarLongPressMenuHandler.getOnLongClickListener());
 
@@ -279,7 +280,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         Clipboard clipboard = Clipboard.getInstance();
         ClipboardManager clipboardManager = mock(ClipboardManager.class);
         ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
-        mUrlString = JUnitTestGURLs.URL_1.getSpec();
+        mUrl = JUnitTestGURLs.URL_1;
 
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.COPY_LINK);
@@ -287,7 +288,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
         assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
-        assertEquals(mUrlString, clipCaptor.getValue().getItemAt(0).getText());
+        assertEquals(mUrl.getSpec(), clipCaptor.getValue().getItemAt(0).getText());
     }
 
     @Test
