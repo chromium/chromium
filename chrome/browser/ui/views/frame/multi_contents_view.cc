@@ -331,10 +331,9 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
   } else {
     CHECK(!contents_container_views_[1]->GetVisible());
     widths.drop_target_width =
-        is_drag_and_drop_enabled() ? drop_target_view_->GetPreferredWidth() : 0;
-
-    // TODO(crbug.com/394369035): Drop targets currently don't scale with
-    // browser size. Consider adding a min width value.
+        is_drag_and_drop_enabled()
+            ? drop_target_view_->GetPreferredWidth(available_space.width())
+            : 0;
     widths.start_width = available_space.width() - widths.drop_target_width;
   }
   return ClampToMinWidth(widths);

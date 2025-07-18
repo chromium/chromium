@@ -58,8 +58,12 @@ class MultiContentsDropTargetView : public views::View,
 
   bool IsClosing() const;
 
-  // Returns the preferred width of this view, considering animation progress.
-  int GetPreferredWidth() const;
+  // Returns the preferred width of this view for the given web contents width,
+  // considering animation progress.
+  int GetPreferredWidth(int web_contents_width) const;
+  // Returns the maximum width that this view should be for the given web
+  // contents width.
+  int GetMaxWidth(int web_contents_width) const;
 
   // views::View
   void SetVisible(bool visible) override;

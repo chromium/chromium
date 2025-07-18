@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +54,7 @@ class DropTargetViewTest : public ChromeViewsTestBase {
 TEST_F(DropTargetViewTest, ViewIsOpened) {
   MultiContentsDropTargetView* view = drop_target_view();
 
-  EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() == 0);
+  EXPECT_EQ(0, view->animation_for_testing().GetCurrentValue());
 
   view->Show(MultiContentsDropTargetView::DropSide::START);
 
@@ -210,6 +212,72 @@ TEST_F(DropTargetViewTest, DropCallbackPerformsDropAndCloses) {
 
   // The view should close after the drop operation.
   EXPECT_FALSE(view->GetVisible());
+}
+
+TEST_F(DropTargetViewTest, GetPreferredWidth) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSideBySide,
+      {{features::kSideBySideDropTargetMinWidth.name, "100"},
+       {features::kSideBySideDropTargetMaxWidth.name, "400"},
+       {features::kSideBySideDropTargetTargetWidthPercentage.name, "20"}});
+
+  MultiContentsDropTargetView* view = drop_target_view();
+  view->Show(MultiContentsDropTargetView::DropSide::START);
+  EXPECT_TRUE(view->GetVisible());
+
+  // Width is clamped to the minimum.
+  EXPECT_EQ(100, view->GetPreferredWidth(400));
+
+  // Width is clamped to the maximum.
+  EXPECT_EQ(400, view->GetPreferredWidth(3000));
+
+  // Width is 20% of the web contents width.
+  EXPECT_EQ(200, view->GetPreferredWidth(1000));
+
+  // When hidden, width should be 0.
+  view->Hide();
+  EXPECT_FALSE(view->GetVisible());
+  EXPECT_EQ(0, view->GetPreferredWidth(1000));
+}
+
+TEST_F(DropTargetViewTest, GetPreferredWidthWithAnimation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSideBySide,
+      {{features::kSideBySideDropTargetMinWidth.name, "100"},
+       {features::kSideBySideDropTargetMaxWidth.name, "400"},
+       {features::kSideBySideDropTargetTargetWidthPercentage.name, "20"}});
+
+  MultiContentsDropTargetView* view = drop_target_view();
+  auto now = base::TimeTicks::Now();
+  gfx::AnimationTestApi animation(
+      &(drop_target_view()->animation_for_testing()));
+  auto scoped_mode = animation.SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+  view->animation_for_testing().SetSlideDuration(
+      base::Seconds(kDelayedAnimationDuration));
+
+  view->Show(MultiContentsDropTargetView::DropSide::START);
+
+  animation.SetStartTime(now);
+  animation.Step(now + base::Seconds(15));
+
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_GT(view->animation_for_testing().GetCurrentValue(), 0);
+  EXPECT_LT(view->animation_for_testing().GetCurrentValue(), 1);
+
+  // Width should be proportional to the animation progress.
+  const int final_width = 200;
+  int animated_width = view->GetPreferredWidth(1000);
+  EXPECT_GT(animated_width, 0);
+  EXPECT_LT(animated_width, final_width);
+
+  // After animation finishes, it should be the final width.
+  animation.Step(now + base::Seconds(kDelayedAnimationDuration + 1));
+  EXPECT_EQ(view->animation_for_testing().GetCurrentValue(), 1);
+  EXPECT_EQ(view->GetPreferredWidth(1000), final_width);
 }
 
 }  // namespace

@@ -97,7 +97,7 @@ bool MultiContentsViewDropTargetController::HandleDragUpdate(
   CHECK_LE(0, point_in_view.x());
   CHECK_LE(point_in_view.x(), drop_target_parent_view_->width());
   const int drop_entry_point_width =
-      drop_target_view_->GetPreferredSize().width();
+      drop_target_view_->GetMaxWidth(drop_target_parent_view_->width());
   const bool is_rtl = base::i18n::IsRTL();
   if (point_in_view.x() >=
       drop_target_parent_view_->width() - drop_entry_point_width) {

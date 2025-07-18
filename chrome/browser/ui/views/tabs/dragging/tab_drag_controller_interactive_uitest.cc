@@ -765,8 +765,21 @@ class DetachToBrowserTabDragControllerTest
           testing::tuple<bool, bool, const char*>> {
  public:
   DetachToBrowserTabDragControllerTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kSideBySide};
+    std::vector<base::test::FeatureRefAndParams> enabled_features_with_params;
+
+    // The SxS drop targets interfere with the "drop" portion of tests because
+    // the dropped tabs end up creating a split instead of keeping the detached
+    // window.
+    // TODO(crbug.com/394369035): For now, we minimize the drop target size, but
+    // this will need to be updated once the params are finalized. Potential
+    // workarounds include updating the drop destination of the tests, or
+    // swapping out the `TabDragPointResolver` with a fake (see
+    // `TabDragDelegateTest` for example).
+    enabled_features_with_params.push_back(
+        {features::kSideBySide,
+         {{features::kSideBySideDropTargetMaxWidth.name, "1"},
+          {features::kSideBySideDropTargetMinWidth.name, "1"}}});
+
     std::vector<base::test::FeatureRef> disabled_features = {
         features::kWebUITabStrip};
 
@@ -775,14 +788,15 @@ class DetachToBrowserTabDragControllerTest
     // over occluded browser window.
     disabled_features.push_back(features::kCalculateNativeWinOcclusion);
 #endif  // BUILDFLAG(IS_WIN)
-
     if (std::get<0>(GetParam())) {
-      enabled_features.push_back(tabs::kSplitTabStrip);
+      enabled_features_with_params.push_back({tabs::kSplitTabStrip, {}});
     }
     if (std::get<1>(GetParam())) {
-      enabled_features.push_back(features::kTearOffWebAppTabOpensWebAppWindow);
+      enabled_features_with_params.push_back(
+          {features::kTearOffWebAppTabOpensWebAppWindow, {}});
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features_with_params, disabled_features);
   }
   DetachToBrowserTabDragControllerTest(
       const DetachToBrowserTabDragControllerTest&) = delete;

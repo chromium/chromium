@@ -122,13 +122,21 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kSideBySide,
                    "drop_target_show_delay",
                    base::Milliseconds(700));
-
-// The padding inside the drop target that determines the overall width.
 BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetInnerPadding,
+                   kSideBySideDropTargetMinWidth,
                    &kSideBySide,
-                   "drop_target_inner_padding",
-                   37);
+                   "drop_target_min_width",
+                   88);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetMaxWidth,
+                   &kSideBySide,
+                   "drop_target_max_width",
+                   360);
+BASE_FEATURE_PARAM(int,
+                   kSideBySideDropTargetTargetWidthPercentage,
+                   &kSideBySide,
+                   "drop_target_width_percentage",
+                   20);
 
 constexpr base::FeatureParam<MiniToolbarActiveConfiguration>::Option
     kMiniToolbarActiveConfigurationOptions[] = {
