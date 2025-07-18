@@ -1395,7 +1395,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.GROUP_SUGGESTION_SERVICE,
                         GroupSuggestionsPromotionCoordinator.CREATE_SUGGESTIONS_PROMOTION_UI_PARAM,
-                        true)) {
+                        false)) {
                     mGroupSuggestionsPromotionCoordinator =
                             new GroupSuggestionsPromotionCoordinator(
                                     this,
