@@ -57,7 +57,7 @@ class MEDIA_EXPORT BitReader {
     uint64_t temp = 0;
     bool ret = ReadBitsInternal(num_bits, &temp);
     if (ret) {
-      *out = base::checked_cast<T>(temp);
+      *out = static_cast<T>(temp);
     }
     return ret;
   }
