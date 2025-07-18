@@ -166,32 +166,22 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   std::unique_ptr<WebV8ValueConverter> converter =
       Platform::Current()->CreateWebV8ValueConverter();
 
-  // TODO(crbug.com/431999487): Inline the lamda directly in the loop below.
-  auto process_request =
-      [resolver, &converter](
-          const ScriptObject& request_object, const String& protocol,
-          Vector<blink::mojom::blink::DigitalCredentialGetRequestPtr>&
-              requests) {
-        blink::mojom::blink::DigitalCredentialGetRequestPtr
-            digital_credential_request =
-                blink::mojom::blink::DigitalCredentialGetRequest::New();
-        digital_credential_request->protocol = protocol;
-        std::unique_ptr<base::Value> digital_credential_request_data =
-            converter->FromV8Value(request_object.V8Object(),
-                                   resolver->GetScriptState()->GetContext());
-        if (!digital_credential_request_data) {
-          return;
-        }
-        digital_credential_request->data =
-            std::move(*digital_credential_request_data);
-
-        requests.push_back(std::move(digital_credential_request));
-      };
-
   Vector<blink::mojom::blink::DigitalCredentialGetRequestPtr> requests;
-    for (const auto& request : options.digital()->requests()) {
-      process_request(request->data(), request->protocol(), requests);
+  for (const auto& request : options.digital()->requests()) {
+    blink::mojom::blink::DigitalCredentialGetRequestPtr
+        digital_credential_request =
+            blink::mojom::blink::DigitalCredentialGetRequest::New();
+    digital_credential_request->protocol = request->protocol();
+    std::unique_ptr<base::Value> digital_credential_request_data =
+        converter->FromV8Value(request->data().V8Object(),
+                               resolver->GetScriptState()->GetContext());
+    if (!digital_credential_request_data) {
+      return;
     }
+    digital_credential_request->data =
+        std::move(*digital_credential_request_data);
+    requests.push_back(std::move(digital_credential_request));
+  }
 
   if (requests.empty()) {
     resolver->RejectWithTypeError(
