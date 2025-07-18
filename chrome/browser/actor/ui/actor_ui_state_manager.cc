@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/variant_visitor.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor::ui {
@@ -171,23 +172,31 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
 // scoped ui components, we can look into using BarrierClosure.
 void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
-  const TabUiUpdate update = std::visit(GetNewUiStateFn(*this), event);
-  if (auto* tab_controller = GetUiTabController(update.tab)) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ActorUiTabControllerInterface::OnUiTabStateChange,
-            tab_controller->GetWeakPtr(), update.ui_tab_state,
-            base::BindOnce(&OnUiChangeComplete, std::move(callback))));
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
+    const TabUiUpdate update = std::visit(GetNewUiStateFn(*this), event);
+    if (auto* tab_controller = GetUiTabController(update.tab)) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &ActorUiTabControllerInterface::OnUiTabStateChange,
+              tab_controller->GetWeakPtr(), update.ui_tab_state,
+              base::BindOnce(&OnUiChangeComplete, std::move(callback))));
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback),
+                         MakeResult(mojom::ActionResultCode::kTabWentAway)));
+    }
   } else {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       MakeResult(mojom::ActionResultCode::kTabWentAway)));
+        FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
   }
 }
 
 void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActorUi)) {
+    return;
+  }
   std::visit(Visitor{[this](const StartTask& e) {
                        this->MaybeUpdateProfileScopedUiState();
                      },

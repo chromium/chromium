@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -340,9 +341,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 
-  // TODO(crbug.com/425952887): Gate behind feature flag.
-  actor_ui_tab_controller_ =
-      std::make_unique<actor::ui::ActorUiTabController>(tab);
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
+    actor_ui_tab_controller_ =
+        std::make_unique<actor::ui::ActorUiTabController>(tab);
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

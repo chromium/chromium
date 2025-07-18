@@ -1,10 +1,10 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -90,6 +91,9 @@ class ActorUiStateManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicActorUi},
+        /*disabled_features=*/{});
     profile_ = TestingProfile::Builder()
                    .AddTestingFactory(
                        ActorKeyedServiceFactory::GetInstance(),
@@ -139,6 +143,7 @@ class ActorUiStateManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ActorUiStateManagerTest, NoTask_ReturnsInactiveUiState) {
