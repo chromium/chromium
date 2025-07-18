@@ -31,14 +31,17 @@ GpuMemoryBufferImplSharedMemory::GpuMemoryBufferImplSharedMemory(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::WritableSharedMemoryMapping shared_memory_mapping,
     size_t offset,
-    uint32_t stride)
+    uint32_t stride,
+    bool for_testing /*=false*/)
     : GpuMemoryBufferImpl(size, format),
       shared_memory_region_(std::move(shared_memory_region)),
       shared_memory_mapping_(std::move(shared_memory_mapping)),
       offset_(offset),
       stride_(stride) {
-  DCHECK(IsUsageSupported(usage));
-  DCHECK(IsSizeValidForFormat(size, format));
+  if (!for_testing) {
+    DCHECK(IsUsageSupported(usage));
+    DCHECK(IsSizeValidForFormat(size, format));
+  }
 }
 
 GpuMemoryBufferImplSharedMemory::~GpuMemoryBufferImplSharedMemory() = default;
@@ -48,8 +51,6 @@ std::unique_ptr<GpuMemoryBufferImplSharedMemory>
 GpuMemoryBufferImplSharedMemory::CreateForTesting(const gfx::Size& size,
                                                   gfx::BufferFormat format,
                                                   gfx::BufferUsage usage) {
-  if (!IsUsageSupported(usage))
-    return nullptr;
   size_t buffer_size = 0u;
   if (!gfx::BufferSizeForBufferFormatChecked(size, format, &buffer_size))
     return nullptr;
@@ -63,7 +64,8 @@ GpuMemoryBufferImplSharedMemory::CreateForTesting(const gfx::Size& size,
   return base::WrapUnique(new GpuMemoryBufferImplSharedMemory(
       size, format, usage, std::move(shared_memory_region),
       std::move(shared_memory_mapping), 0,
-      gfx::RowSizeForBufferFormat(size.width(), format, 0)));
+      gfx::RowSizeForBufferFormat(size.width(), format, 0),
+      /*for_testing=*/true));
 }
 
 // static
