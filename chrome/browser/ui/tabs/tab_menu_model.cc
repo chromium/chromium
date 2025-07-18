@@ -161,29 +161,16 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   }
 #endif
 
-  if (tab_strip->delegate()->SupportsReadLater()) {
+  // Reading list is moved lower when Split View is enabled.
+  if (tab_strip->delegate()->SupportsReadLater() &&
+      !base::FeatureList::IsEnabled(features::kSideBySide)) {
     AddItem(
         TabStripModel::CommandAddToReadLater,
         l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER, num_tabs));
     SetEnabledAt(GetItemCount() - 1,
                  tab_strip->IsReadLaterSupportedForAny(indices));
   }
-  if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
-          tab_strip, index, tab_menu_model_delegate_)) {
-    // Create submenu with existing groups
-    add_to_existing_group_submenu_ =
-        std::make_unique<ExistingTabGroupSubMenuModel>(
-            delegate(), tab_menu_model_delegate_, tab_strip, index);
-    AddSubMenu(TabStripModel::CommandAddToExistingGroup,
-               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
-                                                num_tabs),
-               add_to_existing_group_submenu_.get());
-  } else {
-    AddItem(TabStripModel::CommandAddToNewGroup,
-            l10n_util::GetPluralStringFUTF16(
-                IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
-    SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
-  }
+
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     if (!tab_strip->GetSplitForTab(index).has_value()) {
       if (tab_strip->GetActiveTab()->IsSplit()) {
@@ -215,6 +202,23 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     SetIsNewFeatureAt(GetItemCount() - 1,
                       UserEducationService::MaybeShowNewBadge(
                           tab_strip->profile(), features::kSideBySide));
+  }
+
+  if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
+          tab_strip, index, tab_menu_model_delegate_)) {
+    // Create submenu with existing groups
+    add_to_existing_group_submenu_ =
+        std::make_unique<ExistingTabGroupSubMenuModel>(
+            delegate(), tab_menu_model_delegate_, tab_strip, index);
+    AddSubMenu(TabStripModel::CommandAddToExistingGroup,
+               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
+                                                num_tabs),
+               add_to_existing_group_submenu_.get());
+  } else {
+    AddItem(TabStripModel::CommandAddToNewGroup,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
+    SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
   }
 
   for (const auto& selection : indices) {
@@ -294,9 +298,25 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                           IDS_TAB_CXMENU_SOUND_MUTE_SITE, num_tabs)
                     : l10n_util::GetPluralStringFUTF16(
                           IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_tabs));
-  if (send_tab_to_self::ShouldDisplayEntryPoint(
-          tab_strip->GetWebContentsAt(index))) {
+
+  const bool display_read_later =
+      tab_strip->delegate()->SupportsReadLater() &&
+      base::FeatureList::IsEnabled(features::kSideBySide);
+  const bool display_send_to_self = send_tab_to_self::ShouldDisplayEntryPoint(
+      tab_strip->GetWebContentsAt(index));
+  if (display_read_later || display_send_to_self) {
     AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+
+  if (display_read_later) {
+    AddItem(
+        TabStripModel::CommandAddToReadLater,
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER, num_tabs));
+    SetEnabledAt(GetItemCount() - 1,
+                 tab_strip->IsReadLaterSupportedForAny(indices));
+  }
+
+  if (display_send_to_self) {
 #if BUILDFLAG(IS_MAC)
     AddItem(TabStripModel::CommandSendTabToSelf,
             l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
