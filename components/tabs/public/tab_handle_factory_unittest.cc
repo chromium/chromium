@@ -24,6 +24,9 @@ class TestSupportsTabHandles : public SupportsTabHandles {
   void SetSessionId(int32_t session_id) {
     SupportsTabHandles::SetSessionId(session_id);
   }
+
+  // Expose the protected ClearSessionId for testing.
+  void ClearSessionId() { SupportsTabHandles::ClearSessionId(); }
 };
 
 using SessionMappedTabHandleFactoryTest = testing::Test;
@@ -101,6 +104,24 @@ TEST_F(SessionMappedTabHandleFactoryTest, GetSessionIdForHandle) {
 
   EXPECT_NE(handle.raw_value(), TestHandle::NullValue);
   EXPECT_EQ(session_id, factory->GetSessionIdForHandle(handle.raw_value()));
+}
+
+TEST_F(SessionMappedTabHandleFactoryTest, ClearSessionId) {
+  TestSupportsTabHandles tab;
+  const int32_t session_id = 1;
+  tab.SetSessionId(session_id);
+
+  auto* const factory = &SessionMappedTabHandleFactory::GetInstance();
+  TestHandle handle = tab.GetHandle();
+
+  // Verify the mappings exist before we clear them.
+  EXPECT_EQ(handle.raw_value(), factory->GetHandleForSessionId(session_id));
+  EXPECT_EQ(session_id, factory->GetSessionIdForHandle(handle.raw_value()));
+
+  // Clear the session ID and verify the mappings are gone.
+  tab.ClearSessionId();
+  EXPECT_EQ(TestHandle::NullValue, factory->GetHandleForSessionId(session_id));
+  EXPECT_FALSE(factory->GetSessionIdForHandle(handle.raw_value()).has_value());
 }
 
 }  // namespace

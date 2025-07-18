@@ -44,6 +44,17 @@ void SessionMappedTabHandleFactory::SetSessionIdForHandle(
   handle_value_to_session_id_.emplace(handle_value, session_id);
 }
 
+void SessionMappedTabHandleFactory::ClearHandleMappings(
+    base::PassKey<SupportsTabHandles>,
+    int32_t handle_value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence());
+  if (auto it = handle_value_to_session_id_.find(handle_value);
+      it != handle_value_to_session_id_.end()) {
+    session_id_to_handle_value_.erase(it->second);
+    handle_value_to_session_id_.erase(it);
+  }
+}
+
 int32_t SessionMappedTabHandleFactory::GetHandleForSessionId(
     int32_t session_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence());
@@ -75,6 +86,11 @@ void SessionMappedTabHandleFactory::OnHandleFreed(int32_t handle_value) {
 void SupportsTabHandles::SetSessionId(int32_t session_id) {
   SessionMappedTabHandleFactory::GetInstance().SetSessionIdForHandle(
       base::PassKey<SupportsTabHandles>(), GetHandle().raw_value(), session_id);
+}
+
+void SupportsTabHandles::ClearSessionId() {
+  SessionMappedTabHandleFactory::GetInstance().ClearHandleMappings(
+      base::PassKey<SupportsTabHandles>(), GetHandle().raw_value());
 }
 
 }  // namespace tabs

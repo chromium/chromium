@@ -35,6 +35,8 @@ class SessionMappedTabHandleFactory final
   void SetSessionIdForHandle(base::PassKey<SupportsTabHandles>,
                              int32_t handle,
                              int32_t session_id);
+  // Clears all mappings associated with the handle.
+  void ClearHandleMappings(base::PassKey<SupportsTabHandles>, int32_t handle);
 
  private:
   friend class ::base::NoDestructor<SessionMappedTabHandleFactory>;
@@ -57,6 +59,11 @@ class SupportsTabHandles
 
  protected:
   void SetSessionId(int32_t sesion_id);
+
+  // Resets the mapped session IDs.
+  // This is necessary as long as a tab may have multiple web contents
+  // throughout its lifetime.
+  void ClearSessionId();
 };
 
 }  // namespace tabs
