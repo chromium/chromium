@@ -200,6 +200,9 @@ void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
 void CacheAliasSearchPrefetchURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK && can_fallback_) {
+    base::UmaHistogramSparse(
+      "Omnibox.SearchPrefetch.CacheAliasOnCompleteNetError",
+      -status.error_code);
     RestartDirect(FallbackReason::kErrorOnComplete);
     return;
   }

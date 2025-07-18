@@ -1806,6 +1806,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
       "Omnibox.SearchPrefetch.CacheAliasFallbackReason",
       CacheAliasSearchPrefetchURLLoader::FallbackReason::kErrorOnComplete, 1);
   histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.CacheAliasOnCompleteNetError", 1);
+  histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.CacheAliasElapsedTimeToFallback", 1);
 }
 

@@ -2370,6 +2370,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </token>
 </histogram>
 
+<histogram name="Omnibox.SearchPrefetch.CacheAliasOnCompleteNetError"
+    enum="NetErrorCodes" expires_after="2026-01-11">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the network error code from the completion status when a search
+    prefetch request using CacheAliasSearchPrefetchURLLoader completes. This is
+    recorded in CacheAliasSearchPrefetchURLLoader::OnComplete. net::OK (value 0)
+    is recorded on success. This helps monitor network failures for search
+    prefetches that are aliased in the cache.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPrefetch.DuplicateSearchTermsAge" units="ms"
     expires_after="2025-11-23">
   <owner>lingqi@chromium.org</owner>
