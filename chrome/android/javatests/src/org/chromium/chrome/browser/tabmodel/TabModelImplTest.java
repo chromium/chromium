@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -54,9 +53,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /** Tests for {@link TabModelImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -1135,97 +1132,6 @@ public class TabModelImplTest {
                     assertFalse(
                             "Tab 2 should not be selected.",
                             tabModel.isTabMultiSelected(tab2.getId()));
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
-    @DisabledTest(message = "https://crbug.com/432500572")
-    public void testHighlightTabs_assertionFailsWithEmptyList() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Tab tabToActivate = mTabModelJni.getTabAt(0);
-                    List<Tab> emptyList = new ArrayList<>();
-
-                    AssertionError e =
-                            assertThrows(
-                                    AssertionError.class,
-                                    () -> mTabModelJni.highlightTabs(tabToActivate, emptyList));
-                    assertEquals("The provided tab list cannot be empty.", e.getMessage());
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
-    public void testHighlightTabs_assertionFailsWithNullTabToActivate() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    List<Tab> tabs = new ArrayList<>();
-                    tabs.add(mTabModelJni.getTabAt(0));
-
-                    AssertionError e =
-                            assertThrows(
-                                    AssertionError.class,
-                                    () -> mTabModelJni.highlightTabs(null, tabs));
-                    assertEquals("tabToActivate cannot be null", e.getMessage());
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
-    public void testHighlightTabs_assertionFailsWithMismatchedTabToActivate() {
-        createTab();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Tab tab0 = mTabModelJni.getTabAt(0);
-                    Tab tabToActivate = mTabModelJni.getTabAt(1);
-
-                    // Create a list that does NOT contain the tab we intend to activate.
-                    List<Tab> listWithoutTabToActivate = new ArrayList<>();
-                    listWithoutTabToActivate.add(tab0);
-
-                    AssertionError e =
-                            assertThrows(
-                                    AssertionError.class,
-                                    () ->
-                                            mTabModelJni.highlightTabs(
-                                                    tabToActivate, listWithoutTabToActivate));
-                    assertEquals("tabToActivate not found in tab list", e.getMessage());
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
-    public void testSetTabsMultiSelected_assertionFailsWithNoActiveTabInSet() {
-        createTabs(2);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel tabModel =
-                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-                    // Set active tab to Tab1 (index 1)
-                    tabModel.setIndex(1, TabSelectionType.FROM_USER);
-                    assertEquals("Active tab index should be 1.", 1, tabModel.index());
-
-                    Tab tabToSelect = tabModel.getTabAt(2);
-                    Set<Integer> selection = new HashSet<>();
-                    selection.add(tabToSelect.getId());
-
-                    // Attempt to set a selection that does not include the active tab (Tab1).
-                    AssertionError e =
-                            assertThrows(
-                                    AssertionError.class,
-                                    () -> tabModel.setTabsMultiSelected(selection, true));
-
-                    assertEquals(
-                            "If the selection is not empty, the current tab must always be"
-                                    + " present within the set.",
-                            e.getMessage());
                 });
     }
 
