@@ -28,26 +28,6 @@
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-// Key and enum for NewTabPage.LogoShown UMA histogram.
-const char kUMANewTabPageLogoShown[] = "NewTabPage.LogoShown";
-enum ShownLogoType {
-  SHOWN_LOGO_TYPE_STATIC,
-  SHOWN_LOGO_TYPE_CTA,
-  SHOWN_LOGO_TYPE_COUNT
-};
-
-// Key and enum for NewTabPage.LogoClick UMA histogram.
-const char kUMANewTabPageLogoClick[] = "NewTabPage.LogoClick";
-enum ClickedLogoType {
-  CLICKED_LOGO_TYPE_STATIC,
-  CLICKED_LOGO_TYPE_CTA,
-  CLICKED_LOGO_TYPE_ANIMATING,
-  CLICKED_LOGO_TYPE_COUNT
-};
-}  // namespace
-
 #pragma mark - SearchEngineLogoMediator Private Interface
 
 @interface SearchEngineLogoMediator () <SearchEngineLogoContainerViewDelegate>
@@ -66,23 +46,36 @@ enum ClickedLogoType {
 
 @end
 
-#pragma mark - LogoObserverIOS
+namespace {
 
-class LogoObserverIOS : public search_provider_logos::LogoObserver {
- public:
-  explicit LogoObserverIOS(SearchEngineLogoMediator* owner) : owner_(owner) {}
-  ~LogoObserverIOS() override {}
-
-  // search_provider_logos::LogoObserver implementation.
-  void OnLogoAvailable(const search_provider_logos::Logo* logo,
-                       bool from_cache) override {
-    [owner_ updateLogo:logo animate:YES];
-  }
-  void OnObserverRemoved() override { delete this; }
-
- private:
-  __weak SearchEngineLogoMediator* owner_;  // weak.
+// Key and enum for NewTabPage.LogoShown UMA histogram.
+const char kUMANewTabPageLogoShown[] = "NewTabPage.LogoShown";
+enum ShownLogoType {
+  SHOWN_LOGO_TYPE_STATIC,
+  SHOWN_LOGO_TYPE_CTA,
+  SHOWN_LOGO_TYPE_COUNT
 };
+
+// Key and enum for NewTabPage.LogoClick UMA histogram.
+const char kUMANewTabPageLogoClick[] = "NewTabPage.LogoClick";
+enum ClickedLogoType {
+  CLICKED_LOGO_TYPE_STATIC,
+  CLICKED_LOGO_TYPE_CTA,
+  CLICKED_LOGO_TYPE_ANIMATING,
+  CLICKED_LOGO_TYPE_COUNT
+};
+
+// Called when logo has been fetched.
+void OnLogoAvailable(SearchEngineLogoMediator* mediator,
+                     search_provider_logos::LogoCallbackReason callback_reason,
+                     const std::optional<search_provider_logos::Logo>& logo) {
+  if (callback_reason ==
+      search_provider_logos::LogoCallbackReason::DETERMINED) {
+    [mediator updateLogo:(logo ? &logo.value() : nullptr) animate:YES];
+  }
+}
+
+}  // namespace
 
 #pragma mark - SearchEngineLogoMediator Implementation
 
@@ -164,7 +157,13 @@ class LogoObserverIOS : public search_provider_logos::LogoObserver {
   if (!logo.image.empty()) {
     [self updateLogo:&logo animate:NO];
   }
-  logoService->GetLogo(new LogoObserverIOS(self));
+  search_provider_logos::LogoCallbacks callbacks;
+  __weak __typeof(self) weakSelf = self;
+  callbacks.on_cached_decoded_logo_available =
+      base::BindOnce(&OnLogoAvailable, weakSelf);
+  callbacks.on_fresh_decoded_logo_available =
+      base::BindOnce(&OnLogoAvailable, weakSelf);
+  logoService->GetLogo(std::move(callbacks), false);
 }
 
 - (void)setShowingDoodle:(BOOL)showingDoodle {
