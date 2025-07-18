@@ -118,6 +118,11 @@ enum HeaderBehaviour {
   // This header stay on screen and covers part of the content.
   Overlap
 };
+
+// Inset to remove from the toolbar height when in full-screen mode with the
+// dynamic island visible.
+const CGFloat kTopDynamicIslandInset = 24;
+
 }  // namespace
 
 #pragma mark - HeaderDefinition helper
@@ -948,6 +953,13 @@ enum HeaderBehaviour {
   // Update the toolbar height to account for `topLayoutGuide` changes.
   self.primaryToolbarHeightConstraint.constant =
       [self primaryToolbarHeightWithInset];
+
+  if ([self topInsetWithCornerAdaptation] - self.rootSafeAreaInsets.top > 0) {
+    // On iOS 26, the safe area layout guide doesn't automatically adjust
+    // for the control setting island's dimensions.
+    // Update the collapsedTopToolbarHeight when the dynamic island has moved.
+    [self updateToolbarState];
+  }
 
   if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
       self.webUsageEnabled) {
@@ -1813,6 +1825,21 @@ enum HeaderBehaviour {
   [self.view insertSubview:tabStripView belowSubview:primaryToolbar];
 }
 
+// On iOS 26, returns the top inset with corner adapation, otherwise returns 0.
+- (CGFloat)topInsetWithCornerAdaptation {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    UIViewLayoutRegion* safeAreaRegion =
+        [UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:
+                                UIViewLayoutRegionAdaptivityAxisVertical];
+    NSDirectionalEdgeInsets calculatedInsets = [self.safeAreaProvider
+        directionalEdgeInsetsForLayoutRegion:safeAreaRegion];
+    return calculatedInsets.top;
+  }
+#endif
+  return 0;
+}
+
 #pragma mark - Private Methods: Tap handling
 
 // Record the last tap point based on the `originPoint` (if any) passed in
@@ -2004,8 +2031,19 @@ enum HeaderBehaviour {
 // The minimum amount by which the top toolbar overlaps the browser content
 // area.
 - (CGFloat)collapsedTopToolbarHeight {
-  return self.rootSafeAreaInsets.top +
-         self.toolbarCoordinator.collapsedPrimaryToolbarHeight;
+  CGFloat topInset = self.rootSafeAreaInsets.top;
+
+  // On iOS 26, the safe area layout guide doesn't automatically adjust for the
+  // control setting island's dimensions.
+  // If the app is windowed, the dynamic island is not included in the
+  // status bar. In that case, `topInset` should be updated.
+  CGFloat topInsetWithCornerAdaptation = [self topInsetWithCornerAdaptation];
+  if (topInsetWithCornerAdaptation - topInset > 0) {
+    topInset =
+        fmax(topInset, topInsetWithCornerAdaptation - kTopDynamicIslandInset);
+  }
+
+  return topInset + self.toolbarCoordinator.collapsedPrimaryToolbarHeight;
 }
 
 // The minimum amount by which the bottom toolbar overlaps the browser content
