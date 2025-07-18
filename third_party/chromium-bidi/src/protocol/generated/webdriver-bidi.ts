@@ -977,7 +977,8 @@ export namespace BrowsingContext {
 export type EmulationCommand =
   | Emulation.SetGeolocationOverride
   | Emulation.SetLocaleOverride
-  | Emulation.SetScreenOrientationOverride;
+  | Emulation.SetScreenOrientationOverride
+  | Emulation.SetTimezoneOverride;
 export namespace Emulation {
   export type SetGeolocationOverride = {
     method: 'emulation.setGeolocationOverride';
@@ -1089,6 +1090,22 @@ export namespace Emulation {
 export namespace Emulation {
   export type SetScreenOrientationOverrideParameters = {
     screenOrientation: Emulation.ScreenOrientation | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  };
+}
+export namespace Emulation {
+  export type SetTimezoneOverride = {
+    method: 'emulation.setTimezoneOverride';
+    params: Emulation.SetTimezoneOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export type SetTimezoneOverrideParameters = {
+    timezone: string | null;
     contexts?: [
       BrowsingContext.BrowsingContext,
       ...BrowsingContext.BrowsingContext[],

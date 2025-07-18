@@ -128,6 +128,9 @@ export interface BidiCommandParameterParser {
   parseSetScreenOrientationOverrideParams(
     params: unknown,
   ): Emulation.SetScreenOrientationOverrideParameters;
+  parseSetTimezoneOverrideParams(
+    params: unknown,
+  ): Emulation.SetTimezoneOverrideParameters;
   // keep-sorted end
 
   // Input module

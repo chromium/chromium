@@ -39,6 +39,7 @@ export class UserContextConfig {
     | null;
   locale?: string | null;
   screenOrientation?: Emulation.ScreenOrientation | null;
+  timezone?: string | null;
   userPromptHandler?: Session.UserPromptHandler;
 
   constructor(userContextId: string) {

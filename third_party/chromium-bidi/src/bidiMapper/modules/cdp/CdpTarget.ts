@@ -669,6 +669,10 @@ export class CdpTarget {
       promises.push(this.setLocaleOverride(this.#userContextConfig.locale));
     }
 
+    if (this.#userContextConfig.timezone !== undefined) {
+      promises.push(this.setTimezoneOverride(this.#userContextConfig.timezone));
+    }
+
     if (this.#userContextConfig.acceptInsecureCerts !== undefined) {
       promises.push(
         this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
@@ -830,6 +834,19 @@ export class CdpTarget {
     } else {
       await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {
         locale,
+      });
+    }
+  }
+
+  async setTimezoneOverride(timezone: string | null): Promise<void> {
+    if (timezone === null) {
+      await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
+        // If empty, disables the override and restores default host system timezone.
+        timezoneId: '',
+      });
+    } else {
+      await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
+        timezoneId: timezone,
       });
     }
   }

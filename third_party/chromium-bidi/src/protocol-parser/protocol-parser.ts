@@ -369,6 +369,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetScreenOrientationOverrideParametersSchema,
     ) as Protocol.Emulation.SetScreenOrientationOverrideParameters;
   }
+  export function parseSetTimezoneOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetTimezoneOverrideParametersSchema,
+    ) as Protocol.Emulation.SetTimezoneOverrideParameters;
+  }
 }
 
 export namespace Input {

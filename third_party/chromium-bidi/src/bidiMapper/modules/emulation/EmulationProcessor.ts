@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
+import {
+  InvalidArgumentException,
+  UnsupportedOperationException,
+} from '../../../protocol/ErrorResponse.js';
 import type {
   EmptyResult,
   Emulation,
@@ -207,6 +210,43 @@ export class EmulationProcessor {
     // `browsingContextStorage` returns the same instance for the same id.
     return [...new Set(result).values()];
   }
+
+  async setTimezoneOverride(
+    params: Emulation.SetTimezoneOverrideParameters,
+  ): Promise<EmptyResult> {
+    const timezone = params.timezone ?? null;
+
+    if (timezone !== null && !isValidTimezone(timezone)) {
+      throw new InvalidArgumentException(`Invalid timezone "${timezone}"`);
+    }
+
+    if (timezone !== null && isTimeZoneOffsetString(timezone)) {
+      // CDP does not support timezone offset emulation.
+      // TODO: remove after http://b/432670902 is addressed.
+      throw new UnsupportedOperationException(
+        'Timezone offsets are not yet supported',
+      );
+    }
+
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const userContextId of params.userContexts ?? []) {
+      const userContextConfig =
+        this.#userContextStorage.getConfig(userContextId);
+      userContextConfig.timezone = timezone;
+    }
+
+    await Promise.all(
+      browsingContexts.map(
+        async (context) =>
+          await context.cdpTarget.setTimezoneOverride(timezone),
+      ),
+    );
+    return {};
+  }
 }
 
 // Export for testing.
@@ -221,4 +261,29 @@ export function isValidLocale(locale: string): boolean {
     // Re-throw other errors
     throw e;
   }
+}
+
+// Export for testing.
+export function isValidTimezone(timezone: string): boolean {
+  try {
+    Intl.DateTimeFormat(undefined, {timeZone: timezone});
+    return true;
+  } catch (e) {
+    if (e instanceof RangeError) {
+      return false;
+    }
+    // Re-throw other errors
+    throw e;
+  }
+}
+
+// Export for testing.
+// TODO: remove after http://b/432670902 is addressed.
+/**
+ * Implementation of spec method. Required, until CDP supports :
+ * https://tc39.es/ecma262/#sec-istimezoneoffsetstring
+ * @param timezone
+ */
+export function isTimeZoneOffsetString(timezone: string): boolean {
+  return /^[+-](?:2[0-3]|[01]\d)(?::[0-5]\d)?$/.test(timezone);
 }
