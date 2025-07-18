@@ -29,7 +29,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -1699,27 +1698,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (!show) return;
 
             mVariantForFallbackMenu = buttonVariant;
-            var menuInfo = getHighlightMenuInfo(buttonVariant);
-            assert menuInfo != null : "Menu item for the optional toolbar action should be found";
-            int menuId = menuInfo.first;
+            int menuId = getHighlightMenuId(buttonVariant);
+            assert menuId > 0 : "Menu item for the optional toolbar action should be found";
 
             mAppMenuHandler.get().setMenuHighlight(menuId, false);
-            View menuIcon = mMenuButton.findViewById(R.id.menu_button);
-            menuIcon.setContentDescription(
-                    getContext().getString(R.string.accessibility_custom_tab_menu_with_dot));
             if (mAppMenuObserver != null) mAppMenuHandler.get().removeObserver(mAppMenuObserver);
             mAppMenuObserver =
                     new AppMenuObserver() {
                         @Override
                         public void onMenuVisibilityChanged(boolean isVisible) {
                             // TODO(crbug.com/424807997): Do this toggling in MenuButton MVC.
-                            if (isVisible) {
-                                resetOptionalButtonState(/* resetFallbackMenu= */ false);
-                                String menuTitle = getContext().getString(menuInfo.second);
-                                int textId = R.string.accessibility_custom_tab_menu_item_highlight;
-                                String highlightedMenu = getContext().getString(textId, menuTitle);
-                                mAppMenuHandler.get().setContentDescription(highlightedMenu);
-                            }
+                            if (isVisible) resetOptionalButtonState(/* resetFallbackMenu= */ false);
                         }
 
                         @Override
@@ -1728,8 +1717,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mAppMenuHandler.get().addObserver(mAppMenuObserver);
         }
 
-        private Pair<Integer, Integer> getHighlightMenuInfo(
-                @AdaptiveToolbarButtonVariant int buttonVariant) {
+        private int getHighlightMenuId(@AdaptiveToolbarButtonVariant int buttonVariant) {
             return switch (buttonVariant) {
                 case AdaptiveToolbarButtonVariant.PRICE_TRACKING -> {
                     // Figure out which of the two menu items (enable/disable) appears and needs
@@ -1739,18 +1727,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             (AppMenuPropertiesDelegateImpl)
                                     mAppMenuHandler.get().getMenuPropertiesDelegate();
                     var showEnabled = appMenuDelegate.getPriceTrackingMenuItemInfo(getCurrentTab());
-                    if (showEnabled == null) yield null;
+                    if (showEnabled == null) yield -1;
                     yield showEnabled
-                            ? Pair.create(
-                                    R.id.enable_price_tracking_menu_id,
-                                    R.string.enable_price_tracking_menu_item)
-                            : Pair.create(
-                                    R.id.disable_price_tracking_menu_id,
-                                    R.string.disable_price_tracking_menu_item);
+                            ? R.id.enable_price_tracking_menu_id
+                            : R.id.disable_price_tracking_menu_id;
                 }
-                case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS -> Pair.create(
-                        R.id.price_insights_menu_id, R.string.price_insights_title);
-                default -> null;
+                case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS -> R.id.price_insights_menu_id;
+                default -> -1;
             };
         }
 
@@ -1779,13 +1762,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             // Hides the menu dot, and turns off the highlight on the fallback menu item.
             View indicator = mMenuButton.findViewById(R.id.menu_dot);
-            if (indicator.getVisibility() != View.GONE) {
-                indicator.setVisibility(View.GONE);
-                View menuIcon = mMenuButton.findViewById(R.id.menu_button);
-                menuIcon.setContentDescription(
-                        getContext().getString(R.string.accessibility_toolbar_btn_menu));
-                mAppMenuHandler.get().setContentDescription(null);
-            }
+            indicator.setVisibility(View.GONE);
             if (resetFallbackMenu) {
                 mVariantForFallbackMenu = AdaptiveToolbarButtonVariant.UNKNOWN;
             }

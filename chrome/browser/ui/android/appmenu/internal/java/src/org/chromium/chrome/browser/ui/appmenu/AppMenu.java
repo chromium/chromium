@@ -357,20 +357,6 @@ class AppMenu implements OnKeyListener {
         }
     }
 
-    @EnsuresNonNullIf("mPopup")
-    void setContentDescription(@Nullable String desc) {
-        if (mPopup == null) return;
-
-        View contentView = mPopup.getContentView();
-        if (contentView == null) return;
-
-        contentView.setAccessibilityLiveRegion(
-                desc != null
-                        ? View.ACCESSIBILITY_LIVE_REGION_POLITE
-                        : View.ACCESSIBILITY_LIVE_REGION_NONE);
-        contentView.setContentDescription(desc);
-    }
-
     @VisibleForTesting
     static int[] getPopupPosition(
             int[] tempLocation,

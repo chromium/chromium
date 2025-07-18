@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -104,11 +103,4 @@ public interface AppMenuHandler {
      * @return {@link AppMenuPropertiesDelegate} that builds the menu list.
      */
     AppMenuPropertiesDelegate getMenuPropertiesDelegate();
-
-    /**
-     * Sets the content description text for the app menu view.
-     *
-     * @param desc Content description.
-     */
-    void setContentDescription(@Nullable String desc);
 }
