@@ -14,11 +14,14 @@ import androidx.annotation.Nullable;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
+import org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragment;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -39,6 +42,7 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
     private final BottomSheetController mBottomSheetController;
     private final TabArchiveSettings mTabArchiveSettings;
     private final PropertyModel mModel;
+    private SettingsNavigation mSettingsNavigation;
 
     private @Nullable ArchivedTabsAutoDeletePromoSheetContent mSheetContent;
     private @Nullable BottomSheetObserver mSheetObserver;
@@ -73,6 +77,7 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mTabArchiveSettings = tabArchiveSettings;
+        mSettingsNavigation = SettingsNavigationFactory.createSettingsNavigation();
 
         mModel = ArchivedTabsAutoDeletePromoProperties.createDefaultModel();
 
@@ -171,18 +176,18 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
             return;
         }
         mIsFinalizedThisInstance = true;
-
         boolean disableAutoDeleteFeature = mUserChoiceThisInstance == UserChoice.NO;
 
-        mTabArchiveSettings.setAutoDeleteEnabled(!disableAutoDeleteFeature);
+        mTabArchiveSettings.setAutoDeleteEnabled(true);
         mTabArchiveSettings.setAutoDeleteDecisionMade(true);
-
+        if (disableAutoDeleteFeature) {
+            mSettingsNavigation.startSettings(mContext, TabArchiveSettingsFragment.class);
+        }
         if (disableAutoDeleteFeature) {
             RecordUserAction.record("Tabs.ArchivedTabAutoDeletePromo.No");
         } else {
             RecordUserAction.record("Tabs.ArchivedTabAutoDeletePromo.Yes");
         }
-
         cleanupSheetResourcesOnly();
     }
 
@@ -226,5 +231,9 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
 
     boolean isSheetCurrentlyManagedForTesting() {
         return mIsSheetCurrentlyManagedByController;
+    }
+
+    void setSettingsNavigationForTesting(SettingsNavigation settingsNavigation) {
+        mSettingsNavigation = settingsNavigation;
     }
 }

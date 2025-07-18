@@ -35,10 +35,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
+import org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragment;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link ArchivedTabsAutoDeletePromoCoordinator}. */
@@ -50,6 +52,7 @@ public class ArchivedTabsAutoDeletePromoCoordinatorTest {
 
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private TabArchiveSettings mMockTabArchiveSettings;
+    @Mock private SettingsNavigation mMockSettingsNavigation;
 
     @Captor
     private ArgumentCaptor<ArchivedTabsAutoDeletePromoSheetContent>
@@ -151,11 +154,15 @@ public class ArchivedTabsAutoDeletePromoCoordinatorTest {
         View.OnClickListener noListener =
                 mCoordinatorModel.get(
                         ArchivedTabsAutoDeletePromoProperties.ON_NO_BUTTON_CLICK_LISTENER);
+        mCoordinator.setSettingsNavigationForTesting(mMockSettingsNavigation);
         noListener.onClick(null);
         simulateSheetClose(coordinatorObserver, StateChangeReason.INTERACTION_COMPLETE);
 
-        verify(mMockTabArchiveSettings).setAutoDeleteEnabled(false);
+        // We set auto-delete to true before navigating to the settings page.
+        verify(mMockTabArchiveSettings).setAutoDeleteEnabled(true);
         verify(mMockTabArchiveSettings).setAutoDeleteDecisionMade(true);
+        verify(mMockSettingsNavigation)
+                .startSettings(eq(mActivity), eq(TabArchiveSettingsFragment.class));
     }
 
     @Test
