@@ -140,7 +140,7 @@ void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
 
   // Metrics related to parking only should be recorded if the feature is
   // enabled.
-  if (IsParkableImagesToDiskEnabled() && data_allocator().may_write()) {
+  if (data_allocator().may_write()) {
     base::UmaHistogramTimes("Memory.ParkableImage.TotalWriteTime.5min",
                             total_disk_write_time_);
     base::UmaHistogramTimes("Memory.ParkableImage.TotalReadTime.5min",
@@ -213,9 +213,6 @@ void ParkableImageManager::OnReadFromDisk(ParkableImageImpl* image) {
 }
 
 void ParkableImageManager::ScheduleDelayedParkingTaskIfNeeded() {
-  if (!ParkableImageManager::IsParkableImagesToDiskEnabled())
-    return;
-
   if (has_pending_parking_task_)
     return;
 
@@ -232,7 +229,6 @@ void ParkableImageManager::MaybeParkImages() {
   // very careful here to avoid a UAF.
   // To avoid this, we make sure that ParkableImageImpl is always destroyed on
   // the main thread, using |ParkableImageManager::DestroyParkableImage|.
-  DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
   DCHECK(IsMainThread());
 
   base::AutoLock lock(lock_);

@@ -303,7 +303,6 @@ void ParkableImageImpl::WriteToDiskInBackground(
   DCHECK(!IsMainThread());
   base::AutoLock lock(parkable_image->lock_);
 
-  DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
   DCHECK(parkable_image);
   DCHECK(parkable_image->reserved_chunk_);
   DCHECK(!parkable_image->on_disk_metadata_);
@@ -403,7 +402,6 @@ bool ParkableImageImpl::TransientlyUnableToPark() const {
 
 bool ParkableImageImpl::MaybePark(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
   DCHECK(IsMainThread());
 
   base::AutoLock lock(lock_);
@@ -458,8 +456,6 @@ void ParkableImageImpl::Unpark() {
     AsanUnpoisonBuffer(rw_buffer_.get());
     return;
   }
-
-  DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
 
   TRACE_EVENT1("blink", "ParkableImageImpl::Unpark", "size", size());
 

@@ -2029,10 +2029,6 @@ BASE_FEATURE(kOriginTrialStateHostApplyFeatureDiff,
 // Enable defer commits to avoid flash of unstyled content, for all navigations.
 BASE_FEATURE(kPaintHolding, "PaintHolding", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kParkableImagesToDisk,
-             "ParkableImagesToDisk",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // A parameter to exclude or not exclude CanvasFontCache from
 // PartialLowModeOnMidRangeDevices. This is used to see how
@@ -2894,10 +2890,6 @@ bool IsFencedFramesEnabled() {
 bool IsParkableStringsToDiskEnabled() {
   // Always enabled as soon as compression is enabled.
   return base::FeatureList::IsEnabled(kCompressParkableStrings);
-}
-
-bool IsParkableImagesToDiskEnabled() {
-  return base::FeatureList::IsEnabled(kParkableImagesToDisk);
 }
 
 bool IsSetIntervalWithoutClampEnabled() {

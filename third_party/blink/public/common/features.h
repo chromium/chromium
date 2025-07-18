@@ -1346,8 +1346,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPath2DPaintCache);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPaintHolding);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kParkableImagesToDisk);
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
@@ -1869,8 +1867,6 @@ BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
-
-BLINK_COMMON_EXPORT bool IsParkableImagesToDiskEnabled();
 
 BLINK_COMMON_EXPORT bool IsSetIntervalWithoutClampEnabled();
 

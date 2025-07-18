@@ -37,10 +37,6 @@ class PLATFORM_EXPORT ParkableImageManager
   // Number of parked and unparked images.
   size_t Size() const LOCKS_EXCLUDED(lock_);
 
-  static bool IsParkableImagesToDiskEnabled() {
-    return base::FeatureList::IsEnabled(features::kParkableImagesToDisk);
-  }
-
   void MaybeParkImagesForTesting() { MaybeParkImages(); }
 
  private:

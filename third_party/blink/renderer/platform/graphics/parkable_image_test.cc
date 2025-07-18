@@ -184,10 +184,7 @@ class ParkableImageBaseTest : public ::testing::Test {
 // Parking is enabled for these tests.
 class ParkableImageTest : public ParkableImageBaseTest {
  public:
-  ParkableImageTest() {
-    fl_.InitWithFeatures({features::kParkableImagesToDisk},
-                         {kDelayParkingImages});
-  }
+  ParkableImageTest() { fl_.InitWithFeatures({}, {kDelayParkingImages}); }
 
  private:
   base::test::ScopedFeatureList fl_;
@@ -197,19 +194,7 @@ class ParkableImageTest : public ParkableImageBaseTest {
 class ParkableImageDelayedTest : public ParkableImageBaseTest {
  public:
   ParkableImageDelayedTest() {
-    fl_.InitWithFeatures({features::kParkableImagesToDisk, kDelayParkingImages},
-                         {});
-  }
-
- private:
-  base::test::ScopedFeatureList fl_;
-};
-
-// Parking is disabled for these tests.
-class ParkableImageNoParkingTest : public ParkableImageBaseTest {
- public:
-  ParkableImageNoParkingTest() {
-    fl_.InitAndDisableFeature(features::kParkableImagesToDisk);
+    fl_.InitWithFeatures({kDelayParkingImages}, {});
   }
 
  private:
@@ -220,7 +205,6 @@ class ParkableImageWithLimitedDiskCapacityTest : public ParkableImageBaseTest {
  public:
   ParkableImageWithLimitedDiskCapacityTest() {
     const std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kParkableImagesToDisk, {}},
         {features::kCompressParkableStrings, {{"max_disk_capacity_mb", "1"}}}};
     fl_.InitWithFeaturesAndParameters(enabled_features, {kDelayParkingImages});
   }
@@ -681,29 +665,6 @@ TEST_F(ParkableImageTest, ManagerNonFrozen) {
   ExpectReadStatistics(0, 0);
 }
 
-// Check that trying to unpark a ParkableImage when parking is disabled has no
-// effect.
-TEST_F(ParkableImageNoParkingTest, Unpark) {
-  const size_t kDataSize = 3.5 * 4096;
-  auto data = base::HeapArray<uint8_t>::Uninit(kDataSize);
-  PrepareReferenceData(data);
-
-  auto pi = MakeParkableImageForTesting(data);
-
-  pi->Freeze();
-
-  ASSERT_FALSE(is_on_disk(pi));
-
-  // This is a no-op when parking is disabled.
-  Unpark(pi);
-
-  EXPECT_TRUE(IsSameContent(pi, data));
-
-  // No data should be written or read when parking is disabled.
-  ExpectWriteStatistics(kDataSize / 1024, 0);
-  ExpectReadStatistics(kDataSize / 1024, 0);
-}
-
 // Tests that the ParkableImageManager is correctly recording statistics after 5
 // minutes.
 TEST_F(ParkableImageTest, ManagerStatistics5min) {
@@ -729,64 +690,6 @@ TEST_F(ParkableImageTest, ManagerStatistics5min) {
                                      1);
   histogram_tester_.ExpectTotalCount("Memory.ParkableImage.UnparkedSize.5min",
                                      1);
-}
-
-// Tests that the ParkableImageManager is correctly recording statistics after 5
-// minutes, even when parking is disabled. Only bookkeeping metrics should be
-// recorded in this case, since no reads/writes will happen.
-TEST_F(ParkableImageNoParkingTest, ManagerStatistics5min) {
-  const size_t kDataSize = 3.5 * 4096;
-  auto data = base::HeapArray<uint8_t>::Uninit(kDataSize);
-  PrepareReferenceData(data);
-
-  auto pi = MakeParkableImageForTesting(data);
-  pi->Freeze();
-
-  Wait5MinForStatistics();
-
-  // Note that we expect 0 counts of some of these metrics.
-  histogram_tester_.ExpectTotalCount(
-      "Memory.ParkableImage.OnDiskFootprintKb.5min", 0);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.OnDiskSize.5min", 1);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.TotalReadTime.5min",
-                                     0);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.TotalSize.5min", 1);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.TotalWriteTime.5min",
-                                     0);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.UnparkedSize.5min",
-                                     1);
-}
-
-// Tests that the manager doesn't try to park any images when parking is
-// disabled.
-TEST_F(ParkableImageNoParkingTest, ManagerSimple) {
-  const size_t kDataSize = 3.5 * 4096;
-  auto data = base::HeapArray<uint8_t>::Uninit(kDataSize);
-  PrepareReferenceData(data);
-
-  auto pi = MakeParkableImageForTesting(data);
-
-  auto& manager = ParkableImageManager::Instance();
-  // The manager still keeps track of all images when parking is disabled, but
-  // should not park them.
-  EXPECT_EQ(1u, manager.Size());
-
-  pi->Freeze();
-
-  // This is the delayed
-  // accounting task |ParkableImageManager::RecordStatisticsAfter5Minutes|.
-  EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
-
-  // This should not do anything, since parking is disabled.
-  WaitForParking();
-
-  EXPECT_FALSE(is_on_disk(pi));
-
-  EXPECT_TRUE(IsSameContent(pi, data));
-
-  // No data should be written or read when parking is disabled.
-  ExpectWriteStatistics(kDataSize / 1024, 0);
-  ExpectReadStatistics(kDataSize / 1024, 0);
 }
 
 // Test a locked image will not be written to disk.
