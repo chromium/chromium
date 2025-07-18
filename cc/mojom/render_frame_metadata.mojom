@@ -118,7 +118,7 @@ struct RenderFrameMetadata {
   bool has_transparent_background;
 };
 
-[EnableIf=is_android]
+[EnableIf=is_android|is_ios]
 enum RootScrollOffsetUpdateFrequency {
   // The client will only be notified of root scroll offsets via the regular
   // RenderFrameMetadata updates. This is the default behavior. See
@@ -151,7 +151,7 @@ interface RenderFrameMetadataObserver {
   // In other words, if this is sent, *only* the root-scroll-offset has changed
   // and the client is not sent a OnRenderFrameMetadataChanged() for the frame.
   // Used on Android for acessibility and GestureListenerManager.
-  [EnableIf=is_android]
+  [EnableIf=is_android|is_ios]
   UpdateRootScrollOffsetUpdateFrequency(
       RootScrollOffsetUpdateFrequency frequency);
 
@@ -175,6 +175,6 @@ interface RenderFrameMetadataObserverClient {
   OnFrameSubmissionForTesting(uint32 frame_token);
 
   // Only called if UpdateRootScrollOffsetUpdateFrequency() has been called.
-  [EnableIf=is_android]
+  [EnableIf=is_android|is_ios]
   OnRootScrollOffsetChanged(gfx.mojom.PointF root_scroll_offset);
 };

@@ -333,7 +333,7 @@ void LayerTreeHostImpl::DidEndScroll() {
     client_->SetWaitingForScrollEvent(false);
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (render_frame_metadata_observer_) {
     render_frame_metadata_observer_->DidEndScroll();
   }

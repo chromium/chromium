@@ -178,6 +178,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(
       const cc::RenderFrameMetadata& metadata) override;
+  void OnRootScrollOffsetChanged(
+      const gfx::PointF& root_scroll_offset) override;
   void OnRenderFrameMetadataChangedAfterActivation(
       base::TimeTicks activation_time) override {}
   void OnRenderFrameSubmission() override {}

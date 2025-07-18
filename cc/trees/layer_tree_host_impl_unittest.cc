@@ -16827,7 +16827,7 @@ class TestRenderFrameMetadataObserver : public RenderFrameMetadataObserver {
       compositor_frame_metadata->send_frame_token_to_embedder = true;
     last_metadata_ = render_frame_metadata;
   }
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void DidEndScroll() override {}
 #endif
 

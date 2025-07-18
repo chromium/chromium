@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "build/ios_buildflags.h"
+#include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "components/input/events_helper.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
@@ -125,6 +126,10 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
   }
 
   host()->render_frame_metadata_provider()->AddObserver(this);
+  host()
+      ->render_frame_metadata_provider()
+      ->UpdateRootScrollOffsetUpdateFrequency(
+          cc::mojom::RootScrollOffsetUpdateFrequency::kAllUpdates);
   host()->SetView(this);
 }
 
@@ -877,17 +882,13 @@ void RenderWidgetHostViewIOS::ChildDidAckGestureEvent(
 }
 
 void RenderWidgetHostViewIOS::UpdateFrameBounds() {
-  // UIScrollView* scrollView = (UIScrollView*)[ui_view_->view_ superview];
-  gfx::PointF scrollOffset;
-  if (last_root_scroll_offset_) {
-    scrollOffset = *last_root_scroll_offset_;
-  }
-  CGRect parentBounds = [[ui_view_->view_ superview] bounds];
-  gfx::SizeF viewportSize(parentBounds.size);
+  const gfx::PointF scrollOffset =
+      last_root_scroll_offset_.value_or(gfx::PointF());
+  const CGRect parentBounds = [[ui_view_->view_ superview] bounds];
 
   CGRect frameBounds;
   frameBounds.origin = scrollOffset.ToCGPoint();
-  frameBounds.size = viewportSize.ToCGSize();
+  frameBounds.size = parentBounds.size;
 
   // If we are scrolling we don't resize the WebView immediately.
   if (!is_scrolling_ && !IsTesting()) {
@@ -920,6 +921,11 @@ void RenderWidgetHostViewIOS::OnRenderFrameMetadataChangedBeforeActivation(
   if (metadata.root_scroll_offset) {
     ApplyRootScrollOffsetChanged(*metadata.root_scroll_offset, /*force=*/false);
   }
+}
+
+void RenderWidgetHostViewIOS::OnRootScrollOffsetChanged(
+    const gfx::PointF& root_scroll_offset) {
+  ApplyRootScrollOffsetChanged(root_scroll_offset, /*force=*/false);
 }
 
 void RenderWidgetHostViewIOS::ContentInsetChanged() {

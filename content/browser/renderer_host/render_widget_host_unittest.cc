@@ -323,7 +323,7 @@ class FakeRenderFrameMetadataObserver
 
   ~FakeRenderFrameMetadataObserver() override {}
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void UpdateRootScrollOffsetUpdateFrequency(
       cc::mojom::RootScrollOffsetUpdateFrequency frequency) override {}
 #endif
