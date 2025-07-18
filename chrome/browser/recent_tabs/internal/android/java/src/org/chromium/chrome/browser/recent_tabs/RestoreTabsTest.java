@@ -51,7 +51,9 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -71,24 +73,27 @@ public class RestoreTabsTest {
     private static final String RESTORE_TABS_FEATURE = FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Spy ForeignSessionHelper.Natives mForeignSessionHelperJniSpy;
     // Tell R8 not to break the ability to mock the class.
-    @Spy ForeignSessionHelperJni mUnused;
+    @Spy org.chromium.chrome.browser.recent_tabs.ForeignSessionHelperJni mUnused;
 
     @Mock private Tracker mMockTracker;
 
     private BottomSheetController mBottomSheetController;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         TrackerFactory.setTrackerForTests(mMockTracker);
 
         mForeignSessionHelperJniSpy = Mockito.spy(ForeignSessionHelperJni.get());
-        ForeignSessionHelperJni.setInstanceForTesting(mForeignSessionHelperJniSpy);
+        org.chromium.chrome.browser.recent_tabs.ForeignSessionHelperJni.setInstanceForTesting(
+                mForeignSessionHelperJniSpy);
         doReturn(true).when(mForeignSessionHelperJniSpy).isTabSyncEnabled(anyLong());
 
         mBottomSheetController =

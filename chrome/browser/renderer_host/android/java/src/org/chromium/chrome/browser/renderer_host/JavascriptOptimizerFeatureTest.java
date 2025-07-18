@@ -21,7 +21,9 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -29,7 +31,6 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.url.GURL;
 
 /** Integration test for Android OS disabling Javascript Optimizers. */
@@ -43,22 +44,22 @@ import org.chromium.url.GURL;
 public class JavascriptOptimizerFeatureTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
 
-    private EmbeddedTestServer mTestServer;
-
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @ClassRule
     public static AdvancedProtectionTestRule sAdvancedProtectionRule =
             new AdvancedProtectionTestRule();
 
+    private EmbeddedTestServer mTestServer;
+    private WebPageStation mPage;
+
     @Before
     public void setUp() {
-        EmbeddedTestServerRule embeddedTestServerRule =
-                mActivityTestRule.getEmbeddedTestServerRule();
-        mTestServer = embeddedTestServerRule.getServer();
+        mTestServer = mActivityTestRule.getTestServer();
         sAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(false);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     private boolean queryJavascriptOptimizersEnabledForActiveWebContents() {

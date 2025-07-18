@@ -24,7 +24,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -43,9 +42,6 @@ import org.chromium.url.JUnitTestGURLs;
 })
 public class TapToSeekSelectionManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock private ReadAloudController mReadAloudController;
 

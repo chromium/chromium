@@ -26,7 +26,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -43,10 +45,12 @@ public class QuickDeleteBridgeTest {
                     "https://www.example.com/",
                     "https://www.google.com/");
 
-    private QuickDeleteBridge mQuickDeleteBridge;
-
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private WebPageStation mPage;
+    private QuickDeleteBridge mQuickDeleteBridge;
 
     private static class DomainVisitsCallback implements QuickDeleteBridge.DomainVisitsCallback {
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
@@ -64,7 +68,7 @@ public class QuickDeleteBridgeTest {
 
     @Before
     public void setUp() throws ExecutionException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
