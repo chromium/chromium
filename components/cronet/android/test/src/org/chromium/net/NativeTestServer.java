@@ -27,6 +27,8 @@ public final class NativeTestServer {
     // This variable contains the response body of a request to getSuccessURL().
     public static final String SUCCESS_BODY = "this is a text file\n";
 
+    private static Long sEmbeddedTestServerAdapter;
+
     public static boolean startNativeTestServer(Context context) {
         if (!prepareNativeTestServer(context)) return false;
         startPrepared();
@@ -41,36 +43,52 @@ public final class NativeTestServer {
     }
 
     public static boolean prepareNativeTestServer(Context context) {
+        if (sEmbeddedTestServerAdapter != null) {
+            return false;
+        }
         TestFilesInstaller.installIfNeeded(context);
-        return NativeTestServerJni.get()
-                .prepareNativeTestServer(
-                        TestFilesInstaller.getInstalledPath(context),
-                        UrlUtils.getIsolatedTestRoot(),
-                        false, // useHttps
-                        ServerCertificate.CERT_OK);
+        sEmbeddedTestServerAdapter =
+                NativeTestServerJni.get()
+                        .create(
+                                TestFilesInstaller.getInstalledPath(context),
+                                UrlUtils.getIsolatedTestRoot(),
+                                false, // useHttps
+                                ServerCertificate.CERT_OK);
+        return true;
     }
 
     public static boolean prepareNativeTestServerWithHTTPS(
             Context context, @ServerCertificate int serverCertificate) {
+        if (sEmbeddedTestServerAdapter != null) {
+            return false;
+        }
         TestFilesInstaller.installIfNeeded(context);
-        return NativeTestServerJni.get()
-                .prepareNativeTestServer(
-                        TestFilesInstaller.getInstalledPath(context),
-                        UrlUtils.getIsolatedTestRoot(),
-                        true, // useHttps
-                        serverCertificate);
+        sEmbeddedTestServerAdapter =
+                NativeTestServerJni.get()
+                        .create(
+                                TestFilesInstaller.getInstalledPath(context),
+                                UrlUtils.getIsolatedTestRoot(),
+                                true, // useHttps
+                                serverCertificate);
+        return true;
     }
 
     public static void enableConnectProxy(List<String> urlsToBeProxied) {
-        NativeTestServerJni.get().enableConnectProxy(urlsToBeProxied.toArray(new String[0]));
+        NativeTestServerJni.get()
+                .enableConnectProxy(
+                        sEmbeddedTestServerAdapter, urlsToBeProxied.toArray(new String[0]));
     }
 
     public static void startPrepared() {
-        NativeTestServerJni.get().startPrepared();
+        NativeTestServerJni.get().start(sEmbeddedTestServerAdapter);
     }
 
     public static void shutdownNativeTestServer() {
-        NativeTestServerJni.get().shutdownNativeTestServer();
+        if (sEmbeddedTestServerAdapter == null) {
+            return;
+        }
+        NativeTestServerJni.get().destroy(sEmbeddedTestServerAdapter);
+        sEmbeddedTestServerAdapter = null;
     }
 
     public static final class PreparedScope implements AutoCloseable {
@@ -87,67 +105,69 @@ public final class NativeTestServer {
     }
 
     public static String getEchoBodyURL() {
-        return NativeTestServerJni.get().getEchoBodyURL();
+        return NativeTestServerJni.get().getEchoBodyURL(sEmbeddedTestServerAdapter);
     }
 
     public static String getEchoHeaderURL(String header) {
-        return NativeTestServerJni.get().getEchoHeaderURL(header);
+        return NativeTestServerJni.get().getEchoHeaderURL(sEmbeddedTestServerAdapter, header);
     }
 
     public static String getEchoAllHeadersURL() {
-        return NativeTestServerJni.get().getEchoAllHeadersURL();
+        return NativeTestServerJni.get().getEchoAllHeadersURL(sEmbeddedTestServerAdapter);
     }
 
     public static String getEchoMethodURL() {
-        return NativeTestServerJni.get().getEchoMethodURL();
+        return NativeTestServerJni.get().getEchoMethodURL(sEmbeddedTestServerAdapter);
     }
 
     public static String getUseEncodingURL(String encoding) {
-        return NativeTestServerJni.get().getUseEncodingURL(encoding);
+        return NativeTestServerJni.get().getUseEncodingURL(sEmbeddedTestServerAdapter, encoding);
     }
 
     public static String getRedirectToEchoBody() {
-        return NativeTestServerJni.get().getRedirectToEchoBody();
+        return NativeTestServerJni.get().getRedirectToEchoBodyURL(sEmbeddedTestServerAdapter);
     }
 
     public static String getFileURL(String filePath) {
-        return NativeTestServerJni.get().getFileURL(filePath);
+        return NativeTestServerJni.get().getFileURL(sEmbeddedTestServerAdapter, filePath);
     }
 
     // Returns a URL that the server will return an Exabyte of data
     public static String getExabyteResponseURL() {
-        return NativeTestServerJni.get().getExabyteResponseURL();
+        return NativeTestServerJni.get().getExabyteResponseURL(sEmbeddedTestServerAdapter);
     }
 
     // The following URLs will make NativeTestServer serve a response based on
     // the contents of the corresponding file and its mock-http-headers file.
 
     public static String getSuccessURL() {
-        return NativeTestServerJni.get().getFileURL("/success.txt");
+        return NativeTestServerJni.get().getFileURL(sEmbeddedTestServerAdapter, "/success.txt");
     }
 
     public static String getRedirectURL() {
-        return NativeTestServerJni.get().getFileURL("/redirect.html");
+        return NativeTestServerJni.get().getFileURL(sEmbeddedTestServerAdapter, "/redirect.html");
     }
 
     public static String getMultiRedirectURL() {
-        return NativeTestServerJni.get().getFileURL("/multiredirect.html");
+        return NativeTestServerJni.get()
+                .getFileURL(sEmbeddedTestServerAdapter, "/multiredirect.html");
     }
 
     public static String getNotFoundURL() {
-        return NativeTestServerJni.get().getFileURL("/notfound.html");
+        return NativeTestServerJni.get().getFileURL(sEmbeddedTestServerAdapter, "/notfound.html");
     }
 
     public static String getServerErrorURL() {
-        return NativeTestServerJni.get().getFileURL("/server_error.txt");
+        return NativeTestServerJni.get()
+                .getFileURL(sEmbeddedTestServerAdapter, "/server_error.txt");
     }
 
     public static int getPort() {
-        return NativeTestServerJni.get().getPort();
+        return NativeTestServerJni.get().getPort(sEmbeddedTestServerAdapter);
     }
 
     public static String getHostPort() {
-        return NativeTestServerJni.get().getHostPort();
+        return NativeTestServerJni.get().getHostPort(sEmbeddedTestServerAdapter);
     }
 
     /** Java counterpart of native net::test_server::HttpRequest. */
@@ -220,7 +240,7 @@ public final class NativeTestServer {
 
     /** See net::test_server::EmbeddedTestServer::registerRequestHandler(). */
     public static void registerRequestHandler(HandleRequestCallback callback) {
-        NativeTestServerJni.get().registerRequestHandler(callback);
+        NativeTestServerJni.get().registerRequestHandler(sEmbeddedTestServerAdapter, callback);
     }
 
     // The following indirecting methods are needed because jni_zero doesn't support @CalledByNative
@@ -259,39 +279,57 @@ public final class NativeTestServer {
 
     @NativeMethods("cronet_tests")
     interface Natives {
-        boolean prepareNativeTestServer(
-                String filePath,
-                String testDataDir,
-                boolean useHttps,
-                @ServerCertificate int certificate);
+        @JniType("long")
+        long create(
+                @JniType("std::string") String filePath,
+                @JniType("std::string") String testDataDir,
+                @JniType("bool") boolean useHttps,
+                @JniType("net::EmbeddedTestServer::ServerCertificate") @ServerCertificate
+                        int certificate);
 
-        void startPrepared();
+        void destroy(long nativeEmbeddedTestServerAdapter);
 
-        void shutdownNativeTestServer();
+        void start(long nativeEmbeddedTestServerAdapter);
 
-        void enableConnectProxy(@JniType("std::vector<std::string>") String[] urls);
+        void enableConnectProxy(
+                long nativeEmbeddedTestServerAdapter,
+                @JniType("std::vector<std::string>") String[] urls);
 
-        String getEchoBodyURL();
+        @JniType("std::string")
+        String getEchoBodyURL(long nativeEmbeddedTestServerAdapter);
 
-        String getEchoHeaderURL(String header);
+        @JniType("std::string")
+        String getEchoHeaderURL(
+                long nativeEmbeddedTestServerAdapter, @JniType("std::string") String header);
 
-        String getEchoAllHeadersURL();
+        @JniType("std::string")
+        String getEchoAllHeadersURL(long nativeEmbeddedTestServerAdapter);
 
-        String getEchoMethodURL();
+        @JniType("std::string")
+        String getEchoMethodURL(long nativeEmbeddedTestServerAdapter);
 
-        String getUseEncodingURL(String encoding);
+        @JniType("std::string")
+        String getUseEncodingURL(
+                long nativeEmbeddedTestServerAdapter, @JniType("std::string") String encoding);
 
-        String getRedirectToEchoBody();
+        @JniType("std::string")
+        String getRedirectToEchoBodyURL(long nativeEmbeddedTestServerAdapter);
 
-        String getFileURL(String filePath);
+        @JniType("std::string")
+        String getFileURL(
+                long nativeEmbeddedTestServerAdapter, @JniType("std::string") String filePath);
 
-        String getExabyteResponseURL();
+        @JniType("std::string")
+        String getExabyteResponseURL(long nativeEmbeddedTestServerAdapter);
 
-        String getHostPort();
+        @JniType("std::string")
+        String getHostPort(long nativeEmbeddedTestServerAdapter);
 
-        int getPort();
+        @JniType("int")
+        int getPort(long nativeEmbeddedTestServerAdapter);
 
         void registerRequestHandler(
+                long nativeEmbeddedTestServerAdapter,
                 @JniType("std::unique_ptr<cronet::NativeTestServerHandleRequestCallback>")
                         HandleRequestCallback callback);
     }

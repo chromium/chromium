@@ -1164,13 +1164,16 @@ shared_library("cronet_tests") {
     "test/experimental_options_test.cc",
     "test/mock_cert_verifier.cc",
     "test/mock_url_request_job_factory.cc",
-    "test/native_test_server.cc",
     "test/quic_test_server.cc",
+    "test/test_server/embedded_test_server_adapter.cc",
+    "test/test_server/embedded_test_server_adapter.h",
     "test/test_upload_data_stream_handler.cc",
     "test/test_upload_data_stream_handler.h",
     "test/url_request_intercepting_job_factory.cc",
     "test/url_request_intercepting_job_factory.h",
   ]
+
+  data = [ "test/test_server/data/" ]
 
   deps = [
     ":cronet_static",
@@ -1181,7 +1184,6 @@ shared_library("cronet_tests") {
     "//base/test:test_support",
     "//components/cronet:cronet_common",
     "//components/cronet:cronet_version_header",
-    "//components/cronet/testing:test_support",
     "//components/prefs",
     "//net",
     "//net:simple_quic_tools",
@@ -1481,7 +1483,7 @@ android_library("cronet_javatests") {
     "//third_party/mockito:mockito_java",
   ]
   deps += cronet_javatests_deps_to_package
-  data = [ "//components/cronet/testing/test_server/data/" ]
+  data = [ "//components/cronet/android/test/test_server/data/" ]
 }
 
 cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
@@ -1755,7 +1757,7 @@ cronet_test("cronet_unittests_android") {
 
   sources = [ "../run_all_unittests.cc" ]
 
-  data = [ "//components/cronet/testing/test_server/data/" ]
+  data = [ "//components/cronet/android/test/test_server/data/" ]
 
   if (is_android) {
     shard_timeout = 180
@@ -1785,7 +1787,7 @@ cronet_test("cronet_tests_android") {
 
   defines = [ "CRONET_TESTS_IMPLEMENTATION" ]
 
-  data = [ "//components/cronet/testing/test_server/data/" ]
+  data = [ "//components/cronet/android/test/test_server/data/" ]
 
   if (is_android) {
     shard_timeout = 180
@@ -1993,7 +1995,7 @@ copy("cronet_package_copy_native_test_lib_unstripped") {
 
 copy("cronet_package_copy_test_assets") {
   testonly = true
-  sources = [ "//components/cronet/testing/test_server/data" ]
+  sources = [ "//components/cronet/android/test/test_server/data" ]
   outputs = [ "$_test_package_dir/assets/test" ]
 }
 

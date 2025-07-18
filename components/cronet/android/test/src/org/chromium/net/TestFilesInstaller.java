@@ -11,7 +11,8 @@ import org.chromium.base.test.util.UrlUtils;
 /** Helper class to install test files. */
 public final class TestFilesInstaller {
     // Name of the asset directory in which test files are stored.
-    private static final String TEST_FILE_ASSET_PATH = "components/cronet/testing/test_server/data";
+    private static final String TEST_FILE_ASSET_PATH =
+            "components/cronet/android/test/test_server/data";
 
     /** Installs test files if files have not been installed. */
     public static void installIfNeeded(Context context) {

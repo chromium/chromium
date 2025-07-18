@@ -43,7 +43,7 @@ public class SharedDictionaryTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     // Byte contents of a compression dictionary whose contents is the string "A dictionary".
-    // See components/cronet/testing/test_server/test_server.cc.
+    // See components/cronet/android/test/test_server/test_server.cc.
     private static final byte[] COMPRESSION_DICTIONARY = {
         (byte) 0x41,
         (byte) 0x20,

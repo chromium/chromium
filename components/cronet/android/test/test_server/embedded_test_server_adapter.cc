@@ -7,12 +7,13 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
-#include "components/cronet/testing/test_server/test_server.h"
+#include "components/cronet/android/test/test_server/embedded_test_server_adapter.h"
 
 #include <memory>
 #include <string_view>
 #include <utility>
 
+#include "base/android/jni_string.h"
 #include "base/base_paths.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
@@ -23,17 +24,121 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_support_android.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace {
+namespace cronet {
 
-// Cronet test data directory, relative to source root.
-const base::FilePath::CharType kTestDataRelativePath[] =
-    FILE_PATH_LITERAL("components/cronet/testing/test_server/data");
+using NativeTestServerHeaderMap =
+    std::map<std::string,
+             std::string,
+             net::test_server::HttpRequest::CaseInsensitiveStringComparator>;
+
+struct NativeTestServerHttpRequest final {
+  net::test_server::HttpRequest http_request;
+};
+
+struct NativeTestServerRawHttpResponse final {
+  std::unique_ptr<net::test_server::RawHttpResponse> raw_http_response;
+};
+
+class NativeTestServerHandleRequestCallback final {
+ public:
+  explicit NativeTestServerHandleRequestCallback(
+      const jni_zero::JavaRef<jobject>& java_callback)
+      : java_callback_(java_callback) {}
+
+  std::unique_ptr<net::test_server::HttpResponse> operator()(
+      const net::test_server::HttpRequest& http_request) const;
+
+ private:
+  jni_zero::ScopedJavaGlobalRef<jobject> java_callback_;
+};
+
+}  // namespace cronet
+
+namespace jni_zero {
+
+template <>
+jni_zero::ScopedJavaLocalRef<jobject>
+ToJniType<cronet::NativeTestServerHttpRequest>(
+    JNIEnv* env,
+    const cronet::NativeTestServerHttpRequest& input);
+
+template <>
+cronet::NativeTestServerRawHttpResponse
+FromJniType<cronet::NativeTestServerRawHttpResponse>(
+    JNIEnv* env,
+    const JavaRef<jobject>& java_raw_http_response);
+
+template <>
+std::unique_ptr<cronet::NativeTestServerHandleRequestCallback>
+FromJniType<std::unique_ptr<cronet::NativeTestServerHandleRequestCallback>>(
+    JNIEnv* env,
+    const JavaRef<jobject>& java_handle_request_callback);
+
+}  // namespace jni_zero
+
+// Uses the declarations above, so must come after them.
+#include "components/cronet/android/cronet_test_apk_jni/NativeTestServer_jni.h"
+
+namespace jni_zero {
+
+template <>
+jni_zero::ScopedJavaLocalRef<jobject>
+ToJniType<cronet::NativeTestServerHttpRequest>(
+    JNIEnv* env,
+    const cronet::NativeTestServerHttpRequest&
+        native_test_server_http_request) {
+  const auto& http_request = native_test_server_http_request.http_request;
+  return cronet::Java_NativeTestServer_createHttpRequest(
+      env, http_request.relative_url, http_request.headers,
+      http_request.method_string, http_request.all_headers,
+      http_request.content);
+}
+
+template <>
+cronet::NativeTestServerRawHttpResponse
+FromJniType<cronet::NativeTestServerRawHttpResponse>(
+    JNIEnv* env,
+    const JavaRef<jobject>& java_raw_http_response) {
+  return {.raw_http_response =
+              std::make_unique<net::test_server::RawHttpResponse>(
+                  cronet::Java_NativeTestServer_getRawHttpResponseHeaders(
+                      env, java_raw_http_response),
+                  cronet::Java_NativeTestServer_getRawHttpResponseContents(
+                      env, java_raw_http_response))};
+}
+
+template <>
+std::unique_ptr<cronet::NativeTestServerHandleRequestCallback>
+FromJniType<std::unique_ptr<cronet::NativeTestServerHandleRequestCallback>>(
+    JNIEnv* env,
+    const JavaRef<jobject>& java_handle_request_callback) {
+  return std::make_unique<cronet::NativeTestServerHandleRequestCallback>(
+      java_handle_request_callback);
+}
+
+}  // namespace jni_zero
+
+namespace cronet {
+
+std::unique_ptr<net::test_server::HttpResponse>
+NativeTestServerHandleRequestCallback::operator()(
+    const net::test_server::HttpRequest& http_request) const {
+  cronet::Java_NativeTestServer_handleRequest(jni_zero::AttachCurrentThread(),
+                                              java_callback_,
+                                              {.http_request = http_request});
+  return nullptr;
+}
+
+}  // namespace cronet
+
+namespace {
 
 const char kSimplePath[] = "/simple";
 const char kEchoHeaderPath[] = "/echo_header?";
@@ -41,15 +146,10 @@ const char kEchoMethodPath[] = "/echo_method";
 const char kEchoAllHeadersPath[] = "/echo_all_headers";
 const char kRedirectToEchoBodyPath[] = "/redirect_to_echo_body";
 const char kSetCookiePath[] = "/set_cookie?";
-const char kBigDataPath[] = "/big_data?";
 const char kUseEncodingPath[] = "/use_encoding?";
 const char kEchoBodyPath[] = "/echo_body";
 
 const char kSimpleResponse[] = "The quick brown fox jumps over the lazy dog.";
-
-std::unique_ptr<net::EmbeddedTestServer> g_test_server;
-base::LazyInstance<std::string>::Leaky g_big_data_body =
-    LAZY_INSTANCE_INITIALIZER;
 
 std::unique_ptr<net::test_server::HttpResponse> SimpleRequest() {
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -111,18 +211,6 @@ std::unique_ptr<net::test_server::HttpResponse> UseEncodingInResponse(
   return std::move(http_response);
 }
 
-std::unique_ptr<net::test_server::HttpResponse> ReturnBigDataInResponse(
-    const net::test_server::HttpRequest& request) {
-  DCHECK(base::StartsWith(request.relative_url, kBigDataPath,
-                          base::CompareCase::INSENSITIVE_ASCII));
-  std::string data_size_str = request.relative_url.substr(strlen(kBigDataPath));
-  int64_t data_size;
-  CHECK(base::StringToInt64(std::string_view(data_size_str), &data_size));
-  CHECK(data_size == static_cast<int64_t>(g_big_data_body.Get().size()));
-  return std::make_unique<net::test_server::RawHttpResponse>(
-      std::string(), g_big_data_body.Get());
-}
-
 std::unique_ptr<net::test_server::HttpResponse> SetAndEchoCookieInResponse(
     const net::test_server::HttpRequest& request) {
   std::string cookie_line;
@@ -137,6 +225,7 @@ std::unique_ptr<net::test_server::HttpResponse> SetAndEchoCookieInResponse(
 }
 
 std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
+    net::EmbeddedTestServer* test_server,
     const net::test_server::HttpRequest& request) {
   if (base::StartsWith(request.relative_url, kSimplePath,
                        base::CompareCase::INSENSITIVE_ASCII)) {
@@ -145,10 +234,6 @@ std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
   if (base::StartsWith(request.relative_url, kSetCookiePath,
                        base::CompareCase::INSENSITIVE_ASCII)) {
     return SetAndEchoCookieInResponse(request);
-  }
-  if (base::StartsWith(request.relative_url, kBigDataPath,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return ReturnBigDataInResponse(request);
   }
   if (base::StartsWith(request.relative_url, kUseEncodingPath,
                        base::CompareCase::INSENSITIVE_ASCII)) {
@@ -170,7 +255,7 @@ std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
 
   if (base::StartsWith(request.relative_url, kEchoHeaderPath,
                        base::CompareCase::SENSITIVE)) {
-    GURL url = g_test_server->GetURL(request.relative_url);
+    GURL url = test_server->GetURL(request.relative_url);
     auto it = request.headers.find(url.query());
     if (it != request.headers.end()) {
       response->set_content(it->second);
@@ -204,144 +289,114 @@ std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
 
 namespace cronet {
 
-/* static */
-bool TestServer::PrepareServeFilesFromDirectory(
-    const base::FilePath& test_files_root,
-    net::EmbeddedTestServer::Type server_type,
-    net::EmbeddedTestServer::ServerCertificate server_certificate) {
-  // Shouldn't happen.
-  if (g_test_server)
-    return false;
-
-  g_test_server = std::make_unique<net::EmbeddedTestServer>(server_type);
-  g_test_server->RegisterRequestHandler(
-      base::BindRepeating(&CronetTestRequestHandler));
-  g_test_server->ServeFilesFromDirectory(test_files_root);
-  net::test_server::RegisterDefaultHandlers(g_test_server.get());
-  g_test_server->SetSSLConfig(server_certificate);
-  return true;
+long JNI_NativeTestServer_Create(
+    JNIEnv* env,
+    std::string& test_files_root,
+    std::string& test_data_dir,
+    bool use_https,
+    net::EmbeddedTestServer::ServerCertificate certificate) {
+  base::InitAndroidTestPaths(base::FilePath(test_data_dir));
+  return reinterpret_cast<long>(new EmbeddedTestServerAdapter(
+      base::FilePath(test_files_root),
+      (use_https ? net::test_server::EmbeddedTestServer::TYPE_HTTPS
+                 : net::test_server::EmbeddedTestServer::TYPE_HTTP),
+      certificate));
 }
 
-void TestServer::EnableConnectProxy(std::vector<std::string>& urls) {
+EmbeddedTestServerAdapter::EmbeddedTestServerAdapter(
+    const base::FilePath& test_files_root,
+    net::EmbeddedTestServer::Type server_type,
+    net::EmbeddedTestServer::ServerCertificate server_certificate)
+    : test_server(net::EmbeddedTestServer(server_type)) {
+  test_server.RegisterRequestHandler(
+      base::BindRepeating(&CronetTestRequestHandler, &test_server));
+  test_server.ServeFilesFromDirectory(test_files_root);
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  test_server.SetSSLConfig(server_certificate);
+}
+
+EmbeddedTestServerAdapter::~EmbeddedTestServerAdapter() = default;
+
+void EmbeddedTestServerAdapter::EnableConnectProxy(
+    JNIEnv* env,
+    std::vector<std::string>& urls) {
   std::vector<net::HostPortPair> destinations;
   for (auto& url : urls) {
     destinations.push_back(net::HostPortPair::FromURL(GURL(url)));
   }
-  g_test_server->EnableConnectProxy(destinations);
+  test_server.EnableConnectProxy(destinations);
 }
 
-void TestServer::StartPrepared() {
-  CHECK(g_test_server);
-  CHECK(g_test_server->Start());
+void EmbeddedTestServerAdapter::Destroy(JNIEnv* env) {
+  delete this;
 }
 
-/* static */
-bool TestServer::Start() {
-  base::FilePath src_root;
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root));
-  return StartServeFilesFromDirectory(
-      src_root.Append(kTestDataRelativePath),
-      net::test_server::EmbeddedTestServer::TYPE_HTTP,
-      net::test_server::EmbeddedTestServer::CERT_OK);
+bool EmbeddedTestServerAdapter::Start(JNIEnv* env) {
+  return test_server.Start();
 }
 
-/* static */
-void TestServer::Shutdown() {
-  if (!g_test_server)
-    return;
-  g_test_server.reset();
+int EmbeddedTestServerAdapter::GetPort(JNIEnv* env) {
+  return test_server.port();
 }
 
-/* static */
-int TestServer::GetPort() {
-  DCHECK(g_test_server);
-  return g_test_server->port();
+std::string EmbeddedTestServerAdapter::GetHostPort(JNIEnv* env) {
+  return net::HostPortPair::FromURL(test_server.base_url()).ToString();
 }
 
-/* static */
-std::string TestServer::GetHostPort() {
-  DCHECK(g_test_server);
-  return net::HostPortPair::FromURL(g_test_server->base_url()).ToString();
+std::string EmbeddedTestServerAdapter::GetSimpleURL(JNIEnv* env) {
+  return GetFileURL(env, kSimplePath);
 }
 
-/* static */
-std::string TestServer::GetSimpleURL() {
-  return GetFileURL(kSimplePath);
+std::string EmbeddedTestServerAdapter::GetEchoMethodURL(JNIEnv* env) {
+  return GetFileURL(env, kEchoMethodPath);
 }
 
-/* static */
-std::string TestServer::GetEchoMethodURL() {
-  return GetFileURL(kEchoMethodPath);
+std::string EmbeddedTestServerAdapter::GetEchoHeaderURL(
+    JNIEnv* env,
+    const std::string& header_name) {
+  return GetFileURL(env, kEchoHeaderPath + header_name);
 }
 
-/* static */
-std::string TestServer::GetEchoHeaderURL(const std::string& header_name) {
-  return GetFileURL(kEchoHeaderPath + header_name);
+std::string EmbeddedTestServerAdapter::GetUseEncodingURL(
+    JNIEnv* env,
+    const std::string& encoding_name) {
+  return GetFileURL(env, kUseEncodingPath + encoding_name);
 }
 
-/* static */
-std::string TestServer::GetUseEncodingURL(const std::string& encoding_name) {
-  return GetFileURL(kUseEncodingPath + encoding_name);
+std::string EmbeddedTestServerAdapter::GetSetCookieURL(
+    JNIEnv* env,
+    const std::string& cookie_line) {
+  return GetFileURL(env, kSetCookiePath + cookie_line);
 }
 
-/* static */
-std::string TestServer::GetSetCookieURL(const std::string& cookie_line) {
-  return GetFileURL(kSetCookiePath + cookie_line);
+std::string EmbeddedTestServerAdapter::GetEchoAllHeadersURL(JNIEnv* env) {
+  return GetFileURL(env, kEchoAllHeadersPath);
 }
 
-/* static */
-std::string TestServer::GetEchoAllHeadersURL() {
-  return GetFileURL(kEchoAllHeadersPath);
+std::string EmbeddedTestServerAdapter::GetEchoBodyURL(JNIEnv* env) {
+  return GetFileURL(env, kEchoBodyPath);
 }
 
-/* static */
-std::string TestServer::GetEchoRequestBodyURL() {
-  return GetFileURL(kEchoBodyPath);
+std::string EmbeddedTestServerAdapter::GetRedirectToEchoBodyURL(JNIEnv* env) {
+  return GetFileURL(env, kRedirectToEchoBodyPath);
 }
 
-/* static */
-std::string TestServer::GetRedirectToEchoBodyURL() {
-  return GetFileURL(kRedirectToEchoBodyPath);
+std::string EmbeddedTestServerAdapter::GetExabyteResponseURL(JNIEnv* env) {
+  return GetFileURL(env, "/exabyte_response");
 }
 
-/* static */
-std::string TestServer::GetExabyteResponseURL() {
-  return GetFileURL("/exabyte_response");
+std::string EmbeddedTestServerAdapter::GetFileURL(
+    JNIEnv* env,
+    const std::string& file_path) {
+  return test_server.GetURL(file_path).spec();
 }
 
-/* static */
-std::string TestServer::PrepareBigDataURL(size_t data_size) {
-  DCHECK(g_test_server);
-  DCHECK(g_big_data_body.Get().empty());
-  // Response line with headers.
-  std::string response_builder;
-  base::StringAppendF(&response_builder, "HTTP/1.1 200 OK\r\n");
-  base::StringAppendF(&response_builder, "Content-Length: %" PRIuS "\r\n",
-                      data_size);
-  base::StringAppendF(&response_builder, "\r\n");
-  response_builder += std::string(data_size, 'c');
-  g_big_data_body.Get() = response_builder;
-  return g_test_server
-      ->GetURL(kBigDataPath + base::NumberToString(response_builder.size()))
-      .spec();
-}
-
-/* static */
-void TestServer::ReleaseBigDataURL() {
-  DCHECK(!g_big_data_body.Get().empty());
-  g_big_data_body.Get() = std::string();
-}
-
-/* static */
-std::string TestServer::GetFileURL(const std::string& file_path) {
-  DCHECK(g_test_server);
-  return g_test_server->GetURL(file_path).spec();
-}
-
-void TestServer::RegisterRequestHandler(
-    net::test_server::EmbeddedTestServer::HandleRequestCallback callback) {
-  CHECK(g_test_server);
-  g_test_server->RegisterRequestHandler(callback);
+void EmbeddedTestServerAdapter::RegisterRequestHandler(
+    JNIEnv* env,
+    std::unique_ptr<NativeTestServerHandleRequestCallback>& callback) {
+  test_server.RegisterRequestHandler(
+      base::BindRepeating(&NativeTestServerHandleRequestCallback::operator(),
+                          base::Owned(std::move(callback))));
 }
 
 }  // namespace cronet
