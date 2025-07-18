@@ -4986,12 +4986,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_PREFIX" desc="The prefix for an Incognito page stored in the Back/Forward Cache">
         Incognito Back/Forward Cached Page: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
       </message>
-      <message name="IDS_TASK_MANAGER_PLUGIN_PREFIX" desc="The prefix for a Task Manager plugin row">
-        Plugin: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
-      </message>
-      <message name="IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX" desc="Task Manager row for PPAPI plugin broker, which provides additional access for PPAPI plugins">
-        Plugin Broker: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
-      </message>
       <message name="IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI" desc="Task Manager row for the render process that is preloaded with Top Chrome WebUI resources.">
         Preloaded UI Renderer
       </message>
@@ -5016,9 +5010,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_TASK_MANAGER_SERVICE_WORKER_PREFIX" desc="The prefix for a Task Manager service worker row">
         Service Worker: <ph name="SCRIPT_URL">$1<ex>https://googlechrome.github.io/samples/service-worker/basic/service-worker.js</ex></ph>
-      </message>
-      <message name="IDS_TASK_MANAGER_UNKNOWN_PLUGIN_NAME" desc="The prefix for a Task Manager plugin row">
-        Unknown plugin
       </message>
       <message name="IDS_TASK_MANAGER_UTILITY_PREFIX" desc="The prefix for a utility process row">
         Utility: <ph name="UTILITY_TYPE">$1<ex>Image Decoder</ex></ph>
