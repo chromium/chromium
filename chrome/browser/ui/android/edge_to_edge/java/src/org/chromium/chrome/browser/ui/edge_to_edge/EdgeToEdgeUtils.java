@@ -165,7 +165,7 @@ public class EdgeToEdgeUtils {
      * This is a sensitive check for whether all insets indicate or imply that the device is in
      * gesture navigation mode, and not tappable (3-button) navigation mode.
      *
-     * @param insetObserver The window insets to check for signals indicating gesture navigation.
+     * @param insets The window insets to check for signals indicating gesture navigation.
      * @return Whether all insets indicate the device is in gesture navigation mode.
      */
     public static boolean doAllInsetsIndicateGestureNavigation(
@@ -239,8 +239,7 @@ public class EdgeToEdgeUtils {
 
     /** Whether key native pages should draw to edge. */
     public static boolean isDrawKeyNativePageToEdgeEnabled() {
-        return isBottomChinFeatureEnabled()
-                && ChromeFeatureList.sDrawKeyNativeEdgeToEdge.isEnabled();
+        return isBottomChinFeatureEnabled();
     }
 
     /**
@@ -330,9 +329,7 @@ public class EdgeToEdgeUtils {
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
         return isPageOptedIntoEdgeToEdge
                 || (isBottomChinFeatureEnabled() && isBottomChinAllowed(layoutType, bottomInset))
-                || (isDrawKeyNativePageToEdgeEnabled()
-                        && layoutType == LayoutType.TAB_SWITCHER
-                        && !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableHubE2e.getValue());
+                || (layoutType == LayoutType.TAB_SWITCHER);
     }
 
     /**

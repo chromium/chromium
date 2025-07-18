@@ -119,10 +119,7 @@ public class CrossDevicePaneUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testSetEdgeToEdgeSupplier_BeforeNotifyLoadHint() {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         assertFalse(mEdgeToEdgeSupplier.hasObservers());
@@ -134,10 +131,7 @@ public class CrossDevicePaneUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testSetEdgeToEdgeSupplier_AfterNotifyLoadHint() {
         mCrossDevicePane.notifyLoadHint(LoadHint.HOT);
         assertTrue(mEdgeToEdgeSupplier.hasObservers());

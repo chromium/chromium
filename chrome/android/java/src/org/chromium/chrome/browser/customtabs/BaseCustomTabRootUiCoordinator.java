@@ -783,8 +783,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     protected boolean supportsEdgeToEdge() {
         // Currently edge to edge only supports CCT media viewer.
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity)
-                && EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()
-                && !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e.getValue()
                 && mIntentDataProvider.get() != null
                 && mIntentDataProvider.get().shouldEnableEmbeddedMediaExperience();
     }

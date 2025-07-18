@@ -162,7 +162,7 @@ public class IncognitoNewTabPage extends BasicNativePage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableIncognitoNtpE2e.getValue();
+        return true;
     }
 
     // InvalidationAwareThumbnailProvider

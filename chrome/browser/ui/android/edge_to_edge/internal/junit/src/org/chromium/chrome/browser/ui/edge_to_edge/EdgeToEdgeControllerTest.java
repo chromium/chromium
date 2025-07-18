@@ -94,10 +94,7 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSo
         sdk = VERSION_CODES.R,
         manifest = Config.NONE,
         shadows = EdgeToEdgeControllerTest.ShadowEdgeToEdgeControllerFactory.class)
-@EnableFeatures({
-    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-})
+@EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class EdgeToEdgeControllerTest {
 
@@ -564,16 +561,6 @@ public class EdgeToEdgeControllerTest {
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertToEdgeExpectations();
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE + ":disable_cct_media_viewer_e2e/true")
-    public void onObservingDifferentTab_embeddedMediaExperience_DisableByParam() {
-        when(mTab.shouldEnableEmbeddedMediaExperience()).thenReturn(true);
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-        assertToNormalExpectations();
     }
 
     /** Test that we update WebContentsObservers when a Tab changes WebContents. */

@@ -278,10 +278,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Test
     @Config(sdk = 30)
-    @EnableFeatures({
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgeForMediaViewer() {
         doReturn(true)
                 .when(mBrowserServicesIntentDataProvider)
@@ -291,10 +288,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Test
     @Config(sdk = 30)
-    @DisableFeatures({
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
-    })
+    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgeForMediaViewer_DisabledFeatures() {
         doReturn(true)
                 .when(mBrowserServicesIntentDataProvider)
@@ -306,10 +300,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Test
     @Config(sdk = 30)
-    @EnableFeatures({
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgeForMediaViewer_NotMediaViewer() {
         doReturn(false)
                 .when(mBrowserServicesIntentDataProvider)

@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
@@ -80,7 +78,6 @@ public class IncognitoNewTabPageUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
     })
     public void setupEdgeToEdgeWithInsets() {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
@@ -96,10 +93,7 @@ public class IncognitoNewTabPageUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void setupEdgeToEdgeWithoutInsets() {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         verify(mEdgeToEdgeController).registerAdjuster(mEdgePadAdjusterCaptor.capture());
@@ -113,12 +107,5 @@ public class IncognitoNewTabPageUnitTest {
         assertTrue(
                 "ScrollView should be clip to padding where there's no bottom insets.",
                 view.getClipToPadding());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
-    public void setupEdgeToEdgeWithFeatureDisabled() {
-        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
-        verify(mEdgeToEdgeController, never()).registerAdjuster(any());
     }
 }

@@ -2776,9 +2776,6 @@ extern const char kDeprecatedExternalPickerFunctionDescription[];
 extern const char kDrawCutoutEdgeToEdgeName[];
 extern const char kDrawCutoutEdgeToEdgeDescription[];
 
-extern const char kDrawKeyNativeEdgeToEdgeName[];
-extern const char kDrawKeyNativeEdgeToEdgeDescription[];
-
 extern const char kDynamicSafeAreaInsetsName[];
 extern const char kDynamicSafeAreaInsetsDescription[];
 

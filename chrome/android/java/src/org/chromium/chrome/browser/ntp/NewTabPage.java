@@ -1098,7 +1098,7 @@ public class NewTabPage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableNtpE2e.getValue();
+        return true;
     }
 
     @Override
