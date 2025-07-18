@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/document_user_data.h"
 #include "ui/views/widget/widget_observer.h"
@@ -37,6 +36,8 @@ class TabInterface;
 }  // namespace tabs
 
 namespace ambient_signin {
+
+class AmbientSigninBubbleView;
 
 // This class is responsible for displaying sign-in methods such as passkeys in
 // a bubble like view over the document. Its lifetime is bound to the blink

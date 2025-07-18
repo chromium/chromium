@@ -4761,21 +4761,6 @@ static_library("ui") {
       "views/webid/webid_utils.h",
       "web_applications/pwa_install_page_action.cc",
       "web_applications/pwa_install_page_action.h",
-      "webauthn/account_hover_list_model.cc",
-      "webauthn/ambient/ambient_signin_controller.cc",
-      "webauthn/ambient/ambient_signin_controller.h",
-      "webauthn/authenticator_request_sheet_model.cc",
-      "webauthn/authenticator_request_window.cc",
-      "webauthn/context_menu_helper.cc",
-      "webauthn/passkey_deleted_confirmation_controller.cc",
-      "webauthn/passkey_not_accepted_bubble_controller.cc",
-      "webauthn/passkey_saved_confirmation_controller.cc",
-      "webauthn/passkey_updated_confirmation_controller.cc",
-      "webauthn/passkey_upgrade_request_controller.cc",
-      "webauthn/sheet_models.cc",
-      "webauthn/transport_hover_list_model.cc",
-      "webauthn/user_actions.cc",
-      "webauthn/webauthn_ui_helpers.cc",
     ]
 
     sources += get_target_outputs(":webui_name_variants")
@@ -4830,6 +4815,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/permissions",
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/permissions/chip:impl",
+      "//chrome/browser/ui/webauthn:impl",
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
@@ -4881,6 +4867,12 @@ static_library("ui") {
       "//ui/gfx/geometry",
       "//ui/lottie",
       "//ui/views:buildflags",
+
+      # TODO(crbug.com/432061436) Remove this dependency when the following headers get
+      # componentized:
+      # c/b/ui/browser.h, browser_finder.h, browser_window.h.
+      # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
+      "//chrome/browser/ui/webauthn:impl",
     ]
 
     # This dependency is needed because translate_bubble_view.h declares free-functions in
@@ -4907,6 +4899,12 @@ static_library("ui") {
       # TODO(crbug.com/413572035): Remove circular dependency once/if
       # chrome_{typography,layout_provider} get modularized.
       "//chrome/browser/ui/plus_addresses:impl",
+
+      # TODO(crbug.com/432061436) Remove this circular dependency when the following
+      # headers get componentized:
+      # c/b/ui/browser.h, browser_finder.h, browser_window.h.
+      # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
+      "//chrome/browser/ui/webauthn:impl",
     ]
 
     if (is_linux) {

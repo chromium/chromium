@@ -1882,6 +1882,13 @@ static_library("browser") {
     # TODO(crbug.com/430804948): Remove this circular dependency when profiles/profile_manager.h
     # gets componentized.
     "//chrome/browser/ui/profiles:impl",
+
+    # TODO(crbug.com/432061436): Remove this circular dependency when c/b/password_manager gets
+    # componentized. Particularly, the following headers are included from //c/b/ui/webauthn::impl:
+    # - chrome_webauthn_credentials_delegate_factory.h"
+    # - account_password_store_factory.h"
+    # - profile_password_store_factory.h"
+    "//chrome/browser/ui/webauthn:impl",
   ]
 
   public_deps = [
@@ -2661,6 +2668,10 @@ static_library("browser") {
     # TODO(crbug.com/430804948): Remove this dependency when profiles/profile_manager.h
     # gets componentized.
     "//chrome/browser/ui/profiles:impl",
+
+    # TODO(crbug.com/432061436): Remove this dependency when c/b/password_manager gets
+    # componentized.
+    "//chrome/browser/ui/webauthn:impl",
   ]
 
   if (is_win && is_chrome_branded) {
