@@ -67,6 +67,8 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
  private:
   friend class DesktopPaymentsWindowManagerTestApi;
 
+  // TODO(crbug.com/429272687): Migrate to use `FlowState` with shared
+  // `FlowType` enum in parent PaymentsWindowManager instead.
   // Contains the possible flows that this class can support.
   enum class FlowType {
     kNoFlow = 0,
@@ -91,6 +93,9 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
   void OnWebContentsDestroyedForVcn3ds();
 
+  // TODO(crbug.com/429272687): Migrate to use shared function
+  // `OnWebContentsDestroyedForBnpl(FlowState)` in
+  // `payments_window_manager_util.h` instead.
   // Triggered when a pop-up is destroyed, and the `flow_type_` is kBnpl.
   void OnWebContentsDestroyedForBnpl();
 
@@ -126,6 +131,9 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
 
   // Resets the state of `this` in relation to the ongoing flow.
   void Reset();
+
+  // TODO(crbug.com/429272687): Migrate to use struct `FlowState` in parent
+  // PaymentsWindowManager to hold flow data.
 
   // Only present if `flow_type_` is `kVcn3ds`.
   std::optional<Vcn3dsContext> vcn_3ds_context_;

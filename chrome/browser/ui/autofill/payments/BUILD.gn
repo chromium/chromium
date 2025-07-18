@@ -31,6 +31,7 @@ source_set("payments") {
 
   if (is_android) {
     sources += [
+      "android_payments_window_manager.h",
       "autofill_message_controller.h",
       "autofill_message_model.h",
       "offer_notification_controller_android.h",
@@ -111,6 +112,7 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "android_payments_window_manager.cc",
       "autofill_message_controller.cc",
       "autofill_message_model.cc",
       "offer_notification_controller_android.cc",
@@ -257,6 +259,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "android_payments_window_manager_unittest.cc",
       "autofill_message_controller_test_api.h",
       "autofill_message_controller_unittest.cc",
       "autofill_message_model_unittest.cc",
@@ -269,6 +272,7 @@ source_set("unit_tests") {
       "//chrome/browser/touch_to_fill/autofill/android:test_support",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//components/autofill/android:autofill_core_browser_java_enums",
+      "//components/autofill/content/browser:test_support",
       "//components/messages/android:test_support",
       "//components/resources:components_scaled_resources",
       "//components/resources:components_scaled_resources_grit",
@@ -311,7 +315,9 @@ source_set("test_support") {
     "//ui/gfx/geometry",
   ]
 
-  if (!is_android) {
+  if (is_android) {
+    sources += [ "android_payments_window_manager_test_api.h" ]
+  } else {
     sources += [ "desktop_payments_window_manager_test_api.h" ]
   }
 }

@@ -135,6 +135,9 @@ void DesktopPaymentsWindowManager::WebContentsDestroyed() {
   if (flow_type_ == FlowType::kVcn3ds) {
     OnWebContentsDestroyedForVcn3ds();
   } else if (flow_type_ == FlowType::kBnpl) {
+    // TODO(crbug.com/429272687): Migrate to use shared function
+    // `OnWebContentsDestroyedForBnpl(FlowState)` in
+    // `payments_window_manager_util.h` instead.
     OnWebContentsDestroyedForBnpl();
   }
 
@@ -295,6 +298,9 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
   Reset();
 }
 
+// TODO(crbug.com/429272687): Migrate to use shared function
+// `OnWebContentsDestroyedForBnpl(FlowState)` in
+// `payments_window_manager_util.h` instead.
 void DesktopPaymentsWindowManager::OnWebContentsDestroyedForBnpl() {
   CHECK(bnpl_popup_shown_timestamp_.has_value());
   BnplPopupStatus status =

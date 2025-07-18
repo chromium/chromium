@@ -39,4 +39,11 @@ PaymentsWindowManager::BnplContext::operator=(
     PaymentsWindowManager::BnplContext&&) = default;
 PaymentsWindowManager::BnplContext::~BnplContext() = default;
 
+PaymentsWindowManager::FlowState::FlowState() = default;
+PaymentsWindowManager::FlowState::FlowState(
+    PaymentsWindowManager::FlowState&&) = default;
+PaymentsWindowManager::FlowState& PaymentsWindowManager::FlowState::operator=(
+    PaymentsWindowManager::FlowState&&) = default;
+PaymentsWindowManager::FlowState::~FlowState() = default;
+
 }  // namespace autofill::payments

@@ -56,6 +56,13 @@ CreateVcn3dsAuthenticationResponseFromServerResult(
     const UnmaskResponseDetails& response_details,
     CreditCard card);
 
+// Triggered when a tab is destroyed, and the `flow_type` is kBnpl. Handles the
+// completion of the BNPL popup flow. This function invokes the
+// `completion_callback` with the final `result` and logs the popup window's
+// result and latency metrics.
+void TriggerCompletionCallbackAndLogMetricsForBnpl(
+    PaymentsWindowManager::FlowState&& flow_state);
+
 }  // namespace payments
 
 }  // namespace autofill
