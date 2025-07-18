@@ -147,11 +147,13 @@ std::optional<AttributeType> GetAttributeType(EntityType entity,
   return std::nullopt;
 }
 
-// Adds to `attributes_by_field[i]` the static types of `fields[i]`.
-void AddStaticAttributeTypes(
+// Adds to `attributes_by_field[i]` the static types of `fields[i]`. Returns
+// whether at least one relevant field has a static attribute type.
+bool AddStaticAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<DenseSet<AttributeType>> attributes_by_field) {
   DCHECK_EQ(fields.size(), attributes_by_field.size());
+  bool found_type = false;
   for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
     if (!IsRelevant(*field)) {
       continue;
@@ -161,7 +163,9 @@ void AddStaticAttributeTypes(
       continue;
     }
     attributes.insert(*at);
+    found_type = true;
   }
+  return found_type;
 }
 
 // Adds to `attributes_by_field[i]` the dynamic types of `fields[i]`.
@@ -169,9 +173,9 @@ void AddDynamicAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<DenseSet<AttributeType>> attributes_by_field) {
   DCHECK_EQ(fields.size(), attributes_by_field.size());
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes) ||
-      std::ranges::all_of(attributes_by_field,
-                          &DenseSet<AttributeType>::empty)) {
+  DCHECK(!std::ranges::all_of(attributes_by_field,
+                              &DenseSet<AttributeType>::empty));
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
     return;
   }
 
@@ -232,8 +236,10 @@ std::vector<DenseSet<AttributeType>> GetAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields) {
   std::vector<DenseSet<AttributeType>> attributes_by_field;
   attributes_by_field.resize(fields.size());
-  AddStaticAttributeTypes(fields, attributes_by_field);
-  AddDynamicAttributeTypes(fields, attributes_by_field);
+  // Dynamic attributes exist only if there is at least one static attribute.
+  if (AddStaticAttributeTypes(fields, attributes_by_field)) {
+    AddDynamicAttributeTypes(fields, attributes_by_field);
+  }
   return attributes_by_field;
 }
 
