@@ -220,6 +220,10 @@ template("clang_lib") {
           _dir = "loongarch64-unknown-linux-gnu"
         } else if (current_cpu == "riscv64") {
           _dir = "riscv64-unknown-linux-gnu"
+        } else if (current_cpu == "ppc64") {
+          _dir = "ppc64le-unknown-linux-gnu"
+        } else if (current_cpu == "s390x") {
+          _dir = "s390x-unknown-linux-gnu"
         } else {
           assert(false)  # Unhandled cpu type
         }
@@ -289,7 +293,7 @@ clang_lib("compiler_builtins") {
     } else {
       assert(false, "unsupported target_platform=$target_platform")
     }
-  } else {
+  } else if (current_cpu != "ppc64" && current_cpu != "s390x") {
     libname = "builtins"
   }
 }

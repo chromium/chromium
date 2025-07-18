@@ -656,7 +656,10 @@ config("compiler") {
     # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
     # (excluding toolchains that use an older version of LLVM).
     # TODO(crbug.com/376278218): This causes segfault on Linux ARM builds.
+    # It also causes segfault on Linux s390x:
+    # https://github.com/llvm/llvm-project/issues/149511
     if (is_linux && use_lld && !llvm_android_mainline && current_cpu != "arm" &&
+        current_cpu != "s390x" &&
         default_toolchain != "//build/toolchain/cros:target") {
       cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
