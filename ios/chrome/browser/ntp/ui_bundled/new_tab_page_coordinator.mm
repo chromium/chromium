@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
@@ -669,7 +670,9 @@
   Browser* browser = self.browser;
   id<NewTabPageComponentFactoryProtocol> componentFactory =
       self.componentFactory;
-  self.logoVendor = ios::provider::CreateLogoVendor(browser, self.webState);
+  self.logoVendor =
+      [[SearchEngineLogoMediator alloc] initWithBrowser:browser
+                                               webState:self.webState];
   self.NTPViewController = [componentFactory NTPViewController];
   self.headerViewController =
       [componentFactory headerViewControllerForProfile:self.profile];
