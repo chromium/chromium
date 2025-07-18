@@ -25,10 +25,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
-import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.js';
-import {SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
+import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
+import {SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 import {getTemplate} from './search_page.html.js';
 
 const SettingsSearchPageElementBase =
