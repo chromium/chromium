@@ -10826,6 +10826,22 @@
             ]
         }
     ],
+    "GlicFreWarming": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicFreWarming"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicRolloutDogfood": [
         {
             "platforms": [
