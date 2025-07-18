@@ -22,8 +22,8 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "clobber"
+                  "clobber",
+                  "mb"
                 ],
                 "build_config": "Debug",
                 "config": "chromium_asan",
