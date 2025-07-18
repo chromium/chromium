@@ -1306,7 +1306,6 @@ UkmParameters HTMLCanvasElement::GetUkmParameters() {
 
 void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
   CanvasRenderingContextHost::SetSize(size);
-  did_fail_to_create_resource_provider_ = false;
   if (RenderingContext()) {
     RenderingContext()->SizeChanged();
   }

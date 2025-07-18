@@ -1136,6 +1136,10 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
 }
 
+void CanvasRenderingContext2D::SizeChanged() {
+  did_fail_to_create_resource_provider_ = false;
+}
+
 std::unique_ptr<CanvasResourceProvider>
 CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   CHECK(!GetResourceProviderForCanvas2D());
@@ -1273,12 +1277,12 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
     return resource_provider;
   }
 
-  if (canvas()->did_fail_to_create_resource_provider()) {
+  if (did_fail_to_create_resource_provider_) {
     return nullptr;
   }
 
   if (!canvas()->IsValidImageSize()) {
-    canvas()->set_did_fail_to_create_resource_provider(true);
+    did_fail_to_create_resource_provider_ = true;
     if (!canvas()->Size().IsEmpty()) {
       LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
     }
@@ -1349,13 +1353,13 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   CHECK(canvas()->GetHibernationHandler());
 
   auto* resource_provider = GetResourceProviderForCanvas2D();
-  if (!resource_provider && !canvas()->did_fail_to_create_resource_provider()) {
+  if (!resource_provider && !did_fail_to_create_resource_provider_) {
     if (canvas()->IsValidImageSize()) {
       canvas()->SetResourceProviderForCanvas2D(CreateCanvasResourceProvider());
       resource_provider = GetResourceProviderForCanvas2D();
     }
     if (!resource_provider) {
-      canvas()->set_did_fail_to_create_resource_provider(true);
+      did_fail_to_create_resource_provider_ = true;
     } else if (resource_provider->IsValid()) {
       base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                                 resource_provider->IsAccelerated());
