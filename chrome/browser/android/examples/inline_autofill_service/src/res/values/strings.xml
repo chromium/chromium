@@ -22,8 +22,9 @@
     Click the button at the top to check how this app can communicate with the
     browser.\n
     \n
-    By default, this app does not use the compatibility mode to fill Chrome.
-    Change the autofill_service_config.xml and recompile this app to allow it.
+    By default, this app does not use the compatibility mode to fill Chrome
+    starting from version 137.0.7120.0. Make changes in
+    autofill_service_config.xml to modify this behavior.
   </string>
   <string name="fragment_browser_communication_summary">
     Besides the Autofill service, this test app may communicate with Chrome.\n
