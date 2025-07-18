@@ -34,7 +34,8 @@ enum class NotificationType {
   kTipsTrustedVaultKeyRetrieval = 16,
   kReminder = 17,
   kCommerce = 18,
-  kMaxValue = kCommerce,
+  kContent = 19,
+  kMaxValue = kContent,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

@@ -30,6 +30,14 @@ ContentNotificationClient::ContentNotificationClient()
 
 ContentNotificationClient::~ContentNotificationClient() = default;
 
+std::optional<NotificationType> ContentNotificationClient::GetNotificationType(
+    UNNotification* notification) {
+  if (CanHandleNotification(notification)) {
+    return NotificationType::kContent;
+  }
+  return std::nullopt;
+}
+
 bool ContentNotificationClient::CanHandleNotification(
     UNNotification* notification) {
   return [notification.request.content.categoryIdentifier
