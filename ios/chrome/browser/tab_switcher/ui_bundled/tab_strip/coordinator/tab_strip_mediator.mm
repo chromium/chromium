@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon_configurator.h"
@@ -65,6 +66,10 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/gfx/image/image.h"
+
+using ScopedTabGroupSyncObservation =
+    base::ScopedObservation<tab_groups::TabGroupSyncService,
+                            tab_groups::TabGroupSyncService::Observer>;
 
 namespace {
 
@@ -252,6 +257,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
 @interface TabStripMediator () <CRWWebStateObserver,
                                 MessagingBackendServiceObserving,
+                                TabGroupSyncServiceObserverDelegate,
                                 WebStateFaviconDriverObserver,
                                 WebStateListObserving>
 // The consumer for this object.
@@ -260,18 +266,18 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 @end
 
 @implementation TabStripMediator {
-  // Bridge C++ WebStateListObserver methods to this TabStripController.
+  // Bridges between C++ service observers and this Objective-C class.
+  std::unique_ptr<TabGroupSyncServiceObserverBridge>
+      _tabGroupSyncServiceObserver;
+  std::unique_ptr<ScopedTabGroupSyncObservation>
+      _scopedTabGroupSyncServiceObservation;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-  // Bridge C++ WebStateObserver methods to this TabStripController.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
-  // Forward observer methods for all WebStates in the WebStateList monitored
-  // by the TabStripMediator.
   std::unique_ptr<AllWebStateObservationForwarder>
       _allWebStateObservationForwarder;
-  // Bridges FaviconDriverObservers methods to this mediator, and maintains a
-  // FaviconObserver for each all webstates.
   std::unique_ptr<WebStateListFaviconDriverObserver>
       _webStateListFaviconObserver;
+
   // Browser list.
   raw_ptr<BrowserList> _browserList;
 
@@ -329,6 +335,14 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       _messagingService->AddPersistentMessageObserver(
           _messagingBackendServiceBridge.get());
     }
+    if (tabGroupSyncService) {
+      _tabGroupSyncServiceObserver =
+          std::make_unique<TabGroupSyncServiceObserverBridge>(self);
+      _scopedTabGroupSyncServiceObservation =
+          std::make_unique<ScopedTabGroupSyncObservation>(
+              _tabGroupSyncServiceObserver.get());
+      _scopedTabGroupSyncServiceObservation->Observe(_tabGroupSyncService);
+    }
   }
   return self;
 }
@@ -348,6 +362,10 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
         _messagingBackendServiceBridge.get());
     _messagingBackendServiceBridge.reset();
     _messagingService = nullptr;
+  }
+  if (_tabGroupSyncService) {
+    _scopedTabGroupSyncServiceObservation.reset();
+    _tabGroupSyncServiceObserver.reset();
   }
   _tabGroupSyncService = nullptr;
   _tabStripHandler = nil;
@@ -1054,6 +1072,23 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 - (void)faviconDriver:(favicon::FaviconDriver*)driver
     didUpdateFaviconForWebState:(web::WebState*)webState {
   [self reconfigureItemForWebState:webState];
+}
+
+#pragma mark - TabGroupSyncServiceObserverDelegate
+
+- (void)tabGroupSyncServiceTabGroupMigrated:
+            (const tab_groups::SavedTabGroup&)newGroup
+                                  oldSyncID:(const base::Uuid&)oldSyncId
+                                 fromSource:(tab_groups::TriggerSource)source {
+  std::set<const TabGroup*> groups = self.webStateList->GetGroups();
+  const TabGroup* localGroup = nullptr;
+  for (const TabGroup* group : groups) {
+    if (group->tab_group_id() == newGroup.local_group_id()) {
+      localGroup = group;
+      break;
+    }
+  }
+  [self updateDataAndReconfigureItemsInGroup:localGroup];
 }
 
 #pragma mark - TabCollectionDragDropHandler
