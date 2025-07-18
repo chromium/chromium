@@ -41,6 +41,7 @@ void ChromeProfileDownloadServiceTracker::OnProfileWillBeDestroyed(
 
 download::BackgroundDownloadService*
 ChromeProfileDownloadServiceTracker::GetBackgroundDownloadService() {
+  // Pick the first profile in the list of active profiles.
   return active_profile_observers_.IsObservingAnySource()
              ? BackgroundDownloadServiceFactory::GetForKey(
                    active_profile_observers_.sources().front()->GetProfileKey())
