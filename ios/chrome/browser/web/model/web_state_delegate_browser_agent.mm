@@ -100,17 +100,19 @@ WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
       web_state_list_(browser->GetWebStateList()),
       tab_insertion_agent_(tab_insertion_agent) {
   DCHECK(tab_insertion_agent_);
-  browser_observation_.Observe(browser);
-  web_state_list_observation_.Observe(web_state_list_.get());
 
   // All the BrowserAgent are attached to the Browser during the creation,
   // the WebStateList must be empty at this point.
   DCHECK(web_state_list_->empty())
       << "WebStateDelegateBrowserAgent created for a Browser with a non-empty "
          "WebStateList.";
+
+  StartObserving(web_state_list_, Policy::kOnlyRealized);
 }
 
-WebStateDelegateBrowserAgent::~WebStateDelegateBrowserAgent() {}
+WebStateDelegateBrowserAgent::~WebStateDelegateBrowserAgent() {
+  StopObserving();
+}
 
 void WebStateDelegateBrowserAgent::SetUIProviders(
     ContextMenuConfigurationProvider* context_menu_provider,
@@ -127,84 +129,33 @@ void WebStateDelegateBrowserAgent::ClearUIProviders() {
   container_view_provider_ = nil;
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - TabsDependencyInstaller
 
-void WebStateDelegateBrowserAgent::WebStateListDidChange(
-    WebStateList* web_state_list,
-    const WebStateListChange& change,
-    const WebStateListStatus& status) {
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // Do nothing when a WebState is selected and its status is updated.
-      break;
-    case WebStateListChange::Type::kDetach: {
-      const WebStateListChangeDetach& detach_change =
-          change.As<WebStateListChangeDetach>();
-      ClearWebStateDelegate(detach_change.detached_web_state());
-      break;
-    }
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replace_change =
-          change.As<WebStateListChangeReplace>();
-      ClearWebStateDelegate(replace_change.replaced_web_state());
-      SetWebStateDelegate(replace_change.inserted_web_state());
-      break;
-    }
-    case WebStateListChange::Type::kInsert: {
-      const WebStateListChangeInsert& insert_change =
-          change.As<WebStateListChangeInsert>();
-      SetWebStateDelegate(insert_change.inserted_web_state());
-      break;
-    }
-    case WebStateListChange::Type::kGroupCreate:
-      // Do nothing when a group is created.
-      break;
-    case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // Do nothing when a tab group's visual data are updated.
-      break;
-    case WebStateListChange::Type::kGroupMove:
-      // Do nothing when a tab group is moved.
-      break;
-    case WebStateListChange::Type::kGroupDelete:
-      // Do nothing when a group is deleted.
-      break;
-  }
+void WebStateDelegateBrowserAgent::OnWebStateInserted(
+    web::WebState* web_state) {
+  DCHECK(web_state);
+  DCHECK(web_state->IsRealized());
+  web_state->SetDelegate(this);
 }
 
-#pragma mark - BrowserObserver
-
-void WebStateDelegateBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK(browser_observation_.IsObservingSource(browser));
-
-  WebStateList* web_state_list = browser->GetWebStateList();
-  DCHECK(web_state_list_observation_.IsObservingSource(web_state_list));
-  DCHECK_EQ(web_state_list_, web_state_list);
-
-  // Remove all web state delegates.
-  for (int index = 0; index < web_state_list_->count(); ++index) {
-    web_state_list_->GetWebStateAt(index)->SetDelegate(nullptr);
-  }
-
-  web_state_observations_.RemoveAllObservations();
-  web_state_list_observation_.Reset();
-  browser_observation_.Reset();
+void WebStateDelegateBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
+  DCHECK(web_state);
+  DCHECK(web_state->IsRealized());
+  web_state->SetDelegate(nullptr);
 }
 
-#pragma mark - WebStateObserver
-
-void WebStateDelegateBrowserAgent::WebStateRealized(web::WebState* web_state) {
-  SetWebStateDelegate(web_state);
-  web_state_observations_.RemoveObservation(web_state);
+void WebStateDelegateBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
+  // Nothing to do.
 }
 
-void WebStateDelegateBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
-  web_state_observations_.RemoveObservation(web_state);
+void WebStateDelegateBrowserAgent::OnActiveWebStateChanged(
+    web::WebState* old_active,
+    web::WebState* new_active) {
+  // Nothing to do.
 }
 
-// WebStateDelegate::
+#pragma mark - WebStateDelegate
+
 web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
     web::WebState* source,
     const GURL& url,
@@ -400,24 +351,4 @@ void WebStateDelegateBrowserAgent::OnNewWebViewCreated(web::WebState* source) {
   // Focusing a newly-created web view allows it to request auth-based API. See
   // crbug.com/369996712.
   [source->GetWebViewProxy() becomeFirstResponder];
-}
-
-void WebStateDelegateBrowserAgent::SetWebStateDelegate(
-    web::WebState* web_state) {
-  DCHECK(web_state);
-  if (web_state->IsRealized()) {
-    web_state->SetDelegate(this);
-  } else {
-    web_state_observations_.AddObservation(web_state);
-  }
-}
-
-void WebStateDelegateBrowserAgent::ClearWebStateDelegate(
-    web::WebState* web_state) {
-  DCHECK(web_state);
-  if (web_state->IsRealized()) {
-    web_state->SetDelegate(nullptr);
-  } else {
-    web_state_observations_.RemoveObservation(web_state);
-  }
 }

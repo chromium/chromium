@@ -7,17 +7,13 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#import "base/memory/raw_ptr.h"
-#include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation.h"
-#import "ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h"
-#include "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h"
 #include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#include "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #include "ios/web/public/navigation/form_warning_type.h"
 #include "ios/web/public/web_state_delegate.h"
-#include "ios/web/public/web_state_observer.h"
 
 @class ContextMenuConfigurationProvider;
 @protocol CRWResponderInputView;
@@ -30,10 +26,8 @@ class GURL;
 // added to the browser's WebStateList (and unassigning them when they leave).
 // This browser agent must be created after TabInsertionBrowserAgent.
 class WebStateDelegateBrowserAgent
-    : public BrowserObserver,
-      public BrowserUserData<WebStateDelegateBrowserAgent>,
-      public WebStateListObserver,
-      public web::WebStateObserver,
+    : public BrowserUserData<WebStateDelegateBrowserAgent>,
+      public TabsDependencyInstaller,
       public web::WebStateDelegate {
  public:
   ~WebStateDelegateBrowserAgent() override;
@@ -60,17 +54,12 @@ class WebStateDelegateBrowserAgent
   WebStateDelegateBrowserAgent(Browser* browser,
                                TabInsertionBrowserAgent* tab_insertion_agent);
 
-  // WebStateListObserver::
-  void WebStateListDidChange(WebStateList* web_state_list,
-                             const WebStateListChange& change,
-                             const WebStateListStatus& status) override;
-
-  // BrowserObserver::
-  void BrowserDestroyed(Browser* browser) override;
-
-  // web::WebStateObserver:
-  void WebStateRealized(web::WebState* web_state) override;
-  void WebStateDestroyed(web::WebState* web_state) override;
+  // TabsDependencyInstaller implementation.
+  void OnWebStateInserted(web::WebState* web_state) override;
+  void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
 
   // web::WebStateDelegate:
   web::WebState* CreateNewWebState(web::WebState* source,
@@ -107,24 +96,10 @@ class WebStateDelegateBrowserAgent
       web::WebState* source) override;
   void OnNewWebViewCreated(web::WebState* source) override;
 
-  // Helper methods to set/clear the WebState delegate if it is realized,
-  // or to listen for the realization of the WebState.
-  void SetWebStateDelegate(web::WebState* web_state);
-  void ClearWebStateDelegate(web::WebState* web_state);
-
   raw_ptr<WebStateList> web_state_list_ = nullptr;
   raw_ptr<TabInsertionBrowserAgent> tab_insertion_agent_ = nullptr;
 
   OverlayJavaScriptDialogPresenter java_script_dialog_presenter_;
-
-  // Scoped observations of Browser, WebStateList and WebStates.
-  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
-
-  base::ScopedObservation<WebStateList, WebStateListObserver>
-      web_state_list_observation_{this};
-
-  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
-      web_state_observations_{this};
 
   // These providers are owned by other objects.
   __weak ContextMenuConfigurationProvider* context_menu_provider_;

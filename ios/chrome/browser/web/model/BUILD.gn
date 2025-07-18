@@ -103,6 +103,7 @@ source_set("delegate") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/supervised_user/model:capabilities",
     "//ios/chrome/browser/tab_insertion/model",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/components/security_interstitials",
