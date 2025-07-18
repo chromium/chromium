@@ -40,9 +40,7 @@ WebSigninTracker::WebSigninTracker(
     OnAccountsInCookieUpdated(info, GoogleServiceAuthError::AuthErrorNone());
   }
 
-  if (base::FeatureList::IsEnabled(switches::kDeferWebSigninTrackerCreation)) {
-    OnStateChanged(account_reconcilor->GetState());
-  }
+  OnStateChanged(account_reconcilor->GetState());
 }
 
 WebSigninTracker::~WebSigninTracker() = default;
