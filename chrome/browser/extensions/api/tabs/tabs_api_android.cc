@@ -53,13 +53,6 @@ api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
 
 // Windows ---------------------------------------------------------------------
 
-ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
-  std::optional<windows::GetAll::Params> params =
-      windows::GetAll::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kWindowsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   std::optional<windows::Create::Params> params =
       windows::Create::Params::Create(args());
