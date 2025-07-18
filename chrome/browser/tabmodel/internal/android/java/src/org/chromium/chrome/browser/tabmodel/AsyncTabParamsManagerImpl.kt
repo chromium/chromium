@@ -75,6 +75,10 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
       }
     }
 
+    override fun closeAllIncognitoTabsOnInit() {
+      closeAllIncognitoTabs()
+    }
+
     override fun isActiveModel() = false
   }
 }
