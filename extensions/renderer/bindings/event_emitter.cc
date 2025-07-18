@@ -27,9 +27,6 @@ constexpr const char kEventEmitterTypeName[] = "Event";
 
 }  // namespace
 
-gin::DeprecatedWrapperInfo EventEmitter::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
-
 EventEmitter::EventEmitter(bool supports_filters,
                            std::unique_ptr<APIEventListeners> listeners,
                            ExceptionHandler* exception_handler)
@@ -39,9 +36,14 @@ EventEmitter::EventEmitter(bool supports_filters,
 
 EventEmitter::~EventEmitter() = default;
 
+void EventEmitter::Dispose() {
+  pending_filters_.clear();
+  listeners_.reset();
+}
+
 gin::ObjectTemplateBuilder EventEmitter::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return DeprecatedWrappable<EventEmitter>::GetObjectTemplateBuilder(isolate)
+  return gin::Wrappable<EventEmitter>::GetObjectTemplateBuilder(isolate)
       .SetMethod("addListener", &EventEmitter::AddListener)
       .SetMethod("removeListener", &EventEmitter::RemoveListener)
       .SetMethod("hasListener", &EventEmitter::HasListener)
@@ -53,7 +55,7 @@ gin::ObjectTemplateBuilder EventEmitter::GetObjectTemplateBuilder(
       .SetMethod("dispatch", &EventEmitter::Dispatch);
 }
 
-const char* EventEmitter::GetTypeName() {
+const char* EventEmitter::GetHumanReadableName() const {
   return kEventEmitterTypeName;
 }
 
@@ -383,6 +385,10 @@ void EventEmitter::DispatchAsyncHelper(
   callback_argument.push_back(dispatch_sync_result);
   JSRunner::Get(context)->RunJSFunctionSync(callback_function, context,
                                             callback_argument);
+}
+
+const gin::WrapperInfo* EventEmitter::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 }  // namespace extensions

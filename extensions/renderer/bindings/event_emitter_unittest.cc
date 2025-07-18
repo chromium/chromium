@@ -17,8 +17,9 @@
 #include "extensions/renderer/bindings/exception_handler.h"
 #include "extensions/renderer/bindings/listener_tracker.h"
 #include "extensions/renderer/bindings/test_js_runner.h"
-#include "gin/handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -66,11 +67,12 @@ TEST_F(EventEmitterUnittest, TestDispatchMethod) {
   ExceptionHandler exception_handler(
       base::BindRepeating(log_error, &logged_errors));
 
-  gin::Handle<EventEmitter> event = gin::CreateHandle(
-      isolate(),
-      new EventEmitter(false, std::move(listeners), &exception_handler));
+  auto* event_emitter = cppgc::MakeGarbageCollected<EventEmitter>(
+      isolate()->GetCppHeap()->GetAllocationHandle(), false,
+      std::move(listeners), &exception_handler);
 
-  v8::Local<v8::Value> v8_event = event.ToV8();
+  v8::Local<v8::Value> v8_event =
+      event_emitter->GetWrapper(isolate()).ToLocalChecked();
 
   const char kAddListener[] =
       "(function(event, listener) { event.addListener(listener); })";
@@ -163,11 +165,12 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
       binding::kNoListenerMax, true, &tracker);
   ExceptionHandler exception_handler(base::BindRepeating(
       [](v8::Local<v8::Context> context, const std::string& error) {}));
-  gin::Handle<EventEmitter> event = gin::CreateHandle(
-      isolate(),
-      new EventEmitter(false, std::move(listeners), &exception_handler));
+  auto* event_emitter = cppgc::MakeGarbageCollected<EventEmitter>(
+      isolate()->GetCppHeap()->GetAllocationHandle(), false,
+      std::move(listeners), &exception_handler);
 
-  v8::Local<v8::Value> v8_event = event.ToV8();
+  v8::Local<v8::Value> v8_event =
+      event_emitter->GetWrapper(isolate()).ToLocalChecked();
 
   const char kAddListener[] =
       "(function(event, listener) { event.addListener(listener); })";
@@ -186,11 +189,11 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
     RunFunction(add_listener_function, context, std::size(args), args);
   }
 
-  EXPECT_EQ(kNumListeners, event->GetNumListeners());
+  EXPECT_EQ(kNumListeners, event_emitter->GetNumListeners());
 
   v8::LocalVector<v8::Value> args(isolate());
-  event->Fire(context, &args, /*filter=*/nullptr,
-              /*callback=*/v8::Local<v8::Function>());
+  event_emitter->Fire(context, &args, /*filter=*/nullptr,
+                      /*callback=*/v8::Local<v8::Function>());
 
   EXPECT_TRUE(closure_data.did_invalidate_context);
 }

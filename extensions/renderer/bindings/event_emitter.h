@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/js_runner.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
+#include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8.h"
 
 namespace gin {
@@ -21,11 +23,17 @@ namespace extensions {
 class APIEventListeners;
 class ExceptionHandler;
 
-// A gin::DeprecatedWrappable Event object. One is expected to be created per
-// event, per context. Note: this object *does not* clear any events, so it must
-// be destroyed with the context to avoid leaking.
-class EventEmitter final : public gin::DeprecatedWrappable<EventEmitter> {
+// A gin::Wrappable Event object. One is expected to be created per event, per
+// context. Note: this object *does not* clear any events, so it must be
+// destroyed with the context to avoid leaking.
+class EventEmitter final : public gin::Wrappable<EventEmitter> {
+  CPPGC_USING_PRE_FINALIZER(EventEmitter, Dispose);
+
  public:
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kEventEmitter};
+
+  // Public for cppgc::MakeGarbageCollected.
   EventEmitter(bool supports_filters,
                std::unique_ptr<APIEventListeners> listeners,
                ExceptionHandler* exception_handler);
@@ -35,12 +43,13 @@ class EventEmitter final : public gin::DeprecatedWrappable<EventEmitter> {
 
   ~EventEmitter() override;
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
-
-  // gin::DeprecatedWrappable:
+  // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
-  const char* GetTypeName() final;
+
+  const char* GetHumanReadableName() const final;
+
+  void Dispose();
 
   // Fires the event to any listeners.
   // Warning: This can run arbitrary JS code, so the `context` may be
@@ -85,6 +94,8 @@ class EventEmitter final : public gin::DeprecatedWrappable<EventEmitter> {
   bool HasListener(v8::Local<v8::Function> function);
   bool HasListeners();
   void Dispatch(gin::Arguments* arguments);
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
   // Dispatches an event synchronously to listeners, returning the result.
   v8::Local<v8::Value> DispatchSync(v8::Local<v8::Context> context,

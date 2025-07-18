@@ -221,7 +221,9 @@ class FilteredEventListeners final : public APIEventListeners {
 
   // The listener tracker to notify of added or removed listeners. Required to
   // outlive this object. Must be non-null.
-  raw_ptr<ListenerTracker> listener_tracker_ = nullptr;
+  // Triggers the dangling pointer detector on Windows, see
+  // http://crbug.com/432665599
+  raw_ptr<ListenerTracker, DanglingUntriaged> listener_tracker_ = nullptr;
 };
 
 }  // namespace extensions

@@ -26,8 +26,9 @@
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
-#include "gin/handle.h"
 #include "gin/per_context_data.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -170,14 +171,11 @@ v8::Local<v8::Object> APIEventHandler::CreateEventInstance(
   }
 
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  gin::Handle<EventEmitter> emitter_handle = gin::CreateHandle(
-      isolate, new EventEmitter(supports_filters, std::move(listeners),
-                                exception_handler_));
-  CHECK(!emitter_handle.IsEmpty());
-  v8::Local<v8::Value> emitter_value = emitter_handle.ToV8();
-  CHECK(emitter_value->IsObject());
+  auto* emitter = cppgc::MakeGarbageCollected<EventEmitter>(
+      isolate->GetCppHeap()->GetAllocationHandle(), supports_filters,
+      std::move(listeners), exception_handler_);
   v8::Local<v8::Object> emitter_object =
-      v8::Local<v8::Object>::Cast(emitter_value);
+      emitter->GetWrapper(isolate).ToLocalChecked();
   data->emitters[event_name] = v8::Global<v8::Object>(isolate, emitter_object);
 
   return emitter_object;
@@ -200,13 +198,12 @@ v8::Local<v8::Object> APIEventHandler::CreateAnonymousEventInstance(
           APIEventListeners::ContextOwnerIdGetter(), binding::kNoListenerMax,
           false, anonymous_listener_tracker);
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  gin::Handle<EventEmitter> emitter_handle = gin::CreateHandle(
-      isolate, new EventEmitter(supports_filters, std::move(listeners),
-                                exception_handler_));
-  CHECK(!emitter_handle.IsEmpty());
-  v8::Local<v8::Object> emitter_object = emitter_handle.ToV8().As<v8::Object>();
-  data->anonymous_emitters.push_back(
-      v8::Global<v8::Object>(isolate, emitter_object));
+  auto* emitter = cppgc::MakeGarbageCollected<EventEmitter>(
+      isolate->GetCppHeap()->GetAllocationHandle(), supports_filters,
+      std::move(listeners), exception_handler_);
+  v8::Local<v8::Object> emitter_object =
+      emitter->GetWrapper(isolate).ToLocalChecked();
+  data->anonymous_emitters.emplace_back(isolate, emitter_object);
   return emitter_object;
 }
 

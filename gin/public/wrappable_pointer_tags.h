@@ -30,6 +30,7 @@ enum WrappablePointerTag : uint16_t {
   kContentSetting,                   // extensions::ContentSetting
   kDeclarativeEvent,                 // extensions::DeclarativeEvent
   kDomAutomationController,          // content::DomAutomationController
+  kEventEmitter,                     // extensions::EventEmitter
   kEventSenderBindings,              // content::EventSenderBindings
   kGamepadControllerBindings,        // content::GameControllerBindings
   kGCController,                     // content::GCController
@@ -46,8 +47,8 @@ enum WrappablePointerTag : uint16_t {
   kPDFPluginPlaceholder,             // PDFPluginPlaceholder
   kPluginPlaceholder,                // plugins::PluginPlaceholder
   kReadAnythingAppController,        // ReadAnythingAppController
+  kSearchBoxBindings,                // SearchBoxBindings
   kSecurityInterstitialPageController,  // SecurityInterstitialPageController
-  kSearchBoxBindings,                   // SearchBoxBindings
   kSessionStorageArea,                  // extensions::SessionStorageArea
   kSharedStorageMethod,                 // auction_worklet::SharedStorageMethod
   kSkiaBenchmarking,                    // content::SkiaBenchmarking
