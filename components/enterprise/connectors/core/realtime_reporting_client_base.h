@@ -76,6 +76,10 @@ class RealtimeReportingClientBase : public KeyedService,
   // information.
   virtual std::string GetProfileIdentifier() = 0;
 
+  // Sub-methods called by ReportEventWithTimestamp() to provide content area
+  // account email.
+  virtual std::string GetContentAreaAccountEmail(const GURL& url) = 0;
+
   // Returns whether device info should be reported for browser or profile.
   virtual bool ShouldIncludeDeviceInfo(bool per_profile) = 0;
 

@@ -176,6 +176,7 @@ inline constexpr char kKeySource[] = "source";
 inline constexpr char kKeyDestination[] = "destination";
 inline constexpr char kKeyDownloadDigestSha256[] = "downloadDigestSha256";
 inline constexpr char kKeyFileName[] = "fileName";
+inline constexpr char kKeyWebAppSignedInAccount[] = "webAppSignedInAccount";
 inline constexpr char kKeyContentType[] = "contentType";
 inline constexpr char kKeyUnscannedReason[] = "unscannedReason";
 inline constexpr char kKeyContentSize[] = "contentSize";

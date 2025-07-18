@@ -58,6 +58,7 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
   // RealtimeReportingClientBase overrides (all overrides below):
   std::string GetProfileIdentifier() override;
   std::string GetBrowserClientId() override;
+  std::string GetContentAreaAccountEmail(const GURL& url) override;
   base::Value::Dict GetContext() override;
   ::chrome::cros::reporting::proto::UploadEventsRequest
   CreateUploadEventsRequest() override;

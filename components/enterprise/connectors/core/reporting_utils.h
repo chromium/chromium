@@ -102,6 +102,7 @@ GetUrlFilteringInterstitialEvent(
     const safe_browsing::RTLookupResponse& response,
     const std::string& profile_identifier,
     const std::string& profile_username,
+    const std::string& active_user,
     const ReferrerChain& referrer_chain);
 
 chrome::cros::reporting::proto::UnscannedFileEvent GetUnscannedFileEvent(

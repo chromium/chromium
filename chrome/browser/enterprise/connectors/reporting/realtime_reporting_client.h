@@ -57,6 +57,7 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
   // RealtimeReportingClientBase overrides:
   std::string GetProfileUserName() override;
   std::string GetProfileIdentifier() override;
+  std::string GetContentAreaAccountEmail(const GURL& url) override;
   base::WeakPtr<RealtimeReportingClientBase> AsWeakPtr() override;
   std::optional<ReportingSettings> GetReportingSettings() override;
 

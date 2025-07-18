@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
@@ -234,6 +235,12 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
     return;
   }
 
+  std::string active_user;
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseActiveUserDetection)) {
+    active_user = reporting_client_->GetContentAreaAccountEmail(url);
+  }
+
   if (base::FeatureList::IsEnabled(
           policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
@@ -241,7 +248,9 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
         GetUrlFilteringInterstitialEvent(
             url, threat_type, response,
             reporting_client_->GetProfileIdentifier(),
-            reporting_client_->GetProfileUserName(), referrer_chain);
+            reporting_client_->GetProfileUserName(), active_user,
+            referrer_chain);
+
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
@@ -253,6 +262,10 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
               event_result == enterprise_connectors::EventResult::BYPASSED);
     if (!threat_type.empty()) {
       event.Set(kKeyThreatType, threat_type);
+    }
+
+    if (!active_user.empty()) {
+      event.Set(kKeyWebAppSignedInAccount, active_user);
     }
     AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
     event.Set(kKeyEventResult,

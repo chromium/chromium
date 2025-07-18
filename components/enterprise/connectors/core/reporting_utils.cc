@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -441,6 +442,7 @@ proto::UrlFilteringInterstitialEvent GetUrlFilteringInterstitialEvent(
     const safe_browsing::RTLookupResponse& response,
     const std::string& profile_identifier,
     const std::string& profile_username,
+    const std::string& active_user,
     const ReferrerChain& referrer_chain) {
   proto::UrlFilteringInterstitialEvent event;
   event.set_url(url.spec());
@@ -453,6 +455,10 @@ proto::UrlFilteringInterstitialEvent GetUrlFilteringInterstitialEvent(
   event.set_event_result(GetEventResult(event_result));
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(profile_username);
+
+  if (!active_user.empty()) {
+    event.set_web_app_signed_in_account(active_user);
+  }
 
   for (const safe_browsing::RTLookupResponse::ThreatInfo& threat_info :
        response.threat_info()) {

@@ -10,6 +10,7 @@
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
+#import "components/enterprise/connectors/core/content_area_user_provider.h"
 #import "components/policy/core/common/cloud/affiliation.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -96,6 +97,12 @@ IOSRealtimeReportingClient::InitProfileReportingClient(
                             /*user_affiliation_ids*/ {});
 
   return {GetProfilePolicyClientDescription(), client};
+}
+
+std::string IOSRealtimeReportingClient::GetContentAreaAccountEmail(
+    const GURL& url) {
+  return enterprise_connectors::GetActiveContentAreaUser(identity_manager_,
+                                                         url);
 }
 
 std::optional<ReportingSettings>

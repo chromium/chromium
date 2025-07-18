@@ -173,6 +173,7 @@ TEST(ReportingUtilsTest, GetUrlFilteringInterstitialEvent) {
       /*threat_type=*/"ENTERPRISE_BLOCKED_SEEN", /*response=*/response,
       /*profile_identifier=*/"identifier",
       /*profile_username=*/"profile_username",
+      /*active_user=*/"active_user@example.com",
       /*referrer_chain=*/referrer_chain);
 
   ASSERT_EQ(event.url(), "https://filteredurl.com/");
@@ -194,6 +195,7 @@ TEST(ReportingUtilsTest, GetUrlFilteringInterstitialEvent) {
   ASSERT_FALSE(triggered_rule_info.has_watermarking());
   ASSERT_EQ(event.profile_identifier(), "identifier");
   ASSERT_EQ(event.profile_user_name(), "profile_username");
+  ASSERT_EQ(event.web_app_signed_in_account(), "active_user@example.com");
 
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
     ASSERT_EQ(event.referrers_size(), 1);
