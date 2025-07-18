@@ -39,7 +39,8 @@ $.executeAction.addEventListener('click', async () => {
             `Annotated page content data length: ${annotatedPageDataSize}`;
       }
     }
-    $.actionStatus.innerText = 'Finished Execute Action.';
+    $.actionStatus.innerText =
+        `Finished Execute Action. Result code ${actionResult.actionResult}.`;
     $.actionUpdatedContextResult.innerText +=
         `Returned data: ${JSON.stringify(pageContent, null, 2)}`;
   } catch (error) {
