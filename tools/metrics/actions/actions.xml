@@ -15591,6 +15591,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.NilNavigationContextOnError">
+  <owner>justincohen@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    Recorded after a WKWebView load error is triggered with a nil
+    NavigationContext.
+  </description>
+</action>
+
+<action name="IOS.NilWKNavigationOnError">
+  <owner>justincohen@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <description>
+    Recorded after a WKWebView load error is triggered with a nil WKNavigation.
+  </description>
+</action>
+
 <action name="IOS.Notifications.OptInAlert.Cancelled">
   <owner>scottyoder@google.com</owner>
   <owner>hiramahmood@google.com</owner>

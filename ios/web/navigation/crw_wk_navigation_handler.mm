@@ -9,6 +9,8 @@
 #import "base/ios/ns_error_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/timer/timer.h"
@@ -1812,8 +1814,19 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
         contextError, policyDecisionCancellationError);
   }
 
+  if (!navigation) {
+    base::RecordAction(base::UserMetricsAction("IOS.NilWKNavigationOnError"));
+    return;
+  }
+
   web::NavigationContextImpl* navigationContext =
       [self.navigationStates contextForNavigation:navigation];
+  if (!navigationContext) {
+    base::RecordAction(
+        base::UserMetricsAction("IOS.NilNavigationContextOnError"));
+    return;
+  }
+
   web::HttpsUpgradeType failed_upgrade_type = GetFailedHttpsUpgradeType(
       error, navigationContext, policyDecisionCancellationError);
   if (failed_upgrade_type != web::HttpsUpgradeType::kNone) {
