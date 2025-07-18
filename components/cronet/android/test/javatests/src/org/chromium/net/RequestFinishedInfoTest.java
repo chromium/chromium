@@ -46,6 +46,7 @@ public class RequestFinishedInfoTest {
 
     private String mUrl;
     private CronetImplementation mImplementationUnderTest;
+    private NativeTestServer mNativeTestServer;
 
     // A subclass of TestRequestFinishedListener to additionally assert that UrlRequest.Callback's
     // terminal callbacks have been invoked at the time of onRequestFinished().
@@ -69,14 +70,16 @@ public class RequestFinishedInfoTest {
 
     @Before
     public void setUp() throws Exception {
-        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
-        mUrl = NativeTestServer.getFileURL("/echo?status=200");
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
+        mUrl = mNativeTestServer.getFileURL("/echo?status=200");
         mImplementationUnderTest = mTestRule.implementationUnderTest();
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     static class DirectExecutor implements Executor {

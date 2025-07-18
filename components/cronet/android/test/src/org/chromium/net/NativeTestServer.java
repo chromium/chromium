@@ -17,157 +17,121 @@ import org.chromium.net.test.ServerCertificate;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Wrapper class to start an in-process native test server, and get URLs needed to talk to it.
- *
- * <p>NativeTestServer only supports HTTP/1.
- */
+/** Java wrapper for net::EmbeddedTestServer. */
 @JNINamespace("cronet")
-public final class NativeTestServer {
+public final class NativeTestServer implements AutoCloseable {
     // This variable contains the response body of a request to getSuccessURL().
     public static final String SUCCESS_BODY = "this is a text file\n";
 
-    private static Long sEmbeddedTestServerAdapter;
+    private Long mEmbeddedTestServerAdapter;
 
-    public static boolean startNativeTestServer(Context context) {
-        if (!prepareNativeTestServer(context)) return false;
-        startPrepared();
-        return true;
-    }
-
-    public static boolean startNativeTestServerWithHTTPS(
-            Context context, @ServerCertificate int serverCertificate) {
-        if (!prepareNativeTestServerWithHTTPS(context, serverCertificate)) return false;
-        startPrepared();
-        return true;
-    }
-
-    public static boolean prepareNativeTestServer(Context context) {
-        if (sEmbeddedTestServerAdapter != null) {
-            return false;
-        }
+    private NativeTestServer(
+            Context context, boolean useHttps, @ServerCertificate int serverCertificate) {
         TestFilesInstaller.installIfNeeded(context);
-        sEmbeddedTestServerAdapter =
+        mEmbeddedTestServerAdapter =
                 NativeTestServerJni.get()
                         .create(
                                 TestFilesInstaller.getInstalledPath(context),
                                 UrlUtils.getIsolatedTestRoot(),
-                                false, // useHttps
-                                ServerCertificate.CERT_OK);
-        return true;
-    }
-
-    public static boolean prepareNativeTestServerWithHTTPS(
-            Context context, @ServerCertificate int serverCertificate) {
-        if (sEmbeddedTestServerAdapter != null) {
-            return false;
-        }
-        TestFilesInstaller.installIfNeeded(context);
-        sEmbeddedTestServerAdapter =
-                NativeTestServerJni.get()
-                        .create(
-                                TestFilesInstaller.getInstalledPath(context),
-                                UrlUtils.getIsolatedTestRoot(),
-                                true, // useHttps
+                                useHttps,
                                 serverCertificate);
-        return true;
     }
 
-    public static void enableConnectProxy(List<String> urlsToBeProxied) {
-        NativeTestServerJni.get()
-                .enableConnectProxy(
-                        sEmbeddedTestServerAdapter, urlsToBeProxied.toArray(new String[0]));
+    public static NativeTestServer createNativeTestServer(Context context) {
+        return new NativeTestServer(context, false /*  useHttps */, ServerCertificate.CERT_OK);
     }
 
-    public static void startPrepared() {
-        NativeTestServerJni.get().start(sEmbeddedTestServerAdapter);
+    public static NativeTestServer createNativeTestServerWithHTTPS(
+            Context context, @ServerCertificate int serverCertificate) {
+        return new NativeTestServer(context, true /*  useHttps */, serverCertificate);
     }
 
-    public static void shutdownNativeTestServer() {
-        if (sEmbeddedTestServerAdapter == null) {
+    public void start() {
+        NativeTestServerJni.get().start(mEmbeddedTestServerAdapter);
+    }
+
+    @Override
+    public void close() {
+        if (mEmbeddedTestServerAdapter == null) {
             return;
         }
-        NativeTestServerJni.get().destroy(sEmbeddedTestServerAdapter);
-        sEmbeddedTestServerAdapter = null;
+        NativeTestServerJni.get().destroy(mEmbeddedTestServerAdapter);
+        mEmbeddedTestServerAdapter = null;
     }
 
-    public static final class PreparedScope implements AutoCloseable {
-        public PreparedScope(Context context) {
-            if (!NativeTestServer.prepareNativeTestServer(context)) {
-                throw new IllegalStateException("NativeTestServer already prepared");
-            }
-        }
-
-        @Override
-        public void close() {
-            NativeTestServer.shutdownNativeTestServer();
-        }
+    public void enableConnectProxy(List<String> urlsToBeProxied) {
+        NativeTestServerJni.get()
+                .enableConnectProxy(
+                        mEmbeddedTestServerAdapter, urlsToBeProxied.toArray(new String[0]));
     }
 
-    public static String getEchoBodyURL() {
-        return NativeTestServerJni.get().getEchoBodyURL(sEmbeddedTestServerAdapter);
+    public String getEchoBodyURL() {
+        return NativeTestServerJni.get().getEchoBodyURL(mEmbeddedTestServerAdapter);
     }
 
-    public static String getEchoHeaderURL(String header) {
-        return NativeTestServerJni.get().getEchoHeaderURL(sEmbeddedTestServerAdapter, header);
+    public String getEchoHeaderURL(String header) {
+        return NativeTestServerJni.get().getEchoHeaderURL(mEmbeddedTestServerAdapter, header);
     }
 
-    public static String getEchoAllHeadersURL() {
-        return NativeTestServerJni.get().getEchoAllHeadersURL(sEmbeddedTestServerAdapter);
+    public String getEchoAllHeadersURL() {
+        return NativeTestServerJni.get().getEchoAllHeadersURL(mEmbeddedTestServerAdapter);
     }
 
-    public static String getEchoMethodURL() {
-        return NativeTestServerJni.get().getEchoMethodURL(sEmbeddedTestServerAdapter);
+    public String getEchoMethodURL() {
+        return NativeTestServerJni.get().getEchoMethodURL(mEmbeddedTestServerAdapter);
     }
 
-    public static String getUseEncodingURL(String encoding) {
-        return NativeTestServerJni.get().getUseEncodingURL(sEmbeddedTestServerAdapter, encoding);
+    public String getUseEncodingURL(String encoding) {
+        return NativeTestServerJni.get().getUseEncodingURL(mEmbeddedTestServerAdapter, encoding);
     }
 
-    public static String getRedirectToEchoBody() {
-        return NativeTestServerJni.get().getRedirectToEchoBodyURL(sEmbeddedTestServerAdapter);
+    public String getRedirectToEchoBody() {
+        return NativeTestServerJni.get().getRedirectToEchoBodyURL(mEmbeddedTestServerAdapter);
     }
 
-    public static String getFileURL(String filePath) {
-        return NativeTestServerJni.get().getFileURL(sEmbeddedTestServerAdapter, filePath);
+    public String getFileURL(String filePath) {
+        return NativeTestServerJni.get().getFileURL(mEmbeddedTestServerAdapter, filePath);
     }
 
     // Returns a URL that the server will return an Exabyte of data
-    public static String getExabyteResponseURL() {
-        return NativeTestServerJni.get().getExabyteResponseURL(sEmbeddedTestServerAdapter);
+    public String getExabyteResponseURL() {
+        return NativeTestServerJni.get().getExabyteResponseURL(mEmbeddedTestServerAdapter);
     }
 
     // The following URLs will make NativeTestServer serve a response based on
     // the contents of the corresponding file and its mock-http-headers file.
 
-    public static String getSuccessURL() {
-        return NativeTestServerJni.get().getFileURL(sEmbeddedTestServerAdapter, "/success.txt");
+    public String getSuccessURL() {
+        return getFileURL("/success.txt");
     }
 
-    public static String getRedirectURL() {
-        return NativeTestServerJni.get().getFileURL(sEmbeddedTestServerAdapter, "/redirect.html");
+    public String getRedirectURL() {
+        return getFileURL("/redirect.html");
     }
 
-    public static String getMultiRedirectURL() {
-        return NativeTestServerJni.get()
-                .getFileURL(sEmbeddedTestServerAdapter, "/multiredirect.html");
+    public String getMultiRedirectURL() {
+        return getFileURL("/multiredirect.html");
     }
 
-    public static String getNotFoundURL() {
-        return NativeTestServerJni.get().getFileURL(sEmbeddedTestServerAdapter, "/notfound.html");
+    public String getNotFoundURL() {
+        return getFileURL("/notfound.html");
     }
 
-    public static String getServerErrorURL() {
-        return NativeTestServerJni.get()
-                .getFileURL(sEmbeddedTestServerAdapter, "/server_error.txt");
+    public String getServerErrorURL() {
+        return getFileURL("/server_error.txt");
     }
 
-    public static int getPort() {
-        return NativeTestServerJni.get().getPort(sEmbeddedTestServerAdapter);
+    public int getPort() {
+        return NativeTestServerJni.get().getPort(mEmbeddedTestServerAdapter);
     }
 
-    public static String getHostPort() {
-        return NativeTestServerJni.get().getHostPort(sEmbeddedTestServerAdapter);
+    public String getHostPort() {
+        return NativeTestServerJni.get().getHostPort(mEmbeddedTestServerAdapter);
+    }
+
+    /** See net::test_server::EmbeddedTestServer::registerRequestHandler(). */
+    public void registerRequestHandler(HandleRequestCallback callback) {
+        NativeTestServerJni.get().registerRequestHandler(mEmbeddedTestServerAdapter, callback);
     }
 
     /** Java counterpart of native net::test_server::HttpRequest. */
@@ -236,11 +200,6 @@ public final class NativeTestServer {
         // Note currently we only support RawHttpResponse. We could add support for more flexible
         // response generation if need be.
         public RawHttpResponse handleRequest(HttpRequest httpRequest);
-    }
-
-    /** See net::test_server::EmbeddedTestServer::registerRequestHandler(). */
-    public static void registerRequestHandler(HandleRequestCallback callback) {
-        NativeTestServerJni.get().registerRequestHandler(sEmbeddedTestServerAdapter, callback);
     }
 
     // The following indirecting methods are needed because jni_zero doesn't support @CalledByNative

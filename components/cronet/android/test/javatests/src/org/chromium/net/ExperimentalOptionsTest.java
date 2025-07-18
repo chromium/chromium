@@ -220,9 +220,10 @@ public class ExperimentalOptionsTest {
     // Tests that basic Cronet functionality works when host cache persistence is enabled, and that
     // persistence works.
     public void testHostCachePersistence() throws Exception {
-        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
-
-        String realUrl = NativeTestServer.getFileURL("/echo?status=200");
+        NativeTestServer nativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        nativeTestServer.start();
+        String realUrl = nativeTestServer.getFileURL("/echo?status=200");
         URL javaUrl = new URL(realUrl);
         String realHost = javaUrl.getHost();
         int realPort = javaUrl.getPort();
@@ -274,7 +275,7 @@ public class ExperimentalOptionsTest {
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         context.shutdown();
-        NativeTestServer.shutdownNativeTestServer();
+        nativeTestServer.close();
     }
 
     @Test

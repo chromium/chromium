@@ -155,10 +155,11 @@ public final class SystemProxyTest {
     public void testHttpScheme_sendsPathToProxy() {
         var requestHandler = new NativeTestServerRequestHandler();
 
-        try (var nativeTestServerScope =
-                new NativeTestServer.PreparedScope(mTestRule.getTestFramework().getContext())) {
-            NativeTestServer.registerRequestHandler(requestHandler);
-            NativeTestServer.startPrepared();
+        try (var nativeTestServer =
+                NativeTestServer.createNativeTestServer(
+                        mTestRule.getTestFramework().getContext())) {
+            nativeTestServer.registerRequestHandler(requestHandler);
+            nativeTestServer.start();
 
             // These are the standard Java system properties for discovering system proxies,
             // see:
@@ -175,7 +176,7 @@ public final class SystemProxyTest {
                             new ScopedSystemProperty("http.proxyHost", "localhost");
                     var httpProxyPortScopedSystemProperty =
                             new ScopedSystemProperty(
-                                    "http.proxyPort", String.valueOf(NativeTestServer.getPort()));
+                                    "http.proxyPort", String.valueOf(nativeTestServer.getPort()));
                     var httpsProxyHostScopedSystemProperty =
                             new ScopedSystemProperty("https.proxyHost", "invalid-host");
                     var httpsProxyPortScopedSystemProperty =
@@ -208,10 +209,11 @@ public final class SystemProxyTest {
     public void testHttpsScheme_usesConnect() {
         var requestHandler = new NativeTestServerRequestHandler();
 
-        try (var nativeTestServerScope =
-                new NativeTestServer.PreparedScope(mTestRule.getTestFramework().getContext())) {
-            NativeTestServer.registerRequestHandler(requestHandler);
-            NativeTestServer.startPrepared();
+        try (var nativeTestServer =
+                NativeTestServer.createNativeTestServer(
+                        mTestRule.getTestFramework().getContext())) {
+            nativeTestServer.registerRequestHandler(requestHandler);
+            nativeTestServer.start();
 
             // These are the standard Java system properties for discovering system proxies,
             // see:
@@ -228,7 +230,7 @@ public final class SystemProxyTest {
                             new ScopedSystemProperty("https.proxyHost", "localhost");
                     var httpsProxyPortScopedSystemProperty =
                             new ScopedSystemProperty(
-                                    "https.proxyPort", String.valueOf(NativeTestServer.getPort()));
+                                    "https.proxyPort", String.valueOf(nativeTestServer.getPort()));
                     var httpProxyHostScopedSystemProperty =
                             new ScopedSystemProperty("http.proxyHost", "invalid-host");
                     var httpProxyPortScopedSystemProperty =
@@ -253,10 +255,11 @@ public final class SystemProxyTest {
     public void testProxyChange() throws Exception {
         var requestHandler = new NativeTestServerRequestHandler();
 
-        try (var nativeTestServerScope =
-                new NativeTestServer.PreparedScope(mTestRule.getTestFramework().getContext())) {
-            NativeTestServer.registerRequestHandler(requestHandler);
-            NativeTestServer.startPrepared();
+        try (var nativeTestServer =
+                NativeTestServer.createNativeTestServer(
+                        mTestRule.getTestFramework().getContext())) {
+            nativeTestServer.registerRequestHandler(requestHandler);
+            nativeTestServer.start();
 
             // Set up a proxy config and verify that it is used, same as
             // testHttpScheme_sendsPathToProxy().
@@ -264,7 +267,7 @@ public final class SystemProxyTest {
                             new ScopedSystemProperty("http.proxyHost", "localhost");
                     var httpProxyPortScopedSystemProperty =
                             new ScopedSystemProperty(
-                                    "http.proxyPort", String.valueOf(NativeTestServer.getPort()))) {
+                                    "http.proxyPort", String.valueOf(nativeTestServer.getPort()))) {
                 mTestRule.getTestFramework().startEngine();
                 executeRequest("http");
             }

@@ -40,13 +40,13 @@ public class CronetURLStreamHandlerFactoryTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private HttpURLConnection mUrlConnection;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() throws Exception {
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
     }
 
     @After
@@ -54,7 +54,7 @@ public class CronetURLStreamHandlerFactoryTest {
         if (mUrlConnection != null) {
             mUrlConnection.disconnect();
         }
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
@@ -69,7 +69,7 @@ public class CronetURLStreamHandlerFactoryTest {
     public void internalSetUrlStreamFactoryUsesCronet() throws Exception {
         URL.setURLStreamHandlerFactory(
                 mTestRule.getTestFramework().getEngine().createURLStreamHandlerFactory());
-        URL url = new URL(NativeTestServer.getEchoMethodURL());
+        URL url = new URL(mNativeTestServer.getEchoMethodURL());
         mUrlConnection = (HttpURLConnection) url.openConnection();
         assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");

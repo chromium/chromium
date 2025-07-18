@@ -42,19 +42,19 @@ public class BrotliTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private CronetEngine mCronetEngine;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() throws Exception {
-        assertThat(
-                        NativeTestServer.startNativeTestServerWithHTTPS(
-                                mTestRule.getTestFramework().getContext(),
-                                ServerCertificate.CERT_OK))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServerWithHTTPS(
+                        mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_OK);
+        mNativeTestServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
@@ -68,7 +68,7 @@ public class BrotliTest {
                         });
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).contains("Accept-Encoding: gzip, deflate, br");
@@ -88,7 +88,7 @@ public class BrotliTest {
     public void testBrotliAdvertisedWhenAlwaysEnableBrotliExperimentEnabled_default()
             throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).contains("Accept-Encoding: gzip, deflate, br");
@@ -114,7 +114,7 @@ public class BrotliTest {
                             builder.enableBrotli(false);
                         });
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).contains("Accept-Encoding: gzip, deflate, br");
@@ -124,7 +124,7 @@ public class BrotliTest {
     @SmallTest
     public void testBrotliNotAdvertised() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).doesNotContain("br");
@@ -141,7 +141,7 @@ public class BrotliTest {
                         });
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getUseEncodingURL("brotli");
+        String url = mNativeTestServer.getUseEncodingURL("brotli");
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         String expectedResponse = "The quick brown fox jumps over the lazy dog";

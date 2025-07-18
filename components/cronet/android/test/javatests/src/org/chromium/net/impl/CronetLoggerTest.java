@@ -74,18 +74,20 @@ public final class CronetLoggerTest {
 
     private TestLogger mTestLogger;
     private Context mContext;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() {
         mContext = mTestRule.getTestFramework().getContext();
         mTestLogger = mLoggerTestRule.mTestLogger;
-        assertThat(NativeTestServer.startNativeTestServer(mContext)).isTrue();
+        mNativeTestServer = NativeTestServer.createNativeTestServer(mContext);
+        mNativeTestServer.start();
     }
 
     @After
     public void tearDown() {
         mTestLogger = null;
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
@@ -159,7 +161,7 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testTelemetryDefaultEnabled() throws JSONException {
-        final String url = NativeTestServer.getEchoBodyURL();
+        final String url = mNativeTestServer.getEchoBodyURL();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
@@ -435,7 +437,7 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testSuccessfulRequestNative() throws Exception {
-        final String url = NativeTestServer.getEchoMethodURL();
+        final String url = mNativeTestServer.getEchoMethodURL();
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -526,7 +528,7 @@ public final class CronetLoggerTest {
                 .getTestFramework()
                 .startEngine()
                 .newUrlRequestBuilder(
-                        NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
+                        mNativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
                 .build()
                 .start();
         callback.blockForDone();
@@ -552,7 +554,7 @@ public final class CronetLoggerTest {
                 .getTestFramework()
                 .startEngine()
                 .newUrlRequestBuilder(
-                        NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
+                        mNativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
                 .build()
                 .start();
         callback.blockForDone();
@@ -566,7 +568,7 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testCanceledRequestNative() throws Exception {
-        final String url = NativeTestServer.getEchoBodyURL();
+        final String url = mNativeTestServer.getEchoBodyURL();
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -620,7 +622,7 @@ public final class CronetLoggerTest {
                 .getTestFramework()
                 .startEngine()
                 .newUrlRequestBuilder(
-                        NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor())
+                        mNativeTestServer.getEchoBodyURL(), callback, callback.getExecutor())
                 .setUploadDataProvider(dataProvider, callback.getExecutor())
                 .addHeader("Content-Type", "useless/string")
                 .build()

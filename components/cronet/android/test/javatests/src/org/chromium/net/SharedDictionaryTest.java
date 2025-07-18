@@ -60,6 +60,7 @@ public class SharedDictionaryTest {
     };
 
     private CronetEngine mCronetEngine;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() throws Exception {
@@ -69,16 +70,15 @@ public class SharedDictionaryTest {
                         (builder) -> {
                             builder.enableBrotli(true);
                         });
-        assertThat(
-                        NativeTestServer.startNativeTestServerWithHTTPS(
-                                mTestRule.getTestFramework().getContext(),
-                                ServerCertificate.CERT_OK))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServerWithHTTPS(
+                        mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_OK);
+        mNativeTestServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
@@ -86,7 +86,7 @@ public class SharedDictionaryTest {
     @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
     public void testNullHashThrows() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -108,7 +108,7 @@ public class SharedDictionaryTest {
     @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
     public void testNonConformantHashSizeThrows() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -130,7 +130,7 @@ public class SharedDictionaryTest {
     @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
     public void testNullDictionaryThrows() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -155,7 +155,7 @@ public class SharedDictionaryTest {
     @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
     public void testNullDictionaryIdThrows() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -182,7 +182,7 @@ public class SharedDictionaryTest {
     @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
     public void testNonDirectByteBufferAsDictionaryThrows() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -207,7 +207,7 @@ public class SharedDictionaryTest {
     @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
     public void testDictionaryIsAdvertised() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -241,7 +241,7 @@ public class SharedDictionaryTest {
     @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
     public void testDictionaryIDIsAdvertised() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -274,7 +274,7 @@ public class SharedDictionaryTest {
     @SmallTest
     public void testDefaultNoDictionaryIsAdvertised() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -297,7 +297,7 @@ public class SharedDictionaryTest {
                             builder.enableBrotli(false);
                         });
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getEchoAllHeadersURL();
+        String url = mNativeTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -323,7 +323,7 @@ public class SharedDictionaryTest {
     @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
     public void testSharedDictionaryDecoded() throws Exception {
         mCronetEngine = mTestRule.getTestFramework().startEngine();
-        String url = NativeTestServer.getUseEncodingURL("dcb");
+        String url = mNativeTestServer.getUseEncodingURL("dcb");
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());

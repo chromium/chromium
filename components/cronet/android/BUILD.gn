@@ -1600,8 +1600,6 @@ instrumentation_test_apk(
     ]
   }
 
-  # There is no native in this apk. However, since we depend on //base, we
-  # need something that provides a GEN_JNI, as //base uses GEN_JNI.
   srcjar_deps = [ ":cronet_jni_registration" ]
 }
 
@@ -1640,9 +1638,10 @@ instrumentation_test_apk(
     ]
   }
 
-  # There is no native in this apk. However, since we depend on //base, we
-  # need something that provides a GEN_JNI, as //base uses GEN_JNI.
-  srcjar_deps = [ ":cronet_jni_registration" ]
+  srcjar_deps = [
+    ":cronet_jni_registration",
+    ":cronet_tests_jni_registration",
+  ]
 }
 
 # The smoketests included in this test target are already included in

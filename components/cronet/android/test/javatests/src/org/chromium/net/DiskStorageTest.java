@@ -42,15 +42,15 @@ public class DiskStorageTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private String mReadOnlyStoragePath;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() throws Exception {
         CronetLibraryLoader.switchToTestLibrary();
         CronetLibraryLoader.loadLibrary();
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
     }
 
     @After
@@ -58,7 +58,7 @@ public class DiskStorageTest {
         if (mReadOnlyStoragePath != null) {
             FileUtils.recursivelyDeleteFile(new File(mReadOnlyStoragePath));
         }
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DiskStorageTest {
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         UrlRequest.Builder requestBuilder =
                 cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         UrlRequest urlRequest = requestBuilder.build();
@@ -149,7 +149,7 @@ public class DiskStorageTest {
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         UrlRequest.Builder requestBuilder =
                 cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         UrlRequest urlRequest = requestBuilder.build();
@@ -191,7 +191,7 @@ public class DiskStorageTest {
 
         CronetEngine cronetEngine = builder.build();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         UrlRequest.Builder requestBuilder =
                 cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         UrlRequest urlRequest = requestBuilder.build();
@@ -217,7 +217,7 @@ public class DiskStorageTest {
         // Creates a new CronetEngine and make a request.
         CronetEngine engine = builder.build();
         TestUrlRequestCallback callback2 = new TestUrlRequestCallback();
-        String url2 = NativeTestServer.getFileURL("/cacheable.txt");
+        String url2 = mNativeTestServer.getFileURL("/cacheable.txt");
         UrlRequest.Builder requestBuilder2 =
                 engine.newUrlRequestBuilder(url2, callback2, callback2.getExecutor());
         UrlRequest urlRequest2 = requestBuilder2.build();
@@ -259,7 +259,7 @@ public class DiskStorageTest {
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         UrlRequest.Builder requestBuilder =
                 cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         UrlRequest urlRequest = requestBuilder.build();
@@ -287,7 +287,7 @@ public class DiskStorageTest {
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        String url = NativeTestServer.getFileURL("/cacheable.txt");
+        String url = mNativeTestServer.getFileURL("/cacheable.txt");
         UrlRequest.Builder requestBuilder =
                 cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
         UrlRequest urlRequest = requestBuilder.build();
