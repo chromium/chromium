@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -16,6 +17,7 @@
 #include "base/version_info/channel.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -76,6 +78,44 @@ void ConvertActionTabId(T* action_payload,
   action_payload->set_tab_id(ConvertSessionTabIdToTabHandle(
       action_payload->tab_id(), browser_context));
 }
+
+const void* const kSerializerKey = &kSerializerKey;
+
+// File location that the actor journal should be serialized to.
+const char kExperimentalActorJournalLog[] = "experimental-actor-journal";
+
+class Serializer : public base::SupportsUserData::Data {
+ public:
+  explicit Serializer(actor::AggregatedJournal& journal) {
+    base::FilePath path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            kExperimentalActorJournalLog);
+    if (!path.empty()) {
+      serializer_ =
+          std::make_unique<actor::AggregatedJournalFileSerializer>(journal);
+      serializer_->Init(
+          path, base::BindOnce(&Serializer::InitDone, base::Unretained(this)));
+    }
+  }
+
+  static void EnsureInitialized(content::BrowserContext* context,
+                                actor::AggregatedJournal& journal) {
+    if (!context->GetUserData(kSerializerKey)) {
+      context->SetUserData(kSerializerKey,
+                           std::make_unique<Serializer>(journal));
+    }
+  }
+
+ private:
+  void InitDone(bool success) {
+    if (!success) {
+      serializer_.reset();
+    }
+  }
+
+  std::unique_ptr<actor::AggregatedJournalFileSerializer> serializer_;
+};
+
 }  // namespace
 
 ExperimentalActorApiFunction::ExperimentalActorApiFunction() = default;
@@ -100,6 +140,7 @@ bool ExperimentalActorApiFunction::PreRunValidation(std::string* error) {
     return false;
   }
 
+  Serializer::EnsureInitialized(browser_context(), actor_service->GetJournal());
   return true;
 }
 

@@ -29,7 +29,7 @@ constexpr char kManifest[] =
   "permissions": [
     "experimentalActor",
     "tabs",
-    "windows",
+    "windows"
   ]
 }
 )json";
