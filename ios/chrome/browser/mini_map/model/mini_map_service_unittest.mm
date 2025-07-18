@@ -9,6 +9,9 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/mini_map/model/mini_map_service_factory.h"
@@ -16,6 +19,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -34,6 +39,10 @@ class MiniMapServiceTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
+    test_profile_builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
 
     profile_ = std::move(test_profile_builder).Build();
     OCMStub([application_ sharedApplication]).andReturn(application_);
@@ -107,4 +116,16 @@ TEST_F(MiniMapServiceTest, TestMiniMapIsMapsInstalled) {
       postNotificationName:UIApplicationDidBecomeActiveNotification
                     object:nil];
   EXPECT_FALSE(mini_map_service_->IsGoogleMapsInstalled());
+}
+
+// Test that service reports correctly the signed-in state.
+TEST_F(MiniMapServiceTest, TestMiniMapIsSignedIn) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(mini_map_service_->IsSignedIn());
+  signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
+                                      signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(mini_map_service_->IsSignedIn());
+  ClearPrimaryAccount(identity_manager);
+  EXPECT_FALSE(mini_map_service_->IsSignedIn());
 }

@@ -9,6 +9,8 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/mini_map/model/mini_map_service_factory.h"
@@ -17,6 +19,8 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -78,6 +82,10 @@ class MiniMapTabHelperTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
+    test_profile_builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
 
     profile_ = std::move(test_profile_builder).Build();
 
@@ -180,6 +188,8 @@ class MiniMapTabHelperTest : public PlatformTest {
 
 // Test all the combinations of conditions for ShouldAllowRequest.
 TEST_F(MiniMapTabHelperTest, TestNavigations) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
   const int google_srp_index = 1 << 0;
   const int link_to_maps_index = 1 << 1;
   const int feature_enabled_index = 1 << 2;
@@ -188,7 +198,9 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
   const int user_initiated_index = 1 << 5;
   const int transition_type_index = 1 << 6;
   const int handled_url_index = 1 << 7;
-  const int total = 1 << 8;
+  const int signed_in = 1 << 8;
+  const int total = 1 << 9;
+  bool was_signed_in = false;
 
   for (int scenario = 0; scenario < total; scenario++) {
     NSString* web_state_url =
@@ -201,6 +213,15 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
     bool user_initiated = scenario & user_initiated_index;
     if (scenario & handled_url_index) {
       url = [url stringByAppendingFormat:@"?%@", kValidQuery];
+    }
+
+    if (scenario & signed_in && !was_signed_in) {
+      signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
+                                          signin::ConsentLevel::kSignin);
+      was_signed_in = true;
+    } else if (!(scenario & signed_in) && was_signed_in) {
+      ClearPrimaryAccount(identity_manager);
+      was_signed_in = false;
     }
     ui::PageTransition transition_type =
         (scenario & transition_type_index)

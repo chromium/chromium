@@ -77,6 +77,10 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     // Only intercept request when the feature is enabled.
     return false;
   }
+  if (!mini_map_service_->IsSignedIn()) {
+    // Only intercept request when the user is signed in.
+    return false;
+  }
 
   if (!user_initiated) {
     // Only consider user initiated link clicks.

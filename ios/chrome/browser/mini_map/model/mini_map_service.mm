@@ -27,10 +27,17 @@ bool IsGoogleDSE(TemplateURLService* template_url_service) {
 }  // namespace
 
 MiniMapService::MiniMapService(PrefService* pref_service,
-                               TemplateURLService* template_url_service)
-    : pref_service_(pref_service), template_url_service_(template_url_service) {
+                               TemplateURLService* template_url_service,
+                               signin::IdentityManager* identity_manager)
+    : pref_service_(pref_service),
+      template_url_service_(template_url_service),
+      identity_manager_(identity_manager) {
   template_url_service_->AddObserver(this);
   is_dse_google_ = IsGoogleDSE(template_url_service_);
+
+  is_signed_in_ =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  identity_manager->AddObserver(this);
 
   mini_map_enabled_pref_.Init(
       prefs::kIosMiniMapShowNativeMap, pref_service,
@@ -46,6 +53,10 @@ MiniMapService::~MiniMapService() {}
 
 void MiniMapService::Shutdown() {
   mini_map_enabled_pref_.Destroy();
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+    identity_manager_ = nullptr;
+  }
   if (template_url_service_) {
     template_url_service_->RemoveObserver(this);
     template_url_service_ = nullptr;
@@ -59,6 +70,10 @@ bool MiniMapService::IsMiniMapEnabled() {
 // Whether the current default search engine is Google.
 bool MiniMapService::IsDSEGoogle() {
   return is_dse_google_;
+}
+
+bool MiniMapService::IsSignedIn() {
+  return is_signed_in_;
 }
 
 // static
@@ -77,6 +92,23 @@ void MiniMapService::OnTemplateURLServiceShuttingDown() {
   if (template_url_service_) {
     template_url_service_->RemoveObserver(this);
     template_url_service_ = nullptr;
+  }
+}
+
+#pragma mark - signin::IdentityManager::Observer
+
+void MiniMapService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  is_signed_in_ =
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+void MiniMapService::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  is_signed_in_ = false;
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+    identity_manager_ = nullptr;
   }
 }
 

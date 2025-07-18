@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
 MiniMapService* MiniMapServiceFactory::GetForProfile(ProfileIOS* profile) {
@@ -26,6 +27,7 @@ MiniMapServiceFactory* MiniMapServiceFactory::GetInstance() {
 
 MiniMapServiceFactory::MiniMapServiceFactory()
     : ProfileKeyedServiceFactoryIOS("MiniMapService") {
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
 
@@ -39,5 +41,6 @@ std::unique_ptr<KeyedService> MiniMapServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<MiniMapService>(
       profile->GetPrefs(),
-      ios::TemplateURLServiceFactory::GetForProfile(profile));
+      ios::TemplateURLServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile));
 }

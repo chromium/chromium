@@ -12,15 +12,19 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_member.h"
 #import "components/search_engines/template_url_service_observer.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 
 class PrefService;
 class TemplateURLService;
 
 // A service to observe Profile scoped MiniMap prefs.
-class MiniMapService : public KeyedService, public TemplateURLServiceObserver {
+class MiniMapService : public KeyedService,
+                       public TemplateURLServiceObserver,
+                       public signin::IdentityManager::Observer {
  public:
   MiniMapService(PrefService* pref_service,
-                 TemplateURLService* template_url_service);
+                 TemplateURLService* template_url_service,
+                 signin::IdentityManager* authentication_service);
   ~MiniMapService() override;
 
   // Whether the mini map feature is currently enabled.
@@ -32,12 +36,21 @@ class MiniMapService : public KeyedService, public TemplateURLServiceObserver {
   // Whether GoogleMaps is installed.
   bool IsGoogleMapsInstalled();
 
+  // Whether the user is signed in.
+  bool IsSignedIn();
+
   // KeyedService
   void Shutdown() override;
 
   // TemplateURLServiceObserver
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
+
+  // signin::IdentityManager::Observer
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Called when `is_mini_map_enabled_` changes (i.e. when the user changes the
   // mini map pref).
@@ -54,6 +67,11 @@ class MiniMapService : public KeyedService, public TemplateURLServiceObserver {
   raw_ptr<TemplateURLService> template_url_service_;
   // Whether the current default search engine is Google.
   bool is_dse_google_ = false;
+
+  // Identity manager to check the sign in status.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  // Whether the user is signed in.
+  bool is_signed_in_ = false;
 
   // An object to observe the mini map preference.
   BooleanPrefMember mini_map_enabled_pref_;
