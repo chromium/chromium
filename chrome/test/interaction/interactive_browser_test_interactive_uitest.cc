@@ -89,8 +89,14 @@ class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
   }
 };
 
+// TODO(https://crbug.com/432623498): Times out on windows rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PressButtonAndMouseMoveClick DISABLED_PressButtonAndMouseMoveClick
+#else
+#define MAYBE_PressButtonAndMouseMoveClick PressButtonAndMouseMoveClick
+#endif
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       PressButtonAndMouseMoveClick) {
+                       MAYBE_PressButtonAndMouseMoveClick) {
   RelativePositionSpecifier pos = CenterPoint();
 #if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetInstance()->version() < base::win::Version::WIN11) {
