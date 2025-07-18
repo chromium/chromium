@@ -581,6 +581,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '"Android.WebView.Startup.CreationTime.Stage1.FactoryInit":["mean"],'
             '"PageLoad.PaintTiming.NavigationToFirstContentfulPaint":["mean"]}}',
             '--repetitions=50',
+            '--cool-down-threshold=moderate',
             '--stories=cnn',
         ]
     ),
@@ -595,6 +596,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '--probe-config=../../clank/android_webview/tools/crossbench_config/'
             'agsa_probe_config.hjson',
             '--repetitions=50',
+            '--cool-down-threshold=moderate',
             '--http-request-timeout=15s',
             '--action-runner=android',
         ]
