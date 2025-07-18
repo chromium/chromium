@@ -469,7 +469,10 @@ class Generator(generator.Generator):
 
     if (mojom.IsEnumKind(kind) or mojom.IsStructKind(kind)
         or mojom.IsUnionKind(kind)):
-      return [make_import(kind.name), make_import(kind.name, 'Spec')]
+      imports = [make_import(kind.name, 'Spec')]
+      if not kind.qualified_name in self.typemap:
+        imports += [make_import(kind.name)]
+      return imports
     if mojom.IsInterfaceKind(kind):
       # Typescript will output an error if types are included
       # that are not used or are double included. Only include
@@ -762,6 +765,12 @@ class Generator(generator.Generator):
     for qualified_name, typemap in self.typemap.items():
       qualified_type_to_import[qualified_name] = Import(typemap['typename'],
                                                         typemap['type_import'])
+
+    for struct in self.module.structs:
+      for enum in struct.enums:
+        qualified_type_to_import[enum.qualified_name] = Import(
+            self._TypescriptType(enum),
+            './' + Path(self._GetModuleFilename('js')).name)
 
     # Now we create the list of imports, based on the struct deps.
     imports = {}
