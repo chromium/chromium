@@ -76,6 +76,8 @@ const signin::RestoreData& LoadDeviceRestoreData(
     base::OnceClosure completion = base::DoNothing()) {
   if (!g_restore_data.has_value()) {
     g_restore_data = LoadDeviceRestoreDataInternal(std::move(completion));
+  } else {
+    std::move(completion).Run();
   }
   return g_restore_data.value();
 }

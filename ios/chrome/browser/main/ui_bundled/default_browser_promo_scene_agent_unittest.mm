@@ -124,7 +124,6 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
          forKey:@"SimulatePostDeviceRestore"];
     [scene_state_ shutdown];
     scene_state_ = nil;
-    profile_.reset();
     ClearDefaultBrowserPromoData();
     ResetDeviceRestoreDataForTesting();
   }
@@ -531,9 +530,7 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestTriggerCriteriaExperiment) {
   scene_state_.activationLevel = SceneActivationLevelBackground;
 }
 
-// TODO(crbug.com/432457158): This test is failing on ios-rel-ready.
-TEST_F(DefaultBrowserPromoSceneAgentTest,
-       DISABLED_TestTriggerCriteriaForReadingMode) {
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestTriggerCriteriaForReadingMode) {
   scoped_feature_list_.InitWithFeatures(
       {kEnableReaderMode, kEnableReaderModeDefaultBrowserPromo}, {});
 
