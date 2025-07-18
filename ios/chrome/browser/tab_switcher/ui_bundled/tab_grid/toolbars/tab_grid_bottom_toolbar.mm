@@ -114,10 +114,10 @@ CGFloat CompactButtonHorizontalPadding() {
 // zero so that the toolbar isn't accounted for when calculating the bottom
 // insets of the container view.
 - (CGSize)intrinsicContentSize {
-  if (_largeNewTabButton.enabled) {
+  if (!_largeNewTabButton.hidden) {
     return CGSizeZero;
   }
-  return [super intrinsicContentSize];
+  return _containerToolbar.intrinsicContentSize;
 }
 
 #pragma mark - Public
