@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "chrome/browser/web_applications/icons/primary_icon_filter.h"
+#include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -572,7 +572,7 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   if (!options_.skip_primary_icon_download) {
     if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
       std::optional<apps::IconInfo> primary_icon_metadata =
-          GetPrimaryIconsFromManifest(manifest_->icons);
+          GetTrustedIconsFromManifest(manifest_->icons);
       if (primary_icon_metadata) {
         install_info_->manifest_icons = {*primary_icon_metadata};
       }

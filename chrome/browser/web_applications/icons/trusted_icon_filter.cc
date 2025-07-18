@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/icons/primary_icon_filter.h"
+#include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
 
 #include <optional>
 #include <vector>
@@ -31,7 +31,7 @@ constexpr bool kPreferMaskableIcons = false;
 
 }  // namespace
 
-std::optional<apps::IconInfo> GetPrimaryIconsFromManifest(
+std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
     const std::vector<blink::Manifest::ImageResource>& icons) {
   // Keep track of largest icon per purpose based on all the entries in the
   // manifest.
