@@ -361,10 +361,16 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     }
   }
 
-  private async beginLoad(): Promise<void> {
-    // Time to show the loading panel if the web client is not ready.
-    const showLoadingTime = performance.now() + kPreHoldLoadingTimeMs;
+  private beginLoad(): void {
+    // Wait a moment before showing the loading panel.
+    this.loadingTimer = setTimeout(() => {
+      this.setState(WebUiState.kShowLoading);
+    }, kPreHoldLoadingTimeMs);
 
+    this.load();
+  }
+
+  private async load(): Promise<void> {
     // profileReadyState isn't available right away. Wait until it's ready.
     await this.profileReadyInitialState.promise;
 
@@ -407,9 +413,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     this.webview.getWebClientState().subscribe(
         this.webClientStateChanged.bind(this));
 
-    this.loadingTimer = setTimeout(() => {
-      this.setState(WebUiState.kShowLoading);
-    }, Math.max(0, showLoadingTime - performance.now()));
+    // Browser is expected to call client's notifyPanelWillOpen(), and then we
+    // expect a call to webClientReady() when that finishes.
   }
 
   private showLoading(): void {
