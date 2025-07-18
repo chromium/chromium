@@ -331,9 +331,7 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
 
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info_copy, sync_token,
-      GpuMemoryBufferHandleInfo(std::move(gmb_handle), si_info_copy.meta.format,
-                                si_info_copy.meta.size, buffer_usage),
-      holder_);
+      GpuMemoryBufferHandleInfo(std::move(gmb_handle), buffer_usage), holder_);
   most_recent_mappable_shared_image_ = client_si.get();
   return client_si;
 }
@@ -374,9 +372,7 @@ TestSharedImageInterface::CreateSharedImage(
 
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info_copy, sync_token,
-      GpuMemoryBufferHandleInfo(std::move(buffer_handle),
-                                si_info_copy.meta.format,
-                                si_info_copy.meta.size, buffer_usage),
+      GpuMemoryBufferHandleInfo(std::move(buffer_handle), buffer_usage),
       holder_);
 }
 

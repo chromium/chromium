@@ -147,8 +147,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
   void GetGpuMemoryBufferHandleInfoOnGpuThread(
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle* handle,
-      viz::SharedImageFormat* format,
-      gfx::Size* size,
       gfx::BufferUsage* buffer_usage,
       base::WaitableEvent* completion);
 

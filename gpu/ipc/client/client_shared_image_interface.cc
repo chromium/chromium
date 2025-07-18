@@ -151,9 +151,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   CHECK(!buffer_handle.is_null());
   return base::MakeRefCounted<ClientSharedImage>(
       AddMailbox(mailbox), si_info_copy, GenUnverifiedSyncToken(),
-      GpuMemoryBufferHandleInfo(std::move(buffer_handle),
-                                si_info_copy.meta.format,
-                                si_info_copy.meta.size, buffer_usage),
+      GpuMemoryBufferHandleInfo(std::move(buffer_handle), buffer_usage),
       holder_, shared_memory_pool_);
 }
 
@@ -179,9 +177,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       proxy_->CreateSharedImage(si_info_copy, std::move(buffer_handle));
   return base::MakeRefCounted<ClientSharedImage>(
       AddMailbox(mailbox), si_info_copy, GenUnverifiedSyncToken(),
-      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
-                                si_info_copy.meta.format,
-                                si_info_copy.meta.size, buffer_usage),
+      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), buffer_usage),
       holder_, shared_memory_pool_);
 }
 

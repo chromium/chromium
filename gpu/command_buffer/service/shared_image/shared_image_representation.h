@@ -199,12 +199,8 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     backing()->CopyToGpuMemoryBufferAsync(std::move(callback));
   }
   void GetGpuMemoryBufferHandleInfo(gfx::GpuMemoryBufferHandle& handle,
-                                    viz::SharedImageFormat& format,
-                                    gfx::Size& size,
                                     gfx::BufferUsage& buffer_usage) {
     handle = backing()->GetGpuMemoryBufferHandle();
-    format = backing()->format();
-    size = backing()->size();
     buffer_usage = backing()->buffer_usage();
   }
   bool PresentSwapChain() { return backing()->PresentSwapChain(); }

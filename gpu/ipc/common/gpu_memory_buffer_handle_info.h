@@ -14,33 +14,23 @@ namespace gpu {
 struct GpuMemoryBufferHandleInfo {
   GpuMemoryBufferHandleInfo() = default;
   GpuMemoryBufferHandleInfo(gfx::GpuMemoryBufferHandle handle,
-                            viz::SharedImageFormat format,
-                            gfx::Size size,
                             gfx::BufferUsage buffer_usage)
       : handle(std::move(handle)),
-        format(format),
-        size(size),
         buffer_usage(buffer_usage) {}
   ~GpuMemoryBufferHandleInfo() = default;
 
   GpuMemoryBufferHandleInfo(const GpuMemoryBufferHandleInfo& other) {
     handle = other.handle.Clone();
-    format = other.format;
-    size = other.size;
     buffer_usage = other.buffer_usage;
   }
 
   GpuMemoryBufferHandleInfo& operator=(const GpuMemoryBufferHandleInfo& other) {
     handle = other.handle.Clone();
-    format = other.format;
-    size = other.size;
     buffer_usage = other.buffer_usage;
     return *this;
   }
 
   gfx::GpuMemoryBufferHandle handle;
-  viz::SharedImageFormat format;
-  gfx::Size size;
   gfx::BufferUsage buffer_usage;
 };
 }  // namespace gpu

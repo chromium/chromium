@@ -220,25 +220,20 @@ SharedImageInterfaceInProcessBase::GetGpuMemoryBufferHandleInfo(
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   gfx::GpuMemoryBufferHandle handle;
-  viz::SharedImageFormat format;
-  gfx::Size size;
   gfx::BufferUsage buffer_usage;
 
-  ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcessBase::
-                                     GetGpuMemoryBufferHandleInfoOnGpuThread,
-                                 this, mailbox, &handle, &format, &size,
-                                 &buffer_usage, &completion),
-                  /*sync_token_fences=*/{}, SyncToken());
+  ScheduleGpuTask(
+      base::BindOnce(&SharedImageInterfaceInProcessBase::
+                         GetGpuMemoryBufferHandleInfoOnGpuThread,
+                     this, mailbox, &handle, &buffer_usage, &completion),
+      /*sync_token_fences=*/{}, SyncToken());
   completion.Wait();
-  return GpuMemoryBufferHandleInfo(std::move(handle), format, size,
-                                   buffer_usage);
+  return GpuMemoryBufferHandleInfo(std::move(handle), buffer_usage);
 }
 
 void SharedImageInterfaceInProcessBase::GetGpuMemoryBufferHandleInfoOnGpuThread(
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle* handle,
-    viz::SharedImageFormat* format,
-    gfx::Size* size,
     gfx::BufferUsage* buffer_usage,
     base::WaitableEvent* completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
@@ -250,8 +245,8 @@ void SharedImageInterfaceInProcessBase::GetGpuMemoryBufferHandleInfoOnGpuThread(
   // Note that we are not calling `MakeContextCurrent()` here as of now since
   // it is not needed to get the handle from the backings. Make context current
   // if we find that it is required.
-  if (!shared_image_factory->GetGpuMemoryBufferHandleInfo(
-          mailbox, *handle, *format, *size, *buffer_usage)) {
+  if (!shared_image_factory->GetGpuMemoryBufferHandleInfo(mailbox, *handle,
+                                                          *buffer_usage)) {
     LOG(ERROR) << "SharedImageInterfaceInProcessBase: Unable to get "
                   "GpuMemoryBufferHandle";
   }
@@ -289,9 +284,7 @@ SharedImageInterfaceInProcessBase::CreateSharedImage(
 
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info_copy, GenCreationSyncToken(),
-      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
-                                si_info_copy.meta.format,
-                                si_info_copy.meta.size, buffer_usage),
+      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), buffer_usage),
       holder_);
 }
 

@@ -711,8 +711,6 @@ bool SharedImageFactory::CopyToGpuMemoryBufferAsync(
 bool SharedImageFactory::GetGpuMemoryBufferHandleInfo(
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle& handle,
-    viz::SharedImageFormat& format,
-    gfx::Size& size,
     gfx::BufferUsage& buffer_usage) {
   auto* shared_image = GetFactoryRef(mailbox);
   if (!shared_image) {
@@ -720,8 +718,7 @@ bool SharedImageFactory::GetGpuMemoryBufferHandleInfo(
         << "GetGpuMemoryBufferHandleInfo: Could not find shared image mailbox";
     return false;
   }
-  shared_image->GetGpuMemoryBufferHandleInfo(handle, format, size,
-                                             buffer_usage);
+  shared_image->GetGpuMemoryBufferHandleInfo(handle, buffer_usage);
   return true;
 }
 

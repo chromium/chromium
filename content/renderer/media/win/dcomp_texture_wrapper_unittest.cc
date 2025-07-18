@@ -55,7 +55,6 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
     return base::MakeRefCounted<gpu::ClientSharedImage>(
         gpu::Mailbox::Generate(), si_info, gpu::SyncToken(),
         gpu::GpuMemoryBufferHandleInfo(std::move(buffer_handle),
-                                       si_info.meta.format, si_info.meta.size,
                                        buffer_usage),
         holder_);
   }

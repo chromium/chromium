@@ -507,9 +507,9 @@ ClientSharedImage::ClientSharedImage(
       creation_sync_token_(sync_token),
       gpu_memory_buffer_(CreateGpuMemoryBufferImplFromHandle(
           std::move(handle_info.handle),
-          handle_info.size,
+          metadata_.size,
           viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-              handle_info.format),
+              metadata_.format),
           handle_info.buffer_usage,
           info.meta.usage,
           base::BindRepeating(
