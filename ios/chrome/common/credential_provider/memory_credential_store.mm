@@ -41,7 +41,8 @@
   __block NSArray<id<Credential>>* credentials;
   __weak __typeof(self) weakSelf = self;
   dispatch_sync(self.workingQueue, ^{
-    credentials = [weakSelf allMemoryStorageValues];
+    __typeof(self) strongSelf = weakSelf;
+    credentials = [strongSelf allMemoryStorageValues];
   });
   return credentials;
 }
@@ -51,7 +52,8 @@
   CHECK(completion);
   __weak __typeof(self) weakSelf = self;
   dispatch_async(self.workingQueue, ^{
-    completion([weakSelf allMemoryStorageValues]);
+    __typeof(self) strongSelf = weakSelf;
+    completion([strongSelf allMemoryStorageValues]);
   });
 }
 
@@ -65,7 +67,8 @@
 - (void)removeAllCredentials {
   __weak __typeof(self) weakSelf = self;
   dispatch_barrier_async(self.workingQueue, ^{
-    [weakSelf.memoryStorage removeAllObjects];
+    __typeof(self) strongSelf = weakSelf;
+    [strongSelf.memoryStorage removeAllObjects];
   });
 }
 
@@ -74,7 +77,8 @@
       << "credential must have a record identifier";
   __weak __typeof(self) weakSelf = self;
   dispatch_barrier_async(self.workingQueue, ^{
-    weakSelf.memoryStorage[credential.recordIdentifier] =
+    __typeof(self) strongSelf = weakSelf;
+    strongSelf.memoryStorage[credential.recordIdentifier] =
         base::apple::ObjCCastStrict<ArchivableCredential>(credential);
   });
 }
@@ -88,7 +92,8 @@
   DCHECK(recordIdentifier.length) << "Invalid `recordIdentifier` was passed.";
   __weak __typeof(self) weakSelf = self;
   dispatch_barrier_async(self.workingQueue, ^{
-    weakSelf.memoryStorage[recordIdentifier] = nil;
+    __typeof(self) strongSelf = weakSelf;
+    strongSelf.memoryStorage[recordIdentifier] = nil;
   });
 }
 
@@ -97,7 +102,8 @@
   __block id<Credential> credential;
   __weak __typeof(self) weakSelf = self;
   dispatch_sync(self.workingQueue, ^{
-    credential = weakSelf.memoryStorage[recordIdentifier];
+    __typeof(self) strongSelf = weakSelf;
+    credential = strongSelf.memoryStorage[recordIdentifier];
   });
   return credential;
 }
