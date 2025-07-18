@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package google.internal.remoting.cloud.v1alpha;
 
+import "duration.proto";
+
 // Policies to be applied to the CRD host and client.
 // Absent values indicate that a sensible default value should be used, which
 // is usually fail-open. For example, `allow_file_transfer` being absent
@@ -52,4 +54,10 @@ message SessionPolicies {
   // Restrict the UDP port range used by the remote access host. Defaults to no
   // restrictions.
   optional PortRange host_udp_port_range = 7;
+
+  // The maximum length of time for either:
+  // 1) A single session if 2FA is not configured.
+  // 2) A session continuum (concurrent sessions) when 2FA is required.
+  // Default is no maximum session length.
+  optional Duration maximum_session_duration = 8;
 }

@@ -229,6 +229,13 @@ void CloudSessionAuthzServiceClient::OnVerifySessionTokenResponse(
         session_policies.host_udp_port_range.max_port = max_port;
       }
     }
+    if (response->session_policies().has_maximum_session_duration()) {
+      auto maximum_session_duration = base::Seconds(
+          response->session_policies().maximum_session_duration().seconds());
+      session_policies.maximum_session_duration =
+          std::max(maximum_session_duration,
+                   SessionPolicies::kMinMaximumSessionDuration);
+    }
     response_struct->session_policies.emplace(std::move(session_policies));
   }
 
