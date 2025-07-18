@@ -25,6 +25,9 @@ class ChromeIwaClient : public IwaClient {
   base::expected<web_package::SignedWebBundleId, std::string>
   CreateWebBundleIdFromURL(const GURL& url) override;
 
+  GURL CreateBaseURLForWebBundleId(
+      const web_package::SignedWebBundleId& web_bundle_id) override;
+
  private:
   ChromeIwaClient() = default;
   ~ChromeIwaClient() override = default;

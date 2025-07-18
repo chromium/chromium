@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 
 #include <memory>
 #include <optional>
@@ -16,11 +16,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
@@ -32,12 +31,12 @@ namespace web_app {
 namespace {
 
 base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlockAndMetadata(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     const SignedWebBundleReader& reader,
     const web_package::SignedWebBundleId& web_bundle_id,
     bool dev_mode) {
   RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateIntegrityBlock(
-      profile, web_bundle_id, reader.GetIntegrityBlock(), dev_mode));
+      browser_context, web_bundle_id, reader.GetIntegrityBlock(), dev_mode));
   RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateMetadata(
       web_bundle_id, reader.GetPrimaryURL(), reader.GetEntries()));
   return base::ok();
@@ -46,8 +45,8 @@ base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlockAndMetadata(
 }  // namespace
 
 IsolatedWebAppResponseReaderFactory::IsolatedWebAppResponseReaderFactory(
-    Profile& profile)
-    : profile_(profile) {}
+    content::BrowserContext* browser_context)
+    : browser_context_(*browser_context) {}
 
 IsolatedWebAppResponseReaderFactory::~IsolatedWebAppResponseReaderFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -101,12 +100,10 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!web_bundle_id.is_for_proxy_mode());
 
-  GURL base_url(
-      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                    web_bundle_id.id()}));
-
   SignedWebBundleReader::Create(
-      web_bundle_path, std::move(base_url),
+      web_bundle_path,
+      web_app::IwaClient::GetInstance()->CreateBaseURLForWebBundleId(
+          web_bundle_id),
       /*verify_signatures=*/!flags.Has(Flag::kSkipSignatureVerification),
       base::BindOnce(&IsolatedWebAppResponseReaderFactory::OnReaderCreated,
                      weak_ptr_factory_.GetWeakPtr(), web_bundle_path,
@@ -129,7 +126,8 @@ void IsolatedWebAppResponseReaderFactory::OnReaderCreated(
   });
 
   RETURN_IF_ERROR(
-      ValidateIntegrityBlockAndMetadata(&profile_.get(), *reader, web_bundle_id,
+      ValidateIntegrityBlockAndMetadata(&browser_context_.get(), *reader,
+                                        web_bundle_id,
                                         flags.Has(Flag::kDevModeBundle)),
       [&](const auto& error) {
         UmaLogExpectedStatus<UnusableSwbnFileError>(
@@ -154,7 +152,7 @@ void IsolatedWebAppResponseReaderFactory::OnReaderCreated(
       "WebApp.Isolated.SwbnFileUsability", base::ok());
 
   std::move(callback).Run(std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), *profile_, web_bundle_id,
+      std::move(reader), &browser_context_.get(), web_bundle_id,
       flags.Has(Flag::kDevModeBundle)));
 }
 

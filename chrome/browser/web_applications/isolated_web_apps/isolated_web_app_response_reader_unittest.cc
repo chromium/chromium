@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
-
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -22,6 +20,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
@@ -97,7 +96,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ChecksWhetherBundleIsStillTrusted) {
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), profile_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &profile_, web_bundle_id_, /*dev_mode=*/false);
 
   {
     network::ResourceRequest request;
@@ -136,7 +135,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), profile_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &profile_, web_bundle_id_, /*dev_mode=*/false);
 
   {
     network::ResourceRequest request;
@@ -167,7 +166,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), profile_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &profile_, web_bundle_id_, /*dev_mode=*/false);
 
   network::ResourceRequest request;
   request.url = base_url_;
@@ -210,7 +209,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, Close) {
   auto* raw_reader = reader.get();
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), profile_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &profile_, web_bundle_id_, /*dev_mode=*/false);
 
   network::ResourceRequest request;
   request.url = base_url_;

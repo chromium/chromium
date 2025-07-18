@@ -17,11 +17,13 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "services/network/public/cpp/resource_request.h"
+
+class Profile;
 
 namespace web_package {
 class SignedWebBundleId;

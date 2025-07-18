@@ -43,6 +43,13 @@ class IwaClient {
   virtual base::expected<web_package::SignedWebBundleId, std::string>
   CreateWebBundleIdFromURL(const GURL& url) = 0;
 
+  // Infers the base URL for a signed web bundle with this `web_bundle_id`;
+  // Resources from this web bundle will be served relative to it.
+  // TODO(crbug.com/431980377): Consider moving chrome::kIsolatedAppScheme to
+  // components/webapps/isolated_web_apps/ to remove this link.
+  virtual GURL CreateBaseURLForWebBundleId(
+      const web_package::SignedWebBundleId& web_bundle_id) = 0;
+
  protected:
   IwaClient();
   virtual ~IwaClient();

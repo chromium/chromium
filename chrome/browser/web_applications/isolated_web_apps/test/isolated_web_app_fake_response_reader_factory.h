@@ -8,8 +8,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 
 class Profile;

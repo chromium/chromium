@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 namespace web_app {
@@ -28,6 +29,13 @@ base::expected<web_package::SignedWebBundleId, std::string>
 ChromeIwaClient::CreateWebBundleIdFromURL(const GURL& url) {
   return IsolatedWebAppUrlInfo::Create(url).transform(
       [](const auto& url_info) { return url_info.web_bundle_id(); });
+}
+
+GURL ChromeIwaClient::CreateBaseURLForWebBundleId(
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  return GURL(
+      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    web_bundle_id.id()}));
 }
 
 }  // namespace web_app

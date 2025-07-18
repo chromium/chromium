@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
 
 #include <memory>
 
@@ -34,11 +34,11 @@ network::ResourceRequest RemoveQuery(
 
 IsolatedWebAppResponseReaderImpl::IsolatedWebAppResponseReaderImpl(
     std::unique_ptr<SignedWebBundleReader> reader,
-    Profile& profile,
+    content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& web_bundle_id,
     bool dev_mode)
     : reader_(std::move(reader)),
-      profile_(profile),
+      browser_context_(*browser_context),
       web_bundle_id_(web_bundle_id),
       dev_mode_(dev_mode) {}
 
@@ -54,7 +54,7 @@ void IsolatedWebAppResponseReaderImpl::ReadResponse(
     ReadResponseCallback callback) {
   RETURN_IF_ERROR(Error::FromTrustCheckerResult(
                       web_app::IwaClient::GetInstance()->ValidateTrust(
-                          &profile_.get(), web_bundle_id_, dev_mode_)),
+                          &browser_context_.get(), web_bundle_id_, dev_mode_)),
                   [&callback](Error error) {
                     std::move(callback).Run(base::unexpected(std::move(error)));
                   });

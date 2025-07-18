@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_RESPONSE_READER_FACTORY_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_RESPONSE_READER_FACTORY_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_FACTORY_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_FACTORY_H_
 
 #include <memory>
 #include <optional>
@@ -15,17 +15,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
-
-class Profile;
 
 namespace web_package {
 class SignedWebBundleId;
 class SignedWebBundleIntegrityBlock;
 }  // namespace web_package
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace web_app {
 
@@ -36,7 +38,7 @@ namespace web_app {
 // `skip_signature_verification` is set).
 class IsolatedWebAppResponseReaderFactory {
  public:
-  explicit IsolatedWebAppResponseReaderFactory(Profile& profile);
+  explicit IsolatedWebAppResponseReaderFactory(content::BrowserContext*);
   virtual ~IsolatedWebAppResponseReaderFactory();
 
   IsolatedWebAppResponseReaderFactory(
@@ -78,7 +80,7 @@ class IsolatedWebAppResponseReaderFactory {
                        base::expected<std::unique_ptr<SignedWebBundleReader>,
                                       UnusableSwbnFileError> status);
 
-  const raw_ref<Profile> profile_;
+  const raw_ref<content::BrowserContext> browser_context_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<IsolatedWebAppResponseReaderFactory> weak_ptr_factory_{
@@ -87,4 +89,4 @@ class IsolatedWebAppResponseReaderFactory {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_RESPONSE_READER_FACTORY_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_FACTORY_H_

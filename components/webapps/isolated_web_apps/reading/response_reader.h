@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_RESPONSE_READER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_RESPONSE_READER_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_H_
 
 #include <memory>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
@@ -18,7 +17,11 @@
 
 namespace network {
 struct ResourceRequest;
-}
+}  // namespace network
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace web_app {
 
@@ -103,7 +106,7 @@ class IsolatedWebAppResponseReaderImpl : public IsolatedWebAppResponseReader {
  public:
   explicit IsolatedWebAppResponseReaderImpl(
       std::unique_ptr<SignedWebBundleReader> reader,
-      Profile& profile,
+      content::BrowserContext* browser_context,
       const web_package::SignedWebBundleId& web_bundle_id,
       bool dev_mode);
   ~IsolatedWebAppResponseReaderImpl() override;
@@ -121,11 +124,11 @@ class IsolatedWebAppResponseReaderImpl : public IsolatedWebAppResponseReader {
   void OnClosed(base::OnceClosure callback);
 
   std::unique_ptr<SignedWebBundleReader> reader_;
-  const raw_ref<Profile> profile_;
+  const raw_ref<content::BrowserContext> browser_context_;
   const web_package::SignedWebBundleId web_bundle_id_;
   const bool dev_mode_ = false;
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_RESPONSE_READER_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_READING_RESPONSE_READER_H_

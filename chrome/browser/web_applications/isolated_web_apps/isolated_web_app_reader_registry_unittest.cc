@@ -25,8 +25,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "chrome/common/url_constants.h"
@@ -39,6 +37,8 @@
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
+#include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "components/webapps/isolated_web_apps/reading/validator.h"
 #include "content/public/common/content_features.h"
@@ -125,7 +125,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
         *profile_,
-        std::make_unique<IsolatedWebAppResponseReaderFactory>(*profile_));
+        std::make_unique<IsolatedWebAppResponseReaderFactory>(profile_.get()));
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(
