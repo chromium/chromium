@@ -1435,6 +1435,12 @@ void PDFiumEngine::OnTextOrLinkAreaClickInternal(const PointData& point_data,
 
   if (click_count == 1) {
     OnSingleClick(point_data.page_index, point_data.char_index);
+    if (caret_) {
+      // TODO(crbug.com/427133561): Handle corner case of clicking to the right
+      // of the last char on a page.
+      caret_->SetChar(
+          PageCharacterIndex(point_data.page_index, point_data.char_index));
+    }
   } else if (click_count == 2 || click_count == 3) {
     OnMultipleClick(click_count, point_data.page_index, point_data.char_index);
   }

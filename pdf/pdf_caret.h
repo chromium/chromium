@@ -40,6 +40,11 @@ class PdfCaret {
   // caret will not blink. No-op if `interval` is negative.
   void SetBlinkInterval(base::TimeDelta interval);
 
+  // Sets the caret's char position and updates its screen rect. Requires a
+  // page with at least one char and a valid char index (from 0 up to the page's
+  // char count, inclusive), otherwise crashes.
+  void SetChar(const PageCharacterIndex& next_char);
+
   // Draws the caret on the canvas if it is visible within any paint updates in
   // `dirty_in_screen`. Returns true if the caret was drawn, false otherwise.
   bool MaybeDrawCaret(const RegionData& region,
@@ -58,11 +63,13 @@ class PdfCaret {
   // Called by `blink_timer_` to toggle caret visibility.
   void OnBlinkTimerFired();
 
-  // Sets the caret's char position and updates its screen rect.
-  void SetChar(const PageCharacterIndex& next_char);
-
-  // Returns the screen rect for the current caret.
+  // Returns the screen rect for the current caret. For chars without a defined
+  // rect (like synthetic newlines), it calculates a position based on the
+  // preceding char.
   gfx::Rect GetScreenRectForCaret() const;
+
+  // Returns the screen rect for a char, which may be empty.
+  gfx::Rect GetScreenRectForChar(const PageCharacterIndex& index) const;
 
   // Draws `rect` as the caret on `region`.
   void Draw(const RegionData& region, const gfx::Rect& rect) const;
