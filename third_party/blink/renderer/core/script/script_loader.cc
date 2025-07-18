@@ -849,6 +849,10 @@ PendingScript* ScriptLoader::PrepareScript(
             mojom::blink::ConsoleMessageSource::kJavaScript,
             mojom::blink::ConsoleMessageLevel::kError,
             "External speculation rules are not yet supported."));
+        element_document.GetTaskRunner(TaskType::kDOMManipulation)
+            ->PostTask(FROM_HERE,
+                       WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                     WrapPersistent(element_.Get())));
         return nullptr;
 
       case ScriptTypeAtPrepare::kWebBundle:
@@ -1421,6 +1425,21 @@ void ScriptLoader::AddSpeculationRuleSet(SpeculationRuleSet::Source* source) {
 
   speculation_rule_set_ = SpeculationRuleSet::Parse(source, context_window);
   CHECK(speculation_rule_set_);
+
+  if (speculation_rule_set_->error_type() ==
+      SpeculationRuleSetErrorType::kSourceIsNotJsonObject) {
+    // For a JSON parse error, we fire an error event on the element, and
+    // then report an exception which will bubble to the window.
+    element_->DispatchErrorEvent();
+
+    ScriptState* script_state =
+        ToScriptStateForMainWorld(context_window->GetFrame());
+    ScriptState::Scope scope(script_state);
+    v8::Local<v8::Value> error = v8::Exception::TypeError(V8String(
+        script_state->GetIsolate(), speculation_rule_set_->error_message()));
+    V8ScriptRunner::ReportException(script_state->GetIsolate(), error);
+  }
+
   DocumentSpeculationRules::From(element_document)
       .AddRuleSet(speculation_rule_set_);
   speculation_rule_set_->AddConsoleMessageForValidation(*element_);
