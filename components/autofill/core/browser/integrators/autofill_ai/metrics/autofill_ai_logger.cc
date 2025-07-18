@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -105,6 +106,10 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
                                          bool opt_in_status) {
   FunnelState state = form_states_[form.global_id()];
   if (submission_state) {
+    using enum AutofillAiOptInStatus;
+    base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Status",
+                                  opt_in_status ? kOptedIn : kOptedOut);
+    // TODO(crbug.com/408380915): Remove after M141.
     base::UmaHistogramBoolean("Autofill.Ai.OptInStatus", opt_in_status);
     ukm_logger_.LogKeyMetrics(
         ukm_source_id, form, /*data_to_fill_available=*/state.has_data_to_fill,

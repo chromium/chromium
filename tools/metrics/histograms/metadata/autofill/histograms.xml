@@ -1212,6 +1212,29 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.OptIn.Funnel" enum="AutofillAiOptInFunnelEvents"
+    expires_after="2026-06-30">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records events related to the surfaces available for users to find out and
+    opt in Autofill AI. These educational surfaces are the IPH and the FFR
+    dialog. Logged when any of them are shown and when the FFR (final step in
+    the funnel) is accepted.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Ai.OptIn.Status" enum="AutofillAiOptInStatus"
+    expires_after="2026-06-30">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the user is opted into the Autofill AI feature or not. This
+    metric is emitted each time a form that contains information fillable by
+    Autofill AI is submitted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.OptInFunnel" enum="AutofillAiOptInFunnelEvents"
     expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>
@@ -1221,6 +1244,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     opt in Autofill AI. These educational surfaces are the IPH and the FFR
     dialog. Logged when any of them are shown and when the FFR (final step in
     the funnel) is accepted.
+
+    Deprecated in favor of Autofill.Ai.OptIn.Funnel - will be removed after
+    M141.
   </summary>
 </histogram>
 
@@ -1232,6 +1258,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Records whether the user is opted into the Autofill AI feature or not. This
     metric is emitted each time a form that contains information fillable by
     Autofill AI is submitted.
+
+    Deprecated in favor of Autofill.Ai.OptIn.Funnel - will be removed after
+    M141.
   </summary>
 </histogram>
 

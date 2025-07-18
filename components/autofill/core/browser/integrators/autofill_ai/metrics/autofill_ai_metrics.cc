@@ -8,13 +8,10 @@
 
 namespace autofill {
 
-namespace {
-constexpr char kOptinMetricsPrefix[] = "Autofill.Ai.OptInFunnel";
-}
-
-// static
 void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event) {
-  base::UmaHistogramEnumeration(kOptinMetricsPrefix, event);
+  base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Funnel", event);
+  // TODO(crbug.com/408380915): Remove after M141.
+  base::UmaHistogramEnumeration("Autofill.Ai.OptInFunnel", event);
 }
 
 }  // namespace autofill
