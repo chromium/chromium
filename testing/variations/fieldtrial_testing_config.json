@@ -27347,7 +27347,7 @@
                     "name": "Enabled_en_20241016",
                     "params": {
                         "en_site_id": "6bnVh68QF0ugnJ3q1cK0NQxjpCFS",
-                        "probability": "0.4"
+                        "probability": "0.01"
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForDesktopWhatsNew"
