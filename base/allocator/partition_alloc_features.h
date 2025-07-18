@@ -235,14 +235,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground);
 // See also: https://crbug.com/333443437
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans);
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-using ShadowMetadataEnabledProcesses = internal::PAFeatureEnabledProcesses;
-
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocShadowMetadata);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(ShadowMetadataEnabledProcesses,
-                                       kShadowMetadataEnabledProcessesParam);
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
-
 #if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks);
 #endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)

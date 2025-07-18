@@ -331,17 +331,6 @@ bool ShouldEnableFeatureOnProcess(
   }
 }
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-bool ShouldEnableShadowMetadata(const std::string& process_type) {
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocShadowMetadata)) {
-    return false;
-  }
-  return ShouldEnableFeatureOnProcess(
-      features::kShadowMetadataEnabledProcessesParam.Get(), process_type);
-}
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
-
 }  // namespace
 
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
@@ -1341,15 +1330,6 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   partition_alloc::PartitionRoot::SetSortActiveSlotSpansEnabled(
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocSortActiveSlotSpans));
-
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  if (ShouldEnableShadowMetadata(process_type)) {
-    partition_alloc::PartitionRoot::EnableShadowMetadata(
-        partition_alloc::internal::PoolHandleMask::kRegular |
-        partition_alloc::internal::PoolHandleMask::kBRP |
-        partition_alloc::internal::PoolHandleMask::kConfigurable);
-  }
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 
 void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {

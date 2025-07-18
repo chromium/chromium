@@ -155,7 +155,6 @@ pa_buildflag_header("buildflags") {
     "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
     "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression",
     "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
-    "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
     "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
     "FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=$force_disable_backup_ref_ptr_feature",

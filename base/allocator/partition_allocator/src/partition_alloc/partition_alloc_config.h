@@ -166,24 +166,15 @@ constexpr bool kUseLazyCommit = false;
   (PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_LINUX) || \
    PA_BUILDFLAG(IS_CHROMEOS))
 
-// Enable shadow metadata.
-//
 // With this flag, shadow pools will be mapped, on which writable shadow
 // metadatas are placed, and the real metadatas are set to read-only instead.
 // This feature is only enabled with 64-bit environment because pools work
 // differently with 32-bits pointers (see glossary).
-#if PA_BUILDFLAG(ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS) && \
-    PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#define PA_CONFIG_ENABLE_SHADOW_METADATA() 1
-#else
 #define PA_CONFIG_ENABLE_SHADOW_METADATA() 0
-#endif
 
 // PartitionAlloc uses PartitionRootEnumerator to acquire all
 // PartitionRoots at BeforeFork and to release at AfterFork.
-#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-     PA_CONFIG(HAS_ATFORK_HANDLER)) ||              \
-    PA_CONFIG(ENABLE_SHADOW_METADATA)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(HAS_ATFORK_HANDLER)
 #define PA_CONFIG_USE_PARTITION_ROOT_ENUMERATOR() 1
 #else
 #define PA_CONFIG_USE_PARTITION_ROOT_ENUMERATOR() 0

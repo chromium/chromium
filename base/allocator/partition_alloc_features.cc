@@ -29,11 +29,6 @@ static constexpr char kBrowserAndRendererStr[] = "browser-and-renderer";
 static constexpr char kNonRendererStr[] = "non-renderer";
 static constexpr char kAllProcessesStr[] = "all-processes";
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-static constexpr char kRendererOnlyStr[] = "renderer-only";
-static constexpr char kAllChildProcessesStr[] = "all-child-processes";
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
-
 }  // namespace
 
 BASE_FEATURE(kPartitionAllocUnretainedDanglingPtr,
@@ -485,29 +480,6 @@ BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
 #else
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-BASE_FEATURE(kPartitionAllocShadowMetadata,
-             "PartitionAllocShadowMetadata",
-#if BUILDFLAG(IS_LINUX)
-             FEATURE_ENABLED_BY_DEFAULT);
-#else
-             FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-constexpr FeatureParam<ShadowMetadataEnabledProcesses>::Option
-    kShadowMetadataEnabledProcessesOptions[] = {
-        {ShadowMetadataEnabledProcesses::kRendererOnly, kRendererOnlyStr},
-        {ShadowMetadataEnabledProcesses::kAllChildProcesses,
-         kAllChildProcessesStr}};
-
-// Note: Do not use the prepared macro as of no need for a local cache.
-constinit const FeatureParam<ShadowMetadataEnabledProcesses>
-    kShadowMetadataEnabledProcessesParam{
-        &kPartitionAllocShadowMetadata, kPAFeatureEnabledProcessesStr,
-        ShadowMetadataEnabledProcesses::kRendererOnly,
-        &kShadowMetadataEnabledProcessesOptions};
-#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 #if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 BASE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks,
