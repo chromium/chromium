@@ -7356,21 +7356,6 @@
             ]
         }
     ],
-    "CrosSeparateGeoApiKey": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrosSeparateGeoApiKey"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrosSwitcher": [
         {
             "platforms": [

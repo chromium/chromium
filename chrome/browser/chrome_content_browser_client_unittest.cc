@@ -1493,14 +1493,17 @@ TEST_F(ChromeContentBrowserClientTest, UseCorrectGeoAPIKey) {
   auto scoped_override =
       google_apis::SetScopedApiKeyCacheForTesting(&api_key_cache);
 
-  // Check that by default Chrome-on-ChromeOS uses shared API key for
+  // Check the legacy behavior that Chrome-on-ChromeOS uses shared API key for
   // geolocation requests.
   ChromeContentBrowserClient client;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ash::features::kCrosSeparateGeoApiKey);
   EXPECT_EQ(client.GetGeolocationApiKey(), google_apis::GetAPIKey());
 
   // Check that when the `kCrosSeparateGeoApiKey` feature is enabled,
   // Chrome-on-ChromeOS uses ChromeOS-specific API key for geolocation.
-  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.Reset();
   scoped_feature_list.InitAndEnableFeature(
       ash::features::kCrosSeparateGeoApiKey);
   EXPECT_EQ(client.GetGeolocationApiKey(),
