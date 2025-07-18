@@ -76,12 +76,14 @@ def main():
     raise SdkError('Install Xcode, launch it, accept the license ' +
       'agreement, and run `sudo xcode-select -s /path/to/Xcode.app` ' +
       'to continue.')
-  sdks = [re.findall('^MacOSX(\d+\.\d+)\.sdk$', s) for s in os.listdir(sdk_dir)]
+  sdk_dir_list = os.listdir(sdk_dir)
+  sdks = [re.findall('^MacOSX(\d+\.\d+)\.sdk$', s) for s in sdk_dir_list]
   sdks = [s[0] for s in sdks if s]  # [['10.5'], ['10.6']] => ['10.5', '10.6']
   sdks = [s for s in sdks  # ['10.5', '10.6'] => ['10.6']
           if parse_version(s) >= parse_version(min_sdk_version)]
   if not sdks:
-    raise Exception('No %s+ SDK found' % min_sdk_version)
+    raise Exception(
+        f'No {min_sdk_version}+ SDK found. {sdk_dir} contains: {sdk_dir_list}')
   best_sdk = sorted(sdks, key=parse_version)[0]
   sdk_name = 'MacOSX' + best_sdk + '.sdk'
   sdk_path = os.path.join(sdk_dir, sdk_name)
