@@ -13103,6 +13103,7 @@ experimental domain Preload
     enum
       SourceIsNotJsonObject
       InvalidRulesSkipped
+      InvalidRulesetLevelTag
 
   # The type of preloading attempted. It corresponds to
   # mojom::SpeculationAction (although PrefetchWithSubresources is omitted as it

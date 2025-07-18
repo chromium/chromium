@@ -4494,7 +4494,7 @@ TEST_F(SpeculationRuleSetTest, InvalidTag) {
       })",
       KURL("https://example.com/"), execution_context());
   EXPECT_EQ(rule_set->error_type(),
-            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+            SpeculationRuleSetErrorType::kInvalidRulesetLevelTag);
   EXPECT_TRUE(rule_set->error_message().Contains("Tag value"))
       << rule_set->error_message();
 
@@ -4510,7 +4510,7 @@ TEST_F(SpeculationRuleSetTest, InvalidTag) {
                                           tag),
                            KURL("https://example.com/"), execution_context());
   EXPECT_EQ(rule_set->error_type(),
-            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+            SpeculationRuleSetErrorType::kInvalidRulesetLevelTag);
   EXPECT_TRUE(rule_set->error_message().Contains("Tag value"))
       << rule_set->error_message();
 }

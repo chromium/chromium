@@ -32,7 +32,9 @@ enum class SpeculationRuleSetErrorType {
   kSourceIsNotJsonObject,
   // An invalid or unsupported rule was ignored.
   kInvalidRulesSkipped,
-  kMaxValue = kInvalidRulesSkipped,
+  // An invalid ruleset-level tag was found.
+  kInvalidRulesetLevelTag,
+  kMaxValue = kInvalidRulesetLevelTag,
 };
 
 enum class BrowserInjectedSpeculationRuleOptOut { kRespect, kIgnore };

@@ -653,14 +653,16 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
   if (JSONValue* tag_value = parsed->Get("tag")) {
     String tag_str;
     if (!tag_value->AsString(&tag_str)) {
-      result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+      result->SetError(SpeculationRuleSetErrorType::kInvalidRulesetLevelTag,
                        "Tag value must be a string.");
-    } else if (!IsValidTag(tag_str)) {
-      result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                       "Tag value is invalid: must be ASCII printable.");
-    } else {
-      ruleset_tag = WTF::String(tag_str);
+      return result;
     }
+    if (!IsValidTag(tag_str)) {
+      result->SetError(SpeculationRuleSetErrorType::kInvalidRulesetLevelTag,
+                       "Tag value is invalid: must be ASCII printable.");
+      return result;
+    }
+    ruleset_tag = WTF::String(tag_str);
   }
 
   const auto parse_for_action =
@@ -791,6 +793,7 @@ bool SpeculationRuleSet::ShouldReportUMAForError() const {
   // We report UMAs only if entire parse failed.
   switch (error_type_) {
     case SpeculationRuleSetErrorType::kSourceIsNotJsonObject:
+    case SpeculationRuleSetErrorType::kInvalidRulesetLevelTag:
       return true;
     case SpeculationRuleSetErrorType::kNoError:
     case SpeculationRuleSetErrorType::kInvalidRulesSkipped:

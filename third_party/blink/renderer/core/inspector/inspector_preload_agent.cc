@@ -29,6 +29,8 @@ std::optional<protocol::Preload::RuleSetErrorType> GetProtocolRuleSetErrorType(
       return protocol::Preload::RuleSetErrorTypeEnum::SourceIsNotJsonObject;
     case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
       return protocol::Preload::RuleSetErrorTypeEnum::InvalidRulesSkipped;
+    case SpeculationRuleSetErrorType::kInvalidRulesetLevelTag:
+      return protocol::Preload::RuleSetErrorTypeEnum::InvalidRulesetLevelTag;
   }
 }
 
@@ -38,6 +40,7 @@ String GetProtocolRuleSetErrorMessage(const SpeculationRuleSet& rule_set) {
       return String();
     case SpeculationRuleSetErrorType::kSourceIsNotJsonObject:
     case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
+    case SpeculationRuleSetErrorType::kInvalidRulesetLevelTag:
       return rule_set.error_message();
   }
 }

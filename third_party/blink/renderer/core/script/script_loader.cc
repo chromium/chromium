@@ -1427,7 +1427,9 @@ void ScriptLoader::AddSpeculationRuleSet(SpeculationRuleSet::Source* source) {
   CHECK(speculation_rule_set_);
 
   if (speculation_rule_set_->error_type() ==
-      SpeculationRuleSetErrorType::kSourceIsNotJsonObject) {
+          SpeculationRuleSetErrorType::kSourceIsNotJsonObject ||
+      speculation_rule_set_->error_type() ==
+          SpeculationRuleSetErrorType::kInvalidRulesetLevelTag) {
     // For a JSON parse error, we fire an error event on the element, and
     // then report an exception which will bubble to the window.
     element_->DispatchErrorEvent();
