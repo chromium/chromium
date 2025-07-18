@@ -250,6 +250,11 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
       Widget::InitParams::Ownership ownership =
           Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
+  static Widget* CreateBubble(
+      BubbleDialogDelegate* bubble_delegate,
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+
   //////////////////////////////////////////////////////////////////////////////
   // The anchor view and rectangle:
   //

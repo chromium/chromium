@@ -499,10 +499,8 @@ BubbleDialogDelegate::~BubbleDialogDelegate() {
 
 // static
 Widget* BubbleDialogDelegate::CreateBubble(
-    std::unique_ptr<BubbleDialogDelegate> bubble_delegate_unique,
+    BubbleDialogDelegate* bubble_delegate,
     Widget::InitParams::Ownership ownership) {
-  BubbleDialogDelegate* const bubble_delegate = bubble_delegate_unique.get();
-
   // On Mac, MODAL_TYPE_WINDOW is implemented using sheets, which can't be
   // anchored at a specific point - they are always placed near the top center
   // of the window. To avoid unpleasant surprises, disallow setting an anchor
@@ -517,8 +515,7 @@ Widget* BubbleDialogDelegate::CreateBubble(
   if (auto* anchor_view = bubble_delegate->GetAnchorView()) {
     bubble_delegate->SetAnchorView(anchor_view);
   }
-  Widget* const bubble_widget =
-      CreateBubbleWidget(bubble_delegate_unique.release(), ownership);
+  Widget* const bubble_widget = CreateBubbleWidget(bubble_delegate, ownership);
 
   bubble_delegate->set_adjust_if_offscreen(
       PlatformStyle::kAdjustBubbleIfOffscreen);
@@ -529,6 +526,14 @@ Widget* BubbleDialogDelegate::CreateBubble(
   return bubble_widget;
 }
 
+// static
+Widget* BubbleDialogDelegate::CreateBubble(
+    std::unique_ptr<BubbleDialogDelegate> bubble_delegate_unique,
+    Widget::InitParams::Ownership ownership) {
+  return CreateBubble(bubble_delegate_unique.release(), ownership);
+}
+
+// static
 Widget* BubbleDialogDelegateView::CreateBubble(
     BubbleDialogDelegateView* delegate_view,
     Widget::InitParams::Ownership ownership) {
