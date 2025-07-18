@@ -29,7 +29,7 @@ suite('SafetyHubCard', function() {
     testElement.remove();
   });
 
-  test('testHeaderAndSubheaderText', function() {
+  test('HeaderAndSubheaderText', function() {
     const mockData = getMockDataForState(CardState.SAFE);
     testElement.data = mockData;
     flush();
@@ -44,7 +44,7 @@ suite('SafetyHubCard', function() {
     assertTextContent('#subheader', mockData.subheader);
   });
 
-  test('testIcon', function() {
+  test('Icon', function() {
     // Check icon for SAFE state.
     testElement.data = getMockDataForState(CardState.SAFE);
     flushTasks();

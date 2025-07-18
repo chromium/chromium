@@ -44,7 +44,7 @@ suite('BatteryPage', function() {
     return microtasksFinished();
   });
 
-  test('testBatterySaverModeEnabledOnBattery', function() {
+  test('BatterySaverModeEnabledOnBattery', function() {
     batteryPage.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.ENABLED_ON_BATTERY);
     flush();
@@ -66,7 +66,7 @@ suite('BatteryPage', function() {
         'selected radio button should be enabled on battery');
   });
 
-  test('testBatterySaverModeEnabledBelowThreshold', function() {
+  test('BatterySaverModeEnabledBelowThreshold', function() {
     batteryPage.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.ENABLED_BELOW_THRESHOLD);
     flush();
@@ -88,7 +88,7 @@ suite('BatteryPage', function() {
         'selected radio button should be enabled below threshold');
   });
 
-  test('testBatterySaverModeDisabled', function() {
+  test('BatterySaverModeDisabled', function() {
     batteryPage.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.DISABLED);
     assertFalse(
@@ -102,7 +102,7 @@ suite('BatteryPage', function() {
         'collapse should be closed when battery saver mode is disabled');
   });
 
-  test('testBatterySaverModeMetrics', async function() {
+  test('BatterySaverModeMetrics', async function() {
     batteryPage.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.DISABLED);
 

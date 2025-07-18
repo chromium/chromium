@@ -57,7 +57,7 @@ suite('LiveCaptionSection', function() {
     return settingsLanguages.whenReady();
   });
 
-  test('test caption.enable toggle', function() {
+  test('caption.enable toggle', function() {
     const settingsToggle =
         liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
             '#liveCaptionToggleButton');
@@ -150,7 +150,7 @@ suite('LiveCaptionSection', function() {
     assertEquals(1, languagePacks.length);
   });
 
-  test('test more action button aria label', async function() {
+  test('more action button aria label', async function() {
     const defaultLabel = loadTimeData.getString('defaultLanguageLabel');
     const getMoreButtons = () =>
         liveCaptionSection.shadowRoot!.querySelectorAll<HTMLElement>(

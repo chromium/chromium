@@ -75,10 +75,10 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
   }
 
   const eligibilityParams: EligibilityParamsInterface[] = [
-    {optedIn: true, ineligibleUser: true, title: 'testOptedInIneligibleUser'},
-    {optedIn: true, ineligibleUser: false, title: 'testOptedInEligibleUser'},
-    {optedIn: false, ineligibleUser: true, title: 'testOptedOutIneligibleUser'},
-    {optedIn: false, ineligibleUser: false, title: 'testOptedOutEligibleUser'},
+    {optedIn: true, ineligibleUser: true, title: 'OptedInIneligibleUser'},
+    {optedIn: true, ineligibleUser: false, title: 'OptedInEligibleUser'},
+    {optedIn: false, ineligibleUser: true, title: 'OptedOutIneligibleUser'},
+    {optedIn: false, ineligibleUser: false, title: 'OptedOutEligibleUser'},
   ];
 
   eligibilityParams.forEach(
@@ -107,7 +107,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
             'The entries should always be visible');
       }));
 
-  test('testSwitchingToggleUpdatesPref', async function() {
+  test('SwitchingToggleUpdatesPref', async function() {
     // The user is eligible so that the toggle is enabled.
     section.ineligibleUser = false;
     document.body.appendChild(section);
@@ -249,7 +249,7 @@ suite('AutofillAiSectionUiTest', function() {
   }
 
   test(
-      'testAutofillAiEnterpriseUserLoggingAllowedAndNonEnterpriseUserHaveNoLoggingInfoBullet',
+      'AutofillAiEnterpriseUserLoggingAllowedAndNonEnterpriseUserHaveNoLoggingInfoBullet',
       async function() {
         // Both enterprise and non enterprise users have the pref set to 0
         // (allow).
@@ -265,7 +265,7 @@ suite('AutofillAiSectionUiTest', function() {
       });
 
   test(
-      'testAutofillAiEnterpriseUserLoggingNotAllowedHaveLoggingInfoBullet',
+      'AutofillAiEnterpriseUserLoggingNotAllowedHaveLoggingInfoBullet',
       async function() {
         settingsPrefs.set(
             `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
@@ -283,8 +283,7 @@ suite('AutofillAiSectionUiTest', function() {
       });
 
   test(
-      'testAutofillAiEnterpriseUserDisabledHasLoggingInfoBullet',
-      async function() {
+      'AutofillAiEnterpriseUserDisabledHasLoggingInfoBullet', async function() {
         settingsPrefs.set(
             `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
             ModelExecutionEnterprisePolicyValue.DISABLE);
@@ -300,7 +299,7 @@ suite('AutofillAiSectionUiTest', function() {
             enterpriseLogginInfoBullet.loggingManagedDisabledCustomLabel);
       });
 
-  test('testEntityInstancesLoadedAndSortedAlphabetically', async function() {
+  test('EntityInstancesLoadedAndSortedAlphabetically', async function() {
     await createPage();
     await entityDataManager.whenCalled('loadEntityInstances');
     const listItems =
@@ -327,8 +326,8 @@ suite('AutofillAiSectionUiTest', function() {
   }
 
   const removeEntityInstanceParams: RemoveEntityInstanceParamsInterface[] = [
-    {confirmed: true, title: 'testRemoveEntityInstanceConfirmed'},
-    {confirmed: false, title: 'testRemoveEntityInstanceCancelled'},
+    {confirmed: true, title: 'RemoveEntityInstanceConfirmed'},
+    {confirmed: false, title: 'RemoveEntityInstanceCancelled'},
   ];
 
   removeEntityInstanceParams.forEach(
@@ -387,8 +386,8 @@ suite('AutofillAiSectionUiTest', function() {
 
   const addOrEditEntityInstanceDialogParams: AddOrEditDialogParamsInterface[] =
       [
-        {add: true, title: 'testAddEntityInstanceDialogOpenAndConfirm'},
-        {add: false, title: 'testEditEntityInstanceDialogOpenAndConfirm'},
+        {add: true, title: 'AddEntityInstanceDialogOpenAndConfirm'},
+        {add: false, title: 'EditEntityInstanceDialogOpenAndConfirm'},
       ];
 
   addOrEditEntityInstanceDialogParams.forEach(
@@ -462,7 +461,7 @@ suite('AutofillAiSectionUiTest', function() {
         assertDeepEquals(testEntityInstance, addedOrEditedEntityInstance);
       }));
 
-  test('testAddButtonShowsEntityInstancesList', async function() {
+  test('AddButtonShowsEntityInstancesList', async function() {
     await createPage();
     const addButton =
         section.shadowRoot!.querySelector<HTMLElement>('#addEntityInstance');
@@ -482,7 +481,7 @@ suite('AutofillAiSectionUiTest', function() {
   });
 
   test(
-      'testEntityInstancesChangedListenerUpdatesAndAlphabeticallySortsEntries',
+      'EntityInstancesChangedListenerUpdatesAndAlphabeticallySortsEntries',
       async function() {
         await createPage();
         const newTestEntityInstancesWithLabels:
@@ -524,7 +523,7 @@ suite('AutofillAiSectionUiTest', function() {
         assertFalse(isVisible(listItems[3]!));
       });
 
-  test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {
+  test('EntriesDoNotDisappearAfterToggleDisabling', async function() {
     await createPage();
     // The toggle is initially enabled (see the setup() method). Clicking it
     // sets the opt-in status to false.
@@ -543,7 +542,7 @@ suite('AutofillAiSectionUiTest', function() {
         'With the toggle disabled, the entries should be visible');
   });
 
-  test('testToggleIsDisabledWhenUserIsNotEligible', async function() {
+  test('ToggleIsDisabledWhenUserIsNotEligible', async function() {
     await createPage();
     // The toggle is initially enabled (see the setup() method). Clicking it
     // sets the opt-in status to false.
@@ -620,7 +619,7 @@ suite('AutofillAiSectionLongLabelsUiTest', function() {
     await flushTasks();
   }
 
-  test('testLongLabelsHaveHiddenOverflow', async function() {
+  test('LongLabelsHaveHiddenOverflow', async function() {
     await createPage();
     // Contains all labels and sublabels, in order.
     const labels =

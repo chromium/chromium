@@ -50,14 +50,14 @@ suite('SpeedPage', function() {
     await microtasksFinished();
   });
 
-  test('testPreloadPagesDefault', function() {
+  test('PreloadPagesDefault', function() {
     assertEquals(
         NetworkPredictionOptions.STANDARD,
         speedPage.prefs.net.network_prediction_options.value);
     assertTrue(speedPage.$.preloadingToggle.checked);
   });
 
-  test('testPreloadPagesDisabled', function() {
+  test('PreloadPagesDisabled', function() {
     speedPage.$.preloadingToggle.click();
     flush();
 
@@ -67,7 +67,7 @@ suite('SpeedPage', function() {
     assertFalse(speedPage.$.preloadingToggle.checked);
   });
 
-  test('testPreloadPagesStandard', function() {
+  test('PreloadPagesStandard', function() {
     // STANDARD is the default value, so this changes the pref to ensure that
     // clicking preloadingToggle actually updates the underlying pref.
     speedPage.setPrefValue(
@@ -83,7 +83,7 @@ suite('SpeedPage', function() {
     assertTrue(speedPage.$.preloadingStandard.expanded);
   });
 
-  test('testPreloadPagesStandardFromExtended', async () => {
+  test('PreloadPagesStandardFromExtended', async () => {
     // STANDARD is the default value, so this changes the pref to ensure that
     // clicking preloadingToggle actually updates the underlying pref.
     speedPage.setPrefValue(
@@ -99,7 +99,7 @@ suite('SpeedPage', function() {
     assertTrue(speedPage.$.preloadingStandard.expanded);
   });
 
-  test('testPreloadPagesExtended', async () => {
+  test('PreloadPagesExtended', async () => {
     speedPage.$.preloadingExtended.click();
     await eventToPromise('change', speedPage.$.preloadingRadioGroup);
 
@@ -110,7 +110,7 @@ suite('SpeedPage', function() {
     assertTrue(speedPage.$.preloadingExtended.expanded);
   });
 
-  test('testPreloadPagesStandardExpand', async function() {
+  test('PreloadPagesStandardExpand', async function() {
     // By default, the preloadingStandard option will be selected and collapsed.
     assertFalse(speedPage.$.preloadingStandard.expanded);
 
@@ -126,7 +126,7 @@ suite('SpeedPage', function() {
     assertFalse(speedPage.$.preloadingStandard.expanded);
   });
 
-  test('testPreloadPagesExtendedExpand', async function() {
+  test('PreloadPagesExtendedExpand', async function() {
     assertFalse(speedPage.$.preloadingExtended.expanded);
 
     const expandButton = speedPage.$.preloadingExtended.$.expandButton;

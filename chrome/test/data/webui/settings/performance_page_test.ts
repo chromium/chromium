@@ -84,7 +84,7 @@ suite('DiscardIndicator', function() {
         getPerformancePageElement('discardRingTreatmentToggleButton');
   });
 
-  test('testDiscardTingTreatmentChangeState', async function() {
+  test('DiscardTingTreatmentChangeState', async function() {
     performancePage.setPrefValue(DISCARD_RING_PREF, false);
 
     discardRingTreatmentToggleButton.click();
@@ -122,7 +122,7 @@ suite('PerformanceIntervention', function() {
     flush();
   });
 
-  test('testPerformanceInterventionChangeState', async function() {
+  test('PerformanceInterventionChangeState', async function() {
     performancePage.setPrefValue(
         PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, false);
     const toggle = performancePage.shadowRoot!.querySelector<HTMLElement>(
@@ -227,7 +227,7 @@ suite('TabDiscardExceptionList', function() {
     button.click();
   }
 
-  test('testExceptionList', function() {
+  test('ExceptionList', function() {
     // no sites added message should be shown when list is empty
     assertFalse(exceptionList.$.noSitesAdded.hidden);
     assertExceptionListEquals([]);
@@ -237,7 +237,7 @@ suite('TabDiscardExceptionList', function() {
     assertTrue(exceptionList.$.noSitesAdded.hidden);
   });
 
-  test('testManagedExceptionList', async () => {
+  test('ManagedExceptionList', async () => {
     const userRules = 3;
     const managedRules = 3;
     setupExceptionListEntries(
@@ -270,7 +270,7 @@ suite('TabDiscardExceptionList', function() {
     assertTrue(!!userRule.shadowRoot!.querySelector('cr-icon-button'));
   });
 
-  test('testExceptionListDelete', async function() {
+  test('ExceptionListDelete', async function() {
     setupExceptionListEntries(['foo', 'bar']);
 
     clickMoreActionsButton(getExceptionListEntry(0));
@@ -328,7 +328,7 @@ suite('TabDiscardExceptionList', function() {
     dialog.$.actionButton.click();
   }
 
-  test('testExceptionListAdd', async function() {
+  test('ExceptionListAdd', async function() {
     setupExceptionListEntries(['foo']);
     assertTabbedAddDialogDoesNotExist();
 
@@ -345,7 +345,7 @@ suite('TabDiscardExceptionList', function() {
     assertExceptionListEquals(['foo', 'bar']);
   });
 
-  test('testExceptionListEdit', async function() {
+  test('ExceptionListEdit', async function() {
     setupExceptionListEntries(['foo', 'bar']);
     const entry = getExceptionListEntry(1);
     assertEditDialogDoesNotExist();
@@ -364,7 +364,7 @@ suite('TabDiscardExceptionList', function() {
     assertExceptionListEquals(['foo', 'baz']);
   });
 
-  test('testExceptionListAddAfterMenuClick', async function() {
+  test('ExceptionListAddAfterMenuClick', async function() {
     setupExceptionListEntries(['foo']);
     clickMoreActionsButton(getExceptionListEntry(0));
     exceptionList.$.addButton.click();
@@ -374,7 +374,7 @@ suite('TabDiscardExceptionList', function() {
     assertEquals('', addDialog.$.input.$.input.value);
   });
 
-  test('testExceptionListAddExceptionOverflow', async function() {
+  test('ExceptionListAddExceptionOverflow', async function() {
     assertTrue(exceptionList.$.expandButton.hidden);
 
     const entries = [
@@ -402,7 +402,7 @@ suite('TabDiscardExceptionList', function() {
     assertExceptionListEquals([...entries, newRule]);
   });
 
-  test('testExceptionListAddExceptionsOverflow', async function() {
+  test('ExceptionListAddExceptionsOverflow', async function() {
     const existingEntry = 'www.foo.com';
     setupExceptionListEntries([existingEntry]);
     const entries = [
@@ -432,7 +432,7 @@ suite('TabDiscardExceptionList', function() {
     assertExceptionListEquals([existingEntry, ...entries]);
   });
 
-  test('testExceptionListOverflowEdit', async function() {
+  test('ExceptionListOverflowEdit', async function() {
     const entries = [
       ...Array(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 1).keys(),
     ].map(index => `rule${index}`);
@@ -454,7 +454,7 @@ suite('TabDiscardExceptionList', function() {
     assertExceptionListEquals(entries.slice(0, -1));
   });
 
-  test('testExceptionListOverflowDelete', function() {
+  test('ExceptionListOverflowDelete', function() {
     const entries = [
       ...Array(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 2).keys(),
     ].map(index => `rule${index}`);

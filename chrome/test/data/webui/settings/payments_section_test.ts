@@ -22,7 +22,7 @@ import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/te
 // clang-format on
 
 suite('PaymentSectionUiTest', function() {
-  test('testAutofillExtensionIndicator', function() {
+  test('AutofillExtensionIndicator', function() {
     // Initializing with fake prefs
     const section = document.createElement('settings-payments-section');
     section.prefs = {

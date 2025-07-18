@@ -93,7 +93,7 @@ suite('A11yPage', () => {
     });
   });
 
-  test('test ax tree fixing toggle and pref', async () => {
+  test('ax tree fixing toggle and pref', async () => {
     assertTrue(loadTimeData.getBoolean('axTreeFixingEnabled'));
 
     const toggle =

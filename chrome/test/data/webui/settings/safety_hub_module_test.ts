@@ -70,7 +70,7 @@ suite('SafetyHubModule', function() {
     testElement.remove();
   });
 
-  test('testHeaderAndSubheaderText', function() {
+  test('HeaderAndSubheaderText', function() {
     const headerText = 'Test header text';
     const subheaderText = 'Test subheader text';
     testElement.header = headerText;
@@ -87,7 +87,7 @@ suite('SafetyHubModule', function() {
     assertTextContent('#subheader', subheaderText);
   });
 
-  test('testItemButton', async function() {
+  test('ItemButton', async function() {
     await assignAndShowTestData();
     testElement.buttonIcon = 'cr20:block';
     testElement.buttonAriaLabelId =
@@ -109,7 +109,7 @@ suite('SafetyHubModule', function() {
     assertEquals(clickedItem.detail, mockData[1]!.detail);
   });
 
-  test('testItemList', async function() {
+  test('ItemList', async function() {
     // Check the item list is filled with the data.
     await assignAndShowTestData();
     flush();
@@ -159,7 +159,7 @@ suite('SafetyHubModule', function() {
     assertFalse(isVisible(testElement.shadowRoot!.querySelector('#siteList')));
   });
 
-  test('testTooltip', async function() {
+  test('Tooltip', async function() {
     // Check the item list is filled with the data.
     const text = 'Dummy tooltip text';
     await assignAndShowTestData();

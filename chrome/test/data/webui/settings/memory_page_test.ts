@@ -45,19 +45,19 @@ suite('MemorySaver', function() {
     flush();
   });
 
-  test('testMemorySaverModeEnabled', function() {
+  test('MemorySaverModeEnabled', function() {
     memoryPage.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
     assertTrue(memoryPage.$.toggleButton.checked);
   });
 
-  test('testMemorySaverModeDisabled', function() {
+  test('MemorySaverModeDisabled', function() {
     memoryPage.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
     assertFalse(memoryPage.$.toggleButton.checked);
   });
 
-  test('testMemorySaverModeChangeState', async function() {
+  test('MemorySaverModeChangeState', async function() {
     memoryPage.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
 
@@ -125,14 +125,14 @@ suite('MemorySaverAggressiveness', function() {
     radioGroupCollapse = getMemoryPageElement('radioGroupCollapse');
   });
 
-  test('testMemorySaverModeDisabled', function() {
+  test('MemorySaverModeDisabled', function() {
     memoryPage.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
     assertFalse(memoryPage.$.toggleButton.checked);
     assertFalse(radioGroupCollapse.opened);
   });
 
-  test('testMemorySaverModeEnabled', function() {
+  test('MemorySaverModeEnabled', function() {
     memoryPage.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
     assertTrue(memoryPage.$.toggleButton.checked);
@@ -141,7 +141,7 @@ suite('MemorySaverAggressiveness', function() {
         String(MemorySaverModeAggressiveness.MEDIUM), radioGroup.selected);
   });
 
-  test('testMemorySaverModeChangeState', async function() {
+  test('MemorySaverModeChangeState', async function() {
     async function testMemorySaverModeChangeState(
         expectedState: MemorySaverModeState) {
       performanceMetricsProxy.reset();
@@ -188,7 +188,7 @@ suite('MemorySaverAggressiveness', function() {
     await testMemorySaverModeChangeState(MemorySaverModeState.DISABLED);
   });
 
-  test('testMemorySaverModeAggressiveness', function() {
+  test('MemorySaverModeAggressiveness', function() {
     function assertMemorySaverModeAggressivenessPolicyIndicatorExists(
         mode: MemorySaverModeAggressiveness, el: HTMLElement) {
       memoryPage.setPrefValue(MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, mode);

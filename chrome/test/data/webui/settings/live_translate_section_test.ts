@@ -51,7 +51,7 @@ suite('LiveTranslateSection', function() {
     return settingsLanguages.whenReady();
   });
 
-  test('test translate.enable toggle', function() {
+  test('translate.enable toggle', function() {
     const settingsToggle =
         liveTranslateSection.shadowRoot!.querySelector<HTMLElement>(
             '#liveTranslateToggleButton');
@@ -74,7 +74,7 @@ suite('LiveTranslateSection', function() {
     assertFalse(newToggleValue);
   });
 
-  test('test aria label for the target language dropdown menu', function() {
+  test('aria label for the target language dropdown menu', function() {
     liveTranslateSection.setPrefValue(
         'accessibility.captions.live_translate_enabled', true);
     flush();

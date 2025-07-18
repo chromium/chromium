@@ -45,7 +45,7 @@ suite('CrSettingsSafetyHubExtensionsTest', function() {
     return flushTasks();
   });
 
-  test('testExtensionsModule', async function() {
+  test('ExtensionsModule', async function() {
     testElement =
         document.createElement('settings-safety-hub-extensions-module');
     document.body.appendChild(testElement);

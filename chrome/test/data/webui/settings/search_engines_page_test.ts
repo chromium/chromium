@@ -231,7 +231,7 @@ suite('SearchEnginePageTests', function() {
     flush();
   });
 
-  test('testDefaultsList', function() {
+  test('DefaultsList', function() {
     const defaultsListElement = searchEnginesLists[0]!;
 
     // The defaults list should only show the name and shortcut columns.
@@ -253,7 +253,7 @@ suite('SearchEnginePageTests', function() {
     assertEquals(searchEnginesInfo.defaults.length, defaultsEntries!.length);
   });
 
-  test('testActivesList', function() {
+  test('ActivesList', function() {
     const activesListElement = searchEnginesLists[1]!;
 
     // The actives list should only show the name and shortcut columns.
@@ -281,7 +281,7 @@ suite('SearchEnginePageTests', function() {
     assertTrue(expandButton.hasAttribute('hidden'));
   });
 
-  test('testOthersList', function() {
+  test('OthersList', function() {
     const othersListElement = searchEnginesLists[2]!;
 
     // The others list should only show the name and url columns.

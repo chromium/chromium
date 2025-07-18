@@ -120,10 +120,10 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   }
 
   const addOrEditEntityInstanceParams: AddOrEditParamsInterface[] = [
-    {confirmed: true, add: true, title: 'testAddEntityInstanceConfirmed'},
-    {confirmed: true, add: false, title: 'testEditEntityInstanceConfirmed'},
-    {confirmed: false, add: true, title: 'testAddEntityInstanceCancelled'},
-    {confirmed: false, add: false, title: 'testEditEntityInstanceCancelled'},
+    {confirmed: true, add: true, title: 'AddEntityInstanceConfirmed'},
+    {confirmed: true, add: false, title: 'EditEntityInstanceConfirmed'},
+    {confirmed: false, add: true, title: 'AddEntityInstanceCancelled'},
+    {confirmed: false, add: false, title: 'EditEntityInstanceCancelled'},
   ];
 
   addOrEditEntityInstanceParams.forEach(
@@ -213,7 +213,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         }
       }));
 
-  test('testAddOrEditEntityInstanceValidationError', async function() {
+  test('AddOrEditEntityInstanceValidationError', async function() {
     dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
     await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
@@ -374,16 +374,16 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
 
   const addOrEditEntityInstanceCountryParams:
       AddOrEditEntityInstanceCountryParamsInterface[] = [
-        {add: true, changeCountry: true, title: 'testAddEntityInstanceCountry'},
+        {add: true, changeCountry: true, title: 'AddEntityInstanceCountry'},
         {
           add: false,
           changeCountry: true,
-          title: 'testEditEntityInstanceCountry',
+          title: 'EditEntityInstanceCountry',
         },
         {
           add: false,
           changeCountry: false,
-          title: 'testEditEntityInstanceDontChangeCountry',
+          title: 'EditEntityInstanceDontChangeCountry',
         },
       ];
 
@@ -457,16 +457,16 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
 
   const addOrEditEntityInstanceDateParams:
       AddOrEditEntityInstanceDateParamsInterface[] = [
-        {add: true, changeDate: true, title: 'testAddEntityInstanceDate'},
+        {add: true, changeDate: true, title: 'AddEntityInstanceDate'},
         {
           add: false,
           changeDate: true,
-          title: 'testEditEntityInstanceDate',
+          title: 'EditEntityInstanceDate',
         },
         {
           add: false,
           changeDate: false,
-          title: 'testEditEntityInstanceDontChangeDate',
+          title: 'EditEntityInstanceDontChangeDate',
         },
       ];
 
@@ -544,7 +544,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         assertDeepEquals(expectedEntityInstance, dialogConfirmedEvent.detail);
       }));
 
-  test('testEditEntityInstanceExistingYearOutOfBounds', async function() {
+  test('EditEntityInstanceExistingYearOutOfBounds', async function() {
     // Set up the test.
     (testDateAttributeInstance.value as DateValue).year = '1800';
     testEntityInstance.attributeInstances.push(testDateAttributeInstance);
@@ -572,7 +572,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     assertEquals('1800', yearSelect.value);
   });
 
-  test('testAddOrEditEntityInstanceCountryValidationError', async function() {
+  test('AddOrEditEntityInstanceCountryValidationError', async function() {
     testEntityInstance.attributeInstances.push(testCountryAttributeInstance);
     dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
@@ -616,7 +616,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     assertFalse(saveButton.disabled);
   });
 
-  test('testAddOrEditEntityInstanceDateValidationError', async function() {
+  test('AddOrEditEntityInstanceDateValidationError', async function() {
     testEntityInstance.attributeInstances.push(testDateAttributeInstance);
     dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
@@ -802,7 +802,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
             ' Nov\n',
             ' Dec\n',
           ],
-          title: 'testMonthPickerHasCorrectMonthsEnglishLocale',
+          title: 'MonthPickerHasCorrectMonthsEnglishLocale',
         },
         {
           locale: 'cs',
@@ -820,7 +820,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
             ' lis\n',
             ' pro\n',
           ],
-          title: 'testMonthPickerHasCorrectMonthsCzechLocale',
+          title: 'MonthPickerHasCorrectMonthsCzechLocale',
         },
       ];
 

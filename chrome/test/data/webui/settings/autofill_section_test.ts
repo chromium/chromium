@@ -142,7 +142,7 @@ const ADDRESS_COMPONENTS_IL = {
 };
 
 suite('AutofillSectionUiTest', function() {
-  test('testAutofillExtensionIndicator', function() {
+  test('AutofillExtensionIndicator', function() {
     // Initializing with fake prefs
     const section = document.createElement('settings-autofill-section');
     section.prefs = {autofill: {profile_enabled: {}}};
