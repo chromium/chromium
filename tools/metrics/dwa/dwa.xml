@@ -210,6 +210,38 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SharedStorage.RunFinishedInWorklet">
+  <owner>yaoxia@google.com</owner>
+  <owner>cammie@google.com</owner>
+  <summary>
+    Records the completion of the `run()` method execution within a Shared
+    Storage worklet. Only recorded upon successful execution and does not
+    capture early errors.
+  </summary>
+  <metric name="TimeInWorklet">
+    <summary>
+      The time, in milliseconds, that the `run()` method took to execute within
+      the Shared Storage worklet.
+    </summary>
+  </metric>
+</event>
+
+<event name="SharedStorage.SelectUrlFinishedInWorklet">
+  <owner>yaoxia@google.com</owner>
+  <owner>cammie@google.com</owner>
+  <summary>
+    Records the completion of the `selectURL()` method execution within a Shared
+    Storage worklet. Only recorded upon successful execution and does not
+    capture early errors.
+  </summary>
+  <metric name="TimeInWorklet">
+    <summary>
+      The time, in milliseconds, that the `selectURL()` method took to execute
+      within the Shared Storage worklet.
+    </summary>
+  </metric>
+</event>
+
 <event name="StorageAccess.RequestOutcome">
   <owner>selya@google.com</owner>
   <owner>cfredric@chromium.org</owner>

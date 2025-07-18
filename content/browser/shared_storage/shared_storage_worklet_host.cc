@@ -19,6 +19,8 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/unguessable_token.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -1425,9 +1427,19 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
       GetWorkletDevToolsToken(), GetMainFrameIdIfAvailable(),
       shared_storage_origin_.Serialize());
 
+  base::TimeDelta time_in_worklet =
+      base::TimeTicks::Now() - execution_start_time;
+
   base::UmaHistogramLongTimes(
       "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet",
-      base::TimeTicks::Now() - execution_start_time);
+      time_in_worklet);
+
+  dwa::builders::SharedStorage_RunFinishedInWorklet()
+      .SetContent(shared_storage_origin_.Serialize())
+      .SetTimeInWorklet(ukm::GetExponentialBucketMinForUserTiming(
+          time_in_worklet.InMilliseconds()))
+      .Record(metrics::dwa::DwaRecorder::Get());
+
   DecrementPendingOperationsCount();
 }
 
@@ -1559,9 +1571,19 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
       operation_id, GetWorkletDevToolsToken(), GetMainFrameIdIfAvailable(),
       shared_storage_origin_.Serialize());
 
+  base::TimeDelta time_in_worklet =
+      base::TimeTicks::Now() - execution_start_time;
+
   base::UmaHistogramLongTimes(
       "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",
-      base::TimeTicks::Now() - execution_start_time);
+      time_in_worklet);
+
+  dwa::builders::SharedStorage_SelectUrlFinishedInWorklet()
+      .SetContent(shared_storage_origin_.Serialize())
+      .SetTimeInWorklet(ukm::GetExponentialBucketMinForUserTiming(
+          time_in_worklet.InMilliseconds()))
+      .Record(metrics::dwa::DwaRecorder::Get());
+
   DecrementPendingOperationsCount();
 }
 

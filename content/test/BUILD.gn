@@ -1857,6 +1857,8 @@ test("content_browsertests") {
     "//components/favicon/content",
     "//components/fingerprinting_protection_filter/interventions/common:features",
     "//components/input",
+    "//components/metrics/dwa:dwa",
+    "//components/metrics/dwa:dwa_builders",
     "//components/network_session_configurator/common",
     "//components/os_crypt/async/browser:key_provider_interface",
     "//components/os_crypt/async/browser:test_support",
