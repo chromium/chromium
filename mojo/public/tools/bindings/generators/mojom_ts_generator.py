@@ -736,7 +736,8 @@ class Generator(generator.Generator):
   def _ConverterImports(self):
 
     def needs_import(kind):
-      return mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)
+      return mojom.IsStructKind(kind) or mojom.IsUnionKind(
+          kind) or mojom.IsEnumKind(kind)
 
     class Import:
 
