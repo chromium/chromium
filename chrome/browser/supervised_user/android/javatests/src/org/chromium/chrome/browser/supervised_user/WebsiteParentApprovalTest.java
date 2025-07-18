@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.supervised_user.android.AndroidLocalWebApprovalFlowOutcome;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -61,8 +63,8 @@ import java.util.concurrent.TimeoutException;
                         + "which must remain unchanged for the duration of the test.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebsiteParentApprovalTest {
-    public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mTabbedActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
     public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     // Destroy TabbedActivityTestRule before SigninTestRule to remove observers of
@@ -84,12 +86,13 @@ public class WebsiteParentApprovalTest {
 
     @Mock private WebsiteParentApproval.Natives mWebsiteParentApprovalNativesMock;
     @Mock private ParentAuthDelegate mParentAuthDelegateMock;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer = mTabbedActivityTestRule.getEmbeddedTestServerRule().getServer();
+        mTestServer = mTabbedActivityTestRule.getTestServer();
         mBlockedUrl = mTestServer.getURL(TEST_PAGE);
-        mTabbedActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mTabbedActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();

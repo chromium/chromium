@@ -22,7 +22,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.test.util.TestAccounts;
 
@@ -30,13 +32,16 @@ import org.chromium.components.signin.test.util.TestAccounts;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoInteractionTest {
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
+
+    private RegularNewTabPageStation mNtp;
 
     /** Waits until the Incognito Tab is closed. */
     private static class TabClosedWaiter extends EmptyTabObserver {
@@ -58,7 +63,7 @@ public class IncognitoInteractionTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(null);
+        mNtp = mActivityTestRule.startFromLauncherAtNtp();
     }
 
     @Test
