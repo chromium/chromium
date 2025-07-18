@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/user_education/ntp_promo_identifiers.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sync/base/features.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/user_education_metadata.h"
@@ -34,7 +35,11 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
 
   registry.AddPromo(NtpPromoSpecification(
       kNtpSignInPromoId,
-      NtpPromoContent("chrome-filled", IDS_NTP_SIGN_IN_PROMO,
+      NtpPromoContent("chrome-filled",
+                      base::FeatureList::IsEnabled(
+                          syncer::kReplaceSyncPromosWithSignInPromos)
+                          ? IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS
+                          : IDS_NTP_SIGN_IN_PROMO,
                       IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON),
       base::BindRepeating([](Profile* profile) {
         return NtpPromoSpecification::Eligibility::kEligible;
