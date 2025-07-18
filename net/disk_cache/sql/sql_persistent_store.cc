@@ -442,16 +442,18 @@ class Backend {
   // value, it recalculates the correct value from the database to recover from
   // potential metadata corruption.
   // It then updates the meta table values and attempts to commit the
-  // `transaction`. Returns true on success, false on failure.
-  bool UpdateStoreStatusAndCommitTransaction(sql::Transaction& transaction,
-                                             int64_t entry_count_delta,
-                                             int64_t total_size_delta,
-                                             bool& corruption_detected);
+  // `transaction`.
+  // Returns Error::kOk on success, or an error code on failure.
+  Error UpdateStoreStatusAndCommitTransaction(sql::Transaction& transaction,
+                                              int64_t entry_count_delta,
+                                              int64_t total_size_delta,
+                                              bool& corruption_detected);
 
   // Recalculates the store's status (entry count and total size) directly from
   // the database. This is a recovery mechanism used when metadata might be
   // inconsistent, e.g., after a numerical overflow.
-  bool RecalculateStoreStatusAndCommitTransaction(
+  // Returns Error::kOk on success, or an error code on failure.
+  Error RecalculateStoreStatusAndCommitTransaction(
       sql::Transaction& transaction);
 
   int64_t CalculateResourceEntryCount();
@@ -563,17 +565,12 @@ Error Backend::InitializeInternal(bool& corruption_detected) {
       !base::IsValueInRangeForNumericType<int32_t>(tmp_entry_count) ||
       store_status_.total_size < 0) {
     corruption_detected = true;
-    return RecalculateStoreStatusAndCommitTransaction(transaction)
-               ? Error::kOk
-               : Error::kFailedToCommitTransaction;
+    return RecalculateStoreStatusAndCommitTransaction(transaction);
   }
 
   store_status_.entry_count = static_cast<int32_t>(tmp_entry_count);
 
-  if (!transaction.Commit()) {
-    return Error::kFailedToCommitTransaction;
-  }
-  return Error::kOk;
+  return transaction.Commit() ? Error::kOk : Error::kFailedToCommitTransaction;
 }
 
 void Backend::DatabaseErrorCallback(int error, sql::Statement* statement) {
@@ -766,11 +763,12 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
   // Update the store's status and commit the transaction.
   // The entry count is increased by 1, and the total size by `bytes_usage`.
   // This call will also handle updating the on-disk meta table.
-  if (!UpdateStoreStatusAndCommitTransaction(transaction,
-                                             /*entry_count_delta=*/1,
-                                             /*total_size_delta=*/bytes_usage,
-                                             corruption_detected)) {
-    return base::unexpected(Error::kFailedToCommitTransaction);
+  if (const auto error = UpdateStoreStatusAndCommitTransaction(
+          transaction,
+          /*entry_count_delta=*/1,
+          /*total_size_delta=*/bytes_usage, corruption_detected);
+      error != Error::kOk) {
+    return base::unexpected(error);
   }
 
   return entry_info;
@@ -854,20 +852,13 @@ Error Backend::DoomEntryInternal(const CacheEntryKey& key,
   // consistent state.
   if (!total_size_delta.IsValid()) {
     corruption_detected = true;
-    return RecalculateStoreStatusAndCommitTransaction(transaction)
-               ? Error::kOk
-               : Error::kFailedToCommitTransaction;
+    return RecalculateStoreStatusAndCommitTransaction(transaction);
   }
 
-  if (!UpdateStoreStatusAndCommitTransaction(
-          transaction,
-          /*entry_count_delta=*/-doomed_count,
-          /*total_size_delta=*/total_size_delta.ValueOrDie(),
-          corruption_detected)) {
-    return Error::kFailedToCommitTransaction;
-  }
-
-  return Error::kOk;
+  return UpdateStoreStatusAndCommitTransaction(
+      transaction,
+      /*entry_count_delta=*/-doomed_count,
+      /*total_size_delta=*/total_size_delta.ValueOrDie(), corruption_detected);
 }
 
 ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
@@ -1017,21 +1008,14 @@ Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
   // scratch.
   if (corruption_detected || !total_size_delta.IsValid()) {
     corruption_detected = true;
-    return RecalculateStoreStatusAndCommitTransaction(transaction)
-               ? Error::kOk
-               : Error::kFailedToCommitTransaction;
+    return RecalculateStoreStatusAndCommitTransaction(transaction);
   }
 
-  if (!UpdateStoreStatusAndCommitTransaction(
-          transaction,
-          /*entry_count_delta=*/
-          -static_cast<int64_t>(tokens_to_be_deleted.size()),
-          /*total_size_delta=*/total_size_delta.ValueOrDie(),
-          corruption_detected)) {
-    return Error::kFailedToCommitTransaction;
-  }
-
-  return Error::kOk;
+  return UpdateStoreStatusAndCommitTransaction(
+      transaction,
+      /*entry_count_delta=*/
+      -static_cast<int64_t>(tokens_to_be_deleted.size()),
+      /*total_size_delta=*/total_size_delta.ValueOrDie(), corruption_detected);
 }
 
 ErrorAndEvictionRequested Backend::DeleteAllEntries() {
@@ -1082,14 +1066,10 @@ Error Backend::DeleteAllEntriesInternal(bool& corruption_detected) {
   // Update the store's status and commit the transaction.
   // The entry count and the total size will be zero.
   // This call will also handle updating the on-disk meta table.
-  if (!UpdateStoreStatusAndCommitTransaction(
-          transaction,
-          /*entry_count_delta=*/-store_status_.entry_count,
-          /*total_size_delta=*/-store_status_.total_size,
-          corruption_detected)) {
-    return Error::kFailedToCommitTransaction;
-  }
-  return Error::kOk;
+  return UpdateStoreStatusAndCommitTransaction(
+      transaction,
+      /*entry_count_delta=*/-store_status_.entry_count,
+      /*total_size_delta=*/-store_status_.total_size, corruption_detected);
 }
 
 ErrorAndEvictionRequested Backend::DeleteLiveEntriesBetween(
@@ -1184,20 +1164,14 @@ Error Backend::DeleteLiveEntriesBetweenInternal(
   // scratch.
   if (corruption_detected || !total_size_delta.IsValid()) {
     corruption_detected = true;
-    return RecalculateStoreStatusAndCommitTransaction(transaction)
-               ? Error::kOk
-               : Error::kFailedToCommitTransaction;
+    return RecalculateStoreStatusAndCommitTransaction(transaction);
   }
 
   // Update the in-memory and on-disk store status (entry count and total size)
   // and commit the transaction.
-  if (!UpdateStoreStatusAndCommitTransaction(transaction, entry_count_delta,
-                                             total_size_delta.ValueOrDie(),
-                                             corruption_detected)) {
-    return Error::kFailedToCommitTransaction;
-  }
-
-  return Error::kOk;
+  return UpdateStoreStatusAndCommitTransaction(transaction, entry_count_delta,
+                                               total_size_delta.ValueOrDie(),
+                                               corruption_detected);
 }
 
 Error Backend::UpdateEntryLastUsed(const CacheEntryKey& key,
@@ -1317,14 +1291,10 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
       return Error::kNotFound;
     }
   }
-  if (!UpdateStoreStatusAndCommitTransaction(
-          transaction,
-          /*entry_count_delta=*/0,
-          /*total_size_delta=*/header_size_delta, corruption_detected)) {
-    return Error::kFailedToCommitTransaction;
-  }
-
-  return Error::kOk;
+  return UpdateStoreStatusAndCommitTransaction(
+      transaction,
+      /*entry_count_delta=*/0,
+      /*total_size_delta=*/header_size_delta, corruption_detected);
 }
 
 ErrorAndEvictionRequested Backend::WriteEntryData(
@@ -1465,13 +1435,10 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
 
   // Commit the transaction, which also updates the in-memory and on-disk store
   // status.
-  if (!UpdateStoreStatusAndCommitTransaction(
-          transaction,
-          /*entry_count_delta=*/0,
-          /*total_size_delta=*/total_size_delta, corruption_detected)) {
-    return Error::kFailedToCommitTransaction;
-  }
-  return Error::kOk;
+  return UpdateStoreStatusAndCommitTransaction(
+      transaction,
+      /*entry_count_delta=*/0,
+      /*total_size_delta=*/total_size_delta, corruption_detected);
 }
 
 // This function handles writes that overlap with existing data blobs. It finds
@@ -2093,15 +2060,12 @@ Error Backend::RunEvictionInternal(
       return Error::kFailedToExecute;
     }
   }
-  if (!UpdateStoreStatusAndCommitTransaction(
-          transaction, entry_count_delta, checked_total_size_delta.ValueOrDie(),
-          corruption_detected)) {
-    return Error::kFailedToCommitTransaction;
-  }
-  return Error::kOk;
+  return UpdateStoreStatusAndCommitTransaction(
+      transaction, entry_count_delta, checked_total_size_delta.ValueOrDie(),
+      corruption_detected);
 }
 
-bool Backend::UpdateStoreStatusAndCommitTransaction(
+Error Backend::UpdateStoreStatusAndCommitTransaction(
     sql::Transaction& transaction,
     int64_t entry_count_delta,
     int64_t total_size_delta,
@@ -2147,12 +2111,12 @@ bool Backend::UpdateStoreStatusAndCommitTransaction(
   if (!transaction.Commit()) {
     store_status_.entry_count = old_entry_count;
     store_status_.total_size = old_total_size;
-    return false;
+    return Error::kFailedToCommitTransaction;
   }
-  return true;
+  return Error::kOk;
 }
 
-bool Backend::RecalculateStoreStatusAndCommitTransaction(
+Error Backend::RecalculateStoreStatusAndCommitTransaction(
     sql::Transaction& transaction) {
   store_status_.entry_count = CalculateResourceEntryCount();
   store_status_.total_size = CalculateTotalSize();
@@ -2160,7 +2124,7 @@ bool Backend::RecalculateStoreStatusAndCommitTransaction(
                        store_status_.entry_count);
   meta_table_.SetValue(kSqlBackendMetaTableKeyTotalSize,
                        store_status_.total_size);
-  return transaction.Commit();
+  return transaction.Commit() ? Error::kOk : Error::kFailedToCommitTransaction;
 }
 
 // Recalculates the number of non-doomed entries in the `resources` table.
