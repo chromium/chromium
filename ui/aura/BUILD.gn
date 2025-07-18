@@ -351,28 +351,3 @@ test("aura_unittests") {
 
   data_deps = [ "//third_party/angle:includes" ]
 }
-
-# This target is added as a dependency of browser interactive_ui_tests. It must
-# be source_set, otherwise the linker will drop the tests as dead code.
-source_set("aura_interactive_ui_tests") {
-  testonly = true
-  if (is_win) {
-    sources = [ "native_window_occlusion_tracker_win_interactive_test.cc" ]
-
-    deps = [
-      ":aura",
-      ":test_support",
-      "//base/test:test_support",
-      "//mojo/core/embedder",
-      "//testing/gtest",
-      "//ui/base:test_support",
-      "//ui/base/ime/init",
-      "//ui/display:display",
-      "//ui/gfx",
-      "//ui/gfx/geometry",
-      "//ui/gl:test_support",
-      "//ui/gl/init",
-      "//ui/views:views",
-    ]
-  }
-}

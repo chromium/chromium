@@ -11510,7 +11510,6 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/ui/aura/accessibility:interactive_ui_tests",
         "//components/eye_dropper",
-        "//ui/aura:aura_interactive_ui_tests",
         "//ui/aura:test_support",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",

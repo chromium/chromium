@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/win/hwnd_util.h"
 
@@ -316,8 +314,6 @@ NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
         UpdateOcclusionStateCallback update_occlusion_state_callback)
     : task_runner_(task_runner),
       ui_thread_task_runner_(ui_thread_task_runner),
-      calculate_occluded_region_(base::FeatureList::IsEnabled(
-          features::kApplyNativeOccludedRegionToWindowTracker)),
       update_occlusion_state_callback_(update_occlusion_state_callback) {
   ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
                      IID_PPV_ARGS(&virtual_desktop_manager_));
@@ -673,7 +669,6 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 
   num_root_windows_with_unknown_occlusion_state_--;
 
-  SkRegion occluded_window_region = unoccluded_desktop_region_;
   SkRegion curr_unoccluded_destkop = unoccluded_desktop_region_;
   if (window_is_occluding) {
     unoccluded_desktop_region_.op(gfx::RectToSkIRect(window_rect),
@@ -697,18 +692,7 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     return true;
   }
   it->second.occlusion_state = Window::OcclusionState::VISIBLE;
-  if (!calculate_occluded_region_ || window_rect.IsEmpty())
-    return true;
 
-  occluded_window_region.op(gfx::RectToSkIRect(window_rect),
-                            SkRegion::kIntersect_Op);
-  if (occluded_window_region.isEmpty())
-    return true;
-
-  occluded_window_region.op(gfx::RectToSkIRect(window_rect),
-                            SkRegion::kReverseDifference_Op);
-  occluded_window_region.translate(-window_rect.x(), -window_rect.y());
-  it->second.occluded_region_pixels.swap(occluded_window_region);
   return true;
 }
 

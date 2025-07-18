@@ -231,10 +231,6 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // task is posted to this task runner.
     const scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
 
-    // True if the occluded region should be tracked. This caches the value of
-    // the feature `kApplyNativeOccludedRegionToWindowTracker`.
-    const bool calculate_occluded_region_;
-
     // Callback used to update occlusion state on UI thread.
     UpdateOcclusionStateCallback update_occlusion_state_callback_;
 

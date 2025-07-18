@@ -22,11 +22,6 @@
 namespace features {
 
 #if BUILDFLAG(IS_WIN)
-// If enabled, the occluded region of the HWND is supplied to WindowTracker.
-BASE_FEATURE(kApplyNativeOccludedRegionToWindowTracker,
-             "ApplyNativeOccludedRegionToWindowTracker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, calculate native window occlusion - Windows-only.
 BASE_FEATURE(kCalculateNativeWinOcclusion,
              "CalculateNativeWinOcclusion",
