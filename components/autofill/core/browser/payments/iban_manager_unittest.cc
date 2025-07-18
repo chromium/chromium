@@ -30,7 +30,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 using testing::_;
@@ -83,17 +82,6 @@ class IbanManagerTest : public testing::Test,
     test_api(*form_structure_).SetFieldTypes({IBAN_VALUE});
     autofill_field_ = form_structure_->field(0);
 
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", &mock_resource_delegate_,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-    if (IsNewFopDisplayEnabled()) {
-      ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
-          .WillByDefault(testing::Return(gfx::test::CreateImage(100, 50)));
-    } else {
-      ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN_OLD))
-          .WillByDefault(testing::Return(gfx::test::CreateImage(100, 50)));
-    }
-
     ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
             ShouldBlockSingleFieldSuggestions)
         .WillByDefault(testing::Return(false));
@@ -105,10 +93,6 @@ class IbanManagerTest : public testing::Test,
 #else
     return GetParam();
 #endif
-  }
-
-  void TearDown() override {
-    ui::ResourceBundle::CleanupSharedInstance();
   }
 
   // Sets up the TestPersonalDataManager with a local IBAN.
@@ -185,8 +169,6 @@ class IbanManagerTest : public testing::Test,
   raw_ptr<AutofillField> autofill_field_;
   IbanManager iban_manager_{
       &autofill_client_.GetPersonalDataManager().payments_data_manager()};
-  testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
-  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
   base::test::ScopedFeatureList feature_list_metadata_;
 };
 

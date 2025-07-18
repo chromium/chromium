@@ -21,7 +21,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
@@ -49,24 +48,9 @@ class IbanSuggestionGeneratorTest : public testing::Test,
         test::CreateTestIbanFormData(/*value=*/""));
     test_api(*form_structure_).SetFieldTypes({IBAN_VALUE});
 
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", &mock_resource_delegate_,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-    if (IsNewFopDisplayEnabled()) {
-      ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
-          .WillByDefault(testing::Return(gfx::test::CreateImage(100, 50)));
-    } else {
-      ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN_OLD))
-          .WillByDefault(testing::Return(gfx::test::CreateImage(100, 50)));
-    }
-
     ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
             ShouldBlockSingleFieldSuggestions)
         .WillByDefault(testing::Return(false));
-  }
-
-  ~IbanSuggestionGeneratorTest() override {
-    ui::ResourceBundle::CleanupSharedInstance();
   }
 
   bool IsNewFopDisplayEnabled() const {
@@ -156,8 +140,6 @@ class IbanSuggestionGeneratorTest : public testing::Test,
   TestAutofillClient autofill_client_;
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<FormStructure> form_structure_;
-  testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
-  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_;
   base::test::ScopedFeatureList feature_list_;
 };
 

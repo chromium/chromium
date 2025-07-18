@@ -54,8 +54,6 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/mock_resource_bundle_delegate.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -226,10 +224,6 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (did_set_up_image_resource_for_test_) {
-      CleanUpIbanImageResources();
-      did_set_up_image_resource_for_test_ = false;
-    }
     credit_card_form_event_logger_->OnDestroyed();
   }
 
@@ -258,11 +252,6 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   }
 
   gfx::Image CustomIconForTest() { return gfx::test::CreateImage(32, 32); }
-
-  void CleanUpIbanImageResources() {
-    ui::ResourceBundle::CleanupSharedInstance();
-    resource_bundle_swapper_.reset();
-  }
 
   bool VerifyCardArtImageExpectation(Suggestion& suggestion,
                                      const GURL& expected_url,
@@ -298,12 +287,6 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   TestBrowserAutofillManager autofill_manager_{&autofill_driver_};
 
  protected:
-  testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
-  std::unique_ptr<ui::ResourceBundle::SharedInstanceSwapperForTesting>
-      resource_bundle_swapper_;
-  // Tracks whether SetUpIbanImageResources() has been called, so that the
-  // created images can be cleaned up when the test has finished.
-  bool did_set_up_image_resource_for_test_ = false;
   std::unique_ptr<MockCreditCardFormEventLogger> credit_card_form_event_logger_;
 };
 
@@ -2238,22 +2221,6 @@ class AutofillIbanSuggestionContentTest
 
   ~AutofillIbanSuggestionContentTest() override = default;
 
-  void SetUpIbanImageResources() {
-    resource_bundle_swapper_ =
-        std::make_unique<ui::ResourceBundle::SharedInstanceSwapperForTesting>();
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", &mock_resource_delegate_,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-    if (IsNewFopDisplayEnabled()) {
-      ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
-          .WillByDefault(testing::Return(CustomIconForTest()));
-    } else {
-      ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN_OLD))
-          .WillByDefault(testing::Return(CustomIconForTest()));
-    }
-    did_set_up_image_resource_for_test_ = true;
-  }
-
   bool IsNewFopDisplayEnabled() const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     return false;
@@ -2271,8 +2238,6 @@ INSTANTIATE_TEST_SUITE_P(PaymentsSuggestionGeneratorTest,
                          ::testing::Bool());
 
 TEST_P(AutofillIbanSuggestionContentTest, GetLocalIbanSuggestions) {
-  SetUpIbanImageResources();
-
   auto MakeLocalIban = [](const std::u16string& value,
                           const std::u16string& nickname) {
     Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
@@ -2326,8 +2291,6 @@ TEST_P(AutofillIbanSuggestionContentTest, GetLocalIbanSuggestions) {
 }
 
 TEST_P(AutofillIbanSuggestionContentTest, GetServerIbanSuggestions) {
-  SetUpIbanImageResources();
-
   Iban server_iban1 = test::GetServerIban();
   Iban server_iban2 = test::GetServerIban2();
   Iban server_iban3 = test::GetServerIban3();
@@ -2366,8 +2329,6 @@ TEST_P(AutofillIbanSuggestionContentTest, GetServerIbanSuggestions) {
 }
 
 TEST_P(AutofillIbanSuggestionContentTest, GetLocalAndServerIbanSuggestions) {
-  SetUpIbanImageResources();
-
   Iban server_iban1 = test::GetServerIban();
   Iban server_iban2 = test::GetServerIban2();
   Iban local_iban1 = test::GetLocalIban();
