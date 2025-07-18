@@ -339,17 +339,13 @@ void WaitForFakeJoinFlowView() {
       performAction:grey_tap()];
 
   // Open the menu and check elements while not shared.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kTabGroupOverflowMenuButtonIdentifier)]
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP)]
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kTabGroupOverflowMenuButtonIdentifier)]
+
+  // Close the menu by tapping outside the menu area.
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
 
   // Tap on the face pile to share the group.
@@ -368,21 +364,15 @@ void WaitForFakeJoinFlowView() {
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:FakeShareFlowView()];
 
   // Open the menu and check elements while shared.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kTabGroupOverflowMenuButtonIdentifier)]
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP)]
+  [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY)]
+  [[EarlGrey selectElementWithMatcher:RecentActivityButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kTabGroupOverflowMenuButtonIdentifier)]
+
+  // Close the menu by tapping outside the menu area.
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
 
   // Tap on the face pile to manage the group.
