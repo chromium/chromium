@@ -132,20 +132,17 @@ struct CompactionTraits<blink::HeapVectorBacking<T>> {
   }
 };
 }  // namespace internal
-}  // namespace blink
-
-namespace WTF {
 
 // This trace method is used for all HeapVectorBacking objects. On-stack objects
 // are found and dispatched using conservative stack scanning. HeapVector (i.e.
 // Vector) dispatches all regular on-heap backings to this method.
 template <typename T, typename Traits>
 struct TraceInCollectionTrait<kNoWeakHandling,
-                              blink::HeapVectorBacking<T, Traits>,
+                              HeapVectorBacking<T, Traits>,
                               void> {
-  using Backing = blink::HeapVectorBacking<T, Traits>;
+  using Backing = HeapVectorBacking<T, Traits>;
 
-  static void Trace(blink::Visitor* visitor, const void* self) {
+  static void Trace(Visitor* visitor, const void* self) {
     // HeapVectorBacking does not know the exact size of the vector
     // and just knows the capacity of the vector. Due to the constraint,
     // HeapVectorBacking can support only the following objects:
@@ -167,7 +164,7 @@ struct TraceInCollectionTrait<kNoWeakHandling,
         "cleared as unused with memset.");
 
     // Bail out early if the contents are not actually traceable.
-    if constexpr (!IsTraceable<T>::value) {
+    if constexpr (!IsTraceableV<T>) {
       return;
     }
 
@@ -181,10 +178,10 @@ struct TraceInCollectionTrait<kNoWeakHandling,
     // already zeroed out).
     ANNOTATE_CHANGE_SIZE(array, length, 0, length);
 #endif  // ANNOTATE_CONTIGUOUS_CONTAINER
-    if constexpr (IsTraceable<T>::value) {
+    if constexpr (IsTraceableV<T>) {
       for (unsigned i = 0; i < length; ++i) {
         if (!std::is_polymorphic_v<T> ||
-            blink::internal::VTableInitialized(&array[i])) {
+            internal::VTableInitialized(&array[i])) {
           visitor->Trace(array[i]);
         }
       }
@@ -192,7 +189,7 @@ struct TraceInCollectionTrait<kNoWeakHandling,
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 namespace cppgc {
 
@@ -238,12 +235,12 @@ struct TraceTrait<blink::HeapVectorBacking<T, Traits>> {
   }
 
   static void Trace(Visitor* visitor, const void* self) {
-    static_assert(!WTF::IsWeak<T>::value,
+    static_assert(!blink::IsWeakV<T>,
                   "Weakness is not supported in HeapVector and HeapDeque");
 
     // Early bailout for non-traceable types. `GetTraceDescriptor()` doesn't
     // support returning a null callback, so this is the best we can do for now.
-    if (!WTF::IsTraceable<T>::value) {
+    if (!blink::IsTraceableV<T>) {
       return;
     }
 
@@ -256,9 +253,9 @@ struct TraceTrait<blink::HeapVectorBacking<T, Traits>> {
       }
     }
 
-    WTF::TraceInCollectionTrait<WTF::kNoWeakHandling,
-                                blink::HeapVectorBacking<T, Traits>,
-                                void>::Trace(visitor, self);
+    blink::TraceInCollectionTrait<blink::kNoWeakHandling,
+                                  blink::HeapVectorBacking<T, Traits>,
+                                  void>::Trace(visitor, self);
   }
 };
 

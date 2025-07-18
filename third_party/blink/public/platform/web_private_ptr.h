@@ -146,11 +146,10 @@ class WebPrivatePtrForRefCounted final {
   template <typename U>
   // NOLINTNEXTLINE(google-explicit-constructor)
   WebPrivatePtrForRefCounted(U&& ptr) : WebPrivatePtrForRefCounted() {
-    static_assert(
-        PtrDestruction == WebPrivatePtrDestruction::kSameThread ||
-            WTF::IsSubclassOfTemplate<T, WTF::ThreadSafeRefCounted>::value,
-        "Cross thread destructible class must derive from "
-        "ThreadSafeRefCounted<>");
+    static_assert(PtrDestruction == WebPrivatePtrDestruction::kSameThread ||
+                      IsSubclassOfTemplate<T, WTF::ThreadSafeRefCounted>::value,
+                  "Cross thread destructible class must derive from "
+                  "ThreadSafeRefCounted<>");
     AsRefPtr() = std::forward<U>(ptr);
   }
 
@@ -263,7 +262,7 @@ class WebPrivatePtrForGC final {
       U&& ptr,
       const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE)
       : handle_(std::forward<U>(ptr), loc) {
-    static_assert(WTF::IsGarbageCollectedType<T>::value,
+    static_assert(IsGarbageCollectedTypeV<T>,
                   "WebPrivatePtrForGC can only be used on T inheriting from "
                   "GarbageCollected or GarbageCollectedMixin");
   }

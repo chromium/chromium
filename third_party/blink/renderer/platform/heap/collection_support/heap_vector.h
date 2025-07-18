@@ -156,12 +156,10 @@ constexpr BasicHeapVector<CollectionType, T, inlineCapacity>::TypeConstraints::
   static_assert(
       std::is_trivially_destructible_v<BasicHeapVector> || inlineCapacity,
       "BasicHeapVector must be trivially destructible.");
-  static_assert(!WTF::IsWeak<T>::value,
-                "Weak types are not allowed in BasicHeapVector.");
-  static_assert(
-      !WTF::IsGarbageCollectedType<T>::value || IsHeapVector<T>::value,
-      "GCed types should not be inlined in a BasicHeapVector.");
-  static_assert(!WTF::IsPointerToGarbageCollectedType<T>,
+  static_assert(!IsWeakV<T>, "Weak types are not allowed in BasicHeapVector.");
+  static_assert(!IsGarbageCollectedTypeV<T> || IsHeapVector<T>::value,
+                "GCed types should not be inlined in a BasicHeapVector.");
+  static_assert(!IsPointerToGarbageCollectedType<T>,
                 "Don't use raw pointers or reference to garbage collected "
                 "types in BasicHeapVector. Use Member<> instead.");
 
@@ -177,14 +175,14 @@ template <typename T, wtf_size_t inlineCapacity = 0>
 using HeapVector = BasicHeapVector<internal::HeapCollectionType::kDisallowNew,
                                    T,
                                    inlineCapacity>;
-static_assert(WTF::IsDisallowNew<HeapVector<int>>);
+static_assert(IsDisallowNew<HeapVector<int>>);
 ASSERT_SIZE(Vector<int>, HeapVector<int>);
 
 // GCed version of WTF::Vector for referring to GarbageCollected objects.
 template <typename T, wtf_size_t inlineCapacity = 0>
 using GCedHeapVector =
     BasicHeapVector<internal::HeapCollectionType::kGCed, T, inlineCapacity>;
-static_assert(!WTF::IsDisallowNew<GCedHeapVector<int>>);
+static_assert(!IsDisallowNew<GCedHeapVector<int>>);
 ASSERT_SIZE(Vector<int>, GCedHeapVector<int>);
 
 template <typename T>

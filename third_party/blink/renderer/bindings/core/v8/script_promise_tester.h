@@ -72,7 +72,7 @@ class ScriptPromiseTester final {
         : owner_(std::move(owner)), target_state_(target_state) {}
 
     using BlinkType =
-        std::conditional_t<WTF::IsGarbageCollectedType<IDLType>::value,
+        std::conditional_t<IsGarbageCollectedTypeV<IDLType>,
                            std::add_pointer_t<IDLType>,
                            typename IDLTypeToBlinkImplType<IDLType>::type>;
 

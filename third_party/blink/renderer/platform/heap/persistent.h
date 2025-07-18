@@ -60,7 +60,7 @@ cppgc::internal::BasicCrossThreadPersistent<U, weakness> DownCast(
 }
 
 template <typename T>
-  requires(WTF::IsGarbageCollectedType<T>::value)
+  requires(IsGarbageCollectedTypeV<T>)
 Persistent<T> WrapPersistentIfNeeded(T* value) {
   return Persistent<T>(value);
 }

@@ -47,7 +47,7 @@ class IntWrapper : public blink::GarbageCollected<IntWrapper> {
   int x_;
 };
 
-static_assert(WTF::IsTraceable<IntWrapper>::value,
+static_assert(blink::IsTraceableV<IntWrapper>,
               "IsTraceable<> template failed to recognize trace method.");
 
 }  // namespace

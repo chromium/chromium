@@ -14,9 +14,8 @@ namespace blink {
 template <typename T>
 class CORE_EXPORT ValueRepeater : public GarbageCollected<ValueRepeater<T>> {
  public:
-  using VectorType = typename std::conditional<WTF::IsTraceable<T>::value,
-                                               HeapVector<T, 1>,
-                                               Vector<T>>::type;
+  using VectorType = typename std::
+      conditional<IsTraceableV<T>, HeapVector<T, 1>, Vector<T>>::type;
   ValueRepeater() = default;
 
   explicit ValueRepeater(VectorType repeated_values,

@@ -106,16 +106,15 @@ struct IntWrapperHashTraits : GenericHashTraits<IntWrapper> {
   }
 };
 
-static_assert(WTF::IsTraceable<IntWrapper>::value,
+static_assert(IsTraceableV<IntWrapper>,
               "IsTraceable<> template failed to recognize trace method.");
-static_assert(WTF::IsTraceable<HeapVector<IntWrapper>>::value,
+static_assert(IsTraceableV<HeapVector<IntWrapper>>,
               "HeapVector<IntWrapper> must be traceable.");
-static_assert(WTF::IsTraceable<HeapDeque<IntWrapper>>::value,
+static_assert(IsTraceableV<HeapDeque<IntWrapper>>,
               "HeapDeque<IntWrapper> must be traceable.");
-static_assert(
-    WTF::IsTraceable<HeapHashSet<IntWrapper, IntWrapperHashTraits>>::value,
-    "HeapHashSet<IntWrapper> must be traceable.");
-static_assert(WTF::IsTraceable<HeapHashMap<int, Member<IntWrapper>>>::value,
+static_assert(IsTraceableV<HeapHashSet<IntWrapper, IntWrapperHashTraits>>,
+              "HeapHashSet<IntWrapper> must be traceable.");
+static_assert(IsTraceableV<HeapHashMap<int, Member<IntWrapper>>>,
               "HeapHashMap<int, IntWrapper> must be traceable.");
 
 }  // namespace
@@ -2154,9 +2153,9 @@ TEST_F(HeapTest, CollectionNesting) {
       MakeGarbageCollected<GCedHeapHashMap<void*, Member<IntVector>>>();
   GCedHeapHashMap<void*, Member<IntDeque>>* map2 =
       MakeGarbageCollected<GCedHeapHashMap<void*, Member<IntDeque>>>();
-  static_assert(WTF::IsTraceable<IntVector>::value,
+  static_assert(IsTraceableV<IntVector>,
                 "Failed to recognize HeapVector as traceable");
-  static_assert(WTF::IsTraceable<IntDeque>::value,
+  static_assert(IsTraceableV<IntDeque>,
                 "Failed to recognize HeapDeque as traceable");
 
   map->insert(key, MakeGarbageCollected<IntVector>());
@@ -2556,9 +2555,10 @@ class Mixin : public GarbageCollectedMixin {
 class UseMixin : public SimpleObject, public Mixin {
  public:
   UseMixin() {
-    // Verify that WTF::IsGarbageCollectedType<> works as expected for mixins.
-    static_assert(WTF::IsGarbageCollectedType<UseMixin>::value,
-                  "IsGarbageCollectedType<> sanity check failed for GC mixin.");
+    // Verify that IsGarbageCollectedTypeV<> works as expected for mixins.
+    static_assert(
+        IsGarbageCollectedTypeV<UseMixin>,
+        "IsGarbageCollectedTypeV<> sanity check failed for GC mixin.");
     trace_count_ = 0;
   }
 

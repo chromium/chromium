@@ -59,10 +59,6 @@ struct KeyValuePair {
   ValueTypeArg value;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename K, typename V>
 struct IsWeak<blink::KeyValuePair<K, V>>
     : std::integral_constant<bool, IsWeak<K>::value || IsWeak<V>::value> {};
@@ -71,10 +67,6 @@ template <typename K, typename V>
 struct IsTraceable<blink::KeyValuePair<K, V>>
     : std::integral_constant<bool,
                              IsTraceable<K>::value || IsTraceable<V>::value> {};
-
-}  // namespace WTF
-
-namespace blink {
 
 template <typename KeyTraitsArg,
           typename ValueTraitsArg,
@@ -92,7 +84,7 @@ struct KeyValuePairHashTraits
   static constexpr bool kCanTraceConcurrently =
       KeyTraits::kCanTraceConcurrently &&
       (ValueTraits::kCanTraceConcurrently ||
-       !WTF::IsTraceable<typename ValueTraits::TraitType>::value);
+       !IsTraceableV<typename ValueTraits::TraitType>);
   static constexpr bool kSupportsCompaction =
       KeyTraits::kSupportsCompaction && ValueTraits::kSupportsCompaction;
 };

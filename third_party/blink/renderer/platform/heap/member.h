@@ -77,21 +77,17 @@ static_assert(kBlinkMemberGCHasDebugChecks ||
                   sizeof(Member<void*>) <= sizeof(void*),
               "Member<> should stay small!");
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
-struct IsTraceable<blink::Member<T>> {
+struct IsTraceable<Member<T>> {
   STATIC_ONLY(IsTraceable);
   static const bool value = true;
 };
 
 template <typename T>
-struct IsWeak<blink::WeakMember<T>> : std::true_type {};
+struct IsWeak<WeakMember<T>> : std::true_type {};
 
 template <typename T>
-struct IsTraceable<blink::WeakMember<T>> {
+struct IsTraceable<WeakMember<T>> {
   STATIC_ONLY(IsTraceable);
   static const bool value = true;
 };
@@ -108,38 +104,32 @@ class ValuePeeker final {
   ALWAYS_INLINE ValuePeeker(T* ptr) : ptr_(ptr) {}
   template <typename U>
   // NOLINTNEXTLINE
-  ALWAYS_INLINE ValuePeeker(const blink::Member<U>& m) : ptr_(m.Get()) {}
+  ALWAYS_INLINE ValuePeeker(const Member<U>& m) : ptr_(m.Get()) {}
   template <typename U>
   // NOLINTNEXTLINE
-  ALWAYS_INLINE ValuePeeker(const blink::WeakMember<U>& m) : ptr_(m.Get()) {}
+  ALWAYS_INLINE ValuePeeker(const WeakMember<U>& m) : ptr_(m.Get()) {}
   template <typename U>
   // NOLINTNEXTLINE
-  ALWAYS_INLINE ValuePeeker(const blink::UntracedMember<U>& m)
-      : ptr_(m.Get()) {}
+  ALWAYS_INLINE ValuePeeker(const UntracedMember<U>& m) : ptr_(m.Get()) {}
   template <typename U>
   // NOLINTNEXTLINE
-  ALWAYS_INLINE ValuePeeker(const blink::Persistent<U>& p) : ptr_(p.Get()) {}
+  ALWAYS_INLINE ValuePeeker(const Persistent<U>& p) : ptr_(p.Get()) {}
   template <typename U>
   // NOLINTNEXTLINE
-  ALWAYS_INLINE ValuePeeker(const blink::WeakPersistent<U>& p)
-      : ptr_(p.Get()) {}
+  ALWAYS_INLINE ValuePeeker(const WeakPersistent<U>& p) : ptr_(p.Get()) {}
 
   // NOLINTNEXTLINE
   ALWAYS_INLINE operator T*() const { return ptr_; }
   // NOLINTNEXTLINE
-  ALWAYS_INLINE operator blink::Member<T>() const { return ptr_; }
+  ALWAYS_INLINE operator Member<T>() const { return ptr_; }
   // NOLINTNEXTLINE
-  ALWAYS_INLINE operator blink::WeakMember<T>() const { return ptr_; }
+  ALWAYS_INLINE operator WeakMember<T>() const { return ptr_; }
   // NOLINTNEXTLINE
-  ALWAYS_INLINE operator blink::UntracedMember<T>() const { return ptr_; }
+  ALWAYS_INLINE operator UntracedMember<T>() const { return ptr_; }
 
  private:
   T* ptr_;
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 // Default hash for hash tables with Member<>-derived elements.
 template <typename T, typename MemberType>
@@ -161,14 +151,14 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
     return blink::GetHash(st.GetAsInteger());
   }
   template <typename Member>
-    requires(WTF::IsAnyMemberType<Member>::value)
+    requires(IsAnyMemberType<Member>::value)
   static unsigned GetHash(const Member& m) {
     return blink::GetHash(m.GetRawStorage().GetAsInteger());
   }
 
   static constexpr bool kEmptyValueIsZero = true;
 
-  using PeekInType = WTF::ValuePeeker<T>;
+  using PeekInType = ValuePeeker<T>;
   using PeekOutType = T*;
   using IteratorGetType = MemberType*;
   using IteratorConstGetType = const MemberType*;

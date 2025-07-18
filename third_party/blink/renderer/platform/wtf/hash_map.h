@@ -69,7 +69,7 @@ struct KeyValuePairExtractor {
   template <typename T>
   static void ClearValue(T& p) {
     using ValueType = typename T::ValueType;
-    if (IsTraceable<ValueType>::value) {
+    if (IsTraceableV<ValueType>) {
       AtomicMemzero<sizeof(ValueType), alignof(ValueType)>(&p.value);
     } else {
       UNSAFE_TODO(memset(static_cast<void*>(&p.value), 0, sizeof(p.value)));

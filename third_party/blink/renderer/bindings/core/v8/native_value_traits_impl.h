@@ -832,7 +832,7 @@ struct NativeValueTraits<IDLSequence<T>>
 
   // HeapVector is GarbageCollected, so HeapVector<T>* is used for IDLNullable
   // while std::optional<Vector<T>> is used for IDLNullable<Vector<T>>.
-  static constexpr bool has_null_value = WTF::IsTraceable<T>::value;
+  static constexpr bool has_null_value = IsTraceableV<T>;
 
   // https://webidl.spec.whatwg.org/#es-sequence
   static ImplType NativeValue(v8::Isolate* isolate,

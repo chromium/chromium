@@ -186,7 +186,7 @@ class PLATFORM_EXPORT HeapAllocator {
       case HeapConsistency::WriteBarrierType::kMarking:
         HeapConsistency::DijkstraWriteBarrierRange(
             params, slot_in_backing, sizeof(T), 1,
-            TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
+            TraceCollectionIfEnabled<kNoWeakHandling, T, Traits>::Trace);
         break;
       case HeapConsistency::WriteBarrierType::kGenerational:
         GenerationalBarrierForBacking(params, slot_in_backing);
@@ -213,7 +213,7 @@ class PLATFORM_EXPORT HeapAllocator {
       case HeapConsistency::WriteBarrierType::kMarking:
         HeapConsistency::DijkstraWriteBarrierRange(
             params, first_element, sizeof(T), length,
-            TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
+            TraceCollectionIfEnabled<kNoWeakHandling, T, Traits>::Trace);
         break;
       case HeapConsistency::WriteBarrierType::kGenerational:
         GenerationalBarrierForBacking(params, first_element);
@@ -227,8 +227,8 @@ class PLATFORM_EXPORT HeapAllocator {
 
   template <typename T, typename Traits>
   static void Trace(Visitor* visitor, const T& t) {
-    TraceCollectionIfEnabled<WTF::kWeakHandlingTrait<T>, T, Traits>::Trace(
-        visitor, &t);
+    TraceCollectionIfEnabled<kWeakHandlingTrait<T>, T, Traits>::Trace(visitor,
+                                                                      &t);
   }
 
   template <typename T>
@@ -291,11 +291,11 @@ template <typename T>
 void GenerationalBarrierForBacking(
     const cppgc::subtle::HeapConsistency::WriteBarrierParams& params,
     T* slot_in_backing) {
-  if constexpr (WTF::IsMemberOrWeakMemberType<std::decay_t<T>>::value) {
+  if constexpr (IsMemberOrWeakMemberType<std::decay_t<T>>::value) {
     // TODO(1029379): Provide Member::GetSlot() and call it here.
     cppgc::subtle::HeapConsistency::GenerationalBarrier(params,
                                                         slot_in_backing);
-  } else if constexpr (WTF::IsTraceable<std::decay_t<T>>::value) {
+  } else if constexpr (IsTraceableV<std::decay_t<T>>) {
     cppgc::subtle::HeapConsistency::GenerationalBarrierForSourceObject(
         params, slot_in_backing);
   }

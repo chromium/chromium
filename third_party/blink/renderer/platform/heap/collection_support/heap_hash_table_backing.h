@@ -124,12 +124,6 @@ struct CompactionTraits<blink::HeapHashTableBacking<Table>> {
     return ValueTraits::kSupportsCompaction;
   }
 };
-}  // namespace internal
-}  // namespace blink
-
-namespace WTF {
-
-namespace internal {
 
 // ConcurrentBucket is a wrapper for HashTable buckets for concurrent marking.
 // It is used to provide a snapshot view of the bucket key and guarantee
@@ -186,14 +180,14 @@ class ConcurrentBucket<blink::KeyValuePair<Key, Value>> {
 
 }  // namespace internal
 
-template <WTF::WeakHandlingFlag weak_handling, typename Table>
+template <WeakHandlingFlag weak_handling, typename Table>
 struct TraceHashTableBackingInCollectionTrait {
   using Value = typename Table::ValueType;
   using Traits = typename Table::ValueTraits;
   using Extractor = typename Table::ExtractorType;
 
   static void Trace(blink::Visitor* visitor, const void* self) {
-    static_assert(IsTraceable<Value>::value || WTF::IsWeak<Value>::value,
+    static_assert(IsTraceableV<Value> || IsWeakV<Value>,
                   "Table should not be traced");
     const Value* array = reinterpret_cast<const Value*>(self);
     const size_t length =
@@ -287,7 +281,7 @@ struct IsWeak<internal::ConcurrentBucket<T>> : IsWeak<T> {};
 template <typename T>
 struct IsTraceable<internal::ConcurrentBucket<T>> : IsTraceable<T> {};
 
-}  // namespace WTF
+}  // namespace blink
 
 namespace cppgc {
 
@@ -330,14 +324,14 @@ struct TraceTrait<blink::HeapHashTableBacking<Table>> {
   using ValueType = typename Table::ValueTraits::TraitType;
 
   static TraceDescriptor GetTraceDescriptor(const void* self) {
-    return {self, Trace<WTF::kNoWeakHandling>};
+    return {self, Trace<blink::kNoWeakHandling>};
   }
 
   static TraceDescriptor GetWeakTraceDescriptor(const void* self) {
     return GetWeakTraceDescriptorImpl<ValueType>::GetWeakTraceDescriptor(self);
   }
 
-  template <WTF::WeakHandlingFlag weak_handling = WTF::kNoWeakHandling>
+  template <blink::WeakHandlingFlag weak_handling = blink::kNoWeakHandling>
   static void Trace(Visitor* visitor, const void* self) {
     if (!Traits::kCanTraceConcurrently && self) {
       if (visitor->DeferTraceToMutatorThreadIfConcurrent(
@@ -348,11 +342,10 @@ struct TraceTrait<blink::HeapHashTableBacking<Table>> {
       }
     }
 
-    static_assert(
-        WTF::IsTraceable<ValueType>::value || WTF::IsWeak<ValueType>::value,
-        "T should not be traced");
-    WTF::TraceInCollectionTrait<weak_handling, Backing, void>::Trace(visitor,
-                                                                     self);
+    static_assert(blink::IsTraceableV<ValueType> || blink::IsWeakV<ValueType>,
+                  "T should not be traced");
+    blink::TraceInCollectionTrait<weak_handling, Backing, void>::Trace(visitor,
+                                                                       self);
   }
 
  private:
@@ -375,12 +368,11 @@ struct TraceTrait<blink::HeapHashTableBacking<Table>> {
     // Default setting for KVP without ephemeron semantics.
     template <typename KeyType,
               typename ValueType,
-              bool ephemeron_semantics = (WTF::IsWeak<KeyType>::value &&
-                                          !WTF::IsWeak<ValueType>::value &&
-                                          WTF::IsTraceable<ValueType>::value) ||
-                                         (WTF::IsWeak<ValueType>::value &&
-                                          !WTF::IsWeak<KeyType>::value &&
-                                          WTF::IsTraceable<KeyType>::value)>
+              bool ephemeron_semantics =
+                  (blink::IsWeakV<KeyType> && !blink::IsWeakV<ValueType> &&
+                   blink::IsTraceableV<ValueType>) ||
+                  (blink::IsWeakV<ValueType> && !blink::IsWeakV<KeyType> &&
+                   blink::IsTraceableV<KeyType>)>
     struct GetWeakTraceDescriptorKVPImpl {
       static TraceDescriptor GetWeakTraceDescriptor(const void* backing) {
         return {backing, nullptr};
@@ -391,7 +383,7 @@ struct TraceTrait<blink::HeapHashTableBacking<Table>> {
     template <typename KeyType, typename ValueType>
     struct GetWeakTraceDescriptorKVPImpl<KeyType, ValueType, true> {
       static TraceDescriptor GetWeakTraceDescriptor(const void* backing) {
-        return {backing, Trace<WTF::kWeakHandling>};
+        return {backing, Trace<blink::kWeakHandling>};
       }
     };
   };

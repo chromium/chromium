@@ -83,7 +83,7 @@ class GCedHeapLinkedStack final
     constexpr TypeConstraints() {
       static_assert(std::is_trivially_destructible_v<GCedHeapLinkedStack<T>>,
                     "GCedHeapLinkedStack must be trivially destructible.");
-      static_assert(WTF::IsMemberType<T>::value,
+      static_assert(IsMemberType<T>::value,
                     "GCedHeapLinkedStack supports only Member.");
     }
   };

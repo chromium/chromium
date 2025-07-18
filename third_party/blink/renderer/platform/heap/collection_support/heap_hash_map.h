@@ -45,27 +45,24 @@ class BasicHeapHashMap final
  private:
   template <typename T>
   static constexpr bool IsValidNonTraceableType() {
-    return !WTF::IsTraceable<T>::value &&
-           !WTF::IsPointerToGarbageCollectedType<T>;
+    return !IsTraceableV<T> && !IsPointerToGarbageCollectedType<T>;
   }
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
       static_assert(std::is_trivially_destructible_v<BasicHeapHashMap>,
                     "BasicHeapHashMap must be trivially destructible.");
-      static_assert(
-          WTF::IsTraceable<KeyArg>::value || WTF::IsTraceable<MappedArg>::value,
-          "For hash maps without traceable elements, use HashMap<> "
-          "instead of BasicHeapHashMap<>.");
-      static_assert(WTF::IsMemberOrWeakMemberType<KeyArg>::value ||
+      static_assert(IsTraceableV<KeyArg> || IsTraceableV<MappedArg>,
+                    "For hash maps without traceable elements, use HashMap<> "
+                    "instead of BasicHeapHashMap<>.");
+      static_assert(IsMemberOrWeakMemberType<KeyArg>::value ||
                         IsValidNonTraceableType<KeyArg>(),
                     "BasicHeapHashMap supports only Member, WeakMember and "
                     "non-traceable types as keys.");
       static_assert(
-          WTF::IsMemberOrWeakMemberType<MappedArg>::value ||
-              WTF::IsTraceable<MappedArg>::value ||
-              IsValidNonTraceableType<MappedArg>() ||
-              WTF::IsSubclassOfTemplate<MappedArg, v8::TracedReference>::value,
+          IsMemberOrWeakMemberType<MappedArg>::value ||
+              IsTraceableV<MappedArg> || IsValidNonTraceableType<MappedArg>() ||
+              IsSubclassOfTemplate<MappedArg, v8::TracedReference>::value,
           "BasicHeapHashMap supports only Member, WeakMember, "
           "TraceWrapperV8Reference, objects with Trace(), and "
           "non-traceable types as values.");
@@ -86,7 +83,7 @@ using HeapHashMap = BasicHeapHashMap<internal::HeapCollectionType::kDisallowNew,
                                      KeyTraitsArg,
                                      MappedTraitsArg>;
 
-static_assert(WTF::IsDisallowNew<HeapHashMap<int, int>>);
+static_assert(IsDisallowNew<HeapHashMap<int, int>>);
 #define COMMA ,
 ASSERT_SIZE(HashMap<int COMMA int>, HeapHashMap<int COMMA int>);
 #undef COMMA
@@ -102,7 +99,7 @@ using GCedHeapHashMap = BasicHeapHashMap<internal::HeapCollectionType::kGCed,
                                          KeyTraitsArg,
                                          MappedTraitsArg>;
 
-static_assert(!WTF::IsDisallowNew<GCedHeapHashMap<int, int>>);
+static_assert(!IsDisallowNew<GCedHeapHashMap<int, int>>);
 #define COMMA ,
 ASSERT_SIZE(HashMap<int COMMA int>, GCedHeapHashMap<int COMMA int>);
 #undef COMMA

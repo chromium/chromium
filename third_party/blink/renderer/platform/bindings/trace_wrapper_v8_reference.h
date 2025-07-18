@@ -28,18 +28,11 @@ struct HashTraits<TraceWrapperV8Reference<T>>
   static constexpr bool kSupportsCompaction = true;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
-struct IsTraceable<blink::TraceWrapperV8Reference<T>> {
+struct IsTraceable<TraceWrapperV8Reference<T>> {
   STATIC_ONLY(IsTraceable);
   static const bool value = true;
 };
-
-}  // namespace WTF
-namespace blink {
 
 template <typename T>
 struct VectorTraits<TraceWrapperV8Reference<T>>

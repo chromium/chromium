@@ -145,7 +145,7 @@ class TaskRunnerTimer : public TimerBase {
                   TimerFiredClass* o,
                   TimerFiredFunction f)
       : TimerBase(std::move(web_task_runner)), object_(o), function_(f) {
-    static_assert(!WTF::IsGarbageCollectedType<TimerFiredClass>::value,
+    static_assert(!IsGarbageCollectedTypeV<TimerFiredClass>,
                   "Use HeapTaskRunnerTimer with garbage-collected types.");
   }
 
@@ -174,7 +174,7 @@ class HeapTaskRunnerTimer final : public TimerBase {
         object_(object),
         function_(function) {
     static_assert(
-        WTF::IsGarbageCollectedType<TimerFiredClass>::value,
+        IsGarbageCollectedTypeV<TimerFiredClass>,
         "HeapTaskRunnerTimer can only be used with garbage-collected types.");
   }
 

@@ -186,7 +186,7 @@ class PLATFORM_EXPORT DisplayItemList {
 
   template <class DerivedItemType, typename... Args>
   DerivedItemType& AllocateAndConstruct(Args&&... args) {
-    static_assert(WTF::IsSubclass<DerivedItemType, DisplayItem>::value,
+    static_assert(IsSubclass<DerivedItemType, DisplayItem>::value,
                   "Must use subclass of DisplayItem.");
     static_assert(sizeof(DerivedItemType) <= kMaxItemSize,
                   "DisplayItem subclass is larger than kMaxItemSize.");

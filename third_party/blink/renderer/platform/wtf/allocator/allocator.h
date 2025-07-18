@@ -81,7 +81,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 #if defined(OFFICIAL_BUILD)
 #define WTF_HEAP_PROFILER_TYPE_NAME(T) nullptr
 #else
-#define WTF_HEAP_PROFILER_TYPE_NAME(T) ::WTF::GetStringWithTypeName<T>()
+#define WTF_HEAP_PROFILER_TYPE_NAME(T) ::blink::GetStringWithTypeName<T>()
 #endif
 
 // Both of these macros enable fast malloc and provide type info to the heap

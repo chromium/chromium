@@ -22,28 +22,24 @@ template <typename T>
 struct TraceIfNeeded {
   STATIC_ONLY(TraceIfNeeded);
   static void Trace(Visitor* visitor, const T& t) {
-    if constexpr (WTF::IsTraceable<T>::value) {
+    if constexpr (IsTraceableV<T>) {
       visitor->Trace(t);
     }
   }
 };
 
-// `WTF::IsWeak<typename Traits::TraitType>::value` is always false when used
+// `blink::IsWeakV<typename Traits::TraitType>` is always false when used
 // from vectors (on and off the GCed heap).
-template <WTF::WeakHandlingFlag weakness,
+template <WeakHandlingFlag weakness,
           typename T,
           typename Traits,
-          bool = WTF::IsTraceable<typename Traits::TraitType>::value &&
-                 !WTF::IsWeak<typename Traits::TraitType>::value,
-          WTF::WeakHandlingFlag = WTF::kWeakHandlingTrait<T>>
+          bool = IsTraceableV<typename Traits::TraitType> &&
+                 !IsWeakV<typename Traits::TraitType>,
+          WeakHandlingFlag = kWeakHandlingTrait<T>>
 struct TraceCollectionIfEnabled;
 
-template <WTF::WeakHandlingFlag weakness, typename T, typename Traits>
-struct TraceCollectionIfEnabled<weakness,
-                                T,
-                                Traits,
-                                false,
-                                WTF::kNoWeakHandling> {
+template <WeakHandlingFlag weakness, typename T, typename Traits>
+struct TraceCollectionIfEnabled<weakness, T, Traits, false, kNoWeakHandling> {
   STATIC_ONLY(TraceCollectionIfEnabled);
 
   static bool IsAlive(const blink::LivenessBroker& info, const T&) {
@@ -51,45 +47,45 @@ struct TraceCollectionIfEnabled<weakness,
   }
 
   static void Trace(Visitor*, const void*) {
-    static_assert(!WTF::IsTraceable<typename Traits::TraitType>::value ||
-                      WTF::IsWeak<typename Traits::TraitType>::value,
+    static_assert(!IsTraceableV<typename Traits::TraitType> ||
+                      IsWeakV<typename Traits::TraitType>,
                   "T should not be traced");
   }
 };
 
 template <typename T, typename Traits>
-struct TraceCollectionIfEnabled<WTF::kNoWeakHandling,
+struct TraceCollectionIfEnabled<kNoWeakHandling,
                                 T,
                                 Traits,
                                 false,
-                                WTF::kWeakHandling> {
+                                kWeakHandling> {
   STATIC_ONLY(TraceCollectionIfEnabled);
 
   static void Trace(Visitor* visitor, const void* t) {
-    WTF::TraceInCollectionTrait<WTF::kNoWeakHandling, T, Traits>::Trace(
+    TraceInCollectionTrait<kNoWeakHandling, T, Traits>::Trace(
         visitor, *reinterpret_cast<const T*>(t));
   }
 };
 
-template <WTF::WeakHandlingFlag weakness,
+template <WeakHandlingFlag weakness,
           typename T,
           typename Traits,
           bool,
-          WTF::WeakHandlingFlag>
+          WeakHandlingFlag>
 struct TraceCollectionIfEnabled {
   STATIC_ONLY(TraceCollectionIfEnabled);
 
   static bool IsAlive(const blink::LivenessBroker& info, const T& traceable) {
-    return WTF::TraceInCollectionTrait<weakness, T, Traits>::IsAlive(info,
-                                                                     traceable);
+    return TraceInCollectionTrait<weakness, T, Traits>::IsAlive(info,
+                                                                traceable);
   }
 
   static void Trace(Visitor* visitor, const void* t) {
-    static_assert((WTF::IsTraceable<typename Traits::TraitType>::value &&
-                   !WTF::IsWeak<typename Traits::TraitType>::value) ||
-                      weakness == WTF::kWeakHandling,
+    static_assert((IsTraceableV<typename Traits::TraitType> &&
+                   !IsWeakV<typename Traits::TraitType>) ||
+                      weakness == kWeakHandling,
                   "Traits should be traced");
-    WTF::TraceInCollectionTrait<weakness, T, Traits>::Trace(
+    TraceInCollectionTrait<weakness, T, Traits>::Trace(
         visitor, *reinterpret_cast<const T*>(t));
   }
 };
@@ -102,7 +98,7 @@ template <typename _KeyType,
           typename _ValueType,
           typename _KeyTraits,
           typename _ValueTraits,
-          bool = WTF::IsWeak<_ValueType>::value>
+          bool = IsWeakV<_ValueType>>
 struct EphemeronKeyValuePair {
   STACK_ALLOCATED();
 
@@ -116,14 +112,11 @@ struct EphemeronKeyValuePair {
   // is equal, we either have Strong/Strong, or Weak/Weak, which would indicate
   // a full strong or fully weak pair.
   static constexpr bool kNeedsEphemeronSemantics =
-      WTF::IsWeak<KeyType>::value != WTF::IsWeak<ValueType>::value &&
-      WTF::IsTraceable<ValueType>::value;
+      IsWeakV<KeyType> != IsWeakV<ValueType> && IsTraceableV<ValueType>;
 
-  static_assert(!WTF::IsWeak<KeyType>::value ||
-                    WTF::IsWeakMemberType<KeyType>::value,
+  static_assert(!IsWeakV<KeyType> || IsWeakMemberType<KeyType>::value,
                 "Weakness must be encoded using WeakMember.");
-  static_assert(!WTF::IsWeak<ValueType>::value ||
-                    WTF::IsWeakMemberType<ValueType>::value,
+  static_assert(!IsWeakV<ValueType> || IsWeakMemberType<ValueType>::value,
                 "Weakness must be encoded using WeakMember.");
 
   EphemeronKeyValuePair(const KeyType& k, const ValueType& v)
@@ -154,7 +147,7 @@ struct EphemeronKeyValuePair<_KeyType,
                               false>(v, k) {}
 };
 
-template <WTF::WeakHandlingFlag WeakHandling,
+template <WeakHandlingFlag WeakHandling,
           typename Key,
           typename Value,
           typename Traits>
@@ -165,10 +158,10 @@ struct KeyValuePairInCollectionTrait {
     // (ephemeron). Order of invocation does not matter as `IsAlive()` does not
     // have any side effects.
     return blink::TraceCollectionIfEnabled<
-               WTF::kWeakHandlingTrait<Key>, Key,
+               kWeakHandlingTrait<Key>, Key,
                typename Traits::KeyTraits>::IsAlive(info, kvp.key) &&
            blink::TraceCollectionIfEnabled<
-               WTF::kWeakHandlingTrait<Value>, Value,
+               kWeakHandlingTrait<Value>, Value,
                typename Traits::ValueTraits>::IsAlive(info, kvp.value);
   }
 
@@ -201,10 +194,10 @@ struct KeyValuePairInCollectionTrait {
       // snapshot, where it is useful to annotate values as being kept alive
       // from keys rather than the table.
       EphemeronHelper helper(*key, *value);
-      if (WeakHandling == WTF::kNoWeakHandling) {
+      if (WeakHandling == kNoWeakHandling) {
         // Strongify the weak part.
         blink::TraceCollectionIfEnabled<
-            WTF::kNoWeakHandling, typename EphemeronHelper::KeyType,
+            kNoWeakHandling, typename EphemeronHelper::KeyType,
             typename EphemeronHelper::KeyTraits>::Trace(visitor, &helper.key);
       }
       // The following passes on kNoWeakHandling for tracing value as the value
@@ -221,11 +214,11 @@ struct KeyValuePairInCollectionTrait {
       // Strongification of non-ephemeron KVP, i.e., Strong/Strong or Weak/Weak.
       // Order does not matter here.
       blink::TraceCollectionIfEnabled<
-          WTF::kNoWeakHandling, Key, typename Traits::KeyTraits>::Trace(visitor,
-                                                                        key);
+          kNoWeakHandling, Key, typename Traits::KeyTraits>::Trace(visitor,
+                                                                   key);
       blink::TraceCollectionIfEnabled<
-          WTF::kNoWeakHandling, Value,
-          typename Traits::ValueTraits>::Trace(visitor, value);
+          kNoWeakHandling, Value, typename Traits::ValueTraits>::Trace(visitor,
+                                                                       value);
     }
   };
 
@@ -237,24 +230,16 @@ struct KeyValuePairInCollectionTrait {
 
 }  // namespace internal
 
-}  // namespace blink
-
-namespace WTF {
-
 // Trait for strong treatment of KeyValuePair. This is used to handle regular
 // KVP but also for strongification of otherwise weakly handled KVPs.
 template <typename Key, typename Value, typename Traits>
-struct TraceInCollectionTrait<kNoWeakHandling,
-                              blink::KeyValuePair<Key, Value>,
-                              Traits>
-    : public blink::internal::
+struct TraceInCollectionTrait<kNoWeakHandling, KeyValuePair<Key, Value>, Traits>
+    : public internal::
           KeyValuePairInCollectionTrait<kNoWeakHandling, Key, Value, Traits> {};
 
 template <typename Key, typename Value, typename Traits>
-struct TraceInCollectionTrait<kWeakHandling,
-                              blink::KeyValuePair<Key, Value>,
-                              Traits>
-    : public blink::internal::
+struct TraceInCollectionTrait<kWeakHandling, KeyValuePair<Key, Value>, Traits>
+    : public internal::
           KeyValuePairInCollectionTrait<kWeakHandling, Key, Value, Traits> {};
 
 // Catch-all for types that have a way to trace that don't have special
@@ -265,21 +250,19 @@ struct TraceInCollectionTrait<kWeakHandling,
 // weak elements.
 template <typename T, typename Traits>
 struct TraceInCollectionTrait<kNoWeakHandling, T, Traits> {
-  static bool IsAlive(const blink::LivenessBroker& info, const T& t) {
-    return true;
-  }
+  static bool IsAlive(const LivenessBroker& info, const T& t) { return true; }
 
   static void Trace(blink::Visitor* visitor, const T& t) {
-    static_assert(WTF::IsTraceable<typename Traits::TraitType>::value &&
-                      !WTF::IsWeak<typename Traits::TraitType>::value,
+    static_assert(IsTraceableV<typename Traits::TraitType> &&
+                      !IsWeakV<typename Traits::TraitType>,
                   "T should be traceable");
     visitor->Trace(t);
   }
 };
 
 template <typename T, typename Traits>
-struct TraceInCollectionTrait<kNoWeakHandling, blink::WeakMember<T>, Traits> {
-  static void Trace(blink::Visitor* visitor, const blink::WeakMember<T>& t) {
+struct TraceInCollectionTrait<kNoWeakHandling, WeakMember<T>, Traits> {
+  static void Trace(Visitor* visitor, const WeakMember<T>& t) {
     // Extract raw pointer to avoid using the WeakMember<> overload in Visitor.
     visitor->TraceStrongly(t);
   }
@@ -291,14 +274,13 @@ template <typename T, typename Traits>
 struct TraceInCollectionTrait<kWeakHandling, T, Traits> {};
 
 template <typename T, typename Traits>
-struct TraceInCollectionTrait<kWeakHandling, blink::WeakMember<T>, Traits> {
-  static bool IsAlive(const blink::LivenessBroker& info,
-                      const blink::WeakMember<T>& value) {
+struct TraceInCollectionTrait<kWeakHandling, WeakMember<T>, Traits> {
+  static bool IsAlive(const LivenessBroker& info, const WeakMember<T>& value) {
     return info.IsHeapObjectAlive(value);
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 namespace cppgc {
 

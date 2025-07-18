@@ -302,7 +302,7 @@ template <typename ElementIDLType, typename ContainerType>
     // SAFETY: v8::Array::New ensures the current callback will be called no
     // more than sequence.size() times, so the current_it++ is safe.
     auto it = UNSAFE_BUFFERS(current_it++);
-    if constexpr (WTF::IsAnyMemberType<decltype(*current_it)>::value) {
+    if constexpr (IsAnyMemberType<decltype(*current_it)>::value) {
       return ToV8Traits<ElementIDLType>::ToV8(script_state, it->Get());
     } else {
       return ToV8Traits<ElementIDLType>::ToV8(script_state, *it);
@@ -367,7 +367,7 @@ template <typename ValueIDLType, typename ContainerType>
   v8::Local<v8::Context> context = script_state->GetContext();
   for (const auto& [key, value] : record) {
     v8::Local<v8::Value> v8_value;
-    if constexpr (WTF::IsAnyMemberType<decltype(value)>::value) {
+    if constexpr (IsAnyMemberType<decltype(value)>::value) {
       v8_value = ToV8Traits<ValueIDLType>::ToV8(script_state, value.Get());
     } else {
       v8_value = ToV8Traits<ValueIDLType>::ToV8(script_state, value);

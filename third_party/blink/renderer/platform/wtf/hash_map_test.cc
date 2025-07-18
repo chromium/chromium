@@ -671,7 +671,7 @@ TEST(HashMapTest, ConstructFromOtherContainerIterators) {
   convert_and_verify(base::span(kArray), "span");
 }
 
-static_assert(!IsTraceable<HashMap<int, int>>::value,
+static_assert(!IsTraceableV<HashMap<int, int>>,
               "HashMap<int, int> must not be traceable.");
 
 static_assert(

@@ -60,7 +60,7 @@ class CORE_EXPORT PromiseAll final
 
  private:
   using BlinkType =
-      std::conditional_t<WTF::IsGarbageCollectedType<IDLType>::value,
+      std::conditional_t<IsGarbageCollectedTypeV<IDLType>,
                          std::add_pointer_t<IDLType>,
                          typename IDLTypeToBlinkImplType<IDLType>::type>;
   using VectorType = HeapVector<

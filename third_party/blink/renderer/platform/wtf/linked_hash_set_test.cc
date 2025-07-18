@@ -11,9 +11,9 @@
 
 namespace blink {
 
-static_assert(!WTF::IsTraceable<LinkedHashSet<int>>::value,
+static_assert(!IsTraceableV<LinkedHashSet<int>>,
               "LinkedHashSet must not be traceable.");
-static_assert(!WTF::IsTraceable<LinkedHashSet<String>>::value,
+static_assert(!IsTraceableV<LinkedHashSet<String>>,
               "LinkedHashSet must not be traceable.");
 
 TEST(LinkedHashSetTest, CopyConstructAndAssignInt) {

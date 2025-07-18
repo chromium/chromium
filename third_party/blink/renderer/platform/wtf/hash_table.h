@@ -1295,7 +1295,7 @@ typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
 
   if (ShouldExpand()) {
     entry = Expand(entry);
-  } else if (WTF::IsWeak<ValueType>::value && ShouldShrink()) {
+  } else if (IsWeakV<ValueType> && ShouldShrink()) {
     // When weak hash tables are processed by the garbage collector,
     // elements with no other strong references to them will have their
     // table entries cleared. But no shrinking of the backing store is
@@ -1598,7 +1598,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
   // verifier that checks that all backings are in consistent state.
   const bool needs_bucket_deletion =
       !std::is_trivially_destructible<ValueType>::value ||
-      (WTF::IsWeak<ValueType>::value && Allocator::IsIncrementalMarking());
+      (IsWeakV<ValueType> && Allocator::IsIncrementalMarking());
   if (needs_bucket_deletion) {
     for (wtf_size_t i = 0; i < size; ++i) {
       // This code is called when the hash table is cleared or resized. We
@@ -1909,7 +1909,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::swap(
   AtomicWriteSwap(table_, other.table_);
   Allocator::BackingWriteBarrier(&table_);
   Allocator::BackingWriteBarrier(&other.table_);
-  if (IsWeak<ValueType>::value) {
+  if (IsWeakV<ValueType>) {
     // Weak processing is omitted when no backing store is present. In case such
     // an empty table is later on used it needs to be strongified.
     if (table_)
@@ -2030,7 +2030,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
     auto visitor) const
   requires Allocator::kIsGarbageCollected
 {
-  static_assert(WTF::IsWeak<ValueType>::value || IsTraceable<ValueType>::value,
+  static_assert(IsWeakV<ValueType> || IsTraceableV<ValueType>,
                 "Value should not be traced");
   TraceTable(visitor, AsAtomicPtr(&table_)->load(std::memory_order_relaxed));
 }
@@ -2046,7 +2046,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
     const ValueType* table) const
   requires Allocator::kIsGarbageCollected
 {
-  if (!WTF::IsWeak<ValueType>::value) {
+  if (!IsWeakV<ValueType>) {
     // Strong HashTable.
     Allocator::template TraceHashTableBackingStrongly<ValueType, HashTable>(
         visitor, table, &table_);

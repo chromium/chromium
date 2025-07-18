@@ -1713,13 +1713,13 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   struct TypeConstraints {
     constexpr TypeConstraints() {
       // This condition is relied upon by TraceCollectionIfEnabled.
-      static_assert(!IsWeak<T>::value);
+      static_assert(!IsWeakV<T>);
       static_assert(!IsStackAllocatedTypeV<T>);
       static_assert(!std::is_polymorphic_v<T> ||
                         !VectorTraits<T>::kCanInitializeWithMemset,
                     "Cannot initialize with memset if there is a vtable.");
       static_assert(Allocator::kIsGarbageCollected || !IsDisallowNew<T> ||
-                        !IsTraceable<T>::value,
+                        !IsTraceableV<T>,
                     "Cannot put DISALLOW_NEW() objects that have trace methods "
                     "into an off-heap Vector.");
       static_assert(

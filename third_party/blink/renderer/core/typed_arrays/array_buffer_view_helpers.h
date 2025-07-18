@@ -25,8 +25,8 @@ namespace blink {
 template <typename T>
 class NotShared {
   DISALLOW_NEW();
-  static_assert(WTF::IsSubclass<typename std::remove_const<T>::type,
-                                DOMArrayBufferView>::value,
+  static_assert(IsSubclass<typename std::remove_const<T>::type,
+                           DOMArrayBufferView>::value,
                 "NotShared<T> must have T as subclass of DOMArrayBufferView");
 
  public:
@@ -83,8 +83,8 @@ class NotShared {
 template <typename T>
 class MaybeShared {
   DISALLOW_NEW();
-  static_assert(WTF::IsSubclass<typename std::remove_const<T>::type,
-                                DOMArrayBufferView>::value,
+  static_assert(IsSubclass<typename std::remove_const<T>::type,
+                           DOMArrayBufferView>::value,
                 "MaybeShared<T> must have T as subclass of DOMArrayBufferView");
 
  public:

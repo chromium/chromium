@@ -54,12 +54,12 @@ class BasicHeapDeque final
  private:
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(WTF::IsMemberType<T>::value,
+      static_assert(IsMemberType<T>::value,
                     "BasicHeapDeque supports only Member.");
       static_assert(std::is_trivially_destructible_v<BasicHeapDeque>,
                     "BasicHeapDeque must be trivially destructible.");
       static_assert(
-          WTF::IsTraceable<T>::value,
+          IsTraceableV<T>,
           "For deques without traceable elements, use Deque<> instead "
           "of HeapDeque<>");
     }
@@ -72,7 +72,7 @@ class BasicHeapDeque final
 template <typename T>
 using HeapDeque = BasicHeapDeque<internal::HeapCollectionType::kDisallowNew, T>;
 
-static_assert(WTF::IsDisallowNew<HeapDeque<int>>);
+static_assert(IsDisallowNew<HeapDeque<int>>);
 ASSERT_SIZE(Deque<int>, HeapDeque<int>);
 
 // GCed version of blink::Deque for referring to GarbageCollected or
@@ -80,7 +80,7 @@ ASSERT_SIZE(Deque<int>, HeapDeque<int>);
 template <typename T>
 using GCedHeapDeque = BasicHeapDeque<internal::HeapCollectionType::kGCed, T>;
 
-static_assert(!WTF::IsDisallowNew<GCedHeapDeque<int>>);
+static_assert(!IsDisallowNew<GCedHeapDeque<int>>);
 ASSERT_SIZE(Deque<int>, GCedHeapDeque<int>);
 
 template <typename T>

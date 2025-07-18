@@ -89,7 +89,7 @@ class StaticSingleton final {
         thread_(blink::CurrentThread())
 #endif
   {
-    static_assert(!WTF::IsGarbageCollectedType<Type>::value,
+    static_assert(!blink::IsGarbageCollectedTypeV<Type>,
                   "Garbage collected objects must be wrapped in a Persistent");
     LEAK_SANITIZER_IGNORE_OBJECT(instance_.Get());
   }

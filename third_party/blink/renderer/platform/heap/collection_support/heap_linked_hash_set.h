@@ -38,11 +38,11 @@ class BasicHeapLinkedHashSet final
   struct TypeConstraints {
     constexpr TypeConstraints() {
       static_assert(
-          WTF::IsMemberOrWeakMemberType<ValueArg>::value,
+          IsMemberOrWeakMemberType<ValueArg>::value,
           "BasicHeapLinkedHashSet supports only Member and WeakMember.");
       static_assert(std::is_trivially_destructible_v<BasicHeapLinkedHashSet>,
                     "BasicHeapLinkedHashSet must be trivially destructible.");
-      static_assert(WTF::IsTraceable<ValueArg>::value,
+      static_assert(IsTraceableV<ValueArg>,
                     "For sets without traceable elements, use LinkedHashSet<> "
                     "instead of BasicHeapLinkedHashSet<>.");
     }
@@ -58,7 +58,7 @@ using HeapLinkedHashSet =
                            T,
                            Traits>;
 
-static_assert(WTF::IsDisallowNew<HeapLinkedHashSet<int>>);
+static_assert(IsDisallowNew<HeapLinkedHashSet<int>>);
 ASSERT_SIZE(LinkedHashSet<int>, HeapLinkedHashSet<int>);
 
 // GCed version of WTF::LinkedHashSet for referring to GarbageCollected objects.
@@ -66,7 +66,7 @@ template <typename T, typename Traits = HashTraits<T>>
 using GCedHeapLinkedHashSet =
     BasicHeapLinkedHashSet<internal::HeapCollectionType::kGCed, T, Traits>;
 
-static_assert(!WTF::IsDisallowNew<GCedHeapLinkedHashSet<int>>);
+static_assert(!IsDisallowNew<GCedHeapLinkedHashSet<int>>);
 ASSERT_SIZE(LinkedHashSet<int>, GCedHeapLinkedHashSet<int>);
 
 }  // namespace blink

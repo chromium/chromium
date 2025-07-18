@@ -143,28 +143,28 @@ class CrossThreadUnretainedWrapper final {
 
 template <typename T>
 UnretainedWrapper<T> Unretained(T* value) {
-  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+  static_assert(!IsGarbageCollectedTypeV<T>,
                 "blink::Unretained() + GCed type is forbidden");
   return UnretainedWrapper<T>(value);
 }
 
 template <typename T>
 UnretainedWrapper<T> Unretained(const raw_ptr<T>& value) {
-  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+  static_assert(!IsGarbageCollectedTypeV<T>,
                 "blink::Unretained() + GCed type is forbidden");
   return UnretainedWrapper<T>(value.get());
 }
 
 template <typename T>
 CrossThreadUnretainedWrapper<T> CrossThreadUnretained(T* value) {
-  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+  static_assert(!IsGarbageCollectedTypeV<T>,
                 "CrossThreadUnretained() + GCed type is forbidden");
   return CrossThreadUnretainedWrapper<T>(value);
 }
 
 template <typename T>
 CrossThreadUnretainedWrapper<T> CrossThreadUnretained(const raw_ptr<T>& value) {
-  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+  static_assert(!IsGarbageCollectedTypeV<T>,
                 "CrossThreadUnretained() + GCed type is forbidden");
   return CrossThreadUnretainedWrapper<T>(value.get());
 }
@@ -178,17 +178,17 @@ struct CheckGCedTypeRestriction {
                 "it with either WrapPersistent, WrapWeakPersistent, "
                 "WrapCrossThreadPersistent, WrapCrossThreadWeakPersistent, "
                 "RetainedRef or Unretained.");
-  static_assert(!WTF::IsMemberOrWeakMemberType<T>::value,
+  static_assert(!IsMemberOrWeakMemberType<T>::value,
                 "Member and WeakMember are not allowed to bind into "
                 "WTF::Function. Wrap it with either WrapPersistent, "
                 "WrapWeakPersistent, WrapCrossThreadPersistent or "
                 "WrapCrossThreadWeakPersistent.");
-  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+  static_assert(!IsGarbageCollectedTypeV<T>,
                 "GCed types are forbidden as bound parameters.");
-  static_assert(!WTF::IsStackAllocatedTypeV<T>,
+  static_assert(!IsStackAllocatedTypeV<T>,
                 "Stack allocated types are forbidden as bound parameters.");
   static_assert(
-      !(WTF::IsDisallowNew<T> && WTF::IsTraceable<T>::value),
+      !(IsDisallowNew<T> && IsTraceableV<T>),
       "Traceable disallow new types are forbidden as bound parameters.");
 };
 
@@ -411,7 +411,7 @@ using CrossThreadOnceClosure = CrossThreadOnceFunction<void()>;
 template <typename T>
 struct CrossThreadCopier<RetainedRefWrapper<T>> {
   STATIC_ONLY(CrossThreadCopier);
-  static_assert(WTF::IsSubclassOfTemplate<T, base::RefCountedThreadSafe>::value,
+  static_assert(IsSubclassOfTemplate<T, base::RefCountedThreadSafe>::value,
                 "scoped_refptr<T> can be passed across threads only if T is "
                 "ThreadSafeRefCounted or base::RefCountedThreadSafe.");
   using Type = RetainedRefWrapper<T>;

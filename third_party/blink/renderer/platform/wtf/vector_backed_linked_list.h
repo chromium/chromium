@@ -72,7 +72,7 @@ class VectorBackedLinkedListNode {
   void Trace(auto visitor) const
     requires Allocator::kIsGarbageCollected
   {
-    if (!WTF::IsWeak<ValueType>::value) {
+    if (!IsWeakV<ValueType>) {
       visitor->Trace(value_);
     }
   }
@@ -177,7 +177,7 @@ template <typename ValueType, typename Allocator = WTF::PartitionAllocator>
 class VectorBackedLinkedList {
   USE_ALLOCATOR(VectorBackedLinkedList, Allocator);
 
-  static_assert(!WTF::IsStackAllocatedTypeV<ValueType>);
+  static_assert(!IsStackAllocatedTypeV<ValueType>);
 
  private:
   using Node = VectorBackedLinkedListNode<ValueType, Allocator>;
@@ -275,7 +275,7 @@ class VectorBackedLinkedList {
     requires Allocator::kIsGarbageCollected
   {
     nodes_.Trace(visitor);
-    if (WTF::IsWeak<ValueType>::value) {
+    if (IsWeakV<ValueType>) {
       visitor->template RegisterWeakCallbackMethod<
           VectorBackedLinkedList,
           &VectorBackedLinkedList::ProcessCustomWeakness>(this);

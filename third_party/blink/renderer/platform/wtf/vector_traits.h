@@ -85,9 +85,8 @@ struct VectorTraitsBase {
   // on zeroed memory.
   static constexpr bool kCanClearUnusedSlotsWithMemset =
       std::is_trivially_destructible<T>::value &&
-      (!WTF::IsTraceable<T>::value ||
-       (std::is_trivially_constructible<T>::value &&
-        std::is_trivially_copyable<T>::value));
+      (!IsTraceableV<T> || (std::is_trivially_constructible<T>::value &&
+                            std::is_trivially_copyable<T>::value));
 
   // Garbage collection support: When true, the vector invokes `Trace()` methods
   // concurrently from the non-owning thread.
@@ -147,10 +146,8 @@ struct VectorTraits<std::pair<First, Second>> {
   typedef VectorTraits<First> FirstTraits;
   typedef VectorTraits<Second> SecondTraits;
 
-  static_assert(!WTF::IsWeak<First>::value,
-                "Weak references are not allowed in Vector");
-  static_assert(!WTF::IsWeak<Second>::value,
-                "Weak references are not allowed in Vector");
+  static_assert(!IsWeakV<First>, "Weak references are not allowed in Vector");
+  static_assert(!IsWeakV<Second>, "Weak references are not allowed in Vector");
 
   static const bool kNeedsDestruction =
       FirstTraits::kNeedsDestruction || SecondTraits::kNeedsDestruction;

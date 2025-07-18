@@ -486,7 +486,7 @@ TEST(HashSetTest, ConstructFromOtherContainerIterators) {
   convert_and_verify(base::span(kArray), "span");
 }
 
-static_assert(!IsTraceable<HashSet<int>>::value,
+static_assert(!IsTraceableV<HashSet<int>>,
               "HashSet<int, int> must not be traceable.");
 
 }  // anonymous namespace

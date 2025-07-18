@@ -74,11 +74,10 @@ class TraceableSparseVectorFields {
 template <typename FieldId,
           typename FieldType,
           wtf_size_t inline_capacity = 0,
-          typename VectorType =
-              std::conditional_t<WTF::IsMemberType<FieldType>::value ||
-                                     WTF::IsTraceable<FieldType>::value,
-                                 HeapVector<FieldType, inline_capacity>,
-                                 Vector<FieldType, inline_capacity>>,
+          typename VectorType = std::conditional_t<
+              IsMemberType<FieldType>::value || IsTraceableV<FieldType>,
+              HeapVector<FieldType, inline_capacity>,
+              Vector<FieldType, inline_capacity>>,
           typename BitfieldType =
               std::conditional_t<static_cast<size_t>(FieldId::kNumFields) <=
                                      std::numeric_limits<uint32_t>::digits,
@@ -89,7 +88,7 @@ class SparseVector :
     // SparseVector<Enum, int> from being treated as traceable by the blinkgc
     // clang plugin. `requires` clause on the `Trace` method doesn't work.
     public std::conditional_t<
-        WTF::IsTraceable<VectorType>::value,
+        IsTraceableV<VectorType>,
         internal::TraceableSparseVectorFields<VectorType>,
         internal::NonTraceableSparseVectorFields<VectorType>> {
   static_assert(std::is_enum_v<FieldId>);
