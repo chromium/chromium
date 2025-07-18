@@ -376,6 +376,13 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
     &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(10)};
 
+// An artificial delay before signalling the tools that the page has become
+// stable.
+const base::FeatureParam<base::TimeDelta>
+    kGlicActorPageStabilityInvokeCallbackDelay{
+        &kGlicActor, "glic-actor-page-stability-invoke-callback-delay",
+        base::Milliseconds(200)};
+
 // Controls whether typing happens incrementally.
 BASE_FEATURE(kGlicActorIncrementalTyping,
              "GlicActorIncrementalTyping",

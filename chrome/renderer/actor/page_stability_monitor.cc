@@ -11,6 +11,7 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_base.h"
@@ -30,7 +31,7 @@ using ::content::RenderFrameObserver;
 
 std::ostream& operator<<(std::ostream& o,
                          const PageStabilityMonitor::State& state) {
-  return o << static_cast<int>(state);
+  return o << base::to_underlying(state);
 }
 
 namespace {
@@ -87,7 +88,7 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
       "DidCommitProvisionalLoad",
       absl::StrFormat("transition[%s]",
                       PageTransitionGetCoreTransitionString(transition)));
-  MoveToState(State::kInvokeCallback);
+  MoveToState(State::kMaybeDelayCallback);
 }
 
 void PageStabilityMonitor::DidFailProvisionalLoad() {
@@ -167,7 +168,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     case State::kWaitForVisualStateRequest: {
       WebFrameWidget* widget = render_frame()->GetWebFrame()->FrameWidget();
       if (!widget->InsertVisualStateRequest(
-              PostMoveToStateClosure(State::kInvokeCallback))) {
+              PostMoveToStateClosure(State::kMaybeDelayCallback))) {
         journal_entry_->EndEntry(
             "Failed to wait for new frame presentation due to no "
             "compositor.");
@@ -185,6 +186,17 @@ void PageStabilityMonitor::MoveToState(State new_state) {
           "Timed out waiting for page stability - main thread to "
           "produce a thread.");
       MoveToState(State::kInvokeCallback);
+      break;
+    }
+    case State::kMaybeDelayCallback: {
+      base::TimeDelta callback_invoke_delay =
+          features::kGlicActorPageStabilityInvokeCallbackDelay.Get();
+      if (callback_invoke_delay.is_zero()) {
+        MoveToState(State::kInvokeCallback);
+      } else {
+        PostMoveToStateClosure(State::kInvokeCallback, callback_invoke_delay)
+            .Run();
+      }
       break;
     }
     case State::kInvokeCallback: {
@@ -240,6 +252,7 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kWaitForNetworkIdle,
               State::kWaitForMainThreadIdle}},
           {State::kWaitForNavigation, {
+              State::kMaybeDelayCallback,
               State::kInvokeCallback,
               State::kTimeoutGlobal}},
           {State::kWaitForNetworkIdle, {
@@ -250,6 +263,7 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal}},
           {State::kWaitForVisualStateRequest, {
+              State::kMaybeDelayCallback,
               State::kInvokeCallback,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal}},
@@ -257,6 +271,10 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kInvokeCallback}},
           {State::kTimeoutGlobal, {
               State::kInvokeCallback}},
+          {State::kMaybeDelayCallback, {
+              State::kInvokeCallback,
+              State::kTimeoutMainThread,
+              State::kTimeoutGlobal}},
           {State::kInvokeCallback, {
               State::kDone}}
 

@@ -70,6 +70,10 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
     kTimeoutGlobal,
     kTimeoutMainThread,
 
+    // If `kGlicActorPageStabilityInvokeCallbackDelay` is set, the callback
+    // passed to WaitForStable() will be delayed by said amount of time.
+    kMaybeDelayCallback,
+
     // Invoke the callback passed to WaitForStable and cleanup.
     kInvokeCallback,
 
