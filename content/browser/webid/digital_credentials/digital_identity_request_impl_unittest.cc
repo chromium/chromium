@@ -340,8 +340,12 @@ class DigitalIdentityRequestImplInterstitialTest
       bool are_origins_low_risk = false) {
     auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
         are_origins_low_risk);
-    std::vector<ProtocolAndParsedRequest> requests;
-    requests.emplace_back(protocol, std::move(request_data));
+    DigitalCredentialGetRequestPtr digital_credential_request =
+        DigitalCredentialGetRequest::New();
+    digital_credential_request->protocol = protocol;
+    digital_credential_request->data = std::move(request_data);
+    std::vector<DigitalCredentialGetRequestPtr> requests;
+    requests.emplace_back(std::move(digital_credential_request));
     return DigitalIdentityRequestImpl::ComputeInterstitialType(
         *main_rfh(), provider.get(), std::move(requests));
   }
@@ -694,9 +698,17 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   base::Value openid4vp_request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
   base::Value preview_request = GenerateOnlyAgePreviewRequest();
 
-  std::vector<ProtocolAndParsedRequest> requests;
-  requests.emplace_back(kOpenid4vpProtocol, std::move(openid4vp_request));
-  requests.emplace_back(kPreviewProtocol, std::move(preview_request));
+  DigitalCredentialGetRequestPtr request1 = DigitalCredentialGetRequest::New();
+  request1->protocol = kOpenid4vpProtocol;
+  request1->data = std::move(openid4vp_request);
+
+  DigitalCredentialGetRequestPtr request2 = DigitalCredentialGetRequest::New();
+  request2->protocol = kPreviewProtocol;
+  request2->data = std::move(preview_request);
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.emplace_back(std::move(request1));
+  requests.emplace_back(std::move(request2));
 
   auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
       /*are_origins_low_risk=*/false);
@@ -711,9 +723,17 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   base::Value preview_request = GenerateOnlyAgePreviewRequest();
   ASSERT_TRUE(SetFieldNameValue(preview_request, "given_name"));
 
-  std::vector<ProtocolAndParsedRequest> requests;
-  requests.emplace_back(kOpenid4vpProtocol, std::move(openid4vp_request));
-  requests.emplace_back(kPreviewProtocol, std::move(preview_request));
+  DigitalCredentialGetRequestPtr request1 = DigitalCredentialGetRequest::New();
+  request1->protocol = kOpenid4vpProtocol;
+  request1->data = std::move(openid4vp_request);
+
+  DigitalCredentialGetRequestPtr request2 = DigitalCredentialGetRequest::New();
+  request2->protocol = kPreviewProtocol;
+  request2->data = std::move(preview_request);
+
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.emplace_back(std::move(request1));
+  requests.emplace_back(std::move(request2));
 
   auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
       /*are_origins_low_risk=*/false);

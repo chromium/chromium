@@ -327,7 +327,8 @@ std::optional<InterstitialType>
 DigitalIdentityRequestImpl::ComputeInterstitialType(
     RenderFrameHost& render_frame_host,
     const DigitalIdentityProvider* provider,
-    const std::vector<ProtocolAndParsedRequest>& parsed_requests) {
+    const std::vector<blink::mojom::DigitalCredentialGetRequestPtr>&
+        digital_credential_requests) {
   std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
       features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
   if (dialog_param_value == kDigitalIdentityNoDialogParamValue) {
@@ -346,11 +347,10 @@ DigitalIdentityRequestImpl::ComputeInterstitialType(
     return std::nullopt;
   }
   return std::ranges::all_of(
-             parsed_requests,
-             [](const ProtocolAndParsedRequest& protocol_request) {
-               return protocol_request.second.has_value() &&
-                      CanRequestCredentialBypassInterstitial(
-                          protocol_request.first, *protocol_request.second);
+             digital_credential_requests,
+             [](const blink::mojom::DigitalCredentialGetRequestPtr& request) {
+               return CanRequestCredentialBypassInterstitial(request->protocol,
+                                                             request->data);
              })
              ? std::nullopt
              : std::optional<InterstitialType>(InterstitialType::kLowRisk);
@@ -496,25 +496,50 @@ void DigitalIdentityRequestImpl::Get(
           ? std::make_optional(digital_credential_requests[0]->protocol)
           : std::nullopt;
 
-  std::optional<Value> request_to_send =
-      BuildGetRequest(digital_credential_requests);
-  if (!request_to_send.has_value()) {
-    CompleteRequestWithError(RequestStatusForMetrics::kErrorInvalidJson);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeUIForDigitalIdentity)) {
+    // Post delayed task to enable testing abort.
+    GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
+                       weak_ptr_factory_.GetWeakPtr(), protocol,
+                       DigitalIdentityProvider::DigitalCredential(
+                           protocol, Value(Value::Dict().Set(
+                                         "token", "fake_test_token")))),
+        base::Milliseconds(1));
     return;
   }
-  // TODO(crbug.com/431999487): Remove the callback and process the requests
-  // directly.
-  auto request_parsed_barrier_callback =
-      base::BarrierCallback<ProtocolAndParsedRequest>(
-          digital_credential_requests.size(),
-          base::BindOnce(&DigitalIdentityRequestImpl::OnGetRequestJsonParsed,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
-                         std::move(request_to_send.value())));
 
-  for (const auto& request : digital_credential_requests) {
-    request_parsed_barrier_callback.Run(
-        std::pair(request->protocol, request->data.Clone()));
+  provider_ = GetContentClient()->browser()->CreateDigitalIdentityProvider();
+  if (!provider_) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
   }
+
+  if (!render_frame_host().IsActive() ||
+      render_frame_host().GetVisibilityState() !=
+          content::PageVisibilityState::kVisible) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
+  std::optional<InterstitialType> interstitial_type = ComputeInterstitialType(
+      render_frame_host(), provider_.get(), digital_credential_requests);
+
+  Value request_to_send = BuildGetRequest(digital_credential_requests);
+  if (!interstitial_type) {
+    OnInterstitialDone(std::move(protocol), std::move(request_to_send),
+                       RequestStatusForMetrics::kSuccess);
+    return;
+  }
+
+  update_interstitial_on_abort_callback_ =
+      provider_->ShowDigitalIdentityInterstitial(
+          *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
+          *interstitial_type,
+          base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
+                         std::move(request_to_send)));
 }
 
 void DigitalIdentityRequestImpl::Create(
@@ -618,56 +643,6 @@ void DigitalIdentityRequestImpl::Abort() {
       /*protocol=*/std::nullopt, RequestDigitalIdentityStatus::kErrorCanceled,
       base::unexpected(RequestStatusForMetrics::kErrorAborted));
 }
-
-void DigitalIdentityRequestImpl::OnGetRequestJsonParsed(
-    std::optional<std::string> protocol,
-    Value request_to_send,
-    const std::vector<ProtocolAndParsedRequest>& parsed_requests) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseFakeUIForDigitalIdentity)) {
-    // Post delayed task to enable testing abort.
-    GetUIThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                       weak_ptr_factory_.GetWeakPtr(), protocol,
-                       DigitalIdentityProvider::DigitalCredential(
-                           protocol, Value(Value::Dict().Set(
-                                         "token", "fake_test_token")))),
-        base::Milliseconds(1));
-    return;
-  }
-
-  provider_ = GetContentClient()->browser()->CreateDigitalIdentityProvider();
-  if (!provider_) {
-    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
-    return;
-  }
-
-  if (!render_frame_host().IsActive() ||
-      render_frame_host().GetVisibilityState() !=
-          content::PageVisibilityState::kVisible) {
-    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
-    return;
-  }
-
-  std::optional<InterstitialType> interstitial_type = ComputeInterstitialType(
-      render_frame_host(), provider_.get(), parsed_requests);
-
-  if (!interstitial_type) {
-    OnInterstitialDone(std::move(protocol), std::move(request_to_send),
-                       RequestStatusForMetrics::kSuccess);
-    return;
-  }
-
-  update_interstitial_on_abort_callback_ =
-      provider_->ShowDigitalIdentityInterstitial(
-          *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-          *interstitial_type,
-          base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
-                         std::move(request_to_send)));
-}
-
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(
     std::optional<std::string> protocol,

@@ -23,8 +23,6 @@ namespace content {
 class DigitalIdentityProvider;
 class RenderFrameHost;
 
-using ProtocolAndParsedRequest =
-    std::pair<std::string, data_decoder::DataDecoder::ValueOrError>;
 // DigitalIdentityRequestImpl handles mojo connections from the renderer to
 // fulfill digital identity requests.
 //
@@ -46,7 +44,8 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   static std::optional<DigitalIdentityInterstitialType> ComputeInterstitialType(
       RenderFrameHost& render_frame_host,
       const DigitalIdentityProvider* provider,
-      const std::vector<ProtocolAndParsedRequest>& parsed_requests);
+      const std::vector<blink::mojom::DigitalCredentialGetRequestPtr>&
+          digital_credential_requests);
 
   DigitalIdentityRequestImpl(const DigitalIdentityRequestImpl&) = delete;
   DigitalIdentityRequestImpl& operator=(const DigitalIdentityRequestImpl&) =
@@ -69,12 +68,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   DigitalIdentityRequestImpl(
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
-
-  // Called when the get request JSON has been parsed.
-  void OnGetRequestJsonParsed(
-      std::optional<std::string> protocol,
-      base::Value request_to_send,
-      const std::vector<ProtocolAndParsedRequest>& parsed_requests);
 
   // Called when the create request JSON has been parsed.
   void OnCreateRequestJsonParsed(
