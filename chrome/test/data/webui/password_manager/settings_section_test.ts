@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {BatchUploadPasswordsEntryPoint, OpenWindowProxyImpl, PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID, PasswordManagerImpl, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
+import {BatchUploadPasswordsEntryPoint, OpenWindowProxyImpl, Page, PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID, PasswordManagerImpl, Router, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,7 +19,6 @@ import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, make
 
 // clang-format off
 import type { PrefToggleButtonElement } from 'chrome://password-manager/password_manager.js';
-
 // <if expr="is_win or is_macosx">
 import { PasskeysBrowserProxyImpl } from 'chrome://password-manager/password_manager.js';
 
@@ -820,4 +819,18 @@ suite('SettingsSectionTest', function() {
         assertFalse(settings.$.passwordToggle.checked);
         assertFalse(isVisible(passkeyUpgradeToggle));
       });
+
+  test('automated password change row opens dedicated page', async function() {
+    loadTimeData.overrideValues({passwordChangeAvailable: true});
+    const section = document.createElement('settings-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    const automatedPasswordChange = $$(section, '#automatedPasswordChange');
+    assertTrue(!!automatedPasswordChange);
+    automatedPasswordChange.click();
+    await flushTasks();
+
+    assertEquals(Router.getInstance().currentRoute.page, Page.PASSWORD_CHANGE);
+  });
 });

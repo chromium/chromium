@@ -30,7 +30,7 @@ import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedLis
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import type {Route} from './router.js';
-import {RouteObserverMixin, Router, UrlParam} from './router.js';
+import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './settings_section.html.js';
 import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
@@ -88,6 +88,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('passkeyUpgradeSettingsToggleVisible');
+        },
+      },
+
+      isAutomatedPasswordChangeVisible_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('passwordChangeAvailable');
         },
       },
 
@@ -180,6 +187,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   declare private passwordManagerDisabled_: boolean;
   declare private hasPasswordsToExport_: boolean;
   declare private isPasskeyUpgradeSettingsToggleVisible_: boolean;
+  declare private isAutomatedPasswordChangeVisible_: boolean;
   declare private canAddShortcut_: boolean;
   declare private trustedVaultBannerState_: TrustedVaultBannerState;
   declare private movePasswordsLabel_: string;
@@ -516,6 +524,17 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
     this.toastMessage_ = this.i18n('passwordManagerPinChanged');
     this.$.toast.show();
+  }
+
+  private onAutomatedPasswordChangeClick_() {
+    Router.getInstance().navigateTo(Page.PASSWORD_CHANGE);
+  }
+
+  private getAriaLabelForAutomatedPasswordChange_(): string {
+    return [
+      this.i18n('automatedPasswordChangeTitle'),
+      this.i18n('automatedPasswordChangeDescription'),
+    ].join('. ');
   }
 }
 

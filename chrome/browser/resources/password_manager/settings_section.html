@@ -104,6 +104,15 @@
       </cr-button>
     </cr-link-row>
   </template>
+  <template is="dom-if" if="[[isAutomatedPasswordChangeVisible_]]">
+    <cr-link-row id="automatedPasswordChange"
+        class="cr-row settings-cr-link-row"
+        label="$i18n{automatedPasswordChangeTitle}"
+        sub-label="$i18n{automatedPasswordChangeDescription}"
+        aria-label="[[getAriaLabelForAutomatedPasswordChange_()]]"
+        on-click="onAutomatedPasswordChangeClick_">
+    </cr-link-row>
+  </template>
   <cr-link-row id="trustedVaultBanner" class="cr-row"
       label="[[getTrustedVaultBannerTitle_(trustedVaultBannerState_)]]"
       sub-label="[[getTrustedVaultBannerDescription_(trustedVaultBannerState_)]]"
