@@ -998,13 +998,32 @@ void TapTabGridEditButton() {
   [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
       performAction:grey_tap()];
 
+  if (iOS26_OR_ABOVE()) {
+    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
+    // this workaround when it's not needed anymore.
+    // On iOS 26, the keyboard appears when the new tab button is tapped and it
+    // hides the elements behind. Close the keyboard by typing a return key.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
+  }
+
   // Tap the delete button.
   [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
       performAction:grey_tap()];
-  // Cancel the action by tapping a tab itself (= outside the delete button).
-  // We have a cancel button only on iPhone.
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+
+  // Cancel the action by tapping the close button (= outside the delete
+  // button). We have a cancel button only on iPhones with iOS versions smaller
+  // than iOS26.
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
+
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (iOS26_OR_ABOVE()) {
+    // On iOS26 cancelling the action by tapping outside the popover is also
+    // clicking the button, for this reason, it is necessary to open again the
+    // tab group.
+    OpenTabGroupAtIndex(0);
+  }
+#endif
 
   // Check that `Tab 1` tab cell still exists in the group.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
