@@ -269,7 +269,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         doReturn(Token.createRandom()).when(parentTab).getTabGroupId();
         doReturn(newTab)
                 .when(mTabCreator)
-                .createTabWithWebContents(any(), any(), anyInt(), any(), anyBoolean());
+                .createTabWithWebContents(
+                        any(), anyBoolean(), any(), anyInt(), any(), anyBoolean());
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(any());
         doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
         Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, newWebContents, newTab);
@@ -295,7 +296,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         Tab newTab = mock(Tab.class);
         doReturn(newTab)
                 .when(mTabCreator)
-                .createTabWithWebContents(any(), any(), anyInt(), any(), anyBoolean());
+                .createTabWithWebContents(
+                        any(), anyBoolean(), any(), anyInt(), any(), anyBoolean());
 
         mTabWebContentsDelegateAndroid.webContentsCreated(
                 mWebContents, 0, 0, "testFrame", new GURL("https://foo.com"), newWebContents);
@@ -307,9 +309,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 true);
 
         verify(mTabCreator, times(1))
-                .createTabWithWebContents(any(), any(), anyInt(), any(), eq(true));
+                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), eq(true));
         verify(mTabCreator, never())
-                .createTabWithWebContents(any(), any(), anyInt(), any(), eq(false));
+                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), eq(false));
     }
 
     @Test

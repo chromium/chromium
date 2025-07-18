@@ -64,7 +64,7 @@ public class MockTabCreator extends TabCreator {
                         TabLaunchType.FROM_LINK);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(false));
         TabTestUtils.initialize(
-                tab, null, null, loadUrlParams, title, null, null, false, null, false);
+                tab, null, null, loadUrlParams, title, null, null, false, null, false, false);
         tab.setIsInitialized(true);
         mSelector
                 .getModel(mIsIncognito)
@@ -82,7 +82,7 @@ public class MockTabCreator extends TabCreator {
                         TabLaunchType.FROM_RESTORE);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(true));
         if (state != null) TabTestUtils.restoreFieldsFromState(tab, state);
-        TabTestUtils.initialize(tab, null, null, null, null, null, null, false, null, false);
+        TabTestUtils.initialize(tab, null, null, null, null, null, null, false, null, false, false);
         tab.setIsInitialized(true);
         mSelector
                 .getModel(mIsIncognito)
@@ -94,6 +94,7 @@ public class MockTabCreator extends TabCreator {
     @Override
     public Tab createTabWithWebContents(
             Tab parent,
+            boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,

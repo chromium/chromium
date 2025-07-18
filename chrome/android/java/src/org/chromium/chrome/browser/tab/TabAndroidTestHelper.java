@@ -41,7 +41,8 @@ public class TabAndroidTestHelper {
                 new HeadlessTabDelegateFactory(),
                 /* initiallyHidden= */ true,
                 /* tabState= */ null,
-                /* initializeRenderer= */ false);
+                /* initializeRenderer= */ false,
+                /* isPinned= */ false);
         return tab;
     }
 }

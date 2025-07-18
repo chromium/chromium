@@ -35,7 +35,7 @@ public class MockTab extends TabImpl {
     /** Create a new Tab for testing and initializes Tab UserData objects. */
     public static MockTab createAndInitialize(int id, Profile profile) {
         MockTab tab = new MockTab(id, profile);
-        tab.initialize(null, null, null, null, null, null, false, null, false);
+        tab.initialize(null, null, null, null, null, null, false, null, false, false);
         return tab;
     }
 
@@ -43,7 +43,7 @@ public class MockTab extends TabImpl {
     public static MockTab createAndInitialize(
             int id, Profile profile, @TabLaunchType int tabLaunchType) {
         MockTab tab = new MockTab(id, profile, tabLaunchType);
-        tab.initialize(null, null, null, null, null, null, false, null, false);
+        tab.initialize(null, null, null, null, null, null, false, null, false, false);
         return tab;
     }
 
@@ -65,7 +65,8 @@ public class MockTab extends TabImpl {
             @Nullable TabDelegateFactory delegateFactory,
             boolean initiallyHidden,
             TabState tabState,
-            boolean initializeRenderer) {
+            boolean initializeRenderer,
+            boolean isPinned) {
         if (loadUrlParams != null) {
             mGurlOverride = new GURL(loadUrlParams.getUrl());
         }

@@ -94,6 +94,7 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
     @Override
     public Tab createTabWithWebContents(
             @Nullable Tab parent,
+            boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,

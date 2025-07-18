@@ -458,6 +458,7 @@ public class ChromeTabCreator extends TabCreator
     @Override
     public @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
+            boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
@@ -493,6 +494,7 @@ public class ChromeTabCreator extends TabCreator
                                 .setWebContents(webContents)
                                 .setDelegateFactory(delegateFactory)
                                 .setInitiallyHidden(!openInForeground)
+                                .setInitialPinState(shouldPin)
                                 .build();
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
             } else {
@@ -504,6 +506,7 @@ public class ChromeTabCreator extends TabCreator
                                 .setWebContents(webContents)
                                 .setDelegateFactory(delegateFactory)
                                 .setInitiallyHidden(!openInForeground)
+                                .setInitialPinState(shouldPin)
                                 .build();
                 creationState =
                         openInForeground

@@ -314,6 +314,125 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    public void testDuplicateTab_PinnedTab() {
+        String url = "https://www.chromium.org/chromium-projects/";
+        GURL gurl1 = new GURL("https://www.example.com/");
+        mPage.openNewTabFast().loadWebPageProgrammatically(url);
+        // 0:Tab0 | 1:Tab1 (tabToDuplicate)
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(2, mTabModelJni.getCount());
+                    Tab tab0 = mTabModelJni.getTabAt(/* index= */ 0);
+                    Tab tab1 = mTabModelJni.getTabAt(/* index= */ 1);
+
+                    GURL gurl0 = new GURL(url);
+                    assertEquals(gurl0, tab1.getUrl());
+                    assertNull(tab1.getTabGroupId());
+                    assertFalse(tab1.getIsPinned());
+
+                    mTabModelJni.pinTab(tab1);
+                    mTabModelJni.pinTab(tab0);
+                    assertEquals(0, mTabModelJni.indexOf(tab1));
+                    assertEquals(1, mTabModelJni.indexOf(tab0));
+                    assertTrue(tab1.getIsPinned());
+                    assertTrue(tab0.getIsPinned());
+                    // [0:Tab1 (tabToDuplicate)] | [1:Tab0]
+
+                    mTabModelJni.duplicateTabForTesting(tab1);
+                    assertEquals(3, mTabModelJni.getCount());
+                    assertEquals(0, mTabModelJni.indexOf(tab1));
+                    assertEquals(2, mTabModelJni.indexOf(tab0));
+                    // [0:Tab1 (tabToDuplicate)] | [1:Tab2 (duplicatedTab)] | [2:Tab0]
+
+                    // Assert duplicatedTab (tab2)
+                    Tab tab2 = mTabModelJni.getTabAt(/* index= */ 1);
+                    assertEquals(tab1.getId(), tab2.getParentId());
+                    assertEquals(gurl0, tab2.getUrl());
+                    assertEquals(
+                            TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                            tab2.getTabLaunchTypeAtCreation());
+                    assertTrue(tab2.getIsPinned());
+                    assertNull(tab2.getTabGroupId());
+                    assertNull(tab1.getTabGroupId());
+
+                    mTabModelJni.openTabProgrammatically(gurl1, 3);
+                    assertEquals(4, mTabModelJni.getCount());
+                    Tab tab3 = mTabModelJni.getTabAt(3);
+                    assertEquals(gurl1, tab3.getUrl());
+                    // [0:Tab1] | [1:Tab2] | [2:Tab0] | 3:Tab3
+
+                    mTabModelJni.unpinTab(tab1);
+                    assertEquals(2, mTabModelJni.indexOf(tab1));
+                    // [0:Tab2] | [1:Tab0] | 2:Tab1 | 3:Tab3
+
+                    mTabModelJni.duplicateTabForTesting(tab2);
+                    assertEquals(5, mTabModelJni.getCount());
+                    assertEquals(0, mTabModelJni.indexOf(tab2));
+                    assertEquals(2, mTabModelJni.indexOf(tab0));
+                    assertEquals(3, mTabModelJni.indexOf(tab1));
+                    assertEquals(4, mTabModelJni.indexOf(tab3));
+                    // [0:Tab2 (tabToDuplicate)] | [1:Tab4 (duplicatedTab)] | [2:Tab0] | 3:Tab1
+                    // | 4:Tab3
+
+                    // Assert duplicatedTab (tab4)
+                    Tab tab4 = mTabModelJni.getTabAt(/* index= */ 1);
+                    assertEquals(tab2.getId(), tab4.getParentId());
+                    assertEquals(gurl0, tab4.getUrl());
+                    assertEquals(
+                            TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                            tab2.getTabLaunchTypeAtCreation());
+                    assertTrue(tab4.getIsPinned());
+                    assertNull(tab4.getTabGroupId());
+                    assertNull(tab2.getTabGroupId());
+
+                    // Clean-up (otherwise next tests will fail)
+                    mTabModelJni.unpinTab(tab2);
+                    mTabModelJni.unpinTab(tab4);
+                    mTabModelJni.unpinTab(tab0);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testPinUnpinTab() {
+        createTabs(2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(3, mTabModelJni.getCount());
+                    Tab tab0 = mTabModelJni.getTabAt(/* index= */ 0);
+                    Tab tab1 = mTabModelJni.getTabAt(/* index= */ 1);
+                    Tab tab2 = mTabModelJni.getTabAt(/* index= */ 2);
+                    assertFalse(tab0.getIsPinned());
+                    assertFalse(tab1.getIsPinned());
+                    assertFalse(tab2.getIsPinned());
+
+                    mTabModelJni.pinTab(tab1);
+                    assertTrue(tab1.getIsPinned());
+                    assertEquals(0, mTabModelJni.indexOf(tab1));
+                    assertEquals(1, mTabModelJni.indexOf(tab0));
+                    assertEquals(2, mTabModelJni.indexOf(tab2));
+
+                    mTabModelJni.pinTab(tab2);
+                    assertTrue(tab2.getIsPinned());
+                    assertEquals(0, mTabModelJni.indexOf(tab1));
+                    assertEquals(1, mTabModelJni.indexOf(tab2));
+                    assertEquals(2, mTabModelJni.indexOf(tab0));
+
+                    mTabModelJni.unpinTab(tab1);
+                    assertFalse(tab1.getIsPinned());
+                    assertEquals(0, mTabModelJni.indexOf(tab2));
+                    assertEquals(1, mTabModelJni.indexOf(tab1));
+                    assertEquals(2, mTabModelJni.indexOf(tab0));
+
+                    // Clean-up (otherwise next tests will fail)
+                    mTabModelJni.unpinTab(tab2);
+                });
+    }
+
+    @Test
+    @SmallTest
     public void testMoveTabToIndex() {
         // Programmatically set up the tab state (PT is flaky)
         createTabs(2);

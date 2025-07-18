@@ -92,6 +92,7 @@ public abstract class TabCreator {
      * Creates a Tab to host the given WebContents.
      *
      * @param parent The parent Tab, if present.
+     * @param shouldPin Whether the newly created tab should be pinned.
      * @param webContents The web contents to create a Tab around.
      * @param type The TabLaunchType describing how this Tab was created.
      * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
@@ -103,6 +104,7 @@ public abstract class TabCreator {
      */
     public abstract @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
+            boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
@@ -125,6 +127,29 @@ public abstract class TabCreator {
      * Creates a Tab to host the given WebContents and adds it to the TabModel.
      *
      * @param parent The parent Tab, if present.
+     * @param shouldPin Whether the newly created tab should be pinned.
+     * @param webContents The web contents to create a Tab around.
+     * @param type The TabLaunchType describing how this Tab was created.
+     * @return The new Tab or null if a Tab was not created successfully.
+     */
+    public final @Nullable Tab createTabWithWebContents(
+            @Nullable Tab parent,
+            boolean shouldPin,
+            WebContents webContents,
+            @TabLaunchType int type) {
+        return createTabWithWebContents(
+                parent,
+                shouldPin,
+                webContents,
+                type,
+                webContents.getVisibleUrl(),
+                /* addTabToModel= */ true);
+    }
+
+    /**
+     * Creates a Tab to host the given WebContents and adds it to the TabModel.
+     *
+     * @param parent The parent Tab, if present.
      * @param webContents The web contents to create a Tab around.
      * @param type The TabLaunchType describing how this Tab was created.
      * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
@@ -132,7 +157,8 @@ public abstract class TabCreator {
      */
     public final @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, GURL url) {
-        return createTabWithWebContents(parent, webContents, type, url, true);
+        return createTabWithWebContents(
+                parent, /* shouldPin= */ false, webContents, type, url, /* addTabToModel= */ true);
     }
 
     /**

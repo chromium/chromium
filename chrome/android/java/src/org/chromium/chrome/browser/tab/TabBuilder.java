@@ -37,6 +37,7 @@ public class TabBuilder {
     private boolean mInitializeRenderer;
     private @Nullable TabState mTabState;
     private @Nullable Callback<Tab> mPreInitializeAction;
+    private boolean mIsPinned;
 
     public TabBuilder(Profile profile) {
         mProfile = profile;
@@ -157,6 +158,11 @@ public class TabBuilder {
         return this;
     }
 
+    public TabBuilder setInitialPinState(boolean isPinned) {
+        mIsPinned = isPinned;
+        return this;
+    }
+
     public Tab build() {
         assert mLaunchType != null : "TabBuilder#setLaunchType() must be called.";
 
@@ -201,7 +207,8 @@ public class TabBuilder {
                 mDelegateFactory,
                 mInitiallyHidden,
                 mTabState,
-                mInitializeRenderer);
+                mInitializeRenderer,
+                mIsPinned);
         return tab;
     }
 

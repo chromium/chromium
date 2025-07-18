@@ -355,13 +355,25 @@ std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {
 }
 
 void TabModelJniBridge::PinTab(tabs::TabHandle tab) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  if (!tab_android) {
+    return;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_pinTab(env, jobj, tab_android);
 }
 
 void TabModelJniBridge::UnpinTab(tabs::TabHandle tab) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
+  if (!tab_android) {
+    return;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_unpinTab(env, jobj, tab_android);
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(

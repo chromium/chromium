@@ -160,7 +160,8 @@ public class TabbedModeTabPersistencePolicyTest {
                                         return new GURL("https://www.google.com");
                                     }
                                 };
-                        tab.initialize(null, null, null, null, null, null, false, null, false);
+                        tab.initialize(
+                                null, null, null, null, null, null, false, null, false, false);
                         return tab;
                     }
                 };

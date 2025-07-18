@@ -323,7 +323,19 @@ public class TabModelImpl extends TabModelJniBridge {
                                     && type == TabLaunchType.FROM_LONGPRESS_BACKGROUND);
 
             index = mOrderController.determineInsertionIndex(type, index, tab);
-            assert index <= mTabs.size();
+            if (tab.getIsPinned()) {
+                int firstNonPinnedTabIndex = mPinnedTabReorderManager.findFirstNonPinnedTabIndex();
+                if (firstNonPinnedTabIndex == INVALID_TAB_INDEX) {
+                    // All tabs are pinned or the model is empty, next valid non-pinned index is at
+                    // the end of the list.
+                    firstNonPinnedTabIndex = mTabs.size();
+                }
+
+                // Insert in next non-pinned index if index wasn't handled in
+                // TabModelOrderController.
+                if (index == INVALID_TAB_INDEX) index = firstNonPinnedTabIndex;
+                assert index <= firstNonPinnedTabIndex;
+            }
 
             if (tab.isIncognito() != isIncognito()) {
                 throw new IllegalStateException("Attempting to open tab in wrong model");

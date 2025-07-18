@@ -236,6 +236,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         Tab tab =
                 tabCreator.createTabWithWebContents(
                         mTab,
+                        /* shouldPin= */ false,
                         webContents,
                         TabLaunchType.FROM_LONGPRESS_FOREGROUND,
                         url,

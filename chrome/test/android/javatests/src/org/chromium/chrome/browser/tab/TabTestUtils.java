@@ -45,7 +45,8 @@ public class TabTestUtils {
             @Nullable TabDelegateFactory delegateFactory,
             boolean initiallyHidden,
             TabState tabState,
-            boolean initializeRenderer) {
+            boolean initializeRenderer,
+            boolean isPinned) {
         ((TabImpl) tab)
                 .initialize(
                         parent,
@@ -56,7 +57,8 @@ public class TabTestUtils {
                         delegateFactory,
                         initiallyHidden,
                         tabState,
-                        initializeRenderer);
+                        initializeRenderer,
+                        isPinned);
     }
 
     /** Set the last hidden timestamp. */

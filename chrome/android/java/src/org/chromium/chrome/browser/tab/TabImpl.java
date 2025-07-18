@@ -1221,7 +1221,8 @@ class TabImpl implements Tab {
             TabDelegateFactory delegateFactory,
             boolean initiallyHidden,
             @Nullable TabState tabState,
-            boolean initializeRenderer) {
+            boolean initializeRenderer,
+            boolean isPinned) {
         try {
             TraceEvent.begin("Tab.initialize");
 
@@ -1231,6 +1232,7 @@ class TabImpl implements Tab {
 
             mTabLaunchTypeAtCreation = mLaunchType;
             mCreationState = creationState;
+            mIsPinned = isPinned;
 
             // If applicable set up for a lazy background tab load.
             mPendingLoadParams = loadUrlParams;

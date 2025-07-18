@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -435,10 +436,14 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     @CalledByNative
     public void duplicateTab(@JniType("TabAndroid*") Tab parentTab, WebContents webContents) {
-        // TODO(crbug.com/415351293): Copy pinned state once implemented.
+        // TODO(crbug.com/431997520): Insert tab next to parent instead of next to the other
+        // children tabs.
         getTabCreator()
                 .createTabWithWebContents(
-                        parentTab, webContents, TabLaunchType.FROM_TAB_LIST_INTERFACE);
+                        parentTab,
+                        parentTab.getIsPinned(),
+                        webContents,
+                        TabLaunchType.FROM_TAB_LIST_INTERFACE);
     }
 
     /**
@@ -488,6 +493,22 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         if (tabs.isEmpty()) return;
 
         getTabUngrouper().ungroupTabs(tabs, /* trailing= */ true, /* allowDialog= */ false);
+    }
+
+    @CalledByNative
+    protected void pinTab(@JniType("TabAndroid*") Tab tab) {
+        @TabId int tabId = tab.getId();
+        if (tabId == Tab.INVALID_TAB_ID) return;
+
+        pinTab(tabId);
+    }
+
+    @CalledByNative
+    protected void unpinTab(@JniType("TabAndroid*") Tab tab) {
+        @TabId int tabId = tab.getId();
+        if (tabId == Tab.INVALID_TAB_ID) return;
+
+        unpinTab(tabId);
     }
 
     @NativeMethods
