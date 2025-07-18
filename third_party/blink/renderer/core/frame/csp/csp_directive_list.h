@@ -32,6 +32,7 @@ CSPCheckResult CSPDirectiveListAllowFromSource(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
     CSPDirectiveName type,
+    const KURL& document_url,
     const KURL& url,
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
@@ -179,6 +180,15 @@ void FillInCSPHashValues(
     const String& source,
     const WTF::HashSet<IntegrityAlgorithm>& hash_algorithms_used,
     Vector<network::mojom::blink::IntegrityMetadataPtr>& csp_hash_values);
+
+// Given a document URL and a script URL, returns the relative path of the
+// script URL. Document URL is the URL of the document that contains the script.
+// Only computed if document_url and script_url are same origin and Http(s).
+// Returns empty String otherwise. This function implements roughly the opposite
+// of remove_dot_segments algorithm defined in
+// https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.4
+CORE_EXPORT
+String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url);
 
 }  // namespace blink
 

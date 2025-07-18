@@ -15,6 +15,14 @@ This is a testharness.js-based test.
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 [FAIL] dynamically inserted script inserted by an inline script should be allowed if strict-dynamic-url is present - header
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script by its relative url's hash - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script by its relative url's hash in child directory - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script by its relative url's hash in an iframe in child dir - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script in parent dir by its relative url's hash in an iframe in child dir - header
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 [FAIL] script-src should allow script by its url hash - metatag
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 [FAIL] A parseable url-hash should ignore hostname allowlists - metatag
@@ -30,6 +38,14 @@ This is a testharness.js-based test.
 [FAIL] dynamically inserted parser-inserted script should be allowed if strict-dynamic-url is present - metatag
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 [FAIL] dynamically inserted script inserted by an inline script should be allowed if strict-dynamic-url is present - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script by its relative url's hash - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script by its relative url's hash in child directory - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script by its relative url's hash in an iframe in child dir - metatag
+  assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
+[FAIL] script-src should allow script in parent dir by its relative url's hash in an iframe in child dir - metatag
   assert_equals: expected "SCRIPT_RAN" but got "CSP_VIOLATION"
 Harness: the test ran to completion.
 
