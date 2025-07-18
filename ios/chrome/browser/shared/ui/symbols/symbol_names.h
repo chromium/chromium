@@ -29,6 +29,7 @@ extern NSString* const kGeminiBrandedLogoImage;
 extern NSString* const kGoogleDriveSymbol;
 extern NSString* const kGoogleFullSymbol;
 extern NSString* const kGoogleIconSymbol;
+extern NSString* const kGoogleSearchEngineLogoImage;
 extern NSString* const kGoogleShieldSymbol;
 extern NSString* const kGoogleMapsSymbol;
 extern NSString* const kGooglePasswordManagerWidgetPromoImage;

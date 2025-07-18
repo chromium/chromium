@@ -25,6 +25,7 @@ NSString* const kGeminiBrandedLogoImage = @"gemini_logo";
 NSString* const kGoogleDriveSymbol = @"google_drive";
 NSString* const kGoogleFullSymbol = @"google_full";
 NSString* const kGoogleIconSymbol = @"google_icon";
+NSString* const kGoogleSearchEngineLogoImage = @"google_logo";
 NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kGoogleMapsSymbol = @"google_maps";
 NSString* const kGooglePasswordManagerWidgetPromoImage =
