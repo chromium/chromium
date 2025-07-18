@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/template_url_id.h"
@@ -25,12 +24,6 @@ class WebDatabase;
 namespace sql {
 class Statement;
 }  // namespace sql
-
-namespace features {
-// An emergency 'off switch' to disable hash verification.
-// TODO(crbug.com/376303929): Remove in M134.
-BASE_DECLARE_FEATURE(kKeywordTableHashVerification);
-}  // namespace features
 
 // This class manages the |keywords| MetaTable within the SQLite database
 // passed to the constructor. It expects the following schema:

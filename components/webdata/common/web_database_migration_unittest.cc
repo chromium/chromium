@@ -1516,6 +1516,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion135ToCurrent) {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
 class WebDatabaseMigrationTestEncryption
     : public WebDatabaseMigrationTest,
       public ::testing::WithParamInterface<bool> {
@@ -1525,11 +1526,6 @@ class WebDatabaseMigrationTestEncryption
 
 // Tests addition of the url_hash column to the keywords table.
 TEST_P(WebDatabaseMigrationTestEncryption, MigrateVersion136ToCurrent) {
-  // The feature is tested elsewhere, force enable to make sure expectations
-  // match.
-  base::test::ScopedFeatureList enable_verification(
-      features::kKeywordTableHashVerification);
-
   encryptor_.set_encryption_available_for_testing(IsEncryptionAvailable());
   encryptor_.set_decryption_available_for_testing(IsEncryptionAvailable());
 
@@ -1594,13 +1590,10 @@ INSTANTIATE_TEST_SUITE_P(/*empty*/,
 // Tests migration of a keywords table with an empty url, which is invalid. The
 // entry should not be migrated, and the test should not crash. The dropping of
 // the invalid entry takes place upon the first GetKeywords call, and this is
-// tested elsewhere in KeywordTableTest.KeywordBadUrl.
+// tested elsewhere in KeywordTableTest.KeywordBadUrl. This test is only valid
+// on Windows because the bad url detection only happens if encrypted hashing is
+// enabled.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion136ToCurrentBadUrl) {
-  // The feature is tested elsewhere, force enable to make sure expectations
-  // match.
-  base::test::ScopedFeatureList enable_verification(
-      features::kKeywordTableHashVerification);
-
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_136.sql")));
   const TemplateURLID kTestId = 99;
   {
@@ -1622,6 +1615,27 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion136ToCurrentBadUrl) {
                                   false, 1);
   }
 }
+#else
+// On non-Windows the 136 to 137 migration does nothing except update add the
+// `url_hash` column and update the database version.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion136ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_136.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(136, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "url_hash"));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("keywords", "url_hash"));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(WebDatabaseMigrationTest, MigrateVersion137ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_137.sql")));
