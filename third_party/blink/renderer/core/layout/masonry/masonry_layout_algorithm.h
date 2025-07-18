@@ -62,8 +62,8 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   GridSizingTrackCollection BuildGridAxisTracks(
       const GridLineResolver& line_resolver,
       const GridItems& masonry_items,
-      const bool needs_auto_track_size,
       SizingConstraint sizing_constraint,
+      bool& needs_auto_track_size,
       wtf_size_t& start_offset) const;
 
   // If `auto_repeat_track_size` is non-null, this indicates the track

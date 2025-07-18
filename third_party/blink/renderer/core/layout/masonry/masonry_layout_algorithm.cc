@@ -560,16 +560,15 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::ComputeGridAxisTracks(
     node.AdjustMasonryItemSpans(masonry_items, line_resolver);
   }
 
-  return BuildGridAxisTracks(line_resolver, masonry_items,
-                             needs_auto_track_size, sizing_constraint,
-                             start_offset);
+  return BuildGridAxisTracks(line_resolver, masonry_items, sizing_constraint,
+                             needs_auto_track_size, start_offset);
 }
 
 GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     const GridLineResolver& line_resolver,
     const GridItems& masonry_items,
-    const bool needs_auto_track_size,
     SizingConstraint sizing_constraint,
+    bool& needs_auto_track_size,
     wtf_size_t& start_offset) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
@@ -596,6 +595,13 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
   GridSizingTrackCollection track_collection(BuildRanges(),
                                              grid_axis_direction);
   track_collection.BuildSets(style, masonry_available_size_);
+
+  // If we didn't find an auto repeater, and we are currently looking for
+  // an auto track size for an auto repeater, unset `needs_auto_track_size`
+  // because that means all repeat tracks have been collapsed, and we no
+  // longer need to run two different track sizing passes.
+  needs_auto_track_size &=
+      track_collection.GetAutoSizedRepeaterTrackIndex() != kNotFound;
 
   if (track_collection.HasNonDefiniteTrack()) {
     GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,

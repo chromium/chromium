@@ -291,6 +291,9 @@ GridRangeVector GridRangeBuilder::FinalizeRanges() {
         *end_lines_[line_index].grid_item_range_index_to_cache = ranges.size();
     }
 
+    // TODO(almaher): Handle special auto-fit behavior for Masonry.
+    //
+    // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
     if (is_in_auto_fit_range && open_items_or_repeaters == 1) {
       range.SetIsCollapsed();
       range.set_count = 0;
