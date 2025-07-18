@@ -35,8 +35,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -193,25 +191,6 @@ std::string HatsSurveyTriggerForAccessPoint(
       break;
   }
   return trigger;
-}
-
-// Launches a HaTS survey for the given trigger.
-void LaunchHatsSurvey(std::string trigger, Profile* profile, Browser* browser) {
-  CHECK(!trigger.empty());
-  CHECK(profile);
-
-  // A browser is required to launch the survey.
-  CHECK(browser);
-
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile,
-                                        /*create_if_necessary=*/true);
-  if (!hats_service) {
-    return;
-  }
-
-  // TODO(crbug.com/427971911): add product-specific data.
-  hats_service->LaunchSurvey(trigger);
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -683,13 +662,14 @@ void ChromeSigninClient::LaunchHatsSurveyForAccessPoint(
   if (browser) {
     // Launch the HaTS survey immediately if a browser is active for the
     // profile.
-    LaunchHatsSurvey(trigger, profile_, browser);
+    profiles::LaunchSigninHatsSurveyForBrowser(trigger, browser);
   } else {
     // If no browser is active, defer the survey launch until a browser becomes
     // available.
     // TODO(crbug.com/427971911): Fix test crashes due to the dangling pointer.
     new profiles::BrowserAddedForProfileObserver(
-        profile_, base::BindOnce(&LaunchHatsSurvey, trigger, profile_));
+        profile_,
+        base::BindOnce(&profiles::LaunchSigninHatsSurveyForBrowser, trigger));
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 }

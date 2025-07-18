@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -451,7 +452,12 @@ void ProfileMenuView::OnOtherProfileSelected(
 
   if (!web_app::AppBrowserController::IsWebApp(&browser())) {
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-    profiles::SwitchToProfile(profile_path, /*always_create=*/false);
+    // Switch to the selected profile and launch a HaTS survey for the
+    // associated non-webapp browser.
+    profiles::SwitchToProfile(
+        profile_path, /*always_create=*/false,
+        base::BindOnce(&profiles::LaunchSigninHatsSurveyForBrowser,
+                       kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu));
   } else {
     // Open the same web app for another profile.
     // On non-macOS the only allowlisted case is PasswordManager WebApp, which

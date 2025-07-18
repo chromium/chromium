@@ -226,6 +226,10 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveySigninInterceptProfileSeparation);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveySigninPromoBubbleDismissed);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfileMenu);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfilePicker);
 // LINT.ThenChange(//chrome/browser/signin/signin_util.cc)
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

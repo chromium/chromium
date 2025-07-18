@@ -87,6 +87,10 @@ const ChromeIdentityHatsTriggerFeatureMappingEntry
          &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin},
         {kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
          &switches::kChromeIdentitySurveySigninInterceptProfileSeparation},
+        {kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
+         &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu},
+        {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
+         &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
 };
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

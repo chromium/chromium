@@ -56,6 +56,19 @@ constexpr char kHatsSurveyTriggerAutofillPasswordUserPerception[] =
     "autofill-password-users-perception";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
+    "download-warning-bubble-bypass";
+constexpr char kHatsSurveyTriggerDownloadWarningBubbleHeed[] =
+    "download-warning-bubble-heed";
+constexpr char kHatsSurveyTriggerDownloadWarningBubbleIgnore[] =
+    "download-warning-bubble-ignore";
+constexpr char kHatsSurveyTriggerDownloadWarningPageBypass[] =
+    "download-warning-page-bypass";
+constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
+    "download-warning-page-heed";
+constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
+    "download-warning-page-ignore";
+constexpr char kHatsSurveyTriggerHistoryEmbeddings[] = "history-embeddings";
 constexpr char kHatsSurveyTriggerIdentityAddressBubbleSignin[] =
     "identity-address-bubble-signin";
 constexpr char kHatsSurveyTriggerIdentityDiceWebSigninAccepted[] =
@@ -74,19 +87,10 @@ constexpr char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[] =
     "identity-signin-intercept-profile-separation";
 constexpr char kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed[] =
     "identity-signin-promo-bubble-dismissed";
-constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
-    "download-warning-bubble-bypass";
-constexpr char kHatsSurveyTriggerDownloadWarningBubbleHeed[] =
-    "download-warning-bubble-heed";
-constexpr char kHatsSurveyTriggerDownloadWarningBubbleIgnore[] =
-    "download-warning-bubble-ignore";
-constexpr char kHatsSurveyTriggerDownloadWarningPageBypass[] =
-    "download-warning-page-bypass";
-constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
-    "download-warning-page-heed";
-constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
-    "download-warning-page-ignore";
-constexpr char kHatsSurveyTriggerHistoryEmbeddings[] = "history-embeddings";
+constexpr char kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu[] =
+    "identity-switch-profile-profile-menu";
+constexpr char kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker[] =
+    "identity-switch-profile-profile-picker";
 constexpr char kHatsSurveyTriggerLensOverlayResults[] = "lens-overlay-results";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
 constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
@@ -512,6 +516,12 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySigninPromoBubbleDismissed,
       kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu,
+      kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu);
+  survey_configs.emplace_back(
+      &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker,
+      kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

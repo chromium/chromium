@@ -63,6 +63,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -105,6 +108,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -156,6 +160,7 @@
 #endif
 
 using signin::constants::kNoHostedDomainFound;
+using testing::_;
 
 namespace {
 const SkColor kProfileColor = SK_ColorRED;
@@ -667,6 +672,8 @@ class ProfilePickerCreationFlowBrowserTest
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       platform_management_;
 #endif
+  base::test::ScopedFeatureList feature_list_{
+      switches::kChromeIdentitySurveySwitchProfileFromProfilePicker};
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {
@@ -1150,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
       ProfilePicker::Params::ForGlicManager(mock_callback.Get()));
   WaitForPickerClosedAndReopenedImmediately();
 
-  EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
+  EXPECT_CALL(mock_callback, Run(_)).Times(0);
   ASSERT_TRUE(ProfilePicker::IsOpen());
   ASSERT_FALSE(IsForceSigninErrorDialogShown());
 
@@ -2032,6 +2039,19 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* other_profile = profile_manager->GetProfile(other_path);
+  MockHatsService* hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          other_profile, base::BindRepeating(&BuildMockHatsService)));
+
+  EXPECT_CALL(
+      *hats_service,
+      LaunchSurvey(kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, _,
+                   _, _, _, _, _))
+      .Times(2);
+
   // Open the picker.
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
@@ -3227,7 +3247,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, GlicPickProfile) {
 
   // Open the picker with Glic version.
   base::MockCallback<base::OnceCallback<void(Profile*)>> picked_profile_mock;
-  EXPECT_CALL(picked_profile_mock, Run(testing::_))
+  EXPECT_CALL(picked_profile_mock, Run(_))
       .WillOnce([&new_profile_path](Profile* profile) {
         EXPECT_TRUE(profile);
         EXPECT_EQ(profile->GetPath(), new_profile_path);

@@ -79,6 +79,10 @@ bool HasProfileSwitchTargets(Profile* profile);
 // Close all the browser windows for |profile|.
 void CloseProfileWindows(Profile* profile);
 
+// Launch the HaTS survey corresponding to |trigger| for the given |browser|.
+void LaunchSigninHatsSurveyForBrowser(const std::string& trigger,
+                                      Browser* browser);
+
 // Handles running a callback when a new Browser for the given profile
 // has been completely created.  This object deletes itself once the browser
 // is created and the callback is executed.

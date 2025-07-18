@@ -735,6 +735,13 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(bool open_settings,
   if (profile->IsGuestSession()) {
     RecordProfilePickerAction(ProfilePickerAction::kLaunchGuestProfile);
   } else {
+    // Launch a HaTS survey if the user intentionally switched profiles via the
+    // profile picker accessed from the profile menu. This excludes first-run or
+    // startup scenarios.
+    if (entry_point_ == ProfilePicker::EntryPoint::kProfileMenuManageProfiles) {
+      profiles::LaunchSigninHatsSurveyForBrowser(
+          kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, browser);
+    }
     RecordProfilePickerAction(
         open_settings
             ? ProfilePickerAction::kLaunchExistingProfileCustomizeSettings

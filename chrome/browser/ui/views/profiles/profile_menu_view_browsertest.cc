@@ -55,6 +55,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -126,6 +129,7 @@
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
+using testing::_;
 using ::testing::StrictMock;
 
 constexpr char kTestEmail[] = "foo@example.com";
@@ -1615,6 +1619,65 @@ PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
   RunTest();
 }
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class ProfileMenuHatsSurveyTest : public ProfileMenuViewTestBase,
+                                  public InProcessBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kChromeIdentitySurveySwitchProfileFromProfileMenu};
+};
+
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+// This list is not for setting up a click test, and rather for anchoring the
+// "Other Profile" item for selection.
+constexpr std::array kActionableItems_WithAnotherProfile = {
+    ProfileMenuViewBase::ActionableItem::kSigninButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSigninButton};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
+                       SurveyLaunchedOnSwitchingProfile) {
+  // Setup a new profile and its mock HatsService.
+  Profile* other_profile = CreateAdditionalProfile();
+  MockHatsService* hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          other_profile, base::BindRepeating(&BuildMockHatsService)));
+  Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
+
+  // The survey should be launched for the other profile after switching.
+  EXPECT_CALL(
+      *hats_service,
+      LaunchSurvey(kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu, _, _,
+                   _, _, _, _));
+
+  // Open the profile menu and select the other profile.
+  SetTargetBrowser(browser());
+  OpenProfileMenu();
+  ASSERT_TRUE(profile_menu_view());
+  for (const auto& item : kActionableItems_WithAnotherProfile) {
+    if (item == ProfileMenuViewBase::ActionableItem::kOtherProfileButton) {
+      break;
+    }
+    profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+  }
+  views::View* focused_item =
+      profile_menu_view()->GetFocusManager()->GetFocusedView();
+  ASSERT_TRUE(focused_item);
+  Click(focused_item);
+  base::RunLoop().RunUntilIdle();
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
