@@ -25,6 +25,9 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_mediator.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_controller.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
+#import "ios/chrome/browser/badges/ui_bundled/incognito_badge_mediator.h"
+#import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_controller.h"
+#import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
@@ -114,6 +117,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   std::unique_ptr<FullscreenUIUpdater> _omniboxFullscreenUIUpdater;
   // Observer that updates BadgeViewController for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _badgeFullscreenUIUpdater;
+  // Observer that updates IncognitoBadgeViewController for fullscreen events.
+  std::unique_ptr<FullscreenUIUpdater> _incognitoBadgeFullscreenUIUpdater;
 
   // Facade objects used by `_toolbarCoordinator`.
   // Must outlive `_toolbarCoordinator`.
@@ -126,6 +131,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @property(nonatomic, strong) BadgeMediator* badgeMediator;
 // ViewController for the badges displayed in the LocationBar.
 @property(nonatomic, strong) BadgeViewController* badgeViewController;
+// Mediator for the incognito badge displayed in the LocationBar.
+@property(nonatomic, strong) IncognitoBadgeMediator* incognitoBadgeMediator;
+// ViewController for the incognito badge displayed in the LocationBar.
+@property(nonatomic, strong)
+    IncognitoBadgeViewController* incognitoBadgeViewController;
 // Coordinator for the contextual panel entrypoint.
 @property(nonatomic, strong)
     ContextualPanelEntrypointCoordinator* contextualPanelEntrypointCoordinator;
@@ -284,8 +294,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       self.browser, OverlayModality::kInfobarBanner);
   self.badgeMediator =
       [[BadgeMediator alloc] initWithWebStateList:self.webStateList
-                                 overlayPresenter:overlayPresenter
-                                      isIncognito:isIncognito];
+                                 overlayPresenter:overlayPresenter];
   self.badgeMediator.consumer = self.badgeViewController;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
@@ -296,6 +305,28 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       FullscreenController::FromBrowser(self.browser);
   _badgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.badgeViewController);
+
+  // Create incognito badge view controller and mediator for an incognito
+  // profile.
+  if (isIncognito) {
+    self.incognitoBadgeViewController = [[IncognitoBadgeViewController alloc]
+        initWithButtonFactory:buttonFactory];
+    self.incognitoBadgeViewController.visibilityDelegate =
+        [self.viewController incognitoBadgeViewVisibilityDelegate];
+
+    [self.viewController
+        addChildViewController:self.incognitoBadgeViewController];
+    [self.viewController
+        setIncognitoBadgeView:self.incognitoBadgeViewController.view];
+    [self.incognitoBadgeViewController
+        didMoveToParentViewController:self.viewController];
+
+    self.incognitoBadgeMediator =
+        [[IncognitoBadgeMediator alloc] initWithWebStateList:self.webStateList];
+    self.incognitoBadgeMediator.consumer = self.incognitoBadgeViewController;
+    _incognitoBadgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+        fullscreenController, self.incognitoBadgeViewController);
+  }
 
   self.mediator = [[LocationBarMediator alloc] initWithIsIncognito:isIncognito];
   self.mediator.templateURLService =
@@ -357,6 +388,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.badgeMediator = nil;
   _locationBar.reset();
 
+  [self.incognitoBadgeMediator disconnect];
+  self.incognitoBadgeMediator = nil;
+  self.incognitoBadgeViewController = nil;
+
   self.viewController = nil;
   [self.mediator disconnect];
   self.mediator.templateURLService = nil;
@@ -372,6 +407,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _locationBarModelDelegate = nullptr;
 
   _badgeFullscreenUIUpdater = nullptr;
+  _incognitoBadgeFullscreenUIUpdater = nullptr;
   _omniboxFullscreenUIUpdater = nullptr;
   self.started = NO;
 }

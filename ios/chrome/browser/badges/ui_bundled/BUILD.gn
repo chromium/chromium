@@ -50,6 +50,12 @@ source_set("ui_bundled") {
     "badge_view_controller.h",
     "badge_view_controller.mm",
     "badge_view_visibility_delegate.h",
+    "incognito_badge_consumer.h",
+    "incognito_badge_mediator.h",
+    "incognito_badge_mediator.mm",
+    "incognito_badge_view_controller.h",
+    "incognito_badge_view_controller.mm",
+    "incognito_badge_view_visibility_delegate.h",
   ]
   deps = [
     ":public",
@@ -65,11 +71,12 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -90,7 +97,10 @@ source_set("ui_bundled") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "badge_mediator_unittest.mm" ]
+  sources = [
+    "badge_mediator_unittest.mm",
+    "incognito_badge_mediator_unittest.mm",
+  ]
   deps = [
     ":public",
     ":ui_bundled",

@@ -19,7 +19,6 @@ class WebStateList;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                     overlayPresenter:(OverlayPresenter*)overlayPresenter
-                         isIncognito:(BOOL)isIncognito
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

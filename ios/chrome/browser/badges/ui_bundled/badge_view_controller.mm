@@ -46,10 +46,7 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 // StackView.
 @property(nonatomic, strong) BadgeButton* displayedBadge;
 
-// BadgeButton to show in both FullScreen and non FullScreen.
-@property(nonatomic, strong) BadgeButton* fullScreenBadge;
-
-// StackView holding the displayedBadge and fullScreenBadge.
+// StackView holding the displayedBadge.
 @property(nonatomic, strong) UIStackView* stackView;
 
 // View that displays a blue dot on the top-right corner of the displayed badge
@@ -84,10 +81,8 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 
 #pragma mark BadgeConsumer
 
-- (void)setupWithDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
-                fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem {
+- (void)setupWithDisplayedBadge:(id<BadgeItem>)displayedBadgeItem {
   self.displayedBadge = nil;
-  self.fullScreenBadge = nil;
   if (displayedBadgeItem) {
     BadgeButton* newButton =
         [self.buttonFactory badgeButtonForBadgeType:displayedBadgeItem.badgeType
@@ -96,31 +91,12 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
                   animated:NO];
     self.displayedBadge = newButton;
   }
-  if (fullscreenBadgeItem) {
-    self.fullScreenBadge = [self.buttonFactory
-        badgeButtonForBadgeType:fullscreenBadgeItem.badgeType
-                   usingInfoBar:nil];
-  }
 
-  BOOL badgeHidden = !displayedBadgeItem && !fullscreenBadgeItem;
-  [self.visibilityDelegate setBadgeViewHidden:badgeHidden];
+  [self.visibilityDelegate setBadgeViewHidden:!displayedBadgeItem];
 }
 
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
-             fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem
                      infoBar:(InfoBarIOS*)infoBar {
-  if (fullscreenBadgeItem) {
-    if (!self.fullScreenBadge ||
-        self.fullScreenBadge.badgeType != fullscreenBadgeItem.badgeType) {
-      BadgeButton* newButton = [self.buttonFactory
-          badgeButtonForBadgeType:fullscreenBadgeItem.badgeType
-                     usingInfoBar:nil];
-      self.fullScreenBadge = newButton;
-    }
-  } else {
-    self.fullScreenBadge = nil;
-  }
-
   if (displayedBadgeItem) {
     if (self.displayedBadge &&
         self.displayedBadge.badgeType == displayedBadgeItem.badgeType) {
@@ -143,8 +119,7 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
   }
 
   if (!self.forceDisabled) {
-    BOOL badgeHidden = !displayedBadgeItem && !fullscreenBadgeItem;
-    [self.visibilityDelegate setBadgeViewHidden:badgeHidden];
+    [self.visibilityDelegate setBadgeViewHidden:!displayedBadgeItem];
   }
 }
 
@@ -189,8 +164,7 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
     // Turning off force disable mode doesn't imply that the badge view will
     // not remain hidden. Check if there is a badge to be displayed to avoid
     // accidentally removing the placeholder as a side effect of unhiding.
-    BOOL badgeViewHidden = !(self.fullScreenBadge || self.displayedBadge);
-    [self.visibilityDelegate setBadgeViewHidden:badgeViewHidden];
+    [self.visibilityDelegate setBadgeViewHidden:!self.displayedBadge];
   }
 
   _forceDisabled = forceDisabled;
@@ -201,16 +175,8 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   BOOL badgeViewShouldCollapse = progress <= kFullScreenProgressThreshold;
   if (badgeViewShouldCollapse) {
-    self.fullScreenBadge.fullScreenOn = YES;
-    // Fade in/out in the FullScreen badge with the FullScreen on
-    // configurations.
-    CGFloat alphaValue = fmax((kFullScreenProgressThreshold - progress) /
-                                  kFullScreenProgressThreshold,
-                              0);
-    self.fullScreenBadge.alpha = alphaValue;
     self.displayedBadge.hidden = YES;
   } else {
-    self.fullScreenBadge.fullScreenOn = NO;
     // Fade in/out the FullScreen badge with the FullScreen off configurations
     // at a speed matching that of the trailing button in the
     // LocationBarSteadyView.
@@ -219,7 +185,6 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
                               0);
     self.displayedBadge.hidden = NO;
     self.displayedBadge.alpha = alphaValue;
-    self.fullScreenBadge.alpha = alphaValue;
   }
 }
 
@@ -253,17 +218,6 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
                      self.view.transform = CGAffineTransformIdentity;
                    }
                    completion:nil];
-}
-
-- (void)setFullScreenBadge:(BadgeButton*)fullScreenBadge {
-  [self.stackView removeArrangedSubview:_fullScreenBadge];
-  [_fullScreenBadge removeFromSuperview];
-  if (!fullScreenBadge) {
-    _fullScreenBadge = nil;
-    return;
-  }
-  _fullScreenBadge = fullScreenBadge;
-  [self.stackView insertArrangedSubview:_fullScreenBadge atIndex:0];
 }
 
 @end

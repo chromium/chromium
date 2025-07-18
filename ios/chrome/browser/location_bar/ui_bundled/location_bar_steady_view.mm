@@ -456,6 +456,14 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   [self updateAccessibility];
 }
 
+- (void)setIncognitoBadgeView:(UIView*)incognitoBadgeView {
+  BOOL hadBadgeView = _badgesContainerView.incognitoBadgeView != nil;
+  if (!hadBadgeView && incognitoBadgeView) {
+    _badgesContainerView.incognitoBadgeView = incognitoBadgeView;
+  }
+  [self updateAccessibility];
+}
+
 - (void)setBadgeView:(UIView*)badgeView {
   BOOL hadBadgeView = _badgesContainerView.badgeView != nil;
   if (!hadBadgeView && badgeView) {
@@ -570,6 +578,11 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 }
 
 - (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate {
+  return self.badgesContainerView;
+}
+
+- (id<IncognitoBadgeViewVisibilityDelegate>)
+    incognitoBadgeViewVisibilityDelegate {
   return self.badgesContainerView;
 }
 

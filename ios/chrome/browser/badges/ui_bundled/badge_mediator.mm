@@ -8,11 +8,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
-#import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
-#import "ios/chrome/browser/badges/ui_bundled/badge_static_item.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_type_util.h"
 #import "ios/chrome/browser/infobars/model/badge_state.h"
@@ -28,7 +26,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -69,9 +66,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 // The infobar banner OverlayPresenter.
 @property(nonatomic, readonly) OverlayPresenter* overlayPresenter;
 
-// The incognito badge, or nil if the Browser is not off-the-record.
-@property(nonatomic, readonly) id<BadgeItem> offTheRecordBadge;
-
 // Array of all available badges.
 @property(nonatomic, strong, readonly) NSArray<id<BadgeItem>>* badges;
 
@@ -81,18 +75,11 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 @end
 
 @implementation BadgeMediator
-@synthesize offTheRecordBadge = _offTheRecordBadge;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                    overlayPresenter:(OverlayPresenter*)overlayPresenter
-                         isIncognito:(BOOL)isIncognito {
+                    overlayPresenter:(OverlayPresenter*)overlayPresenter {
   self = [super init];
   if (self) {
-    // Create the incognito badge if `browser` is off-the-record.
-    if (isIncognito) {
-      _offTheRecordBadge =
-          [[BadgeStaticItem alloc] initWithBadgeType:kBadgeTypeIncognito];
-    }
     // Set up the OverlayPresenterObserver for the infobar banner presentation.
     _overlayPresenterObserver =
         std::make_unique<OverlayPresenterObserverBridge>(self);
@@ -219,20 +206,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
              : kBadgeTypePermissionsCamera;
 }
 
-- (id<BadgeItem>)offTheRecordBadge {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
-    return _offTheRecordBadge;
-  }
-
-  // When Parity is enabled, don't show the incognito badge on NTP. The
-  // placeholder with the default search engine logo will be shown instead.
-  if ([self isCurrentWebStateShowingNTP]) {
-    return nil;
-  }
-
-  return _offTheRecordBadge;
-}
-
 #pragma mark - Accessor helpers
 
 // Updates the consumer for the current active WebState.
@@ -251,8 +224,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
     displayedBadge = [badges firstObject];
   }
   // Update the consumer with the new badge items.
-  [self.consumer setupWithDisplayedBadge:displayedBadge
-                         fullScreenBadge:self.offTheRecordBadge];
+  [self.consumer setupWithDisplayedBadge:displayedBadge];
 }
 
 #pragma mark - BadgeDelegate
@@ -373,7 +345,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   }
 
   [self.consumer updateDisplayedBadge:displayedBadge
-                      fullScreenBadge:self.offTheRecordBadge
                               infoBar:infoBar];
   [self updateConsumerReadStatus];
 }
@@ -511,15 +482,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
           base::UserMetricsAction("MobileMessagesBadgeNonAcceptedTapped"));
       break;
   }
-}
-
-- (BOOL)isCurrentWebStateShowingNTP {
-  if (!self.webStateList || !self.webStateList->GetActiveWebState()) {
-    return NO;
-  }
-
-  return self.webStateList->GetActiveWebState()->GetVisibleURL() ==
-         kChromeUINewTabURL;
 }
 
 @end

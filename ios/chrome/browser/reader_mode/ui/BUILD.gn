@@ -76,6 +76,7 @@ source_set("eg2_tests") {
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/mojom",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/badges/ui_bundled:public",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

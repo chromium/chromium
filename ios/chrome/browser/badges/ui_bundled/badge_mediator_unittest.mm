@@ -51,26 +51,17 @@ enum class TestParam {
 // Fake of BadgeConsumer.
 @interface FakeBadgeConsumer : NSObject <BadgeConsumer>
 @property(nonatomic, strong) id<BadgeItem> displayedBadge;
-@property(nonatomic, assign) BOOL hasFullscreenOffTheRecordBadge;
 @property(nonatomic, assign) BOOL hasUnreadBadge;
 @end
 
 @implementation FakeBadgeConsumer
 @synthesize forceDisabled = _forceDisabled;
 
-- (void)setupWithDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
-                fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem {
-  self.hasFullscreenOffTheRecordBadge =
-      fullscreenBadgeItem != nil &&
-      fullscreenBadgeItem.badgeType == kBadgeTypeIncognito;
+- (void)setupWithDisplayedBadge:(id<BadgeItem>)displayedBadgeItem {
   self.displayedBadge = displayedBadgeItem;
 }
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
-             fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem
                      infoBar:(InfoBarIOS*)infoBar {
-  self.hasFullscreenOffTheRecordBadge =
-      fullscreenBadgeItem != nil &&
-      fullscreenBadgeItem.badgeType == kBadgeTypeIncognito;
   self.displayedBadge = displayedBadgeItem;
 }
 - (void)markDisplayedBadgeAsRead:(BOOL)read {
@@ -89,8 +80,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
     overlay_presenter_->SetPresentationContext(&overlay_presentation_context_);
     badge_mediator_ =
         [[BadgeMediator alloc] initWithWebStateList:web_state_list()
-                                   overlayPresenter:overlay_presenter_
-                                        isIncognito:is_off_the_record()];
+                                   overlayPresenter:overlay_presenter_];
     badge_mediator_.consumer = badge_consumer_;
   }
 
@@ -165,8 +155,6 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
 TEST_P(BadgeMediatorTest, BadgeMediatorTestNoInfobar) {
   AppendActivatedWebState();
   EXPECT_FALSE(badge_consumer_.displayedBadge);
-  EXPECT_EQ(is_off_the_record(),
-            badge_consumer_.hasFullscreenOffTheRecordBadge);
 }
 
 // Test that the BadgeMediator responds with one new badge when an infobar is
@@ -273,8 +261,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestRestartWithInfobar) {
   badge_consumer_ = [[FakeBadgeConsumer alloc] init];
   badge_mediator_ =
       [[BadgeMediator alloc] initWithWebStateList:web_state_list()
-                                 overlayPresenter:overlay_presenter_
-                                      isIncognito:is_off_the_record()];
+                                 overlayPresenter:overlay_presenter_];
   badge_mediator_.consumer = badge_consumer_;
   ASSERT_TRUE(badge_consumer_.displayedBadge);
   EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
