@@ -3233,6 +3233,11 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Filled"/>
 </enum>
 
+<enum name="BooleanAutofillHomeAndWorkRemoved">
+  <int value="0" label="Address available"/>
+  <int value="1" label="Address removed from Chrome"/>
+</enum>
+
 <enum name="BooleanAutofillHomeAndWorkSilentUpdateUsage">
   <int value="0" label="The filled address wasn't silently updated"/>
   <int value="1" label="The filled address was silently updated"/>

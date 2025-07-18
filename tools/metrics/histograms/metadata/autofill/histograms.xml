@@ -3648,6 +3648,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.HomeAndWork.RemovedFromChrome.{Type}"
+    enum="BooleanAutofillHomeAndWorkRemoved" expires_after="2026-05-01">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    On browser startup, emits whether the user has chosen to remove their {Type}
+    address from Chrome. Only emitted for users with a {Type} address.
+  </summary>
+  <token key="Type">
+    <variant name="Home"/>
+    <variant name="Work"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.HomeAndWork.SilentUpdates.Lost" units="SilentUpdates"
     expires_after="2026-05-01">
   <owner>fleimgruber@google.com</owner>

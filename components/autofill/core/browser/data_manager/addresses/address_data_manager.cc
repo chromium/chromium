@@ -163,8 +163,8 @@ void AddressDataManager::OnWebDataServiceRequestDone(
   if (!home_and_work_metadata_) {
     profiles_ = std::move(profiles_from_db);
   } else {
-    profiles_ =
-        home_and_work_metadata_->ApplyMetadata(std::move(profiles_from_db));
+    profiles_ = home_and_work_metadata_->ApplyMetadata(
+        std::move(profiles_from_db), !has_initial_load_finished_);
   }
 
   if (!has_initial_load_finished_) {

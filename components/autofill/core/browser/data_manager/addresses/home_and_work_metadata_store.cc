@@ -12,6 +12,7 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -59,6 +60,16 @@ std::string_view GetSilentUpdateCountPrefName(
   }
 }
 
+void RecordHomeAndWorkRemovalMetric(AutofillProfile::RecordType record_type,
+                                    bool is_removed) {
+  std::string_view suffix =
+      record_type == AutofillProfile::RecordType::kAccountHome ? "Home"
+                                                               : "Work";
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.HomeAndWork.RemovedFromChrome.", suffix}),
+      is_removed);
+}
+
 }  // namespace
 
 HomeAndWorkMetadataStore::HomeAndWorkMetadataStore(
@@ -77,7 +88,8 @@ HomeAndWorkMetadataStore::HomeAndWorkMetadataStore(
 HomeAndWorkMetadataStore::~HomeAndWorkMetadataStore() = default;
 
 std::vector<AutofillProfile> HomeAndWorkMetadataStore::ApplyMetadata(
-    std::vector<AutofillProfile> profiles) {
+    std::vector<AutofillProfile> profiles,
+    bool is_initial_load) {
   size_t max_use_count = 0;
   for (const AutofillProfile& profile : profiles) {
     max_use_count =
@@ -90,9 +102,16 @@ std::vector<AutofillProfile> HomeAndWorkMetadataStore::ApplyMetadata(
       result.push_back(std::move(profile));
       continue;
     }
-    if (std::optional<AutofillProfile> modified_profile =
-            ApplyMetadata(std::move(profile), max_use_count)) {
+    AutofillProfile::RecordType record_type = profile.record_type();
+    // Nullopt if the user chose to remove the H/W address.
+    std::optional<AutofillProfile> modified_profile =
+        ApplyMetadata(std::move(profile), max_use_count);
+    if (modified_profile) {
       result.push_back(std::move(*modified_profile));
+    }
+    if (is_initial_load) {
+      RecordHomeAndWorkRemovalMetric(
+          record_type, /*is_removed=*/!modified_profile.has_value());
     }
   }
   return result;

@@ -69,7 +69,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, Update_HomeAndWork) {
   modified_profile.usage_history().set_use_date(base::Time::Now() -
                                                 base::Minutes(345));
   EXPECT_THAT(metadata_store.ApplyMetadata(
-                  std::vector<AutofillProfile>{modified_profile}),
+                  std::vector<AutofillProfile>{modified_profile},
+                  /*is_initial_load=*/false),
               testing::ElementsAre(profile));
 }
 
@@ -93,7 +94,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, Update_NonHomeAndWork) {
   modified_profile.usage_history().set_use_date(base::Time::Now() -
                                                 base::Minutes(345));
   EXPECT_THAT(metadata_store.ApplyMetadata(
-                  std::vector<AutofillProfile>{modified_profile}),
+                  std::vector<AutofillProfile>{modified_profile},
+                  /*is_initial_load=*/false),
               testing::ElementsAre(modified_profile));
 }
 
@@ -111,15 +113,41 @@ TEST_F(HomeAndWorkMetadataStoreTest, Remove_HomeAndWork) {
       AutofillProfileChange::HIDE_IN_AUTOFILL, profile.guid(), profile));
 
   EXPECT_THAT(
-      metadata_store.ApplyMetadata(std::vector<AutofillProfile>{profile}),
+      metadata_store.ApplyMetadata(std::vector<AutofillProfile>{profile},
+                                   /*is_initial_load=*/false),
       testing::IsEmpty());
 
   // Once the modification date increases, the address reappears.
   profile.usage_history().set_modification_date(base::Time::Now() +
                                                 base::Minutes(1));
   EXPECT_THAT(
-      metadata_store.ApplyMetadata(std::vector<AutofillProfile>{profile}),
+      metadata_store.ApplyMetadata(std::vector<AutofillProfile>{profile},
+                                   /*is_initial_load=*/false),
       testing::ElementsAre(profile));
+}
+
+// Tests that during the first load, it is emitted whether users with a H/W
+// address chose to remove it.
+TEST_F(HomeAndWorkMetadataStoreTest, Remove_HomeAndWork_Metric) {
+  HomeAndWorkMetadataStore metadata_store(pref_service(), sync_service(),
+                                          base::DoNothing());
+  AutofillProfile home = test::GetFullProfile();
+  test_api(home).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  AutofillProfile work = test::GetFullProfile();
+  test_api(work).set_record_type(AutofillProfile::RecordType::kAccountWork);
+
+  metadata_store.ApplyChange(AutofillProfileChange(
+      AutofillProfileChange::HIDE_IN_AUTOFILL, home.guid(), home));
+
+  base::HistogramTester histogram_tester;
+  ASSERT_THAT(
+      metadata_store.ApplyMetadata(std::vector<AutofillProfile>{home, work},
+                                   /*is_initial_load=*/true),
+      testing::ElementsAre(work));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.HomeAndWork.RemovedFromChrome.Home", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.HomeAndWork.RemovedFromChrome.Work", false, 1);
 }
 
 // Tests that non Home and Work addresses are not affected by
@@ -135,7 +163,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, Remove_NonHomeAndWork) {
       AutofillProfileChange::HIDE_IN_AUTOFILL, profile.guid(), profile));
 
   EXPECT_THAT(
-      metadata_store.ApplyMetadata(std::vector<AutofillProfile>{profile}),
+      metadata_store.ApplyMetadata(std::vector<AutofillProfile>{profile},
+                                   /*is_initial_load=*/false),
       testing::ElementsAre(profile));
 }
 
@@ -162,8 +191,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, DefaultValues) {
   other.usage_history().set_use_count(123);
   task_environment().FastForwardBy(base::Minutes(2));
 
-  std::vector<AutofillProfile> profiles =
-      metadata_store.ApplyMetadata({home, work, other});
+  std::vector<AutofillProfile> profiles = metadata_store.ApplyMetadata(
+      {home, work, other}, /*is_initial_load=*/false);
   // Note that `AutofillProfile::operator==` doesn't compare usage information.
   ASSERT_THAT(profiles, testing::ElementsAre(home, work, other));
   base::Time comparison_time = base::Time::Now();
@@ -173,7 +202,8 @@ TEST_F(HomeAndWorkMetadataStoreTest, DefaultValues) {
   // Further calls of `ApplyMetadata()` shouldn't boost H/W. By using the
   // `other` addresses sufficiently often, it becomes the top ranked address.
   other.usage_history().set_use_count(321);
-  profiles = metadata_store.ApplyMetadata({home, work, other});
+  profiles = metadata_store.ApplyMetadata({home, work, other},
+                                          /*is_initial_load=*/false);
   ASSERT_THAT(profiles, testing::ElementsAre(home, work, other));
   EXPECT_TRUE(profiles[0].HasGreaterRankingThan(&profiles[1], comparison_time));
   EXPECT_TRUE(profiles[2].HasGreaterRankingThan(&profiles[0], comparison_time));

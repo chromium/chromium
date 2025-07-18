@@ -67,7 +67,8 @@ class HomeAndWorkMetadataStore : public syncer::SyncServiceObserver {
   // Conceptually const, but during the initial integration, this populates H/W
   // metadata with default values.
   std::vector<AutofillProfile> ApplyMetadata(
-      std::vector<AutofillProfile> profiles);
+      std::vector<AutofillProfile> profiles,
+      bool is_initial_load);
 
   // Persists the `change` in prefs, if it applies to a Home and Work profile.
   void ApplyChange(const AutofillProfileChange& change);
