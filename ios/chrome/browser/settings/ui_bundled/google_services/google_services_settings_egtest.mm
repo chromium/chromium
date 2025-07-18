@@ -51,16 +51,23 @@ using l10n_util::GetNSString;
 
 namespace {
 
+// Returns a matcher for an action sheet button that disambiguates nested
+// views often found in UIAlertController implementation on newer iOS versions.
+id<GREYMatcher> UniqueActionSheetButtonMatcher(int message_id) {
+  id<GREYMatcher> baseMatcher =
+      chrome_test_util::ActionSheetItemWithAccessibilityLabelId(message_id);
+
+  // Select the innermost element (the one that doesn't have a descendant
+  // matching the same criteria) to avoid "Multiple elements were matched"
+  // errors.
+  return grey_allOf(baseMatcher, grey_not(grey_descendant(baseMatcher)), nil);
+}
+
 // Dismisses the sign-out dialog.
 void DismissSignOut() {
-  if ([ChromeEarlGrey isIPadIdiom] || iOS26_OR_ABOVE()) {
-    // Tap the tools menu to dismiss the popover.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-        performAction:grey_tap()];
-  }
+  [ChromeEarlGreyUI dismissByTappingOnTheWindowOfPopover:
+                        UniqueActionSheetButtonMatcher(
+                            IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)];
 }
 
 // Waits for the settings done button to be enabled.
@@ -189,9 +196,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                    /*is_toggled_on=*/YES,
                                    /*enabled=*/YES)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                     IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+  [[EarlGrey
+      selectElementWithMatcher:UniqueActionSheetButtonMatcher(
+                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
   WaitForSettingDoneButton();
 
@@ -255,9 +262,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
           grey_text(l10n_util::GetNSString(
               IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                     IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+  [[EarlGrey
+      selectElementWithMatcher:UniqueActionSheetButtonMatcher(
+                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
   if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
