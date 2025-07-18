@@ -749,11 +749,11 @@ void ProfileMenuViewBase::Init() {
 }
 
 void ProfileMenuViewBase::OnWindowClosing() {
-  if (!anchor_button()) {
+  if (!anchor_button_) {
     return;
   }
 
-  views::InkDrop::Get(anchor_button())
+  views::InkDrop::Get(anchor_button_.view())
       ->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
 }
 

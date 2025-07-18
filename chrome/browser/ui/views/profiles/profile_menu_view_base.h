@@ -30,6 +30,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_tracker.h"
 
 class Browser;
 
@@ -191,8 +192,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // TODO(crbug.com/40587757): remove when a general solution is available.
   int GetMaxHeight() const;
 
-  views::Button* anchor_button() const { return anchor_button_; }
-
   bool perform_menu_actions() const { return perform_menu_actions_; }
   void set_perform_menu_actions_for_testing(bool perform_menu_actions) {
     perform_menu_actions_ = perform_menu_actions;
@@ -228,7 +227,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& text);
 
   const raw_ref<Profile> profile_;
-  const raw_ptr<views::Button> anchor_button_;
+
+  // `anchor_button_` usually lives in a separate Views hierarchy than the menu
+  // view. Use a ViewTracker to avoid potential UAF crashes.
+  views::ViewTracker anchor_button_;
 
   // Component containers.
   raw_ptr<views::View> identity_info_container_ = nullptr;
