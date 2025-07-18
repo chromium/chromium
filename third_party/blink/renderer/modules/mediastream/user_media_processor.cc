@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/scoped_media_stream_tracer.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
@@ -207,13 +208,15 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
         processed_source->GetAudioProcessingProperties();
     CHECK(properties);
 
-    source->SetAudioProcessingProperties(
-        properties->echo_cancellation_type ==
-                AudioProcessingProperties::EchoCancellationType::
-                    kEchoCancellationDisabled
+    // TODO(crbug.com/428856440): Use properties->echo_cancellation_mode
+    // directly once we support all EchoCancellationMode values on the Web.
+    EchoCancellationMode source_echo_cancellation_mode =
+        properties->echo_cancellation_mode == EchoCancellationMode::kDisabled
             ? EchoCancellationMode::kDisabled
-            : EchoCancellationMode::kBrowserDecides,
-        properties->auto_gain_control, properties->noise_suppression,
+            : EchoCancellationMode::kBrowserDecides;
+    source->SetAudioProcessingProperties(
+        source_echo_cancellation_mode, properties->auto_gain_control,
+        properties->noise_suppression,
         properties->voice_isolation ==
             AudioProcessingProperties::VoiceIsolationType::
                 kVoiceIsolationEnabled);

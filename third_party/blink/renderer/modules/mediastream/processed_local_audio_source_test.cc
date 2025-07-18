@@ -405,16 +405,13 @@ class ProcessedLocalAudioSourceVoiceIsolationTest
     AudioProcessingProperties properties;
     switch (GetAecState()) {
       case AEC_DISABLED:
-        properties.echo_cancellation_type = AudioProcessingProperties::
-            EchoCancellationType::kEchoCancellationDisabled;
+        properties.echo_cancellation_mode = EchoCancellationMode::kDisabled;
         break;
       case BROWSER_AEC:
-        properties.echo_cancellation_type = AudioProcessingProperties::
-            EchoCancellationType::kEchoCancellationAec3;
+        properties.echo_cancellation_mode = EchoCancellationMode::kRemoteOnly;
         break;
       case SYSTEM_AEC:
-        properties.echo_cancellation_type = AudioProcessingProperties::
-            EchoCancellationType::kEchoCancellationSystem;
+        properties.echo_cancellation_mode = EchoCancellationMode::kAll;
         break;
     }
 
@@ -477,7 +474,7 @@ TEST_P(ProcessedLocalAudioSourceVoiceIsolationTest,
   if (IsVoiceIsolationSupported()) {
     platform_effects |= media::AudioParameters::VOICE_ISOLATION_SUPPORTED;
   }
-  if (IsSystemAecDefaultEnabled()) {
+  if (IsSystemAecDefaultEnabled() || GetAecState() == SYSTEM_AEC) {
     platform_effects |= media::AudioParameters::ECHO_CANCELLER;
   }
 
@@ -527,22 +524,18 @@ MATCHER_P(ExactParamProcessingEffects, expected, "") {
                         media::AudioParameters::AUTOMATIC_GAIN_CONTROL))) {
     return true;
   }
-  LOG(ERROR) << "\n expected: " << expected.AsHumanReadableString()
-             << "\n      arg: " << arg.AsHumanReadableString();
   return false;
 }
 
 class ProcessedLocalAudioSourcePlatformEffectsTest
     : public ProcessedLocalAudioSourceBase,
       public testing::WithParamInterface<
-          testing::tuple<AudioProcessingProperties::EchoCancellationType,
-                         bool,
-                         bool>> {};
+          testing::tuple<EchoCancellationMode, bool, bool>> {};
 
 TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
        PlatformAecNsAgcCorrectIfAvailale) {
   AudioProcessingProperties properties;
-  properties.echo_cancellation_type = std::get<0>(GetParam());
+  properties.echo_cancellation_mode = std::get<0>(GetParam());
   properties.noise_suppression = std::get<1>(GetParam());
   properties.auto_gain_control = std::get<2>(GetParam());
 
@@ -623,12 +616,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ProcessedLocalAudioSourcePlatformEffectsTest,
     ::testing::Combine(
-        ::testing::ValuesIn({AudioProcessingProperties::EchoCancellationType::
-                                 kEchoCancellationDisabled,
-                             AudioProcessingProperties::EchoCancellationType::
-                                 kEchoCancellationSystem,
-                             AudioProcessingProperties::EchoCancellationType::
-                                 kEchoCancellationAec3}),
+        ::testing::ValuesIn({EchoCancellationMode::kDisabled,
+                             EchoCancellationMode::kAll,
+                             EchoCancellationMode::kBrowserDecides}),
         // ACG and NS on/off.
         ::testing::Bool(),
         ::testing::Bool()));

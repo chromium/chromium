@@ -705,7 +705,8 @@ TEST(MediaStreamAudioProcessorCallbackTest,
 
 namespace {
 scoped_refptr<MediaStreamAudioProcessor> CreateAudioProcessorWithProperties(
-    AudioProcessingProperties properties) {
+    AudioProcessingProperties properties,
+    int enabled_platform_effects = 0) {
   MockProcessedCaptureCallback mock_capture_callback;
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new webrtc::RefCountedObject<WebRtcAudioDeviceImpl>());
@@ -717,8 +718,7 @@ scoped_refptr<MediaStreamAudioProcessor> CreateAudioProcessorWithProperties(
           mock_capture_callback.Get(),
           MediaStreamAudioProcessingLayout::
               ComputeWebrtcProcessingSettingsForTests(
-                  properties,
-                  /*enabled_platform_effects=*/0,
+                  properties, enabled_platform_effects,
                   /*multichannel_processing=*/true),
           params, webrtc_audio_device));
   return audio_processor;
@@ -756,8 +756,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenOnlyHardwareEffectsAreUsed) {
   test::TaskEnvironment task_environment_;
   AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
-  properties.echo_cancellation_type =
-      AudioProcessingProperties::EchoCancellationType::kEchoCancellationSystem;
+  properties.echo_cancellation_mode = EchoCancellationMode::kAll;
   MediaStreamAudioProcessingLayout processing_layout(
       properties,
       /*available_platform_effects=*/PlatformEffectsMask::ECHO_CANCELLER,
@@ -765,7 +764,9 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
   EXPECT_FALSE(processing_layout.NeedWebrtcAudioProcessing());
 
   scoped_refptr<MediaStreamAudioProcessor> audio_processor =
-      CreateAudioProcessorWithProperties(properties);
+      CreateAudioProcessorWithProperties(
+          properties,
+          /*enabled_platform_effects=*/PlatformEffectsMask::ECHO_CANCELLER);
   EXPECT_FALSE(audio_processor->has_webrtc_audio_processing());
 }
 
@@ -782,8 +783,7 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenSoftwareEchoCancellationIsEnabled) {
   test::TaskEnvironment task_environment_;
   AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
-  properties.echo_cancellation_type =
-      AudioProcessingProperties::EchoCancellationType::kEchoCancellationAec3;
+  properties.echo_cancellation_mode = EchoCancellationMode::kRemoteOnly;
   MediaStreamAudioProcessingLayout processing_layout(
       properties,
       /*available_platform_effects=*/PlatformEffectsMask::ECHO_CANCELLER,

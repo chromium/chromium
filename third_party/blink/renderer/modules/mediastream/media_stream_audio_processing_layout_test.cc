@@ -12,7 +12,6 @@
 
 namespace blink {
 
-using EchoCancellationType = AudioProcessingProperties::EchoCancellationType;
 using VoiceIsolationType = AudioProcessingProperties::VoiceIsolationType;
 using PlatformEffectsMask = media::AudioParameters::PlatformEffectsMask;
 
@@ -56,7 +55,7 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
      AllBrowserPropertiesEnabled) {
   const AudioProcessingProperties properties{
-      .echo_cancellation_type = EchoCancellationType::kEchoCancellationAec3,
+      .echo_cancellation_mode = EchoCancellationMode::kBrowserDecides,
       .auto_gain_control = true,
       .noise_suppression = true};
   const media::AudioProcessingSettings settings =
@@ -71,8 +70,8 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
      SystemAecDisablesBrowserAec) {
-  AudioProcessingProperties properties{
-      .echo_cancellation_type = EchoCancellationType::kEchoCancellationSystem};
+  AudioProcessingProperties properties{.echo_cancellation_mode =
+                                           EchoCancellationMode::kAll};
   media::AudioProcessingSettings settings =
       MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
           properties,
@@ -109,11 +108,11 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
       media::kEnforceSystemEchoCancellation, {{"allow_ns_in_tandem", "true"}});
 
   constexpr AudioProcessingProperties properties{
-      .echo_cancellation_type = EchoCancellationType::kEchoCancellationSystem};
+      .echo_cancellation_mode = EchoCancellationMode::kAll};
   media::AudioProcessingSettings settings_without_system_ns =
       MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
           properties,
-          /*enabled_platform_effects=*/0,
+          /*enabled_platform_effects=*/PlatformEffectsMask::ECHO_CANCELLER,
           /*multichannel_processing=*/true);
 
   EXPECT_TRUE(settings_without_system_ns.noise_suppression);
@@ -121,13 +120,17 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
   media::AudioProcessingSettings settings_with_system_ns =
       MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
           properties,
-          /*enabled_platform_effects=*/PlatformEffectsMask::NOISE_SUPPRESSION,
+          /*enabled_platform_effects=*/PlatformEffectsMask::NOISE_SUPPRESSION |
+              PlatformEffectsMask::ECHO_CANCELLER,
           /*multichannel_processing=*/true);
 
   EXPECT_TRUE(settings_with_system_ns.noise_suppression);
 
   MediaStreamAudioProcessingLayout processing_layout(
-      properties, PlatformEffectsMask::NOISE_SUPPRESSION, /*channels=*/1);
+      properties,
+      PlatformEffectsMask::NOISE_SUPPRESSION |
+          PlatformEffectsMask::ECHO_CANCELLER,
+      /*channels=*/1);
   EXPECT_TRUE(processing_layout.NoiseSuppressionInTandem());
 }
 #endif
@@ -161,11 +164,11 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
       media::kEnforceSystemEchoCancellation, {{"allow_agc_in_tandem", "true"}});
 
   constexpr AudioProcessingProperties properties{
-      .echo_cancellation_type = EchoCancellationType::kEchoCancellationSystem};
+      .echo_cancellation_mode = EchoCancellationMode::kAll};
   media::AudioProcessingSettings settings_without_system_agc =
       MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
           properties,
-          /*enabled_platform_effects=*/0,
+          /*enabled_platform_effects=*/PlatformEffectsMask::ECHO_CANCELLER,
           /*multichannel_processing=*/true);
 
   EXPECT_TRUE(settings_without_system_agc.automatic_gain_control);
@@ -174,21 +177,25 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
       MediaStreamAudioProcessingLayout::ComputeWebrtcProcessingSettingsForTests(
           properties,
           /*enabled_platform_effects=*/
-          PlatformEffectsMask::AUTOMATIC_GAIN_CONTROL,
+          PlatformEffectsMask::AUTOMATIC_GAIN_CONTROL |
+              PlatformEffectsMask::ECHO_CANCELLER,
           /*multichannel_processing=*/true);
 
   EXPECT_TRUE(settings_with_system_agc.automatic_gain_control);
 
   MediaStreamAudioProcessingLayout processing_layout(
-      properties, PlatformEffectsMask::AUTOMATIC_GAIN_CONTROL, /*channels=*/1);
+      properties,
+      PlatformEffectsMask::AUTOMATIC_GAIN_CONTROL |
+          PlatformEffectsMask::ECHO_CANCELLER,
+      /*channels=*/1);
   EXPECT_TRUE(processing_layout.AutomaticGainControlInTandem());
 }
 #endif
 
 TEST(AudioProcessingPropertiesTest, VerifyDefaultProcessingState) {
   constexpr AudioProcessingProperties kDefaultProperties;
-  EXPECT_EQ(kDefaultProperties.echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(kDefaultProperties.echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
   EXPECT_TRUE(kDefaultProperties.auto_gain_control);
   EXPECT_TRUE(kDefaultProperties.noise_suppression);
   EXPECT_EQ(kDefaultProperties.voice_isolation,
@@ -197,14 +204,12 @@ TEST(AudioProcessingPropertiesTest, VerifyDefaultProcessingState) {
 
 class MediaStreamAudioProcessingLayoutTest
     : public testing::TestWithParam<
-          testing::tuple<AudioProcessingProperties::EchoCancellationType,
-                         bool,
-                         bool>> {};
+          testing::tuple<EchoCancellationMode, bool, bool>> {};
 
 TEST_P(MediaStreamAudioProcessingLayoutTest,
        PlatformAecNsAgcCorrectIfAvailale) {
   AudioProcessingProperties properties;
-  properties.echo_cancellation_type = std::get<0>(GetParam());
+  properties.echo_cancellation_mode = std::get<0>(GetParam());
   properties.noise_suppression = std::get<1>(GetParam());
   properties.auto_gain_control = std::get<2>(GetParam());
 
@@ -264,12 +269,10 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MediaStreamAudioProcessingLayoutTest,
     ::testing::Combine(
-        ::testing::ValuesIn({AudioProcessingProperties::EchoCancellationType::
-                                 kEchoCancellationDisabled,
-                             AudioProcessingProperties::EchoCancellationType::
-                                 kEchoCancellationSystem,
-                             AudioProcessingProperties::EchoCancellationType::
-                                 kEchoCancellationAec3}),
+        ::testing::ValuesIn({EchoCancellationMode::kDisabled,
+                             EchoCancellationMode::kRemoteOnly,
+                             EchoCancellationMode::kAll,
+                             EchoCancellationMode::kBrowserDecides}),
         // ACG and NS on/off.
         ::testing::Bool(),
         ::testing::Bool()));
@@ -291,11 +294,9 @@ TEST_P(MediaStreamAudioProcessingLayoutLoopbackTest, LoopbackAec) {
   }
 
   AudioProcessingProperties properties;
-  properties.echo_cancellation_type =
-      aec_enabled ? AudioProcessingProperties::EchoCancellationType::
-                        kEchoCancellationAec3
-                  : AudioProcessingProperties::EchoCancellationType::
-                        kEchoCancellationDisabled;
+  properties.echo_cancellation_mode =
+      aec_enabled ? EchoCancellationMode::kBrowserDecides
+                  : EchoCancellationMode::kDisabled;
 
   MediaStreamAudioProcessingLayout processing_layout(
       properties, /*available_platform_effects=*/0, /*channels=*/1);

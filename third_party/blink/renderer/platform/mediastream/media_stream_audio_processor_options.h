@@ -18,18 +18,10 @@ enum class EchoCancellationMode {
   kAll
 };
 
+const char* EchoCancellationModeToString(EchoCancellationMode);
+
 // The result of parsing media stream constraints.
 struct PLATFORM_EXPORT AudioProcessingProperties {
-  enum class EchoCancellationType {
-    // Echo cancellation disabled.
-    kEchoCancellationDisabled,
-    // The WebRTC-provided AEC3 echo canceller.
-    kEchoCancellationAec3,
-    // System echo canceller, for example an OS-provided or hardware echo
-    // canceller.
-    kEchoCancellationSystem
-  };
-
   enum class VoiceIsolationType {
     // Voice isolation behavior selected by the system is used.
     kVoiceIsolationDefault,
@@ -50,8 +42,8 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
 
   std::string ToString() const;
 
-  EchoCancellationType echo_cancellation_type =
-      EchoCancellationType::kEchoCancellationAec3;
+  EchoCancellationMode echo_cancellation_mode =
+      EchoCancellationMode::kBrowserDecides;
   bool auto_gain_control = true;
   bool noise_suppression = true;
   VoiceIsolationType voice_isolation =
@@ -75,11 +67,6 @@ class PLATFORM_EXPORT EchoCanceller {
 
   static EchoCanceller From(const AudioProcessingProperties& properties,
                             int available_platform_effects);
-
-  // Can be removed when AudioProcessingProperties are switched to using
-  // EchoCancellation mode.
-  static EchoCanceller From(
-      AudioProcessingProperties::EchoCancellationType type);
 
   static EchoCanceller From(EchoCancellationMode mode,
                             int available_platform_effects);

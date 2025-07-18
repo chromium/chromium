@@ -175,10 +175,10 @@ void MediaStreamSource::SetAudioProcessingProperties(
     bool noise_supression,
     bool voice_isolation) {
   SendLogMessage(
-      String::Format("%s({echo_cancellation=%d}, {auto_gain_control=%d}, "
+      String::Format("%s({echo_cancellation=%s}, {auto_gain_control=%d}, "
                      "{noise_supression=%d}, {voice_isolation=%d})",
-                     __func__, echo_cancellation, auto_gain_control,
-                     noise_supression, voice_isolation)
+                     __func__, EchoCancellationModeToString(echo_cancellation),
+                     auto_gain_control, noise_supression, voice_isolation)
           .Utf8());
   echo_cancellation_ = echo_cancellation;
   auto_gain_control_ = auto_gain_control;

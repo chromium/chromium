@@ -10,7 +10,7 @@
 #include <tuple>
 #include <utility>
 
-#include "base/notreached.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "media/audio/audio_features.h"
@@ -35,7 +35,6 @@ using blink::AudioCaptureSettings;
 using blink::AudioProcessingProperties;
 using ConstraintSet = MediaTrackConstraintSetPlatform;
 using BooleanConstraint = blink::BooleanConstraint;
-using EchoCancellationType = AudioProcessingProperties::EchoCancellationType;
 using VoiceIsolationType = AudioProcessingProperties::VoiceIsolationType;
 using ProcessingType = AudioCaptureSettings::ProcessingType;
 using StringConstraint = blink::StringConstraint;
@@ -46,8 +45,6 @@ using NumericRangeSet = blink::media_constraints::NumericRangeSet<T>;
 namespace {
 using BoolSet = blink::media_constraints::DiscreteSet<bool>;
 using DoubleRangeSet = blink::media_constraints::NumericRangeSet<double>;
-using EchoCancellationTypeSet =
-    blink::media_constraints::DiscreteSet<EchoCancellationType>;
 using VoiceIsolationTypeSet =
     blink::media_constraints::DiscreteSet<VoiceIsolationType>;
 using IntRangeSet = blink::media_constraints::NumericRangeSet<int>;
@@ -74,8 +71,9 @@ struct Score {
  public:
   enum class EcModeScore : int {
     kDisabled = 1,
-    kSystem = 2,
-    kAec3 = 3,
+    kRemoteOnly = 2,
+    kAll = 3,
+    kBrowserDecides = 4,
   };
 
   explicit Score(double fitness,
@@ -108,7 +106,7 @@ struct Score {
     return *this;
   }
 
-  void set_ec_type_score(EcModeScore ec_mode_score) {
+  void set_ec_mode_score(EcModeScore ec_mode_score) {
     std::get<2>(score) = ec_mode_score;
   }
 
@@ -417,23 +415,21 @@ bool IsEnabledEchoCancellationMode(EchoCancellationMode ec_mode) {
   return ec_mode != EchoCancellationMode::kDisabled;
 }
 
-// Container to manage the properties related to echo cancellation:
-// echoCancellation and echoCancellationType.
+// Container to manage the properties related to echo cancellation.
 class EchoCancellationContainer {
  public:
   // Default constructor intended to temporarily create an empty object.
   EchoCancellationContainer()
-      : ec_type_allowed_values_(EchoCancellationTypeSet::EmptySet()),
+      : ec_allowed_values_(EchoCancellationModeSet::EmptySet()),
         device_parameters_(media::AudioParameters::UnavailableDeviceParams()),
         is_device_capture_(true) {}
 
-  EchoCancellationContainer(Vector<EchoCancellationType> allowed_values,
+  EchoCancellationContainer(Vector<EchoCancellationMode> allowed_values,
                             std::optional<SourceInfo> source_info,
                             bool is_device_capture,
                             media::AudioParameters device_parameters,
                             bool is_reconfiguration_allowed)
-      : ec_type_allowed_values_(
-            EchoCancellationTypeSet(std::move(allowed_values))),
+      : ec_allowed_values_(EchoCancellationModeSet(std::move(allowed_values))),
         device_parameters_(device_parameters),
         is_device_capture_(is_device_capture) {
     if (!source_info) {
@@ -455,21 +451,18 @@ class EchoCancellationContainer {
         // Allowing it when the system echo cancellation is enforced via flag,
         // for evaluation purposes.
         media::IsSystemEchoCancellationEnforced() ||
-        source_info->properties().echo_cancellation_type !=
-            EchoCancellationType::kEchoCancellationSystem;
+        (source_info->properties().echo_cancellation_mode !=
+             EchoCancellationMode::kDisabled &&
+         !EchoCanceller::From(source_info->properties(),
+                              device_parameters.effects())
+              .IsPlatformProvided());
 #endif
     if (is_reconfiguration_allowed && is_aec_reconfiguration_supported) {
       return;
     }
 
-    ec_type_allowed_values_ = EchoCancellationTypeSet(
-        {source_info->properties().echo_cancellation_type});
-    EchoCancellationMode ec_value =
-        source_info->properties().echo_cancellation_type ==
-                EchoCancellationType::kEchoCancellationDisabled
-            ? EchoCancellationMode::kDisabled
-            : EchoCancellationMode::kBrowserDecides;
-    ec_allowed_values_ = EchoCancellationModeSet({ec_value});
+    ec_allowed_values_ = EchoCancellationModeSet(
+        {source_info->properties().echo_cancellation_mode});
   }
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
@@ -479,28 +472,20 @@ class EchoCancellationContainer {
 
     // Apply echoCancellation constraint.
     ec_allowed_values_ = ec_allowed_values_.Intersection(ec_set);
-    if (ec_allowed_values_.IsEmpty())
-      return constraint_set.echo_cancellation.GetName();
-    // Translate the boolean values into EC modes.
-    ec_type_allowed_values_ = ec_type_allowed_values_.Intersection(
-        ToEchoCancellationTypes(ec_allowed_values_));
-
-    // Finally, if this container is empty, fail due to contradiction of the
-    // resulting allowed values for ec and/or ec_type.
     return IsEmpty() ? constraint_set.echo_cancellation.GetName() : nullptr;
   }
 
-  std::tuple<Score, EchoCancellationType> SelectSettingsAndScore(
+  std::tuple<Score, EchoCancellationMode> SelectSettingsAndScore(
       const ConstraintSet& constraint_set) const {
-    EchoCancellationType selected_ec_type = SelectBestEcMode(constraint_set);
+    EchoCancellationMode selected_ec_mode = SelectBestEcMode(constraint_set);
     double fitness =
-        Fitness(selected_ec_type, constraint_set.echo_cancellation);
+        Fitness(selected_ec_mode, constraint_set.echo_cancellation);
     Score score(fitness);
-    score.set_ec_type_score(GetEcTypeScore(selected_ec_type));
-    return std::make_tuple(score, selected_ec_type);
+    score.set_ec_mode_score(GetEcModeScore(selected_ec_mode));
+    return std::make_tuple(score, selected_ec_mode);
   }
 
-  bool IsEmpty() const { return ec_type_allowed_values_.IsEmpty(); }
+  bool IsEmpty() const { return ec_allowed_values_.IsEmpty(); }
 
   // Audio-processing properties are disabled by default for content capture,
   // or if the |echo_cancellation| constraint is false.
@@ -518,8 +503,6 @@ class EchoCancellationContainer {
 
   bool GetDefaultValueForAudioProperties(
       const BooleanOrStringConstraint& ec_constraint) const {
-    DCHECK(!ec_type_allowed_values_.is_universal());
-
     std::optional<EchoCancellationMode> ideal_mode =
         IdealEchoCancellationModeFromConstraint(ec_constraint);
     if (ideal_mode && ec_allowed_values_.Contains(*ideal_mode)) {
@@ -534,83 +517,59 @@ class EchoCancellationContainer {
   }
 
  private:
-  static Score::EcModeScore GetEcTypeScore(EchoCancellationType ec_type) {
+  static Score::EcModeScore GetEcModeScore(EchoCancellationMode ec_type) {
     switch (ec_type) {
-      case EchoCancellationType::kEchoCancellationDisabled:
+      case EchoCancellationMode::kDisabled:
         return Score::EcModeScore::kDisabled;
-      case EchoCancellationType::kEchoCancellationSystem:
-        return Score::EcModeScore::kSystem;
-      case EchoCancellationType::kEchoCancellationAec3:
-        return Score::EcModeScore::kAec3;
+      case EchoCancellationMode::kBrowserDecides:
+        return Score::EcModeScore::kBrowserDecides;
+      case EchoCancellationMode::kAll:
+        return Score::EcModeScore::kAll;
+      case EchoCancellationMode::kRemoteOnly:
+        return Score::EcModeScore::kRemoteOnly;
     }
   }
 
-  static EchoCancellationTypeSet ToEchoCancellationTypes(
-      const EchoCancellationModeSet& ec_set) {
-    Vector<EchoCancellationType> types;
-
-    if (ec_set.Contains(EchoCancellationMode::kDisabled)) {
-      types.push_back(EchoCancellationType::kEchoCancellationDisabled);
-    }
-
-    if (ec_set.Contains(EchoCancellationMode::kBrowserDecides)) {
-      types.push_back(EchoCancellationType::kEchoCancellationAec3);
-      types.push_back(EchoCancellationType::kEchoCancellationSystem);
-    }
-
-    return EchoCancellationTypeSet(std::move(types));
-  }
-
-  EchoCancellationType SelectBestEcMode(
+  EchoCancellationMode SelectBestEcMode(
       const ConstraintSet& constraint_set) const {
     DCHECK(!IsEmpty());
-    DCHECK(!ec_type_allowed_values_.is_universal());
 
     // Try to use an ideal candidate, if supplied.
-    bool is_ec_preferred =
-        ShouldUseEchoCancellation(constraint_set.echo_cancellation);
-
-    if (!is_ec_preferred &&
-        ec_type_allowed_values_.Contains(
-            EchoCancellationType::kEchoCancellationDisabled)) {
-      return EchoCancellationType::kEchoCancellationDisabled;
+    std::optional<EchoCancellationMode> ideal_mode =
+        IdealEchoCancellationModeFromConstraint(
+            constraint_set.echo_cancellation);
+    if (ideal_mode && ec_allowed_values_.Contains(*ideal_mode)) {
+      return *ideal_mode;
     }
 
     // If no ideal could be selected and the set contains only one value, pick
     // that one.
-    if (ec_type_allowed_values_.elements().size() == 1) {
-      return ec_type_allowed_values_.FirstElement();
+    if (ec_allowed_values_.elements().size() == 1) {
+      return ec_allowed_values_.FirstElement();
     }
 
-    // If no type has been selected, choose system if the device has the
-    // ECHO_CANCELLER flag set. Never automatically enable an experimental
-    // system echo canceller.
-    if (device_parameters_.IsValid() &&
-        ec_type_allowed_values_.Contains(
-            EchoCancellationType::kEchoCancellationSystem) &&
-        (device_parameters_.effects() &
-         media::AudioParameters::ECHO_CANCELLER)) {
-      return EchoCancellationType::kEchoCancellationSystem;
+    // For device (microphone) capture, kBrowserDecides is the preferred option.
+    if (is_device_capture_) {
+      if (ec_allowed_values_.Contains(EchoCancellationMode::kBrowserDecides)) {
+        return EchoCancellationMode::kBrowserDecides;
+      }
+      CHECK(ec_allowed_values_.Contains(EchoCancellationMode::kDisabled));
+      return EchoCancellationMode::kDisabled;
     }
 
-    // At this point we have at least two elements, hence the only two options
-    // from which to select are either AEC3 or System, where AEC3 has higher
-    // priority.
-    if (ec_type_allowed_values_.Contains(
-            EchoCancellationType::kEchoCancellationAec3)) {
-      return EchoCancellationType::kEchoCancellationAec3;
+    // For content (screen) capture, kDisabled is the preferred option.
+    if (ec_allowed_values_.Contains(EchoCancellationMode::kDisabled)) {
+      return EchoCancellationMode::kDisabled;
     }
-
-    DCHECK(ec_type_allowed_values_.Contains(
-        EchoCancellationType::kEchoCancellationDisabled));
-    return EchoCancellationType::kEchoCancellationDisabled;
+    CHECK(ec_allowed_values_.Contains(EchoCancellationMode::kBrowserDecides));
+    return EchoCancellationMode::kBrowserDecides;
   }
 
   // This function computes the fitness score of the given |ec_mode|. The
   // fitness is determined by the ideal values of |ec_constraint|. If |ec_mode|
   // satisfies the constraint, the fitness score results in a value of 1, and 0
   // otherwise. If no ideal value is specified, the fitness is 1.
-  double Fitness(const EchoCancellationType& ec_type,
+  double Fitness(EchoCancellationMode ec_mode,
                  const BooleanOrStringConstraint& ec_constraint) const {
     std::optional<EchoCancellationMode> ideal_mode =
         IdealEchoCancellationModeFromConstraint(ec_constraint);
@@ -620,55 +579,17 @@ class EchoCancellationContainer {
 
     switch (*ideal_mode) {
       case EchoCancellationMode::kBrowserDecides:
-        return ec_type != EchoCancellationType::kEchoCancellationDisabled;
+        return ec_mode != EchoCancellationMode::kDisabled;
       case EchoCancellationMode::kDisabled:
-        return ec_type == EchoCancellationType::kEchoCancellationDisabled;
+        return ec_mode == EchoCancellationMode::kDisabled;
       case EchoCancellationMode::kAll:
       case EchoCancellationMode::kRemoteOnly:
-        NOTREACHED();
+        // TODO(crbug.com/428856440): Support these values.
+        return 0;
     }
-  }
-
-  bool EchoCancellationTypeContains(EchoCancellationMode ec_mode) const {
-    DCHECK(!ec_type_allowed_values_.is_universal());
-    switch (ec_mode) {
-      case EchoCancellationMode::kBrowserDecides:
-        return ec_type_allowed_values_.Contains(
-                   EchoCancellationType::kEchoCancellationAec3) ||
-               ec_type_allowed_values_.Contains(
-                   EchoCancellationType::kEchoCancellationSystem);
-      case EchoCancellationMode::kDisabled:
-        return ec_type_allowed_values_.Contains(
-            EchoCancellationType::kEchoCancellationDisabled);
-      case EchoCancellationMode::kAll:
-      case EchoCancellationMode::kRemoteOnly:
-        NOTREACHED();
-    }
-  }
-
-  bool ShouldUseEchoCancellation(
-      const BooleanOrStringConstraint& ec_constraint) const {
-    DCHECK(!ec_type_allowed_values_.is_universal());
-
-    std::optional<EchoCancellationMode> ideal_mode =
-        IdealEchoCancellationModeFromConstraint(ec_constraint);
-
-    if (ideal_mode && EchoCancellationTypeContains(*ideal_mode)) {
-      return IsEnabledEchoCancellationMode(*ideal_mode);
-    }
-
-    // Echo cancellation is enabled by default for device capture and disabled
-    // by default for content capture.
-    if (EchoCancellationTypeContains(EchoCancellationMode::kBrowserDecides) &&
-        EchoCancellationTypeContains(EchoCancellationMode::kDisabled)) {
-      return is_device_capture_;
-    }
-
-    return EchoCancellationTypeContains(EchoCancellationMode::kBrowserDecides);
   }
 
   EchoCancellationModeSet ec_allowed_values_;
-  EchoCancellationTypeSet ec_type_allowed_values_;
   media::AudioParameters device_parameters_;
   bool is_device_capture_;
 };
@@ -713,7 +634,7 @@ class AutoGainControlContainer {
 class VoiceIsolationContainer {
  public:
   // Default constructor intended to temporarily create an empty object.
-  VoiceIsolationContainer(BoolSet allowed_values = BoolSet())
+  explicit VoiceIsolationContainer(BoolSet allowed_values = BoolSet())
       : allowed_values_(std::move(allowed_values)) {}
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
@@ -789,12 +710,12 @@ class ProcessingBasedContainer {
       bool is_reconfiguration_allowed) {
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed,
-        {EchoCancellationType::kEchoCancellationAec3,
-         EchoCancellationType::kEchoCancellationDisabled},
-        BoolSet(),                               /* auto_gain_control_set */
-        BoolSet(),                               /* noise_suppression_set */
-        BoolSet(),                               /* voice_isolation_set */
-        IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
+        {EchoCancellationMode::kBrowserDecides,
+         EchoCancellationMode::kDisabled},
+        BoolSet(),                                  /* auto_gain_control_set */
+        BoolSet(),                                  /* noise_suppression_set */
+        BoolSet(),                                  /* voice_isolation_set */
+        IntRangeSet::FromValue(GetSampleSize()),    /* sample_size_range */
         GetApmSupportedChannels(device_parameters), /* channels_set */
         IntRangeSet::FromValue(
             media::WebRtcAudioProcessingSampleRateHz()), /* sample_rate_range */
@@ -812,8 +733,7 @@ class ProcessingBasedContainer {
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
     return ProcessingBasedContainer(
-        ProcessingType::kNoApmProcessed,
-        {EchoCancellationType::kEchoCancellationDisabled},
+        ProcessingType::kNoApmProcessed, {EchoCancellationMode::kDisabled},
         BoolSet({false}),                        /* auto_gain_control_set */
         BoolSet({false}),                        /* noise_suppression_set */
         BoolSet(),                               /* voice_isolation_set */
@@ -835,8 +755,7 @@ class ProcessingBasedContainer {
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
     return ProcessingBasedContainer(
-        ProcessingType::kUnprocessed,
-        {EchoCancellationType::kEchoCancellationDisabled},
+        ProcessingType::kUnprocessed, {EchoCancellationMode::kDisabled},
         BoolSet({false}),                        /* auto_gain_control_set */
         BoolSet({false}),                        /* noise_suppression_set */
         BoolSet({false}),                        /* voice_isolation_set */
@@ -946,7 +865,7 @@ class ProcessingBasedContainer {
 
     AudioProcessingProperties properties;
     Score ec_score(0.0);
-    std::tie(ec_score, properties.echo_cancellation_type) =
+    std::tie(ec_score, properties.echo_cancellation_mode) =
         echo_cancellation_container_.SelectSettingsAndScore(constraint_set);
     score += ec_score;
 
@@ -993,11 +912,11 @@ class ProcessingBasedContainer {
   // Private constructor intended to instantiate different variants of this
   // class based on the initial values provided. The appropriate way to
   // instantiate this class is via the three factory methods provided.
-  // System echo cancellation should not be explicitly included in
-  // |echo_cancellation_type|. It is added automatically based on the value of
-  // |device_parameters|.
+  // TODO(crbug.com/428856440): Do not explicitly include
+  // EchoCancellationMode::kAll in `echo_cancellation_modes`. It should be
+  // added automatically based on the value of |device_parameters|.
   ProcessingBasedContainer(ProcessingType processing_type,
-                           Vector<EchoCancellationType> echo_cancellation_types,
+                           Vector<EchoCancellationMode> echo_cancellation_modes,
                            BoolSet auto_gain_control_set,
                            BoolSet noise_suppression_set,
                            BoolSet voice_isolation_set,
@@ -1015,13 +934,16 @@ class ProcessingBasedContainer {
         latency_container_(
             GetAllowedLatency(processing_type, device_parameters)) {
     // If the parameters indicate that system echo cancellation is available, we
-    // add such value in the allowed values for the EC type.
-    if (device_parameters.effects() & media::AudioParameters::ECHO_CANCELLER) {
-      echo_cancellation_types.push_back(
-          EchoCancellationType::kEchoCancellationSystem);
+    // add support in the allowed values for `echo_cancellation_modes`.
+    // TODO(crbug.com/428856440): Also add EchoCancellationMode::kAll
+    if ((device_parameters.effects() &
+         media::AudioParameters::ECHO_CANCELLER) &&
+        !base::Contains(echo_cancellation_modes,
+                        EchoCancellationMode::kBrowserDecides)) {
+      echo_cancellation_modes.push_back(EchoCancellationMode::kBrowserDecides);
     }
     echo_cancellation_container_ = EchoCancellationContainer(
-        std::move(echo_cancellation_types), source_info, is_device_capture,
+        std::move(echo_cancellation_modes), source_info, is_device_capture,
         device_parameters, is_reconfiguration_allowed);
 
     auto_gain_control_container_ =

@@ -11,10 +11,23 @@
 
 namespace blink {
 
+const char* EchoCancellationModeToString(EchoCancellationMode ec_mode) {
+  switch (ec_mode) {
+    case EchoCancellationMode::kDisabled:
+      return "disabled";
+    case EchoCancellationMode::kBrowserDecides:
+      return "browser-decides";
+    case EchoCancellationMode::kAll:
+      return "all";
+    case EchoCancellationMode::kRemoteOnly:
+      return "remote-only";
+  }
+}
+
 // static
 const AudioProcessingProperties& AudioProcessingProperties::Disabled() {
   static constexpr AudioProcessingProperties kDisabledProperties{
-      .echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled,
+      .echo_cancellation_mode = EchoCancellationMode::kDisabled,
       .auto_gain_control = false,
       .noise_suppression = false,
       .voice_isolation = VoiceIsolationType::kVoiceIsolationDefault};
@@ -24,7 +37,7 @@ const AudioProcessingProperties& AudioProcessingProperties::Disabled() {
 
 bool AudioProcessingProperties::HasSameReconfigurableSettings(
     const AudioProcessingProperties& other) const {
-  return echo_cancellation_type == other.echo_cancellation_type;
+  return echo_cancellation_mode == other.echo_cancellation_mode;
 }
 
 bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
@@ -35,21 +48,11 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
 }
 
 std::string AudioProcessingProperties::ToString() const {
-  auto aec_to_string = [](EchoCancellationType type) {
-    switch (type) {
-      case EchoCancellationType::kEchoCancellationDisabled:
-        return "disabled";
-      case EchoCancellationType::kEchoCancellationAec3:
-        return "aec3";
-      case EchoCancellationType::kEchoCancellationSystem:
-        return "system";
-    }
-  };
   auto str = base::StringPrintf(
-      "echo_cancellation_type: %s, "
+      "echo_cancellation_mode: %s, "
       "auto_gain_control: %s, "
       "noise_suppression: %s, ",
-      aec_to_string(echo_cancellation_type),
+      EchoCancellationModeToString(echo_cancellation_mode),
       base::ToString(auto_gain_control).c_str(),
       base::ToString(noise_suppression).c_str());
   return str;
@@ -64,29 +67,7 @@ bool EchoCanceller::IsSystemWideAecAvailable(int available_platform_effects) {
 // static
 EchoCanceller EchoCanceller::From(const AudioProcessingProperties& properties,
                                   int available_platform_effects) {
-  return From(properties.echo_cancellation_type);
-}
-
-// static
-EchoCanceller EchoCanceller::From(
-    AudioProcessingProperties::EchoCancellationType type) {
-  using EchoCancellationType = AudioProcessingProperties::EchoCancellationType;
-  auto to_echo_canceller_type = [](EchoCancellationType type) {
-    switch (type) {
-      case EchoCancellationType::kEchoCancellationDisabled:
-        return Type::kNone;
-      case EchoCancellationType::kEchoCancellationSystem:
-        return Type::kPlatformProvided;
-      case EchoCancellationType::kEchoCancellationAec3:
-        return media::IsSystemLoopbackAsAecReferenceForcedOn()
-                   ? Type::kLoopbackBased
-               : media::IsChromeWideEchoCancellationEnabled()
-                   ? Type::kChromeWide
-                   : Type::kPeerConnection;
-    }
-  };
-
-  return EchoCanceller(to_echo_canceller_type(type));
+  return From(properties.echo_cancellation_mode, available_platform_effects);
 }
 
 // static
