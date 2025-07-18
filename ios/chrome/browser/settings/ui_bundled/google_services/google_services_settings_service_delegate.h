@@ -11,6 +11,8 @@
 @protocol GoogleServicesSettingsServiceDelegate <NSObject>
 
 // Called when the UISwitch from a TableViewItem is toggled.
+// `switchItem`
+// `value` the new value of the toggle,
 // `targetRect` UISwitch rect in table view system coordinate.
 - (void)toggleSwitchItem:(TableViewItem*)switchItem
                withValue:(BOOL)value
