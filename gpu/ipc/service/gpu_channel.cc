@@ -187,9 +187,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
                              const viz::SharedImageFormat& format,
                              gfx::BufferUsage buffer_usage,
                              CreateGpuMemoryBufferCallback callback) override;
-  void GetGpuMemoryBufferHandleInfo(
-      const gpu::Mailbox& mailbox,
-      GetGpuMemoryBufferHandleInfoCallback callback) override;
 #if BUILDFLAG(IS_WIN)
   void CreateDCOMPTexture(
       int32_t route_id,
@@ -470,33 +467,6 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     LOG(ERROR) << "Buffer Handle is null.";
   }
   std::move(callback).Run(std::move(handle));
-}
-
-void GpuChannelMessageFilter::GetGpuMemoryBufferHandleInfo(
-    const gpu::Mailbox& mailbox,
-    GetGpuMemoryBufferHandleInfoCallback callback) {
-  TRACE_EVENT0("gpu", "GpuChannelMessageFilter::GetGpuMemoryBufferHandleInfo");
-  base::AutoLock auto_lock(gpu_channel_lock_);
-  int32_t routing_id =
-      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface);
-  auto it = route_sequences_.find(routing_id);
-  if (it == route_sequences_.end()) {
-    LOG(ERROR) << "Invalid route id in flush list.";
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle(),
-                            viz::SharedImageFormat(), gfx::Size(),
-                            gfx::BufferUsage::GPU_READ);
-    return;
-  }
-  std::vector<Scheduler::Task> tasks;
-  tasks.emplace_back(
-      it->second,
-      base::BindOnce(
-          &gpu::GpuChannel::GetGpuMemoryBufferHandleInfo,
-          gpu_channel_->AsWeakPtr(), mailbox,
-          base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
-                             std::move(callback))),
-      std::vector<::gpu::SyncToken>());
-  scheduler_->ScheduleTasks(std::move(tasks));
 }
 
 void GpuChannelMessageFilter::CrashForTesting() {
@@ -895,23 +865,6 @@ void GpuChannel::ExecuteDeferredRequest(
       shared_image_stub_->ExecuteDeferredRequest(
           std::move(params->get_shared_image_request()));
       break;
-  }
-}
-
-void GpuChannel::GetGpuMemoryBufferHandleInfo(
-    const gpu::Mailbox& mailbox,
-    mojom::GpuChannel::GetGpuMemoryBufferHandleInfoCallback callback) {
-  gfx::GpuMemoryBufferHandle handle;
-  viz::SharedImageFormat format;
-  gfx::Size size;
-  gfx::BufferUsage buffer_usage;
-  if (shared_image_stub_->GetGpuMemoryBufferHandleInfo(mailbox, handle, format,
-                                                       size, buffer_usage)) {
-    std::move(callback).Run(std::move(handle), format, size, buffer_usage);
-  } else {
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle(),
-                            viz::SharedImageFormat(), gfx::Size(),
-                            gfx::BufferUsage::GPU_READ);
   }
 }
 

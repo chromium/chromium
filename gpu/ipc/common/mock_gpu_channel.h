@@ -58,8 +58,6 @@ class MockGpuChannel : public mojom::GpuChannel {
                     const viz::SharedImageFormat&,
                     gfx::BufferUsage,
                     CreateGpuMemoryBufferCallback));
-  MOCK_METHOD2(GetGpuMemoryBufferHandleInfo,
-               void(const gpu::Mailbox&, GetGpuMemoryBufferHandleInfoCallback));
 #if BUILDFLAG(IS_WIN)
   MOCK_METHOD3(CreateDCOMPTexture,
                void(int32_t,
