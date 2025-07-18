@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.display_cutout;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -30,6 +31,7 @@ import org.chromium.ui.insets.InsetObserver;
  *
  * <p>This will only be created once the tab sets a non-default viewport fit.
  */
+@NullMarked
 public class DisplayCutoutTabHelper implements UserData {
     private static final Class<DisplayCutoutTabHelper> USER_DATA_KEY = DisplayCutoutTabHelper.class;
 
@@ -85,22 +87,24 @@ public class DisplayCutoutTabHelper implements UserData {
         }
 
         @Override
-        public Activity getAttachedActivity() {
-            return mTab.getWindowAndroid().getActivity().get();
+        public @Nullable Activity getAttachedActivity() {
+            WindowAndroid window = mTab.getWindowAndroid();
+            return window == null ? null : window.getActivity().get();
         }
 
         @Override
-        public WebContents getWebContents() {
+        public @Nullable WebContents getWebContents() {
             return mTab.getWebContents();
         }
 
         @Override
         public @Nullable InsetObserver getInsetObserver() {
-            return mTab.getWindowAndroid().getInsetObserver();
+            WindowAndroid window = mTab.getWindowAndroid();
+            return window == null ? null : window.getInsetObserver();
         }
 
         @Override
-        public ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier() {
+        public @Nullable ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier() {
             WindowAndroid window = mTab.getWindowAndroid();
             return window == null ? null : ActivityDisplayCutoutModeSupplier.from(window);
         }

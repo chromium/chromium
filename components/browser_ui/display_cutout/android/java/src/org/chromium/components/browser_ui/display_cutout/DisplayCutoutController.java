@@ -141,7 +141,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
          * Returns the activity-specific (vs tab-specific) cutout mode. The activity-specific cutout
          * mode takes precedence over the tab-specific cutout mode.
          */
-        ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier();
+        @Nullable ObservableSupplier<Integer> getBrowserDisplayCutoutModeSupplier();
 
         /** Whether the activity is in browser (not-HTML) fullscreen. */
         boolean isInBrowserFullscreen();

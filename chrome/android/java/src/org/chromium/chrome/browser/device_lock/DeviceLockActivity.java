@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.device_lock;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
@@ -13,8 +16,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -27,9 +32,10 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
- * Informs the user on using a device lock to protect their privacy and data on the device. If
- * the device does not currently have a device lock, the user will be prompted to create one.
+ * Informs the user on using a device lock to protect their privacy and data on the device. If the
+ * device does not currently have a device lock, the user will be prompted to create one.
  */
+@NullMarked
 public class DeviceLockActivity extends SynchronousInitializationActivity
         implements DeviceLockCoordinator.Delegate {
     private static final String ARGUMENT_FRAGMENT_ARGS = "DeviceLockActivity.FragmentArgs";
@@ -41,13 +47,13 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
 
     private FrameLayout mFrameLayout;
     private WindowAndroid mWindowAndroid;
-    private IntentRequestTracker mIntentRequestTracker;
+    private @Nullable IntentRequestTracker mIntentRequestTracker;
     private DeviceLockCoordinator mDeviceLockCoordinator;
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (mIntentRequestTracker != null) {
-            mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);
+            mIntentRequestTracker.onActivityResult(requestCode, resultCode, assumeNonNull(data));
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -57,6 +63,7 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
     }
 
     @Override
+    @Initializer
     protected void onProfileAvailable(Profile profile) {
         super.onProfileAvailable(profile);
         mFrameLayout = new FrameLayout(this);
@@ -71,6 +78,7 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
         mIntentRequestTracker = mWindowAndroid.getIntentRequestTracker();
 
         Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
+        assumeNonNull(fragmentArgs);
         @Nullable
         String selectedAccountEmail = fragmentArgs.getString(ARGUMENT_SELECTED_ACCOUNT, null);
         boolean requireDeviceLockReauthentication =
@@ -100,7 +108,7 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
     }
 
     @Override
-    protected ModalDialogManager createModalDialogManager() {
+    protected @Nullable ModalDialogManager createModalDialogManager() {
         return null;
     }
 
@@ -152,6 +160,8 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
 
     @Override
     public @DeviceLockActivityLauncher.Source String getSource() {
-        return getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS).getString(ARGUMENT_SOURCE);
+        Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
+        assumeNonNull(fragmentArgs);
+        return assertNonNull(fragmentArgs.getString(ARGUMENT_SOURCE));
     }
 }
