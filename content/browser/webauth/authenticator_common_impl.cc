@@ -1458,6 +1458,9 @@ void AuthenticatorCommonImpl::GetCredential(
     req_state_->mode = AuthenticationRequestMode::kPayment;
   } else if (options->mediation == Mediation::CONDITIONAL) {
     req_state_->mode = AuthenticationRequestMode::kConditional;
+  } else if (options->mediation == Mediation::IMMEDIATE) {
+    req_state_->mode = AuthenticationRequestMode::kImmediate;
+    BeginImmediateRequestTimeout();
   } else {
     req_state_->mode = AuthenticationRequestMode::kModalWebAuthn;
   }
@@ -1465,9 +1468,6 @@ void AuthenticatorCommonImpl::GetCredential(
 
   if (options->mediation != Mediation::CONDITIONAL) {
     BeginRequestTimeout(options->timeout);
-  }
-  if (options->mediation == Mediation::IMMEDIATE) {
-    BeginImmediateRequestTimeout();
   }
 
   if (options->challenge.has_value() == options->challenge_url.has_value()) {

@@ -435,7 +435,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Renewal failed"/>
 </enum>
 
-<!-- LINT.IfChange(PinRenewalFailureCauseEnum) -->
+<!-- LINT.IfChange(WebAuthenticationPinRenewalFailureCause) -->
 
 <enum name="WebAuthenticationPinRenewalFailureCause">
   <int value="1" label="Renewal failed while downloading XML files"/>
@@ -453,12 +453,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:PinRenewalFailureCause) -->
 
+<!-- LINT.IfChange(WebAuthenticationRequestMode) -->
+
 <enum name="WebAuthenticationRequestMode">
   <int value="0" label="WebAuthn Modal Request"/>
   <int value="1" label="WebAuthn Conditional UI Request"/>
   <int value="2" label="Payment Request"/>
   <int value="3" label="WebAuthn Passkey Upgrade Request"/>
+  <int value="4" label="WebAuthn Immediate Get Request"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/webauth/authenticator_request_outcome_enums.h:AuthenticationRequestMode) -->
 
 <enum name="WindowsForegroundedHelloDialog">
   <int value="0" label="Succeeded"/>

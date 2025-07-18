@@ -82,6 +82,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     // Information about the request cached here for metric reporting purposes.
     private boolean mIsConditionalRequest;
     private boolean mIsPaymentRequest;
+    private boolean mIsImmediateRequest;
 
     // StaticFieldLeak complains that this is a memory leak because
     // `Fido2CredentialRequest` contains a `Context`. But this field is only
@@ -233,6 +234,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mIsOperationPending = true;
         mIsPaymentRequest = mPayment != null;
         mIsConditionalRequest = options.mediation == Mediation.CONDITIONAL;
+        mIsImmediateRequest = options.mediation == Mediation.IMMEDIATE;
 
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {
@@ -484,6 +486,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             mode = AuthenticationRequestMode.CONDITIONAL;
         } else if (mIsPaymentRequest) {
             mode = AuthenticationRequestMode.PAYMENT;
+        } else if (mIsImmediateRequest) {
+            mode = AuthenticationRequestMode.IMMEDIATE;
         }
         new UkmRecorder(mWebContents, event)
                 .addMetric(resultMetricName, resultMetricValue)
