@@ -126,7 +126,9 @@ public class RecentTabsManager
                         : new RecentlyClosedBridge(profile, tabModelSelector);
         mSignInManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
 
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        context, mSignInManager.getIdentityManager());
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)

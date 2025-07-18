@@ -52,11 +52,14 @@ public abstract class SignInPromo {
     private final SigninManager mSigninManager;
     protected final SyncPromoController mSyncPromoController;
     protected final ProfileDataCache mProfileDataCache;
+    protected final IdentityManager mIdentityManager;
 
     protected SignInPromo(SigninManager signinManager, SyncPromoController syncPromoController) {
         Context context = ContextUtils.getApplicationContext();
         mSigninManager = signinManager;
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        mIdentityManager = signinManager.getIdentityManager();
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context, mIdentityManager);
         mSyncPromoController = syncPromoController;
         mSigninObserver = new SigninObserver();
 
@@ -104,9 +107,8 @@ public abstract class SignInPromo {
     }
 
     public boolean isUserSignedInButNotSyncing() {
-        IdentityManager identityManager = mSigninManager.getIdentityManager();
-        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
-                && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
+        return mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                && !mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     /** Notify that the content for this {@link SignInPromo} has changed. */

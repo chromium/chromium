@@ -182,6 +182,20 @@ public class ProfileDataCache implements AccountInfoService.Observer {
 
     /**
      * @param context Context of the application to extract resources from.
+     * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
+     *     and no badge.
+     */
+    public static ProfileDataCache createWithDefaultImageSizeAndNoBadge(
+            Context context, IdentityManager identityManager) {
+        return new ProfileDataCache(
+                context,
+                identityManager,
+                context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
+                /* badgeConfig= */ null);
+    }
+
+    /**
+     * @param context Context of the application to extract resources from.
      * @param badgeResId Resource id of the badge to be attached.
      * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
      *     and a badge of given badgeResId provided

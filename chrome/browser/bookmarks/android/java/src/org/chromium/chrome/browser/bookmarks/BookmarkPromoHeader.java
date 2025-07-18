@@ -78,7 +78,9 @@ public class BookmarkPromoHeader
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         SigninAndHistorySyncActivityLauncherImpl.get());
         if (syncPromoController.canShowSyncPromo()) {
-            mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
+            mProfileDataCache =
+                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            mContext, mSigninManager.getIdentityManager());
             mSyncPromoController = syncPromoController;
         } else {
             mProfileDataCache = null;

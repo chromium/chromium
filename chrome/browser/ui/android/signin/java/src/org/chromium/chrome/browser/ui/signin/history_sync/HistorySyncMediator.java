@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.metrics.SyncButtonClicked;
@@ -55,8 +56,10 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mAccessPoint = accessPoint;
         mDelegate = delegate;
         mShouldSignOutOnDecline = shouldSignOutOnDecline;
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+        IdentityManager identityManager = mSigninManager.getIdentityManager();
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context, identityManager);
         mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
         mHistorySyncHelper = HistorySyncHelper.getForProfile(profile);
         mProfileDataCache.addObserver(this);
@@ -65,9 +68,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mAccountEmail =
                 assumeNonNull(
                         CoreAccountInfo.getEmailFrom(
-                                mSigninManager
-                                        .getIdentityManager()
-                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+                                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
         // The history sync screen should never be created when the user is signed out.
         assert mAccountEmail != null;
         DisplayableProfileData profileData =

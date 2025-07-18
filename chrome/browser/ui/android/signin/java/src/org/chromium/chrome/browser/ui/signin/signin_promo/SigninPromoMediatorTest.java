@@ -149,7 +149,10 @@ public class SigninPromoMediatorTest {
 
     private void createSigninPromoMediator() {
         Context context = ApplicationProvider.getApplicationContext();
-        mProfileDataCache = spy(ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context));
+        mProfileDataCache =
+                spy(
+                        ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                                context, mIdentityManager));
         doReturn(true).when(mDelegate).canShowPromo();
         mMediator =
                 new SigninPromoMediator(

@@ -462,11 +462,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private void setupCentralAccountCardPreference(Profile profile) {
         CentralAccountCardPreference centralAccountCardPreference =
                 (CentralAccountCardPreference) findPreference(PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
         centralAccountCardPreference.initialize(
-                IdentityServicesProvider.get()
-                        .getIdentityManager(profile)
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext()));
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN),
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        getContext(), identityManager));
     }
 
     private void setupIdentityErrorCardPreference(Profile profile) {

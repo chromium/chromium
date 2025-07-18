@@ -54,12 +54,12 @@ public class SigninPromoCoordinator {
     public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
         mContext = context;
         mDelegate = delegate;
-        ProfileDataCache profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         assumeNonNull(identityManager);
+        ProfileDataCache profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext, identityManager);
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         assumeNonNull(syncService);
         mMediator =
                 new SigninPromoMediator(

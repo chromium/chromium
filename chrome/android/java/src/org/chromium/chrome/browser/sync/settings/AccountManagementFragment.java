@@ -115,7 +115,10 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                     getArguments().getInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, mGaiaServiceType);
         }
 
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        requireContext(),
+                        IdentityServicesProvider.get().getIdentityManager(getProfile()));
     }
 
     @Override

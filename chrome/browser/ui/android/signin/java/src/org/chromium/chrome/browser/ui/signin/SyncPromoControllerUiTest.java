@@ -48,14 +48,16 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -95,12 +97,19 @@ public class SyncPromoControllerUiTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    private IdentityManager mIdentityManager;
 
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+                });
     }
 
     @Test
@@ -110,7 +119,7 @@ public class SyncPromoControllerUiTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                                    mActivityTestRule.getActivity());
+                                    mActivityTestRule.getActivity(), mIdentityManager);
                         });
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
@@ -207,7 +216,7 @@ public class SyncPromoControllerUiTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                                    mActivityTestRule.getActivity());
+                                    mActivityTestRule.getActivity(), mIdentityManager);
                         });
         setUpSyncPromoView(
                 SigninAccessPoint.RECENT_TABS,
@@ -341,7 +350,7 @@ public class SyncPromoControllerUiTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                                    mActivityTestRule.getActivity());
+                                    mActivityTestRule.getActivity(), mIdentityManager);
                         });
         View view =
                 setUpSyncPromoView(
@@ -379,7 +388,7 @@ public class SyncPromoControllerUiTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                            mActivityTestRule.getActivity());
+                            mActivityTestRule.getActivity(), mIdentityManager);
                 });
     }
 

@@ -228,7 +228,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 useLegacySettingsOrder() ? R.xml.main_preferences_legacy : R.xml.main_preferences);
 
         ProfileDataCache profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext());
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        getContext(),
+                        IdentityServicesProvider.get().getIdentityManager(getProfile()));
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
