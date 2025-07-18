@@ -11,12 +11,4 @@ OptimizationMetadata::~OptimizationMetadata() = default;
 OptimizationMetadata::OptimizationMetadata(const OptimizationMetadata&) =
     default;
 
-void OptimizationMetadata::SetAnyMetadataForTesting(
-    const google::protobuf::MessageLite& metadata) {
-  proto::Any any;
-  any.set_type_url(metadata.GetTypeName());
-  metadata.SerializeToString(any.mutable_value());
-  any_metadata_ = any;
-}
-
 }  // namespace optimization_guide

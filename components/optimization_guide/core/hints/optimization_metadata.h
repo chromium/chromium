@@ -37,9 +37,6 @@ class OptimizationMetadata {
   void set_any_metadata(const proto::Any& any_metadata) {
     any_metadata_ = any_metadata;
   }
-  // Sets |any_metadata_| to be validly parsed as |metadata|. Should only be
-  // used for testing purposes.
-  void SetAnyMetadataForTesting(const google::protobuf::MessageLite& metadata);
 
   const std::optional<proto::LoadingPredictorMetadata>&
   loading_predictor_metadata() const {
