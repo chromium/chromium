@@ -571,6 +571,10 @@ id<GREYMatcher> OpenNewWindowMenuButton() {
   return [ChromeMatchersAppInterface openNewWindowMenuButton];
 }
 
+id<GREYMatcher> SearchBar() {
+  return [ChromeMatchersAppInterface searchBar];
+}
+
 id<GREYMatcher> SystemSelectionCallout() {
   return [EditMenuAppInterface editMenuButtonMatcher];
 }

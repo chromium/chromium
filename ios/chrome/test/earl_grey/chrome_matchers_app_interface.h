@@ -458,6 +458,9 @@
 // Returns matcher for the New Window button on the Tools menu.
 + (id<GREYMatcher>)openNewWindowMenuButton;
 
+// Returns matcher for the search bar.
++ (id<GREYMatcher>)searchBar;
+
 // Matcher for a Copy button, such as the one in the Activity View. This matcher
 // is very broad and will look for any button with a matching string.
 + (id<GREYMatcher>)copyActivityButton;

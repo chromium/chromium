@@ -33,6 +33,7 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
+using chrome_test_util::SearchBar;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsToolbarAddButton;
@@ -104,13 +105,6 @@ id<GREYMatcher> NavigationBarEditButton() {
 // Matcher for a country entry with the given accessibility label.
 id<GREYMatcher> CountryEntry(NSString* label) {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(label),
-                    grey_sufficientlyVisible(), nil);
-}
-
-// Matcher for the search bar.
-id<GREYMatcher> SearchBar() {
-  // Match using the accessibility trait for a search field.
-  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitSearchField),
                     grey_sufficientlyVisible(), nil);
 }
 

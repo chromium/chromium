@@ -1099,6 +1099,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuNewWindowId);
 }
 
++ (id<GREYMatcher>)searchBar {
+  // Match using the accessibility trait for a search field.
+  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitSearchField),
+                    grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)copyActivityButton {
   id<GREYMatcher> copyStaticText = [ChromeMatchersAppInterface
       staticTextWithAccessibilityLabel:l10n_util::GetNSString(

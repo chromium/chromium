@@ -21,6 +21,7 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::SearchBar;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsToolbarEditButton;
 using chrome_test_util::TableViewSwitchCell;
@@ -65,13 +66,6 @@ id<GREYMatcher> LanguageSettingsButton() {
 id<GREYMatcher> AddLanguageButton() {
   return grey_allOf(ButtonWithAccessibilityLabelId(
                         IDS_IOS_LANGUAGE_SETTINGS_ADD_LANGUAGE_BUTTON_TITLE),
-                    grey_sufficientlyVisible(), nil);
-}
-
-// Matcher for the search bar.
-id<GREYMatcher> SearchBar() {
-  // Match using the accessibility trait for a search field.
-  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitSearchField),
                     grey_sufficientlyVisible(), nil);
 }
 

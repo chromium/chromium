@@ -46,6 +46,7 @@ using chrome_test_util::EditButton;
 using chrome_test_util::MoveButton;
 using chrome_test_util::OpenLinkInIncognitoButton;
 using chrome_test_util::OpenLinkInNewTabButton;
+using chrome_test_util::SearchBar;
 using chrome_test_util::ShareButton;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
@@ -534,10 +535,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // The search bar should not be visible when the illustrated empty state is
   // shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityTrait(
-                                              UIAccessibilityTraitSearchField),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
       assertWithMatcher:grey_nil()];
 }
 

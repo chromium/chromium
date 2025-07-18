@@ -29,6 +29,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::SearchBar;
 using manual_fill::ManualFillDataType;
 using net::test_server::EmbeddedTestServer;
 
@@ -83,13 +84,6 @@ id<GREYMatcher> OverflowMenuManageAction() {
 id<GREYMatcher> PlusAddressSelectDoneMatcher() {
   return grey_accessibilityID(
       manual_fill::kPlusAddressDoneButtonAccessibilityIdentifier);
-}
-
-// Returns a matcher for the plus address search bar in manual fallback.
-id<GREYMatcher> PlusAddressSelectSearchBarMatcher() {
-  // Match using the accessibility trait for a search field.
-  return grey_allOf(grey_accessibilityTrait(UIAccessibilityTraitSearchField),
-                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the select plus address action.
@@ -361,16 +355,15 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       performAction:grey_tap()];
 
   // Tap the search option.
-  [[EarlGrey selectElementWithMatcher:PlusAddressSelectSearchBarMatcher()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:PlusAddressSelectSearchBarMatcher()]
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
       performAction:grey_replaceText(@"example1")];
   [[EarlGrey
       selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]
       assertWithMatcher:grey_notVisible()];
 
-  [[EarlGrey selectElementWithMatcher:PlusAddressSelectSearchBarMatcher()]
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
       performAction:grey_replaceText(@"foo.com")];
   [[EarlGrey
       selectElementWithMatcher:manual_fill::ChipButton(u"plus+foo@plus.plus")]

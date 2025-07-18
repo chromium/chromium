@@ -470,6 +470,9 @@ id<GREYMatcher> NTPFeedMenuDisableButton();
 // Returns a matcher for the New Window button on the Tools menu.
 id<GREYMatcher> OpenNewWindowMenuButton();
 
+// Returns a matcher for the search bar.
+id<GREYMatcher> SearchBar();
+
 // Returns a matcher for the system selection callout.
 id<GREYMatcher> SystemSelectionCallout();
 
