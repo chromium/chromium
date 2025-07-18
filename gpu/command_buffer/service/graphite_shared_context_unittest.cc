@@ -66,7 +66,7 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
     dawn::native::Instance dawn_instance(&instance_desc);
 
     wgpu::RequestAdapterOptions options = {};
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     options.backendType = wgpu::BackendType::Metal;
 #elif BUILDFLAG(IS_WIN)
     options.backendType = wgpu::BackendType::D3D11;
