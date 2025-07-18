@@ -45,6 +45,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/texture_layer.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
@@ -1290,7 +1291,7 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
     canvas()->RecreateHibernationHandler();
   }
 
-  resource_provider = canvas()->RecreateCanvasResourceProviderForCanvas2D();
+  resource_provider = RecreateCanvasResourceProviderForCanvas2D();
 
   canvas()->UpdateMemoryUsage();
 
@@ -1332,7 +1333,7 @@ void CanvasRenderingContext2D::
 
   // Bail out if it's not possible to create a new provider.
   CanvasResourceProvider* new_provider =
-      canvas()->RecreateCanvasResourceProviderForCanvas2D();
+      RecreateCanvasResourceProviderForCanvas2D();
   if (!new_provider) {
     return;
   }
@@ -1341,6 +1342,65 @@ void CanvasRenderingContext2D::
   new_provider->SetRecorder(std::move(recorder));
 
   canvas()->UpdateMemoryUsage();
+}
+
+CanvasResourceProvider*
+CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
+  CHECK(canvas()->GetHibernationHandler());
+
+  auto* resource_provider = GetResourceProviderForCanvas2D();
+  if (!resource_provider && !canvas()->did_fail_to_create_resource_provider()) {
+    if (canvas()->IsValidImageSize()) {
+      canvas()->SetResourceProviderForCanvas2D(CreateCanvasResourceProvider());
+      resource_provider = GetResourceProviderForCanvas2D();
+    }
+    if (!resource_provider) {
+      canvas()->set_did_fail_to_create_resource_provider(true);
+    } else if (resource_provider->IsValid()) {
+      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                                resource_provider->IsAccelerated());
+      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                    resource_provider->GetType());
+    }
+  }
+  if (!resource_provider || !resource_provider->IsValid()) {
+    return nullptr;
+  }
+
+  auto* hibernation_handler = canvas()->GetHibernationHandler();
+  if (!hibernation_handler->IsHibernating()) {
+    return resource_provider;
+  }
+
+  if (resource_provider->IsAccelerated()) {
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally);
+  } else {
+    if (!canvas()->IsPageVisible()) {
+      CanvasHibernationHandler::ReportHibernationEvent(
+          CanvasHibernationHandler::HibernationEvent::
+              kHibernationEndedWithSwitchToBackgroundRendering);
+    } else {
+      CanvasHibernationHandler::ReportHibernationEvent(
+          CanvasHibernationHandler::HibernationEvent::
+              kHibernationEndedWithFallbackToSW);
+    }
+  }
+
+  PaintImageBuilder builder = PaintImageBuilder::WithDefault();
+  builder.set_image(hibernation_handler->GetImage(),
+                    PaintImage::GetNextContentId());
+  builder.set_id(PaintImage::GetNextId());
+  resource_provider->RestoreBackBuffer(builder.TakePaintImage());
+  resource_provider->SetRecorder(hibernation_handler->ReleaseRecorder());
+  // The hibernation image is no longer valid, clear it.
+  hibernation_handler->Clear();
+  DCHECK(!hibernation_handler->IsHibernating());
+
+  // shouldBeDirectComposited() may have changed.
+  canvas()->SetNeedsCompositingUpdate();
+
+  return resource_provider;
 }
 
 }  // namespace blink
