@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -126,4 +127,14 @@ void TabModel::RecordActualSyncedTabsHistogram() {
   int percent_synced = synced_tabs_count * 100 / eligible_tabs_count;
   base::UmaHistogramPercentage("Android.Sync.ActualSyncedTabCountPercentage",
                                percent_synced);
+}
+
+// static
+// From //chrome/browser/ui/tabs/tab_list_interface.h
+TabListInterface* TabListInterface::From(
+    BrowserWindowInterface* browser_window_interface) {
+  // TODO(https://crbug.com/415961057): Implement this once AndroidBrowserWindow
+  // has a get-able UnownedUserDataHost.
+  NOTIMPLEMENTED();
+  return nullptr;
 }

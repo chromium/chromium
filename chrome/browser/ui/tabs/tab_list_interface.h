@@ -26,12 +26,8 @@ class TabListInterface {
   TabListInterface(const TabListInterface& other) = delete;
   void operator=(const TabListInterface& other) = delete;
 
-  // TODO(https://crbug.com/427503497): Include this on Android when the
-  // implementation is get-able from a BrowserWindowInterface.
-#if !BUILDFLAG(IS_ANDROID)
   // Returns the TabListInterface associated with the given `browser`.
   static TabListInterface* From(BrowserWindowInterface* browser);
-#endif
 
   // Returns the count of tabs within the tab list.
   virtual int GetTabCount() const = 0;
