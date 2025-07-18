@@ -383,7 +383,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // scrolling happens at once.
     [self.collectionView
         scrollToItemAtIndexPath:[self indexPathForTabIndex:selectedIndex]
-               atScrollPosition:UICollectionViewScrollPositionTop
+               atScrollPosition:UICollectionViewScrollPositionCenteredVertically
                        animated:NO];
   }
 
@@ -1571,7 +1571,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
   NSIndexPath* selectedIndexPath = [self indexPathForTabIndex:selectedIndex];
   UICollectionViewScrollPosition scrollPosition =
-      shouldBringItemIntoView ? UICollectionViewScrollPositionTop
+      shouldBringItemIntoView ? UICollectionViewScrollPositionCenteredVertically
                               : UICollectionViewScrollPositionNone;
   [self.collectionView selectItemAtIndexPath:selectedIndexPath
                                     animated:NO
