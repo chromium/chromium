@@ -40,19 +40,20 @@ void ExecuteJavaScriptForFeature(web::WebState* web_state,
 
 // Executes JavaScript on `web_view` and returns the result as an id.
 // `error` can be null and will be updated only if script execution fails.
-id ExecuteJavaScript(WKWebView* web_view,
-                     NSString* script,
-                     NSError* __autoreleasing* error);
+[[nodiscard]] id ExecuteJavaScript(WKWebView* web_view,
+                                   NSString* script,
+                                   NSError* __autoreleasing* error);
 
 // Executes JavaScript on `web_view` and returns the result as an id.
 // Fails if there was an error during script execution.
-id ExecuteJavaScript(WKWebView* web_view, NSString* script);
+[[nodiscard]] id ExecuteJavaScript(WKWebView* web_view, NSString* script);
 
 // Synchronously executes JavaScript in the content world associated with
 // `feature` and returns the result as id.
-id ExecuteJavaScriptForFeatureAndReturnResult(web::WebState* web_state,
-                                              NSString* script,
-                                              JavaScriptFeature* feature);
+[[nodiscard]] id ExecuteJavaScriptForFeatureAndReturnResult(
+    web::WebState* web_state,
+    NSString* script,
+    JavaScriptFeature* feature);
 
 // Synchronously loads `html` into `web_view`. Returns true is successful or
 // false if the `web_view` never finishes loading.
