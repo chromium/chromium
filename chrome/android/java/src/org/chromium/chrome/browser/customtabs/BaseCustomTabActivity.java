@@ -157,7 +157,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private Verifier mVerifier;
     private FullscreenManager mFullscreenManager;
     private CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
-    private CustomTabFeatureOverridesManager mCustomTabFeatureOverridesManager;
     private boolean mWarmupOnDestroy;
     private TabObserverRegistrar mTabObserverRegistrar;
     private CustomTabObserver mCustomTabObserver;
@@ -376,7 +375,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         mBackPressManager,
                         () -> getCustomTabActivityTabController(),
                         () -> getCustomTabMinimizationManagerHolder().getMinimizationManager(),
-                        () -> getCustomTabFeatureOverridesManager(),
                         () -> getCustomTabActivityNavigationController().openCurrentUrlInBrowser(),
                         getEdgeToEdgeManager(),
                         getAppHeaderCoordinator(),
@@ -1296,14 +1294,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     private CustomTabActivityClientConnectionKeeper getCustomTabActivityClientConnectionKeeper() {
         return mCustomTabActivityClientConnectionKeeper;
-    }
-
-    private CustomTabFeatureOverridesManager getCustomTabFeatureOverridesManager() {
-        if (mCustomTabFeatureOverridesManager == null) {
-            mCustomTabFeatureOverridesManager =
-                    new CustomTabFeatureOverridesManager(getIntentDataProvider());
-        }
-        return mCustomTabFeatureOverridesManager;
     }
 
     private CustomTabOrientationController getCustomTabOrientationController() {

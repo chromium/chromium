@@ -677,8 +677,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                                 ScreenOrientation.DEFAULT));
 
         mGsaExperimentIds = IntentUtils.safeGetIntArrayExtra(intent, EXPERIMENT_IDS);
-        boolean usingDynamicFeatures =
-                CustomTabsConnection.getInstance().setupDynamicFeatures(intent);
 
         mBreakPointDp = getActivityBreakPointFromIntent(intent);
         mInitialActivityHeight = getInitialActivityHeightFromIntent(intent);
@@ -705,7 +703,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         mSideSheetRoundedCornersPosition =
                 getActivitySideSheetRoundedCornersPositionFromIntent(intent);
 
-        logCustomTabFeatures(intent, colorScheme, usingDynamicFeatures);
+        logCustomTabFeatures(intent, colorScheme);
         String packageName = getClientPackageNameFromSessionOrCallingActivity(mIntent, mSession);
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.HasNonSpoofablePackageName", !TextUtils.isEmpty(packageName));
@@ -1071,11 +1069,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      *
      * @param intent The intent used to launch the CCT.
      * @param colorScheme The requested color scheme to use with the CCT.
-     * @param isUsingDynamicFeatures Whether the intent specified Features to dynamically enable or
-     *     disable.
      */
-    private void logCustomTabFeatures(
-            Intent intent, int colorScheme, boolean isUsingDynamicFeatures) {
+    private void logCustomTabFeatures(Intent intent, int colorScheme) {
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
         // Ordering: Log all the features ordered by CustomTabsFeature enum, when they apply.
@@ -1193,9 +1188,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             featureUsage.log(CustomTabsFeature.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
         }
         if (mEnableUrlBarHiding) featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_URLBAR_HIDING);
-        if (isUsingDynamicFeatures) {
-            featureUsage.log(CustomTabsFeature.EXTRA_INTENT_FEATURE_OVERRIDES);
-        }
         if (showSideSheetMaximizeButton()) {
             featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION);
         }

@@ -88,7 +88,6 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
@@ -208,8 +207,6 @@ public class CustomTabsConnection {
         "Invalid referrer for session"
     };
 
-    private static final String SYNTHETIC_FIELDTRIAL_CCT_EXPERIMENT_OVERRIDE =
-            "CCT_EXPERIMENT_OVERRIDE";
     private static CustomTabsConnection sInstance;
     private @Nullable String mTrustedPublisherUrlPackage;
 
@@ -230,13 +227,6 @@ public class CustomTabsConnection {
     // Caches the previous height reported via |onResized|. Used for extraCallback
     // |ON_RESIZED_CALLLBACK| which cares about height only.
     private int mPrevHeight;
-
-    /** Whether Dynamic Features are enabled. CCT Intents can override the feature set. */
-    private boolean mIsDynamicIntentFeatureOverridesEnabled =
-            ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled();
-
-    @Nullable private List<String> mDynamicEnabledFeatures;
-    @Nullable private List<String> mDynamicDisabledFeatures;
 
     // Async tab prewarming can cause flakiness in tests when it runs after test shutdown and
     // triggers LifetimeAsserts.
@@ -1609,109 +1599,6 @@ public class CustomTabsConnection {
         }
         logCallback("onNavigationEvent()", navigationEvent);
         return true;
-    }
-
-    /** Resets dynamic experiment features that can be enabled/disabled via an Intent. */
-    @VisibleForTesting
-    void resetDynamicFeatures() {
-        mDynamicEnabledFeatures = null;
-        mDynamicDisabledFeatures = null;
-    }
-
-    /**
-     * Does setup of dynamic experiment features that can be enabled/disabled via an Intent.
-     *
-     * @param intent The {@link Intent} that is active, to be scanned for enable/disable Extras.
-     * @return Whether the setup will actually change the active feature set.
-     */
-    boolean setupDynamicFeatures(Intent intent) {
-        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
-        if (!mIsDynamicIntentFeatureOverridesEnabled
-                || (!CustomTabIntentDataProvider.isTrustedCustomTab(intent, session)
-                        && !CommandLine.getInstance()
-                                .hasSwitch("cct-client-firstparty-override"))) {
-            return false;
-        }
-        return setupDynamicFeaturesInternal(intent);
-    }
-
-    @VisibleForTesting
-    boolean setupDynamicFeaturesInternal(Intent intent) {
-        // TODO(crbug.com/40884078) Add support for separate dynamic experiments per session!
-        // Early exits if any CCT client app has already set or cleared dynamic experiments.
-        if (mDynamicEnabledFeatures != null || mDynamicDisabledFeatures != null) return false;
-
-        ArrayList<String> enabledExperiments =
-                IntentUtils.safeGetStringArrayListExtra(
-                        intent, CustomTabIntentDataProvider.EXPERIMENTS_ENABLE);
-        ArrayList<String> disabledExperiments =
-                IntentUtils.safeGetStringArrayListExtra(
-                        intent, CustomTabIntentDataProvider.EXPERIMENTS_DISABLE);
-        if (!areExperimentsSupported(enabledExperiments, disabledExperiments)) return false;
-
-        mDynamicEnabledFeatures = enabledExperiments;
-        mDynamicDisabledFeatures = disabledExperiments;
-        if (UmaSessionStats.isMetricsServiceAvailable()) {
-            boolean isEnabling = enabledExperiments != null;
-            String groupPrefix = isEnabling ? "Enable_" : "Disable_";
-            List<String> featuresUsed = isEnabling ? enabledExperiments : disabledExperiments;
-            String groupName = groupPrefix + String.join("_", featuresUsed);
-            UmaSessionStats.registerSyntheticFieldTrial(
-                    SYNTHETIC_FIELDTRIAL_CCT_EXPERIMENT_OVERRIDE,
-                    groupName,
-                    SyntheticTrialAnnotationMode.CURRENT_LOG);
-        } else {
-            Log.w(TAG, "The Metrics Service is not available, so no synthetic field trial");
-        }
-        return true;
-    }
-
-    /**
-     * Determines whether the given enable and disable features are currently supported.
-     * @param enabledExperiments A list of Features to enable.
-     * @param disabledExperiments A list of Features to disable.
-     * @return Whether this set of Features is allowed to be overridden by an Intent.
-     */
-    @VisibleForTesting
-    boolean areExperimentsSupported(
-            List<String> enabledExperiments, List<String> disabledExperiments) {
-        return false;
-    }
-
-    // TODO(crbug.com/40274032): Remove this and other dynamic feature related methods.
-    /**
-     * Determines if the given Feature is enabled after factoring in active Intent overrides.
-     *
-     * @see #setupDynamicFeatures
-     * @param featureName The Feature to check if it's enabled.
-     * @return Whether the given Feature is effectively enabled given active overrides.
-     */
-    public boolean isDynamicFeatureEnabled(String featureName) {
-        if (mIsDynamicIntentFeatureOverridesEnabled) {
-            if (mDynamicEnabledFeatures != null && mDynamicEnabledFeatures.contains(featureName)) {
-                return true;
-            }
-            if (mDynamicDisabledFeatures != null
-                    && mDynamicDisabledFeatures.contains(featureName)) {
-                return false;
-            }
-        }
-        Log.e(TAG, "Unsupported Feature!");
-        return false;
-    }
-
-    @VisibleForTesting
-    void setIsDynamicFeaturesEnabled(boolean isDynamicFeaturesEnabled) {
-        mIsDynamicIntentFeatureOverridesEnabled = isDynamicFeaturesEnabled;
-    }
-
-    /**
-     * Returns whether the given feature is enabled with Intent overrides.
-     * @param featureName The feature to check.
-     * @return Whether the feature is enabled with Intent overrides.
-     */
-    public boolean isDynamicFeatureEnabledWithOverrides(String featureName) {
-        return mDynamicEnabledFeatures != null && mDynamicEnabledFeatures.contains(featureName);
     }
 
     /**

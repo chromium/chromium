@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
-import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.CustomTabsButtonState;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
@@ -183,7 +182,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private @Nullable CustomTabCaptureStateToken mLastCustomTabCaptureStateToken;
     private final ObserverList<Callback<Integer>> mContainerVisibilityChangeObserverList =
             new ObserverList<>();
-    private @Nullable CustomTabFeatureOverridesManager mFeatureOverridesManager;
     private final boolean mIsRtl;
 
     // Whether the maximization button should be shown when it can. Set to {@code true}
@@ -329,9 +327,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mButtonVisibilityRule.addButton(ButtonId.MENU, findViewById(R.id.menu_button), true);
         mLocationBar.onFinishInflate(this);
 
-        if (!ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
-            maybeInitMinimizeButton();
-        }
+        maybeInitMinimizeButton();
     }
 
     @Override
@@ -679,14 +675,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // cases where the location bar layout gets already completed. Trigger the visibility
         // update manually here.
         setMaximizeButtonVisibility();
-    }
-
-    public void setFeatureOverridesManager(CustomTabFeatureOverridesManager manager) {
-        if (mFeatureOverridesManager != null) return;
-
-        mFeatureOverridesManager = manager;
-
-        maybeInitMinimizeButton();
     }
 
     /**

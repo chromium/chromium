@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -83,7 +82,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
-import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
@@ -156,7 +154,6 @@ public class CustomTabToolbarUnitTest {
     @Mock WindowAndroid mWindowAndroid;
     @Mock AppMenuHandler mAppMenuHandler;
     private @Mock PageInfoIphController mPageInfoIphController;
-    @Mock private CustomTabFeatureOverridesManager mFeatureOverridesManager;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private CustomTabMinimizeDelegate mMinimizeDelegate;
     @Captor ArgumentCaptor<AppMenuObserver> mAppMenuObserverCaptor;
@@ -196,7 +193,6 @@ public class CustomTabToolbarUnitTest {
         when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
         when(mIntentDataProvider.isOptionalButtonSupported())
                 .thenReturn(ChromeFeatureList.sCctAdaptiveButton.isEnabled());
-        when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         var shareButtonParams = CustomButtonParamsImpl.createShareButton(mActivity, Color.WHITE);
@@ -226,7 +222,6 @@ public class CustomTabToolbarUnitTest {
                 /* homeButtonDisplay= */ null);
         if (!ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             mToolbar.initVisibilityRule(mActivity, () -> mAppMenuHandler, mIntentDataProvider);
-            mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
         }
         mLocationBar =
                 (CustomTabLocationBar)

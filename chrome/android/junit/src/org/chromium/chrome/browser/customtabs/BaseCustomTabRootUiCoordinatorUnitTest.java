@@ -146,7 +146,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private Supplier<CustomTabActivityTabController> mTabController;
     @Mock private Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
-    @Mock private Supplier<CustomTabFeatureOverridesManager> mFeatureOverridesManagerSupplier;
     @Mock private Profile mProfile;
     @Mock private GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
     @Mock private ShoppingService mShoppingService;
@@ -216,7 +215,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mBackPressManager,
                         mTabController,
                         mMinimizeDelegateSupplier,
-                        mFeatureOverridesManagerSupplier,
                         CallbackUtils.emptyRunnable(),
                         mEdgeToEdgeManager,
                         mDesktopWindowStateManager,

@@ -111,7 +111,6 @@ public class CustomTabsConnectionUnitTest {
                 });
         CustomTabsConnection.setInstanceForTesting(null);
         mConnection = CustomTabsConnection.getInstance();
-        mConnection.setIsDynamicFeaturesEnabled(true);
         mSession = spy(CustomTabsSessionToken.createMockSessionTokenForTesting());
         mSessionHolder = new SessionHolder<>(mSession);
         when(mSession.getCallback()).thenReturn(mCallback);
@@ -125,11 +124,6 @@ public class CustomTabsConnectionUnitTest {
     @After
     public void tearDown() {
         SessionDataHolder.getInstance().removeActiveHandler(mSessionHandler);
-    }
-
-    @Test
-    public void areExperimentsSupported_NullInputs() {
-        assertFalse(mConnection.areExperimentsSupported(null, null));
     }
 
     @Test

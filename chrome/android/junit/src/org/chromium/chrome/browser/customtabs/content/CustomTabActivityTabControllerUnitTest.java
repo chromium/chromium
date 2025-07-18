@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
@@ -366,7 +365,6 @@ public class CustomTabActivityTabControllerUnitTest {
     public void setsTabObserverRegistrarOnEngagementSignalsHandler() {
         var handler = mock(EngagementSignalsHandler.class);
         when(env.connection.getEngagementSignalsHandler(eq(env.session))).thenReturn(handler);
-        when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();

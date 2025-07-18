@@ -108,7 +108,9 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="TWA origins EXTRA_ADDITIONAL_TRUSTED_ORIGINS"/>
   <int value="41" label="Url bar hiding EXTRA_ENABLE_URLBAR_HIDING"/>
   <int value="42" label="Translate specified EXTRA_AUTO_TRANSLATE_LANGUAGE"/>
-  <int value="43" label="Experiment override EXTRA_AGA_EXPERIMENT_ENABLE"/>
+  <int value="43"
+      label="(Obsolete) Experiment override EXTRA_AGA_EXPERIMENT_ENABLE.
+             Removed 2025/07."/>
   <int value="44" label="Partial width custom tab CTF_PARTIAL_SIDE_SHEET"/>
   <int value="45" label="Break point EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP"/>
   <int value="46" label="Initial width EXTRA_INITIAL_ACTIVITY_WIDTH_PX"/>

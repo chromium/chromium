@@ -128,7 +128,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
     private final Supplier<CustomTabActivityTabController> mTabController;
     private final Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
-    private final Supplier<CustomTabFeatureOverridesManager> mFeatureOverridesManagerSupplier;
     private final SearchActivityClient mCustomTabSearchClient;
 
     private CustomTabHeightStrategy mCustomTabHeightStrategy;
@@ -186,7 +185,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param tabController Activity tab controller.
      * @param minimizeDelegateSupplier Supplies the {@link CustomTabMinimizeDelegate} used to
      *     minimize the tab.
-     * @param featureOverridesManagerSupplier Supplies the {@link CustomTabFeatureOverridesManager}.
      * @param openInBrowserRunnable Runnable opening the current tab in BrApp.
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      * @param desktopWindowStateManager Provides information about desktop windowing state.
@@ -226,7 +224,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull BackPressManager backPressManager,
             @NonNull Supplier<CustomTabActivityTabController> tabController,
             @NonNull Supplier<CustomTabMinimizeDelegate> minimizeDelegateSupplier,
-            @NonNull Supplier<CustomTabFeatureOverridesManager> featureOverridesManagerSupplier,
             @NonNull Runnable openInBrowserRunnable,
             @NonNull EdgeToEdgeManager edgeToEdgeManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
@@ -310,7 +307,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         mTabController = tabController;
         mMinimizeDelegateSupplier = minimizeDelegateSupplier;
-        mFeatureOverridesManagerSupplier = featureOverridesManagerSupplier;
         mOpenInBrowserRunnable = openInBrowserRunnable;
         // TODO(crbug.com/41481778): move this RootUiCoordinator once this flag is removed.
         if (ChromeFeatureList.sCctTabModalDialog.isEnabled()) {
@@ -452,9 +448,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mActivity,
                 () -> mAppMenuCoordinator != null ? mAppMenuCoordinator.getAppMenuHandler() : null,
                 mIntentDataProvider.get());
-        if (ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
-            toolbar.setFeatureOverridesManager(mFeatureOverridesManagerSupplier.get());
-        }
         var cpac = getContextualPageActionController();
         if (cpac != null) cpac.setButtonVisibilitySupplier(toolbar::shouldShowOptionalButton);
         View coordinator = mActivity.findViewById(R.id.coordinator);
