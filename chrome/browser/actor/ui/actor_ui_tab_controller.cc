@@ -17,6 +17,10 @@ ActorUiTabController::ActorUiTabController(TabInterface& tab) : tab_(tab) {
   tab_subscriptions_.push_back(tab.RegisterWillDeactivate(
       base::BindRepeating(&ActorUiTabController::OnTabActivationChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/false)));
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
+      &ActorUiTabController::OnTabWillDetach, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterDidInsert(base::BindRepeating(
+      &ActorUiTabController::OnTabDidInsert, weak_factory_.GetWeakPtr())));
 }
 
 ActorUiTabController::~ActorUiTabController() = default;
@@ -52,8 +56,17 @@ void ActorUiTabController::NotifyTabScopedUiComponents(
 }
 
 void ActorUiTabController::OnTabActivationChanged(bool is_activated,
-                                                  tabs::TabInterface* tab) {
+                                                  TabInterface* tab) {
   NotifyTabScopedUiComponents(current_ui_tab_state_, is_activated);
+}
+
+void ActorUiTabController::OnTabWillDetach(TabInterface* tab,
+                                           TabInterface::DetachReason reason) {
+  // TODO(crbug.com/422540636): Implement.
+}
+
+void ActorUiTabController::OnTabDidInsert(TabInterface* tab) {
+  // TODO(crbug.com/422540636): Implement.
 }
 
 base::WeakPtr<ActorUiTabControllerInterface>

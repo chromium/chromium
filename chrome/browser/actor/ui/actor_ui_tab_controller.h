@@ -8,10 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
-
-namespace tabs {
-class TabInterface;
-}  // namespace tabs
+#include "components/tabs/public/tab_interface.h"
 
 namespace actor::ui {
 
@@ -32,8 +29,13 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void NotifyTabScopedUiComponents(const UiTabState& ui_tab_state,
                                    bool tab_activated);
   // Tab subscriptions:
-  // Called when this `tab_`'s activation status changes.
+  // Called when this tab's activation status changes.
   void OnTabActivationChanged(bool is_activated, tabs::TabInterface* tab);
+  // Called when the tab is detached.
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+  // Called when the tab is inserted.
+  void OnTabDidInsert(tabs::TabInterface* tab);
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
