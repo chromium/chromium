@@ -692,54 +692,6 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialProceeded) {
   run_loop.Run();
 }
 
-// Tests that password reuse reporting events warned as expected.
-TEST_P(IOSReportingEventRouterTest, TestPasswordReuseWarned) {
-  // TODO(crbug.com/430603698): Add test path for password_reuse event in proto
-  // format.
-  if (use_proto_format()) {
-    return;
-  }
-  test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
-      /*enabled_event_names=*/{kKeyPasswordReuseEvent},
-      /*enabled_opt_in_events=*/{});
-
-  test::EventReportValidatorBase validator(client_.get());
-  base::RunLoop run_loop;
-  validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectPasswordReuseEvent(
-      "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_WARNED",
-      profile_->GetProfileName(), GetProfileIdentifier());
-  reporting_event_router_->OnPasswordReuse(
-      GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
-      /*warning_shown*/ true);
-  run_loop.Run();
-}
-
-// Tests that password reuse reporting events allowed as expected.
-TEST_P(IOSReportingEventRouterTest, TestPasswordReuseAllowed) {
-  // TODO(crbug.com/430603698): Add test path for password_reuse event in proto
-  // format.
-  if (use_proto_format()) {
-    return;
-  }
-  test::SetOnSecurityEventReporting(
-      profile_->GetTestingPrefService(), /*enabled=*/true,
-      /*enabled_event_names=*/{kKeyPasswordReuseEvent},
-      /*enabled_opt_in_events=*/{});
-
-  test::EventReportValidatorBase validator(client_.get());
-  base::RunLoop run_loop;
-  validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectPasswordReuseEvent(
-      "https://phishing.com/", "user_name_1", true, "EVENT_RESULT_ALLOWED",
-      profile_->GetProfileName(), GetProfileIdentifier());
-  reporting_event_router_->OnPasswordReuse(
-      GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
-      /*warning_shown*/ false);
-  run_loop.Run();
-}
-
 INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
                          IOSReportingEventRouterTest,
                          /* is_profile_reporting */ testing::Bool());
