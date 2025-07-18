@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SIGNIN_REGISTRATION_TOKEN_HELPER_H_
-#define CHROME_BROWSER_SIGNIN_REGISTRATION_TOKEN_HELPER_H_
+#ifndef CHROME_BROWSER_SIGNIN_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_
+#define CHROME_BROWSER_SIGNIN_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_
 
 #include <optional>
 #include <string>
@@ -38,7 +38,7 @@ class UnexportableKeyLoader;
 //
 // TODO(alexilin): support a timeout aborting the token generation if it takes
 // too long.
-class RegistrationTokenHelper {
+class BindingKeyRegistrationTokenHelper {
  public:
   // Initialization parameter indicating which binding key should be used for
   // registration token generation.
@@ -83,14 +83,15 @@ class RegistrationTokenHelper {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:BoundSessionCredentialsRegistrationTokenResult)
 
   // `unexportable_key_service` must outlive `this`.
-  RegistrationTokenHelper(
+  BindingKeyRegistrationTokenHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       KeyInitParam key_init_param);
 
-  RegistrationTokenHelper(const RegistrationTokenHelper&) = delete;
-  RegistrationTokenHelper& operator=(const RegistrationTokenHelper&) = delete;
+  BindingKeyRegistrationTokenHelper(const BindingKeyRegistrationTokenHelper&) = delete;
+  BindingKeyRegistrationTokenHelper& operator=(
+      const BindingKeyRegistrationTokenHelper&) = delete;
 
-  virtual ~RegistrationTokenHelper();
+  virtual ~BindingKeyRegistrationTokenHelper();
 
   // Invokes `callback` with a `Result` containing a new binding key ID and a
   // corresponding registration token on success. Otherwise, invokes `callback`
@@ -134,7 +135,7 @@ class RegistrationTokenHelper {
   const KeyInitParam key_init_param_;
 
   std::unique_ptr<unexportable_keys::UnexportableKeyLoader> key_loader_;
-  base::WeakPtrFactory<RegistrationTokenHelper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BindingKeyRegistrationTokenHelper> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SIGNIN_REGISTRATION_TOKEN_HELPER_H_
+#endif  // CHROME_BROWSER_SIGNIN_BINDING_KEY_REGISTRATION_TOKEN_HELPER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/registration_token_helper.h"
+#include "chrome/browser/signin/binding_key_registration_token_helper.h"
 
 #include <optional>
 #include <string_view>
@@ -37,7 +37,7 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
 
 }  // namespace
 
-RegistrationTokenHelper::Result::Result(
+BindingKeyRegistrationTokenHelper::Result::Result(
     unexportable_keys::UnexportableKeyId in_binding_key_id,
     std::vector<uint8_t> in_wrapped_binding_key,
     std::string in_registration_token)
@@ -45,21 +45,21 @@ RegistrationTokenHelper::Result::Result(
       wrapped_binding_key(std::move(in_wrapped_binding_key)),
       registration_token(std::move(in_registration_token)) {}
 
-RegistrationTokenHelper::Result::Result(Result&& other) = default;
-RegistrationTokenHelper::Result& RegistrationTokenHelper::Result::operator=(
-    Result&& other) = default;
+BindingKeyRegistrationTokenHelper::Result::Result(Result&& other) = default;
+BindingKeyRegistrationTokenHelper::Result&
+BindingKeyRegistrationTokenHelper::Result::operator=(Result&& other) = default;
 
-RegistrationTokenHelper::Result::~Result() = default;
+BindingKeyRegistrationTokenHelper::Result::~Result() = default;
 
-RegistrationTokenHelper::RegistrationTokenHelper(
+BindingKeyRegistrationTokenHelper::BindingKeyRegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     KeyInitParam key_init_param)
     : unexportable_key_service_(unexportable_key_service),
       key_init_param_(std::move(key_init_param)) {}
 
-RegistrationTokenHelper::~RegistrationTokenHelper() = default;
+BindingKeyRegistrationTokenHelper::~BindingKeyRegistrationTokenHelper() = default;
 
-void RegistrationTokenHelper::GenerateForSessionBinding(
+void BindingKeyRegistrationTokenHelper::GenerateForSessionBinding(
     std::string_view challenge,
     const GURL& registration_url,
     base::OnceCallback<void(std::optional<Result>)> callback) {
@@ -67,13 +67,16 @@ void RegistrationTokenHelper::GenerateForSessionBinding(
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForSessionBinding,
       std::string(challenge), registration_url);
-  key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
-      &RegistrationTokenHelper::SignHeaderAndPayload,
-      weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),
-      base::BindOnce(&RegistrationTokenHelper::RecordResultAndInvokeCallback,
-                     kSessionBindingResultHistogram, std::move(callback))));
+  key_loader_->InvokeCallbackAfterKeyLoaded(
+      base::BindOnce(&BindingKeyRegistrationTokenHelper::SignHeaderAndPayload,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(header_and_payload_generator),
+                     base::BindOnce(&BindingKeyRegistrationTokenHelper::
+                                        RecordResultAndInvokeCallback,
+                                    kSessionBindingResultHistogram,
+                                    std::move(callback))));
 }
-void RegistrationTokenHelper::GenerateForTokenBinding(
+void BindingKeyRegistrationTokenHelper::GenerateForTokenBinding(
     std::string_view client_id,
     std::string_view auth_code,
     const GURL& registration_url,
@@ -82,14 +85,17 @@ void RegistrationTokenHelper::GenerateForTokenBinding(
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForTokenBinding,
       std::string(client_id), std::string(auth_code), registration_url);
-  key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
-      &RegistrationTokenHelper::SignHeaderAndPayload,
-      weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),
-      base::BindOnce(&RegistrationTokenHelper::RecordResultAndInvokeCallback,
-                     kTokenBindingResultHistogram, std::move(callback))));
+  key_loader_->InvokeCallbackAfterKeyLoaded(
+      base::BindOnce(&BindingKeyRegistrationTokenHelper::SignHeaderAndPayload,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(header_and_payload_generator),
+                     base::BindOnce(&BindingKeyRegistrationTokenHelper::
+                                        RecordResultAndInvokeCallback,
+                                    kTokenBindingResultHistogram,
+                                    std::move(callback))));
 }
 
-void RegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
+void BindingKeyRegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
   if (key_loader_) {
     return;
   }
@@ -112,7 +118,7 @@ void RegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
       key_init_param_);
 }
 
-void RegistrationTokenHelper::SignHeaderAndPayload(
+void BindingKeyRegistrationTokenHelper::SignHeaderAndPayload(
     HeaderAndPayloadGenerator header_and_payload_generator,
     base::OnceCallback<void(base::expected<Result, Error>)> callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
@@ -147,13 +153,13 @@ void RegistrationTokenHelper::SignHeaderAndPayload(
   unexportable_key_service_->SignSlowlyAsync(
       *binding_key, base::as_byte_span(*header_and_payload), kTaskPriority,
       /*max_retries=*/0,
-      base::BindOnce(&RegistrationTokenHelper::CreateRegistrationToken,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::string(*header_and_payload), *binding_key,
-                     std::move(callback)));
+      base::BindOnce(
+          &BindingKeyRegistrationTokenHelper::CreateRegistrationToken,
+          weak_ptr_factory_.GetWeakPtr(), std::string(*header_and_payload),
+          *binding_key, std::move(callback)));
 }
 
-void RegistrationTokenHelper::CreateRegistrationToken(
+void BindingKeyRegistrationTokenHelper::CreateRegistrationToken(
     std::string_view header_and_payload,
     unexportable_keys::UnexportableKeyId binding_key,
     base::OnceCallback<void(base::expected<Result, Error>)> callback,
@@ -179,12 +185,14 @@ void RegistrationTokenHelper::CreateRegistrationToken(
                                  std::move(registration_token).value()));
 }
 
-void RegistrationTokenHelper::RecordResultAndInvokeCallback(
+void BindingKeyRegistrationTokenHelper::RecordResultAndInvokeCallback(
     std::string_view result_histogram_name,
-    base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>
+    base::OnceCallback<
+        void(std::optional<BindingKeyRegistrationTokenHelper::Result>)>
         callback,
-    base::expected<RegistrationTokenHelper::Result,
-                   RegistrationTokenHelper::Error> result_or_error) {
+    base::expected<BindingKeyRegistrationTokenHelper::Result,
+                   BindingKeyRegistrationTokenHelper::Error>
+        result_or_error) {
   base::UmaHistogramEnumeration(result_histogram_name,
                                 result_or_error.error_or(Error::kNone));
   std::move(callback).Run(

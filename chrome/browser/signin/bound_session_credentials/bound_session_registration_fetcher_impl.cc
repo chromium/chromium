@@ -79,9 +79,10 @@ void BoundSessionRegistrationFetcherImpl::Start(
   CHECK(!registration_token_helper_);
   registration_duration_.emplace();  // Starts the timer.
   callback_ = std::move(callback);
-  registration_token_helper_ = std::make_unique<RegistrationTokenHelper>(
-      key_service_.get(),
-      base::ToVector(registration_params_.supported_algos()));
+  registration_token_helper_ =
+      std::make_unique<BindingKeyRegistrationTokenHelper>(
+          key_service_.get(),
+          base::ToVector(registration_params_.supported_algos()));
   // base::Unretained() is safe since `this` owns
   // `registration_token_helper_`.
   registration_token_helper_->GenerateForSessionBinding(
@@ -160,7 +161,7 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
 
 void BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated(
     base::ElapsedTimer generate_registration_token_timer,
-    std::optional<RegistrationTokenHelper::Result> result) {
+    std::optional<BindingKeyRegistrationTokenHelper::Result> result) {
   TRACE_EVENT("browser",
               "BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated",
               perfetto::Flow::FromPointer(this), "success", result.has_value());

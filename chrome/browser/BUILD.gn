@@ -7448,6 +7448,8 @@ static_library("browser") {
     sources += [
       "password_manager/multi_profile_credentials_filter.cc",
       "password_manager/multi_profile_credentials_filter.h",
+      "signin/binding_key_registration_token_helper.cc",
+      "signin/binding_key_registration_token_helper.h",
       "signin/dice_intercepted_session_startup_helper.cc",
       "signin/dice_intercepted_session_startup_helper.h",
       "signin/dice_response_handler.cc",
@@ -7464,8 +7466,6 @@ static_library("browser") {
       "signin/logout_tab_helper.h",
       "signin/process_dice_header_delegate_impl.cc",
       "signin/process_dice_header_delegate_impl.h",
-      "signin/registration_token_helper.cc",
-      "signin/registration_token_helper.h",
       "signin/signin_ui_delegate_impl_dice.cc",
       "signin/signin_ui_delegate_impl_dice.h",
     ]

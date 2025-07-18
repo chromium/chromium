@@ -21,7 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/signin/registration_token_helper.h"
+#include "chrome/browser/signin/binding_key_registration_token_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -117,14 +117,15 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
   raw_ptr<GaiaAuthConsumer> consumer_;
 };
 
-class MockRegistrationTokenHelper : public RegistrationTokenHelper {
+class MockBindingKeyRegistrationTokenHelper
+    : public BindingKeyRegistrationTokenHelper {
  public:
-  MockRegistrationTokenHelper()
-      : RegistrationTokenHelper(
+  MockBindingKeyRegistrationTokenHelper()
+      : BindingKeyRegistrationTokenHelper(
             fake_unexportable_key_service_,
             std::vector<crypto::SignatureVerifier::SignatureAlgorithm>{}) {}
 
-  ~MockRegistrationTokenHelper() override = default;
+  ~MockBindingKeyRegistrationTokenHelper() override = default;
 
   MOCK_METHOD(void,
               GenerateForSessionBinding,
@@ -254,16 +255,19 @@ class DiceResponseHandlerTest : public testing::Test,
 
   void ExpectRegistrationTokenHelperCreated(
       const std::vector<std::string>& expected_authorization_codes,
-      const RegistrationTokenHelper::KeyInitParam& expected_key_init_param) {
+      const BindingKeyRegistrationTokenHelper::KeyInitParam&
+          expected_key_init_param) {
     EXPECT_CALL(mock_registration_token_helper_factory_,
                 Run(expected_key_init_param))
         .WillOnce(
             Return(BuildRegistrationTokenHelper(expected_authorization_codes)));
   }
 
-  std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
+  std::unique_ptr<BindingKeyRegistrationTokenHelper>
+  BuildRegistrationTokenHelper(
       const std::vector<std::string>& expected_authorization_codes) {
-    auto helper = std::make_unique<StrictMock<MockRegistrationTokenHelper>>();
+    auto helper =
+        std::make_unique<StrictMock<MockBindingKeyRegistrationTokenHelper>>();
     for (const auto& authorization_code : expected_authorization_codes) {
       EXPECT_CALL(*helper, GenerateForTokenBinding(_, authorization_code, _, _))
           .WillOnce(
@@ -274,7 +278,7 @@ class DiceResponseHandlerTest : public testing::Test,
 
   void SimulateRegistrationTokenHelperResult(
       const std::string& authorization_code,
-      std::optional<RegistrationTokenHelper::Result> result) {
+      std::optional<BindingKeyRegistrationTokenHelper::Result> result) {
     auto node = binding_registration_callbacks_.extract(authorization_code);
     ASSERT_FALSE(node.empty());
     std::move(node.mapped()).Run(std::move(result));
@@ -306,9 +310,9 @@ class DiceResponseHandlerTest : public testing::Test,
   std::string auth_error_email_;
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableChromeRefreshTokenBinding};
-  std::map<
-      std::string,
-      base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>>
+  std::map<std::string,
+           base::OnceCallback<void(
+               std::optional<BindingKeyRegistrationTokenHelper::Result>)>>
       binding_registration_callbacks_;
   StrictMock<
       base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
@@ -465,9 +469,9 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   // Simulate successful token generation.
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
-      authorization_code,
-      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
-                                      kWrappedKey, "test_registration_token"));
+      authorization_code, BindingKeyRegistrationTokenHelper::Result(
+                              unexportable_keys::UnexportableKeyId(),
+                              kWrappedKey, "test_registration_token"));
 
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
@@ -577,9 +581,9 @@ TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
   // Simulate successful token generation.
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
-      authorization_code,
-      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
-                                      kWrappedKey, "test_registration_token"));
+      authorization_code, BindingKeyRegistrationTokenHelper::Result(
+                              unexportable_keys::UnexportableKeyId(),
+                              kWrappedKey, "test_registration_token"));
 
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
@@ -624,9 +628,9 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
   // Simulate successful token generation.
   SimulateRegistrationTokenHelperResult(
-      authorization_code,
-      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
-                                      kWrappedKey, "test_registration_token"));
+      authorization_code, BindingKeyRegistrationTokenHelper::Result(
+                              unexportable_keys::UnexportableKeyId(),
+                              kWrappedKey, "test_registration_token"));
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer, testing::NotNull());
@@ -700,14 +704,16 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
       authorization_code(dice_params_2),
-      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
-                                      kWrappedKey, "test_registration_token"));
+      BindingKeyRegistrationTokenHelper::Result(
+          unexportable_keys::UnexportableKeyId(), kWrappedKey,
+          "test_registration_token"));
   GaiaAuthConsumer* consumer_2 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_2, testing::NotNull());
   SimulateRegistrationTokenHelperResult(
       authorization_code(dice_params_1),
-      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
-                                      kWrappedKey, "other_registration_token"));
+      BindingKeyRegistrationTokenHelper::Result(
+          unexportable_keys::UnexportableKeyId(), kWrappedKey,
+          "other_registration_token"));
   GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_1, testing::NotNull());
 
@@ -771,8 +777,9 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
       authorization_code(eligible_dice_params_),
-      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
-                                      kWrappedKey, "test_registration_token"));
+      BindingKeyRegistrationTokenHelper::Result(
+          unexportable_keys::UnexportableKeyId(), kWrappedKey,
+          "test_registration_token"));
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::NotNull());
 }
 
@@ -799,8 +806,9 @@ TEST_F(DiceResponseHandlerTest,
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
       authorization_code(dice_params_1),
-      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
-                                      kWrappedKey, "test_registration_token"));
+      BindingKeyRegistrationTokenHelper::Result(
+          unexportable_keys::UnexportableKeyId(), kWrappedKey,
+          "test_registration_token"));
   GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_1, testing::NotNull());
 

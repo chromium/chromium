@@ -16,7 +16,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
-#include "chrome/browser/signin/registration_token_helper.h"
+#include "chrome/browser/signin/binding_key_registration_token_helper.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -83,7 +83,7 @@ class BoundSessionRegistrationFetcherImpl
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
   void OnRegistrationTokenCreated(
       base::ElapsedTimer generate_registration_token_timer,
-      std::optional<RegistrationTokenHelper::Result> result);
+      std::optional<BindingKeyRegistrationTokenHelper::Result> result);
 
   void StartFetchingRegistration(const std::string& registration_token);
 
@@ -107,7 +107,8 @@ class BoundSessionRegistrationFetcherImpl
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   std::optional<base::ElapsedTimer> registration_duration_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<RegistrationTokenHelper> registration_token_helper_;
+  std::unique_ptr<BindingKeyRegistrationTokenHelper>
+      registration_token_helper_;
 
   RegistrationCompleteCallback callback_;
 };
