@@ -2663,6 +2663,13 @@ inline constexpr char kNetworkServiceSandboxEnabled[] =
     "net.network_service_sandbox";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
+// If non-zero, then the last major version of Chrome where a failed launch of
+// the network service occurred. A failed launch is defined as either the
+// sandboxed network service process failed to launch entirely, or the network
+// service process was unable to reach UtilityMain to bootstrap IPC and mojo.
+inline constexpr char kNetworkServiceFailedLaunchMajorVersion[] =
+    "net.network_service_failed_launch_major_version";
+
 #if BUILDFLAG(IS_LINUX)
 // Records whether the user has seen an HTTP auth "negotiate" header.
 inline constexpr char kReceivedHttpAuthNegotiateHeader[] =

@@ -55,6 +55,7 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -117,6 +118,7 @@ constexpr char kKrb5ConfFilePath[] = "/home/chronos/user/kerberos/krb5.conf";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool g_force_create_network_service_directly = false;
+bool g_network_service_crashes_on_next_startup = false;
 mojo::Remote<network::mojom::NetworkService>* g_network_service_remote =
     nullptr;
 network::NetworkConnectionTracker* g_network_connection_tracker;
@@ -599,10 +601,14 @@ network::mojom::NetworkService* GetNetworkService() {
         } else {
           if (service_was_bound)
             LOG(ERROR) << "Network service crashed, restarting service.";
-          ServiceProcessHost::Launch(std::move(receiver),
-                                     ServiceProcessHost::Options()
-                                         .WithDisplayName(u"Network Service")
-                                         .Pass());
+          ServiceProcessHost::Options options;
+          options.WithDisplayName(u"Network Service");
+          if (g_network_service_crashes_on_next_startup) {
+            g_network_service_crashes_on_next_startup = false;
+            options.WithExtraCommandLineSwitches(
+                {switches::kUtilityImmediateCrashForTesting});
+          }
+          ServiceProcessHost::Launch(std::move(receiver), std::move(options));
         }
       } else {
         DCHECK(IsInProcessNetworkService())
@@ -780,6 +786,10 @@ const scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunner() {
 void ForceCreateNetworkServiceDirectlyForTesting() {
   ForceInProcessNetworkService();
   g_force_create_network_service_directly = true;
+}
+
+void SetNetworkServiceCrashOnNextStartupImplForTesting() {
+  g_network_service_crashes_on_next_startup = true;
 }
 
 void ResetNetworkServiceForTesting() {

@@ -42,6 +42,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/chrome_version.h"
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/request_header_integrity/buildflags.h"
@@ -67,6 +68,7 @@
 #include "content/public/browser/network_context_client_base.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
+#include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -87,6 +89,7 @@
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/network_annotation_monitor.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -111,6 +114,7 @@
 #endif
 
 namespace {
+
 // Enumeration of possible sandbox states. These values are persisted to logs,
 // so entries should not be renumbered and numeric values should never be
 // reused.
@@ -125,7 +129,9 @@ enum class NetworkSandboxState {
   kDisabledByPolicy = 2,
   // Disabled by policy. Only valid on Windows where the policy is respected.
   kEnabledByPolicy = 3,
-  // Disabled because of a previous failed launch attempt.
+  // Disabled because of a previous failed launch attempt, which could be a
+  // complete failure to start the process sandboxed, or the process failed to
+  // bootstrap far enough to initialize IPC and mojo services.
   kDisabledBecauseOfFailedLaunch = 4,
   // Disabled because the user (might) want kerberos, which is incompatible with
   // the Linux/Cros sandbox.
@@ -135,10 +141,6 @@ enum class NetworkSandboxState {
 
 // The global instance of the SystemNetworkContextManager.
 SystemNetworkContextManager* g_system_network_context_manager = nullptr;
-
-// Whether or not any instance of the system network context manager has
-// received a failed launch for a sandboxed network service.
-bool g_previously_failed_to_launch_sandboxed_service = false;
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // Whether kerberos library loading will work in the network service due to the
@@ -256,10 +258,16 @@ void OnAuthPrefsChanged(PrefService* local_state,
 }
 
 NetworkSandboxState IsNetworkSandboxEnabledInternal() {
-  // If previously an attempt to launch the sandboxed process failed, then
-  // launch unsandboxed.
-  if (g_previously_failed_to_launch_sandboxed_service) {
-    return NetworkSandboxState::kDisabledBecauseOfFailedLaunch;
+  if (g_system_network_context_manager) {
+    // If previously an attempt to launch the sandboxed process failed, then
+    // launch unsandboxed.
+    if (g_system_network_context_manager->HasFailedPreviousRecentLaunch()) {
+      return NetworkSandboxState::kDisabledBecauseOfFailedLaunch;
+    }
+  } else {
+    // g_system_network_context_manager should only be null in unit_tests where
+    // it is not always initialized.
+    CHECK_IS_TEST();
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   auto* local_state = g_browser_process->local_state();
@@ -346,10 +354,30 @@ std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
 
 }  // namespace
 
+namespace features {
+// If enabled, then failed launch state persisted to prefs. Disabling this
+// feature can be used to 'reset' clients back to a state where they are once
+// again attempting to launch sandboxed network services e.g. if a bug fix lands
+// and it is not desirable to wait until the next milestone. Note that even if
+// this feature is disabled any failed launches in the current browser session
+// will still result in sandbox being disabled for the lifetime of the running
+// browser.
+BASE_FEATURE(kPersistFailedLaunchState,
+             "PersistFailedLaunchState",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+
 class SystemNetworkContextManager::NetworkProcessLaunchWatcher
-    : public content::BrowserChildProcessObserver {
+    : public content::BrowserChildProcessObserver,
+      public content::ServiceProcessHost::Observer {
  public:
-  NetworkProcessLaunchWatcher() { BrowserChildProcessObserver::Add(this); }
+  explicit NetworkProcessLaunchWatcher(PrefService* prefs) : prefs_(prefs) {
+    if (!base::FeatureList::IsEnabled(features::kPersistFailedLaunchState)) {
+      prefs->ClearPref(prefs::kNetworkServiceFailedLaunchMajorVersion);
+    }
+    content::ServiceProcessHost::AddObserver(this);
+    BrowserChildProcessObserver::Add(this);
+  }
 
   NetworkProcessLaunchWatcher(const NetworkProcessLaunchWatcher&) = delete;
   NetworkProcessLaunchWatcher& operator=(const NetworkProcessLaunchWatcher&) =
@@ -357,6 +385,27 @@ class SystemNetworkContextManager::NetworkProcessLaunchWatcher
 
   ~NetworkProcessLaunchWatcher() override {
     BrowserChildProcessObserver::Remove(this);
+    content::ServiceProcessHost::RemoveObserver(this);
+  }
+
+  static void RegisterPrefs(PrefRegistrySimple* registry) {
+    registry->RegisterIntegerPref(
+        prefs::kNetworkServiceFailedLaunchMajorVersion, 0);
+  }
+
+  // Returns true if there has been a previous failed launch or early startup
+  // failure on the current milestone.
+  bool HasFailedPreviousRecentLaunch() {
+    const auto last_failing_version =
+        prefs_->GetInteger(prefs::kNetworkServiceFailedLaunchMajorVersion);
+    if (last_failing_version == 0) {
+      return false;
+    }
+    if (CHROME_VERSION_MAJOR > last_failing_version) {
+      prefs_->ClearPref(prefs::kNetworkServiceFailedLaunchMajorVersion);
+      return false;
+    }
+    return true;
   }
 
  private:
@@ -381,9 +430,27 @@ class SystemNetworkContextManager::NetworkProcessLaunchWatcher
           "WinLastError",
           info.last_error);
 #endif  // BUILDFLAG(IS_WIN)
-      g_previously_failed_to_launch_sandboxed_service = true;
+      RecordLaunchFailure();
     }
   }
+
+  void OnServiceProcessCrashed(
+      const content::ServiceProcessInfo& info) override {
+    if (info.IsService<network::mojom::NetworkService>() &&
+        *info.crashed_pre_ipc()) {
+      base::UmaHistogramBoolean(
+          "Chrome.SystemNetworkContextManager.NetworkSandboxEarlyLaunchCrashed",
+          true);
+      RecordLaunchFailure();
+    }
+  }
+
+  void RecordLaunchFailure() {
+    prefs_->SetInteger(prefs::kNetworkServiceFailedLaunchMajorVersion,
+                       CHROME_VERSION_MAJOR);
+  }
+
+  raw_ptr<PrefService> prefs_;
 };
 
 // SharedURLLoaderFactory backed by a SystemNetworkContextManager and its
@@ -628,7 +695,7 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       base::FeatureList::IsEnabled(
           features::kRestartNetworkServiceUnsandboxedForFailedLaunch)) {
     network_process_launch_watcher_ =
-        std::make_unique<NetworkProcessLaunchWatcher>();
+        std::make_unique<NetworkProcessLaunchWatcher>(local_state_);
   }
 
   pref_change_registrar_.Add(
@@ -652,6 +719,7 @@ SystemNetworkContextManager::~SystemNetworkContextManager() {
 void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   StubResolverConfigReader::RegisterPrefs(registry);
   DefaultDnsOverHttpsConfigSource::RegisterPrefs(registry);
+  NetworkProcessLaunchWatcher::RegisterPrefs(registry);
 
   // Static auth params
   registry->RegisterStringPref(prefs::kAuthSchemes,
@@ -1089,6 +1157,11 @@ void SystemNetworkContextManager::UpdateTLS13EarlyDataEnabled() {
           ? local_state_->GetBoolean(prefs::kTLS13EarlyDataEnabled)
           : base::FeatureList::IsEnabled(net::features::kEnableTLS13EarlyData);
   content::GetNetworkService()->SetTLS13EarlyDataEnabled(value);
+}
+
+bool SystemNetworkContextManager::HasFailedPreviousRecentLaunch() {
+  return network_process_launch_watcher_ &&
+         network_process_launch_watcher_->HasFailedPreviousRecentLaunch();
 }
 
 // static

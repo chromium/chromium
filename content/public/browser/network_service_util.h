@@ -22,6 +22,11 @@ CONTENT_EXPORT bool IsInProcessNetworkService();
 // browser process. The flag will be checked in |IsInProcessNetworkService()|.
 CONTENT_EXPORT void ForceOutOfProcessNetworkService();
 CONTENT_EXPORT void ForceInProcessNetworkService();
+
+// Sets whether or not the network service process will crash early in process
+// bootstrap, on the next launch, for testing.
+CONTENT_EXPORT void SetNetworkServiceCrashOnNextStartupForTesting();
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_UTIL_H_

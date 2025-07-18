@@ -23,6 +23,10 @@ namespace content {
 // This also calls ForceInProcessNetworkService().
 CONTENT_EXPORT void ForceCreateNetworkServiceDirectlyForTesting();
 
+// Sets whether or not the network service process will crash early in process
+// bootstrap, on the next launch, for testing.
+CONTENT_EXPORT void SetNetworkServiceCrashOnNextStartupImplForTesting();
+
 // Resets the interface ptr to the network service.
 CONTENT_EXPORT void ResetNetworkServiceForTesting();
 

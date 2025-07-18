@@ -5,8 +5,10 @@
 #include "content/public/browser/network_service_util.h"
 
 #include "content/browser/network/network_service_util_internal.h"
+#include "content/browser/network_service_instance_impl.h"
 
 namespace content {
+
 bool IsOutOfProcessNetworkService() {
   return !IsInProcessNetworkService();
 }
@@ -20,6 +22,10 @@ void ForceOutOfProcessNetworkService() {
 }
 void ForceInProcessNetworkService() {
   ForceInProcessNetworkServiceImpl();
+}
+
+void SetNetworkServiceCrashOnNextStartupForTesting() {
+  SetNetworkServiceCrashOnNextStartupImplForTesting();  // IN-TEST
 }
 
 }  // namespace content

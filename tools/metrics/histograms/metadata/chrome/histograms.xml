@@ -235,6 +235,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Chrome.SystemNetworkContextManager.NetworkSandboxEarlyLaunchCrashed"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>wfh@chromium.org</owner>
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    Reported if the network service process crashed early in startup, before IPC
+    and mojo services are available.
+  </summary>
+</histogram>
+
+<histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.ErrorCode"
     enum="LaunchErrorCodes" expires_after="2025-12-31">
   <owner>wfh@chromium.org</owner>
