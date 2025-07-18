@@ -301,7 +301,7 @@
 <translation id="8392023217086447677">已在 Chrome 無痕模式中開啟</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
 <translation id="8413500425974960807">Chrome 提示：將 Chrome 移至 Dock</translation>
-<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
+<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="84594714173170813">請繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="8459495907675268833">系統已將您所選取的資料從 Chrome 和其他同步的裝置中移除。您的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
 <translation id="8491300088149538575">目前登入的帳戶是 <ph name="EMAIL" />。

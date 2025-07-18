@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} የይለፍ ቃል}one{{count} የይለፍ ቃል}other{{count} የይለፍ ቃላት}}</translation>
 <translation id="1275718070701477396">የተመረጡ</translation>
 <translation id="1285320974508926690">ይህን ጣቢያ በጭራሽ አትተርጉም</translation>
+<translation id="1287229685519872919">Google Workspace ውሂብ</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> ፈቃዶች እርስዎ ከዚህ ጣቢያ ሲወጡ ዳግም ይጀመራሉ።</translation>
 <translation id="129553762522093515">በቅርብ ጊዜ የተዘጉ</translation>
 <translation id="1296581780163690620">ፋይል ይውረድ? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@
 <translation id="3940195383040445971">በትሮች ላይ ዋጋዎችን ይከታተሉ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ትር ዝጋ}one{{COUNT} ትር ዝጋ}other{{COUNT} ትሮችን ዝጋ}}</translation>
 <translation id="3948600256434252210">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ቀኝ ማንሸራተት ይችላሉ።</translation>
+<translation id="3949712484278252781">ከGemini ጋር የሚኖሩዎት ውይይቶች ወይም <ph name="GOOGLE_WORKSPACE_DATA" /> ውሂብዎ በሰው ገምጋሚዎች አይገመገሙም ወይም ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውሉም።</translation>
 <translation id="3950479158728806902">በፍጥነት ለመግባት የይለፍ ቁልፍ በራስ-ሰር ፍጠር</translation>
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="3955740319737378355">ተከናውኗል</translation>
@@ -1123,6 +1125,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="555749644339804659">የይለፍ ቃላትን በመፈተሽ ላይ…</translation>
 <translation id="5559567453458728487">በድር ላይ የተገኙ የልወጣ መለኪያ አሃዶችን ይቀይሩ</translation>
 <translation id="556042886152191864">አዘራር</translation>
+<translation id="5565871407246142825">ክሬዲት ካርዶች</translation>
 <translation id="5567439033041178034">ተጨማሪ ለመረዳት</translation>
 <translation id="5572648434713976849">በአድራሻ አሞሌው ውስጥ የተሻሻሉ የአስተያየት ጥቆማዎችን ያገኛሉ</translation>
 <translation id="5576885723883013398">አዲሰ መስኮት</translation>
@@ -1637,6 +1640,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7512909159512473473">የይለፍ ሐረግ አስገባ…</translation>
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7514530647142300459">በGoogle መለያዎ <ph name="EMAIL" /> ውስጥ የይለፍ ቃላትን መጠቀምዎን ይቀጥሉ</translation>
+<translation id="7522587739845660862">ስለ እርስዎ አካባቢ መረጃ</translation>
 <translation id="7522948500476882302">ፋይል ሲያወርዱ በራስ-ሰር በ1 ወር ውስጥ እንዲሰረዝ ለማድረግ ይምረጡ</translation>
 <translation id="7524055474074101597">በመላው መተግበሪያዎች ላይ የእርስዎን የChrome የይለፍ ቃላት እና ሌሎችን ይድረሱ።</translation>
 <translation id="75362970626182391">አዲስ የትር ቡድን</translation>
@@ -1651,6 +1655,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7582666837709186351">በፎቶዎችዎ ወይም በአካባቢዎ ያለውን ጽሁፍ በካሜራዎ ይተርጉሙ።</translation>
 <translation id="7582857256643797524">ይህ ቅንብር በመሣሪያዎ ላይ ነቅቷል</translation>
 <translation id="7583004045319035904">የእርስዎን ማንነት የማያሳውቁ ትሮችን ለመከፈት <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይጠቀሙ።</translation>
+<translation id="7588149553568293500">ስለ ምርጫዎችዎ ይወቁ።</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} ገቢር ያልሆነ ትር ይዘጋ?}one{{COUNT} ገቢር ያልሆነ ትር ይዘጋ?}other{{COUNT} ገቢር ያልሆኑ ትሮች ይዘጉ?}}</translation>
 <translation id="7598439272585186139">ተጨማሪ ደኅንነት ያግኙ</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>
@@ -2053,6 +2058,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9066097352053395362">እልባት አርትዕን ደብቅ</translation>
 <translation id="9070824521421603770">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ እና ትሮች ይዘጋሉ</translation>
 <translation id="9072837124205571418">ከሁሉም መሣሪያዎች የትር ቡድኖች</translation>
+<translation id="9075970015528364598">ውይይቶች ይገመገማሉ እና Google ሰው ሠራሽ አስተውሎትን ለማሻሻል ጥቅም ላይ ይውላሉ። <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> እንዲሁም ከእንቅስቃሴዎ ጋር ይከማቻል።</translation>
 <translation id="9081058212938299310">የ<ph name="USERNAME" /> ይለፍ ቃል ይዘመን?</translation>
 <translation id="9083838294503912307">በመላ መሣሪያዎች ላይ ለማስመር እና ግላዊነትን ለማላበስ ስምረትን ያብሩ።</translation>
 <translation id="9084367296493549256">{count,plural, =1{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገባ የሚችል {count} ደካማ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።}one{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገባ የሚችል {count} ደካማ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።}other{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገቡ የሚችሉ {count} ደካማ የይለፍ ቃላት አሉዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን እነሱን ያስተካክሉ።}}</translation>

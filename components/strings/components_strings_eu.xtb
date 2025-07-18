@@ -1022,6 +1022,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2690699652723742414">Azken 30 egunak</translation>
 <translation id="2691385045260836588">Modeloa</translation>
 <translation id="2691924980723297736">Segurtasun-abisua</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core-rekin, arakatzailearen gidalerroak, aplikazioak eta luzapenak hodeitik kudea ditzakezu</translation>
 <translation id="2697248912349197812">Galdetu <ph name="KEYWORD_SHORT_NAME" /> zerbitzuari</translation>
 <translation id="2699273987028089219">Azpimenu bat dago erabilgarri, erabili <ph name="SHORTCUT" /> beste aukera batzuetara nabigatzeko.</translation>
 <translation id="2701514975700770343">Ahuspez</translation>
@@ -3138,6 +3139,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6284449872909111707">Testu-mezuak eta istanteko mezularitza</translation>
 <translation id="6284517535531159884">Aldaeren iturburu mota</translation>
 <translation id="6287197303017372967">Jaso helmugara iristeko urratsez urratseko jarraibideak nabigazio-eginbidea erabilita.</translation>
+<translation id="6288559570252410796">Galdetu Google-ren AA moduari</translation>
 <translation id="628877850550444614">Deskontu bat aurkitu da</translation>
 <translation id="6289939620939689042">Orriaren kolorea</translation>
 <translation id="6292819926564202163">Chrome-n darabilzun bilatzailea</translation>
@@ -4353,6 +4355,7 @@ Xehetasun gehiago:
 <translation id="831997045666694187">Arratsaldea</translation>
 <translation id="8321448084834652864">Bilatzailea aldatzeko, joan Chromium-en ezarpenetara.</translation>
 <translation id="8321476692217554900">jakinarazpenak</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu Sartu Google-ren AA moduari galdetzeko</translation>
 <translation id="8322402665880479974">Oheak eta oheburuak</translation>
 <translation id="8323505966575306467">Hobetu zure pasahitzen babesa</translation>
 <translation id="832547548543012337">Ezabatu pasaportea</translation>
@@ -4642,6 +4645,7 @@ Xehetasun gehiago:
 <translation id="883848425547221593">Beste laster-markak</translation>
 <translation id="8842351563145134519">Haien eremuak sakatzean automatikoki beteko diren ordainketa-metodoen zerrenda altuera erdian irekita dago.</translation>
 <translation id="884264119367021077">Bidaltzeko helbidea</translation>
+<translation id="8849032795302265570">Kudeatu erraz zure langileek sarea arakatzeko modua</translation>
 <translation id="8849231003559822746">130 × 180 mm</translation>
 <translation id="884923133447025588">Ez da baliogabetze-mekanismorik aurkitu.</translation>
 <translation id="8849262850971482943">Segurtasun handiagoa izateko, erabili txartel birtuala</translation>
@@ -4891,6 +4895,7 @@ Xehetasun gehiago:
 <translation id="950926967802086924">Sarbide-gakoa • Google Password Manager</translation>
 <translation id="955429569736351433">EBa erabil daiteke</translation>
 <translation id="955627189349169688">Gidalerro honi lotuta ez egotea aukeratu nahi baduzu, joan <ph name="BEGIN_LINK" />Chrome-ren sinkronizazioaren ezarpenetara<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">AA moduaren botoia, aktiba ezazu Google-ren AA moduari galdetzeko</translation>
 <translation id="95721182352849470">Horia</translation>
 <translation id="961663415146723894">Koadernatu behetik</translation>
 <translation id="961856697154696964">Ezabatu arakatze-datuak</translation>

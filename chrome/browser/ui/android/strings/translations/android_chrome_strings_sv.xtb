@@ -721,6 +721,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4306489587293957491">Ange</translation>
 <translation id="4307992518367153382">Grunderna</translation>
 <translation id="4311652497846705514">Vill du öppna PDF-filen?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Möjlig spam}other{Möjlig spam (#)}}</translation>
 <translation id="4320177379694898372">Ingen internetanslutning</translation>
 <translation id="4326079409704643112">Verifiera din identitet om du vill använda och spara Chrome-data i Google-kontot</translation>
 <translation id="433213510553688132">Följer …</translation>
@@ -1059,6 +1060,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="580893287573699959">Hantera ämnen och webbplatser som du är intresserad av</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{för # timme sedan}other{för # timmar sedan}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Visa avisering}other{Visa aviseringar}}</translation>
 <translation id="5814749351757353073">Håll dig uppdaterad om dina favoritwebbplatser</translation>
 <translation id="5823093032261493462">Vill du ladda ned <ph name="FILE_NAME" /> från <ph name="DOWNLOAD_DOMAIN" /> ändå?</translation>
 <translation id="5828921839638612740">Du kan radera data i Chrome-inställningarna</translation>

@@ -720,6 +720,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4306489587293957491">입력</translation>
 <translation id="4307992518367153382">기본설정</translation>
 <translation id="4311652497846705514">PDF를 여시겠습니까?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{스팸일 수 있음}other{스팸일 수 있음(#개)}}</translation>
 <translation id="4320177379694898372">인터넷에 연결되지 않음</translation>
 <translation id="4326079409704643112">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 인증 절차를 거치세요</translation>
 <translation id="433213510553688132">팔로우 중...</translation>
@@ -944,7 +945,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
 <translation id="5252768492075585080">서드 파티 쿠키 설정</translation>
 <translation id="5264813352784073502">지난 24시간</translation>
-<translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호하세요</translation>
+<translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호받으세요.</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
 <translation id="5273031377282080577">관리자가 이 설정을 관리합니다.</translation>
 <translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{사용하지 않는 사이트 1개의 알림이 수신 거부됨}other{사용하지 않는 사이트 #개의 알림이 수신 거부됨}}</translation>
@@ -1058,6 +1059,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="580893287573699959">관심 있는 주제 및 사이트 관리</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{#시간 전}other{#시간 전}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{알림 표시}other{알림 표시}}</translation>
 <translation id="5814749351757353073">즐겨 찾는 사이트의 최신 소식 확인하기</translation>
 <translation id="5823093032261493462">그래도 <ph name="DOWNLOAD_DOMAIN" />에서 "<ph name="FILE_NAME" />" 파일을 다운로드하시겠습니까?</translation>
 <translation id="5828921839638612740">Chrome 설정에서 데이터를 삭제할 수 있습니다.</translation>
@@ -1425,7 +1427,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="727288900855680735"><ph name="ORIGIN" />에 <ph name="ONE_TIME_CODE" /> 코드를 제출하시겠습니까?</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
 <translation id="7276868533747677875">이전에 비밀번호를 내보낸 경우 기기에서 CSV 파일을 찾아 원하는 비밀번호 관리자로 가져오세요.</translation>
-<translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다</translation>
+<translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다.</translation>
 <translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 <ph name="SITE_ETLD_PLUS_ONE" />에서 계속하기 위한 다른 방법을 시도해 보세요.</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>
 <translation id="7291910923717764901">이 페이지에 추가된 이미지 설명</translation>

@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} գաղտնաբառ}one{{count} գաղտնաբառ}other{{count} գաղտնաբառ}}</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
+<translation id="1287229685519872919">Google Workspace-ի տվյալները</translation>
 <translation id="1291506870746876680">Երբ դուրս գաք <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> կայքից, դրա բոլոր թույլտվությունները կանջատվեն։</translation>
 <translation id="129553762522093515">Վերջերս փակված</translation>
 <translation id="1296581780163690620">Ներբեռնե՞լ ֆայլը (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@
 <translation id="3940195383040445971">Հետագծել գները ներդիրներում</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Փակել {COUNT} ներդիր}one{Փակել {COUNT} ներդիր}other{Փակել {COUNT} ներդիր}}</translation>
 <translation id="3948600256434252210">Կարող եք մատը սահեցնել աջ՝ ինկոգնիտո ռեժիմում դիտարկելու համար։</translation>
+<translation id="3949712484278252781">Gemini-ի հետ ձեր զրույցները և <ph name="GOOGLE_WORKSPACE_DATA" /> չեն ստուգվում մասնագետների կողմից, և մենք չենք օգտագործում այս տեղեկությունները գեներատիվ ԱԲ մոդելները բարելավելու համար։</translation>
 <translation id="3950479158728806902">Ավտոմատ կերպով ստեղծեք մուտքի բանալի՝ ավելի արագ մուտք գործելու համար</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3955740319737378355">Պատրաստ է</translation>
@@ -1123,6 +1125,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="555749644339804659">Գաղտնաբառերի ստուգում…</translation>
 <translation id="5559567453458728487">Փոխարկել չափման միավորները վեբ էջերում</translation>
 <translation id="556042886152191864">Կոճակ</translation>
+<translation id="5565871407246142825">Վարկային քարտեր</translation>
 <translation id="5567439033041178034">ԻՄԱՆԱԼ ԱՎԵԼԻՆ</translation>
 <translation id="5572648434713976849">Հասցեագոտում կհայտնվեն բարելավված հուշումներ։</translation>
 <translation id="5576885723883013398">Նոր պատուհան</translation>
@@ -1637,6 +1640,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7512909159512473473">Մուտքագրել անցաբառը…</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7514530647142300459">Շարունակեք օգտագործել գաղտնաբառերը ձեր <ph name="EMAIL" /> Google հաշվում</translation>
+<translation id="7522587739845660862">Ձեր տեղադրության մասին տեղեկությունները</translation>
 <translation id="7522948500476882302">Ֆայլ ներբեռնելու ժամանակ նշեք, որ այն ավտոմատ ջնջվի 1 ամսից</translation>
 <translation id="7524055474074101597">Օգտագործեք ձեր գաղտնաբառերը և այլ տվյալներ հավելվածներում։</translation>
 <translation id="75362970626182391">Ներդիրների նոր խումբ</translation>
@@ -1651,6 +1655,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7582666837709186351">Ձեր տեսախցիկի միջոցով թարգմանեք ձեր լուսանկարների կամ շրջակայքի տեքստերը։</translation>
 <translation id="7582857256643797524">Այս կարգավորումը միացված է ձեր սարքում</translation>
 <translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>
+<translation id="7588149553568293500">Իմացեք, թե ինչ կարգավորումներ են ձեզ հասանելի։</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրը}one{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրը}other{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրները}}</translation>
 <translation id="7598439272585186139">Ստացեք ավելի շատ անվտանգություն</translation>
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>
@@ -2053,6 +2058,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9066097352053395362">Թաքցնել «Փոփոխել էջանիշը» գործողությունը</translation>
 <translation id="9070824521421603770">Դուք դուրս կգաք հաշվից, իսկ ներդիրները կփակվեն</translation>
 <translation id="9072837124205571418">Ներդիրների խմբեր բոլոր սարքերից</translation>
+<translation id="9075970015528364598">Զրույցները ստուգվում են և օգնում բարելավել Google AI-ը։ <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> նաև պահում են ձեր գործողությունների պատմության մեջ։</translation>
 <translation id="9081058212938299310">Թարմացնե՞լ օգտանվան (<ph name="USERNAME" />) գաղտնաբառը։</translation>
 <translation id="9083838294503912307">Սարքերը համաժամացնելու և անհատականացնելու համար միացրեք համաժամացումը:</translation>
 <translation id="9084367296493549256">{count,plural, =1{Դուք ունեք {count} թույլ գաղտնաբառ, ինչը կարող է սպառնալ ձեր տվյալների անվտանգությանը։ Ապահովության համար փոխեք այն։}one{Դուք ունեք {count} թույլ գաղտնաբառ, ինչը կարող է սպառնալ ձեր տվյալների անվտանգությանը։ Ապահովության համար փոխեք այն։}other{Դուք ունեք {count} թույլ գաղտնաբառ, ինչը կարող է սպառնալ ձեր տվյալների անվտանգությանը։ Ապահովության համար փոխեք դրանք։}}</translation>

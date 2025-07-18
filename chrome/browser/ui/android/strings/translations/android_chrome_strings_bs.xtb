@@ -720,7 +720,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4306489587293957491">Unesite</translation>
 <translation id="4307992518367153382">Osnove</translation>
 <translation id="4311652497846705514">Otvoriti PDF?</translation>
-<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mogući neželjeni sadržaj}one{Mogući neželjeni sadržaji (#)}few{Mogući neželjeni sadržaji (#)}other{Mogući neželjeni sadržaji (#)}}</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Moguće neželjeno obavještenje}one{Moguća neželjena obavještenja (#)}few{Moguća neželjena obavještenja (#)}other{Moguća neželjena obavještenja (#)}}</translation>
 <translation id="4320177379694898372">Nema internetske veze</translation>
 <translation id="4326079409704643112">Da koristite i sačuvate podatke Chromea na Google računu, potvrdite identitet</translation>
 <translation id="433213510553688132">Praćenje...</translation>
@@ -1059,7 +1059,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="580893287573699959">Upravljajte temama i web lokacijama koje vas zanimaju</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Prije # sat}one{Prije # sat}few{Prije # sata}other{Prije # sati}}</translation>
 <translation id="5810288467834065221">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
-<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Prikaži obavijest}one{Prikaži obavijesti}few{Prikaži obavijesti}other{Prikaži obavijesti}}</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Prikaži obavještenje}one{Prikaži obavještenja}few{Prikaži obavještenja}other{Prikaži obavještenja}}</translation>
 <translation id="5814749351757353073">Nastavite pratiti omiljene web lokacije</translation>
 <translation id="5823093032261493462">Želite li ipak preuzeti fajl "<ph name="FILE_NAME" />" sa <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Podatke možete izbrisati u Postavkama Chromea</translation>

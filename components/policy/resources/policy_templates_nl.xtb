@@ -3684,6 +3684,14 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
 
       Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> een standaard bibliotheeknaam.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+De functie ServiceWorkerAutoPreload stuurt een netwerkverzoek voor een hoofdresource op hetzelfde moment dat het ServiceWorker-bootstrap-proces wordt gestart.
+
+Als je het beleid toepast of niet instelt, zet <ph name="PRODUCT_NAME" /> ServiceWorkerAutoPreload aan. Het navigatieverzoek wordt in sommige scenario's automatisch verstuurd terwijl de ServiceWorker wordt gestart, bijvoorbeeld als de ServiceWorker niet actief is.
+
+Als je het beleid niet toepast, zet <ph name="PRODUCT_NAME" /> ServiceWorkerAutoPreload niet aan. Het navigatieverzoek wordt altijd verstuurd nadat de ServiceWorker is gestart.
+
+Dit beleid is een tijdelijke maatregel om de functie te beheren en wordt verwijderd in M144.</translation>
 <translation id="3650122925429054129">Cursormarkering op het inlogscherm uitzetten</translation>
 <translation id="365093517647222762">Rapporteert telemetriegegevens van websites voor toegestane URL's die zijn opgegeven in het beleid <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> voor aangesloten gebruikers.
 
@@ -3847,6 +3855,10 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
 <translation id="376375951585423504">Permanent quotum uitzetten.</translation>
 <translation id="3765260570442823273">Duur van de waarschuwing bij uitloggen inactieve gebruiker</translation>
 <translation id="3766695867369523703">Partitionering van opslag door derden standaard toestaan</translation>
+<translation id="3770044943398389276">Standaard verplaatst zwevende SSO alleen permanente cookies tussen apparaten. Met dit beleid bepaal je of sessiecookies ook moeten worden opgenomen. Het beleid wordt alleen van kracht als het beleid <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> wordt toegepast.
+
+Als je dit beleid toepast, synchroniseert zwevende SSO zowel sessie- als permanente cookies.
+Als je dit beleid niet toepast of niet instelt, synchroniseert zwevende SSO alleen permanente cookies.</translation>
 <translation id="3770407495263198786">Als je dit beleid instelt, kunnen beheerders een lijst met printers instellen voor hun gebruikers. Als gebruikers voor het eerst iets afdrukken, moeten ze een printer selecteren.
 
       Met het beleid:
@@ -3947,6 +3959,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Generatieve AI-achtergronden toestaan zonder AI-modellen te verbeteren</translation>
+<translation id="3848302969721895938">ServiceWorkerAutoPreload uitzetten</translation>
 <translation id="3849923496599301707">Chrome-apps in de kioskmodus geforceerd toestaan</translation>
 <translation id="3851443303439635700">De nestdrempel bepalen waarvoor de JavaScript-functie setTimeout() wordt vastgezet</translation>
 <translation id="3854609566862485607">Dit beleid beheert een aangepast label waarmee beheerde profielen worden geïdentificeerd. Voor beheerde profielen wordt dit label naast de avatar in de werkbalk getoond. Het aangepaste label wordt niet vertaald.
@@ -4252,6 +4265,7 @@ Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid gerelateerd aan externe atteste
 
 Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="4070039109671307724">Overig</translation>
+<translation id="4071922398488395340">Sessiecookies opnemen in de functionaliteit voor zwevende SSO</translation>
 <translation id="4072225853834793549">Snelkoppelingen voor toegankelijkheid op het inlogscherm uitzetten</translation>
 <translation id="4074922053013383215">Gemiddelde geheugenbesparingen.</translation>
 <translation id="4075675819066819571">De plank aan de linkerkant van het scherm plaatsen</translation>
@@ -6822,6 +6836,7 @@ Je kunt meer accountbeperkingen toevoegen met het beleid <ph name="MICROSOFT_ONE
 <translation id="5815129011704381141">Automatisch opnieuw opstarten na update</translation>
 <translation id="5815990343032461023">Verouderd gedrag: Chrome-kiosk-apps worden geüpdatet door het extensiesysteem via de update-URL uit het extensiemanifest en door de cachingmanager via de update-URL uit het beleid</translation>
 <translation id="5816688024515869030">De provider van <ph name="UIA_NAME" /> uitzetten.</translation>
+<translation id="581737504822041364">ServiceWorker toestaan navigatieverzoeken te sturen zonder te wachten tot deze is opgestart</translation>
 <translation id="5828008775808363753">De browser niet starten bij opstarten</translation>
 <translation id="582857022372205358">Dubbelzijdig afdrukken over korte zijde aanzetten</translation>
 <translation id="5830196507442186669">Toestaan dat apparaten <ph name="BOREALIS_NAME" /> gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9124,6 +9139,7 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
 
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
+<translation id="7358299261566939984">ServiceWorkerAutoPreload aanzetten</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> aanzetten</translation>
 <translation id="7362566456990049303">Alleen gebruiker</translation>
 <translation id="736486789939370545">Installatie van externe extensies toestaan</translation>
@@ -11488,6 +11504,7 @@ Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gew
 <translation id="9073405975862312795">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de perioden dat een gebruiker actief is op het apparaat.
 
       Als je het beleid niet toepast, registreren of rapporteren ingeschreven apparaten geen tijden van activiteit.</translation>
+<translation id="9075183018289926453">Sessiecookies niet synchroniseren met zwevende SSO</translation>
 <translation id="9076477053438828079">Altijd namen en foto's van gebruikers laten zien</translation>
 <translation id="9077227880520270584">Timer voor automatisch inloggen op lokaal account op apparaat</translation>
 <translation id="9079158199923156713">URL voor zakelijk logo voor een beheerd profiel</translation>

@@ -720,6 +720,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4306489587293957491">Entrer</translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
 <translation id="4311652497846705514">Ouvrir un fichier PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Contenu indésirable possible}one{Contenu indésirable possible (#)}other{Contenu indésirable possible (#)}}</translation>
 <translation id="4320177379694898372">Pas de connexion Internet</translation>
 <translation id="4326079409704643112">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
 <translation id="433213510553688132">Suivi en cours…</translation>
@@ -1058,6 +1059,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="580893287573699959">Gérez les sujets et les sites qui vous intéressent</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Il y a # heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Afficher la notification}one{Afficher la notification}other{Afficher les notifications}}</translation>
 <translation id="5814749351757353073">Suivez l'actualité de vos sites favoris</translation>
 <translation id="5823093032261493462">Voulez-vous quand même télécharger « <ph name="FILE_NAME" /> » à partir de <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Vous pouvez supprimer les données dans les paramètres de Chrome</translation>

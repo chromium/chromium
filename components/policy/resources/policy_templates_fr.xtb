@@ -3689,6 +3689,14 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3647212518036289905">Permet de spécifier la bibliothèque GSSAPI à utiliser pour l'authentification HTTP. Vous pouvez indiquer le nom de la bibliothèque ou son chemin d'accès complet.
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise un nom de bibliothèque par défaut.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+La fonctionnalité ServiceWorkerAutoPreload envoie une requête réseau pour une ressource principale en même temps qu'elle lance le processus d'amorçage ServiceWorker.
+
+Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> active ServiceWorkerAutoPreload. La requête de navigation est automatiquement distribuée lors du démarrage de ServiceWorker dans certains scénarios, par exemple lorsque ServiceWorker n'est pas en cours d'exécution.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> n'activera pas ServiceWorkerAutoPreload. La requête de navigation est toujours distribuée après le démarrage de ServiceWorker.
+
+Cette règle est une mesure temporaire pour contrôler la fonctionnalité et sera supprimée dans M144.</translation>
 <translation id="3650122925429054129">Désactiver la mise en surbrillance du curseur sur l'écran de connexion</translation>
 <translation id="365093517647222762">Signale les données de télémétrie des sites Web pour les URL autorisées spécifiées par la règle <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> pour les utilisateurs affiliés.
 
@@ -3852,6 +3860,10 @@ Pour connaître les restrictions concernant <ph name="PRIVATE_NETWORK_ACCESS" />
 <translation id="376375951585423504">Désactiver le quota persistant.</translation>
 <translation id="3765260570442823273">Durée du message d'avertissement avant la déconnexion pour cause d'inactivité</translation>
 <translation id="3766695867369523703">Autoriser le partitionnement du stockage tiers par défaut.</translation>
+<translation id="3770044943398389276">Par défaut, le service SSO flottant déplace uniquement les cookies persistants entre les appareils. Cette règle détermine si les cookies de session doivent également être inclus. Elle ne prend effet que lorsque la règle <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> est activée.
+
+Lorsque cette règle est activée, le service SSO flottant synchronise les cookies de session et les cookies persistants.
+Lorsque cette règle est désactivée ou n'est pas configurée, le service SSO flottant ne synchronise que les cookies persistants.</translation>
 <translation id="3770407495263198786">Cette règle permet aux administrateurs de configurer une liste d'imprimantes pour leurs utilisateurs. La sélection de l'imprimante est effectuée la première fois que l'utilisateur lance une impression.
 
       Vous pouvez utiliser cette règle pour effectuer les opérations suivantes :
@@ -3952,6 +3964,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Autoriser le fond d'écran par IA générative sans améliorer les modèles d'IA</translation>
+<translation id="3848302969721895938">Désactiver ServiceWorkerAutoPreload</translation>
 <translation id="3849923496599301707">Forcer l'autorisation des applis Chrome en mode Kiosque</translation>
 <translation id="3851443303439635700">Contrôlez le seuil d'imbrication avant que la fonction JavaScript setTimeout() commence à être limitée</translation>
 <translation id="3854609566862485607">Cette règle permet de définir un libellé personnalisé servant à identifier les profils gérés. Pour les profils gérés, ce libellé s'affichera à côté de l'avatar dans la barre d'outils. Le libellé personnalisé ne sera pas traduit.
@@ -4257,6 +4270,7 @@ Pour <ph name="PRODUCT_OS_NAME" />, cette règle est liée à l'attestation à d
 
 Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Divers</translation>
+<translation id="4071922398488395340">Inclure les cookies de session dans la fonctionnalité de service SSO flottant</translation>
 <translation id="4072225853834793549">Désactiver les raccourcis d'accessibilité sur l'écran de connexion</translation>
 <translation id="4074922053013383215">Économies de mémoire modérées.</translation>
 <translation id="4075675819066819571">Placer l'étagère sur le côté gauche de l'écran</translation>
@@ -6867,6 +6881,7 @@ Vous pouvez ajouter une autre restriction de compte avec la règle <ph name="MIC
 <translation id="5815129011704381141">Redémarrer automatiquement après une mise à jour</translation>
 <translation id="5815990343032461023">Ancien comportement : les applis Chrome Kiosk sont mises à jour par le système d'extension en utilisant l'URL de mise à jour issue du fichier manifeste d'extension, et en mettant en cache le gestionnaire au moyen de l'URL de mise à jour provenant de la règle</translation>
 <translation id="5816688024515869030">Désactiver le fournisseur <ph name="UIA_NAME" />.</translation>
+<translation id="581737504822041364">Autoriser ServiceWorker à distribuer des requêtes de navigation sans attendre son démarrage</translation>
 <translation id="5828008775808363753">Ne pas lancer le navigateur au démarrage</translation>
 <translation id="582857022372205358">Activer l'impression recto verso bord court</translation>
 <translation id="5830196507442186669">Autoriser les appareils à utiliser <ph name="BOREALIS_NAME" /> sur <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9173,6 +9188,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Tout chemin d'accès dans le format d'URL est donc ignoré.
 
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
+<translation id="7358299261566939984">Activer ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Activer <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Utilisateur uniquement</translation>
 <translation id="736486789939370545">Autoriser l'installation d'extensions externes</translation>
@@ -11541,6 +11557,7 @@ Remarque : Le cache est vidé en cas de redémarrage de l'appareil. Les donnée
 <translation id="9073405975862312795">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent les périodes durant lesquelles ils sont utilisés.
 
       Si cette règle est désactivée, les appareils enregistrés n'enregistrent et ne communiquent pas ces périodes.</translation>
+<translation id="9075183018289926453">Ne pas synchroniser les cookies de session avec le service SSO flottant</translation>
 <translation id="9076477053438828079">Toujours afficher le nom et la photo des utilisateurs</translation>
 <translation id="9077227880520270584">Minuteur de connexion automatique au compte local de l'appareil</translation>
 <translation id="9079158199923156713">URL du logo de l'entreprise pour un profil géré</translation>

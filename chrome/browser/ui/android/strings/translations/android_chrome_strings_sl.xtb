@@ -720,6 +720,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4306489587293957491">Vnesi</translation>
 <translation id="4307992518367153382">Osnove</translation>
 <translation id="4311652497846705514">Želite odpreti datoteko PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Možna neželena vsebina}one{Možna neželena vsebina (#)}two{Možna neželena vsebina (#)}few{Možna neželena vsebina (#)}other{Možna neželena vsebina (#)}}</translation>
 <translation id="4320177379694898372">Ni internetne povezave</translation>
 <translation id="4326079409704643112">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, potrdite, da ste to vi</translation>
 <translation id="433213510553688132">Spremljanje …</translation>
@@ -1058,6 +1059,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="580893287573699959">Upravljanje tem in spletnih mest, ki vas zanimajo</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Pred # uro}one{Pred # uro}two{Pred # urama}few{Pred # urami}other{Pred # urami}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Pokaži obvestilo}one{Pokaži obvestila}two{Pokaži obvestili}few{Pokaži obvestila}other{Pokaži obvestila}}</translation>
 <translation id="5814749351757353073">Bodite na tekočem s priljubljenimi spletnimi mesti</translation>
 <translation id="5823093032261493462">Ali želite vseeno prenesti »<ph name="FILE_NAME" />« iz domene <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Podatke lahko izbrišete v Chromovih nastavitvah</translation>

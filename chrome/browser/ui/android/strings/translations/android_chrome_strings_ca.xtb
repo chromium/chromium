@@ -720,6 +720,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4306489587293957491">Introdueix</translation>
 <translation id="4307992518367153382">Configuració bàsica</translation>
 <translation id="4311652497846705514">Vols obrir el PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Possible contingut brossa}other{Possible contingut brossa (#)}}</translation>
 <translation id="4320177379694898372">No hi ha connexió a Internet</translation>
 <translation id="4326079409704643112">Per utilitzar i desar les dades de Chrome al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="433213510553688132">S'està seguint...</translation>
@@ -1058,6 +1059,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="580893287573699959">Gestiona els temes i els llocs web que t'interessen</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{fa # hora}other{fa # hores}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mostra una notificació}other{Mostra notificacions}}</translation>
 <translation id="5814749351757353073">Estigues al corrent dels teus llocs web preferits</translation>
 <translation id="5823093032261493462">Vols baixar "<ph name="FILE_NAME" />" de <ph name="DOWNLOAD_DOMAIN" /> igualment?</translation>
 <translation id="5828921839638612740">Pots suprimir les dades a la configuració de Chrome</translation>

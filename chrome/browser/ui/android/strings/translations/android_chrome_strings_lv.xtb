@@ -720,6 +720,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4306489587293957491">Ievadīt</translation>
 <translation id="4307992518367153382">Pamata</translation>
 <translation id="4311652497846705514">Vai atvērt PDF failu?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Iespējami nevēlams saturs}zero{Iespējami nevēlams saturs (#)}one{Iespējami nevēlams saturs (#)}other{Iespējami nevēlams saturs (#)}}</translation>
 <translation id="4320177379694898372">Nav interneta savienojuma.</translation>
 <translation id="4326079409704643112">Lai izmantotu un saglabātu Chrome datus savā Google kontā, apstipriniet savu identitāti</translation>
 <translation id="433213510553688132">Tiek reģistrēta sekošana...</translation>
@@ -1058,6 +1059,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="580893287573699959">Pārvaldiet tēmas un vaicājumus, kas jūs interesē.</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{pirms # stundas}zero{pirms # stundām}one{pirms # stundas}other{pirms # stundām}}</translation>
 <translation id="5810288467834065221">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Rādīt paziņojumu}zero{Rādīt paziņojumus}one{Rādīt paziņojumus}other{Rādīt paziņojumus}}</translation>
 <translation id="5814749351757353073">Sekojiet savām iecienītajām vietnēm</translation>
 <translation id="5823093032261493462">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />” no vietnes <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Varat dzēst datus Chrome iestatījumos</translation>

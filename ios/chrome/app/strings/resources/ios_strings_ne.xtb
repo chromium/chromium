@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} वटा पासवर्ड}other{{count} वटा पासवर्ड}}</translation>
 <translation id="1275718070701477396">चयन गरिएको</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
+<translation id="1287229685519872919">Google Workspace को डेटा</translation>
 <translation id="1291506870746876680">तपाईं <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> बाट बाहिरिनुभयो भने यो साइटसम्बन्धी अनुमति रिसेट गरी अफ गरिने छ।</translation>
 <translation id="129553762522093515">हालैमा बन्द गरिएको</translation>
 <translation id="1296581780163690620">फाइल डाउनलोड गर्ने हो? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@
 <translation id="3940195383040445971">ट्याबहरूमा मूल्य ट्र्याक गर्नुहोस्</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ट्याब बन्द गर्नुहोस्}other{{COUNT} वटा ट्याब बन्द गर्नुहोस्}}</translation>
 <translation id="3948600256434252210">तपाईं इन्कोग्निटोमा ब्राउज गर्न दायाँतिर स्वाइप गर्न सक्नुहुन्छ।</translation>
+<translation id="3949712484278252781">समीक्षकहरू तपाईंले Gemi सँग गरेका कुराकानी वा तपाईंको <ph name="GOOGLE_WORKSPACE_DATA" /> को समीक्षा गर्ने छैनन्। यसै गरी, जेनेरेटिभ AI मोडेलहरूको गुणस्तर सुधार्न उक्त डेटा प्रयोग गरिने छैन।</translation>
 <translation id="3950479158728806902">अझ छिटो साइन इन गर्नका निम्ति पासकी स्वतः बनाउनुहोस्</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3955740319737378355">सम्पन्न भयो</translation>
@@ -1123,6 +1125,7 @@
 <translation id="555749644339804659">पासवर्डहरू जाँच गरिँदै छन्…</translation>
 <translation id="5559567453458728487">यसले वेबपेजहरूमा भेट्टिएका मापनका एकाइहरू रूपान्तरण गर्छ</translation>
 <translation id="556042886152191864">बटन</translation>
+<translation id="5565871407246142825">क्रेडिट कार्डहरू</translation>
 <translation id="5567439033041178034">थप जान्नुहोस्</translation>
 <translation id="5572648434713976849">तपाईं एड्रेस बारमा अझ राम्रा सुझावहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="5576885723883013398">नयाँ विन्डो</translation>
@@ -1637,6 +1640,7 @@
 <translation id="7512909159512473473">पासफ्रेज हाल्नुहोस्…</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7514530647142300459">आफ्नो Google खाता <ph name="EMAIL" /> मा सेभ गरिएका पासवर्डहरू प्रयोग गरिराख्नुहोस्</translation>
+<translation id="7522587739845660862">तपाईंको लोकेसनका बारेमा जानकारी</translation>
 <translation id="7522948500476882302">तपाईंले कुनै फाइल डाउनलोड गर्दा उक्त फाइल १ महिनामा स्वतः मेटाउने विकल्प छनौट गर्नुहोस्</translation>
 <translation id="7524055474074101597">एपहरूमा भएका पासवर्ड र अन्य कुराहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="75362970626182391">नयाँ ट्याब समूह</translation>
@@ -1651,6 +1655,7 @@
 <translation id="7582666837709186351">आफ्नो क्यामेरा प्रयोग गरेर फोटोमा भएका वा आफ्ना वरपर देखिएका टेक्स्ट अनुवाद गर्नुहोस्।</translation>
 <translation id="7582857256643797524">यो सेटिङ तपाईंको डिभाइसमा अन गरिएको छ</translation>
 <translation id="7583004045319035904">आफ्ना इन्कोग्निटो ट्याबहरू अनलक गर्न <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गर्नुहोस्।</translation>
+<translation id="7588149553568293500">आफूसँग भएका विकल्पहरूका बारेमा जान्नुहोस्।</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} निष्क्रिय ट्याब बन्द गर्ने हो?}other{{COUNT} वटा निष्क्रिय ट्याब बन्द गर्ने हो?}}</translation>
 <translation id="7598439272585186139">थप सुरक्षा प्राप्त गर्नुहोस्</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
@@ -2053,6 +2058,7 @@
 <translation id="9066097352053395362">"बुकमार्क सम्पादन गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="9070824521421603770">तपाईंलाई साइन आउट गरिने छ र ट्याबहरू बन्द गरिने छन्</translation>
 <translation id="9072837124205571418">सबै डिभाइसका ट्याब समूहहरू</translation>
+<translation id="9075970015528364598">च्याटहरूको समीक्षा गरिन्छ र Google AI को गुणस्तर सुधार्न तिनको प्रयोग गरिन्छ। तपाईंको क्रियाकलापसँगै <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> पनि भण्डारण गरिन्छ।</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> को पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="9083838294503912307">यन्त्रहरूभरि सिंक र पर्सनलाइज गर्न सिंक सुविधा अन गर्नुहोस्।</translation>
 <translation id="9084367296493549256">{count,plural, =1{तपाईंको {count} पासवर्ड कमजोर छ। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यो समस्या समाधान गर्नुहोस्।}other{तपाईंका {count} वटा पासवर्ड कमजोर छन्। यसले गर्दा तपाईंको सुरक्षा जोखिममा पर्न सक्छ। सुरक्षित रहन अहिले नै यी समस्या समाधान गर्नुहोस्।}}</translation>

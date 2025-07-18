@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">Ultimele 30 de zile</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Avertisment de siguranță</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core îți dă posibilitatea să gestionezi politicile, aplicațiile și extensiile browserului din cloud</translation>
 <translation id="2697248912349197812">Întreabă <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submeniu disponibil, folosește <ph name="SHORTCUT" /> pentru a naviga la opțiuni suplimentare.</translation>
 <translation id="2701514975700770343">Cu fața în jos</translation>
@@ -3143,6 +3144,7 @@
 <translation id="6284449872909111707">Mesaje text și instantanee</translation>
 <translation id="6284517535531159884">Tipul valorii de bază pentru variante</translation>
 <translation id="6287197303017372967">Primește indicații de orientare spre destinație cu îndrumări pas cu pas folosind funcția de navigare.</translation>
+<translation id="6288559570252410796">Întreabă modul Google AI</translation>
 <translation id="628877850550444614">A fost găsită o reducere</translation>
 <translation id="6289939620939689042">Culoarea paginii</translation>
 <translation id="6292819926564202163">Motorul tău de căutare în Chrome</translation>
@@ -4359,6 +4361,7 @@ Detalii suplimentare:
 <translation id="831997045666694187">Seara</translation>
 <translation id="8321448084834652864">Poți să schimbi oricând motorul de căutare din setările Chromium.</translation>
 <translation id="8321476692217554900">Notificări</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Enter pentru a întreba modul Google AI</translation>
 <translation id="8322402665880479974">Paturi și tăblii</translation>
 <translation id="8323505966575306467">Adaugă mai multă protecție parolelor</translation>
 <translation id="832547548543012337">Șterge pașaportul</translation>
@@ -4649,6 +4652,7 @@ Detalii suplimentare:
 <translation id="883848425547221593">Alte marcaje</translation>
 <translation id="8842351563145134519">Metodele de plată disponibile pentru completarea la atingere, deschise la jumătate din înălțime.</translation>
 <translation id="884264119367021077">Adresa de expediere</translation>
+<translation id="8849032795302265570">Gestionează cu ușurință modul în care angajații navighează pe web</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Nu a fost găsit niciun mecanism de revocare.</translation>
 <translation id="8849262850971482943">Folosește cardul virtual pentru mai multă securitate</translation>
@@ -4899,6 +4903,7 @@ Detalii suplimentare:
 <translation id="950926967802086924">Cheie de acces • Manager de parole Google</translation>
 <translation id="955429569736351433">RV permisă</translation>
 <translation id="955627189349169688">Poți renunța la această politică în <ph name="BEGIN_LINK" />Setările de sincronizare Chrome<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Butonul Modul AI, activează pentru a întreba modul Google AI</translation>
 <translation id="95721182352849470">Galben 2</translation>
 <translation id="961663415146723894">Legare în partea de jos</translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>

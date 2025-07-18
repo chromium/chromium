@@ -720,6 +720,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4306489587293957491">Invoeren</translation>
 <translation id="4307992518367153382">Basisinstellingen</translation>
 <translation id="4311652497846705514">Pdf openen?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mogelijk spam}other{Mogelijk spam (#)}}</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
 <translation id="4326079409704643112">Bevestig dat jij het bent om Chrome-gegevens te gebruiken en op te slaan in je Google-account</translation>
 <translation id="433213510553688132">Volgen…</translation>
@@ -1058,6 +1059,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="580893287573699959">Beheer de onderwerpen en sites waarin je bent geïnteresseerd</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# uur geleden}other{# uur geleden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Melding tonen}other{Meldingen tonen}}</translation>
 <translation id="5814749351757353073">Blijf op de hoogte van je favoriete sites</translation>
 <translation id="5823093032261493462">Wil je <ph name="FILE_NAME" /> toch downloaden van <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Je kunt de gegevens verwijderen in de Chrome-instellingen</translation>

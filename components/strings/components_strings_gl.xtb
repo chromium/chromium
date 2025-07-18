@@ -1022,6 +1022,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2690699652723742414">Últimos 30 días</translation>
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691924980723297736">Advertencia de seguranza</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core permíteche xestionar as políticas do navegador, as aplicacións e as extensións desde a nube</translation>
 <translation id="2697248912349197812">Preguntar a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenú dispoñible. Usa <ph name="SHORTCUT" /> para ir a outras opcións.</translation>
 <translation id="2701514975700770343">Cara abaixo</translation>
@@ -3143,6 +3144,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6284449872909111707">Mensaxaría instantánea e de texto</translation>
 <translation id="6284517535531159884">Tipo de orixe das variacións</translation>
 <translation id="6287197303017372967">Obter indicacións paso a paso ata o teu destino mediante a función de navegación.</translation>
+<translation id="6288559570252410796">Facer preguntas ao modo IA de Google</translation>
 <translation id="628877850550444614">Desconto atopado</translation>
 <translation id="6289939620939689042">Cor das páxinas</translation>
 <translation id="6292819926564202163">O teu buscador en Chrome</translation>
@@ -4358,6 +4360,7 @@ Detalles adicionais:
 <translation id="831997045666694187">Serán</translation>
 <translation id="8321448084834652864">Podes cambiar o buscador en calquera momento na configuración de Chromium.</translation>
 <translation id="8321476692217554900">notificacións</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer preguntas ao modo IA de Google</translation>
 <translation id="8322402665880479974">Camas e cabeceiras</translation>
 <translation id="8323505966575306467">Engade máis protección aos teus contrasinais</translation>
 <translation id="832547548543012337">Eliminar o pasaporte</translation>
@@ -4647,6 +4650,7 @@ Detalles adicionais:
 <translation id="883848425547221593">Outros marcadores</translation>
 <translation id="8842351563145134519">Lista de métodos de pago dispoñibles que se completarán ao tocalos aberta a altura media.</translation>
 <translation id="884264119367021077">Enderezo de envío</translation>
+<translation id="8849032795302265570">Xestiona facilmente como o persoal navega pola Web</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Non se atopou ningún mecanismo de revogación.</translation>
 <translation id="8849262850971482943">Para operar con máis seguranza, utiliza a tarxeta virtual</translation>
@@ -4897,6 +4901,7 @@ Detalles adicionais:
 <translation id="950926967802086924">Clave de acceso • Xestor de contrasinais de Google</translation>
 <translation id="955429569736351433">RV permitida</translation>
 <translation id="955627189349169688">Podes desactivar esta política na <ph name="BEGIN_LINK" />configuración de Sincronización de Chrome<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Botón do modo IA, activar para facer preguntas ao modo IA de Google</translation>
 <translation id="95721182352849470">Amarelo 2</translation>
 <translation id="961663415146723894">Encadernación na parte inferior</translation>
 <translation id="961856697154696964">Eliminar datos navegación</translation>

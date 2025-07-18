@@ -671,6 +671,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1462850958694534228">Xem lại bản cập nhật biểu tượng</translation>
 <translation id="1463112138205428654">Chương trình Bảo vệ nâng cao đã chặn <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">Không cho trang web biết khi bạn đang dùng thiết bị của mình</translation>
+<translation id="1464047267926346987">Lưu trữ mật khẩu, dấu trang và nhiều dữ liệu khác</translation>
 <translation id="1464258312790801189">Tài khoản của bạn</translation>
 <translation id="1464597059227482327">Nếu bạn chia sẻ với một Chromebook không có trong danh bạ, hãy đảm bảo Chromebook đó đã bật "Chế độ hiển thị lân cận". Để bật "Chế độ hiển thị lân cận", hãy chọn góc dưới cùng bên phải, rồi chọn bật "Chế độ hiển thị lân cận". <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Để xem các tùy chọn của thiết bị, hãy chuyển đến phần Cài đặt.</translation>
@@ -815,6 +816,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1558671750917454373">Tiếp tục truyền tới <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Nếu bạn bật thì các ứng dụng, trang web có quyền truy cập thông tin vị trí và các dịch vụ hệ thống sẽ có thể truy cập thông tin vị trí</translation>
 <translation id="1562119309884184621">Khi bạn thêm người liên hệ này, hệ thống sẽ ghi nhớ người đó để dễ dàng chia sẻ lần sau</translation>
+<translation id="1562585387501039294">Tổ chức của bạn, <ph name="ACCOUNT_MANAGER" />, yêu cầu hồ sơ được quản lý và sẽ có thể xem một số thông tin, trong đó có:</translation>
 <translation id="1566049601598938765">Trang web</translation>
 <translation id="15662109988763471">Máy in đã chọn không hoạt động hoặc được cài đặt không chính xác. Hãy kiểm tra máy in của bạn hoặc thử chọn một máy in khác.</translation>
 <translation id="1566329594234563241">Khi không hoạt động và đang cắm điện</translation>
@@ -911,6 +913,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1616298854599875024">Không thể nhập tiện ích "<ph name="IMPORT_NAME" />" do tiện ích này không phải là mô-đun được chia sẻ</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Đang kiểm tra để xem dữ liệu này có tuân theo các chính sách bảo mật của tổ chức bạn hay không...}=1{Đang kiểm tra để xem tệp này có tuân theo các chính sách bảo mật của tổ chức bạn hay không...}other{Đang kiểm tra để xem những tệp này có tuân theo các chính sách bảo mật của tổ chức bạn hay không...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
+<translation id="1618142905422922351">Bạn hiện có <ph name="NUMBERED_ITEM" /> và nhiều dữ liệu khác. Tổ chức của bạn, <ph name="ACCOUNT_MANAGER" />, sẽ có thể xem và quản lý dữ liệu này.</translation>
 <translation id="1618268899808219593">Trung tâm trợ g&amp;iúp</translation>
 <translation id="1619829618836636922">Chứng chỉ máy khách từ nền tảng</translation>
 <translation id="1619879934359211038">Không thể kết nối với Google Play. Hãy kiểm tra kết nối mạng của bạn rồi thử lại. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
@@ -4139,6 +4142,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3844888638014364087">Đã chèn biểu tượng cảm xúc</translation>
 <translation id="3846116211488856547">Tải các công cụ phát triển trang web, ứng dụng Android, v.v. Việc cài đặt Linux sẽ tải <ph name="DOWNLOAD_SIZE" /> dữ liệu xuống.</translation>
 <translation id="3847319713229060696">Giúp tăng cường bảo mật cho mọi người trên web</translation>
+<translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">Mở trong cửa sổ Ẩ&amp;n danh</translation>
 <translation id="3850172593216628215">Bạn sẽ không nhận được các bản cập nhật bảo mật nữa. Bạn sẽ tiết kiệm được 50 USD trở lên khi mua Chromebook mới.</translation>
 <translation id="385051799172605136">Quay lại</translation>
@@ -4621,7 +4625,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4195814663415092787">Tiếp tục từ nơi bạn đã dừng lại</translation>
 <translation id="4198268995694216131">Các trang web khác</translation>
 <translation id="4198420883535766848">Loại bỏ thẻ khỏi danh sách</translation>
-<translation id="4198664641856813238">Đăng nhập để sử dụng dấu trang, mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="4200609364258658652">Sao ché&amp;p khung video</translation>
 <translation id="4200689466366162458">Từ tùy chỉnh</translation>
 <translation id="4200983522494130825">&amp;Thẻ mới</translation>
@@ -6119,6 +6122,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5267572070504076962">Bật tính năng Duyệt web an toàn để được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="5269977353971873915">In không thành công</translation>
 <translation id="5271578170655641944">Xoá quyền truy cập vào Google Drive?</translation>
+<translation id="527335345740023523">Bạn hiện có <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> và nhiều dữ liệu khác. Tổ chức của bạn, <ph name="ACCOUNT_MANAGER" />, sẽ có thể xem và quản lý dữ liệu này.</translation>
 <translation id="5273806377963980154">Chỉnh sửa URL của trang web</translation>
 <translation id="5275084684151588738">Từ điển người dùng</translation>
 <translation id="5275338516105640560">Nút Nhóm thẻ đã lưu</translation>
@@ -6318,6 +6322,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) sẽ mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" ngay lập tức</translation>
 <translation id="5420935737933866496">Sao chép &amp;đường liên kết</translation>
 <translation id="5421048291985386320">&amp;Đăng nhập lại</translation>
+<translation id="542237158771780634">Khi bạn bật các chế độ này, dữ liệu sẽ được lưu vào Tài khoản Google của bạn và có thể được sử dụng trên tất cả các thiết bị của bạn. Khi bạn tắt các chế độ này, dữ liệu sẽ chỉ được lưu trên thiết bị này.</translation>
 <translation id="5422781158178868512">Rất tiếc, thiết bị lưu trữ bên ngoài của bạn không thể nhận dạng được.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">Lần tới bạn truy cập, <ph name="SITE" /> sẽ sử dụng các quyền mặc định</translation>
@@ -6572,6 +6577,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5600706100022181951">Bản cập nhật sẽ được tải xuống bằng cách dùng <ph name="UPDATE_SIZE_MB" /> MB dữ liệu di động. Bạn có muốn tiếp tục không?</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5601833336918638013">Không cho phép các trang web tìm thiết bị Bluetooth</translation>
+<translation id="560213628963806709">Ứng dụng này đã mở <ph name="OPENINGS_COUNT" /> thẻ mới trên Chrome. Bạn có thể quản lý hành vi này trong phần quyền về "Cửa sổ bật lên và liên kết chuyển hướng".</translation>
 <translation id="5602586420788540146">Mở trong nhóm thẻ mới</translation>
 <translation id="5605758115928394442">Chúng tôi đã gửi một thông báo đến điện thoại của bạn để xác nhận đó là bạn.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Tiện ích này đã bị chặn}other{Các tiện ích này đã bị chặn}}</translation>
@@ -7051,6 +7057,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5952020381407136867">bàn di chuột</translation>
 <translation id="5953211687820750364">Danh sách này chịu ảnh hưởng của <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           và <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
+<translation id="5955192144223994637">Tiếp tục làm việc trong hồ sơ này</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Một trang web muốn mở ứng dụng này.</translation>
 <translation id="5955809630138889698">Có thể thiết bị này chỉ đủ điều kiện đối với chế độ minh họa trực tuyến. Vui lòng liên hệ với người đại diện hỗ trợ của bạn để biết thêm chi tiết.</translation>
@@ -7618,7 +7625,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6365411474437319296">Thêm gia đình và bạn bè</translation>
 <translation id="6367097275976877956">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS) không? Nếu có, hãy nhấn phím cách.</translation>
 <translation id="6367196786591004737">Xoá mục</translation>
-<translation id="6367351687417449639">Để sử dụng dấu trang, mật khẩu và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="6367396429435748845">Nhấn <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> để tạm dừng và tiếp tục sử dụng phím điều khiển chuột</translation>
 <translation id="6367985768157257101">Nhận thông qua tính năng Chia sẻ lân cận?</translation>
 <translation id="6368157733310917710">&amp;Địa chỉ và các mục khác</translation>
@@ -7782,6 +7788,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6493991254603208962">Giảm độ sáng</translation>
 <translation id="6494327278868541139">Hiển thị thông tin chi tiết về phương thức bảo vệ nâng cao</translation>
 <translation id="6494483173119160146">Thiết bị đã gặp một lỗi không thể khôi phục. Vui lòng đặt lại thiết bị (thao tác này sẽ xoá tất cả dữ liệu người dùng) rồi thử lại.</translation>
+<translation id="6495261233408033662">Đóng các thẻ đã mở</translation>
 <translation id="6495266441917713704">Không thể truyền Wi-Fi</translation>
 <translation id="6495453178162183932">Giao diện đã được cập nhật thành Chrome mặc định</translation>
 <translation id="6497784818439587832">Thay đổi kích thước hiển thị để thu nhỏ hoặc phóng to các mục trên màn hình</translation>
@@ -8039,6 +8046,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6673898378497337661">tăng độ sáng đèn bàn phím</translation>
 <translation id="6674571176963658787">Để bắt đầu đồng bộ hóa, hãy nhập cụm mật khẩu của bạn</translation>
 <translation id="6675665718701918026">Đã kết nối thiết bị trỏ</translation>
+<translation id="6675717447295898330">Tạo một hồ sơ công việc mới mà không có dữ liệu hiện tại của tôi</translation>
 <translation id="6676212663108450937">Hãy cân nhắc sử dụng tai nghe khi đào tạo giọng nói của bạn</translation>
 <translation id="6676291960742508499">Các thẻ, tiêu đề trang và URL sẽ được gửi đến Google</translation>
 <translation id="667752334740867460">Đang nhận thông tin Wi-Fi...</translation>
@@ -9100,6 +9108,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7427348830195639090">Trang nền: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Đây là hồ sơ được quản lý</translation>
 <translation id="7427798576651127129">Gọi từ <ph name="DEVICE_NAME" /></translation>
+<translation id="7429004613638800673"><ph name="APP_NAME" /> đã mở nhiều thẻ.</translation>
 <translation id="7429415133937917139">Mô phỏng đầu ra của màn hình chữ nổi có thể làm mới
     trong bảng điều khiển ChromeVox ở đầu màn hình</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> có thể nguy hiểm. Hãy thêm mật khẩu nếu bạn muốn Chrome xác minh tệp hoặc bạn có thể trực tiếp tải tệp xuống.</translation>
@@ -9640,6 +9649,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7796453472368605346">Dấu phụ</translation>
 <translation id="7797571222998226653">Đang tắt</translation>
 <translation id="7798504574384119986">Xem các quyền trên web</translation>
+<translation id="7798559336183476274">Thao tác khác cho <ph name="BUTTON_TITLE" /></translation>
 <translation id="7798844538707273832">Đã tự động chặn <ph name="PERMISSION" /></translation>
 <translation id="7799650166313181433">Chỉ những thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /> mới có thể chia sẻ nội dung với thiết bị này. Bạn không cần phê duyệt hoạt động chia sẻ giữa các thiết bị của mình.</translation>
 <translation id="7800485561443537737">Khi bạn sử dụng dữ liệu di động của <ph name="DEVICE_TYPE" />, nhà mạng có thể tính thêm phí. Có thể làm tăng mức sử dụng pin. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9941,6 +9951,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8000020256436988724">Thanh công cụ</translation>
 <translation id="800117767980299235">Đánh dấu bằng giọng nói</translation>
 <translation id="8002274832045662704">Cấu hình máy in nâng cao</translation>
+<translation id="8002531372108263935">Tổ chức của bạn, <ph name="ACCOUNT_MANAGER" />, sẽ không thể xem hoặc quản lý dữ liệu này. Dữ liệu đó sẽ vẫn nằm trong hồ sơ hiện tại.</translation>
 <translation id="8002597610026749658">Chrome có thể tạo phụ đề cho các ngôn ngữ được hiển thị tại đây</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> không sử dụng được nữa</translation>
 <translation id="8004092996156083991">Nếu mật khẩu của bạn bị lộ, chúng tôi sẽ thông báo cho bạn.</translation>
@@ -10826,6 +10837,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="862542460444371744">&amp;Tiện ích mở rộng</translation>
 <translation id="8625663000550647058">Không được phép sử dụng micrô của bạn</translation>
 <translation id="8625916342247441948">Không cho phép trang web kết nối với các thiết bị HID</translation>
+<translation id="8626569226218260115">Hồ sơ này sẽ được quản lý</translation>
 <translation id="862727964348362408">Bị tạm ngưng</translation>
 <translation id="862750493060684461">Bộ nhớ đệm CSS</translation>
 <translation id="8627795981664801467">Chỉ kết nối an toàn</translation>
@@ -11240,6 +11252,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8890529496706615641">Không thể đổi tên hồ sơ. Vui lòng thử lại hoặc liên hệ với nhà mạng của bạn để được hỗ trợ kỹ thuật.</translation>
 <translation id="8892168913673237979">Đã hoàn tất!</translation>
 <translation id="8892246501904593980">Xem tất cả dấu trang của bạn trong phần Dấu trang và danh sách</translation>
+<translation id="8893779047492837414">Bạn hiện có <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> và nhiều dữ liệu khác Tổ chức của bạn, <ph name="ACCOUNT_MANAGER" />, sẽ có thể xem và quản lý dữ liệu này.</translation>
 <translation id="8893801527741465188">Đã gỡ cài đặt xong</translation>
 <translation id="8893928184421379330">Rất tiếc, không thể nhận dạng thiết bị <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Ngăn thiết bị ngoại vi truy cập vào dữ liệu</translation>

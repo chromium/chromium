@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">درج کریں</translation>
 <translation id="4307992518367153382">بنیادی باتیں</translation>
 <translation id="4311652497846705514">‏PDF کھولیں؟</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ممکنہ سپام}other{ممکنہ سپام (#)}}</translation>
 <translation id="4320177379694898372">کوئی انٹرنیٹ کنکشن نہیں ہے</translation>
 <translation id="4326079409704643112">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال اور اسے محفوظ کرنے کیلئے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="433213510553688132">پیروی جاری ہے...</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">ان عنوانات اور سائٹس کا نظم کریں جن میں آپ کی دلچسپی ہے</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# گھنٹہ پہلے}other{# گھنٹے پہلے}}</translation>
 <translation id="5810288467834065221">‏کاپی رائٹ<ph name="YEAR" /> Google LLC۔ جملہ حقوق محفوظ ہیں۔</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{اطلاع دکھائیں}other{اطلاعات دکھائیں}}</translation>
 <translation id="5814749351757353073">اپنی پسندیدہ سائٹس سے باخبر رہیں</translation>
 <translation id="5823093032261493462">کیا آپ بہر صورت <ph name="DOWNLOAD_DOMAIN" /> سے "<ph name="FILE_NAME" />" کو ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="5828921839638612740">‏آپ Chrome کی ترتیبات میں جا کر ڈیٹا حذف کر سکتے ہیں</translation>

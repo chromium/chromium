@@ -720,6 +720,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4306489587293957491">Zadejte</translation>
 <translation id="4307992518367153382">Základy</translation>
 <translation id="4311652497846705514">Otevřít PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Možný spam}few{Možný spam (#)}many{Možný spam (#)}other{Možný spam (#)}}</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
 <translation id="4326079409704643112">Pokud chcete používat a ukládat data prohlížeče Chrome ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="433213510553688132">Sledování…</translation>
@@ -1058,6 +1059,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="580893287573699959">Spravujte témata a vyhledávání, která vás zajímají</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{před # hodinou}few{před # hodinami}many{před # hodiny}other{před # hodinami}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Zobrazit oznámení}few{Zobrazit oznámení}many{Zobrazit oznámení}other{Zobrazit oznámení}}</translation>
 <translation id="5814749351757353073">Sledujte své oblíbené weby</translation>
 <translation id="5823093032261493462">Chcete soubor „<ph name="FILE_NAME" />“ z domény <ph name="DOWNLOAD_DOMAIN" /> i přesto stáhnout?</translation>
 <translation id="5828921839638612740">Data můžete v Nastavení Chromu smazat</translation>

@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">Оруулах</translation>
 <translation id="4307992518367153382">Үндэс</translation>
 <translation id="4311652497846705514">PDF-г нээх үү?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Болзошгүй спам}other{Болзошгүй спам (#)}}</translation>
 <translation id="4320177379694898372">Интернетийн холболтгүй байна</translation>
 <translation id="4326079409704643112">Google Бүртгэлдээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="433213510553688132">Дагаж байна...</translation>
@@ -1058,6 +1059,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="580893287573699959">Сонирхдог сэдэв болон сайтуудаа удирдана уу</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# цагийн өмнө}other{# цагийн өмнө}}</translation>
 <translation id="5810288467834065221">Зохиогчийн эрх <ph name="YEAR" /> Google ХХК. Бүх эрх хуулиар хамгаалагдсан.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Мэдэгдэл харуулах}other{Мэдэгдлүүд харуулах}}</translation>
 <translation id="5814749351757353073">Дуртай сайтуудаасаа хоцрохгүй байгаарай</translation>
 <translation id="5823093032261493462">Та ямартай ч "<ph name="FILE_NAME" />"-г <ph name="DOWNLOAD_DOMAIN" />-с татмаар байна уу?</translation>
 <translation id="5828921839638612740">Та өгөгдлийг Chrome-н тохиргооноос устгаж болно</translation>

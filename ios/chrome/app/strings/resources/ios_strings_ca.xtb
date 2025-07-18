@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} contrasenya}other{{count} contrasenyes}}</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
+<translation id="1287229685519872919">dades de Google Workspace</translation>
 <translation id="1291506870746876680">Els permisos per a <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> es restabliran a l'estat desactivat quan surtis d'aquest lloc web.</translation>
 <translation id="129553762522093515">Tancades recentment</translation>
 <translation id="1296581780163690620">Vols baixar el fitxer? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tanca {COUNT} pestanya}other{Tanca {COUNT} pestanyes}}</translation>
 <translation id="3948600256434252210">Pots lliscar cap a la dreta per navegar d'incògnit.</translation>
+<translation id="3949712484278252781">Els revisors humans no revisaran ni les teves converses amb Gemini ni les teves <ph name="GOOGLE_WORKSPACE_DATA" />, i aquestes dades tampoc no es faran servir per millorar els models d'IA generativa.</translation>
 <translation id="3950479158728806902">Crea una clau d'accés automàticament per iniciar la sessió més ràpidament</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3955740319737378355">Fet</translation>
@@ -1123,6 +1125,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="555749644339804659">Comprovant contrasenyes…</translation>
 <translation id="5559567453458728487">Converteix les unitats de mesura que es trobin al web</translation>
 <translation id="556042886152191864">Botó</translation>
+<translation id="5565871407246142825">Targetes de crèdit</translation>
 <translation id="5567439033041178034">MÉS INFORMACIÓ</translation>
 <translation id="5572648434713976849">Obtindràs suggeriments millorats a la barra d'adreces</translation>
 <translation id="5576885723883013398">Finestra nova</translation>
@@ -1637,6 +1640,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7512909159512473473">Introdueix la frase de contrasenya…</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7514530647142300459">Continua utilitzant les contrasenyes al teu Compte de Google <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">informació sobre la teva ubicació</translation>
 <translation id="7522948500476882302">Quan baixis un fitxer, pots triar que se suprimeixi automàticament al cap d'1 mes</translation>
 <translation id="7524055474074101597">Accedeix a les teves contrasenyes i a altres elements en totes les aplicacions.</translation>
 <translation id="75362970626182391">Grup de pestanyes nou</translation>
@@ -1651,6 +1655,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7582666837709186351">Tradueix el text de les fotos o de l'entorn amb la càmera.</translation>
 <translation id="7582857256643797524">Aquesta opció de configuració està activada al dispositiu</translation>
 <translation id="7583004045319035904">Utilitza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per desbloquejar les pestanyes d'incògnit.</translation>
+<translation id="7588149553568293500">Obtén informació sobre les teves opcions.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Vols tancar {COUNT} pestanya inactiva?}other{Vols tancar {COUNT} pestanyes inactives?}}</translation>
 <translation id="7598439272585186139">Més seguretat</translation>
 <translation id="7600965453749440009">No tradueixis mai de: <ph name="LANGUAGE" /></translation>
@@ -2053,6 +2058,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9066097352053395362">Amaga l'opció Adreça d'interès</translation>
 <translation id="9070824521421603770">Es tancaran les pestanyes i la teva sessió</translation>
 <translation id="9072837124205571418">Grups de pestanyes de tots els dispositius</translation>
+<translation id="9075970015528364598">Els xats es revisen i s'utilitzen per millorar la IA de Google. <ph name="LEARN_ABOUT_CHOICES" /> La <ph name="INFO_ABOUT_LOCATION" /> també s'emmagatzema amb la teva activitat.</translation>
 <translation id="9081058212938299310">Vols actualitzar la contrasenya per a <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Per sincronitzar i personalitzar el contingut en tots els dispositius, activa la sincronització.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Tens {count} contrasenya poc segura que podria posar en perill la teva seguretat. Corregeix el problema per protegir-te.}other{Tens {count} contrasenyes poc segures que podrien posar en perill la teva seguretat. Corregeix el problema per protegir-te.}}</translation>

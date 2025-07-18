@@ -393,7 +393,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5980111191913430208">來源不明的擴充功能、應用程式和主題可能會損害裝置。Chromium 建議你只透過 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安裝這些項目</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6008161919456049856">你儲存在 Google 帳戶中的密碼、付款方式和地址將從這部裝置中移除。如要在 Chrome 中再次使用這些資料，請重新登入。</translation>
-<translation id="6014316319780893079">Chrome 提供<ph name="BEGIN_LINK" />各種實用工具<ph name="END_LINK" />，你可以放心瀏覽網路，掌控一切設定</translation>
+<translation id="6014316319780893079">Chrome 提供<ph name="BEGIN_LINK" />各種實用工具<ph name="END_LINK" />，讓你放心瀏覽網路，掌控一切設定</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
 <translation id="6025087594896450715">Google Chrome 將於 <ph name="REMAINING_TIME" /> 後重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -574,7 +574,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8162006532256575008">使用 Chrome 但不登入帳戶</translation>
 <translation id="8177472873527554730">找不到網頁內容</translation>
 <translation id="8221491193165283816">你通常會封鎖通知。如要允許這個網站傳送通知給你，請按這裡。</translation>
-<translation id="8236577057705776956">如要在所有裝置上存取書籤、密碼及其他設定，請登入 Chrome</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用你的攝影機和麥克風。</translation>
 <translation id="8267953129876836456">請查看 Chrome 提供的安全防護建議</translation>
 <translation id="8286862437124483331">Google Chrome 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>

@@ -3841,6 +3841,15 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="3647212518036289905">Si estableces la política, esta especificará qué biblioteca GSSAPI se debe usar para la autenticación HTTP. Puedes establecerla asignándole un nombre de biblioteca o una ruta completa.
 
       Si no estableces la política, <ph name="PRODUCT_NAME" /> usará un nombre de biblioteca predeterminado.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+La función ServiceWorkerAutoPreload envía una solicitud de red para un recurso principal al mismo tiempo que inicia el proceso de inicio de ServiceWorker.
+
+Si habilitas la política o no la estableces,
+<ph name="PRODUCT_NAME" /> habilitará ServiceWorkerAutoPreload. La solicitud de navegación se envía automáticamente cuando se inicia ServiceWorker en algunos casos, p. ej., cuando ServiceWorker no se está ejecutando.
+
+Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> no habilitará ServiceWorkerAutoPreload. La solicitud de navegación siempre se envía después de iniciar ServiceWorker.
+
+Esta política es una medida temporal para controlar la función y se quitará en la versión M144.</translation>
 <translation id="3650122925429054129">Inhabilitar la función para resaltar el cursor en la pantalla de acceso</translation>
 <translation id="365093517647222762">Informa datos de telemetría de sitios web para las URLs permitidas que se especifican en la política <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> para los usuarios afiliados.
 
@@ -4130,6 +4139,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Permitir Generative AI Wallpaper sin mejorar los modelos de IA</translation>
+<translation id="3848302969721895938">Inhabilitar ServiceWorkerAutoPreload</translation>
 <translation id="3849923496599301707">Forzar permisos de apps de Chrome en el modo Kiosco</translation>
 <translation id="3851443303439635700">Controlar el umbral de anidación antes de que la función de JavaScript setTimeout() comience a restringirse</translation>
 <translation id="3854609566862485607">Esta política controla una etiqueta personalizada que se usa para identificar perfiles administrados. En el caso de los perfiles administrados, esta etiqueta se mostrará junto al avatar en la barra de herramientas. No se traducirá la etiqueta personalizada.
@@ -7138,6 +7148,7 @@ Se podrán agregar más restricciones de cuentas con la política <ph name="MICR
 <translation id="5815129011704381141">Reinicia automáticamente después de la actualización.</translation>
 <translation id="5815990343032461023">Comportamiento heredado: las apps de Chrome para kiosco recibirán actualizaciones del sistema de extensiones (mediante las URL de actualización del manifiesto de la extensión) y del administrador del almacenamiento en caché (mediante las URL de actualización de la política)</translation>
 <translation id="5816688024515869030">Inhabilitar el proveedor de <ph name="UIA_NAME" />.</translation>
+<translation id="581737504822041364">Permitir que ServiceWorker envíe solicitudes de navegación sin esperar su inicio</translation>
 <translation id="5828008775808363753">No abrir el navegador al inicio</translation>
 <translation id="582857022372205358">Habilitar la impresión doble con bordes cortos</translation>
 <translation id="5830196507442186669">Permite que los dispositivos usen <ph name="BOREALIS_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9588,6 +9599,7 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
       Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />). Esta política solo establece coincidencias basadas en el origen; por lo tanto, se ignoran todas las rutas de acceso que se incluyan en el patrón de URL.
 
       Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, el permiso seguirá la configuración predeterminada del navegador y permitirá a los usuarios escoger este permiso para cada sitio.</translation>
+<translation id="7358299261566939984">Habilitar ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Habilitar <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Solo usuarios</translation>
 <translation id="736486789939370545">Permitir la instalación de extensiones externas</translation>

@@ -720,6 +720,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4306489587293957491">Voer in</translation>
 <translation id="4307992518367153382">Basies</translation>
 <translation id="4311652497846705514">Maak PDF oop?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Moontlike strooipos}other{Moontlike strooipos (#)}}</translation>
 <translation id="4320177379694898372">Geen internetverbinding nie</translation>
 <translation id="4326079409704643112">Verifieer dis jy om Chrome-data in jou Google-rekening te gebruik en te stoor</translation>
 <translation id="433213510553688132">Volg tans …</translation>
@@ -1058,6 +1059,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="580893287573699959">Bestuur die onderwerpe en werwe waarin jy belangstel</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# uur gelede}other{# uur gelede}}</translation>
 <translation id="5810288467834065221">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Wys kennisgewing}other{Wys kennisgewings}}</translation>
 <translation id="5814749351757353073">Bly op hoogte van jou gunstelingwerwe</translation>
 <translation id="5823093032261493462">Wil jy in elk geval “<ph name="FILE_NAME" />” van <ph name="DOWNLOAD_DOMAIN" /> aflaai?</translation>
 <translation id="5828921839638612740">Jy kan die data in Chrome-instellings uitvee</translation>

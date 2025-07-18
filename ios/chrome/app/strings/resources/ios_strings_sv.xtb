@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} lösenord}other{{count} lösenord}}</translation>
 <translation id="1275718070701477396">Markerad</translation>
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
+<translation id="1287229685519872919">Google Workspace-data</translation>
 <translation id="1291506870746876680">Behörigheterna för <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> inaktiveras igen när du lämnar webbplatsen.</translation>
 <translation id="129553762522093515">Nyligen stängda</translation>
 <translation id="1296581780163690620">Vill du ladda ned filen? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3940195383040445971">Bevaka priser på flikar</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Stäng {COUNT} flik}other{Stäng {COUNT} flikar}}</translation>
 <translation id="3948600256434252210">Du kan svepa åt höger för att surfa inkognito.</translation>
+<translation id="3949712484278252781">Varken dina konversationer med Gemini eller din <ph name="GOOGLE_WORKSPACE_DATA" /> granskas av mänskliga granskare och de används inte heller för att förbättra generativa AI-modeller.</translation>
 <translation id="3950479158728806902">Skapa en nyckel automatiskt för att logga in snabbare</translation>
 <translation id="3950820424414687140">Logga in</translation>
 <translation id="3955740319737378355">Klar</translation>
@@ -1123,6 +1125,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="555749644339804659">Kontrollerar lösenord …</translation>
 <translation id="5559567453458728487">Konvertera måttenheter som hittas på webben</translation>
 <translation id="556042886152191864">Knapp</translation>
+<translation id="5565871407246142825">Kreditkort</translation>
 <translation id="5567439033041178034">LÄS MER</translation>
 <translation id="5572648434713976849">Du får bättre förslag i adressfältet</translation>
 <translation id="5576885723883013398">Nytt fönster</translation>
@@ -1637,6 +1640,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7512909159512473473">Ange lösenfras …</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7514530647142300459">Fortsätt använda lösenorden i Google-kontot <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">Information om din plats</translation>
 <translation id="7522948500476882302">När du laddar ned en fil kan du välja att den ska raderas automatiskt efter en månad</translation>
 <translation id="7524055474074101597">Få tillgång till dina lösenord m.m. i appar.</translation>
 <translation id="75362970626182391">Ny flikgrupp</translation>
@@ -1651,6 +1655,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7582666837709186351">Översätt text i foton eller i omgivningen med kameran.</translation>
 <translation id="7582857256643797524">Inställningen är aktiverad på enheten</translation>
 <translation id="7583004045319035904">Lås upp inkognitoflikarna med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
+<translation id="7588149553568293500">Läs mer om dina val.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Vill du stänga {COUNT} inaktiv flik?}other{Vill du stänga {COUNT} inaktiva flikar?}}</translation>
 <translation id="7598439272585186139">Öka säkerheten</translation>
 <translation id="7600965453749440009">Översätt aldrig från <ph name="LANGUAGE" /></translation>
@@ -2053,6 +2058,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9066097352053395362">Dölj Redigera bokmärke</translation>
 <translation id="9070824521421603770">Du loggas ut och flikar stängs</translation>
 <translation id="9072837124205571418">Flikgrupper från alla enheter</translation>
+<translation id="9075970015528364598">Chattar granskas och används för att förbättra Google AI. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> lagras även med din aktivitet.</translation>
 <translation id="9081058212938299310">Vill du uppdatera lösenordet för <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Du har {count} svagt lösenord som kan innebära en säkerhetsrisk. Åtgärda det nu för att hålla dig säker.}other{Du har {count} svaga lösenord som kan innebära en säkerhetsrisk. Åtgärda dem nu för att hålla dig säker.}}</translation>

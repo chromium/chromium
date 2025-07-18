@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">கடந்த 30 நாட்கள்</translation>
 <translation id="2691385045260836588">மாடல்</translation>
 <translation id="2691924980723297736">பாதுகாப்பு எச்சரிக்கை</translation>
+<translation id="2696385693639654606">பிரவுசர் கொள்கைகள், ஆப்ஸ், நீட்டிப்புகள் ஆகியவற்றை நீங்கள் கிளவுடில் இருந்து நிர்வகிக்க Chrome Enterprise Core உதவும்</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ஐக் கேளுங்கள்</translation>
 <translation id="2699273987028089219">துணைமெனு கிடைக்கிறது, கூடுதல் விருப்பங்களுக்குச் செல்ல <ph name="SHORTCUT" /> பயன்படுத்தவும்.</translation>
 <translation id="2701514975700770343">கீழ் நோக்கியது</translation>
@@ -3138,6 +3139,7 @@
 <translation id="6284449872909111707">மெசேஜ் மற்றும் உடனடி மெசேஜிங்</translation>
 <translation id="6284517535531159884">வேரியேஷன் சீடு வகை</translation>
 <translation id="6287197303017372967">வழிகாட்டல் அம்சம் வழங்கும் படிப்படியான வழிகாட்டல் மூலம் நீங்கள் சேரவேண்டிய இடத்திற்கான வழிகளைப் பெறலாம்.</translation>
+<translation id="6288559570252410796">Google AI மோடைப் பயன்படுத்தலாம்</translation>
 <translation id="628877850550444614">தள்ளுபடியில் கிடைக்கிறது</translation>
 <translation id="6289939620939689042">பக்க வண்ணம்</translation>
 <translation id="6292819926564202163">Chromeமில் உங்கள் தேடல் இன்ஜின்</translation>
@@ -4354,6 +4356,7 @@
 <translation id="831997045666694187">மாலை</translation>
 <translation id="8321448084834652864">Chromium அமைப்புகளில் உங்கள் இயல்பான தேடல் இன்ஜினை எப்போது வேண்டுமானாலும் மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="8321476692217554900">அறிவிப்புகள்</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI மோடைப் பயன்படுத்த Enter அழுத்தவும்</translation>
 <translation id="8322402665880479974">படுக்கைகள் &amp; ஹெட்போர்டுகள்</translation>
 <translation id="8323505966575306467">கடவுச்சொற்களின் பாதுகாப்பை அதிகரித்திடுங்கள்</translation>
 <translation id="832547548543012337">பாஸ்போர்ட்டை நீக்குதல்</translation>
@@ -4643,6 +4646,7 @@
 <translation id="883848425547221593">மற்ற புக்மார்க்குகள்</translation>
 <translation id="8842351563145134519">தொட்டு நிரப்பக்கூடிய வகையில் கிடைக்கும் பேமெண்ட் முறைகள் பாதித் திரையில் திறக்கப்பட்டுள்ளன.</translation>
 <translation id="884264119367021077">ஷிப்பிங் முகவரி</translation>
+<translation id="8849032795302265570">உங்கள் பணியாளர்கள் இணையத்தை பிரவுஸ் செய்யும் விதத்தை எளிதாக நிர்வகியுங்கள்</translation>
 <translation id="8849231003559822746">130 x 180 மிமீ</translation>
 <translation id="884923133447025588">திரும்பப்பெறுதல் செயல்முறை காணப்படவில்லை.</translation>
 <translation id="8849262850971482943">கூடுதல் பாதுகாப்பிற்கு விர்ச்சுவல் கார்டைப் பயன்படுத்தவும்</translation>
@@ -4894,6 +4898,7 @@
 <translation id="950926967802086924">கடவுச்சாவி • Google Password Manager</translation>
 <translation id="955429569736351433">VR அனுமதிக்கப்பட்டது</translation>
 <translation id="955627189349169688">இந்தக் கொள்கை வேண்டாம் என்று <ph name="BEGIN_LINK" />Chrome ஒத்திசைவு அமைப்புகளில்<ph name="END_LINK" /> தேர்வுசெய்யலாம்.</translation>
+<translation id="95676157383774931">AI மோடு பட்டன், Google AI மோடைப் பயன்படுத்த இதைச் செயல்படுத்தலாம்</translation>
 <translation id="95721182352849470">மஞ்சள் 2</translation>
 <translation id="961663415146723894">பைண்டு பாட்டம்</translation>
 <translation id="961856697154696964">உலாவிய தரவை நீக்கு</translation>

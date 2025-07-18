@@ -720,6 +720,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4306489587293957491">Sláðu inn</translation>
 <translation id="4307992518367153382">Grunnatriði</translation>
 <translation id="4311652497846705514">Opna PDF-skrá?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mögulegt ruslefni}one{Mögulegt ruslefni (#)}other{Mögulegt ruslefni (#)}}</translation>
 <translation id="4320177379694898372">Engin nettenging</translation>
 <translation id="4326079409704643112">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á Google-reikningnum þínum</translation>
 <translation id="433213510553688132">Fylgist með...</translation>
@@ -1058,6 +1059,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="580893287573699959">Stjórnaðu umfjöllunarefnunum og vefsvæðunum sem þú hefur áhuga á</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Fyrir # klukkustund}one{Fyrir # klukkustund}other{Fyrir # klukkustundum}}</translation>
 <translation id="5810288467834065221">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Sýna tilkynningu}one{Sýna tilkynningar}other{Sýna tilkynningar}}</translation>
 <translation id="5814749351757353073">Fylgstu með uppáhalds vefsvæðunum þínum</translation>
 <translation id="5823093032261493462">Viltu samt sækja „<ph name="FILE_NAME" />“ úr <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Þú getur eytt gögnum í stillingum Chrome</translation>

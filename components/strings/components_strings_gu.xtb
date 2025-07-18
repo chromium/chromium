@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">છેલ્લા 30 દિવસ</translation>
 <translation id="2691385045260836588">મોડલ</translation>
 <translation id="2691924980723297736">સલામતીની ચેતવણી</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core તમને ક્લાઉડમાંથી બ્રાઉઝરની પૉલિસીઓ, ઍપ અને એક્સ્ટેન્શન મેનેજ કરવાની સુવિધા આપે છે</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />ને પૂછો</translation>
 <translation id="2699273987028089219">સબમેનૂ ઉપલબ્ધ છે, વધારાનાં વિકલ્પો પર નૅવિગેટ કરવા માટે <ph name="SHORTCUT" />નો ઉપયોગ કરો.</translation>
 <translation id="2701514975700770343">નીચે તરફ</translation>
@@ -3143,6 +3144,7 @@
 <translation id="6284449872909111707">ટેક્સ્ટ અને ઇન્સ્ટન્ટ મેસેજિંગ</translation>
 <translation id="6284517535531159884">વૅરિએશન સીડનો પ્રકાર</translation>
 <translation id="6287197303017372967">નૅવિગેશન સુવિધાનો ઉપયોગ કરીને દરેક વળાંક પર માર્ગદર્શન સાથે તમારા નિર્ધારિત સ્થાન માટે દિશાનિર્દેશો મેળવો.</translation>
+<translation id="6288559570252410796">Google AI મોડને પૂછો</translation>
 <translation id="628877850550444614">ડિસ્કાઉન્ટ મળ્યું</translation>
 <translation id="6289939620939689042">પેજનો રંગ</translation>
 <translation id="6292819926564202163">Chromeમાંનું તમારું શોધ એન્જિન</translation>
@@ -4359,6 +4361,7 @@
 <translation id="831997045666694187">સાંજ</translation>
 <translation id="8321448084834652864">તમે Chromiumના સેટિંગમાં જઈને કોઈપણ સમયે તમારા શોધ એન્જિનમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="8321476692217554900">નોટિફિકેશન</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI મોડને પૂછવા માટે Enter કી દબાવો</translation>
 <translation id="8322402665880479974">પથારી અને ઓશિકા</translation>
 <translation id="8323505966575306467">તમારા પાસવર્ડ માટે વધારે સંરક્ષણ ઉમેરો</translation>
 <translation id="832547548543012337">પાસપોર્ટ ડિલીટ કરો</translation>
@@ -4648,6 +4651,7 @@
 <translation id="883848425547221593">અન્ય બુકમાર્ક</translation>
 <translation id="8842351563145134519">ટચ કરીને ભરવાની ઉપલબ્ધ ચુકવણી પદ્ધતિઓની સૂચિ અડધી ઊંચાઈએ ખૂલી.</translation>
 <translation id="884264119367021077">શિપિંગ સરનામું</translation>
+<translation id="8849032795302265570">તમારા કર્મચારીઓ વેબ કેવી રીતે બ્રાઉઝ કરે છે તે સરળતાથી મેનેજ કરો</translation>
 <translation id="8849231003559822746">130 x 180 મિમી</translation>
 <translation id="884923133447025588">રદ કરવાની કોઈ મેકેનિઝમ મળી નથી.</translation>
 <translation id="8849262850971482943">વધારાની સુરક્ષા માટે, તમારા વર્ચ્યુઅલ કાર્ડનો ઉપયોગ કરો</translation>
@@ -4898,6 +4902,7 @@
 <translation id="950926967802086924">પાસકી • Google Password Manager</translation>
 <translation id="955429569736351433">VRને મંજૂરી આપવામાં આવી</translation>
 <translation id="955627189349169688">તમે <ph name="BEGIN_LINK" />Chrome સિંકના સેટિંગ<ph name="END_LINK" />માં જઈને આ પૉલિસીને નાપસંદ કરી શકો છો.</translation>
+<translation id="95676157383774931">AI મોડ બટન, Google AI મોડને પૂછવા માટે સક્રિય કરો</translation>
 <translation id="95721182352849470">પીળો 2</translation>
 <translation id="961663415146723894">નીચેની બાજુએ જોડો</translation>
 <translation id="961856697154696964">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>

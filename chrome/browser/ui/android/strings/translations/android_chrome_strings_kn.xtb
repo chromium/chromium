@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">ನಮೂದಿಸಿ</translation>
 <translation id="4307992518367153382">ಬೇಸಿಕ್ಸ್</translation>
 <translation id="4311652497846705514">PDF ತೆರೆಯಬೇಕೆ?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ಸಂಭಾವ್ಯ ಸ್ಪ್ಯಾಮ್}one{ಸಂಭಾವ್ಯ ಸ್ಪ್ಯಾಮ್ (#)}other{ಸಂಭಾವ್ಯ ಸ್ಪ್ಯಾಮ್ (#)}}</translation>
 <translation id="4320177379694898372">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲ</translation>
 <translation id="4326079409704643112">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸೇವ್ ಮಾಡಲು, ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="433213510553688132">ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -1057,6 +1058,7 @@
 <translation id="580893287573699959">ನೀವು ಆಸಕ್ತಿ ಹೊಂದಿರುವ ವಿಷಯಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ಗಂಟೆಯ ಹಿಂದೆ}one{# ಗಂಟೆಗಳ ಹಿಂದೆ}other{# ಗಂಟೆಗಳ ಹಿಂದೆ}}</translation>
 <translation id="5810288467834065221">ಕೃತಿಸ್ವಾಮ್ಯ <ph name="YEAR" /> Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ನೋಟಿಫಿಕೇಶನ್ ಅನ್ನು ತೋರಿಸಿ}one{ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ತೋರಿಸಿ}other{ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ತೋರಿಸಿ}}</translation>
 <translation id="5814749351757353073">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಸೈಟ್‌ಗಳನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="5823093032261493462">ನೀವು "<ph name="FILE_NAME" />" ಅನ್ನು <ph name="DOWNLOAD_DOMAIN" /> ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="5828921839638612740">ನೀವು ಡೇಟಾವನ್ನು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅಳಿಸಬಹುದು</translation>

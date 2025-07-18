@@ -720,6 +720,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4306489587293957491">Weka</translation>
 <translation id="4307992518367153382">Mambo Msingi</translation>
 <translation id="4311652497846705514">Ungependa kufungua faili ya PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Uwezekano wa taka}other{Uwezekano wa taka (#)}}</translation>
 <translation id="4320177379694898372">Hakuna muunganisho wa intaneti</translation>
 <translation id="4326079409704643112">Ili utumie na uhifadhi data ya Chrome kwenye Akaunti yako ya Google, thibitisha kuwa ni wewe</translation>
 <translation id="433213510553688132">Unafuatilia...</translation>
@@ -1058,6 +1059,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="580893287573699959">Dhibiti mada na tovuti zinazokuvutia</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Saa # iliyopita}other{Saa # zilizopita}}</translation>
 <translation id="5810288467834065221">Hakimiliki <ph name="YEAR" /> Google LLC. Haki zote zimehifadhiwa.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Onyesha arifa}other{Onyesha arifa}}</translation>
 <translation id="5814749351757353073">Endelea kufuatilia tovuti uzipendazo</translation>
 <translation id="5823093032261493462">Je, ungependa kupakua "<ph name="FILE_NAME" />" kutoka kwenye <ph name="DOWNLOAD_DOMAIN" /> licha ya hayo?</translation>
 <translation id="5828921839638612740">Unaweza kufuta data katika Mipangilio ya Chrome</translation>

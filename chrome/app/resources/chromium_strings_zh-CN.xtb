@@ -45,7 +45,6 @@
 <translation id="1607715478322902680">{COUNT,plural, =0{您的管理员要求您重新启动 Chromium 以应用一项更新}=1{您的管理员要求您重新启动 Chromium 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="1625909126243026060">检查 Chromium 中重要的隐私控制设置和安全控件</translation>
 <translation id="1640672724030957280">正在下载...</translation>
-<translation id="1689003475830815471">如需在所有设备上获取书签、密码等信息，请登录 Chromium</translation>
 <translation id="1709772298389099340">为 <ph name="BROWSER_NAME" /> 提供提升的权限。</translation>
 <translation id="1715127912119967311">为帮助改进这些功能，Chromium 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
 <translation id="1722488837206509557">这样，您就可以从可用设备中选择并在这些设备上显示内容。</translation>

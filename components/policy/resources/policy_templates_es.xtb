@@ -3699,6 +3699,14 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="3647212518036289905">Si se define esta política, especificará qué biblioteca GSSAPI se debe usar para la autenticación HTTP. Puedes definirla como un nombre de biblioteca o una ruta completa.
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> usará un nombre de biblioteca predeterminado.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+La función ServiceWorkerAutoPreload envía una solicitud de red de un recurso principal al mismo tiempo que inicia el proceso de arranque de ServiceWorker.
+
+Si se habilita esta política o no se define, <ph name="PRODUCT_NAME" /> habilitará ServiceWorkerAutoPreload. La solicitud de navegación se envía automáticamente al iniciar el ServiceWorker en algunos casos, como cuando el ServiceWorker no se está ejecutando.
+
+Si está inhabilitada, <ph name="PRODUCT_NAME" /> no habilitará ServiceWorkerAutoPreload. La solicitud de navegación se envía siempre después de iniciar el ServiceWorker.
+
+Esta política es una medida temporal para controlar la función y se eliminará en la versión M144.</translation>
 <translation id="3650122925429054129">Inhabilitar el resaltado del cursor en la pantalla de inicio de sesión</translation>
 <translation id="365093517647222762">Envía informes de datos de telemetría de sitios web sobre URLs permitidas especificadas en la política <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> correspondientes a usuarios afiliados.
 
@@ -3863,6 +3871,10 @@ Consulta https://wicg.github.io/private-network-access/ para saber las restricci
 <translation id="376375951585423504">Inhabilitar la cuota persistente.</translation>
 <translation id="3765260570442823273">Duración del mensaje que advierte al usuario de que se cerrará la sesión porque se encuentra inactivo</translation>
 <translation id="3766695867369523703">Permitir la partición del almacenamiento de terceros de forma predeterminada.</translation>
+<translation id="3770044943398389276">De forma predeterminada, el SSO flotante solo mueve las cookies persistentes entre dispositivos. Esta política controla si también se deben incluir las cookies de sesión. Solo tiene efecto cuando la política <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> está habilitada.
+
+Si se habilita esta política, el SSO flotante sincronizará las cookies de sesión y las persistentes.
+Si se inhabilita esta política o no se define, el SSO flotante solo sincronizará las cookies persistentes.</translation>
 <translation id="3770407495263198786">Si se le asigna un valor a esta política, los administradores podrán establecer una lista de impresoras para los usuarios. La impresora se selecciona la primera vez que los usuarios intentan imprimir.
 
       La política funciona de la siguiente manera:
@@ -3963,6 +3975,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Permitir fondos de pantalla creados con IA generativa sin mejorar los modelos de IA</translation>
+<translation id="3848302969721895938">Inhabilitar ServiceWorkerAutoPreload</translation>
 <translation id="3849923496599301707">Forzar la habilitación de las aplicaciones de Chrome en el modo Kiosco</translation>
 <translation id="3851443303439635700">Controlar el umbral de anidación antes del cual se empezará a redondear la función setTimeout() de JavaScript</translation>
 <translation id="3854609566862485607">Esta política controla una etiqueta personalizada que se utiliza para identificar perfiles gestionados. En los perfiles gestionados, esta etiqueta se mostrará junto al avatar en la barra de herramientas. La etiqueta personalizada no se traducirá.
@@ -4271,6 +4284,7 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política está relacionada co
 
 Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Varios</translation>
+<translation id="4071922398488395340">Incluir cookies de sesión en la funcionalidad del SSO flotante</translation>
 <translation id="4072225853834793549">Inhabilitar los accesos directos de accesibilidad en la pantalla de inicio de sesión</translation>
 <translation id="4074922053013383215">Ahorro de memoria moderado.</translation>
 <translation id="4075675819066819571">Colocar la estantería en la parte izquierda de la pantalla</translation>
@@ -6894,6 +6908,7 @@ Es posible añadir más restricciones de cuentas con la política <ph name="MICR
 <translation id="5815129011704381141">Reiniciar automáticamente después de la actualización</translation>
 <translation id="5815990343032461023">Comportamiento antiguo: el sistema de extensiones actualiza las aplicaciones de kiosco de Chrome mediante la URL de actualización del archivo de manifiesto de la extensión. También las puede actualizar el gestor de almacenamiento en caché mediante la URL de actualización de la política.</translation>
 <translation id="5816688024515869030">Inhabilitar el proveedor de <ph name="UIA_NAME" />.</translation>
+<translation id="581737504822041364">Permitir que ServiceWorker envíe solicitudes de navegación sin esperar a que se inicie</translation>
 <translation id="5828008775808363753">No abrir el navegador al iniciar</translation>
 <translation id="582857022372205358">Habilitar impresión de borde corto por las dos caras</translation>
 <translation id="5830196507442186669">Permite que los dispositivos utilicen <ph name="BOREALIS_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9218,6 +9233,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
       Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />). Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.
 
       Si esta política no se establece para un sitio, se le aplicará la política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> (si se ha definido). Si no se ha definido, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.</translation>
+<translation id="7358299261566939984">Habilitar ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Habilitar <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Solo el usuario</translation>
 <translation id="736486789939370545">Permitir la instalación de extensiones externas</translation>
@@ -11605,6 +11621,7 @@ Nota: La caché se borra al reiniciar el dispositivo. Los datos de dominio de lo
 <translation id="9073405975862312795">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre los periodos en los que un usuario está activo en el dispositivo.
 
       Si se inhabilita la política, dichos dispositivos no registrarán los periodos de actividad ni informarán sobre ellos.</translation>
+<translation id="9075183018289926453">No sincronizar cookies de sesión con SSO flotante</translation>
 <translation id="9076477053438828079">Mostrar siempre nombres y fotos de usuarios</translation>
 <translation id="9077227880520270584">Temporizador de inicio automático de la cuenta local del dispositivo</translation>
 <translation id="9079158199923156713">URL del logotipo de la empresa de un perfil gestionado</translation>

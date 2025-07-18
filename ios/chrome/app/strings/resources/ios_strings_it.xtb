@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} password}other{{count} password}}</translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
+<translation id="1287229685519872919">Dati di Google Workspace</translation>
 <translation id="1291506870746876680">Le autorizzazioni del sito <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> verranno disattivate quando uscirai dal sito.</translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
 <translation id="1296581780163690620">Vuoi scaricare il file? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3940195383040445971">Monitora prezzi nelle schede</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Chiudi {COUNT} scheda}other{Chiudi {COUNT} schede}}</translation>
 <translation id="3948600256434252210">Puoi scorrere verso destra per navigare in incognito.</translation>
+<translation id="3949712484278252781">Le tue conversazioni con Gemini e i tuoi <ph name="GOOGLE_WORKSPACE_DATA" /> non saranno esaminati da revisori umani né usati per migliorare i modelli di AI generativa.</translation>
 <translation id="3950479158728806902">Crea automaticamente una passkey per accedere più velocemente</translation>
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="3955740319737378355">Fine</translation>
@@ -1123,6 +1125,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="555749644339804659">Controllo delle password…</translation>
 <translation id="5559567453458728487">Converti le unità di misura trovate sul web</translation>
 <translation id="556042886152191864">Pulsante</translation>
+<translation id="5565871407246142825">Carte di credito</translation>
 <translation id="5567439033041178034">ULTERIORI INFORMAZIONI</translation>
 <translation id="5572648434713976849">Riceverai suggerimenti migliori nella barra degli indirizzi</translation>
 <translation id="5576885723883013398">Nuova finestra</translation>
@@ -1637,6 +1640,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7512909159512473473">Inserisci passphrase…</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7514530647142300459">Continua a usare le password nel tuo Account Google <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">Informazioni sulla tua posizione</translation>
 <translation id="7522948500476882302">Quando scarichi un file, scegli di eliminarlo automaticamente dopo 1 mese</translation>
 <translation id="7524055474074101597">Accedi alle tue password e ad altro ancora nelle app.</translation>
 <translation id="75362970626182391">Nuovo gruppo di schede</translation>
@@ -1651,6 +1655,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7582666837709186351">Traduci con la fotocamera il testo nelle foto o nell'ambiente circostante.</translation>
 <translation id="7582857256643797524">Questa impostazione è attiva sul tuo dispositivo</translation>
 <translation id="7583004045319035904">Utilizza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per sbloccare le schede di navigazione in incognito.</translation>
+<translation id="7588149553568293500">Scopri di più sulle opzioni a tua disposizione.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Chiudere {COUNT} scheda non attiva?}other{Chiudere {COUNT} schede non attive?}}</translation>
 <translation id="7598439272585186139">Ottieni maggiore sicurezza</translation>
 <translation id="7600965453749440009">Non tradurre mai <ph name="LANGUAGE" /></translation>
@@ -2053,6 +2058,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9066097352053395362">Nascondi Modifica preferito</translation>
 <translation id="9070824521421603770">Il tuo account verrà disconnesso e le schede verranno chiuse</translation>
 <translation id="9072837124205571418">Gruppi di schede da tutti i dispositivi</translation>
+<translation id="9075970015528364598">Le chat vengono esaminate e utilizzate per migliorare Google AI. Nella tua attività vengono memorizzate anche le <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" />.</translation>
 <translation id="9081058212938299310">Aggiornare la password per <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Attiva la sincronizzazione per sincronizzare e personalizzare tutti i dispositivi.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Hai {count} password inefficace che potrebbe mettere a rischio la tua sicurezza. Sistemala subito per rimanere al sicuro.}other{Hai {count} password inefficaci che potrebbero mettere a rischio la tua sicurezza. Sistemale subito per rimanere al sicuro.}}</translation>

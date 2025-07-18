@@ -720,6 +720,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4306489587293957491">Sisesta</translation>
 <translation id="4307992518367153382">Põhiteave</translation>
 <translation id="4311652497846705514">Kas soovite PDF-faili avada?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Võimalik rämpspost}other{Võimalik rämpspost (#)}}</translation>
 <translation id="4320177379694898372">Interneti-ühendus puudub</translation>
 <translation id="4326079409704643112">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontol kinnitage, et see olete teie</translation>
 <translation id="433213510553688132">Jälgimine …</translation>
@@ -1058,6 +1059,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="580893287573699959">Hallake teemasid ja saite, mis teile huvi pakuvad</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# tund tagasi}other{# tundi tagasi}}</translation>
 <translation id="5810288467834065221">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Kuva märguanne}other{Kuva märguanded}}</translation>
 <translation id="5814749351757353073">Olge oma lemmiksaitidega kursis</translation>
 <translation id="5823093032261493462">Kas soovite faili „<ph name="FILE_NAME" />“ domeenist <ph name="DOWNLOAD_DOMAIN" /> ikkagi alla laadida?</translation>
 <translation id="5828921839638612740">Andmeid saab kustutada Chrome’i seadetes.</translation>

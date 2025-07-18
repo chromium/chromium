@@ -720,6 +720,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4306489587293957491">Introdu</translation>
 <translation id="4307992518367153382">Elemente de bază</translation>
 <translation id="4311652497846705514">Deschizi fișierul PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Posibil spam}few{Posibil spam (#)}other{Posibil spam (#)}}</translation>
 <translation id="4320177379694898372">Nu există conexiune la internet</translation>
 <translation id="4326079409704643112">Pentru a folosi și a salva datele Chrome în Contul Google, confirmă-ți identitatea</translation>
 <translation id="433213510553688132">Urmărești...</translation>
@@ -1058,6 +1059,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="580893287573699959">Gestionează subiectele și site-urile care te interesează</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Acum # oră}few{Acum # ore}other{Acum # de ore}}</translation>
 <translation id="5810288467834065221">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Afișează notificarea}few{Afișează notificările}other{Afișează notificările}}</translation>
 <translation id="5814749351757353073">Fii la curent cu site-urile preferate</translation>
 <translation id="5823093032261493462">Vrei să descarci oricum <ph name="FILE_NAME" /> de pe <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Poți șterge datele în Setările Chrome</translation>

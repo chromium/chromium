@@ -720,6 +720,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4306489587293957491">Eingeben</translation>
 <translation id="4307992518367153382">Grundeinstellungen</translation>
 <translation id="4311652497846705514">PDF öffnen?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Möglicherweise Spam}other{Möglicherweise Spam (#)}}</translation>
 <translation id="4320177379694898372">Keine Internetverbindung</translation>
 <translation id="4326079409704643112">Bestätige deine Identität, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="433213510553688132">Folgen wird aktiviert…</translation>
@@ -1058,6 +1059,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="580893287573699959">Hier kannst du Themen und Websites verwalten, die dich interessieren</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Vor # Stunde}other{Vor # Stunden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Benachrichtigung anzeigen}other{Benachrichtigungen anzeigen}}</translation>
 <translation id="5814749351757353073">Lieblingswebsites im Blick behalten</translation>
 <translation id="5823093032261493462">Möchtest du „<ph name="FILE_NAME" />“ trotzdem von <ph name="DOWNLOAD_DOMAIN" /> herunterladen?</translation>
 <translation id="5828921839638612740">Du kannst die Daten in den Chrome-Einstellungen löschen</translation>

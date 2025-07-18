@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} parol}other{{count} parol}}</translation>
 <translation id="1275718070701477396">Seçilib</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
+<translation id="1287229685519872919">Google Workspace datası</translation>
 <translation id="1291506870746876680">Bu saytdan çıxdığınız zaman <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> icazələri sıfırlanaraq deaktiv olacaq.</translation>
 <translation id="129553762522093515">Son qapadılan</translation>
 <translation id="1296581780163690620">Fayl endirilsin? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3940195383040445971">Tablarda qiymətləri izləyin</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} tabı bağlayın}other{{COUNT} tabı bağlayın}}</translation>
 <translation id="3948600256434252210">Sağa çəkərək Anonim rejimdə baxa bilərsiniz.</translation>
+<translation id="3949712484278252781">Gemini ilə söhbətləriniz və <ph name="GOOGLE_WORKSPACE_DATA" /> insan redaktorlar tərəfindən nəzərdən keçirilməyəcək və generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilməyəcək.</translation>
 <translation id="3950479158728806902">Daha sürətlə daxil olmaq üçün avtomatik olaraq giriş açarı yaradın</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3955740319737378355">Hazırdır</translation>
@@ -1123,6 +1125,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="555749644339804659">Parollar yoxlanır…</translation>
 <translation id="5559567453458728487">Vebdə tapılan ölçü vahidlərini çevirin</translation>
 <translation id="556042886152191864">Düymə</translation>
+<translation id="5565871407246142825">Kredit kartları</translation>
 <translation id="5567439033041178034">ƏTRAFLI MƏLUMAT</translation>
 <translation id="5572648434713976849">Ünvan panelində təkmilləşdirilmiş təkliflər alacaqsınız</translation>
 <translation id="5576885723883013398">Yeni pəncərə</translation>
@@ -1637,6 +1640,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7512909159512473473">Parol ifadəsi daxil edin…</translation>
 <translation id="7514365320538308">Endirmə</translation>
 <translation id="7514530647142300459"><ph name="EMAIL" /> Google Hesabındakı parollardan istifadəyə davam edin</translation>
+<translation id="7522587739845660862">Məkanınız haqqında məlumat</translation>
 <translation id="7522948500476882302">Faylı endirəndə 1 ay sonra avtomatik silinməsini seçin</translation>
 <translation id="7524055474074101597">Tətbiqlərdə parol və s. məlumatlara giriş.</translation>
 <translation id="75362970626182391">Yeni tab qrupu</translation>
@@ -1651,6 +1655,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7582666837709186351">Kameranızla fotolarınızdakı və ya ətrafınızdakı mətnləri tərcümə edin.</translation>
 <translation id="7582857256643797524">Bu ayar cihazda aktivləşdirilib</translation>
 <translation id="7583004045319035904">Anonim tabları kiliddən çıxarmaq üçün <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> istifadə edin.</translation>
+<translation id="7588149553568293500">Seçimləriniz haqqında məlumat əldə edin.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} deaktiv tab bağlansın?}other{{COUNT} deaktiv tab bağlansın?}}</translation>
 <translation id="7598439272585186139">Güvənliyi artırın</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> heç vaxt tərcümə etməyin</translation>
@@ -2053,6 +2058,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9066097352053395362">"Əlfəcinləri redaktə edin" seçimini gizlədin</translation>
 <translation id="9070824521421603770">Çıxacaqsınız və tablar bağlanacaq</translation>
 <translation id="9072837124205571418">Bütün cihazlardan tab qrupları</translation>
+<translation id="9075970015528364598">Söhbətlər nəzərdən keçirilir və Google Sİ-ni təkmilləşdirmək üçün istifadə olunur. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> da fəaliyyətinizlə birlikdə saxlanılır.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> üçün parollar yenilənsin?</translation>
 <translation id="9083838294503912307">Cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="9084367296493549256">{count,plural, =1{Təhlükəsizliyi riskə atan {count} zəif parolunuz var. Təhlükəsizlik üçün bunu indi həll edin.}other{Təhlükəsizliyi riskə atan {count} zəif parolunuz var. Təhlükəsizlik üçün bunları indi həll edin.}}</translation>

@@ -720,6 +720,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4306489587293957491">Lisää</translation>
 <translation id="4307992518367153382">Perustiedot</translation>
 <translation id="4311652497846705514">Avataanko PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mahdollisesti roskapostia}other{Mahdollisesti roskapostia (#)}}</translation>
 <translation id="4320177379694898372">Ei internetyhteyttä</translation>
 <translation id="4326079409704643112">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi</translation>
 <translation id="433213510553688132">Seurataan…</translation>
@@ -1058,6 +1059,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="580893287573699959">Hallitse sinua kiinnostavia aiheita ja sivustoja</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# tunti sitten}other{# tuntia sitten}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Näytä ilmoitus}other{Näytä ilmoitukset}}</translation>
 <translation id="5814749351757353073">Pysy ajan tasalla lempisivustojesi tapahtumista</translation>
 <translation id="5823093032261493462">Ladataanko "<ph name="FILE_NAME" />" osoitteesta <ph name="DOWNLOAD_DOMAIN" /> silti?</translation>
 <translation id="5828921839638612740">Voit poistaa datan Chromen asetuksissa</translation>

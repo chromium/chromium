@@ -1022,6 +1022,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2690699652723742414">Y 30 diwrnod diwethaf</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Rhybudd Diogelwch</translation>
+<translation id="2696385693639654606">Mae Chrome Enterprise Core yn gadael i chi reoli polisïau porwr, apiau ac estyniadau o'r cwmwl</translation>
 <translation id="2697248912349197812">Gofyn i <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Isddewislen ar gael, defnyddiwch <ph name="SHORTCUT" /> i lywio i'r dewisiadau ychwanegol.</translation>
 <translation id="2701514975700770343">Wyneb i lawr</translation>
@@ -3143,6 +3144,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6284449872909111707">Tecstio a Negeseuo Gwib</translation>
 <translation id="6284517535531159884">Math o Hedyn Amrywiadau</translation>
 <translation id="6287197303017372967">Defnyddiwch y nodwedd llywio i gael cyfarwyddiadau i'ch cyrchfan gydag arweiniad tro-wrth-dro.</translation>
+<translation id="6288559570252410796">Gofyn i Ddull AI Google</translation>
 <translation id="628877850550444614">Wedi dod o hyd i ostyngiad</translation>
 <translation id="6289939620939689042">Lliw'r Dudalen</translation>
 <translation id="6292819926564202163">Eich peiriant chwilio yn Chrome</translation>
@@ -4358,6 +4360,7 @@ Manylion ychwanegol:
 <translation id="831997045666694187">Nos</translation>
 <translation id="8321448084834652864">Gallwch newid eich peiriant chwilio ar unrhyw adeg yng ngosodiadau Chromium.</translation>
 <translation id="8321476692217554900">hysbysiadau</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Enter i ofyn i Ddull AI Google</translation>
 <translation id="8322402665880479974">Gwelyau a Phenfyrddau</translation>
 <translation id="8323505966575306467">Ychwanegu mwy o amddiffyniad at eich cyfrineiriau</translation>
 <translation id="832547548543012337">Dileu pasbort</translation>
@@ -4647,6 +4650,7 @@ Manylion ychwanegol:
 <translation id="883848425547221593">Nodau Tudalen Eraill</translation>
 <translation id="8842351563145134519">Mae dulliau talu sydd ar gael i'w llenwi ar gyffwrdd wedi'u hagor ar hanner uchder.</translation>
 <translation id="884264119367021077">Cyfeiriad anfon</translation>
+<translation id="8849032795302265570">Rheoli'n hawdd sut mae'ch gweithwyr yn pori'r we</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Ni chanfuwyd mecanwaith dirymu.</translation>
 <translation id="8849262850971482943">Defnyddiwch eich cerdyn rhithwir am ddiogelwch ychwanegol</translation>
@@ -4897,6 +4901,7 @@ Manylion ychwanegol:
 <translation id="950926967802086924">Cod pas • Rheolwr Cyfrineiriau Google</translation>
 <translation id="955429569736351433">Caniateir VR</translation>
 <translation id="955627189349169688">Gallwch optio allan o'r polisi hwn yng <ph name="BEGIN_LINK" />ngosodiadau Chrome Sync<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">Botwm Dull AI, actifadu i ofyn i Ddull AI Google</translation>
 <translation id="95721182352849470">Melyn 2</translation>
 <translation id="961663415146723894">Rhwymo ar y gwaelod</translation>
 <translation id="961856697154696964">Dileu data pori</translation>

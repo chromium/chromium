@@ -720,6 +720,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4306489587293957491">Daxil edin</translation>
 <translation id="4307992518367153382">Əsaslar</translation>
 <translation id="4311652497846705514">PDF açılsın?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mümkün spam}other{Mümkün spam (#)}}</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yoxdur</translation>
 <translation id="4326079409704643112">Google Hesabında Chrome datasını istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="433213510553688132">İzlənilir...</translation>
@@ -1058,6 +1059,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="580893287573699959">Maraqlandığınız mövzu və saytları idarə edin</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# saat öncə}other{# saat öncə}}</translation>
 <translation id="5810288467834065221">Müəllif hüquqları <ph name="YEAR" /> Google MMC. Bütün hüquqlar qorunur.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Bildiriş göstərin}other{Bildirişləri göstərin}}</translation>
 <translation id="5814749351757353073">Sevdiyiniz saytlardan xəbərdar olun</translation>
 <translation id="5823093032261493462">Yenə də <ph name="DOWNLOAD_DOMAIN" /> domenindən "<ph name="FILE_NAME" />" faylını endirmək istəyirsiniz?</translation>
 <translation id="5828921839638612740">Chrome ayarlarında datanı silə bilərsiniz</translation>

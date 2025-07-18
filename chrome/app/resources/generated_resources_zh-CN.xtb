@@ -4597,7 +4597,6 @@
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
 <translation id="4198268995694216131">更多网站</translation>
 <translation id="4198420883535766848">从列表中移除标签页</translation>
-<translation id="4198664641856813238">登录后即可将您的书签、密码等信息同步到您的所有设备上</translation>
 <translation id="4200609364258658652">复制视频帧(&amp;Y)</translation>
 <translation id="4200689466366162458">自定义字词</translation>
 <translation id="4200983522494130825">打开新的标签页(&amp;T)</translation>
@@ -4792,7 +4791,7 @@
 <translation id="4332976768901252016">设置“家长控制”功能</translation>
 <translation id="4333854382783149454">PKCS #1，带有 RSA 加密的 SHA-1</translation>
 <translation id="4334768748331667190">系统不会再向您显示<ph name="MODULE_NAME" /></translation>
-<translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
+<translation id="4335835283689002019">“安全浏览”功能已关闭</translation>
 <translation id="4338034474804311322">若要重新开始将密码保存到 Google 密码管理工具，请更新 Google Play 服务</translation>
 <translation id="4338363401382232853">分屏窗口建议</translation>
 <translation id="4339203724549370495">卸载应用</translation>
@@ -6091,7 +6090,7 @@
 <translation id="5264252276333215551">请先连接到互联网，然后在自助服务终端模式下启动您的应用。</translation>
 <translation id="5265797726250773323">安装时出错</translation>
 <translation id="526622169288322445">显示可对“<ph name="ADDRESS_SUMMARY" />”执行的更多操作</translation>
-<translation id="5267572070504076962">开启安全浏览功能，防范危险网站</translation>
+<translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5269977353971873915">打印失败</translation>
 <translation id="5271578170655641944">撤消 Google 云端硬盘访问权限？</translation>
 <translation id="5273806377963980154">修改网站网址</translation>
@@ -7589,7 +7588,6 @@
 <translation id="6365411474437319296">添加亲朋好友</translation>
 <translation id="6367097275976877956">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请按空格键。</translation>
 <translation id="6367196786591004737">删除条目</translation>
-<translation id="6367351687417449639">如需在所有设备上获取书签、密码等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="6367396429435748845">按 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 可暂停和恢复使用鼠标键</translation>
 <translation id="6367985768157257101">要接收来自“附近分享”的内容吗？</translation>
 <translation id="6368157733310917710">地址和其他信息(&amp;A)</translation>

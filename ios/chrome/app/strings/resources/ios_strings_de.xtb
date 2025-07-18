@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} Passwort}other{{count} Passwörter}}</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
+<translation id="1287229685519872919">Daten in Google Workspace</translation>
 <translation id="1291506870746876680">Die Berechtigungen für <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> werden zurückgesetzt und damit deaktiviert, wenn du diese Website verlässt.</translation>
 <translation id="129553762522093515">Kürzlich geschlossen</translation>
 <translation id="1296581780163690620">Datei herunterladen? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
 <translation id="3948600256434252210">Wische zum Surfen im Inkognitomodus nach rechts.</translation>
+<translation id="3949712484278252781">Deine Unterhaltungen mit Gemini und deine <ph name="GOOGLE_WORKSPACE_DATA" /> werden nicht manuell überprüft und auch nicht verwendet, um generative KI-Modelle zu optimieren.</translation>
 <translation id="3950479158728806902">Für eine schnellere Anmeldung Passkey automatisch erstellen lassen</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3955740319737378355">Fertig</translation>
@@ -1123,6 +1125,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="555749644339804659">Passwörter werden geprüft…</translation>
 <translation id="5559567453458728487">Im Web gefundene Maßeinheiten umrechnen</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
+<translation id="5565871407246142825">Kreditkarten</translation>
 <translation id="5567439033041178034">Weitere Informationen</translation>
 <translation id="5572648434713976849">Du erhältst bessere Vorschläge in der Adressleiste</translation>
 <translation id="5576885723883013398">Neues Fenster</translation>
@@ -1637,6 +1640,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7512909159512473473">Passphrase eingeben…</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7514530647142300459">Verwende weiterhin die Passwörter in deinem Google-Konto <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">Informationen zu deinem Standort</translation>
 <translation id="7522948500476882302">Wenn du eine Datei herunterlädst, kannst du festlegen, dass sie in 1 Monat automatisch gelöscht wird</translation>
 <translation id="7524055474074101597">App-übergreifend auf Passwörter und mehr zugreifen.</translation>
 <translation id="75362970626182391">Neue Tabgruppe</translation>
@@ -1651,6 +1655,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7582666837709186351">Du kannst Text in deinen Fotos oder in deiner Umgebung übersetzen lassen.</translation>
 <translation id="7582857256643797524">Diese Einstellung ist auf deinem Gerät aktiviert</translation>
 <translation id="7583004045319035904">Nutze <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um deine Inkognitotabs zu entsperren.</translation>
+<translation id="7588149553568293500">Hier erfährst du mehr über deine Auswahlmöglichkeiten.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} inaktiven Tab schließen?}other{{COUNT} inaktive Tabs schließen?}}</translation>
 <translation id="7598439272585186139">Mehr Sicherheit</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
@@ -2053,6 +2058,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9066097352053395362">„Lesezeichen bearbeiten“ ausblenden</translation>
 <translation id="9070824521421603770">Du wirst abgemeldet und Tabs werden geschlossen</translation>
 <translation id="9072837124205571418">Tabgruppen von allen Geräten</translation>
+<translation id="9075970015528364598">Chats werden geprüft und zur Verbesserung von Google AI verwendet. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> werden auch in deinen Aktivitäten gespeichert.</translation>
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="9083838294503912307">Aktiviere die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Du nutzt {count} schwaches Passwort, das deine Sicherheit gefährden könnte. Ändere es jetzt, um dich bestmöglich zu schützen.}other{Du nutzt {count} schwache Passwörter, die deine Sicherheit gefährden könnten. Ändere sie jetzt, um dich bestmöglich zu schützen.}}</translation>

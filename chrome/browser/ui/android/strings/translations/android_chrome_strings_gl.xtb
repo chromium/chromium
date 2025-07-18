@@ -720,6 +720,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4306489587293957491">Introducir</translation>
 <translation id="4307992518367153382">Opcións básicas</translation>
 <translation id="4311652497846705514">Queres abrir o PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Posible spam}other{Posible spam (#)}}</translation>
 <translation id="4320177379694898372">Non hai conexión a Internet</translation>
 <translation id="4326079409704643112">Para usar e gardar os datos de Chrome na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="433213510553688132">Seguindo...</translation>
@@ -1058,6 +1059,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="580893287573699959">Xestiona os temas e os sitios que che interesan</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Hai # hora}other{Hai # horas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mostrar notificación}other{Mostrar notificacións}}</translation>
 <translation id="5814749351757353073">Non perdas as novidades dos teus sitios favoritos</translation>
 <translation id="5823093032261493462">Queres descargar o ficheiro "<ph name="FILE_NAME" />" de <ph name="DOWNLOAD_DOMAIN" /> de todos os modos?</translation>
 <translation id="5828921839638612740">Podes eliminar os datos na configuración de Chrome</translation>

@@ -535,7 +535,7 @@
 <translation id="1875512691959384712">Google ฟอร์ม</translation>
 <translation id="1876116428946561107">คุณไม่ได้บันทึกที่อยู่ใดๆ ไว้ เพิ่มที่อยู่เพื่อใช้ใน Chrome</translation>
 <translation id="1876399092304384674">ตามวันที่</translation>
-<translation id="1877026089748256423">Chrome ล้าสมัย</translation>
+<translation id="1877026089748256423">Chrome ไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="187918866476621466">เปิดหน้าเริ่มต้นใช้งาน</translation>
 <translation id="1880901968112404879">โปรดบันทึกบัตร รหัสความปลอดภัยที่เข้ารหัส และที่อยู่สำหรับการเรียกเก็บเงินไว้ในบัญชี Google เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="1883255238294161206">ยุบรายการ</translation>
@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">30 วันที่ผ่านมา</translation>
 <translation id="2691385045260836588">รุ่น</translation>
 <translation id="2691924980723297736">คำเตือนด้านความปลอดภัย</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core ช่วยให้คุณจัดการนโยบายเบราว์เซอร์ แอป และส่วนขยายจากระบบคลาวด์ได้</translation>
 <translation id="2697248912349197812">ถาม <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">มีเมนูย่อยให้ใช้งาน ใช้<ph name="SHORTCUT" />เพื่อไปยังตัวเลือกเพิ่มเติม</translation>
 <translation id="2701514975700770343">คว่ำหน้าลง</translation>
@@ -3142,6 +3143,7 @@
 <translation id="6284449872909111707">การส่ง SMS และการรับส่งข้อความโต้ตอบแบบทันที</translation>
 <translation id="6284517535531159884">ประเภท Seed ของรูปแบบ</translation>
 <translation id="6287197303017372967">ขอเส้นทางไปยังจุดหมายของคุณพร้อมคำแนะนำแบบเลี้ยวต่อเลี้ยวโดยใช้ฟีเจอร์การนำทาง</translation>
+<translation id="6288559570252410796">ถามโหมด AI ของ Google</translation>
 <translation id="628877850550444614">พบส่วนลด</translation>
 <translation id="6289939620939689042">สีของหน้าเว็บ</translation>
 <translation id="6292819926564202163">เครื่องมือค้นหาใน Chrome</translation>
@@ -4358,6 +4360,7 @@
 <translation id="831997045666694187">ตอนเย็น</translation>
 <translation id="8321448084834652864">คุณเปลี่ยนเครื่องมือค้นหาได้ตลอดเวลาในการตั้งค่าของ Chromium</translation>
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Enter เพื่อถามโหมด AI ของ Google</translation>
 <translation id="8322402665880479974">เตียงและหัวเตียง</translation>
 <translation id="8323505966575306467">เพิ่มการปกป้องให้รหัสผ่านของคุณ</translation>
 <translation id="832547548543012337">ลบหนังสือเดินทาง</translation>
@@ -4648,6 +4651,7 @@
 <translation id="883848425547221593">บุ๊กมาร์กอื่นๆ</translation>
 <translation id="8842351563145134519">วิธีการชำระเงินที่พร้อมใช้งานสำหรับการกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="884264119367021077">ที่อยู่สำหรับจัดส่ง</translation>
+<translation id="8849032795302265570">จัดการวิธีที่พนักงานท่องเว็บได้อย่างง่ายดาย</translation>
 <translation id="8849231003559822746">130 x 180 มม.</translation>
 <translation id="884923133447025588">ไม่พบกระบวนการเพิกถอน</translation>
 <translation id="8849262850971482943">ใช้บัตรเสมือนเพื่อเพิ่มความปลอดภัย</translation>
@@ -4897,6 +4901,7 @@
 <translation id="950926967802086924">พาสคีย์ • เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="955429569736351433">อนุญาต VR</translation>
 <translation id="955627189349169688">คุณเลือกไม่รับนโยบายนี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าการซิงค์ของ Chrome<ph name="END_LINK" /></translation>
+<translation id="95676157383774931">ปุ่มโหมด AI เปิดใช้งานเพื่อถามโหมด AI ของ Google</translation>
 <translation id="95721182352849470">เหลือง 2</translation>
 <translation id="961663415146723894">เย็บเล่มด้านล่าง</translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>

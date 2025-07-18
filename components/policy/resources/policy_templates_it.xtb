@@ -3775,6 +3775,15 @@ Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</transla
 <translation id="3647212518036289905">La configurazione della policy consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta la policy sul nome di una libreria o su un percorso completo.
 
       Se la policy non viene configurata, <ph name="PRODUCT_NAME" /> utilizza un nome di libreria predefinito.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+La funzionalità ServiceWorkerAutoPreload invia una richiesta di rete per una risorsa principale contemporaneamente all'avvio del processo di bootstrap di ServiceWorker.
+
+Se la policy viene abilitata o se non viene configurata,
+<ph name="PRODUCT_NAME" /> abilita ServiceWorkerAutoPreload. La richiesta di navigazione viene inviata automaticamente durante l'avvio del ServiceWorker in alcuni scenari, ad esempio se ServiceWorker non è in esecuzione.
+
+Se è disattivata, <ph name="PRODUCT_NAME" /> non attiverà ServiceWorkerAutoPreload. La richiesta di navigazione viene inviata sempre dopo l'avvio di ServiceWorker.
+
+Questa policy è una misura temporanea per controllare la funzionalità e verrà rimossa nella versione M144.</translation>
 <translation id="3650122925429054129">Disattiva l'evidenziazione del cursore nella schermata di accesso</translation>
 <translation id="365093517647222762">Segnala i dati di telemetria dei siti web per gli URL consentiti specificati dalla policy <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> per gli utenti affiliati.
 
@@ -3938,6 +3947,10 @@ Visita la pagina https://wicg.github.io/private-network-access/ per conoscere le
 <translation id="376375951585423504">Disattiva la quota permanente.</translation>
 <translation id="3765260570442823273">Durata del messaggio di avviso di uscita per inattività</translation>
 <translation id="3766695867369523703">Consenti il partizionamento dello spazio di archiviazione di terze parti per impostazione predefinita.</translation>
+<translation id="3770044943398389276">Per impostazione predefinita, SSO mobile sposta solo i cookie permanenti tra i dispositivi. Questa policy consente di stabilire se includere anche i cookie di sessione. Viene applicata soltanto se la policy <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> è abilitata.
+
+Se questa policy viene abilitata, SSO mobile sincronizzerà sia i cookie di sessione sia quelli permanenti.
+Se questa policy viene disattivata o non viene impostata, la sincronizzazione di SSO mobile verrà eseguita solo per i cookie persistenti.</translation>
 <translation id="3770407495263198786">La configurazione della policy consente agli amministratori di impostare un elenco di stampanti per i loro utenti. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare.
 
       Se viene usata la policy:
@@ -4038,6 +4051,7 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
 
 Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Consenti Sfondo AI generativa senza migliorare i modelli di AI</translation>
+<translation id="3848302969721895938">Disattiva ServiceWorkerAutoPreload</translation>
 <translation id="3849923496599301707">Forza autorizzazione app di Chrome in modalità kiosk</translation>
 <translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3854609566862485607">Questa policy consente di controllare un'etichetta personalizzata utilizzata per identificare i profili gestiti. Per i profili gestiti, questa etichetta viene mostrata accanto all'avatar nella barra degli strumenti. L'etichetta personalizzata non viene tradotta.
@@ -4346,6 +4360,7 @@ Per <ph name="PRODUCT_OS_NAME" />, questa policy è correlata all'attestazione r
 
 Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Varie</translation>
+<translation id="4071922398488395340">Includi i cookie di sessione nella funzionalità SSO mobile</translation>
 <translation id="4072225853834793549">Disattiva le scorciatoie di accessibilità nella schermata di accesso</translation>
 <translation id="4074922053013383215">Risparmio di memoria moderato.</translation>
 <translation id="4075675819066819571">Posiziona la barra delle app sul lato sinistro dello schermo</translation>
@@ -6967,6 +6982,7 @@ Se la policy non viene configurata, in pratica equivale a impostarlo su "<ph nam
 <translation id="5815129011704381141">Riavvia automaticamente dopo l'aggiornamento</translation>
 <translation id="5815990343032461023">Comportamento precedente: le app di Chrome Kiosk verranno aggiornate dal sistema di estensione utilizzando l'URL di aggiornamento dal manifest dell'estensione, nonché memorizzando nella cache il gestore usando l'URL di aggiornamento dalla policy</translation>
 <translation id="5816688024515869030">Disattiva il provider di <ph name="UIA_NAME" />.</translation>
+<translation id="581737504822041364">Consenti a ServiceWorker di inviare richieste di navigazione senza attendere l'avvio</translation>
 <translation id="5828008775808363753">Non aprire il browser all'avvio</translation>
 <translation id="582857022372205358">Attiva la stampa fronte/retro su lato corto</translation>
 <translation id="5830196507442186669">Consenti ai dispositivi di usare <ph name="BOREALIS_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9332,6 +9348,7 @@ Sostituisce la policy <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME" /
       Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
 
       Se la policy non viene configurata per un sito, la policy di <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> viene applicata al sito, se configurata, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
+<translation id="7358299261566939984">Abilita ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Attiva <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Solo utente</translation>
 <translation id="736486789939370545">Consenti l'installazione di estensioni esterne</translation>
@@ -11738,6 +11755,7 @@ Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati r
 <translation id="9073405975862312795">Se la policy viene impostata su Attivata o se non viene configurata, i dispositivi registrati segnalano i periodi di attività di un utente sul dispositivo.
 
       Se la policy viene impostata su Disattivata, i dispositivi registrati non registrano e non segnalano i tempi di attività.</translation>
+<translation id="9075183018289926453">Non sincronizzare i cookie di sessione con SSO mobile</translation>
 <translation id="9076477053438828079">Mostra sempre nomi e foto degli utenti</translation>
 <translation id="9077227880520270584">Timer accesso automatico all'account locale del dispositivo</translation>
 <translation id="9079158199923156713">URL logo aziendale per un profilo gestito</translation>

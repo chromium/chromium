@@ -3852,6 +3852,15 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3647212518036289905">Menyetel kebijakan akan menentukan library GSSAPI mana yang akan digunakan untuk autentikasi HTTP. Setel kebijakan ke nama library atau jalur lengkap.
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan nama library default.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+Fitur ServiceWorkerAutoPreload mengirimkan permintaan jaringan untuk resource utama pada saat yang sama saat fitur tersebut memulai proses bootstrap ServiceWorker.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel,
+<ph name="PRODUCT_NAME" /> akan mengaktifkan ServiceWorkerAutoPreload. Dalam beberapa skenario, permintaan navigasi otomatis dikirim saat ServiceWorker dimulai, misalnya saat ServiceWorker belum berjalan,
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan mengaktifkan ServiceWorkerAutoPreload. Permintaan navigasi selalu dikirim setelah ServiceWorker dimulai.
+
+Kebijakan ini merupakan tindakan sementara untuk mengontrol fitur dan akan dihapus di M144.</translation>
 <translation id="3650122925429054129">Nonaktifkan sorotan kursor di layar login</translation>
 <translation id="365093517647222762">Melaporkan data telemetri situs untuk URL yang diizinkan yang ditentukan oleh kebijakan <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> bagi pengguna terafiliasi.
 
@@ -4037,6 +4046,10 @@ Lihat https://wicg.github.io/private-network-access/ untuk melihat batasan <ph n
 <translation id="376375951585423504">Nonaktifkan kuota persisten.</translation>
 <translation id="3765260570442823273">Durasi pesan peringatan proses keluar nganggur</translation>
 <translation id="3766695867369523703">Izinkan partisi penyimpanan pihak ketiga secara default.</translation>
+<translation id="3770044943398389276">Secara default, Floating SSO hanya memindahkan cookie persisten antar-perangkat. Kebijakan ini mengontrol apakah cookie sesi juga harus disertakan. Kebijakan ini hanya berlaku jika kebijakan <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> disetel ke Aktif.
+
+Jika kebijakan ini disetel ke Aktif, Floating SSO akan menyinkronkan cookie sesi dan persisten.
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, Floating SSO hanya akan menyinkronkan cookie persisten.</translation>
 <translation id="3770407495263198786">Jike kebijakan disetel, administrator dapat menyiapkan daftar printer bagi pengguna mereka. Pemilihan printer dilakukan pada saat pengguna mencoba mencetak untuk pertama kalinya.
 
       Menggunakan kebijakan:
@@ -4137,6 +4150,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Mengizinkan Wallpaper AI Generatif tanpa meningkatkan kualitas model AI</translation>
+<translation id="3848302969721895938">Nonaktifkan ServiceWorkerAutoPreload</translation>
 <translation id="3849923496599301707">Mengizinkan Aplikasi Chrome secara Paksa dalam mode Kios</translation>
 <translation id="3851443303439635700">Mengontrol batas bertingkat sebelum fungsi setTimeout() JavaScript mulai dibatasi</translation>
 <translation id="3854609566862485607">Kebijakan ini mengontrol label khusus yang digunakan untuk mengidentifikasi profil terkelola. Untuk profil terkelola, label ini akan ditampilkan di samping avatar di toolbar. Label khusus tidak akan diterjemahkan.
@@ -4447,6 +4461,7 @@ Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini berhubungan dengan pengesahan
 
 Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Lain-lain</translation>
+<translation id="4071922398488395340">Sertakan cookie sesi dalam fungsi Floating SSO</translation>
 <translation id="4072225853834793549">Nonaktifkan pintasan aksesibilitas di layar login</translation>
 <translation id="4074922053013383215">Penghematan memori sedang.</translation>
 <translation id="4075675819066819571">Posisikan rak di sisi kiri layar</translation>
@@ -6857,7 +6872,7 @@ Jika disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan menga
 <translation id="5621503441067774084">Aktifkan sorotan kursor di layar login</translation>
 <translation id="5622590774455244290">Aplikasi Android dapat memilih untuk menerima daftar ini secara sukarela dan tidak dapat dipaksa untuk melakukannya.</translation>
 <translation id="5622924058222112599">Aktifkan proses peluncuran CECPQ2 default</translation>
-<translation id="5623304306796942802">Permintaan saat ada beberapa sertifikat yang cocok</translation>
+<translation id="5623304306796942802">Tampilkan dialog saat ada beberapa sertifikat yang cocok</translation>
 <translation id="5624310713789233422">Mengontrol visibilitas badge profil perusahaan di toolbar</translation>
 <translation id="5624334866248253262">Mengonfigurasi daftar aturan Kontrol Data untuk mencegah kebocoran data.
 
@@ -7142,6 +7157,7 @@ Anda dapat menambahkan pembatasan akun lebih lanjut dengan kebijakan <ph name="M
 <translation id="5815129011704381141">Booting ulang otomatis setelah pembaruan</translation>
 <translation id="5815990343032461023">Perilaku lama: Aplikasi Kiosk Chrome akan diupdate oleh sistem ekstensi menggunakan URL update dari manifes ekstensi, serta oleh pengelola cache menggunakan URL update dari kebijakan</translation>
 <translation id="5816688024515869030">Menonaktifkan penyedia <ph name="UIA_NAME" />.</translation>
+<translation id="581737504822041364">Mengizinkan ServiceWorker mengirim permintaan navigasi tanpa menunggu ServiceWorker dimulai</translation>
 <translation id="5828008775808363753">Jangan luncurkan browser saat memulai</translation>
 <translation id="582857022372205358">Aktifkan pencetakan dupleks tepi pendek</translation>
 <translation id="5830196507442186669">Izinkan perangkat untuk menggunakan <ph name="BOREALIS_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9594,6 +9610,7 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.
 
       Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
+<translation id="7358299261566939984">Aktifkan ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Aktifkan <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Khusus Pengguna</translation>
 <translation id="736486789939370545">Izinkan penginstalan ekstensi eksternal</translation>
@@ -9733,7 +9750,7 @@ baca lisan akan diaktifkan.</translation>
 <translation id="7482768039644066614">Aktifkan pengambilan metadata pemuatan halaman dan model machine learning yang meningkatkan pengalaman penjelajahan</translation>
 <translation id="748292668225669178">Mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
-<translation id="7486205887492534734">Meminta pengguna memilih saat beberapa sertifikat cocok pada layar login</translation>
+<translation id="7486205887492534734">Tampilkan dialog saat ada beberapa sertifikat yang cocok pada layar login</translation>
 <translation id="748873163367340515">Hanya gunakan cookie dan data penting di penelusuran.</translation>
 <translation id="7489169777107143496">Nonaktifkan pemindaian mendalam download Safe Browsing</translation>
 <translation id="7489661071474025727">Menentukan apakah layanan pemulihan akun diaktifkan untuk pengguna Anda di perangkat <ph name="PRODUCT_OS_NAME" />.
@@ -12052,6 +12069,7 @@ Catatan: Memulai ulang perangkat akan menghapus cache. Bahkan, data realm penggu
 <translation id="9073405975862312795">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan jangka waktu pengguna aktif di perangkat.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan merekam atau melaporkan waktu aktivitas.</translation>
+<translation id="9075183018289926453">Jangan sinkronkan cookie sesi dengan Floating SSO</translation>
 <translation id="9076477053438828079">Selalu tampilkan nama dan foto pengguna</translation>
 <translation id="9077227880520270584">Timer login otomatis akun lokal perangkat</translation>
 <translation id="9079158199923156713">URL Logo Perusahaan untuk profil terkelola</translation>

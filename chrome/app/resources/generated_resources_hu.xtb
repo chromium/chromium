@@ -4619,7 +4619,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4195814663415092787">Folytatás ott, ahol abbahagyta</translation>
 <translation id="4198268995694216131">További webhelyek</translation>
 <translation id="4198420883535766848">Lap eltávolítása a listából</translation>
-<translation id="4198664641856813238">Bejelentkezve valamennyi eszközén hozzáférhet könyvjelzőihez, jelszavaihoz és egyebekhez.</translation>
 <translation id="4200609364258658652">Videóképkocka másolása</translation>
 <translation id="4200689466366162458">Egyéni szavak</translation>
 <translation id="4200983522494130825">Új &amp;lap</translation>
@@ -7617,7 +7616,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6365411474437319296">Családtagok és ismerősök hozzáadása</translation>
 <translation id="6367097275976877956">Szeretné aktiválni a ChromeVoxot, a ChromeOS beépített képernyőolvasóját? Ha igen, nyomja meg a szóköz billentyűt.</translation>
 <translation id="6367196786591004737">Bejegyzés törlése</translation>
-<translation id="6367351687417449639">Ha az összes eszközén szeretne hozzáférni könyvjelzőihez, jelszavaihoz és egyéb tartalmaihoz, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="6367396429435748845">Az egérgombok használatának szüneteltetéséhez és folytatásához nyomja le a következő billentyűkombinációt: <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /></translation>
 <translation id="6367985768157257101">Fogadja a Közeli megosztás segítségével?</translation>
 <translation id="6368157733310917710">&amp;Címek és egyebek</translation>

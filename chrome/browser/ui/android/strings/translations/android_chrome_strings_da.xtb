@@ -720,6 +720,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4306489587293957491">Angiv</translation>
 <translation id="4307992518367153382">Grundlæggende valgmuligheder</translation>
 <translation id="4311652497846705514">Vil du åbne PDF-filen?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Muligt spam}one{Muligt spam (#)}other{Muligt spam (#)}}</translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
 <translation id="4326079409704643112">Verificer din identitet for at bruge og gemme Chrome-data på din Google-konto</translation>
 <translation id="433213510553688132">Følger...</translation>
@@ -1058,6 +1059,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="580893287573699959">Administrer de emner og websites, du er interesseret i</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{1 time siden}one{# time siden}other{# timer siden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Vis notifikation}one{Vis notifikation}other{Vis notifikationer}}</translation>
 <translation id="5814749351757353073">Hold dig opdateret om dine foretrukne websites</translation>
 <translation id="5823093032261493462">Vil du downloade "<ph name="FILE_NAME" />" fra <ph name="DOWNLOAD_DOMAIN" /> alligevel?</translation>
 <translation id="5828921839638612740">Du kan slette dataene i Chrome-indstillingerne</translation>

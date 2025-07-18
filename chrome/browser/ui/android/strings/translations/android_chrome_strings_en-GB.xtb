@@ -720,6 +720,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4306489587293957491">Enter</translation>
 <translation id="4307992518367153382">Basics</translation>
 <translation id="4311652497846705514">Open PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Possible spam}other{Possible spam (#)}}</translation>
 <translation id="4320177379694898372">No internet connection</translation>
 <translation id="4326079409704643112">To use and save Chrome data in your Google Account, verify that it's you</translation>
 <translation id="433213510553688132">Following…</translation>
@@ -1058,6 +1059,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="580893287573699959">Manage the topics and sites that you're interested in</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# hour ago}other{# hours ago}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Show notification}other{Show notifications}}</translation>
 <translation id="5814749351757353073">Keep up with your favourite sites</translation>
 <translation id="5823093032261493462">Do you want to download '<ph name="FILE_NAME" />' from <ph name="DOWNLOAD_DOMAIN" /> anyway?</translation>
 <translation id="5828921839638612740">You can delete the data in Chrome settings</translation>

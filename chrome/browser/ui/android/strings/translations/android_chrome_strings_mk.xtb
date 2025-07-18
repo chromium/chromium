@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">Внеси</translation>
 <translation id="4307992518367153382">Основи</translation>
 <translation id="4311652497846705514">Да се отвори PDF-датотеката?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Можен спам}one{Можен спам (#)}other{Можен спам (#)}}</translation>
 <translation id="4320177379694898372">Нема интернет поврзување</translation>
 <translation id="4326079409704643112">За да користите и зачувувате податоци од Chrome во вашата сметка на Google, потврдете го вашиот идентитет</translation>
 <translation id="433213510553688132">Се следи…</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">Управувајте со темите и сајтовите што ве интересираат</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Пред # час}one{Пред # час}other{Пред # часа}}</translation>
 <translation id="5810288467834065221">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Прикажи го известувањето}one{Прикажи ги известувањата}other{Прикажи ги известувањата}}</translation>
 <translation id="5814749351757353073">Следете ги новостите на омилените сајтови</translation>
 <translation id="5823093032261493462">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“ од <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Податоците може да ги избришете во „Поставки за Chrome“</translation>

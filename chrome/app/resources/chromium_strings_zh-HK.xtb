@@ -47,7 +47,6 @@
 <translation id="1607715478322902680">{COUNT,plural, =0{管理員要求您重新啟動 Chromium，以套用更新}=1{管理員要求您重新啟動 Chromium，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chromium，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1625909126243026060">查看 Chromium 中重要的私隱和安全控制項</translation>
 <translation id="1640672724030957280">正在下載…</translation>
-<translation id="1689003475830815471">如要在你的所有裝置上存取書籤、密碼和其他資料，請登入 Chromium</translation>
 <translation id="1709772298389099340">為 <ph name="BROWSER_NAME" /> 提供更高權限。</translation>
 <translation id="1715127912119967311">為協助改善這些功能，Chromium 會向 Google 傳送你與功能的互動資料。人手審查員可能會讀取、處理這些資料，並加上註解。</translation>
 <translation id="1722488837206509557">這樣你就能選取可用裝置，並在這些裝置上顯示內容。</translation>

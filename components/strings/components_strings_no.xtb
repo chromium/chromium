@@ -1022,6 +1022,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2690699652723742414">De siste 30 dagene</translation>
 <translation id="2691385045260836588">Modell</translation>
 <translation id="2691924980723297736">Sikkerhetsadvarsel</translation>
+<translation id="2696385693639654606">Med Chrome Enterprise Core kan du administrere nettleserregler, apper og utvidelser fra nettskyen</translation>
 <translation id="2697248912349197812">Spør <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">En undermeny er tilgjengelig. Bruk <ph name="SHORTCUT" /> for å navigere til flere alternativer.</translation>
 <translation id="2701514975700770343">Forsiden ned</translation>
@@ -3143,6 +3144,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6284449872909111707">Tekstmeldinger og chat</translation>
 <translation id="6284517535531159884">Typer frøvarianter</translation>
 <translation id="6287197303017372967">Bruk navigasjonsfunksjonen for å få veibeskrivelser til destinasjonen med trinnvis veiledning.</translation>
+<translation id="6288559570252410796">Spør Google AI-modus</translation>
 <translation id="628877850550444614">Fant en rabatt</translation>
 <translation id="6289939620939689042">Sidefarge</translation>
 <translation id="6292819926564202163">Søkemotoren din i Chrome</translation>
@@ -4358,6 +4360,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="831997045666694187">Kveld</translation>
 <translation id="8321448084834652864">Du kan når som helst bytte søkemotor i Chromium-innstillingene.</translation>
 <translation id="8321476692217554900">varsler</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Enter for å spørre AI-modusen</translation>
 <translation id="8322402665880479974">Senger og hodegavler</translation>
 <translation id="8323505966575306467">Legg til mer beskyttelse for passordene dine</translation>
 <translation id="832547548543012337">Slett pass</translation>
@@ -4647,6 +4650,7 @@ Mer informasjon:
 <translation id="883848425547221593">Andre bokmerker</translation>
 <translation id="8842351563145134519">Betalingsmåter som kan fylles ut ved å trykkes på, åpnes i halv høyde.</translation>
 <translation id="884264119367021077">Leveringsadresse</translation>
+<translation id="8849032795302265570">Administrer enkelt hvordan de ansatte surfer på nettet</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Finner ingen tilbakekallingsmekanisme.</translation>
 <translation id="8849262850971482943">Bruk det virtuelle kortet ditt for ekstra sikkerhet</translation>
@@ -4897,6 +4901,7 @@ Mer informasjon:
 <translation id="950926967802086924">Passnøkkel • Google Passordlagring</translation>
 <translation id="955429569736351433">VR er tillatt</translation>
 <translation id="955627189349169688">Du kan velge bort denne regelen i <ph name="BEGIN_LINK" />innstillingene for Chrome-synkronisering<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">AI-modus-knapp. Aktiver for å spørre AI-modusen</translation>
 <translation id="95721182352849470">Gul 2</translation>
 <translation id="961663415146723894">Innbinding bunn</translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>

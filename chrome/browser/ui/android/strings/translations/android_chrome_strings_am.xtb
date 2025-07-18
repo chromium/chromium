@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">አስገባ</translation>
 <translation id="4307992518367153382">መሠረታዊ</translation>
 <translation id="4311652497846705514">PDF ይክፈቱ?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ሊሆን የሚችል አይፈለጌ መልዕክት}one{ሊሆን የሚችል አይፈለጌ መልዕክት (#)}other{ሊሆን የሚችል አይፈለጌ መልዕክት (#)}}</translation>
 <translation id="4320177379694898372">ምንም የበይነመረብ ግንኙነት የለም</translation>
 <translation id="4326079409704643112">በGoogle መለያዎ ውስጥ የChrome ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="433213510553688132">በመከተል ላይ...</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">እርስዎ ዝንባሌ ያለዎትን ርዕሶች እና ፍለጋዎች ያስተዳድሩ</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{ከ# ሰዓት በፊት}one{ከ# ሰዓቶች በፊት}other{ከ# ሰዓቶች በፊት}}</translation>
 <translation id="5810288467834065221">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ማሳወቂያ አሳይ}one{ማሳወቂያ አሳይ}other{ማሳወቂያዎች አሳይ}}</translation>
 <translation id="5814749351757353073">የሚወዷቸው ጣቢያዎችን በቅርበት ይከታተሉ</translation>
 <translation id="5823093032261493462">ለማንኛውም «<ph name="FILE_NAME" />»ን ከ<ph name="DOWNLOAD_DOMAIN" /> ማውረድ ይፈልጋሉ?</translation>
 <translation id="5828921839638612740">ውሂቡን በChrome ቅንብሮች ውስጥ መሰረዝ ይችላሉ</translation>

@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">દાખલ કરો</translation>
 <translation id="4307992518367153382">પાયાગત</translation>
 <translation id="4311652497846705514">PDF ખોલીએ?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{સંભવિત સ્પામ}one{સંભવિત સ્પામ (#)}other{સંભવિત સ્પામ (#)}}</translation>
 <translation id="4320177379694898372">કોઈ ઇન્ટરનેટ કનેક્શન નથી</translation>
 <translation id="4326079409704643112">તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="433213510553688132">ફૉલો કરી રહ્યાં છીએ...</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">તમને જેમાં રુચિ હોય તેવા વિષયો અને સાઇટ મેનેજ કરો</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# કલાક પહેલાં}one{# કલાક પહેલાં}other{# કલાક પહેલાં}}</translation>
 <translation id="5810288467834065221">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{નોટિફિકેશન બતાવો}one{નોટિફિકેશન બતાવો}other{નોટિફિકેશન બતાવો}}</translation>
 <translation id="5814749351757353073">તમારી મનપસંદ સાઇટ સાથે જોડાયેલા રહો</translation>
 <translation id="5823093032261493462">શું તેમ છતાં તમે <ph name="DOWNLOAD_DOMAIN" />માંથી "<ph name="FILE_NAME" />" ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="5828921839638612740">તમે Chrome સેટિંગમાં જઈને ડેટા ડિલીટ કરી શકો છો</translation>

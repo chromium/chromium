@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} پاس ورڈ}other{{count} پاس ورڈز}}</translation>
 <translation id="1275718070701477396">منتخب</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
+<translation id="1287229685519872919">‏‫Google Workspace ڈیٹا</translation>
 <translation id="1291506870746876680">جب آپ اس سائٹ کو چھوڑ دیتے ہیں تو <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> اجازتیں ری سیٹ ہو جائیں گی۔</translation>
 <translation id="129553762522093515">حال ہی میں بند کردہ</translation>
 <translation id="1296581780163690620">فائل ڈاؤن لوڈ کریں؟ (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@
 <translation id="3940195383040445971">ٹیبز پر قیمتیں ٹریک کریں</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{‫{COUNT} ٹیب بند کریں}other{‫{COUNT} ٹیبز بند کریں}}</translation>
 <translation id="3948600256434252210">آپ پوشیدگی میں براؤز کرنے کے لیے بائیں سوائپ کر سکتے ہیں۔</translation>
+<translation id="3949712484278252781">‏نہ تو Gemini کے ساتھ آپ کی گفتگوؤں اور نہ ہی آپ کے <ph name="GOOGLE_WORKSPACE_DATA" /> کا انسان جائزہ کاران کے ذریعے جائزہ لیا جائے گا یا نہ ہی تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کے لیے ان کا استعمال کیا جائے گا۔</translation>
 <translation id="3950479158728806902">تیزی سے سائن ان کرنے کے لیے خودکار طور پر ایک پاس کی بنائیں</translation>
 <translation id="3950820424414687140">سائن ان کریں</translation>
 <translation id="3955740319737378355">ہو گیا</translation>
@@ -1123,6 +1125,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="555749644339804659">پاس ورڈز چیک ہو رہے ہیں…</translation>
 <translation id="5559567453458728487">ویب پر تبدیلی کی پیمائش کے یونٹس ملے</translation>
 <translation id="556042886152191864">بٹن</translation>
+<translation id="5565871407246142825">کریڈٹ کارڈز</translation>
 <translation id="5567439033041178034">مزید جانیں</translation>
 <translation id="5572648434713976849">آپ کو ایڈریس بار میں بہتر کردہ تجاویز حاصل ہوں گی</translation>
 <translation id="5576885723883013398">نئی ونڈو</translation>
@@ -1637,6 +1640,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7512909159512473473">پاس فریز درج کریں…</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="7514530647142300459">‏اپنے Google اکاؤنٹ <ph name="EMAIL" /> میں پاس ورڈز استعمال کرتے رہیں</translation>
+<translation id="7522587739845660862">آپ کے مقام سے متعلق معلومات</translation>
 <translation id="7522948500476882302">جب آپ کوئی فائل ڈاؤن لوڈ کرتے ہیں تو آپ اسے ایک ماہ کے بعد خود بخود حذف ہونے کے لیے سیٹ کر سکتے ہیں</translation>
 <translation id="7524055474074101597">ایپس پر اپنے پاس ورڈز اور مزید بہت کچھ تک رسائی حاصل کریں۔</translation>
 <translation id="75362970626182391">نیا ٹیب گروپ</translation>
@@ -1651,6 +1655,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7582666837709186351">اپنے کیمرے سے اپنی تصاویر یا اپنے اردگرد کے ٹیکسٹ کا ترجمہ کریں۔</translation>
 <translation id="7582857256643797524">یہ ترتیب آپ کے آلے پر فعال ہے</translation>
 <translation id="7583004045319035904">اپنے پوشیدگی ٹیبز کو غیر مقفل کرنے کیلئے <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> کا استعمال کریں۔</translation>
+<translation id="7588149553568293500">اپنے انتخابات کے بارے میں جانیں۔</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{‫{COUNT} غیر فعال ٹیب بند کریں؟}other{‫{COUNT} غیر فعال ٹیبز بند کریں؟}}</translation>
 <translation id="7598439272585186139">مزید سیکیورٹی حاصل کریں</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> کا کبھی بھی ترجمہ نہ کریں</translation>
@@ -2053,6 +2058,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9066097352053395362">'بُک مارک میں ترمیم کریں' کو چھپائیں</translation>
 <translation id="9070824521421603770">آپ سائن آؤٹ ہو جائیں گے اور ٹیبز بند ہو جائیں گے</translation>
 <translation id="9072837124205571418">تمام آلات سے ٹیب گروپس</translation>
+<translation id="9075970015528364598">‏‫Google AI کو بہتر بنانے کے لیے چیٹس کا جائزہ لیا جاتا ہے اور انہیں استعمال کیا جاتا ہے۔ ‫<ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> کو بھی آپ کی سرگرمی کے ساتھ محفوظ کیا جاتا ہے۔</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> کا پاس ورڈ اپ ڈیٹ کریں؟</translation>
 <translation id="9083838294503912307">سبھی آلات پر مطابقت پذیری اور ذاتی نوعیت سازی کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="9084367296493549256">{count,plural, =1{آپ کے پاس {count} کمزور پاس ورڈ ہے جس سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔}other{آپ کے پاس {count} کمزور پاس ورڈز ہیں جن سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔ محفوظ رہنے کے لیے انہیں ابھی صحیح کریں۔}}</translation>

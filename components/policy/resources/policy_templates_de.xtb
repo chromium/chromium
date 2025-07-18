@@ -3692,6 +3692,14 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="3647212518036289905">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche GSSAPI-Bibliothek für die HTTP-Authentifizierung verwendet werden soll. Gib entweder nur den Namen einer Bibliothek oder einen vollständigen Pfad an.
 
       Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> einen Standardnamen für die Bibliothek.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+Die Funktion „ServiceWorkerAutoPreload“ sendet eine Netzwerkanfrage für eine Hauptressource, während sie gleichzeitig den Bootstrap-Prozess für den ServiceWorker startet.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird in <ph name="PRODUCT_NAME" /> „ServiceWorkerAutoPreload“ aktiviert. Die Navigationsanfrage wird in einigen Szenarien automatisch gesendet, während der ServiceWorker gestartet wird, z. B. wenn der ServiceWorker nicht ausgeführt wird.
+
+Wenn die Richtlinie deaktiviert ist, wird in <ph name="PRODUCT_NAME" /> „ServiceWorkerAutoPreload“ nicht aktiviert. Die Navigationsanfrage wird immer gesendet, nachdem der ServiceWorker gestartet wurde.
+
+Diese Richtlinie ist eine vorübergehende Maßnahme zur Steuerung der Funktion und wird in M144 entfernt.</translation>
 <translation id="3650122925429054129">„Mauszeiger hervorheben“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="365093517647222762">Meldet Website-Telemetriedaten für zulässige URLs, die in der Richtlinie <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> für verknüpfte Nutzer angegeben sind.
 
@@ -3855,6 +3863,10 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 <translation id="376375951585423504">Persistentes Kontingent deaktivieren.</translation>
 <translation id="3765260570442823273">Dauer der Warnmeldung zur Abmeldung bei Inaktivität</translation>
 <translation id="3766695867369523703">Drittanbieter-Speicherpartitionierung standardmäßig zulassen.</translation>
+<translation id="3770044943398389276">Standardmäßig verschiebt Floating‑SSO nur persistente Cookies zwischen Geräten. Mit dieser Richtlinie kann festgelegt werden, ob auch Sitzungscookies einbezogen werden sollen. Sie wird nur angewendet, wenn die Richtlinie „<ph name="FLOATING_SSO_ENABLED_POLICY_NAME" />“ aktiviert ist.
+
+Wenn diese Richtlinie aktiviert ist, synchronisiert Floating‑SSO sowohl Sitzungs- als auch persistente Cookies.
+Wenn sie deaktiviert oder nicht konfiguriert ist, synchronisiert Floating‑SSO nur persistente Cookies.</translation>
 <translation id="3770407495263198786">Mit dieser Richtlinie können Administratoren eine Liste von Druckern für die Nutzer festlegen. Die Druckerauswahl wird angezeigt, wenn die Nutzer zum ersten Mal einen Druckauftrag ausführen.
 
       So kannst du die Richtlinie verwenden:
@@ -3954,6 +3966,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="3845318141474759319">Hintergrund basierend auf generativer KI ohne Verbesserung von KI‑Modellen zulassen</translation>
+<translation id="3848302969721895938">„ServiceWorkerAutoPreload“ deaktivieren</translation>
 <translation id="3849923496599301707">„Chrome-Apps im Kioskmodus zulassen“ erzwingen</translation>
 <translation id="3851443303439635700">Steuert den Verschachtelungsgrenzwert, bevor die JavaScript-Funktion „setTimeout()“ verzögert wird</translation>
 <translation id="3854609566862485607">Über diese Richtlinie wird ein benutzerdefiniertes Label gesteuert, mit dem verwaltete Profile identifiziert werden können. Bei verwalteten Profilen wird dieses Label neben dem Avatar in der Symbolleiste angezeigt. Das benutzerdefinierte Label wird nicht übersetzt.
@@ -4260,6 +4273,7 @@ Bei <ph name="PRODUCT_OS_NAME" /> bezieht sich diese Richtlinie auf die Remoteat
 
 Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Sonstiges</translation>
+<translation id="4071922398488395340">Sitzungscookies in Floating‑SSO-Funktionalität einbeziehen</translation>
 <translation id="4072225853834793549">Kurzbefehle für Bedienungshilfen auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="4074922053013383215">Moderate Arbeitsspeichereinsparungen.</translation>
 <translation id="4075675819066819571">Ablage auf der linken Seite des Bildschirms anzeigen</translation>
@@ -6854,6 +6868,7 @@ Mit der Richtlinie „<ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />“ 
 <translation id="5815129011704381141">Nach Update automatisch neu starten</translation>
 <translation id="5815990343032461023">Altes Verhalten: Kiosk-Chrome-Apps werden über das Erweiterungssystem anhand der Update-URL aus dem Erweiterungsmanifest aktualisiert sowie über die Caching-Verwaltung anhand der Update-URL aus der Richtlinie</translation>
 <translation id="5816688024515869030">Anbieter der <ph name="UIA_NAME" /> deaktivieren.</translation>
+<translation id="581737504822041364">Zulassen, dass der ServiceWorker Navigationsanfragen sendet, ohne zu warten, bis er gestartet wird</translation>
 <translation id="5828008775808363753">Browser nicht nach dem Anmelden starten</translation>
 <translation id="582857022372205358">Duplexdruck (kurze Kante) aktivieren</translation>
 <translation id="5830196507442186669">Geräten die Verwendung von <ph name="BOREALIS_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> erlauben</translation>
@@ -9159,6 +9174,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand der Quelle ab, daher werden alle Pfade des URL-Musters ignoriert.
 
       Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
+<translation id="7358299261566939984">„ServiceWorkerAutoPreload“ aktivieren</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> aktivieren</translation>
 <translation id="7362566456990049303">Nur Nutzer</translation>
 <translation id="736486789939370545">Installation externer Erweiterungen erlauben</translation>
@@ -11525,6 +11541,7 @@ Hinweis: Durch einen Neustart des Geräts wird der Cache geleert. Auch für Nutz
 <translation id="9073405975862312795">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte die Zeiten gemeldet, zu denen ein Nutzer auf dem Gerät aktiv ist
 
       Ist die Richtlinie deaktiviert, werden die Zeiten von registrierten Geräten weder aufgezeichnet noch gemeldet.</translation>
+<translation id="9075183018289926453">Sitzungscookies nicht mit Floating‑SSO synchronisieren</translation>
 <translation id="9076477053438828079">Nutzernamen und ‑fotos immer anzeigen</translation>
 <translation id="9077227880520270584">Timer für automatische Anmeldung in lokalem Gerätekonto</translation>
 <translation id="9079158199923156713">URL des Unternehmenslogos für ein verwaltetes Profil</translation>

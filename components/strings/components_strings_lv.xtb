@@ -1022,6 +1022,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2690699652723742414">Pēdējās 30 dienas</translation>
 <translation id="2691385045260836588">Modelis</translation>
 <translation id="2691924980723297736">Drošības brīdinājums</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core ļauj pārvaldīt pārlūka politikas, lietotnes un paplašinājumus mākonī.</translation>
 <translation id="2697248912349197812">Jautāt <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Apakšizvēlne ir pieejama. Izmantojiet īsinājumtaustiņu (<ph name="SHORTCUT" />), lai pārietu uz papildu opcijām.</translation>
 <translation id="2701514975700770343">Virspuse uz leju</translation>
@@ -3141,6 +3142,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6284449872909111707">Īsziņas un tūlītējā ziņojumapmaiņa</translation>
 <translation id="6284517535531159884">Variantu izplatīšanas veids</translation>
 <translation id="6287197303017372967">Iegūt detalizētas norādes nokļūšanai galamērķī, izmantojot navigācijas funkciju.</translation>
+<translation id="6288559570252410796">Uzdot jautājumu Google MI režīmā</translation>
 <translation id="628877850550444614">Atrasta atlaide</translation>
 <translation id="6289939620939689042">Lapas krāsa</translation>
 <translation id="6292819926564202163">Jūsu meklētājprogramma pārlūkā Chrome</translation>
@@ -4357,6 +4359,7 @@ Papildu informācija:
 <translation id="831997045666694187">Vakarā</translation>
 <translation id="8321448084834652864">Jebkurā brīdī Chromium iestatījumos varat mainīt meklētājprogrammu.</translation>
 <translation id="8321476692217554900">paziņojumi</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />; nospiediet taustiņu Enter, lai uzdotu jautājumu Google MI režīmā</translation>
 <translation id="8322402665880479974">Gultas un gultu galvgaļi</translation>
 <translation id="8323505966575306467">Pievienojiet papildu aizsardzību parolēm</translation>
 <translation id="832547548543012337">Dzēst pasi</translation>
@@ -4647,6 +4650,7 @@ Papildu informācija:
 <translation id="883848425547221593">Citas grāmatzīmes</translation>
 <translation id="8842351563145134519">Maksājumu veidi, kas pieejami aizpildīšanai pieskaroties, ir atvērti pusekrāna augstumā.</translation>
 <translation id="884264119367021077">Piegādes adrese</translation>
+<translation id="8849032795302265570">Ērti pārvaldiet, kā jūsu darbinieki pārlūko tīmekli</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Nav atrasts atsaukšanas mehānisms.</translation>
 <translation id="8849262850971482943">Papildu drošībai izmantojiet virtuālo karti</translation>
@@ -4896,6 +4900,7 @@ Papildu informācija:
 <translation id="950926967802086924">Piekļuves atslēga • Google paroļu pārvaldnieks</translation>
 <translation id="955429569736351433">Atļauts izmantot VR</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome sinhronizācijas iestatījumos<ph name="END_LINK" /> varat atteikties no šīs politikas.</translation>
+<translation id="95676157383774931">MI režīma poga; aktivizējiet, lai uzdotu jautājumu Google MI režīmā</translation>
 <translation id="95721182352849470">Dzeltena 2</translation>
 <translation id="961663415146723894">Iesējums apakšdaļā</translation>
 <translation id="961856697154696964">Dzēst pārlūkošanas datus</translation>

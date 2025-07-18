@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} senha}one{{count} senha}other{{count} senhas}}</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
+<translation id="1287229685519872919">dados do Google Workspace</translation>
 <translation id="1291506870746876680">As permissões de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> serão redefinidas como desativadas quando você sair desse site.</translation>
 <translation id="129553762522093515">Fechadas recentemente</translation>
 <translation id="1296581780163690620">Baixar o arquivo? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3940195383040445971">Monitorar preço nas guias</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Fechar {COUNT} guia}one{Fechar {COUNT} guia}other{Fechar {COUNT} guias}}</translation>
 <translation id="3948600256434252210">Deslize para a direita para entrar no modo de navegação anônima.</translation>
+<translation id="3949712484278252781">Suas conversas com o Gemini e seus <ph name="GOOGLE_WORKSPACE_DATA" /> não vão passar por revisão humana nem ser usados para aprimorar os modelos de IA generativa.</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para fazer login mais rápido</translation>
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="3955740319737378355">OK</translation>
@@ -1123,6 +1125,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="555749644339804659">Verificando senhas…</translation>
 <translation id="5559567453458728487">Converta unidades de medida encontradas na Web</translation>
 <translation id="556042886152191864">Botão</translation>
+<translation id="5565871407246142825">Cartões de crédito</translation>
 <translation id="5567439033041178034">SAIBA MAIS</translation>
 <translation id="5572648434713976849">Você vai receber sugestões melhores na barra de endereço</translation>
 <translation id="5576885723883013398">Nova janela</translation>
@@ -1637,6 +1640,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7512909159512473473">Digite a senha longa…</translation>
 <translation id="7514365320538308">Baixar</translation>
 <translation id="7514530647142300459">Continue usando as senhas na sua Conta do Google <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">informações sobre seu local</translation>
 <translation id="7522948500476882302">Ao baixar um arquivo, você pode escolher se ele será excluído automaticamente em 1 mês</translation>
 <translation id="7524055474074101597">Acesse suas senhas e muito mais em apps.</translation>
 <translation id="75362970626182391">Novo grupo de guias</translation>
@@ -1651,6 +1655,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7582666837709186351">Use a câmera para traduzir textos em fotos ou ao seu redor.</translation>
 <translation id="7582857256643797524">Configuração ativada no dispositivo</translation>
 <translation id="7583004045319035904">Use o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear suas guias anônimas.</translation>
+<translation id="7588149553568293500">Saiba mais sobre suas opções.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Fechar {COUNT} guia inativa?}one{Fechar {COUNT} guia inativa?}other{Fechar {COUNT} guias inativas?}}</translation>
 <translation id="7598439272585186139">Aumente a segurança</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
@@ -2053,6 +2058,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9066097352053395362">Ocultar opção "Editar favorito"</translation>
 <translation id="9070824521421603770">Sua conta será desconectada e as guias serão fechadas</translation>
 <translation id="9072837124205571418">Grupos de guias de todos os dispositivos</translation>
+<translation id="9075970015528364598">As conversas são analisadas e usadas para aprimorar a IA do Google. <ph name="LEARN_ABOUT_CHOICES" /> As <ph name="INFO_ABOUT_LOCATION" /> também são armazenadas com sua atividade.</translation>
 <translation id="9081058212938299310">Atualizar senha para <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar vários dispositivos, ative a sincronização.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Você tem {count} senha fraca que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha fraca que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas fracas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>

@@ -720,6 +720,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4306489587293957491">Inserisci</translation>
 <translation id="4307992518367153382">Impostazioni di base</translation>
 <translation id="4311652497846705514">Aprire il PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Possibile spam}other{Possibile spam (#)}}</translation>
 <translation id="4320177379694898372">Nessuna connessione Internet</translation>
 <translation id="4326079409704643112">Verifica la tua identità per usare e salvare i dati di Chrome nel tuo Account Google</translation>
 <translation id="433213510553688132">In attesa di seguire…</translation>
@@ -1058,6 +1059,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="580893287573699959">Gestisci gli argomenti e i siti che ti interessano</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ora fa}other{# ore fa}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Tutti i diritti riservati.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mostra notifica}other{Mostra notifiche}}</translation>
 <translation id="5814749351757353073">Rimani al passo con i tuoi siti preferiti</translation>
 <translation id="5823093032261493462">Scaricare comunque "<ph name="FILE_NAME" />" da <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Puoi eliminare i dati nelle Impostazioni di Chrome</translation>

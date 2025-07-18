@@ -720,6 +720,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4306489587293957491">Kiritish</translation>
 <translation id="4307992518367153382">Asosiy</translation>
 <translation id="4311652497846705514">PDF faylni ochilsinmi?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Ehtimoliy spam}other{Ehtimoliy spam (#)}}</translation>
 <translation id="4320177379694898372">Internet aloqasi yo‘q</translation>
 <translation id="4326079409704643112">Chrome maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="433213510553688132">Obuna rasmiylashtirilmoqda…</translation>
@@ -1058,6 +1059,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="580893287573699959">Qiziq boʻlgan mavzu va saytlarni boshqarish</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# soat oldin}other{# soat oldin}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Bildirishnoma chiqarish}other{Bildirishnoma chiqarish}}</translation>
 <translation id="5814749351757353073">Sevimli saytlardan xabar olib turing</translation>
 <translation id="5823093032261493462"><ph name="FILE_NAME" /> fayli <ph name="DOWNLOAD_DOMAIN" /> domenidan baribir yuklab olinsinmi?</translation>
 <translation id="5828921839638612740">Maʼlumotlarni Chrome sozlamalari orqali oʻchirish mumkin</translation>

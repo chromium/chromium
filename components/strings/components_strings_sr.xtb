@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">Помозите да побољшамо безбедност на вебу за све тако што ћете слати <ph name="BEGIN_WHITEPAPER_LINK" />URL-ове неких страница које посећујете, ограничене информације о систему и одређени садржај страница<ph name="END_WHITEPAPER_LINK" /> Google-у <ph name="BEGIN_PRIVACY_PAGE_LINK" />Политика приватности<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Текст и садржај странице се шаљу Google-у и могу да се користе за побољшање ове функције.
   <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Када купујете у Chrome-у, прегледајте начине плаћања који нису картице као опцију</translation>
 <translation id="196146181975453736">Обавите једнократну безбедносну проверу да бисте брже плаћали</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> – обележивачи</translation>
 <translation id="1973335181906896915">Грешка при серијализацији</translation>
@@ -3035,6 +3036,7 @@
 <translation id="6101583188322746099">Услуге доставе намирница</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Направите сајт</translation>
+<translation id="6105511947520166941">Следећи пут платите помоћу Pix-а директно у Chrome-у</translation>
 <translation id="6106989379647458772">Веб-страница на адреси <ph name="PAGE" /> можда привремено не функционише или је трајно премештена на нову веб-адресу.</translation>
 <translation id="6107012941649240045">Издато за</translation>
 <translation id="6107864469867367783">Корисник <ph name="USER_DISPLAY_NAME" /> је променио назив групе</translation>

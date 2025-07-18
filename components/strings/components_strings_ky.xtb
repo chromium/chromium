@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">Акыркы 30 күн</translation>
 <translation id="2691385045260836588">Үлгү</translation>
 <translation id="2691924980723297736">Коопсуздук эскертүүсү</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core'дун жардамы менен булут аркылуу серепчинин саясаттарын, колдонмолорду жана кеңейтүүлөрдү тескей аласыз</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />'дан сураңыз</translation>
 <translation id="2699273987028089219">Көмөкчү меню жеткиликтүү, кошумча параметрлерге өтүү үчүн <ph name="SHORTCUT" /> басыңыз.</translation>
 <translation id="2701514975700770343">Алдыңкы бетин ылдый каратып</translation>
@@ -3142,6 +3143,7 @@
 <translation id="6284449872909111707">SMS жөнөтүү жана ыкчам жазышуу</translation>
 <translation id="6284517535531159884">Модификациялар булагынын түрү</translation>
 <translation id="6287197303017372967">Багыт алуу функциясын колдонуп, бара турган жерге багыттарды алыңыз.</translation>
+<translation id="6288559570252410796">Google'дун ЖИ режиминен суроо</translation>
 <translation id="628877850550444614">Арзандатуу табылды</translation>
 <translation id="6289939620939689042">Барактын түсү</translation>
 <translation id="6292819926564202163">Chrome'догу издөө куралыңыз</translation>
@@ -4357,6 +4359,7 @@
 <translation id="831997045666694187">Кече</translation>
 <translation id="8321448084834652864">Демейки издөө куралын Chromium'дун параметрлеринен каалаган убакта өзгөртө аласыз.</translation>
 <translation id="8321476692217554900">билдирмелер</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google'дун ЖИ режиминен суроо үчүн "Enter" баскычын басыңыз</translation>
 <translation id="8322402665880479974">Керебеттер жана алардын алдыңкы жөлөнгүчтөрү</translation>
 <translation id="8323505966575306467">Сырсөздөрдү бекемирээк коргоңуз</translation>
 <translation id="832547548543012337">Паспортту өчүрүү</translation>
@@ -4646,6 +4649,7 @@
 <translation id="883848425547221593">Башка кыстармалар</translation>
 <translation id="8842351563145134519">Тийип толтурула турган төлөм ыкмалары жарымына чейин ачылды.</translation>
 <translation id="884264119367021077">Жеткирүү дареги</translation>
+<translation id="8849032795302265570">Жумушчуларыңыз Интернетти кандайча серептерин оңой тескеңиз</translation>
 <translation id="8849231003559822746">130 x 180 мм.</translation>
 <translation id="884923133447025588">Жоюу механизми табылган жок.</translation>
 <translation id="8849262850971482943">Кошумча коопсуздук үчүн виртуалдык картаңызды колдонуңуз</translation>
@@ -4896,6 +4900,7 @@
 <translation id="950926967802086924">Киргизүүчү ачкыч • Сырсөздөрдү башкаргыч</translation>
 <translation id="955429569736351433">VR'га уруксат берилет</translation>
 <translation id="955627189349169688">Бул эрежелерден <ph name="BEGIN_LINK" />Chrome шайкештирүү параметрлеринен<ph name="END_LINK" /> баш тарта аласыз.</translation>
+<translation id="95676157383774931">ЖИ режиминин баскычы, Google'дун ЖИ режиминен суроо үчүн иштетүү</translation>
 <translation id="95721182352849470">Сары 2</translation>
 <translation id="961663415146723894">Төмөн жагын байлоо</translation>
 <translation id="961856697154696964">Серептөө дайындарын өчүрүү</translation>

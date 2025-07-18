@@ -1026,6 +1026,7 @@
 <translation id="2690699652723742414">Վերջին 30 օրը</translation>
 <translation id="2691385045260836588">Մոդել</translation>
 <translation id="2691924980723297736">Զգուշացում</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core-ը թույլ է տալիս ձեզ ամպից կառավարել դիտարկիչի կանոնները, հավելվածները և ընդլայնումները</translation>
 <translation id="2697248912349197812">Հարցրեք <ph name="KEYWORD_SHORT_NAME" />-ին</translation>
 <translation id="2699273987028089219">Ենթացանկը հասանելի է, օգտագործեք <ph name="SHORTCUT" /> դյուրանցումը՝ լրացուցիչ ընտրանքներին անցնելու համար։</translation>
 <translation id="2701514975700770343">Երեսի կողմով ներքև</translation>
@@ -3152,6 +3153,7 @@
 <translation id="6284449872909111707">SMS-ներ և ակնթարթային հաղորդակցում</translation>
 <translation id="6284517535531159884">Տարբերակների նախնական տեսակ</translation>
 <translation id="6287197303017372967">Գծել երթուղիներ դեպի նպատակակետ քայլ առ քայլ ցուցումների միջոցով՝ օգտագործելով նավիգացիան։</translation>
+<translation id="6288559570252410796">Հարցնել Google-ի ԱԲ ռեժիմին</translation>
 <translation id="628877850550444614">Գտնվել է զեղչ</translation>
 <translation id="6289939620939689042">Էջի գույնը</translation>
 <translation id="6292819926564202163">Ձեր որոնողական համակարգը Chrome-ում</translation>
@@ -4367,6 +4369,7 @@
 <translation id="831997045666694187">Մինչև երեկո</translation>
 <translation id="8321448084834652864">Դուք ցանկացած ժամանակ կարող եք փոխել ձեր որոնողական համակարգը Chromium-ի կարգավորումներում։</translation>
 <translation id="8321476692217554900">ծանուցումներ</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, սեղմեք Enter՝ Google-ի ԱԲ ռեժիմին հարցնելու համար</translation>
 <translation id="8322402665880479974">Մահճակալներ և մահճակալների պարագաներ</translation>
 <translation id="8323505966575306467">Ուժեղացրեք ձեր գաղտնաբառերի պաշտպանությունը</translation>
 <translation id="832547548543012337">Ջնջել անձնագիրը</translation>
@@ -4656,6 +4659,7 @@
 <translation id="883848425547221593">Այլ էջանիշներ</translation>
 <translation id="8842351563145134519">Վճարման հասանելի եղանակները, որոնք կարելի է լրացնել հպումով, ցուցադրված են էկրանի կեսով։</translation>
 <translation id="884264119367021077">Առաքման հասցե</translation>
+<translation id="8849032795302265570">Հեշտությամբ կառավարեք աշխատակիցների աշխատանքը համացանցում</translation>
 <translation id="8849231003559822746">130 x 180 մմ</translation>
 <translation id="884923133447025588">Հետկանչման մեխանիզմ չի հայտնաբերվել:</translation>
 <translation id="8849262850971482943">Ավելացված անվտանգության կարգավորման համար օգտագործեք ձեր վիրտուալ քարտը</translation>
@@ -4905,6 +4909,7 @@
 <translation id="950926967802086924">Մուտքի բանալի • Google գաղտնաբառերի կառավարիչ</translation>
 <translation id="955429569736351433">Տրամադրվել է VR-ի օգտագործման թույլտվություն</translation>
 <translation id="955627189349169688">Դուք կարող եք անջատել այս գործառույթը <ph name="BEGIN_LINK" />Chrome Sync-ի կարգավորումներում<ph name="END_LINK" />։</translation>
+<translation id="95676157383774931">ԱԲ ռեժիմի կոճակ, ակտիվացրեք՝ Google-ի ԱԲ ռեժիմին հարցնելու համար</translation>
 <translation id="95721182352849470">Դեղին 2</translation>
 <translation id="961663415146723894">Ամրակար ներքևում</translation>
 <translation id="961856697154696964">Ջնջել այցելությունները</translation>

@@ -1021,6 +1021,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2690699652723742414">Oxirgi 30 kun</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Ogohlantirish</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core brauzer qoidalarini, ilova va kengaytmalarni bulut orqali boshqarish imkonini beradi</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />dan soʻrash</translation>
 <translation id="2699273987028089219">Quyi menyusi mavjud. Qoʻshimcha parametrlarni ochish uchun <ph name="SHORTCUT" />ni bosing.</translation>
 <translation id="2701514975700770343">Orqa tomonida</translation>
@@ -3137,6 +3138,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6284449872909111707">Matnli va tezkor xabar almashish</translation>
 <translation id="6284517535531159884">Talqin turlari</translation>
 <translation id="6287197303017372967">Navigatsiya yordamida manzilgacha qadamli koʻrsatkichlarni oling.</translation>
+<translation id="6288559570252410796">Google AI rejimida soʻrash</translation>
 <translation id="628877850550444614">Chegirma mavjud</translation>
 <translation id="6289939620939689042">Sahifa rangi</translation>
 <translation id="6292819926564202163">Chrome brauzerida qidiruv vositasi</translation>
@@ -4352,6 +4354,7 @@ Batafsil axborot:
 <translation id="831997045666694187">Kechqurun</translation>
 <translation id="8321448084834652864">Qidiruv vositasini istalgan vaqt Chromium sozlamalari orqali almashtirishingiz mumkin.</translation>
 <translation id="8321476692217554900">bildirishnomalar</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI rejimida soʻrash uchun Enter tugmasini bosing</translation>
 <translation id="8322402665880479974">Yotoq va bosh tomon mebellar</translation>
 <translation id="8323505966575306467">Parollarni qoʻshimcha himoyalang</translation>
 <translation id="832547548543012337">Pasportni oʻchirish</translation>
@@ -4641,6 +4644,7 @@ Batafsil axborot:
 <translation id="883848425547221593">Boshqa xatcho‘plar</translation>
 <translation id="8842351563145134519">Teginib kiritiladigan toʻlov usullari roʻyxati yarim hajmda ochildi.</translation>
 <translation id="884264119367021077">Yetkazib berish manzili</translation>
+<translation id="8849032795302265570">Xodimlar internetni qanday kezishini oson boshqaring</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Javob mexanizmi topilmadi.</translation>
 <translation id="8849262850971482943">Xavfsizlikni oshirish uchun virtual kartadan foydalaning</translation>
@@ -4891,6 +4895,7 @@ Batafsil axborot:
 <translation id="950926967802086924">Kirish kaliti • Google Parollar menejeri</translation>
 <translation id="955429569736351433">VR ishlatishga ruxsat berildi</translation>
 <translation id="955627189349169688">Bu qoidani <ph name="BEGIN_LINK" />Chrome Sync sozlamalari<ph name="END_LINK" /> orqali rad etish mumkin.</translation>
+<translation id="95676157383774931">AI rejimi tugmasi, Google AI rejimida soʻrash uchun faollashtiring</translation>
 <translation id="95721182352849470">Sariq 2</translation>
 <translation id="961663415146723894">Quyi chekkasini belgilash</translation>
 <translation id="961856697154696964">Brauzer maʼlumotlarini oʻchirish</translation>

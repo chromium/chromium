@@ -3839,6 +3839,15 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
 
       Se ela não for definida, o <ph name="PRODUCT_NAME" /> usará um nome de biblioteca padrão.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+O recurso ServiceWorkerAutoPreload envia uma solicitação de rede para um recurso principal ao mesmo tempo que inicia o processo de inicialização do ServiceWorker.
+
+Se a política for ativada ou deixada sem definição, o
+<ph name="PRODUCT_NAME" /> vai ativar o ServiceWorkerAutoPreload. A solicitação de navegação é enviada automaticamente ao iniciar o ServiceWorker em alguns cenários, por exemplo, o ServiceWorker não está em execução.
+
+Se estiver desativado, o <ph name="PRODUCT_NAME" /> não vai ativar o ServiceWorkerAutoPreload. A solicitação de navegação é enviada sempre após o início do ServiceWorker.
+
+Essa política é uma medida temporária para controlar o recurso e será removida na versão M144.</translation>
 <translation id="3650122925429054129">Desativar o destaque do cursor na tela de login</translation>
 <translation id="365093517647222762">Informa os dados de telemetria do site para URLs permitidos especificados pela política <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> para usuários afiliados.
 
@@ -4024,6 +4033,10 @@ Consulte as restrições do <ph name="PRIVATE_NETWORK_ACCESS" /> em https://wicg
 <translation id="376375951585423504">Desativar cota persistente.</translation>
 <translation id="3765260570442823273">Duração da mensagem de aviso de saída de usuário ocioso</translation>
 <translation id="3766695867369523703">Permitir o particionamento de armazenamento de terceiros por padrão.</translation>
+<translation id="3770044943398389276">Por padrão, o SSO flutuante move apenas cookies persistentes entre dispositivos. Essa política controla se os cookies de sessão também devem ser incluídos. Ela só entra em vigor quando a política <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> está ativada.
+
+Quando essa política está ativada, o SSO flutuante sincroniza cookies de sessão e persistentes.
+Quando essa política estiver desativada ou não for definida, o SSO flutuante vai sincronizar apenas cookies persistentes.</translation>
 <translation id="3770407495263198786">A definição da política permite aos administradores configurar uma lista de impressoras para os usuários. A seleção da impressora ocorre na primeira vez que os usuários tentam imprimir.
 
       Ao usar a política:
@@ -4124,6 +4137,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Permitir plano de fundo de IA generativa sem melhorar os modelos de IA</translation>
+<translation id="3848302969721895938">Desativar ServiceWorkerAutoPreload</translation>
 <translation id="3849923496599301707">Forçar a permissão dos apps do Chrome no modo quiosque</translation>
 <translation id="3851443303439635700">Controla o limite de aninhamento antes que a função setTimeout() do JavaScript comece a ser ajustada.</translation>
 <translation id="3854609566862485607">Esta política controla um rótulo personalizado usado para identificar perfis gerenciados. Para perfis gerenciados, esse rótulo vai aparecer ao lado do avatar na barra de ferramentas. O rótulo personalizado não será traduzido.
@@ -4434,6 +4448,7 @@ No <ph name="PRODUCT_OS_NAME" />, esta política está relacionada a atestados r
 
 Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Diversos</translation>
+<translation id="4071922398488395340">Incluir cookies de sessão na funcionalidade de SSO flutuante</translation>
 <translation id="4072225853834793549">Desativar atalhos de acessibilidade na tela de login</translation>
 <translation id="4074922053013383215">Economia de memória moderada.</translation>
 <translation id="4075675819066819571">Posicionar a estante no lado esquerdo da tela</translation>
@@ -7127,6 +7142,7 @@ Se a política não for definida, isso será funcionalmente equivalente a defini
 <translation id="5815129011704381141">Reinicializar automaticamente após a atualização</translation>
 <translation id="5815990343032461023">Comportamento legado: os apps do Chrome para quiosque serão atualizados pelo sistema de extensão usando o URL de atualização do manifesto de extensão e armazenando o gerenciador em cache com o URL definido na política</translation>
 <translation id="5816688024515869030">Desativar o provedor de <ph name="UIA_NAME" />.</translation>
+<translation id="581737504822041364">Permitir que o ServiceWorker envie solicitações de navegação sem esperar a inicialização</translation>
 <translation id="5828008775808363753">Não abrir o navegador na inicialização</translation>
 <translation id="582857022372205358">Ativar impressão duplex de borda curta</translation>
 <translation id="5830196507442186669">Permitir que dispositivos usem a <ph name="BOREALIS_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9566,6 +9582,7 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
       Para acessar informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência com base na origem, então os caminhos no padrão do URL são ignorados.
 
       Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> será aplicada, se configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
+<translation id="7358299261566939984">Ativar ServiceWorkerAutoPreload</translation>
 <translation id="7358359585412734876">Ativar o <ph name="LACROS_NAME" /></translation>
 <translation id="7362566456990049303">Somente o usuário</translation>
 <translation id="736486789939370545">Permitir a instalação de extensões externas</translation>
@@ -12026,6 +12043,7 @@ Observação: a reinicialização do dispositivo limpa o cache. Até os dados te
 <translation id="9073405975862312795">Se a política for definida como "Ativada" ou não for definida, os períodos de atividade do usuário nos dispositivos registrados serão informados.
 
       Se a política for definida como "Desativada", os períodos de atividade nos dispositivos registrados não serão gravados ou informados.</translation>
+<translation id="9075183018289926453">Não sincronizar cookies de sessão com o SSO flutuante</translation>
 <translation id="9076477053438828079">Sempre mostrar nomes e fotos dos usuários</translation>
 <translation id="9077227880520270584">Timer do login automático da conta local do dispositivo</translation>
 <translation id="9079158199923156713">URL do logotipo da empresa para um perfil gerenciado</translation>

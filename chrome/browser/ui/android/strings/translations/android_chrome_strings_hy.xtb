@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">Մուտքագրեք</translation>
 <translation id="4307992518367153382">Հիմնական</translation>
 <translation id="4311652497846705514">Բացե՞լ PDF ֆայլը</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Հնարավոր սպամ}one{Հնարավոր սպամ (#)}other{Հնարավոր սպամ (#)}}</translation>
 <translation id="4320177379694898372">Համացանցի կապակցում չկա</translation>
 <translation id="4326079409704643112">Հաստատեք ձեր ինքնությունը՝ Chrome-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար</translation>
 <translation id="433213510553688132">Բաժանորդագրում…</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">Կառավարեք ձեզ հետաքրքրող թեմաները և որոնման հարցումները</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ժամ առաջ}one{# ժամ առաջ}other{# ժամ առաջ}}</translation>
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />։ Բոլոր իրավունքները պահպանված են:</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Ցույց տալ ծանուցումը}one{Ցույց տալ ծանուցումը}other{Ցույց տալ ծանուցումները}}</translation>
 <translation id="5814749351757353073">Բաժանորդագրվեք ձեր սիրած կայքերին</translation>
 <translation id="5823093032261493462">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը <ph name="DOWNLOAD_DOMAIN" /> կայքից</translation>
 <translation id="5828921839638612740">Տվյալները կարող եք ջնջել Chrome-ի կարգավորումներում</translation>

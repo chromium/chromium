@@ -720,6 +720,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4306489587293957491">Киргизүү</translation>
 <translation id="4307992518367153382">Негизги параметрлер</translation>
 <translation id="4311652497846705514">PDF файл ачылсынбы?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Спам болушу мүмкүн}other{Спам болушу мүмкүн (#)}}</translation>
 <translation id="4320177379694898372">Интернет жок</translation>
 <translation id="4326079409704643112">Chrome маалыматын Google аккаунтуңузга сактоо жана колдонуу үчүн өзүңүздү ырастаңыз</translation>
 <translation id="433213510553688132">Көз салынууда...</translation>
@@ -1058,6 +1059,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="580893287573699959">Өзүңүздү кызыктырган темаларды жана изделген нерселерди тескеңиз</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# саат мурун}other{# саат мурун}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" /> Баардык укуктар корголгон.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Билдирмени көрсөтүү}other{Билдирмелерди көрсөтүү}}</translation>
 <translation id="5814749351757353073">Жактырган сайттарыңызды колдоно бериңиз</translation>
 <translation id="5823093032261493462"><ph name="DOWNLOAD_DOMAIN" /> сайтындагы "<ph name="FILE_NAME" />" файлын баары бир жүктөп аласызбы?</translation>
 <translation id="5828921839638612740">Бул маалыматты Chrome'дун параметрлеринен өчүрө аласыз</translation>

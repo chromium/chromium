@@ -451,7 +451,7 @@
 <translation id="2996809686854298943">Необходимо указать URL</translation>
 <translation id="3026955690410463085">Добавить ссылку</translation>
 <translation id="3027644380269727216">Подбирается на основе ваших действий на сайте. Параметр включен.</translation>
-<translation id="3027950907978057636">Из приложения "<ph name="APP_LABEL" />"</translation>
+<translation id="3027950907978057636"><ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Без предзагрузки</translation>
 <translation id="3029704984691124060">Кодовые фразы не совпадают</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>

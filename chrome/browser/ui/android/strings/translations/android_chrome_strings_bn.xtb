@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">লিখুন</translation>
 <translation id="4307992518367153382">বুনিয়াদি</translation>
 <translation id="4311652497846705514">পিডিএফ খুলতে চান?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{সম্ভাব্য স্প্যাম}one{সম্ভাব্য স্প্যাম (#)}other{সম্ভাব্য স্প্যাম (#)}}</translation>
 <translation id="4320177379694898372">কোনো ইন্টারনেট সংযোগ নেই</translation>
 <translation id="4326079409704643112">আপনার Google অ্যাকাউন্টের Chrome ডেটা সেভ ও ব্যবহার করতে, আপনার পরিচয় যাচাই করুন</translation>
 <translation id="433213510553688132">অনুসরণ করা হচ্ছে...</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">আপনার আগ্রহের বিষয় ও সাইট ম্যানেজ করুন</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ঘণ্টা আগে}one{# ঘণ্টা আগে}other{# ঘণ্টা আগে}}</translation>
 <translation id="5810288467834065221">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{বিজ্ঞপ্তি দেখুন}one{বিজ্ঞপ্তিগুলি দেখুন}other{বিজ্ঞপ্তিগুলি দেখুন}}</translation>
 <translation id="5814749351757353073">আপনার পছন্দসই সাইটগুলি দেখতে থাকুন</translation>
 <translation id="5823093032261493462">আপনি কি তবুও <ph name="DOWNLOAD_DOMAIN" /> থেকে "<ph name="FILE_NAME" />" ডাউনলোড করতে চান?</translation>
 <translation id="5828921839638612740">Chrome 'সেটিংস'-এ গিয়ে আপনি ডেটা মুছে ফেলতে পারবেন</translation>

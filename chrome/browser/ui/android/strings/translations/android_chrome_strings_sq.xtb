@@ -720,6 +720,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4306489587293957491">Fut</translation>
 <translation id="4307992518367153382">Bazat</translation>
 <translation id="4311652497846705514">Të hapet skedari PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Përmbajtje e bezdisshme e mundshme}other{Përmbajtje e bezdisshme e mundshme (#)}}</translation>
 <translation id="4320177379694898372">Nuk ka lidhje me internetin</translation>
 <translation id="4326079409704643112">Për të përdorur dhe për të ruajtur të dhënat e Chrome në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="433213510553688132">Po ndjek...</translation>
@@ -1058,6 +1059,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="580893287573699959">Menaxho temat dhe sajtet që të interesojnë</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# orë më parë}other{# orë më parë}}</translation>
 <translation id="5810288467834065221">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Shfaq njoftimin}other{Shfaq njoftimet}}</translation>
 <translation id="5814749351757353073">Ndiq sajtet e tua të preferuara</translation>
 <translation id="5823093032261493462">Dëshiron që ta shkarkosh "<ph name="FILE_NAME" />" nga <ph name="DOWNLOAD_DOMAIN" /> gjithsesi?</translation>
 <translation id="5828921839638612740">Mund t'i fshish të dhënat në "Cilësimet" e Chrome</translation>

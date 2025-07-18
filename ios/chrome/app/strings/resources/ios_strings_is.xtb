@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} aðgangsorð}one{{count} aðgangsorð}other{{count} aðgangsorð}}</translation>
 <translation id="1275718070701477396">Valið</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
+<translation id="1287229685519872919">Google Workspace-gögn</translation>
 <translation id="1291506870746876680">Heimildir <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> verða endurstilltar á „slökkt“ þegar þú yfirgefur vefsvæðið.</translation>
 <translation id="129553762522093515">Nýlega lokað</translation>
 <translation id="1296581780163690620">Sækja skrá? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3940195383040445971">Fylgjast með verði á flipum</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Loka {COUNT} flipa}one{Loka {COUNT} flipa}other{Loka {COUNT} flipum}}</translation>
 <translation id="3948600256434252210">Þú getur skoðað í huliðsstillingu með því að strjúka til hægri.</translation>
+<translation id="3949712484278252781">Hvorki samtöl þín við Gemini né <ph name="GOOGLE_WORKSPACE_DATA" /> koma fyrir augu mannlegra yfirlesara né eru notuð til að bæta skapandi gervigreindarlíkön.</translation>
 <translation id="3950479158728806902">Búa til aðgangslykil sjálfkrafa fyrir fljótlegri innskráningu</translation>
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3955740319737378355">Lokið</translation>
@@ -1123,6 +1125,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="555749644339804659">Athugar aðgangsorð…</translation>
 <translation id="5559567453458728487">Umbreyta mælieiningum sem fundust á vefnum</translation>
 <translation id="556042886152191864">Hnappur</translation>
+<translation id="5565871407246142825">Kreditkort</translation>
 <translation id="5567439033041178034">FREKARI UPPLÝSINGAR</translation>
 <translation id="5572648434713976849">Þú færð betri tillögur í veffangastikunni</translation>
 <translation id="5576885723883013398">Nýr gluggi</translation>
@@ -1637,6 +1640,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7512909159512473473">Slá inn aðgangsorð…</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7514530647142300459">Haltu áfram að nota aðgangsorðin á Google-reikningnum þínum <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">Upplýsingar um staðsetningu þína</translation>
 <translation id="7522948500476882302">Veldu að eyða skrá sem þú sækir sjálfkrafa eftir einn mánuð</translation>
 <translation id="7524055474074101597">Fáðu aðgang að aðgangsorðum og fleiru á milli forrita.</translation>
 <translation id="75362970626182391">Nýr flipahópur</translation>
@@ -1651,6 +1655,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7582666837709186351">Þýddu texta á myndum eða á förnum vegi með myndavélinni þinni.</translation>
 <translation id="7582857256643797524">Kveikt er á þessari stillingu í tækinu þínu</translation>
 <translation id="7583004045319035904">Notaðu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til að taka huliðsflipana þína úr lás.</translation>
+<translation id="7588149553568293500">Nánar um val þitt.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Loka {COUNT} óvirkum flipa?}one{Loka {COUNT} óvirkum flipa?}other{Loka {COUNT} óvirkum flipum?}}</translation>
 <translation id="7598439272585186139">Fáðu meira öryggi</translation>
 <translation id="7600965453749440009">Þýða aldrei <ph name="LANGUAGE" /></translation>
@@ -2053,6 +2058,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9066097352053395362">Fela „Breyta bókamerki“</translation>
 <translation id="9070824521421603770">Þú verður skráð(ur) út og flipum verður lokað</translation>
 <translation id="9072837124205571418">Flipahópar úr öllum tækjum</translation>
+<translation id="9075970015528364598">Spjall er yfirfarið og notað til að bæta gervigreind Google. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> eru einnig vistaðar með virkni þinni.</translation>
 <translation id="9081058212938299310">Uppfæra aðgangsorð fyrir <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Þú ert með {count} lélegt aðgangsorð sem gæti stefnt öryggi þínu í hættu. Lagfærðu það núna til að gæta öryggis.}one{Þú ert með {count} lélegt aðgangsorð sem gæti stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}other{Þú ert með {count} léleg aðgangsorð sem gætu stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}}</translation>

@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">Ввести</translation>
 <translation id="4307992518367153382">Основні</translation>
 <translation id="4311652497846705514">Відкрити файл PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Можливо, це спам}one{Можливо, це спам (#)}few{Можливо, це спам (#)}many{Можливо, це спам (#)}other{Можливо, це спам (#)}}</translation>
 <translation id="4320177379694898372">Немає з’єднання з Інтернетом</translation>
 <translation id="4326079409704643112">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, підтвердьте свою особу</translation>
 <translation id="433213510553688132">Додавання до підписок…</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">Керуйте темами й сайтами, які вас цікавлять</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# годину тому}one{# годину тому}few{# години тому}many{# годин тому}other{# години тому}}</translation>
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Показати сповіщення}one{Показати сповіщення}few{Показати сповіщення}many{Показати сповіщення}other{Показати сповіщення}}</translation>
 <translation id="5814749351757353073">Стежте за улюбленими сайтами</translation>
 <translation id="5823093032261493462">Усе одно завантажити файл <ph name="FILE_NAME" /> із сайту <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Ви можете видалити дані в налаштуваннях Chrome</translation>

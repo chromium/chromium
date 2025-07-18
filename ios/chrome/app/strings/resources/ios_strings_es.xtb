@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} contraseña}other{{count} contraseñas}}</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
+<translation id="1287229685519872919">datos de Google Workspace</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> se desactivarán cuando salgas de este sitio.</translation>
 <translation id="129553762522093515">Cerrado recientemente</translation>
 <translation id="1296581780163690620">¿Descargar archivo? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3940195383040445971">Seguir precios en pestañas</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
 <translation id="3948600256434252210">Puedes deslizar hacia la derecha para navegar en Incógnito.</translation>
+<translation id="3949712484278252781">Ni tus conversaciones con Gemini ni tus <ph name="GOOGLE_WORKSPACE_DATA" /> serán revisados por revisores humanos, ni tampoco se usarán para mejorar los modelos de IA generativa.</translation>
 <translation id="3950479158728806902">Crear automáticamente una llave de acceso para iniciar sesión más rápido</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3955740319737378355">Hecho</translation>
@@ -1123,6 +1125,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="555749644339804659">Comprobando contraseñas…</translation>
 <translation id="5559567453458728487">Convierte las unidades de medida que se encuentran en la Web</translation>
 <translation id="556042886152191864">Botón</translation>
+<translation id="5565871407246142825">Tarjetas de crédito</translation>
 <translation id="5567439033041178034">MÁS INFORMACIÓN</translation>
 <translation id="5572648434713976849">Recibirás sugerencias mejoradas en la barra de direcciones</translation>
 <translation id="5576885723883013398">Nueva ventana</translation>
@@ -1637,6 +1640,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7512909159512473473">Introducir frase de contraseña…</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514530647142300459">Sigue usando las contraseñas en tu cuenta de Google <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">La información sobre tu ubicación</translation>
 <translation id="7522948500476882302">Cuando descargues un archivo, elige que se elimine automáticamente al cabo de 1 mes</translation>
 <translation id="7524055474074101597">Accede a tus contraseñas y más en tus aplicaciones.</translation>
 <translation id="75362970626182391">Nuevo grupo de pestañas</translation>
@@ -1651,6 +1655,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7582666837709186351">Traduce texto de tus fotos o de tu entorno con la cámara.</translation>
 <translation id="7582857256643797524">Esta opción está habilitada en tu dispositivo</translation>
 <translation id="7583004045319035904">Usa <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear tus pestañas de incógnito.</translation>
+<translation id="7588149553568293500">Consulta información sobre tus opciones.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{¿Cerrar {COUNT} pestaña inactiva?}other{¿Cerrar {COUNT} pestañas inactivas?}}</translation>
 <translation id="7598439272585186139">Aumenta la seguridad</translation>
 <translation id="7600965453749440009">No traducir nunca del <ph name="LANGUAGE" /></translation>
@@ -2053,6 +2058,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9066097352053395362">Ocultar Editar marcador</translation>
 <translation id="9070824521421603770">Tu sesión y tus pestañas se cerrarán</translation>
 <translation id="9072837124205571418">Grupos de pestañas de todos los dispositivos</translation>
+<translation id="9075970015528364598">Las conversaciones se revisan y se usan para mejorar la IA de Google. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> también se almacena con tu actividad.</translation>
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña de <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Activa la sincronización para sincronizar y personalizar todos tus dispositivos.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Tienes {count} contraseña poco segura que podría poner en riesgo tu seguridad. Soluciona el problema para protegerte.}other{Tienes {count} contraseñas poco seguras que podrían poner en riesgo tu seguridad. Soluciona el problema para protegerte.}}</translation>

@@ -720,6 +720,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4306489587293957491">Masukkan</translation>
 <translation id="4307992518367153382">Dasar</translation>
 <translation id="4311652497846705514">Buka PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Kemungkinan spam}other{Kemungkinan spam (#)}}</translation>
 <translation id="4320177379694898372">Tidak ada koneksi internet</translation>
 <translation id="4326079409704643112">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="433213510553688132">Mengikuti...</translation>
@@ -1058,6 +1059,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="580893287573699959">Mengelola topik dan situs yang Anda minati</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# jam yang lalu}other{# jam yang lalu}}</translation>
 <translation id="5810288467834065221">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Tampilkan notifikasi}other{Tampilkan notifikasi}}</translation>
 <translation id="5814749351757353073">Ikuti kabar terbaru dari situs favorit Anda</translation>
 <translation id="5823093032261493462">Ingin tetap mendownload "<ph name="FILE_NAME" />" dari <ph name="DOWNLOAD_DOMAIN" />?</translation>
 <translation id="5828921839638612740">Anda dapat menghapus data di Setelan Chrome</translation>

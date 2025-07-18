@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">Son 30 gün</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Təhlükəsizlik xəbərdarlığı</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core buluddan brauzer siyasətlərini, tətbiqləri və artırmaları idarə etməyə imkan verir</translation>
 <translation id="2697248912349197812">Soruşun: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Altmenyu əlçatandır, <ph name="SHORTCUT" /> ilə əlavə seçimlərə keçin.</translation>
 <translation id="2701514975700770343">Üzü aşağı</translation>
@@ -3139,6 +3140,7 @@
 <translation id="6284449872909111707">Mətn və Ani Mesajlaşma</translation>
 <translation id="6284517535531159884">Çeşidlərin başlanğıc dəyər növü</translation>
 <translation id="6287197303017372967">Naviqasiya funksiyası vasitəsilə təyinat yeri üzrə istiqamətləri əldə edin.</translation>
+<translation id="6288559570252410796">Google Sİ rejimindən soruşun</translation>
 <translation id="628877850550444614">Endirim tapıldı</translation>
 <translation id="6289939620939689042">Səhifə Rəngi</translation>
 <translation id="6292819926564202163">Chrome-da axtarış mexanizmi</translation>
@@ -4354,6 +4356,7 @@
 <translation id="831997045666694187">Axşam</translation>
 <translation id="8321448084834652864">Chromium ayarlarında axtarış mexanizmini dəyişə bilərsiniz.</translation>
 <translation id="8321476692217554900">bildirişlər</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sİ rejimindən soruşmaq üçün Enter düyməsinə basın</translation>
 <translation id="8322402665880479974">Çarpayı və yataq başlıqları</translation>
 <translation id="8323505966575306467">Parollar üçün daha çox qorunma təmin edin</translation>
 <translation id="832547548543012337">Pasportu silin</translation>
@@ -4643,6 +4646,7 @@
 <translation id="883848425547221593">Digər Əlfəcinlər</translation>
 <translation id="8842351563145134519">Toxunaraq doldurulmaq üçün əlçatan ödəniş metodlarının siyahısı yarı hündürlükdə açılıb.</translation>
 <translation id="884264119367021077">Göndərmə ünvanı</translation>
+<translation id="8849032795302265570">İşçilərin internetdən istifadə qaydasını rahatlıqla idarə edin</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Ləğv etmə mexanizmi tapılmadı.</translation>
 <translation id="8849262850971482943">Əlavə təhlükəsizlik üçün virtual kartınızdan istifadə edin</translation>
@@ -4893,6 +4897,7 @@
 <translation id="950926967802086924">Giriş açarı • Google Parol Meneceri</translation>
 <translation id="955429569736351433">VR icazəsi verildi</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome sinxronizasiyası ayarlarında<ph name="END_LINK" /> bu siyasətdən imtina edə bilərsiniz.</translation>
+<translation id="95676157383774931">Sİ rejimi düyməsi, Google Sİ rejimindən soruşmaq üçün aktivləşdirin</translation>
 <translation id="95721182352849470">Sarı 2</translation>
 <translation id="961663415146723894">Aşağıdan uclarını qovuşdurun</translation>
 <translation id="961856697154696964">Baxış datasını silin</translation>

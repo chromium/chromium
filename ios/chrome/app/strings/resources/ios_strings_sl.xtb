@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} geslo}one{{count} geslo}two{{count} gesli}few{{count} gesla}other{{count} gesel}}</translation>
 <translation id="1275718070701477396">Izbrano</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
+<translation id="1287229685519872919">Podatki iz storitve Google Workspace</translation>
 <translation id="1291506870746876680">Dovoljenja za spletno mesto <ph name="BEGIN_BOLD" />»<ph name="SITE_NAME" />«<ph name="END_BOLD" /> bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
 <translation id="129553762522093515">Nedavno zaprto</translation>
 <translation id="1296581780163690620">Želite prenesti datoteko? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3940195383040445971">Spremljanje cen na zavihkih</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Zapri {COUNT} zavihek}one{Zapri {COUNT} zavihek}two{Zapri {COUNT} zavihka}few{Zapri {COUNT} zavihke}other{Zapri {COUNT} zavihkov}}</translation>
 <translation id="3948600256434252210">Če želite brskati v anonimnem načinu, povlecite desno.</translation>
+<translation id="3949712484278252781">Vaših pogovorov z Geminijem in vaših podatkov iz zbirke <ph name="GOOGLE_WORKSPACE_DATA" /> ne bodo pregledali pregledovalci niti se ti podatki ne bodo uporabljali za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="3950479158728806902">Samodejno ustvarjanje ključa za dostop za hitrejšo prijavo</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3955740319737378355">Končano</translation>
@@ -1123,6 +1125,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="555749644339804659">Preverjanje gesel …</translation>
 <translation id="5559567453458728487">Pretvorba merskih enot, najdenih v spletu</translation>
 <translation id="556042886152191864">Gumb</translation>
+<translation id="5565871407246142825">Kreditne kartice</translation>
 <translation id="5567439033041178034">VEČ O TEM</translation>
 <translation id="5572648434713976849">V naslovni vrstici boste prejemali izboljšane predloge.</translation>
 <translation id="5576885723883013398">Novo okno</translation>
@@ -1637,6 +1640,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7512909159512473473">Vnesite geslo …</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7514530647142300459">Še naprej uporabljajte gesla v računu Google <ph name="EMAIL" /></translation>
+<translation id="7522587739845660862">Podatki o vaši lokaciji</translation>
 <translation id="7522948500476882302">Ko prenesete datoteko, izberite, da se samodejno izbriše čez 1 mesec</translation>
 <translation id="7524055474074101597">Dostopajte do gesel in drugega v aplikacijah.</translation>
 <translation id="75362970626182391">Nova skupina zavihkov</translation>
@@ -1651,6 +1655,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7582666837709186351">Prevedite besedilo na fotografijah ali v okolici s fotoaparatom.</translation>
 <translation id="7582857256643797524">Ta nastavitev je omogočena v vaši napravi</translation>
 <translation id="7583004045319035904">Za odklepanje anonimnih zavihkov uporabite to: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
+<translation id="7588149553568293500">Preberite več o svojih izbirah.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Želite zapreti {COUNT} neaktiven zavihek?}one{Želite zapreti {COUNT} neaktiven zavihek?}two{Želite zapreti {COUNT} neaktivna zavihka?}few{Želite zapreti {COUNT} neaktivne zavihke?}other{Želite zapreti {COUNT} neaktivnih zavihkov?}}</translation>
 <translation id="7598439272585186139">Več varnosti</translation>
 <translation id="7600965453749440009">Nikoli ne prevedi iz jezika: <ph name="LANGUAGE" /></translation>
@@ -2053,6 +2058,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9066097352053395362">Skrij Uredi zaznamek</translation>
 <translation id="9070824521421603770">Odjavljeni boste in zavihki bodo zaprti</translation>
 <translation id="9072837124205571418">Skupine zavihkov iz vseh naprav</translation>
+<translation id="9075970015528364598">Klepeti se pregledujejo in uporabljajo za izboljšanje Googlove umetne inteligence. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> se prav tako shranjujejo z vašo dejavnostjo.</translation>
 <translation id="9081058212938299310">Želite posodobiti geslo za <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Če želite sinhronizirati in prilagajati v vseh napravah, vklopite sinhronizacijo.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Imate {count} šibko geslo, ki lahko ogrozi vašo varnost. Popravite ga, če se želite zavarovati.}one{Imate {count} šibko geslo; ta gesla lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}two{Imate {count} šibki gesli; ta gesla lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}few{Imate {count} šibka gesla, ki lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}other{Imate {count} šibkih gesel, ki lahko ogrozijo vašo varnost. Popravite jih, če se želite zavarovati.}}</translation>

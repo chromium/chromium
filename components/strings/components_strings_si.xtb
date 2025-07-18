@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">පසුගිය දින 30</translation>
 <translation id="2691385045260836588">මාදිලිය</translation>
 <translation id="2691924980723297736">ආරක්‍ෂක අවවාදය</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core මඟින් ඔබට වලාකුළෙන් බ්‍රවුසර ප්‍රතිපත්ති, යෙදුම් සහ දිගු කළමනාකරණය කිරීමට ඉඩ සලසයි</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> විමසන්න</translation>
 <translation id="2699273987028089219">උප මෙනුව තිබේ, අතිරේක විකල්ප වෙත සංචාලනය කිරීමට <ph name="SHORTCUT" /> භාවිතා කරන්න.</translation>
 <translation id="2701514975700770343">මුහුණ පහළට</translation>
@@ -3143,6 +3144,7 @@
 <translation id="6284449872909111707">පාඨ සහ ක්‍ෂණික පණිවුඩ යැවීම</translation>
 <translation id="6284517535531159884">ප්‍රභේදන බිජ වර්ගය</translation>
 <translation id="6287197303017372967">සංචාලන විශේෂාංගය භාවිතයෙන් හැරවුමෙන් හැරවුම මඟ පෙන්වීම සමග ඔබේ ගමනාන්තයට දිශාවන් ලබා ගන්න.</translation>
+<translation id="6288559570252410796">Google AI ප්‍රකාරයෙන් විමසන්න</translation>
 <translation id="628877850550444614">වට්ටම හමු විය</translation>
 <translation id="6289939620939689042">පිටුවේ වර්ණය</translation>
 <translation id="6292819926564202163">Chrome හි ඔබේ සෙවීම් යන්ත්‍රය</translation>
@@ -4358,6 +4360,7 @@
 <translation id="831997045666694187">සවස</translation>
 <translation id="8321448084834652864">ඔබට Chromium හි සැකසීම් තුළ ඕනෑම වේලාවක ඔබේ සෙවීම් යන්ත්‍රය වෙනස් කළ හැක.</translation>
 <translation id="8321476692217554900">දැනුම්දීම්</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI මාදිලිය විමසීමට Enter ඔබන්න</translation>
 <translation id="8322402665880479974">ඇඳන් සහ හිස් ඵලක</translation>
 <translation id="8323505966575306467">ඔබේ මුරපද වලට තවත් ආරක්ෂාවක් එක් කරන්න</translation>
 <translation id="832547548543012337">ගමන් බලපත්‍රය මකන්න</translation>
@@ -4647,6 +4650,7 @@
 <translation id="883848425547221593">වෙනත් පිටු සලකුණු</translation>
 <translation id="8842351563145134519">අඩක් උසකින් විවෘත කරන ලද ස්පර්ශයෙන් පිරවිය හැකි ගෙවීම් ක්‍රම තිබේ.</translation>
 <translation id="884264119367021077">නැව්ගත ලිපිනය</translation>
+<translation id="8849032795302265570">ඔබේ සේවකයින් වෙබය බ්‍රවුස් කරන ආකාරය පහසුවෙන් කළමනාකරණය කරන්න</translation>
 <translation id="8849231003559822746">මිමි 130 x 180</translation>
 <translation id="884923133447025588">අවලංගු කිරීමේ යාන්ත්‍රණයක් නැත.</translation>
 <translation id="8849262850971482943">අමතර ආරක්ෂාව සඳහා ඔබගේ අතථ්‍ය කාඩ්පත භාවිත කරන්න</translation>
@@ -4896,6 +4900,7 @@
 <translation id="950926967802086924">මුරයතුර • Google මුරපද කළමනාකරු</translation>
 <translation id="955429569736351433">VR ඉඩ දී ඇත</translation>
 <translation id="955627189349169688">ඔබට <ph name="BEGIN_LINK" />Chrome සමමුහුර්තකරණ සැකසීම්<ph name="END_LINK" /> තුළ මෙම ප්‍රතිපත්තියෙන් ඉවත් විය හැක.</translation>
+<translation id="95676157383774931">Google AI මාදිලිය විමසීමට, AI මාදිලි බොත්තම සක්‍රිය කරන්න</translation>
 <translation id="95721182352849470">කහ 2</translation>
 <translation id="961663415146723894">පහළ බඳින්න</translation>
 <translation id="961856697154696964">බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>

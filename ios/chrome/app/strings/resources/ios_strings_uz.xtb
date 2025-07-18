@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} ta parol}other{{count} ta parol}}</translation>
 <translation id="1275718070701477396">Tanlandi</translation>
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
+<translation id="1287229685519872919">Google Workspace maʼlumotlaringiz</translation>
 <translation id="1291506870746876680">Bu sayt yopilganda <ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" /> ruxsatlari asliga qaytariladi.</translation>
 <translation id="129553762522093515">Yaqinda yopilganlar</translation>
 <translation id="1296581780163690620">Fayl yuklab olinsinmi? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3940195383040445971">Narxlarni varaqlarda kuzatish</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ta varaqni yopish}other{{COUNT} ta varaqni yopish}}</translation>
 <translation id="3948600256434252210">Inkognito rejimiga oʻtish uchun oʻngga suring.</translation>
+<translation id="3949712484278252781">Gemini bilan suhbatlaringiz va <ph name="GOOGLE_WORKSPACE_DATA" /> xodimlar tomonidan tekshirilmaydi va generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="3950479158728806902">Tezkor kirish kalitlarini avtomatik yaratish</translation>
 <translation id="3950820424414687140">Kirish</translation>
 <translation id="3955740319737378355">Tayyor</translation>
@@ -1123,6 +1125,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="555749644339804659">Parollar tekshirilmoqda…</translation>
 <translation id="5559567453458728487">Internetda topilgan oʻlchov birliklarini oʻgirish</translation>
 <translation id="556042886152191864">Tugma</translation>
+<translation id="5565871407246142825">Bank kartalari</translation>
 <translation id="5567439033041178034">BATAFSIL</translation>
 <translation id="5572648434713976849">Manzillar qatorida yanada yaxshi takliflar olasiz</translation>
 <translation id="5576885723883013398">Yangi oyna</translation>
@@ -1637,6 +1640,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7512909159512473473">Kodli iborani kiriting…</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7514530647142300459">Parollarni Google hisobingizda (<ph name="EMAIL" />) saqlashda davom eting</translation>
+<translation id="7522587739845660862">Joylashuvingiz haqidagi axborot</translation>
 <translation id="7522948500476882302">Yuklab olingan fayllar 1 oydan keyin avtomatik oʻchiriladi</translation>
 <translation id="7524055474074101597">Boshqa ilovalarda parollaringiz va boshqalarni oching.</translation>
 <translation id="75362970626182391">Yangi varaqlar guruhi</translation>
@@ -1651,6 +1655,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7582666837709186351">Kamera orqali suratlardagi matn va atrofdagi obyektlarni tartjima qiling.</translation>
 <translation id="7582857256643797524">Bu sozlama qurilmada yoqilgan</translation>
 <translation id="7583004045319035904">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan oching.</translation>
+<translation id="7588149553568293500">Tanlovlar haqida batafsil.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} ta nofaol varaq yopilsinmi?}other{{COUNT} ta nofaol varaq yopilsinmi?}}</translation>
 <translation id="7598439272585186139">Xavfsizlikni oshirish</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> tili hech qachon tarjima qilinmasin</translation>
@@ -2053,6 +2058,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9066097352053395362">Bukmarkni tahrirlash panelini berkitish</translation>
 <translation id="9070824521421603770">Hisobingizdan chiqasiz va varaqlar yopiladi</translation>
 <translation id="9072837124205571418">Barcha qurilmalardagi varaqlar guruhi</translation>
+<translation id="9075970015528364598">Chatlar tekshiriladi va Google AIʼni yaxshilash uchun foydalaniladi. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> ham faollik tarixida saqlanadi.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> paroli yangilansinmi?</translation>
 <translation id="9083838294503912307">Barcha qurilmalarda sinxronlash va oʻzingizga moslash uchun sinxronizatsiyani yoqing.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Xavfsizlikka tahdid qilishi mumkin {count} ta zaif parol bor. Axborotlarni himoyalash uchun buni tuzating.}other{Xavfsizlikka tahdid qilishi mumkin {count} ta zaif parol bor. Axborotlarni himoyalash uchun buni tuzating.}}</translation>

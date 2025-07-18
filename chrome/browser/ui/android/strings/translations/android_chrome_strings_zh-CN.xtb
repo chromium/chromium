@@ -31,7 +31,7 @@
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
 <translation id="1126696498560056882">管理此设备上的账号</translation>
 <translation id="1129510026454351943">错误详情：<ph name="ERROR_DESCRIPTION" /></translation>
-<translation id="1135018701024399762">无痕模式可实现私密浏览，其他使用此设备的人员无法得知您的浏览信息</translation>
+<translation id="1135018701024399762">无痕模式可实现私密浏览，与您共用设备的其他人无法知晓您浏览了什么内容</translation>
 <translation id="1138458427267715730">当网络中任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="1140317858355046628">如果删除，所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除。</translation>
 <translation id="1142732900304639782">不询问是否翻译这些网站</translation>
@@ -248,7 +248,7 @@
 <translation id="213279576345780926">已关闭“<ph name="TAB_TITLE" />”</translation>
 <translation id="2138283760993967204">“管理”图标</translation>
 <translation id="2141396931810938595">根据您的使用情况</translation>
-<translation id="2145315049852051678">Chrome 会定期进行检查，以确保您的浏览器使用最安全的设置。如有任何事项需要审核，我们会通知您。</translation>
+<translation id="2145315049852051678">Chrome 会定期进行检查，确保您的浏览器使用的是最安全的设置。如有任何事项需要审核，我们会通知您。</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2158408438301413340">Chrome 无法检查所有密码</translation>
 <translation id="2163089732491971196">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令</translation>
@@ -317,7 +317,7 @@
 <translation id="2453860139492968684">完成</translation>
 <translation id="2461378706168271257">搜索标签页</translation>
 <translation id="2461822463642141190">当前</translation>
-<translation id="2468444275314013497">您的浏览器看起来很安全</translation>
+<translation id="2468444275314013497">您的浏览器很安全</translation>
 <translation id="2472163211318554013">登录即可充分利用 Chrome</translation>
 <translation id="247737702124049222">“图片说明”功能已开启</translation>
 <translation id="2479148705183875116">前往“设置”</translation>
@@ -724,7 +724,7 @@
 <translation id="4320177379694898372">未连接到互联网</translation>
 <translation id="4326079409704643112">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请验证是您本人在操作</translation>
 <translation id="433213510553688132">正在关注…</translation>
-<translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
+<translation id="4335835283689002019">“安全浏览”功能已关闭</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
 <translation id="4352287748243729941">要使用您的 <ph name="PROVIDER" /> 密码吗？</translation>
 <translation id="4355272626458588338">您可为重要网页添加书签以便返回查看</translation>
@@ -945,7 +945,7 @@
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
 <translation id="5252768492075585080">第三方 Cookie 设置</translation>
 <translation id="5264813352784073502">过去 24 小时</translation>
-<translation id="5267572070504076962">开启安全浏览功能，防范危险网站</translation>
+<translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
 <translation id="5273031377282080577">此设置由您的管理员管理。</translation>
 <translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{已退订 1 个未使用网站的通知}other{已退订 # 个未使用网站的通知}}</translation>

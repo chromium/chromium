@@ -720,6 +720,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4306489587293957491">हाल्नुहोस्</translation>
 <translation id="4307992518367153382">आधारभूत</translation>
 <translation id="4311652497846705514">PDF खोल्ने हो?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{स्प्याम हुन सक्छ}other{स्प्याम हुन सक्छ (#)}}</translation>
 <translation id="4320177379694898372">इन्टरनेट छैन</translation>
 <translation id="4326079409704643112">तपाईं आफ्नो Google खातामा सेभ गरिएको Chrome को डेटा प्रयोग गर्न र Google खातामा Chrome को थप डेटा सेभ गर्न चाहनुहुन्छ भने आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="433213510553688132">फलो गरिँदै छ…</translation>
@@ -1057,6 +1058,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="580893287573699959">आफूलाई रुचि लाग्ने विषय र साइटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# घन्टा अघि}other{# घन्टा अघि}}</translation>
 <translation id="5810288467834065221">प्रतिलिपि अधिकार <ph name="YEAR" /> Google LLC। सर्वाधिकार सुरक्षित।</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{नोटिफिकेसन देखाउनुहोस्}other{नोटिफिकेसनहरू देखाउनुहोस्}}</translation>
 <translation id="5814749351757353073">आफ्ना मन पर्ने साइटहरू फलो गर्नुहोस्</translation>
 <translation id="5823093032261493462">तपाईं जे भए पनि <ph name="DOWNLOAD_DOMAIN" /> बाट "<ph name="FILE_NAME" />" डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="5828921839638612740">तपाईं Chrome का सेटिङमा गई यो डेटा मेटाउन सक्नुहुन्छ</translation>

@@ -1022,6 +1022,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2690699652723742414">Viimased 30 päeva</translation>
 <translation id="2691385045260836588">Mudel</translation>
 <translation id="2691924980723297736">Ohutusalane hoiatus</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core võimaldab teil hallata brauseri reegleid, rakendusi ja laiendusi pilves</translation>
 <translation id="2697248912349197812">Küsige mudelilt <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Alammenüü on saadaval, kasutage lisavalikute juurde navigeerimiseks otseteed <ph name="SHORTCUT" />.</translation>
 <translation id="2701514975700770343">Esikülg allapoole</translation>
@@ -3143,6 +3144,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6284449872909111707">Tekst- ja kiirsõnumside</translation>
 <translation id="6284517535531159884">Variantide algandmete tüüp</translation>
 <translation id="6287197303017372967">Hankige sihtkohta liikumise juhiseid, kasutades navigeerimisfunktsiooni täppisjuhiseid.</translation>
+<translation id="6288559570252410796">Küsi Google'i AI-režiimilt</translation>
 <translation id="628877850550444614">Leiti allahindlus</translation>
 <translation id="6289939620939689042">Lehe värv</translation>
 <translation id="6292819926564202163">Teie otsingumootor Chrome'is</translation>
@@ -4359,6 +4361,7 @@ Lisateave:
 <translation id="831997045666694187">Õhtu</translation>
 <translation id="8321448084834652864">Saate oma otsingumootorit Chromiumi seadetes alati muuta.</translation>
 <translation id="8321476692217554900">märguanded</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage sisestusklahvi, et Google'i AI-režiim aktiveerida</translation>
 <translation id="8322402665880479974">Voodid ja peatsilauad</translation>
 <translation id="8323505966575306467">Lisage paroolidele täiendav kaitse</translation>
 <translation id="832547548543012337">Kustuta pass</translation>
@@ -4648,6 +4651,7 @@ Lisateave:
 <translation id="883848425547221593">Muud järjehoidjad</translation>
 <translation id="8842351563145134519">Saadaolevad makseviisid, mis täidetakse puudutamisel, on avatud poolel kõrgusel.</translation>
 <translation id="884264119367021077">Tarneaadress</translation>
+<translation id="8849032795302265570">Hallake hõlpsalt oma töötajate veebisirvimist</translation>
 <translation id="8849231003559822746">130 × 180 mm</translation>
 <translation id="884923133447025588">Tühistusmehhanismi ei leitud.</translation>
 <translation id="8849262850971482943">Suurendage virtuaalse kaardi abil turvalisust</translation>
@@ -4898,6 +4902,7 @@ Lisateave:
 <translation id="950926967802086924">Pääsuvõti • Google'i paroolihaldur</translation>
 <translation id="955429569736351433">VR on lubatud</translation>
 <translation id="955627189349169688">Saate sellest reeglist loobuda <ph name="BEGIN_LINK" />Chrome'i sünkroonimisseadetes<ph name="END_LINK" />.</translation>
+<translation id="95676157383774931">AI-režiimi nupp, vajutage Google'i AI-režiimi aktiveerimiseks</translation>
 <translation id="95721182352849470">Kollane 2</translation>
 <translation id="961663415146723894">Köide all</translation>
 <translation id="961856697154696964">Sirvimisandmete kustutamine</translation>

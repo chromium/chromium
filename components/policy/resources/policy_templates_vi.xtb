@@ -314,6 +314,7 @@ Tuy nhiên, các mẫu so khớp nguồn của chính sách này không được
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
+<translation id="1238150413700645698">Nội dung được bảo vệ</translation>
 <translation id="1238868319430505522">Định cấu hình quy trình <ph name="CLOUD_UPLOAD_NAME" /> cho <ph name="GOOGLE_DRIVE_NAME" /> và <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Kiểm soát việc có cho phép các trang web gửi yêu cầu theo cách không an toàn đến các điểm cuối trên mạng có mức độ riêng tư cao hơn hay không.
 
@@ -605,6 +606,7 @@ Người dùng có thể phải xác thực lại trực tuyến vì một số 
       Khi bạn đặt chính sách này thành Nhanh, thì <ph name="PRODUCT_NAME" /> sẽ tránh tạo điểm ảnh nếu có thể. Việc giảm khối lượng tạo điểm ảnh có thể giúp giảm dung lượng lệnh in và tăng tốc độ in.
 
       Khi bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ ở chế độ Toàn bộ.</translation>
+<translation id="1453707129684226879">Kiểm soát các chính sách dành cho Nội dung được bảo vệ.</translation>
 <translation id="1455351936334569779">Nếu thuộc loại trong danh sách từ chối, máy in sẽ không tìm thấy được cũng như không tìm nạp được.
 
       Nếu bạn đưa tất cả loại máy in vào danh sách từ chối, thì chức năng in sẽ bị vô hiệu hoá vì không có đích để gửi tài liệu cần in.
@@ -4945,6 +4947,27 @@ Chính sách này không có hiệu lực nếu bạn bật, để trống hoặ
       Chính sách này chỉ ảnh hưởng đến những người dùng đã xác thực bằng GAIA mà không dùng SAML.
 
       Bạn phải chỉ định giá trị của chính sách bằng ngày.</translation>
+<translation id="4523997900743255417">Đây là chính sách kiểm soát việc có bật tính năng <ph name="PRIVACY_SANDBOX_NAME" /> <ph name="IP_PROTECTION_NAME" /> hay không.
+
+<ph name="IP_PROTECTION_NAME" /> là một tính năng giúp hạn chế hiển thị địa chỉ IP gốc của người dùng đối với một số yêu cầu mạng nhất định của bên thứ ba khi duyệt web ở chế độ ẩn danh, giúp tăng khả năng bảo vệ chống theo dõi trên nhiều trang web trong các phiên duyệt web ở chế độ ẩn danh.
+
+Nếu bạn đặt chính sách này thành Tắt, <ph name="IP_PROTECTION_NAME" /> sẽ bị tắt và người dùng sẽ không thể bật tính năng này thông qua cài đặt giao diện người dùng.
+Nếu bạn đặt chính sách này thành Bật, <ph name="IP_PROTECTION_NAME" /> sẽ được bật và người dùng sẽ không thể tắt tính năng này thông qua cài đặt giao diện người dùng.
+Nếu bạn không đặt chính sách này, <ph name="IP_PROTECTION_NAME" /> sẽ được bật theo mặc định và người dùng có thể kiểm soát tính năng này trên thiết bị của họ thông qua cài đặt giao diện người dùng.
+
+Một số yếu tố cần cân nhắc liên quan đến việc doanh nghiệp có nên tắt <ph name="IP_PROTECTION_NAME" /> hay không:
+
+– Tra cứu DNS sẽ không được thực hiện đối với các yêu cầu được chuyển tiếp qua proxy, điều này có thể ảnh hưởng đến việc giám sát hoặc lọc dựa trên DNS.
+
+– Các ứng dụng doanh nghiệp có thể bị gián đoạn khi được dùng ở chế độ ẩn danh nếu chúng phụ thuộc vào yêu cầu đến các miền (hoặc miền con của những miền đó) nằm trong Danh sách miền bị ẩn (<ph name="MASKED_DOMAIN_LIST_URL" />) và đòi hỏi những yêu cầu đó phải đến từ các dải địa chỉ IP cụ thể.
+
+– Lưu lượng truy cập có thể không được chuyển tiếp qua proxy ở chế độ ẩn danh trong một số điều kiện nhất định, chẳng hạn như khi người dùng khởi chạy chế độ ẩn danh từ một hồ sơ Chrome mà họ chưa đăng nhập. Nói chung, tính năng này đòi hỏi người dùng phải đăng nhập vào Chrome bằng tài khoản Google cá nhân khi khởi chạy chế độ ẩn danh.
+
+– Danh sách miền trong Danh sách miền bị ẩn có thể thay đổi theo thời gian và các phiên bản mới sẽ tự động được chuyển đến người dùng. Để biết thêm thông tin về Danh sách miền bị ẩn, hãy truy cập: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
+
+Để biết thêm thông tin về <ph name="IP_PROTECTION_NAME" />, hãy truy cập: <ph name="IP_PROTECTION_README_URL" />.
+
+<ph name="IP_PROTECTION_NAME" /> sẽ được ra mắt sớm nhất vào phiên bản M139.</translation>
 <translation id="4525328580251166229">Kiểm soát các chính sách liên quan đến hệ thống con Bruschetta.</translation>
 <translation id="4528981768990874684">Tắt tính năng <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Chính sách này không còn dùng nữa.</translation>
@@ -5196,6 +5219,7 @@ Chính sách này chỉ mang tính tạm thời và sẽ bị loại bỏ trong 
 
       Lưu ý: Tùy chọn cài đặt này ghi đè <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, nếu có.</translation>
 <translation id="4658380868451934335">Bật tính năng nhập bằng giọng nói trên màn hình đăng nhập</translation>
+<translation id="4658420696622830453">Chế độ kiểm soát nội dung được bảo vệ</translation>
 <translation id="4660356908994631271">Hiện nút Google Ống kính trong hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="4661885151480410620">Các thay đổi về hành vi có thể có hiệu lực tuỳ thuộc vào quá trình ra mắt tính năng.</translation>
 <translation id="4661889655253181651">Tùy chọn cài đặt nội dung cho phép bạn chỉ định cách xử lý nội dung thuộc một loại cụ thể (chẳng hạn như Cookie, Hình ảnh hoặc JavaScript).</translation>
@@ -6484,6 +6508,9 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="5488268615614906498">Chính sách này kiểm soát việc người dùng có được phép lưu tệp vào <ph name="GOOGLE_DRIVE_NAME" /> ngay trong trình quản lý tải xuống hay không.
 Nếu bạn đặt thành Bật hoặc không đặt chính sách này, người dùng có thể lưu tệp vào <ph name="GOOGLE_DRIVE_NAME" /> trong trình quản lý tải xuống. Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thấy lựa chọn này trong trình quản lý tải xuống.
 Chính sách này không cho phép người dùng lưu tệp vào <ph name="GOOGLE_DRIVE_NAME" /> bằng các cách khác ngoài trình quản lý tải xuống.</translation>
+<translation id="5490462588616309068">Nếu bạn đặt chính sách này thành true (đúng) hoặc không đặt chính sách này, người dùng được phép sử dụng giá trị nhận dạng cho nội dung được bảo vệ. Việc này có thể giúp nâng cao chất lượng phát nội dung được bảo vệ.
+
+Nếu bạn đặt chính sách này thành false (sai), thì người dùng không được phép sử dụng giá trị nhận dạng cho nội dung được bảo vệ.</translation>
 <translation id="5494322570831642650">Chỉ định việc người dùng có thể mở trang ở Chế độ ẩn danh trong <ph name="PRODUCT_NAME" /> hay không.
 
       Nếu bạn chọn "Bật" hoặc không đặt chính sách này, thì người dùng có thể mở trang ở Chế độ ẩn danh.
@@ -6770,6 +6797,7 @@ Nếu bạn không đặt chính sách này hoặc không xác định thời gi
       Bạn có thể ghi đè chính sách này cho các mẫu URL cụ thể bằng các chính sách <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> và <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Chính sách này chỉ ảnh hưởng đến những thao tác bảng nhớ tạm do quyền sử dụng bảng nhớ tạm cho trang web kiểm soát mà không ảnh hưởng đến việc viết bảng nhớ tạm được bảo vệ an toàn hoặc việc thực hiện thao tác sao chép và dán.</translation>
+<translation id="5649788773465136073">Không cho phép sử dụng giá trị nhận dạng cho nội dung được bảo vệ cùng các trang web. Điều này có thể khiến giảm bớt chất lượng phát nội dung được bảo vệ.</translation>
 <translation id="5650256117857913687">Không cho phép người dùng truy cập từ xa mở URL phía máy chủ bằng trình duyệt máy khách trên thiết bị</translation>
 <translation id="5650716720715977549">Áp dụng quy định hạn chế đối với các yêu cầu đến thiết bị đầu cuối trên mạng có mức độ riêng tư cao hơn</translation>
 <translation id="5651538748810288218">Nếu bạn đặt giá trị chính sách này thành 1, thì các trang web có thể truy cập và sử dụng cảm biến như cảm biến chuyển động và cảm biến ánh sáng. Nếu bạn đặt giá trị chính sách này thành 2, các trang web sẽ không thể truy cập vào cảm biến.
@@ -7075,6 +7103,7 @@ Nếu bạn chưa đặt cả hai chính sách này thì mọi trạng thái xá
       Nếu bạn đặt chính sách này thành false hoặc không đặt chính sách, thì <ph name="PLUGIN_VM_NAME" /> không được phép thu thập dữ liệu.
       Nếu bạn đặt chính sách thành true, thì <ph name="PLUGIN_VM_NAME" /> có thể thu thập dữ liệu sử dụng của <ph name="PLUGIN_VM_NAME" />. Sau đó, dữ liệu này được kết hợp và phân tích kỹ lưỡng để cải thiện trải nghiệm của <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="5872738620659477303">Liên kết thông tin đăng nhập Google với một thiết bị</translation>
+<translation id="5873333871812203119">Cho phép các trang web sử dụng giá trị nhận dạng cho mục đích phát nội dung được bảo vệ</translation>
 <translation id="5875873062228321803">Định cấu hình yêu cầu phiên bản tối thiểu được phép của <ph name="PRODUCT_OS_NAME" />.
 
       Khi bạn đặt chính sách này thành danh sách không phải là danh sách trống:
@@ -11931,6 +11960,7 @@ Giá trị mặc định là RollbackDisabled.</translation>
 <translation id="9197740283131855199">Tỷ lệ phần trăm xác định độ trễ mờ màn hình nếu người dùng hoạt động sau khi màn hình bị làm mờ</translation>
 <translation id="9200828125069750521">Tham số cho URL hình ảnh sử dụng POST</translation>
 <translation id="9202520409249547230">Không cho phép tự động điền bằng AI.</translation>
+<translation id="9204520300236345497">Cho phép sử dụng giá trị nhận dạng cho nội dung được bảo vệ cùng các trang web. Điều này có thể giúp nâng cao chất lượng phát nội dung được bảo vệ.</translation>
 <translation id="9204863016826119209">Những ứng dụng Android được cài đặt và liệt kê trong chính sách này có thể sử dụng khóa công ty.</translation>
 <translation id="9206472508136116830">Không cho phép khám phá lượt chia sẻ tệp bằng NetBIOS</translation>
 <translation id="9207596996305971030">Không báo cáo các lần đăng nhập/đăng xuất</translation>

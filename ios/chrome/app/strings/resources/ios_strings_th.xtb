@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{รหัสผ่าน {count} รายการ}other{รหัสผ่าน {count} รายการ}}</translation>
 <translation id="1275718070701477396">เลือกแล้ว</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
+<translation id="1287229685519872919">ข้อมูล Google Workspace</translation>
 <translation id="1291506870746876680">สิทธิ์ของ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
 <translation id="129553762522093515">เพิ่งปิด</translation>
 <translation id="1296581780163690620">ดาวน์โหลดไฟล์ใช่ไหม (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@
 <translation id="3940195383040445971">ติดตามราคาในแท็บ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{ปิด {COUNT} แท็บ}other{ปิด {COUNT} แท็บ}}</translation>
 <translation id="3948600256434252210">คุณสามารถปัดไปทางขวาเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
+<translation id="3949712484278252781">การสนทนาของคุณกับ Gemini หรือ<ph name="GOOGLE_WORKSPACE_DATA" /> จะไม่ได้รับการตรวจสอบจากเจ้าหน้าที่หรือนำไปใช้เพื่อปรับปรุงโมเดล Generative AI</translation>
 <translation id="3950479158728806902">สร้างพาสคีย์โดยอัตโนมัติเพื่อลงชื่อเข้าใช้ได้เร็วขึ้น</translation>
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3955740319737378355">เสร็จ</translation>
@@ -1123,6 +1125,7 @@
 <translation id="555749644339804659">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="5559567453458728487">แปลงหน่วยวัดที่พบในเว็บ</translation>
 <translation id="556042886152191864">ปุ่ม</translation>
+<translation id="5565871407246142825">บัตรเครดิต</translation>
 <translation id="5567439033041178034">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="5572648434713976849">คุณจะได้รับคำแนะนำที่ดีขึ้นในแถบที่อยู่</translation>
 <translation id="5576885723883013398">หน้าต่างใหม่</translation>
@@ -1637,6 +1640,7 @@
 <translation id="7512909159512473473">ป้อนรหัสผ่าน…</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7514530647142300459">ใช้รหัสผ่านในบัญชี Google <ph name="EMAIL" /> ต่อไป</translation>
+<translation id="7522587739845660862">ข้อมูลเกี่ยวกับตำแหน่งของคุณ</translation>
 <translation id="7522948500476882302">เมื่อดาวน์โหลดไฟล์ ให้เลือกลบไฟล์โดยอัตโนมัติใน 1 เดือน</translation>
 <translation id="7524055474074101597">เข้าถึงรหัสผ่านและข้อมูลอื่นๆ ได้ในแอปต่างๆ</translation>
 <translation id="75362970626182391">กลุ่มแท็บใหม่</translation>
@@ -1651,6 +1655,7 @@
 <translation id="7582666837709186351">แปลข้อความในรูปภาพหรือสิ่งรอบตัวด้วยกล้อง</translation>
 <translation id="7582857256643797524">การตั้งค่านี้เปิดใช้อยู่ในอุปกรณ์ของคุณ</translation>
 <translation id="7583004045319035904">ใช้ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> เพื่อปลดล็อกแท็บที่ไม่ระบุตัวตน</translation>
+<translation id="7588149553568293500">ดูข้อมูลเกี่ยวกับตัวเลือกของคุณ</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{ปิด {COUNT} แท็บที่ไม่ได้ใช้งานใช่ไหม}other{ปิด {COUNT} แท็บที่ไม่ได้ใช้งานใช่ไหม}}</translation>
 <translation id="7598439272585186139">เพิ่มความปลอดภัย</translation>
 <translation id="7600965453749440009">ไม่ต้องแปลภาษา<ph name="LANGUAGE" /></translation>
@@ -2053,6 +2058,7 @@
 <translation id="9066097352053395362">ซ่อน "แก้ไขบุ๊กมาร์ก"</translation>
 <translation id="9070824521421603770">คุณจะออกจากระบบ และแท็บจะปิดไป</translation>
 <translation id="9072837124205571418">กลุ่มแท็บจากอุปกรณ์ทั้งหมด</translation>
+<translation id="9075970015528364598">แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อปรับปรุง AI ของ Google <ph name="LEARN_ABOUT_CHOICES" /> ระบบจะจัดเก็บ<ph name="INFO_ABOUT_LOCATION" />ไว้กับกิจกรรมของคุณด้วย</translation>
 <translation id="9081058212938299310">อัปเดตรหัสผ่านของ <ph name="USERNAME" /> ไหม</translation>
 <translation id="9083838294503912307">เปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="9084367296493549256">{count,plural, =1{คุณมี {count} รหัสผ่านที่ไม่รัดกุมที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง แก้ไขเลยเพื่อความปลอดภัย}other{คุณมี {count} รหัสผ่านที่ไม่รัดกุมที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง แก้ไขเลยเพื่อความปลอดภัย}}</translation>

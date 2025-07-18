@@ -721,6 +721,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4306489587293957491">Nodwch</translation>
 <translation id="4307992518367153382">Hanfodion</translation>
 <translation id="4311652497846705514">Agor PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Sothach posib}zero{Sothach posib (#)}two{Sothach posib (#)}few{Sothach posib (#)}many{Sothach posib (#)}other{Sothach posib (#)}}</translation>
 <translation id="4320177379694898372">Dim cysylltiad rhyngrwyd</translation>
 <translation id="4326079409704643112">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
 <translation id="433213510553688132">Yn dilyn...</translation>
@@ -1059,6 +1060,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="580893287573699959">Rheoli'r pynciau a'r gwefannau y mae gennych ddiddordeb ynddynt</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# awr yn ôl}zero{# awr yn ôl}two{# awr yn ôl}few{# awr yn ôl}many{# awr yn ôl}other{# awr yn ôl}}</translation>
 <translation id="5810288467834065221">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir Pob Hawl.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Dangos hysbysiad}zero{Dangos hysbysiadau}two{Dangos hysbysiadau}few{Dangos hysbysiadau}many{Dangos hysbysiadau}other{Dangos hysbysiadau}}</translation>
 <translation id="5814749351757353073">Cadwch i fyny â'ch hoff wefannau</translation>
 <translation id="5823093032261493462">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" o <ph name="DOWNLOAD_DOMAIN" /> beth bynnag?</translation>
 <translation id="5828921839638612740">Gallwch ddileu'r data yng Ngosodiadau Chrome</translation>

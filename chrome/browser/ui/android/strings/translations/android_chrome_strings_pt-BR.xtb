@@ -596,7 +596,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3708100450779900829">Quando o dispositivo estiver dobrado, escolha uma opção ou toque na barra de endereço e pressione para mudar a posição</translation>
 <translation id="3710501561113687889">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site.</translation>
 <translation id="3710560693796335511">Colaboração</translation>
-<translation id="3718765429352682176">É possível que o histórico de outros apps que abrem links no Chrome seja mostrado.</translation>
+<translation id="3718765429352682176">O histórico de outros apps que abrem links no Chrome pode aparecer.</translation>
 <translation id="3721119614952978349">Você e o Google</translation>
 <translation id="3737319253362202215">Configurações de tradução</translation>
 <translation id="3738139272394829648">Pesquisa por toque</translation>
@@ -720,6 +720,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4306489587293957491">Inserir</translation>
 <translation id="4307992518367153382">Opções básicas</translation>
 <translation id="4311652497846705514">Abrir PDF?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Possível spam}one{Possível spam (#)}other{Possível spam (#)}}</translation>
 <translation id="4320177379694898372">Sem conexão com a Internet</translation>
 <translation id="4326079409704643112">Confirme sua identidade para usar e salvar dados do Chrome na sua Conta do Google</translation>
 <translation id="433213510553688132">Seguindo…</translation>
@@ -1059,6 +1060,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="580893287573699959">Gerencie os temas e sites do seu interesse</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# hora atrás}one{# horas atrás}other{# horas atrás}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mostrar notificação}one{Mostrar notificação}other{Mostrar notificações}}</translation>
 <translation id="5814749351757353073">Acompanhe seus sites favoritos</translation>
 <translation id="5823093032261493462">Quer baixar "<ph name="FILE_NAME" />" de <ph name="DOWNLOAD_DOMAIN" /> mesmo assim?</translation>
 <translation id="5828921839638612740">É possível excluir os dados nas configurações do Chrome</translation>

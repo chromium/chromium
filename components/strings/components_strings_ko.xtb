@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">지난 30일</translation>
 <translation id="2691385045260836588">모델</translation>
 <translation id="2691924980723297736">안전 경고</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core를 사용하면 클라우드에서 브라우저 정책, 앱, 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> 질문하기</translation>
 <translation id="2699273987028089219">하위 메뉴를 사용할 수 있습니다. 추가 옵션으로 이동하려면 <ph name="SHORTCUT" />를 사용하세요.</translation>
 <translation id="2701514975700770343">인쇄면이 아래로</translation>
@@ -3143,6 +3144,7 @@
 <translation id="6284449872909111707">문자 메시지 및 채팅</translation>
 <translation id="6284517535531159884">버전 시드 유형</translation>
 <translation id="6287197303017372967">내비게이션 기능을 사용하여 세부 경로 안내로 목적지까지 이동하세요</translation>
+<translation id="6288559570252410796">Google AI 모드에 질문하기</translation>
 <translation id="628877850550444614">할인 제품 찾음</translation>
 <translation id="6289939620939689042">페이지 색상</translation>
 <translation id="6292819926564202163">Chrome의 검색엔진</translation>
@@ -4358,6 +4360,7 @@
 <translation id="831997045666694187">저녁</translation>
 <translation id="8321448084834652864">언제든지 Chromium 설정에서 검색엔진을 변경할 수 있습니다.</translation>
 <translation id="8321476692217554900">알림</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google AI 모드에 질문하려면 Enter 키를 누르세요.</translation>
 <translation id="8322402665880479974">침대 및 헤드보드</translation>
 <translation id="8323505966575306467">비밀번호 보안 강화</translation>
 <translation id="832547548543012337">여권 삭제</translation>
@@ -4647,6 +4650,7 @@
 <translation id="883848425547221593">기타 북마크</translation>
 <translation id="8842351563145134519">터치하여 입력할 수 있는 결제 수단이 절반 높이로 열렸습니다.</translation>
 <translation id="884264119367021077">배송지 주소</translation>
+<translation id="8849032795302265570">직원들의 웹 탐색 방식을 간편하게 관리하세요</translation>
 <translation id="8849231003559822746">130x180mm</translation>
 <translation id="884923133447025588">폐기 매커니즘을 찾을 수 없습니다.</translation>
 <translation id="8849262850971482943">보안 강화를 위해 가상 카드 사용하기</translation>
@@ -4896,6 +4900,7 @@
 <translation id="950926967802086924">패스키 • Google 비밀번호 관리자</translation>
 <translation id="955429569736351433">VR 허용됨</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome 동기화 설정<ph name="END_LINK" />에서 이 정책을 선택 해제할 수 있습니다.</translation>
+<translation id="95676157383774931">AI 모드 버튼, Google AI 모드에 질문하기 위해 활성화</translation>
 <translation id="95721182352849470">노란색 2</translation>
 <translation id="961663415146723894">하단 바인드</translation>
 <translation id="961856697154696964">인터넷 사용 기록 삭제</translation>

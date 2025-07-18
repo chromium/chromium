@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count}টি পাসওয়ার্ড}one{{count}টি পাসওয়ার্ড}other{{count}টি পাসওয়ার্ড}}</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
 <translation id="1285320974508926690">কখনই এই সাইটটিকে অনুবাদ করবেন না</translation>
+<translation id="1287229685519872919">Google Workspace সম্পর্কিত ডেটা</translation>
 <translation id="1291506870746876680">আপনি এই সাইট বন্ধ করে দিলে, <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> এর সাথে সম্পর্কিত অনুমতি রিসেট হয়ে বন্ধ হয়ে যাবে।</translation>
 <translation id="129553762522093515">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="1296581780163690620">ফাইল ডাউনলোড করবেন? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@
 <translation id="3940195383040445971">ট্যাবে দাম ট্র্যাক করুন</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT}টি ট্যাব বন্ধ করুন}one{{COUNT}টি ট্যাব বন্ধ করুন}other{{COUNT}টি ট্যাব বন্ধ করুন}}</translation>
 <translation id="3948600256434252210">আপনি 'ছদ্মবেশী' মোডে ব্রাউজ করার জন্য ডানদিকে সোয়াইপ করুন।</translation>
+<translation id="3949712484278252781">Gemini-র সাথে আপনার কথোপকথন বা আপনার <ph name="GOOGLE_WORKSPACE_DATA" /> হিউম্যান রিভিউয়ারের মাধ্যমে রিভিউ করা অথবা জেনারেটিভ AI মডেল উন্নত করার জন্য ব্যবহার করা হয় না।</translation>
 <translation id="3950479158728806902">আরও দ্রুত সাইন-ইন করতে অটোমেটিক পাসকী তৈরি করুন</translation>
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="3955740319737378355">হয়ে গেছে</translation>
@@ -1124,6 +1126,7 @@
 <translation id="555749644339804659">পাসওয়ার্ড চেক করা হচ্ছে…</translation>
 <translation id="5559567453458728487">ওয়েবে খুঁজে পাওয়া পরিমাপ করার একক কনভার্ট করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
+<translation id="5565871407246142825">ক্রেডিট কার্ডসমূহ</translation>
 <translation id="5567439033041178034">আরও জানুন</translation>
 <translation id="5572648434713976849">অ্যাড্রেস বারে উন্নত সাজেশন পাবেন</translation>
 <translation id="5576885723883013398">নতুন উইন্ডো</translation>
@@ -1638,6 +1641,7 @@
 <translation id="7512909159512473473">পাসফ্রেজ লিখুন…</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7514530647142300459">আপনার Google অ্যাকাউন্ট <ph name="EMAIL" />-এ পাসওয়ার্ড ব্যবহার করা চালিয়ে যান</translation>
+<translation id="7522587739845660862">আপনার লোকেশন সম্পর্কে তথ্য</translation>
 <translation id="7522948500476882302">আপনি ফাইল ডাউনলোড করলে, ১ মাসের মধ্যে অটোমেটিক মুছে ফেলার জন্য বেছে নিন</translation>
 <translation id="7524055474074101597">অ্যাপ জুড়ে আপনার পাসওয়ার্ড ও আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="75362970626182391">নতুন ট্যাব গ্রুপ</translation>
@@ -1652,6 +1656,7 @@
 <translation id="7582666837709186351">ক্যামেরার সাহায্যে আপনার ফটো অথবা আশেপাশে থাকা টেক্সট অনুবাদ করুন।</translation>
 <translation id="7582857256643797524">আপনার ডিভাইসে এই সেটিং চালু করা আছে</translation>
 <translation id="7583004045319035904">আপনার ছদ্মবেশী ট্যাব আনলক করতে, <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যবহার করুন।</translation>
+<translation id="7588149553568293500">আপনার পছন্দ সম্পর্কে জানুন।</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT}টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}one{{COUNT}টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}other{{COUNT}টি ইনঅ্যাক্টিভ ট্যাব বন্ধ করবেন?}}</translation>
 <translation id="7598439272585186139">আরও সুরক্ষা পান</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কখনও অনুবাদ করবেন না</translation>
@@ -2054,6 +2059,7 @@
 <translation id="9066097352053395362">'বুকমার্ক এডিট করুন' বিকল্পটি লুকান</translation>
 <translation id="9070824521421603770">আপনি সাইন-আউট হয়ে যাবেন এবং ট্যাব বন্ধ হয়ে যাবে</translation>
 <translation id="9072837124205571418">সব ডিভাইসের ট্যাব গ্রুপ</translation>
+<translation id="9075970015528364598">Google AI উন্নত করতে চ্যাট পর্যালোচনা ও ব্যবহার করা হয়। আপনার অ্যাক্টিভিটিতে <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> সেভ করা হয়।</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" />-এর পাসওয়ার্ড আপডেট করবেন?</translation>
 <translation id="9083838294503912307">সমগ্র ডিভাইস জুড়ে সিঙ্ক এবং নিজের মতো সাজিয়ে নিতে সিঙ্ক বিকল্পটি চালু করুন।</translation>
 <translation id="9084367296493549256">{count,plural, =1{আপনার {count}টি দুর্বল পাসওয়ার্ড আছে, এর ফলে আপনার নিরাপত্তা সংক্রান্ত ঝুঁকি তৈরি হতে পারে। নিরাপদে থাকতে এখনই এই সমস্যার সমাধান করুন।}one{আপনার {count}টি দুর্বল পাসওয়ার্ড আছে, এর ফলে আপনার নিরাপত্তা সংক্রান্ত ঝুঁকি তৈরি হতে পারে। নিরাপদে থাকতে এখনই এই সমস্যার সমাধান করুন।}other{আপনার {count}টি দুর্বল পাসওয়ার্ড আছে, এর ফলে আপনার নিরাপত্তা সংক্রান্ত ঝুঁকি তৈরি হতে পারে। নিরাপদে থাকতে এখনই এই সমস্যার সমাধান করুন।}}</translation>

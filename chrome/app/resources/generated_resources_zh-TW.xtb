@@ -4604,7 +4604,6 @@
 <translation id="4195814663415092787">繼續瀏覽上次開啟的網頁</translation>
 <translation id="4198268995694216131">其他網站</translation>
 <translation id="4198420883535766848">從清單中移除分頁</translation>
-<translation id="4198664641856813238">只要在裝置上登入帳戶，即可存取你的書籤、密碼等資訊</translation>
 <translation id="4200609364258658652">複製影片影格(&amp;Y)</translation>
 <translation id="4200689466366162458">自訂字詞</translation>
 <translation id="4200983522494130825">新增分頁(&amp;T)</translation>
@@ -6899,7 +6898,7 @@
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860254591544742609">顯示標題列</translation>
 <translation id="5860335608673904825">搜尋鍵 + Ctrl + Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
-<translation id="5860491529813859533">啟用</translation>
+<translation id="5860491529813859533">開啟</translation>
 <translation id="5860494867054883682">正在將你的裝置更新至<ph name="CHANNEL_NAME" /> (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">在檔案櫃中顯示觸控筆工具</translation>
 <translation id="5862319196656206789">設定已連結的裝置</translation>
@@ -7595,7 +7594,6 @@
 <translation id="6365411474437319296">新增家人好友</translation>
 <translation id="6367097275976877956">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？如要啟動，請按下空格鍵。</translation>
 <translation id="6367196786591004737">刪除項目</translation>
-<translation id="6367351687417449639">如要在所有裝置上存取書籤、密碼及其他設定，請登入 <ph name="EMAIL" /></translation>
 <translation id="6367396429435748845">按下 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 鍵即可暫停及繼續使用滑鼠按鍵</translation>
 <translation id="6367985768157257101">要使用鄰近分享功能接收資料嗎？</translation>
 <translation id="6368157733310917710">地址和其他資訊(&amp;A)</translation>
@@ -10516,7 +10514,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全螢幕</translation>
 <translation id="8412136526970428322">已允許：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
-<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
+<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="8413956290606243087">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>

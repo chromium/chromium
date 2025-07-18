@@ -720,6 +720,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4306489587293957491">Idatzi</translation>
 <translation id="4307992518367153382">Oinarrizko informazioa</translation>
 <translation id="4311652497846705514">PDFa ireki nahi duzu?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Spam posiblea}other{Spam posiblea (#)}}</translation>
 <translation id="4320177379694898372">Ez zaude konektatuta Internetera</translation>
 <translation id="4326079409704643112">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela</translation>
 <translation id="433213510553688132">Jarraitzen…</translation>
@@ -1058,6 +1059,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="580893287573699959">Kudeatu zer gai eta webgune interesatzen zaizkizun</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Duela # ordu}other{Duela # ordu}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Erakutsi jakinarazpena}other{Erakutsi jakinarazpenak}}</translation>
 <translation id="5814749351757353073">Ikusi gogoko dituzun webguneen berritasun guztiak</translation>
 <translation id="5823093032261493462">"<ph name="FILE_NAME" />" deskargatu egin nahi duzu <ph name="DOWNLOAD_DOMAIN" /> domeinutik hala ere?</translation>
 <translation id="5828921839638612740">Chrome-ren ezarpenetan ezabatu ahalko dituzu datuak</translation>

@@ -1022,6 +1022,7 @@
 <translation id="2690699652723742414">Сүүлийн 30 хоног</translation>
 <translation id="2691385045260836588">Загвар</translation>
 <translation id="2691924980723297736">Аюулгүй байдлын анхааруулга</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core танд хөтчийн бодлого, апп, өргөтгөлийг үүлнээс удирдах боломжийг олгодог</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />-с асуух</translation>
 <translation id="2699273987028089219">Дэд цэс боломжтой, нэмэлт сонголтууд руу шилжихийн тулд <ph name="SHORTCUT" />-г ашиглана уу.</translation>
 <translation id="2701514975700770343">Нүүрээр нь доош харуулсан</translation>
@@ -3143,6 +3144,7 @@
 <translation id="6284449872909111707">Мессеж, шуурхай мессеж</translation>
 <translation id="6284517535531159884">Хувилбарын үрийн төрөл</translation>
 <translation id="6287197303017372967">Навигацын онцлогийг ашиглан эргэлт эргэлтээр заах хөтчөөр очих газартаа хүрэх чиглэл аваарай.</translation>
+<translation id="6288559570252410796">Google-н ХОУ-ы горимоос асуух</translation>
 <translation id="628877850550444614">Хөнгөлөлт олдлоо</translation>
 <translation id="6289939620939689042">Хуудасны өнгө</translation>
 <translation id="6292819926564202163">Таны Chrome-н хайлтын систем</translation>
@@ -4358,6 +4360,7 @@
 <translation id="831997045666694187">Үдэш</translation>
 <translation id="8321448084834652864">Та хүссэн үедээ Chromium-н тохиргоонд хайлтын системээ өөрчлөх боломжтой.</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google-н ХОУ-ы горимоос асуухын тулд Enter дээр дарна уу</translation>
 <translation id="8322402665880479974">Ор болон орны толгойнууд</translation>
 <translation id="8323505966575306467">Нууц үгнүүддээ илүү их хамгаалалт нэмнэ үү</translation>
 <translation id="832547548543012337">Паспортыг устгах</translation>
@@ -4647,6 +4650,7 @@
 <translation id="883848425547221593">Бусад хадгалагдсан хуудсууд</translation>
 <translation id="8842351563145134519">Хүрэлтээр бөглөх боломжтой төлбөрийн хэрэгслүүдийг хагас өндрөөр нь нээсэн.</translation>
 <translation id="884264119367021077">Илгээх хаяг</translation>
+<translation id="8849032795302265570">Танай ажилтан вебийг хэрхэн үздэгийг хялбархан удирдаарай</translation>
 <translation id="8849231003559822746">130 x 180 мм</translation>
 <translation id="884923133447025588">Хүчингүй болгох арга олдсонгүй.</translation>
 <translation id="8849262850971482943">Нэмэлт аюулгүй байдлын үүднээс виртуал картаа ашиглана уу</translation>
@@ -4897,6 +4901,7 @@
 <translation id="950926967802086924">Нэвтрэх түлхүүр • Google Нууц үгний менежер</translation>
 <translation id="955429569736351433">VR-г ашиглахыг зөвшөөрсөн</translation>
 <translation id="955627189349169688">Та <ph name="BEGIN_LINK" />Chrome Синкийн тохиргооноос<ph name="END_LINK" /> энэ бодлогоос татгалзаж болно.</translation>
+<translation id="95676157383774931">Google-н ХОУ-ы горимын товч, ХОУ-ы горимоос асуухын тулд идэвхжүүлнэ үү</translation>
 <translation id="95721182352849470">Шар 2</translation>
 <translation id="961663415146723894">Доод булан дагуу үдэж хавтаслах</translation>
 <translation id="961856697154696964">Интернэтээр үзсэн өгөгдлийг устгах</translation>

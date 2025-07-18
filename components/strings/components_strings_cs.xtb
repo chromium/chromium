@@ -1022,6 +1022,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2690699652723742414">Posledních 30 dní</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Bezpečnostní upozornění</translation>
+<translation id="2696385693639654606">Chrome Enterprise Core umožňuje spravovat zásady, aplikace a rozšíření prohlížeče z cloudu</translation>
 <translation id="2697248912349197812">Zeptat se <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">K dispozici je podnabídka, pomocí <ph name="SHORTCUT" /> přejdete na další možnosti.</translation>
 <translation id="2701514975700770343">Lícem dolů</translation>
@@ -3138,6 +3139,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6284449872909111707">Textové zprávy a chat</translation>
 <translation id="6284517535531159884">Typ zdroje variant</translation>
 <translation id="6287197303017372967">Získat trasu k cíli pomocí funkce podrobné navigace.</translation>
+<translation id="6288559570252410796">Zeptat se Googlu v režimu AI</translation>
 <translation id="628877850550444614">Byla nalezena sleva</translation>
 <translation id="6289939620939689042">Barva stránky</translation>
 <translation id="6292819926564202163">Váš vyhledávač v Chromu</translation>
@@ -4353,6 +4355,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321448084834652864">Svůj vyhledávač můžete v nastavení prohlížeče Chromium kdykoliv změnit.</translation>
 <translation id="8321476692217554900">oznámení</translation>
+<translation id="8322230666450346681"><ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Enter se můžete zeptat režimu Google AI</translation>
 <translation id="8322402665880479974">Rámy a čela postelí</translation>
 <translation id="8323505966575306467">Přidejte k heslům další ochranu</translation>
 <translation id="832547548543012337">Smazat pas</translation>
@@ -4643,6 +4646,7 @@ Další podrobnosti:
 <translation id="883848425547221593">Jiné záložky</translation>
 <translation id="8842351563145134519">Platební metody dostupné k vyplnění dotykem jsou otevřené na polovinu výšky.</translation>
 <translation id="884264119367021077">Dodací adresa</translation>
+<translation id="8849032795302265570">Snadno spravujte, jak vaši zaměstnanci procházejí web</translation>
 <translation id="8849231003559822746">130 × 180 mm</translation>
 <translation id="884923133447025588">Nebyl nalezen žádný mechanismus zamítnutí.</translation>
 <translation id="8849262850971482943">Pro větší bezpečnost používejte virtuální kartu</translation>
@@ -4892,6 +4896,7 @@ Další podrobnosti:
 <translation id="950926967802086924">Přístupový klíč • Správce hesel Google</translation>
 <translation id="955429569736351433">VR povolena</translation>
 <translation id="955627189349169688">S této zásady se v <ph name="BEGIN_LINK" />nastavení synchronizace Chromu<ph name="END_LINK" /> můžete odhlásit.</translation>
+<translation id="95676157383774931">Tlačítko režimu AI, aktivací se zeptáte režimu Google AI</translation>
 <translation id="95721182352849470">Žlutá 2</translation>
 <translation id="961663415146723894">Vazba dole</translation>
 <translation id="961856697154696964">Vymazat údaje o prohlížení</translation>

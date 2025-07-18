@@ -69,6 +69,7 @@
 <translation id="1273416271143914096">{count,plural, =1{{count} પાસવર્ડ}one{{count} પાસવર્ડ}other{{count} પાસવર્ડ}}</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="1287229685519872919">Google Workspaceનો ડેટા</translation>
 <translation id="1291506870746876680">જ્યારે તમે સાઇટમાંથી બહાર નીકળી જશો, ત્યારે <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> સંબંધિત પરવાનગીઓ બંધ પર રીસેટ કરવામાં આવશે.</translation>
 <translation id="129553762522093515">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="1296581780163690620">ફાઇલ ડાઉનલોડ કરીએ? (<ph name="FILE_SIZE" />)</translation>
@@ -717,6 +718,7 @@
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
 <translation id="3948600256434252210">છૂપા મોડમાં બ્રાઉઝ કરવા માટે તમે જમણી તરફ સ્વાઇપ કરી શકો છો.</translation>
+<translation id="3949712484278252781">Gemini સાથેની તમારી વાતચીતો કે તમારા <ph name="GOOGLE_WORKSPACE_DATA" />નો માનવ રિવ્યૂઅર દ્વારા રિવ્યૂ કરવામાં આવશે નહીં અથવા જનરેટિવ AI મૉડલને બહેતર બનાવવા માટે તેનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="3950479158728806902">ઝડપથી સાઇન ઇન કરવા માટે ઑટોમૅટિક રીતે પાસકી બનાવો</translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3955740319737378355">થઈ ગયું</translation>
@@ -1123,6 +1125,7 @@
 <translation id="555749644339804659">પાસવર્ડ ચેક કરીએ છીએ…</translation>
 <translation id="5559567453458728487">વેબ પર મળેલા માપના એકમોનું રૂપાંતરણ કરો</translation>
 <translation id="556042886152191864">બટન</translation>
+<translation id="5565871407246142825">ક્રેડિટ કાર્ડ્સ</translation>
 <translation id="5567439033041178034">વધુ જાણો</translation>
 <translation id="5572648434713976849">ઍડ્રેસ બારમાં તમે બહેતર સૂચનો મેળવશો</translation>
 <translation id="5576885723883013398">નવી વિન્ડો</translation>
@@ -1637,6 +1640,7 @@
 <translation id="7512909159512473473">પાસફ્રેઝ દાખલ કરો…</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7514530647142300459">તમારા Google એકાઉન્ટ <ph name="EMAIL" />માં પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
+<translation id="7522587739845660862">તમારા લોકેશન વિશેની માહિતી</translation>
 <translation id="7522948500476882302">તમે ફાઇલ ડાઉનલોડ કરો, ત્યારે 1 મહિનાની અંદર તેનું ઑટોમૅટિક રીતે ડિલીટ થવાનું પસંદ કરો</translation>
 <translation id="7524055474074101597">સમગ્ર ઍપ પર તમારા પાસવર્ડ અને બીજું ઘણું ઍક્સેસ કરો.</translation>
 <translation id="75362970626182391">ટૅબનું નવું ગ્રૂપ</translation>
@@ -1651,6 +1655,7 @@
 <translation id="7582666837709186351">તમારા કૅમેરા વડે તમારા ફોટા કે તમારી આસપાસની વસ્તુઓ પરની ટેક્સ્ટનો અનુવાદ કરો.</translation>
 <translation id="7582857256643797524">આ સેટિંગ તમારા ડિવાઇસ પર ચાલુ કરેલું છે</translation>
 <translation id="7583004045319035904">તમારી છૂપી ટૅબને અનલૉક કરવા માટે <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />નો ઉપયોગ કરો.</translation>
+<translation id="7588149553568293500">તમારી પસંદગીઓ વિશે જાણો.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}one{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}other{{COUNT} નિષ્ક્રિય ટૅબ બંધ કરીએ?}}</translation>
 <translation id="7598439272585186139">વધુ સુરક્ષા મેળવો</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
@@ -2053,6 +2058,7 @@
 <translation id="9066097352053395362">'બુકમાર્કમાં ફેરફાર કરો' છુપાવો</translation>
 <translation id="9070824521421603770">તમને સાઇન આઉટ કરવામાં આવશે અને ટૅબ બંધ કરવામાં આવશે</translation>
 <translation id="9072837124205571418">બધા ડિવાઇસના ટૅબના ગ્રૂપ</translation>
+<translation id="9075970015528364598">Google AIને બહેતર બનાવવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. <ph name="LEARN_ABOUT_CHOICES" /> તમારી ઍક્ટિવિટીમાં <ph name="INFO_ABOUT_LOCATION" /> પણ સ્ટોર કરવામાં આવે છે.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> માટેનો પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="9083838294503912307">એકથી વધુ ડિવાઇસને સિંક અને વ્યક્તિગત કરવા માટે સિંક ચાલુ કરો.</translation>
 <translation id="9084367296493549256">{count,plural, =1{તમે {count} નબળો પાસવર્ડ ધરાવો છો, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}one{તમે {count} નબળો પાસવર્ડ ધરાવો છો, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}other{તમે {count} નબળા પાસવર્ડ ધરાવો છો, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.}}</translation>

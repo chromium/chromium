@@ -189,7 +189,7 @@
 <translation id="1845958458910716240">ให้ Chrome นำสิทธิ์ออกจากเว็บไซต์ที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้เพื่อปกป้องข้อมูลของคุณ</translation>
 <translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome หยุดการแจ้งเตือนจากเว็บไซต์นี้แล้ว คุณสามารถตรวจสอบและจัดการได้}other{Chrome หยุดการแจ้งเตือนจากเว็บไซต์เหล่านี้แล้ว คุณสามารถตรวจสอบและจัดการได้}}</translation>
 <translation id="1871098866036088250">เปิดในเบราว์เซอร์ Chrome</translation>
-<translation id="1877026089748256423">Chrome ล้าสมัย</translation>
+<translation id="1877026089748256423">Chrome ไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="1877073879466606884">โปรไฟล์ที่คุณลงชื่อเข้าใช้เป็นโปรไฟล์ที่มีการจัดการ ผู้ดูแลระบบสามารถเปลี่ยนแปลงการตั้งค่าโปรไฟล์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน และดำเนินการอื่นๆ ที่จำเป็นได้</translation>
 <translation id="1879904908408734349">Bottom Sheet การลงชื่อเข้าใช้ปิดอยู่</translation>
 <translation id="1883903952484604915">ไฟล์ของฉัน</translation>
@@ -720,6 +720,7 @@
 <translation id="4306489587293957491">ป้อน</translation>
 <translation id="4307992518367153382">พื้นฐาน</translation>
 <translation id="4311652497846705514">เปิด PDF ไหม</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{อาจเป็นสแปม}other{อาจเป็นสแปม (#)}}</translation>
 <translation id="4320177379694898372">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="4326079409704643112">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="433213510553688132">กำลังติดตาม...</translation>
@@ -1058,6 +1059,7 @@
 <translation id="580893287573699959">จัดการหัวข้อและเว็บไซต์ที่คุณสนใจ</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ชั่วโมงที่ผ่านมา}other{# ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="5810288467834065221">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{แสดงการแจ้งเตือน}other{แสดงการแจ้งเตือน}}</translation>
 <translation id="5814749351757353073">ติดตามเว็บไซต์ที่คุณชื่นชอบ</translation>
 <translation id="5823093032261493462">คุณต้องการดาวน์โหลด "<ph name="FILE_NAME" />" จาก <ph name="DOWNLOAD_DOMAIN" /> ต่อไปไหม</translation>
 <translation id="5828921839638612740">คุณลบข้อมูลได้ในการตั้งค่า Chrome</translation>
@@ -1582,7 +1584,7 @@
 <translation id="7919123827536834358">แปลภาษาเหล่านี้โดยอัตโนมัติ</translation>
 <translation id="7921782882718083488">สรุปหน้านี้</translation>
 <translation id="7926975587469166629">ชื่อเล่นของบัตร</translation>
-<translation id="7929587383660661825">Chrome จะนำสิทธิ์ออกจากเว็บไซต์ที่มีการแจ้งเตือนที่ทำให้เข้าใจผิดหรือที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้โดยอัตโนมัติ</translation>
+<translation id="7929587383660661825">Chrome จะนำสิทธิ์ออกจากเว็บไซต์ที่ส่งการแจ้งเตือนมากเกินไปหรือที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้โดยอัตโนมัติ</translation>
 <translation id="7934668619883965330">ดาวน์โหลดไฟล์ไม่ได้ ไม่รองรับรูปแบบไฟล์</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ล้าสมัย</translation>
 <translation id="7944772052836377867">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>

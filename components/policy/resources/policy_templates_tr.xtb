@@ -3757,6 +3757,15 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 <translation id="3647212518036289905">Politikanın ayarlanması, HTTP kimlik doğrulaması için hangi GSSAPI kitaplığının kullanılacağını belirtir. Politikayı bir kitaplık adı veya tam yol olarak ayarlayın.
 
       Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, varsayılan bir kitaplık adı kullanır.</translation>
+<translation id="3647756189889410780">https://github.com/WICG/service-worker-auto-preload
+ServiceWorkerAutoPreload özelliği, ServiceWorker önyükleme sürecini başlattığı sırada ana kaynak için bir ağ isteği gönderir.
+
+Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa
+<ph name="PRODUCT_NAME" />, ServiceWorkerAutoPreload'u etkinleştirir. Gezinme isteği, bazı senaryolarda (ör. ServiceWorker çalışmıyorsa) ServiceWorker başlatılırken otomatik olarak gönderilir.
+
+Politika devre dışı bırakılırsa <ph name="PRODUCT_NAME" />, ServiceWorkerAutoPreload'u etkinleştirmez. Gezinme isteği her zaman ServiceWorker başlatıldıktan sonra gönderilir.
+
+Bu politika, özelliği kontrol etmek için geçici bir çözüm olup M144 sürümünde kaldırılacaktır.</translation>
 <translation id="3650122925429054129">Giriş ekranında fare imlecini vurgulamayı devre dışı bırak</translation>
 <translation id="365093517647222762">İlişkili kullanıcılar için <ph name="REPORT_WEBSITE_TELEMETRY_ALLOWLIST_POLICY_NAME" /> politikası tarafından izin verilen URL'lere ait web sitesi telemetri verilerini raporlar.
 
@@ -3941,6 +3950,10 @@ zorunlu kılınmaz ve istekler engellenmez.
 <translation id="376375951585423504">Kalıcı kotayı devre dışı bırak.</translation>
 <translation id="3765260570442823273">Boştayken çıkış yapma uyarı mesajının süresi</translation>
 <translation id="3766695867369523703">Üçüncü taraf depolama bölümlendirmesine varsayılan olarak izin ver</translation>
+<translation id="3770044943398389276">Geçişli TOA varsayılan olarak cihazlar arasında yalnızca kalıcı çerezleri taşır. Bu politika, oturum çerezlerinin de dahil edilip edilmeyeceğini kontrol eder. Politika yalnızca <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> politikası Etkin değerine ayarlandığında geçerli olur.
+
+Bu politika Etkin değerine ayarlandığında Geçişli TOA hem oturum çerezlerini hem de kalıcı çerezleri senkronize eder.
+Bu politika, Devre Dışı değerine ayarlandığında veya ayarlanmadığında Geçişli TOA yalnızca kalıcı çerezleri senkronize eder.</translation>
 <translation id="3770407495263198786">Politika ayarlanırsa yöneticiler kullanıcıları için bir yazıcı listesi oluşturur. Yazıcı seçimi, kullanıcılar ilk kez yazdırmaya çalıştığında yapılır.
 
       Politikayı kullanarak:
@@ -4041,6 +4054,7 @@ Politika ayarlanmaz veya boş bırakılırsa varsayılan Yeni Sekme sayfası kul
 
 <ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="3845318141474759319">Yapay zeka modellerini daha iyi hale getirmeden üretken yapay zeka duvar kağıdı özelliğine izin ver</translation>
+<translation id="3848302969721895938">ServiceWorkerAutoPreload'u devre dışı bırak</translation>
 <translation id="3849923496599301707">Kiosk modunda Chrome Uygulamalarına İzin Vermeye zorla</translation>
 <translation id="3851443303439635700">JavaScript setTimeout() fonksiyonu zaman aşımına uğramaya başlamadan önceki iç içe yerleştirme eşiğini kontrol et</translation>
 <translation id="3854609566862485607">Bu politika, yönetilen profilleri tanımlamak için kullanılan özel bir etiket ekler. Yönetilen profillerde bu etiket, araç çubuğundaki avatarın yanında gösterilir. Özel etiket çevrilmez.
@@ -4349,6 +4363,7 @@ Bu politikanın ayarlanmadan veya boş bırakılması hiçbir web sitesinin kull
 
 Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakabilirsiniz.</translation>
 <translation id="4070039109671307724">Çeşitli</translation>
+<translation id="4071922398488395340">Geçişli TOA işlevine oturum çerezlerini dahil et</translation>
 <translation id="4072225853834793549">Oturum açma ekranında erişilebilirlik kısayollarını devre dışı bırak</translation>
 <translation id="4074922053013383215">Orta düzeyde bellek tasarrufu.</translation>
 <translation id="4075675819066819571">Rafı ekranın sol tarafında konumlandır</translation>
@@ -6967,6 +6982,7 @@ Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel 
 <translation id="5815129011704381141">Güncelleme sonrasında otomatik olarak yeniden başlat</translation>
 <translation id="5815990343032461023">Eski davranış: Kiosk Chrome Uygulamaları, uzantı manifestindeki güncelleme URL'sini kullanarak uzantı sistemi tarafından ve politikadaki güncelleme URL'sini kullanarak önbelleğe alma yöneticisi tarafından güncellenir</translation>
 <translation id="5816688024515869030"><ph name="UIA_NAME" /> sağlayıcısını devre dışı bırak</translation>
+<translation id="581737504822041364">ServiceWorker'ın, başlatılmayı beklemeden gezinme istekleri göndermesine izin ver</translation>
 <translation id="5828008775808363753">Başlangıçta tarayıcıyı başlatma</translation>
 <translation id="582857022372205358">Kısa kenar dupleks yazdırmayı etkinleştir</translation>
 <translation id="5830196507442186669">Cihazların <ph name="PRODUCT_OS_NAME" /> üzerinde <ph name="BOREALIS_NAME" />kullanmasına izin verilsin</translation>
@@ -9337,6 +9353,7 @@ Bu politika, kullanımdan kaldırılan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_UR
       Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir. Bu politika, yalnızca kaynağa göre eşleşir. Dolayısıyla, URL kalıbındaki yollar yok sayılır.
 
       Bu politikanın ayarlanmadığı siteler için, ayarlanmışsa <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> politikası geçerli olur. Aksi takdirde ilgili izin, tarayıcının varsayılan ayarına uyarak kullanıcıların site bazında bu izni belirlemesine imkan verir.</translation>
+<translation id="7358299261566939984">ServiceWorkerAutoPreload'u etkinleştir</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> tarayıcısını etkinleştir</translation>
 <translation id="7362566456990049303">Yalnızca Kullanıcı</translation>
 <translation id="736486789939370545">Harici uzantıların yüklenmesine izin ver</translation>
@@ -11758,6 +11775,7 @@ Not: Cihazın yeniden başlatılması, önbelleğin temizlenmesine neden olur. G
 <translation id="9073405975862312795">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar bir kullanıcının cihazı aktif olarak kullandığı zamanları bildirir.
 
       Politika Devre Dışı değerine ayarlanırsa kayıtlı cihazlar etkinlik zamanlarını kaydetmez veya bildirmez.</translation>
+<translation id="9075183018289926453">Oturum çerezlerini Geçişli TOA ile senkronize etme</translation>
 <translation id="9076477053438828079">Kullanıcı adlarını ve fotoğrafları her zaman göster</translation>
 <translation id="9077227880520270584">Cihaz yerel hesabına otomatik giriş zamanlayıcısı</translation>
 <translation id="9079158199923156713">Yönetilen profilin kurumsal logo URL'si</translation>

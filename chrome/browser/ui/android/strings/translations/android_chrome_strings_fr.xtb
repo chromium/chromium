@@ -189,7 +189,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1845958458910716240">Pour protéger vos données, autorisez Chrome à supprimer les autorisations des sites que vous n'avez pas consultés récemment</translation>
 <translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a bloqué les notifications de ce site. Vous pouvez consulter et gérer ces paramètres.}one{Chrome a bloqué les notifications de ce site. Vous pouvez consulter et gérer ces paramètres.}other{Chrome a bloqué les notifications de ces sites. Vous pouvez consulter et gérer ces paramètres.}}</translation>
 <translation id="1871098866036088250">Ouvrir dans le navigateur Chrome</translation>
-<translation id="1877026089748256423">Version de Chrome obsolète</translation>
+<translation id="1877026089748256423">Chrome est obsolète</translation>
 <translation id="1877073879466606884">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier à distance les paramètres de votre profil, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires.</translation>
 <translation id="1879904908408734349">La bottom sheet de connexion est fermée</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
@@ -720,6 +720,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4306489587293957491">Saisir</translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
 <translation id="4311652497846705514">Ouvrir le PDF ?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Spam potentiel}one{Spam potentiel (#)}other{Spam potentiel (#)}}</translation>
 <translation id="4320177379694898372">Aucune connexion Internet.</translation>
 <translation id="4326079409704643112">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité</translation>
 <translation id="433213510553688132">Suivre…</translation>
@@ -1058,6 +1059,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="580893287573699959">Gérez les thèmes et les sites qui vous intéressent</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Il y a # heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Afficher la notification}one{Afficher la notification}other{Afficher les notifications}}</translation>
 <translation id="5814749351757353073">Tenez-vous informé de l'actualité de vos sites préférés</translation>
 <translation id="5823093032261493462">Voulez-vous quand même télécharger "<ph name="FILE_NAME" />" depuis <ph name="DOWNLOAD_DOMAIN" /> ?</translation>
 <translation id="5828921839638612740">Vous pouvez supprimer les données dans les paramètres Chrome</translation>
@@ -1826,7 +1828,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8945143127965743188"><ph name="LANG" /> - Impossible de télécharger cette langue. Réessayez plus tard.</translation>
 <translation id="8946759102391960088">Conservez l'accès à vos mots de passe</translation>
 <translation id="8957528460562961174">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, puis importez-les dans le gestionnaire de mots de passe de votre choix. Le Gestionnaire de mots de passe de Google a cessé de fonctionner, car les services Google Play ne sont pas disponibles.</translation>
-<translation id="8963117664422609631">Accéder aux paramètres du site</translation>
+<translation id="8963117664422609631">Accéder aux paramètres des sites</translation>
 <translation id="8965591936373831584">en attente</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_ONE" /> autre onglet seront supprimés}one{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autre onglet seront supprimés}other{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autres onglets seront supprimés}}</translation>
 <translation id="897061774231912216">Les mots de passe ne fonctionneront bientôt plus, car les services Google Play ne sont pas disponibles. Pour utiliser les mots de passe enregistrés dans votre compte Google, connectez-vous sur un autre appareil ou accédez à passwords.google.com.</translation>

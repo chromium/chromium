@@ -720,6 +720,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4306489587293957491">Skriv inn</translation>
 <translation id="4307992518367153382">Generelt</translation>
 <translation id="4311652497846705514">Vil du åpne PDF-filen?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Mulig nettsøppel}other{Mulig nettsøppel (#)}}</translation>
 <translation id="4320177379694898372">Ingen internettilkobling</translation>
 <translation id="4326079409704643112">For å bruke og lagre Chrome-data i Google-kontoen din, bekreft at det er deg</translation>
 <translation id="433213510553688132">Følger …</translation>
@@ -1058,6 +1059,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="580893287573699959">Administrer emnene og nettstedene du er interessert i</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{for # time siden}other{for # timer siden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Vis varsel}other{Vis varsler}}</translation>
 <translation id="5814749351757353073">Hold tritt med favorittnettstedene dine</translation>
 <translation id="5823093032261493462">Vil du laste ned «<ph name="FILE_NAME" />» fra <ph name="DOWNLOAD_DOMAIN" /> likevel?</translation>
 <translation id="5828921839638612740">Du kan slette dataene i Chrome-innstillingene</translation>

@@ -317,7 +317,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2453860139492968684">Tamamlandı</translation>
 <translation id="2461378706168271257">Sekmelerinizde arayın</translation>
 <translation id="2461822463642141190">Şu an</translation>
-<translation id="2468444275314013497">Tarayıcınız iyi durumda</translation>
+<translation id="2468444275314013497">Tarayıcınızda bir sorun görünmüyor</translation>
 <translation id="2472163211318554013">Chrome'dan en iyi şekilde yararlanmak için oturum açın</translation>
 <translation id="247737702124049222">Resim açıklamaları açık</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
@@ -720,6 +720,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4306489587293957491">Gir</translation>
 <translation id="4307992518367153382">Temel Bilgiler</translation>
 <translation id="4311652497846705514">PDF açılsın mı?</translation>
+<translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Spam olabilir}other{Spam olabilir (#)}}</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yok</translation>
 <translation id="4326079409704643112">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
 <translation id="433213510553688132">Takip ediliyor...</translation>
@@ -1058,6 +1059,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="580893287573699959">İlgilendiğiniz konuları ve aramaları yönetin</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# saat önce}other{# saat önce}}</translation>
 <translation id="5810288467834065221">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
+<translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Bildirimi göster}other{Bildirimleri göster}}</translation>
 <translation id="5814749351757353073">Favori sitelerinizi takip edin</translation>
 <translation id="5823093032261493462">"<ph name="FILE_NAME" />" dosyasını <ph name="DOWNLOAD_DOMAIN" /> kaynağından yine de indirmek istiyor musunuz?</translation>
 <translation id="5828921839638612740">Verileri Chrome'da Ayarlar'dan silebilirsiniz</translation>
@@ -1582,7 +1584,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7919123827536834358">Şu dilleri otomatik olarak çevir</translation>
 <translation id="7921782882718083488">Bu sayfanın özetini çıkarın</translation>
 <translation id="7926975587469166629">Kart için takma ad</translation>
-<translation id="7929587383660661825">Chrome, bildirimleri kötüye kullanan veya son zamanlarda ziyaret etmediğiniz sitelerin izinlerini otomatik olarak kaldırır.</translation>
+<translation id="7929587383660661825">Chrome, bildirimleri kötüye kullanan veya son zamanlarda ziyaret etmediğiniz sitelerin izinlerini otomatik olarak kaldırır</translation>
 <translation id="7934668619883965330">Dosya indirilemiyor. Dosya biçimi desteklenmiyor.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> güncel değil.</translation>
 <translation id="7944772052836377867">Senkronizasyonun, kimliğinizi doğrulaması gerekiyor</translation>
