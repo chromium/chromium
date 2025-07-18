@@ -61,9 +61,6 @@ class ExtensionNavigationRegistry : public BrowserContextKeyedAPI {
                    const Extension& extension);
 
  private:
-  // Determine whether the feature is enabled.
-  bool IsEnabled();
-
   // BrowserContextKeyedAPIFactory or BrowserContextKeyedAPI related.
   friend class BrowserContextKeyedAPIFactory<ExtensionNavigationRegistry>;
   static const char* service_name() { return "ExtensionNavigationRegistry"; }

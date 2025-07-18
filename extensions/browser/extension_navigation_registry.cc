@@ -7,10 +7,9 @@
 #include <cstdint>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 
 namespace extensions {
 
@@ -40,19 +39,11 @@ void ExtensionNavigationRegistry::RecordExtensionRedirect(
     int64_t navigation_handle_id,
     const GURL& target_url,
     const ExtensionId& extension_id) {
-  if (!IsEnabled()) {
-    return;
-  }
-
   redirect_metadata_.emplace(navigation_handle_id,
                              Metadata(target_url, extension_id));
 }
 
 void ExtensionNavigationRegistry::Erase(int64_t navigation_handle_id) {
-  if (!IsEnabled()) {
-    return;
-  }
-
   auto it = redirect_metadata_.find(navigation_handle_id);
   if (it == redirect_metadata_.end()) {
     return;
@@ -62,10 +53,6 @@ void ExtensionNavigationRegistry::Erase(int64_t navigation_handle_id) {
 
 std::optional<ExtensionNavigationRegistry::Metadata>
 ExtensionNavigationRegistry::GetAndErase(int64_t navigation_handle_id) {
-  if (!IsEnabled()) {
-    return std::nullopt;
-  }
-
   auto it = redirect_metadata_.find(navigation_handle_id);
   if (it == redirect_metadata_.end()) {
     return std::nullopt;
@@ -76,18 +63,9 @@ ExtensionNavigationRegistry::GetAndErase(int64_t navigation_handle_id) {
   return metadata;
 }
 
-bool ExtensionNavigationRegistry::IsEnabled() {
-  return base::FeatureList::IsEnabled(
-      extensions_features::kExtensionWARForRedirect);
-}
-
 bool ExtensionNavigationRegistry::CanRedirect(int64_t navigation_id,
                                               const GURL& gurl,
                                               const Extension& extension) {
-  if (!IsEnabled()) {
-    return true;
-  }
-
   std::optional<Metadata> extension_redirect_recorded =
       GetAndErase(navigation_id);
 

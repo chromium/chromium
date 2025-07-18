@@ -128,10 +128,6 @@ extern const base::FeatureParam<std::string>
 // policy is no longer supported.
 BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
 
-// Controls whether server-side redirects are subject to extensions' web
-// accessible resource restrictions.
-BASE_DECLARE_FEATURE(kExtensionWARForRedirect);
-
 // If enabled, allows an extension to specify protocol_handlers keys in the
 // Manifest, registering a group of custom handlers so that the browser can
 // handle navigation requests to URLs with unknown schemes. This feature

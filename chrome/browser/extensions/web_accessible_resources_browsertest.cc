@@ -5,12 +5,10 @@
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -21,7 +19,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -82,7 +79,7 @@ static constexpr char kFetchResourceScriptTemplate[] = R"(
   Promise.all(tests).then(response => true);
 )";
 
-// Exercise web accessible resources with experimental extension features.
+// Exercise web accessible resources.
 class WebAccessibleResourcesBrowserTest : public ExtensionBrowserTest {
  public:
   WebAccessibleResourcesBrowserTest() = default;
@@ -94,9 +91,6 @@ class WebAccessibleResourcesBrowserTest : public ExtensionBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};
-
   // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
   extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
@@ -663,30 +657,11 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesServiceWorkerBrowserTest,
 // TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
 // doesn't happen.
 
-// Class for testing browser process initiated redirection.
-class WebAccessibleResourcesBrowserProcessRedirectTest
-    : public WebAccessibleResourcesBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  WebAccessibleResourcesBrowserProcessRedirectTest() {
-    feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionWARForRedirect, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(ServerRedirect,
-                         WebAccessibleResourcesBrowserProcessRedirectTest,
-                         testing::Bool());
-
 // Test server redirect to a web accessible or extension resource.
-IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
-                       Manifests) {
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
+                       BrowserProcessRedirect) {
   auto TestBrowserRedirect = [&](const char* kManifest,
-                                 const char* kHistogramName,
-                                 bool is_war_for_redirect_enabled) {
+                                 const char* kHistogramName) {
     // Load extension.
     TestExtensionDir test_dir;
     test_dir.WriteManifest(kManifest);
@@ -719,12 +694,10 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
 
     // Test cases.
     server_redirect(net::OK, "web_accessible_resource.html", true);
-    server_redirect(
-        is_war_for_redirect_enabled ? net::ERR_BLOCKED_BY_CLIENT : net::OK,
-        "resource.html", false);
+    server_redirect(net::ERR_BLOCKED_BY_CLIENT, "resource.html", false);
   };
 
-  auto TestBrowserRedirectMV2 = [&](bool is_war_for_redirect_enabled) {
+  auto TestBrowserRedirectMV2 = [&]() {
     TestBrowserRedirect(
         R"({
           "name": "Test browser redirect",
@@ -732,10 +705,10 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
           "manifest_version": 2,
           "web_accessible_resources": ["web_accessible_resource.html"]
         })",
-        "Extensions.WAR.XOriginWebAccessible.MV2", is_war_for_redirect_enabled);
+        "Extensions.WAR.XOriginWebAccessible.MV2");
   };
 
-  auto TestBrowserRedirectMV3 = [&](bool is_war_for_redirect_enabled) {
+  auto TestBrowserRedirectMV3 = [&]() {
     TestBrowserRedirect(
         R"({
           "name": "Redirect Test",
@@ -748,21 +721,19 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
             }
           ]
         })",
-        "Extensions.WAR.XOriginWebAccessible.MV3", is_war_for_redirect_enabled);
+        "Extensions.WAR.XOriginWebAccessible.MV3");
   };
 
-  bool is_war_for_redirect_enabled = GetParam();
-  TestBrowserRedirectMV2(is_war_for_redirect_enabled);
-  TestBrowserRedirectMV3(is_war_for_redirect_enabled);
+  TestBrowserRedirectMV2();
+  TestBrowserRedirectMV3();
 }
 
 // Verify browser process redirect to an non web accessible resource. Navigate
 // to a webpage that's redirected by DNR to a web server that initiates a
 // redirect to a non web accessible extension resource.
-IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
-                       MainframeReachability) {
-  auto TestBrowserRedirectImpl = [&](const std::string& manifest,
-                                     bool is_war_for_redirect_enabled) {
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
+                       BrowserProcessRedirectMainframeReachability) {
+  auto TestBrowserRedirectImpl = [&](const std::string& manifest) {
     // Load extension.
     TestExtensionDir test_dir;
     test_dir.WriteManifest(manifest);
@@ -844,29 +815,23 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
     ASSERT_TRUE(catcher.GetNextResult());
 
     // Navigate to a webpage that eventually navigates to an extension resource.
-    auto server_redirect = [&](int expect_net_error, const char* resource) {
-      GURL gurl =
-          embedded_test_server()->GetURL("a.example.com", "/empty.html");
-      auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-      content::TestNavigationObserver observer(web_contents);
-      EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-      observer.WaitForNavigationFinished();
-      EXPECT_EQ(expect_net_error == net::OK,
-                observer.last_navigation_succeeded());
-      EXPECT_EQ(expect_net_error, observer.last_net_error_code());
-      EXPECT_EQ(extension->GetResourceURL(resource),
-                observer.last_navigation_url());
-    };
-
-    server_redirect(
-        is_war_for_redirect_enabled ? net::ERR_BLOCKED_BY_CLIENT : net::OK,
-        "inaccessible.html");
+    int expect_net_error = net::ERR_BLOCKED_BY_CLIENT;
+    const char* resource = "inaccessible.html";
+    GURL gurl = embedded_test_server()->GetURL("a.example.com", "/empty.html");
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver observer(web_contents);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+    observer.WaitForNavigationFinished();
+    EXPECT_EQ(expect_net_error == net::OK,
+              observer.last_navigation_succeeded());
+    EXPECT_EQ(expect_net_error, observer.last_net_error_code());
+    EXPECT_EQ(extension->GetResourceURL(resource),
+              observer.last_navigation_url());
   };
 
   using ManifestVersion = enum { MV3, MV2 };
   auto TestBrowserRedirect = [&TestBrowserRedirectImpl](
-                                 ManifestVersion manifest_version,
-                                 bool is_war_for_redirect_enabled) {
+                                 ManifestVersion manifest_version) {
     std::string manifest_base = base::StringPrintf(
         R"(
           "name": "test",
@@ -904,12 +869,11 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserProcessRedirectTest,
     }
 
     manifest = base::StringPrintf("{%s, %s}", manifest_base, manifest);
-    TestBrowserRedirectImpl(manifest, is_war_for_redirect_enabled);
+    TestBrowserRedirectImpl(manifest);
   };
 
-  bool is_war_for_redirect_enabled = GetParam();
-  TestBrowserRedirect(MV3, is_war_for_redirect_enabled);
-  TestBrowserRedirect(MV2, is_war_for_redirect_enabled);
+  TestBrowserRedirect(MV3);
+  TestBrowserRedirect(MV2);
 }
 
 // Test dynamic origins in web accessible resources.
@@ -956,8 +920,6 @@ class DynamicOriginBrowserTest : public ExtensionBrowserTest {
 
   raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
   TestExtensionDir dir_;
-  base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};
 };
 
 // Test a dynamic url as a web accessible resource.

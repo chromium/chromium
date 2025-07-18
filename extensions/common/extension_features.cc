@@ -109,10 +109,6 @@ BASE_FEATURE(kExtensionProtocolHandlers,
              "ExtensionProtocolHandlers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionWARForRedirect,
-             "ExtensionWARForRedirect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionsManifestV3Only,
              "ExtensionsManifestV3Only",
              base::FEATURE_DISABLED_BY_DEFAULT);
