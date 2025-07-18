@@ -119,11 +119,6 @@ bool GetStatusForSigninPolicy() {
 // Preference value for the "Allow Chrome Sign-in" feature.
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* allowChromeSigninPreference;
-// Preference value for the "Help improve Chromium's features" for Wifi-Only.
-// TODO(crbug.com/40588486): Needs to create the UI to change from Wifi-Only to
-// always
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* sendDataUsageWifiOnlyPreference;
 // Preference value for the "Make searches and browsing better" feature.
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* anonymizedDataCollectionPreference;
@@ -196,8 +191,6 @@ bool GetStatusForSigninPolicy() {
 - (void)disconnect {
   [_allowChromeSigninPreference stop];
   _allowChromeSigninPreference = nil;
-  [_sendDataUsageWifiOnlyPreference stop];
-  _sendDataUsageWifiOnlyPreference = nil;
   [_anonymizedDataCollectionPreference stop];
   _anonymizedDataCollectionPreference = nil;
   [_improveSearchSuggestionsPreference stop];
@@ -481,12 +474,6 @@ bool GetStatusForSigninPolicy() {
     }
     case ImproveChromeItemType:
       self.sendDataUsagePreference.value = value;
-      // Don't set value if sendDataUsageWifiOnlyPreference has not been
-      // allocated.
-      if (value && self.sendDataUsageWifiOnlyPreference) {
-        // Should be wifi only, until https://crbug.com/872101 is fixed.
-        self.sendDataUsageWifiOnlyPreference.value = YES;
-      }
       break;
     case BetterSearchAndBrowsingItemType:
       self.anonymizedDataCollectionPreference.value = value;
