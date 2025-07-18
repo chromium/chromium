@@ -226,7 +226,7 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
   request->set_result_selection(gfx::Rect(size));
   request->set_blit_request(
       BlitRequest(gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
-                  shared_image->mailbox(), shared_image->creation_sync_token(),
+                  shared_image, shared_image->creation_sync_token(),
                   /*populates_gpu_memory_buffer=*/false));
 
   return request;

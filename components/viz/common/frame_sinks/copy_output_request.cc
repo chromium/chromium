@@ -129,7 +129,7 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
     DCHECK_EQ(blit_request.destination_region_offset().y() % 2, 0);
   }
 
-  CHECK(!blit_request.mailbox().IsZero());
+  CHECK(blit_request.shared_image());
 
   blit_request_ = std::move(blit_request);
 }

@@ -156,7 +156,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       scoped_refptr<SharedImageInterfaceHolder> sii_holder,
       scoped_refptr<base::UnsafeSharedMemoryPool> shared_memory_pool = nullptr);
 
-  const Mailbox& mailbox() { return mailbox_; }
+  const Mailbox& mailbox() const { return mailbox_; }
   viz::SharedImageFormat format() const { return metadata_.format; }
   gfx::Size size() const { return metadata_.size; }
   const gfx::ColorSpace& color_space() const { return metadata_.color_space; }

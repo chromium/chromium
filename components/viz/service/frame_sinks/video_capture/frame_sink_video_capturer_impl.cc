@@ -1117,13 +1117,13 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
 
     auto sync_token = frame_capture.frame->acquire_sync_token();
-    auto mailbox = frame_capture.frame->shared_image()->mailbox();
 
     // TODO(crbug.com/41350322): change the capturer to only request the
     // parts of the frame that have changed whenever possible.
     blit_request =
         BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
-                    mailbox, sync_token, true);
+                    frame_capture.frame->shared_image(), sync_token,
+                    /*populates_gpu_memory_buffer=*/true);
 
     // We haven't captured the frame yet, but let's pretend that we did for
     // the sake of blend information computation. We will be asking for an

@@ -962,11 +962,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
   std::unique_ptr<gpu::SkiaImageRepresentation> representation;
   // If has blit request, import texture from request.
   if (request->has_blit_request()) {
-    const gpu::Mailbox& mailbox = request->blit_request().mailbox();
+    // Blit requests must be created with a non-null shared image.
+    DCHECK(request->blit_request().shared_image());
 
-    // Should never happen, mailboxes are validated when setting blit
-    // request on a CopyOutputResult.
-    DCHECK(!mailbox.IsZero());
+    const gpu::Mailbox& mailbox =
+        request->blit_request().shared_image()->mailbox();
 
     representation = dependency_->GetSharedImageManager()->ProduceSkia(
         mailbox, context_state_->memory_type_tracker(), context_state_);
@@ -1069,9 +1069,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     // `SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion()`.
     ++num_readbacks_pending_;
 
+    const gpu::Mailbox& mailbox =
+        request->blit_request().shared_image()->mailbox();
     readback_context = std::make_unique<ReadbackContextTexture>(
-        weak_ptr_, std::move(request), geometry.result_selection,
-        request->blit_request().mailbox(), color_space);
+        weak_ptr_, std::move(request), geometry.result_selection, mailbox,
+        color_space);
   }
 
   bool flush_succeeded = false;
@@ -1118,19 +1120,22 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     return;
   }
 
-  // Grab the mailbox before we transfer `representation`'s ownership:
-  gpu::Mailbox mailbox = representation->mailbox();
-
   CopyOutputResult::ReleaseCallbacks release_callbacks;
-  if (!request->has_blit_request()) {
+  if (request->has_blit_request()) {
+    request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
+        CopyOutputResult::Format::RGBA, geometry.result_selection,
+        request->blit_request().shared_image(), std::move(release_callbacks)));
+  } else {
+    // Grab the mailbox before we transfer `representation`'s ownership:
+    gpu::Mailbox mailbox = representation->mailbox();
     release_callbacks.push_back(
         CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
             std::move(representation)));
-  }
 
-  request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
-      CopyOutputResult::Format::RGBA, geometry.result_selection, mailbox,
-      color_space, "CopyOutputRGBAInTexture", std::move(release_callbacks)));
+    request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
+        CopyOutputResult::Format::RGBA, geometry.result_selection, mailbox,
+        color_space, "CopyOutputRGBAInTexture", std::move(release_callbacks)));
+  }
 }
 
 void SkiaOutputSurfaceImplOnGpu::RenderSurface(
@@ -1221,11 +1226,11 @@ bool SkiaOutputSurfaceImplOnGpu::CreateDestinationImageIfNeededAndBeginAccess(
   std::unique_ptr<gpu::SkiaImageRepresentation> representation;
   // If has blit request, import texture from request.
   if (request->has_blit_request()) {
-    const gpu::Mailbox& mailbox = request->blit_request().mailbox();
+    // Blit requests must be created with a non-null shared image.
+    DCHECK(request->blit_request().shared_image());
 
-    // Should never happen, mailboxes are validated when setting blit
-    // request on a CopyOutputResult.
-    DCHECK(!mailbox.IsZero());
+    const gpu::Mailbox& mailbox =
+        request->blit_request().shared_image()->mailbox();
 
     representation = dependency_->GetSharedImageManager()->ProduceSkia(
         mailbox, context_state_->memory_type_tracker(), context_state_);
@@ -1532,18 +1537,23 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     case CopyOutputRequest::ResultDestination::kSharedImage: {
       CopyOutputResult::ReleaseCallbacks release_callbacks;
 
-      if (!request->has_blit_request()) {
+      if (request->has_blit_request()) {
+        request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
+            CopyOutputResult::Format::NV12, geometry.result_selection,
+            request->blit_request().shared_image(),
+            std::move(release_callbacks)));
+      } else {
         // In blit requests, we are not responsible for releasing the textures
         // (the issuer of the request owns them), create the callbacks only if
         // we don't have blit request:
         release_callbacks.push_back(
             CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
                 std::move(mailbox_access_data.representation)));
+        request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
+            CopyOutputResult::Format::NV12, geometry.result_selection,
+            mailbox_access_data.mailbox, color_space, "CopyOutputNV12",
+            std::move(release_callbacks)));
       }
-      request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
-          CopyOutputResult::Format::NV12, geometry.result_selection,
-          mailbox_access_data.mailbox, color_space, "CopyOutputNV12",
-          std::move(release_callbacks)));
       break;
     }
     case CopyOutputRequest::ResultDestination::kSystemMemory: {

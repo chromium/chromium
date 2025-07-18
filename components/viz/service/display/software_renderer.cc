@@ -695,7 +695,7 @@ void SoftwareRenderer::CopyDrawnRenderPass(
     const auto& blit_request = request->blit_request();
 
     auto representation = resource_provider()->GetSharedImageRepresentation(
-        blit_request.mailbox(), blit_request.sync_token());
+        blit_request.shared_image()->mailbox(), blit_request.sync_token());
 
     if (!representation) {
       DLOG(ERROR) << "BlitRequest: Couldn't create shared image representation";
@@ -750,8 +750,8 @@ void SoftwareRenderer::CopyDrawnRenderPass(
 
     request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
         CopyOutputResult::Format::RGBA, geometry.result_selection,
-        request->blit_request().mailbox(), representation->color_space(),
-        "CopyDrawnRenderPass", CopyOutputResult::ReleaseCallbacks()));
+        request->blit_request().shared_image(),
+        CopyOutputResult::ReleaseCallbacks()));
 
     return;
   }
