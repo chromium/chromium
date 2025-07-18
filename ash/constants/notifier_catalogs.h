@@ -216,7 +216,8 @@ enum class NotificationCatalogName {
   kFaceGazeActive = 197,
   kUsbPeripheralDeviceOrEndpointLimit = 198,
   kDemoMode = 199,
-  kMaxValue = kDemoMode
+  kArcDlcInstall = 200,
+  kMaxValue = kArcDlcInstall
 };
 
 // A living catalog that registers system nudges.

@@ -29,6 +29,14 @@ void MessageCenter::Initialize(
 }
 
 // static
+void MessageCenter::InitializeForTesting(
+    std::unique_ptr<MessageCenter> message_center) {
+  DCHECK(!g_message_center);
+  DCHECK(message_center);
+  g_message_center = message_center.release();
+}
+
+// static
 MessageCenter* MessageCenter::Get() {
   return g_message_center;
 }

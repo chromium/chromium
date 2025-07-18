@@ -5,13 +5,19 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_NOTIFICATION_MANAGER_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_DLC_INSTALLER_ARC_DLC_INSTALL_NOTIFICATION_MANAGER_H_
 
-#include <memory>
-
-#include "base/memory/raw_ref.h"
-#include "components/account_id/account_id.h"
-#include "ui/message_center/public/cpp/notification.h"
+#include <string_view>
 
 namespace arc {
+
+// Manages notifications for ARC DLC installation processes.
+namespace arc_dlc_install_notification_manager {
+
+inline constexpr std::string_view kArcVmPreloadStartedId =
+    "arc_dlc_install/started";
+inline constexpr std::string_view kArcVmPreloadSucceededId =
+    "arc_dlc_install/succeeded";
+inline constexpr std::string_view kArcVmPreloadFailedId =
+    "arc_dlc_install/failed";
 
 // Represents the type of notification to be displayed.
 enum class NotificationType {
@@ -20,32 +26,10 @@ enum class NotificationType {
   kArcVmPreloadFailed
 };
 
-// Manages notifications for ARC DLC installation processes.
-class ArcDlcInstallNotificationManager {
- public:
-  // Interface for handling notification display logic.
-  class Delegate {
-   public:
-    virtual void DisplayNotification(
-        const message_center::Notification& notification) = 0;
+// Displays a notification of the specified type.
+void Show(NotificationType notification_type);
 
-    virtual ~Delegate() = default;
-  };
-
-  ArcDlcInstallNotificationManager(std::unique_ptr<Delegate> delegate,
-                                   const AccountId& account_id);
-  ~ArcDlcInstallNotificationManager();
-
-  // Displays a notification of the specified type.
-  void Show(NotificationType notification_type);
-
- private:
-  // Delegate for managing notification display.
-  std::unique_ptr<Delegate> delegate_;
-
-  // Account id associated with notifications.
-  const AccountId account_id_;
-};
+}  // namespace arc_dlc_install_notification_manager
 
 }  // namespace arc
 

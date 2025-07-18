@@ -18,7 +18,6 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
-#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_notification_manager_factory.h"
 
 namespace arc {
 
@@ -31,12 +30,9 @@ constexpr const char kArcvmBindMountDlcPath[] =
 }  // namespace
 
 ArcDlcInstaller::ArcDlcInstaller(
-    std::unique_ptr<ArcDlcNotificationManagerFactory>
-        notification_manager_factory,
     std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker,
     ash::CrosSettings* cros_settings)
-    : notification_manager_factory_(std::move(notification_manager_factory)),
-      hardware_checker_(std::move(hardware_checker)),
+    : hardware_checker_(std::move(hardware_checker)),
       cros_settings_(std::move(cros_settings)) {}
 
 ArcDlcInstaller::~ArcDlcInstaller() = default;
@@ -105,25 +101,6 @@ bool ArcDlcInstaller::IsDlcRequired() {
   return true;
 }
 
-void ArcDlcInstaller::MaybeShowDlcInstallNotification(NotificationType type) {
-  if (!arc_dlc_install_notification_manager_) {
-    VLOG(1) << "Notification manager not initialized. Queueing notification.";
-    dlc_install_pending_notifications_.push_back(type);
-    return;
-  }
-  arc_dlc_install_notification_manager_->Show(type);
-}
-
-void ArcDlcInstaller::OnPrimaryUserSessionStarted(const AccountId& account_id) {
-  arc_dlc_install_notification_manager_ =
-      notification_manager_factory_->CreateNotificationManager(account_id);
-
-  for (const auto& notification : dlc_install_pending_notifications_) {
-    arc_dlc_install_notification_manager_->Show(notification);
-  }
-  dlc_install_pending_notifications_.clear();
-}
-
 void ArcDlcInstaller::OnDlcProgress(bool* installation_triggered_ptr,
                                     double progress) {
   CHECK(installation_triggered_ptr);
@@ -131,7 +108,9 @@ void ArcDlcInstaller::OnDlcProgress(bool* installation_triggered_ptr,
     return;
   }
 
-  MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadStarted);
+  arc_dlc_install_notification_manager::Show(
+      arc_dlc_install_notification_manager::NotificationType::
+          kArcVmPreloadStarted);
   *installation_triggered_ptr = true;
 }
 
@@ -142,7 +121,9 @@ void ArcDlcInstaller::OnDlcInstalled(
     const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error != dlcservice::kErrorNone) {
     VLOG(1) << "Failed to install ARCVM DLC: " << install_result.error;
-    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadFailed);
+    arc_dlc_install_notification_manager::Show(
+        arc_dlc_install_notification_manager::NotificationType::
+            kArcVmPreloadFailed);
     base::UmaHistogramBoolean("Arc.DlcInstaller.Install", false);
     std::move(callback).Run(false);
     return;
@@ -159,15 +140,12 @@ void ArcDlcInstaller::OnDlcInstalled(
   // installation succeeds.
   CHECK(installation_triggered);
   if (*installation_triggered) {
-    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
+    arc_dlc_install_notification_manager::Show(
+        arc_dlc_install_notification_manager::NotificationType::
+            kArcVmPreloadSucceeded);
   }
 
   OnPrepareArcDlc(std::move(callback), true);
-}
-
-const std::vector<NotificationType>&
-ArcDlcInstaller::GetDlcInstallPendingNotificationsForTesting() const {
-  return dlc_install_pending_notifications_;
 }
 
 void ArcDlcInstaller::OnPrepareArcDlc(base::OnceCallback<void(bool)> callback,

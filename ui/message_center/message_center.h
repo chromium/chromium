@@ -59,6 +59,9 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   static void Initialize();
   // Creates the global message center object with custom LockScreenController.
   static void Initialize(std::unique_ptr<LockScreenController> controller);
+  // Sets the global message center for testing.
+  static void InitializeForTesting(
+      std::unique_ptr<MessageCenter> message_center);
 
   // Returns the global message center object. Returns null if Initialize is
   // not called.
@@ -269,6 +272,8 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // Called when a message view associated with `notification_id` is hovered on.
   virtual void OnMessageViewHovered(const std::string& notification_id) = 0;
 
+  virtual ~MessageCenter();
+
  protected:
   friend class ::DownloadNotification;
   friend class ::DownloadNotificationTestBase;
@@ -283,7 +288,6 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual void DisableTimersForTest() = 0;
 
   MessageCenter();
-  virtual ~MessageCenter();
 };
 
 }  // namespace message_center

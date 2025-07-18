@@ -4,8 +4,12 @@
 
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -18,9 +22,8 @@
 #include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_dlc_install_hardware_checker.h"
-#include "chromeos/ash/experiences/arc/test/fake_arc_dlc_notification_manager_factory_impl.h"
-#include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/fake_message_center.h"
 
 namespace arc {
 
@@ -29,8 +32,13 @@ class ArcDlcInstallerTest : public testing::Test {
   void SetUp() override {
     ash::DlcserviceClient::InitializeFake();
     ash::UpstartClient::InitializeFake();
-    std::unique_ptr<FakeArcDlcNotificationManagerFactoryImpl> fake_factory =
-        std::make_unique<FakeArcDlcNotificationManagerFactoryImpl>();
+
+    auto fake_message_center =
+        std::make_unique<message_center::FakeMessageCenter>();
+    fake_message_center_ = fake_message_center.get();
+    message_center::MessageCenter::InitializeForTesting(
+        std::move(fake_message_center));
+
     std::unique_ptr<FakeArcDlcInstallHardwareChecker> fake_hardware_checker =
         std::make_unique<FakeArcDlcInstallHardwareChecker>(true);
     cros_settings_ = std::make_unique<ash::CrosSettings>();
@@ -42,8 +50,7 @@ class ArcDlcInstallerTest : public testing::Test {
     // specific path.
     fake_provider_->Set(ash::kDeviceFlexArcPreloadEnabled, base::Value());
     arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>(
-        std::move(fake_factory), std::move(fake_hardware_checker),
-        cros_settings_.get());
+        std::move(fake_hardware_checker), cros_settings_.get());
   }
 
   void TearDown() override {
@@ -52,6 +59,8 @@ class ArcDlcInstallerTest : public testing::Test {
     cros_settings_.reset();
     ash::UpstartClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
+    fake_message_center_ = nullptr;
+    message_center::MessageCenter::Shutdown();
   }
 
   void SetFlexArcPreloadEnabled(bool enabled) {
@@ -71,14 +80,13 @@ class ArcDlcInstallerTest : public testing::Test {
     run_loop.Run();
   }
 
-  void VerifyPendingNotifications(
-      const std::vector<NotificationType>& expected_notifications) {
-    const auto& pending_notifications =
-        arc_dlc_installer_->GetDlcInstallPendingNotificationsForTesting();
-
-    ASSERT_EQ(pending_notifications.size(), expected_notifications.size());
-    for (size_t i = 0; i < pending_notifications.size(); ++i) {
-      EXPECT_EQ(pending_notifications[i], expected_notifications[i]);
+  void VerifyNotifications(base::span<const std::string_view> expected_ids) {
+    const auto& notifications = fake_message_center_->GetNotifications();
+    ASSERT_EQ(notifications.size(), expected_ids.size());
+    size_t index = 0;
+    for (const auto& notification : notifications) {
+      ASSERT_TRUE(notification);
+      EXPECT_EQ(notification->id(), expected_ids[index++]);
     }
   }
 
@@ -89,6 +97,7 @@ class ArcDlcInstallerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
+  raw_ptr<message_center::FakeMessageCenter> fake_message_center_ = nullptr;
   std::unique_ptr<ash::CrosSettings> cros_settings_;
   raw_ptr<ash::FakeCrosSettingsProvider> fake_provider_ = nullptr;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
@@ -149,7 +158,7 @@ TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithPolicyOff) {
       base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
 }
 
-TEST_F(ArcDlcInstallerTest, VerifyPendingNotifications_InstallSuccess) {
+TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallSuccess) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -160,17 +169,12 @@ TEST_F(ArcDlcInstallerTest, VerifyPendingNotifications_InstallSuccess) {
   SetFlexArcPreloadEnabled(true);
 
   InstallArcImageFromDlc(dlcservice::kErrorNone);
-  VerifyPendingNotifications({NotificationType::kArcVmPreloadStarted,
-                              NotificationType::kArcVmPreloadSucceeded});
-
-  arc_dlc_installer_->OnPrimaryUserSessionStarted(
-      AccountId::FromUserEmail("test@example.com"));
-  // With the session properly initialized, the pending notifications will be
-  // sent and removed from the pending queue.
-  VerifyPendingNotifications({});
+  VerifyNotifications(
+      {arc_dlc_install_notification_manager::kArcVmPreloadSucceededId,
+       arc_dlc_install_notification_manager::kArcVmPreloadStartedId});
 }
 
-TEST_F(ArcDlcInstallerTest, VerifyPendingNotifications_InstallFail) {
+TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallFail) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -181,14 +185,9 @@ TEST_F(ArcDlcInstallerTest, VerifyPendingNotifications_InstallFail) {
   SetFlexArcPreloadEnabled(true);
 
   InstallArcImageFromDlc(dlcservice::kErrorInternal);
-  VerifyPendingNotifications({NotificationType::kArcVmPreloadStarted,
-                              NotificationType::kArcVmPreloadFailed});
-
-  arc_dlc_installer_->OnPrimaryUserSessionStarted(
-      AccountId::FromUserEmail("test@example.com"));
-  // With the session properly initialized, the pending notifications will be
-  // sent and removed from the pending queue.
-  VerifyPendingNotifications({});
+  VerifyNotifications(
+      {arc_dlc_install_notification_manager::kArcVmPreloadFailedId,
+       arc_dlc_install_notification_manager::kArcVmPreloadStartedId});
 }
 
 // Verifies that installation completion notifications are triggered only once
@@ -211,8 +210,9 @@ TEST_F(ArcDlcInstallerTest, CompletionNotificationTriggerOnce_RepeatInstall) {
 
   // Expect two notifications: one for the preload start and one for the
   // success, even after triggering the installation twice.
-  VerifyPendingNotifications({NotificationType::kArcVmPreloadStarted,
-                              NotificationType::kArcVmPreloadSucceeded});
+  VerifyNotifications(
+      {arc_dlc_install_notification_manager::kArcVmPreloadSucceededId,
+       arc_dlc_install_notification_manager::kArcVmPreloadStartedId});
 }
 
 }  // namespace arc

@@ -7,26 +7,24 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "components/account_id/account_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
 
-namespace arc {
+namespace arc::arc_dlc_install_notification_manager {
 
 namespace {
 
-constexpr char kNotifierId[] = "arc_dlc_install";
-
-// Retrieves the localized message string for the specified notification type.
 std::u16string GetMessage(NotificationType type) {
   switch (type) {
     case NotificationType::kArcVmPreloadStarted:
@@ -38,49 +36,39 @@ std::u16string GetMessage(NotificationType type) {
   }
 }
 
-std::string GenerateNotificationId(NotificationType type) {
+std::string_view GetNotificationId(NotificationType type) {
   switch (type) {
     case NotificationType::kArcVmPreloadStarted:
-      return std::string(kNotifierId) + "/started";
+      return kArcVmPreloadStartedId;
     case NotificationType::kArcVmPreloadSucceeded:
-      return std::string(kNotifierId) + "/succeeded";
+      return kArcVmPreloadSucceededId;
     case NotificationType::kArcVmPreloadFailed:
-      return std::string(kNotifierId) + "/failed";
+      return kArcVmPreloadFailedId;
   }
 }
-
 }  // namespace
 
-ArcDlcInstallNotificationManager::ArcDlcInstallNotificationManager(
-    std::unique_ptr<ArcDlcInstallNotificationManager::Delegate> delegate,
-    const AccountId& account_id)
-    : delegate_(std::move(delegate)), account_id_(account_id) {}
-
-ArcDlcInstallNotificationManager::~ArcDlcInstallNotificationManager() = default;
-
-void ArcDlcInstallNotificationManager::Show(
-    NotificationType notification_type) {
+void Show(NotificationType notification_type) {
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
-      ash::NotificationCatalogName::kArcMigrationGuide);
-  notifier_id.profile_id = account_id_.GetUserEmail();
+      message_center::NotifierType::SYSTEM_COMPONENT, "arc_dlc_install",
+      ash::NotificationCatalogName::kArcDlcInstall);
 
   auto click_delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([]() {}));
 
-  message_center::Notification notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE,
-      GenerateNotificationId(notification_type),
-      l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE),
-      GetMessage(notification_type), std::u16string(), GURL(), notifier_id,
-      message_center::RichNotificationData(), std::move(click_delegate),
-      vector_icons::kSettingsIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+  std::unique_ptr<message_center::Notification> notification =
+      ash::CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          std::string(GetNotificationId(notification_type)),
+          l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE),
+          GetMessage(notification_type), std::u16string(), GURL(), notifier_id,
+          message_center::RichNotificationData(), std::move(click_delegate),
+          vector_icons::kSettingsIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
 
-  notification.set_renotify(true);
-
-  delegate_->DisplayNotification(std::move(notification));
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
-}  // namespace arc
+}  // namespace arc::arc_dlc_install_notification_manager

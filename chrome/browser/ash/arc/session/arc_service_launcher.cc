@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/arc/auth/arc_auth_service.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_bridge.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
-#include "chrome/browser/ash/arc/dlc_installer/arc_dlc_notification_manager_factory_impl.h"
 #include "chrome/browser/ash/arc/enterprise/arc_enterprise_reporting_service.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
@@ -186,7 +185,6 @@ ArcServiceLauncher::ArcServiceLauncher(
                                   scheduler_configuration_manager)),
       scheduler_configuration_manager_(scheduler_configuration_manager),
       arc_dlc_installer_(std::make_unique<ArcDlcInstaller>(
-          std::make_unique<ArcDlcNotificationManagerFactoryImpl>(),
           std::make_unique<ArcDlcInstallHardwareChecker>(),
           ash::CrosSettings::Get())) {
   DCHECK(g_arc_service_launcher == nullptr);
@@ -290,25 +288,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
 
   // Record metrics for ARC status based on device affiliation
   RecordArcStatusBasedOnDeviceAffiliationUMA(profile);
-
-  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile);
-
-  // Profile set up for the test is no properly initialized, so AccountId is not
-  // annotated. If the user is a guest, OTR profile is passed, which does not
-  // have annotated account id. The OnPrimaryUserSessionStarted function must
-  // run before the profile check below. On boards with the arcvm_dlc flag
-  // (e.g., reven board), the ARCVM image installs from DLC at runtime. Before
-  // this completes, the arc_session_manager profile is nullptr, causing the
-  // profile check to fail. Moving OnPrimaryUserSessionStarted earlier ensures
-  // the notification manager can send notifications before ARCVM image
-  // installation is complete. This logic will be removed once the profile
-  // dependency for ARC DLC install notifications is eliminated.
-  // TODO(b/406349559): Remove dependency on profile for ARC DLC install
-  // notifications.
-  // TODO(b/418815526): Create a browser test for ARCVM_DLC notification.
-  if (account_id) {
-    arc_dlc_installer_->OnPrimaryUserSessionStarted(*account_id);
-  }
 
   if (arc_session_manager_->profile() != profile) {
     // Profile is not matched, so the given |profile| is not allowed to use
@@ -472,7 +451,6 @@ void ArcServiceLauncher::ResetForTesting() {
   // Recreate arc_dlc_installer_ after shutdown because browser_test will run
   // ResetForTesting and then do the OnPrimaryUserProfilePrepared.
   arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>(
-      std::make_unique<ArcDlcNotificationManagerFactoryImpl>(),
       std::make_unique<ArcDlcInstallHardwareChecker>(),
       ash::CrosSettings::Get());
 }

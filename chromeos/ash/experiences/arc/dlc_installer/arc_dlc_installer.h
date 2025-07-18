@@ -12,8 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-
-class AccountId;
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
 
 namespace ash {
 class CrosSettings;
@@ -22,10 +21,6 @@ class CrosSettings;
 namespace arc {
 
 class ArcDlcInstallHardwareChecker;
-class ArcDlcInstallNotificationManager;
-class ArcDlcNotificationManagerFactory;
-
-enum class NotificationType;
 
 // The ArcDlcInstaller class manages the installation process for ARC DLC
 // (Android Runtime for Chrome). It handles hardware compatibility checks,
@@ -34,8 +29,6 @@ enum class NotificationType;
 class ArcDlcInstaller {
  public:
   ArcDlcInstaller(
-      std::unique_ptr<ArcDlcNotificationManagerFactory>
-          notification_manager_factory,
       std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker,
       ash::CrosSettings* cros_settings);
 
@@ -48,18 +41,10 @@ class ArcDlcInstaller {
   // DLC, it performs a hardware compatibility check.
   void PrepareArc(base::OnceCallback<void(bool)> callback);
 
-  // ArcServiceLauncher will invoke this function when the profile is set up,
-  // and it will create the notification manager and process any pending DLC
-  // installation notifications that need to be shown.
-  void OnPrimaryUserSessionStarted(const AccountId& account_id);
 
   // Determines if the DLC installation is necessary based on
   // board, management, and feature flag conditions.
   bool IsDlcRequired();
-
-  // Returns dlc_install_pending_notifications_ for testing.
-  const std::vector<NotificationType>&
-  GetDlcInstallPendingNotificationsForTesting() const;
 
  private:
   // Callback invoked after ARC DLC preparation is complete.
@@ -78,11 +63,6 @@ class ArcDlcInstaller {
   void OnHardwareCheckComplete(base::OnceCallback<void(bool)> callback,
                                bool is_compatible);
 
-  // Displays a DLC installation notification of the specified type if the
-  // Notification Manager is initialized. If not initialized, queues the
-  // notification to be shown later once the manager is ready.
-  void MaybeShowDlcInstallNotification(NotificationType type);
-
   // Handles the result of the ARCVM DLC installation. If successful, shows a
   // success notification, configures and starts necessary Upstart jobs, and
   // invokes the callback. If installation fails, logs the error, shows a
@@ -99,13 +79,8 @@ class ArcDlcInstaller {
   // determine whether the DLC image was installed.
   void OnDlcProgress(bool* installation_triggered, double progress);
 
-  std::unique_ptr<ArcDlcNotificationManagerFactory>
-      notification_manager_factory_;
-  std::unique_ptr<ArcDlcInstallNotificationManager>
-      arc_dlc_install_notification_manager_;
   std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker_;
   raw_ptr<ash::CrosSettings> cros_settings_;
-  std::vector<NotificationType> dlc_install_pending_notifications_;
   base::WeakPtrFactory<ArcDlcInstaller> weak_ptr_factory_{this};
 };
 
