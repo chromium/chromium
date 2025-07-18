@@ -14,6 +14,7 @@
 
 class Profile;
 class TabAndroid;
+class TabGroup;
 
 namespace base {
 class Token;
@@ -25,6 +26,7 @@ class TabGroupVisualData;
 }  // namespace tab_groups
 
 namespace tabs {
+class TabGroupTabCollection;
 class TabStripCollection;
 
 // The C++ portion of TabCollectionTabModelImpl.java. Note this is intentionally
@@ -112,6 +114,17 @@ class TabCollectionTabModelImpl {
   // Gets a list of all tab group IDs.
   std::vector<base::Token> GetAllTabGroupIds(JNIEnv* env);
 
+  // Gets a list of representative tabs.
+  std::vector<TabAndroid*> GetRepresentativeTabList(JNIEnv* env);
+
+  // Sets the last shown tab for a group.
+  void SetLastShownTabForGroup(JNIEnv* env,
+                               const base::Token& group_id,
+                               TabAndroid* tab_android);
+
+  // Gets the last shown tab for a group.
+  TabAndroid* GetLastShownTabForGroup(JNIEnv* env, const base::Token& group_id);
+
  private:
   // Returns a safe index for adding or moving a single tab without it changing
   // state.
@@ -120,9 +133,14 @@ class TabCollectionTabModelImpl {
                       const std::optional<tab_groups::TabGroupId>& tab_group_id,
                       bool is_pinned) const;
   std::optional<tab_groups::TabGroupId> GetGroupIdAt(size_t index) const;
-  const tab_groups::TabGroupVisualData* GetTabGroupVisualData(
-      const base::Token& token_id,
-      bool allow_detached) const;
+  TabGroupTabCollection* GetTabGroupCollectionChecked(
+      const tab_groups::TabGroupId& tab_group_id,
+      bool allow_detached = false) const;
+  TabGroup* GetTabGroupChecked(const tab_groups::TabGroupId& tab_group_id,
+                               bool allow_detached = false) const;
+  const tab_groups::TabGroupVisualData* GetTabGroupVisualDataChecked(
+      const tab_groups::TabGroupId& tab_group_id,
+      bool allow_detached = false) const;
 
   JavaObjectWeakGlobalRef java_object_;
   raw_ptr<Profile> profile_;

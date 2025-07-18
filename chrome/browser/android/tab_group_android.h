@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_ANDROID_TAB_GROUP_ANDROID_H_
 
 #include <memory>
+#include <optional>
 
 #include "chrome/browser/android/tab_group_features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
 class TabGroupTabCollection;
@@ -26,6 +28,10 @@ class TabGroupAndroid : public TabGroup {
                   const tab_groups::TabGroupId& id,
                   const tab_groups::TabGroupVisualData& visual_data);
   ~TabGroupAndroid() override;
+
+  // The last shown tab in the group.
+  void set_last_shown_tab(std::optional<tabs::TabHandle> tab_handle);
+  std::optional<tabs::TabHandle> last_shown_tab() const;
 
   class Factory : public TabGroup::Factory {
    public:
@@ -43,6 +49,7 @@ class TabGroupAndroid : public TabGroup {
 
  private:
   std::unique_ptr<TabGroupFeatures> tab_group_features_;
+  std::optional<tabs::TabHandle> last_shown_tab_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_GROUP_ANDROID_H_

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -91,6 +92,17 @@ public class TabModelImplUtilUnitTest {
         return tab;
     }
 
+    private void setUpTabsInTabModel(TabModel model, List<Tab> allTabs) {
+        lenient().when(model.getCount()).thenReturn(allTabs.size());
+        lenient().when(model.getTabAt(anyInt())).thenAnswer(inv -> allTabs.get(inv.getArgument(0)));
+        lenient()
+                .when(model.getTabAtChecked(anyInt()))
+                .thenAnswer(inv -> allTabs.get(inv.getArgument(0)));
+        lenient().when(model.indexOf(any())).thenAnswer(inv -> allTabs.indexOf(inv.getArgument(0)));
+        // Use a new instance of the iterator each time.
+        lenient().when(model.iterator()).thenAnswer(inv -> allTabs.iterator());
+    }
+
     private void setCurrentTab(Tab tab) {
         mCurrentTabSupplier.set(tab);
     }
@@ -121,13 +133,11 @@ public class TabModelImplUtilUnitTest {
         when(mTabModelDelegate.getCurrentModel()).thenReturn(mOtherTabModel);
 
         Tab incognitoTab = createTab(mOtherProfile, 0, Tab.INVALID_TAB_ID);
-        when(mOtherTabModel.getTabAt(0)).thenReturn(incognitoTab);
-        when(mOtherTabModel.getCount()).thenReturn(1);
+        setUpTabsInTabModel(mOtherTabModel, Collections.singletonList(incognitoTab));
         when(mOtherTabModel.index()).thenReturn(0);
 
         Tab normalTab = createTab();
-        when(mTabModel.getTabAt(0)).thenReturn(normalTab);
-        when(mTabModel.getCount()).thenReturn(1);
+        setUpTabsInTabModel(mTabModel, Collections.singletonList(normalTab));
         when(mTabModel.index()).thenReturn(0);
 
         setCurrentTab(normalTab);
@@ -180,13 +190,7 @@ public class TabModelImplUtilUnitTest {
         Tab tab1 = createTab();
         Tab tab2 = createTab();
 
-        when(mTabModel.indexOf(tab0)).thenReturn(0);
-        when(mTabModel.indexOf(tab1)).thenReturn(1);
-        when(mTabModel.indexOf(tab2)).thenReturn(2);
-        when(mTabModel.getCount()).thenReturn(3);
-        when(mTabModel.getTabAtChecked(0)).thenReturn(tab0);
-        when(mTabModel.getTabAtChecked(1)).thenReturn(tab1);
-        when(mTabModel.getTabAtChecked(2)).thenReturn(tab2);
+        setUpTabsInTabModel(mTabModel, List.of(tab0, tab1, tab2));
 
         setCurrentTab(tab0);
         assertEquals(tab1, getNextTabIfClosed(mTabModel, tab0, false));
@@ -205,12 +209,11 @@ public class TabModelImplUtilUnitTest {
         when(mTabModelDelegate.getCurrentModel()).thenReturn(mOtherTabModel);
 
         Tab incognitoTab0 = createTab(mOtherProfile, 0, Tab.INVALID_TAB_ID);
+        setUpTabsInTabModel(mOtherTabModel, Collections.singletonList(incognitoTab0));
+
         Tab tab0 = createTab();
         Tab tab1 = createTab();
-
-        when(mTabModel.getTabAt(0)).thenReturn(tab0);
-        when(mTabModel.getTabAt(1)).thenReturn(tab1);
-        when(mTabModel.getCount()).thenReturn(2);
+        setUpTabsInTabModel(mTabModel, List.of(tab0, tab1));
 
         setCurrentTab(incognitoTab0);
 
@@ -230,11 +233,7 @@ public class TabModelImplUtilUnitTest {
         Tab tab0 = createTab(10, Tab.INVALID_TAB_ID);
         Tab tab1 = createTab(200, tab0.getId());
         Tab tab2 = createTab(30, tab0.getId());
-
-        List<Tab> tabs = List.of(tab0, tab1, tab2);
-        when(mTabModel.getTabAt(anyInt())).thenAnswer(inv -> tabs.get(inv.getArgument(0)));
-        when(mTabModel.getTabAtChecked(anyInt())).thenAnswer(inv -> tabs.get(inv.getArgument(0)));
-        when(mTabModel.getCount()).thenReturn(tabs.size());
+        setUpTabsInTabModel(mTabModel, List.of(tab0, tab1, tab2));
 
         setCurrentTab(tab0);
         assertEquals(tab1, getNextTabIfClosed(mTabModel, tab0, true));
@@ -252,10 +251,7 @@ public class TabModelImplUtilUnitTest {
         when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);
 
         Tab tab0 = createTab();
-        when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(tab0);
-        when(mTabModel.indexOf(tab0)).thenReturn(0);
-        when(mTabModel.getTabAtChecked(0)).thenReturn(tab0);
+        setUpTabsInTabModel(mTabModel, Collections.singletonList(tab0));
 
         setCurrentTab(tab0);
         assertNull(getNextTabIfClosed(mTabModel, tab0, false));
@@ -291,15 +287,7 @@ public class TabModelImplUtilUnitTest {
         Tab tab2 = createTab();
         Tab tab3 = createTab();
 
-        when(mTabModel.indexOf(tab0)).thenReturn(0);
-        when(mTabModel.indexOf(tab1)).thenReturn(1);
-        when(mTabModel.indexOf(tab2)).thenReturn(2);
-        when(mTabModel.indexOf(tab3)).thenReturn(3);
-        when(mTabModel.getCount()).thenReturn(4);
-        when(mTabModel.getTabAtChecked(0)).thenReturn(tab0);
-        when(mTabModel.getTabAtChecked(1)).thenReturn(tab1);
-        when(mTabModel.getTabAtChecked(2)).thenReturn(tab2);
-        when(mTabModel.getTabAtChecked(3)).thenReturn(tab3);
+        setUpTabsInTabModel(mTabModel, List.of(tab0, tab1, tab2, tab3));
 
         // Close tabs [1, 2], current is 1. Should select 0.
         setCurrentTab(tab1);
@@ -335,12 +323,7 @@ public class TabModelImplUtilUnitTest {
         Tab tab1 = createTab(40);
         Tab tab2 = createTab(20);
         Tab tab3 = createTab(30);
-
-        List<Tab> allTabs = List.of(tab0, tab1, tab2, tab3);
-        when(mTabModel.getCount()).thenReturn(allTabs.size());
-        when(mTabModel.getTabAt(anyInt())).thenAnswer(inv -> allTabs.get(inv.getArgument(0)));
-        when(mTabModel.getTabAtChecked(anyInt()))
-                .thenAnswer(inv -> allTabs.get(inv.getArgument(0)));
+        setUpTabsInTabModel(mTabModel, List.of(tab0, tab1, tab2, tab3));
 
         setCurrentTab(tab1);
         List<Tab> closingTabs = List.of(tab1, tab2);
@@ -355,10 +338,7 @@ public class TabModelImplUtilUnitTest {
 
         Tab tab0 = createTab();
         Tab tab1 = createTab();
-        when(mTabModel.getCount()).thenReturn(2);
-        when(mTabModel.getTabAtChecked(0)).thenReturn(tab0);
-        when(mTabModel.getTabAtChecked(1)).thenReturn(tab1);
-        when(mTabModel.indexOf(tab0)).thenReturn(0);
+        setUpTabsInTabModel(mTabModel, List.of(tab0, tab1));
 
         setCurrentTab(tab0);
         List<Tab> closingTabs = List.of(tab0, tab1);

@@ -1108,6 +1108,85 @@ public class TabCollectionTabModelImplTest {
         deleteAllCollapsedHelper.waitForOnly("deleteTabGroupCollapsed failed");
     }
 
+    @Test
+    @SmallTest
+    public void testRepresentativeTabLogic() {
+        // Setup: tab0, tab1 (in group), tab2
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.createSingleTabGroup(tab1));
+        Token tab1GroupId = tab1.getTabGroupId();
+        assertNotNull(tab1GroupId);
+
+        List<Tab> representativeTabs =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mCollectionModel.getRepresentativeTabList());
+        assertEquals(3, representativeTabs.size());
+        assertEquals(tab0, representativeTabs.get(0));
+        assertEquals(tab1, representativeTabs.get(1));
+        assertEquals(tab2, representativeTabs.get(2));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(3, mCollectionModel.getIndividualTabAndGroupCount());
+
+                    assertEquals(tab0, mCollectionModel.getRepresentativeTabAt(0));
+                    assertEquals(tab1, mCollectionModel.getRepresentativeTabAt(1));
+                    assertEquals(tab2, mCollectionModel.getRepresentativeTabAt(2));
+                    assertNull(mCollectionModel.getRepresentativeTabAt(3));
+                    assertNull(mCollectionModel.getRepresentativeTabAt(-1));
+
+                    assertEquals(0, mCollectionModel.representativeIndexOf(tab0));
+                    assertEquals(1, mCollectionModel.representativeIndexOf(tab1));
+                    assertEquals(2, mCollectionModel.representativeIndexOf(tab2));
+                    assertEquals(
+                            TabList.INVALID_TAB_INDEX,
+                            mCollectionModel.representativeIndexOf(null));
+
+                    mCollectionModel.setIndex(0, TabSelectionType.FROM_USER); // Select tab0
+                    assertEquals(tab0, mCollectionModel.getCurrentRepresentativeTab());
+                    assertEquals(0, mCollectionModel.getCurrentRepresentativeTabIndex());
+
+                    mCollectionModel.setIndex(1, TabSelectionType.FROM_USER); // Select tab1
+                    assertEquals(tab1, mCollectionModel.getCurrentRepresentativeTab());
+                    assertEquals(1, mCollectionModel.getCurrentRepresentativeTabIndex());
+
+                    mCollectionModel.setIndex(2, TabSelectionType.FROM_USER); // Select tab2
+                    assertEquals(tab2, mCollectionModel.getCurrentRepresentativeTab());
+                    assertEquals(2, mCollectionModel.getCurrentRepresentativeTabIndex());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testGetGroupLastShownTabId() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.createSingleTabGroup(tab0);
+                    Token tab0GroupId = tab0.getTabGroupId();
+                    assertNotNull(tab0GroupId);
+
+                    assertEquals(
+                            tab0.getId(), mCollectionModel.getGroupLastShownTabId(tab0GroupId));
+
+                    mCollectionModel.setIndex(1, TabSelectionType.FROM_USER);
+                    assertEquals(tab1, mCollectionModel.getCurrentTabSupplier().get());
+                    assertEquals(
+                            tab0.getId(), mCollectionModel.getGroupLastShownTabId(tab0GroupId));
+
+                    assertEquals(Tab.INVALID_TAB_ID, mCollectionModel.getGroupLastShownTabId(null));
+                    assertEquals(
+                            Tab.INVALID_TAB_ID,
+                            mCollectionModel.getGroupLastShownTabId(Token.createRandom()));
+                });
+    }
+
     private void assertTabsInOrderAre(List<Tab> tabs) {
         assertEquals(
                 "Mismatched tab count",

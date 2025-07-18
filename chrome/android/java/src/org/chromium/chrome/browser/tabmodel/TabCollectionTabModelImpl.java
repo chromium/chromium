@@ -311,6 +311,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         mModelDelegate.requestToShowTab(newSelectedTab, type);
 
         if (newSelectedTab != null) {
+            Token tabGroupId = newSelectedTab.getTabGroupId();
+            if (tabGroupId != null) {
+                setLastShownTabForGroup(tabGroupId, newSelectedTab);
+            }
+
             for (TabModelObserver obs : mTabModelObservers) {
                 obs.didSelectTab(newSelectedTab, type, lastId);
                 // Required, otherwise the previously active tab will have MULTISELECTED as its
@@ -402,14 +407,29 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                         || (!hasAnyTabs && type == TabLaunchType.FROM_LONGPRESS_BACKGROUND);
         index = mOrderController.determineInsertionIndex(type, index, tab);
 
-        assert !(tab.getTabGroupId() != null && tab.getIsPinned())
+        Token tabGroupId = tab.getTabGroupId();
+        assert !(tabGroupId != null && tab.getIsPinned())
                 : "Pinned and grouped states are mutually exclusive.";
+
+        if (tabGroupId != null && !tabGroupExists(tabGroupId)) {
+            // TODO(crbug.com/429145597): Restore title, color, and collapsed state from persistence
+            // layer.
+            @TabGroupColorId int colorId = TabGroupColorUtils.getNextSuggestedColorId(this);
+            TabCollectionTabModelImplJni.get()
+                    .createTabGroup(
+                            mNativeTabCollectionTabModelImplPtr,
+                            tabGroupId,
+                            /* title= */ "",
+                            colorId,
+                            /* isCollapsed= */ false);
+        }
+
         TabCollectionTabModelImplJni.get()
                 .addTabRecursive(
                         mNativeTabCollectionTabModelImplPtr,
                         tab,
                         index,
-                        tab.getTabGroupId(),
+                        tabGroupId,
                         tab.getIsPinned());
         int finalIndex = indexOf(tab);
 
@@ -421,6 +441,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         tab.onAddedToTabModel(mCurrentTabSupplier, this::isTabMultiSelected);
         mTabIdToTabs.put(tab.getId(), tab);
         mTabCountSupplier.set(getCount());
+
+        if (tabGroupId != null && getTabsInGroup(tabGroupId).size() == 1) {
+            setLastShownTabForGroup(tabGroupId, tab);
+        }
 
         tabAddedToModel(tab);
         for (TabModelObserver obs : mTabModelObservers) {
@@ -670,7 +694,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // group as the representative tab. Ideally, we'd change this to use the first tab in the
         // tab group as the representative tab. However, the tab TabList* code still depends on
         // this being the last selected tab. A refactor of TabList* code is needed to change this.
-        return Collections.emptyList();
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return Collections.emptyList();
+        return TabCollectionTabModelImplJni.get()
+                .getRepresentativeTabList(mNativeTabCollectionTabModelImplPtr);
     }
 
     @Override
@@ -759,7 +786,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @TabId int getGroupLastShownTabId(@Nullable Token tabGroupId) {
-        return Tab.INVALID_TAB_ID;
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0
+                || tabGroupId == null
+                || !tabGroupExists(tabGroupId)) {
+            return Tab.INVALID_TAB_ID;
+        }
+        Tab tab = getLastShownTabForGroup(tabGroupId);
+        return tab != null ? tab.getId() : Tab.INVALID_TAB_ID;
     }
 
     @Override
@@ -1093,9 +1127,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                             this, tabsToRemove.indexOf(currentTabInModel), tabsToRemove);
         }
 
+        Map<Token, @Nullable Tab> tabGroupShownTabs = new HashMap<>();
         for (Tab tab : tabsToRemove) {
             assert mTabIdToTabs.containsKey(tab.getId()) : "Tab not found in tab model.";
             if (pauseMedia) TabUtils.pauseMedia(tab);
+
+            Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId != null && tabGroupShownTabs.containsKey(tabGroupId)) {
+                Tab nextGroupTab = getNextLastShownTabForGroup(tabGroupId, tabsToRemove);
+                setLastShownTabForGroup(tabGroupId, nextGroupTab);
+                tabGroupShownTabs.put(tabGroupId, nextGroupTab);
+            }
+
             // TODO(crbug.com/428692223): Vectorize this.
             TabCollectionTabModelImplJni.get()
                     .removeTabRecursive(mNativeTabCollectionTabModelImplPtr, tab);
@@ -1118,6 +1161,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 if (!TabUtils.isCapturingForMedia(tab)) continue;
                 // If media is being captured freeze the tab to disconnect it.
                 tab.freeze();
+            }
+        }
+
+        for (Map.Entry<Token, @Nullable Tab> tabGroupShownTab : tabGroupShownTabs.entrySet()) {
+            // TODO(crbug.com/429145597):: Keep these open for undoable closures.
+            if (tabGroupShownTab.getValue() == null) {
+                TabCollectionTabModelImplJni.get()
+                        .closeDetachedTabGroup(
+                                mNativeTabCollectionTabModelImplPtr, tabGroupShownTab.getKey());
             }
         }
     }
@@ -1189,14 +1241,24 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         if (isMovingOutOfGroup) {
+            assumeNonNull(oldTabGroupId);
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                 observer.willMoveTabOutOfGroup(tab, newTabGroupId);
+            }
+            if (getLastShownTabForGroup(oldTabGroupId) == tab) {
+                Tab nextGroupTab =
+                        getNextLastShownTabForGroup(oldTabGroupId, Collections.singletonList(tab));
+                setLastShownTabForGroup(oldTabGroupId, nextGroupTab);
             }
         }
 
         if (isMergingIntoGroup) {
+            assumeNonNull(newTabGroupId);
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                 observer.willMergeTabToGroup(tab, Tab.INVALID_TAB_ID, newTabGroupId);
+            }
+            if (getLastShownTabForGroup(newTabGroupId) == null) {
+                setLastShownTabForGroup(newTabGroupId, tab);
             }
         }
 
@@ -1295,6 +1357,36 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         return indexOf(tabsInGroup.get(0));
     }
 
+    private @Nullable Tab getLastShownTabForGroup(Token tabGroupId) {
+        return TabCollectionTabModelImplJni.get()
+                .getLastShownTabForGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId);
+    }
+
+    private void setLastShownTabForGroup(Token tabGroupId, @Nullable Tab tab) {
+        TabCollectionTabModelImplJni.get()
+                .setLastShownTabForGroup(mNativeTabCollectionTabModelImplPtr, tabGroupId, tab);
+    }
+
+    private @Nullable Tab getNextLastShownTabForGroup(Token tabGroupId, List<Tab> tabsToExclude) {
+        List<Tab> tabsInGroup = getTabsInGroup(tabGroupId);
+        if (tabsInGroup.isEmpty()) return null;
+
+        Tab lastShownTab = getLastShownTabForGroup(tabGroupId);
+        if (lastShownTab == null) {
+            // TODO(crbug.com/428692223): Worst case O(n^2) it can be made faster with sets, but
+            // this should be a very niche case and in most cases both lists will be very small.
+            for (Tab tab : tabsInGroup) {
+                if (!tabsToExclude.contains(tab)) return tab;
+            }
+            return null;
+        }
+
+        if (!tabsToExclude.contains(lastShownTab)) return lastShownTab;
+
+        int indexInGroup = tabsInGroup.indexOf(lastShownTab);
+        return TabModelImplUtil.findNearbyNotClosingTab(tabsInGroup, indexInGroup, tabsToExclude);
+    }
+
     @NativeMethods
     interface Natives {
         long init(TabCollectionTabModelImpl javaObject, @JniType("Profile*") Profile profile);
@@ -1367,5 +1459,17 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         @JniType("std::vector<base::Token>")
         List<Token> getAllTabGroupIds(long nativeTabCollectionTabModelImpl);
+
+        @JniType("std::vector<TabAndroid*>")
+        List<Tab> getRepresentativeTabList(long nativeTabCollectionTabModelImpl);
+
+        void setLastShownTabForGroup(
+                long nativeTabCollectionTabModelImpl,
+                @JniType("base::Token") Token tabGroupId,
+                @JniType("TabAndroid*") @Nullable Tab tab);
+
+        @JniType("TabAndroid*")
+        Tab getLastShownTabForGroup(
+                long nativeTabCollectionTabModelImpl, @JniType("base::Token") Token tabGroupId);
     }
 }

@@ -20,10 +20,12 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 #include "tab_collection_tab_model_impl.h"
 #include "ui/gfx/range/range.h"
 
@@ -188,10 +190,8 @@ int TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
                                               const base::Token& token,
                                               int to_index) {
   TabGroupId tab_group_id = TabGroupId::FromRawToken(token);
-  TabGroupTabCollection* group_collection =
-      tab_strip_collection_->GetTabGroupCollection(tab_group_id);
-  CHECK(group_collection);
-  gfx::Range range = group_collection->GetTabGroup()->ListTabs();
+  TabGroup* group = GetTabGroupChecked(tab_group_id);
+  gfx::Range range = group->ListTabs();
   // TODO(crbug.com/429145597): Reusing GetSafeIndex here might not work for
   // groups with multiple tabs.
 
@@ -211,12 +211,7 @@ void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
     const std::optional<std::u16string>& tab_group_title,
     const std::optional<jint>& j_color_id,
     const std::optional<bool>& is_collapsed) {
-  TabGroupTabCollection* group_collection =
-      tab_strip_collection_->GetTabGroupCollection(
-          TabGroupId::FromRawToken(tab_group_id));
-  CHECK(group_collection);
-  TabGroup* group = group_collection->GetTabGroup();
-  CHECK(group);
+  TabGroup* group = GetTabGroupChecked(TabGroupId::FromRawToken(tab_group_id));
   const TabGroupVisualData* old_visual_data = group->visual_data();
   CHECK(old_visual_data);
 
@@ -231,24 +226,24 @@ void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
 std::u16string TabCollectionTabModelImpl::GetTabGroupTitle(
     JNIEnv* env,
     const base::Token& tab_group_id) {
-  const TabGroupVisualData* visual_data =
-      GetTabGroupVisualData(tab_group_id, /*allow_detached=*/true);
+  const TabGroupVisualData* visual_data = GetTabGroupVisualDataChecked(
+      TabGroupId::FromRawToken(tab_group_id), /*allow_detached=*/true);
   return visual_data->title();
 }
 
 jint TabCollectionTabModelImpl::GetTabGroupColor(
     JNIEnv* env,
     const base::Token& tab_group_id) {
-  const TabGroupVisualData* visual_data =
-      GetTabGroupVisualData(tab_group_id, /*allow_detached=*/true);
+  const TabGroupVisualData* visual_data = GetTabGroupVisualDataChecked(
+      TabGroupId::FromRawToken(tab_group_id), /*allow_detached=*/true);
   return static_cast<jint>(visual_data->color());
 }
 
 bool TabCollectionTabModelImpl::GetTabGroupCollapsed(
     JNIEnv* env,
     const base::Token& tab_group_id) {
-  const TabGroupVisualData* visual_data =
-      GetTabGroupVisualData(tab_group_id, /*allow_detached=*/true);
+  const TabGroupVisualData* visual_data = GetTabGroupVisualDataChecked(
+      TabGroupId::FromRawToken(tab_group_id), /*allow_detached=*/true);
   return visual_data->is_collapsed();
 }
 
@@ -258,6 +253,89 @@ void TabCollectionTabModelImpl::CloseDetachedTabGroup(
   tab_strip_collection_->CloseDetachedTabGroup(
       TabGroupId::FromRawToken(tab_group_id));
 }
+
+std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs(JNIEnv* env) {
+  std::vector<TabAndroid*> tabs;
+  tabs.reserve(tab_strip_collection_->TabCountRecursive());
+
+  for (TabInterface* tab_in_collection : *tab_strip_collection_) {
+    tabs.push_back(ToTabAndroid(tab_in_collection));
+  }
+  return tabs;
+}
+
+std::vector<base::Token> TabCollectionTabModelImpl::GetAllTabGroupIds(
+    JNIEnv* env) {
+  std::vector<TabGroupId> group_ids =
+      tab_strip_collection_->GetAllTabGroupIds();
+
+  std::vector<base::Token> tokens;
+  tokens.reserve(group_ids.size());
+  for (const TabGroupId& group_id : group_ids) {
+    tokens.push_back(group_id.token());
+  }
+  return tokens;
+}
+
+std::vector<TabAndroid*> TabCollectionTabModelImpl::GetRepresentativeTabList(
+    JNIEnv* env) {
+  std::vector<TabAndroid*> tabs;
+  tabs.reserve(tab_strip_collection_->pinned_collection()->ChildCount() +
+               tab_strip_collection_->unpinned_collection()->ChildCount());
+
+  std::optional<TabGroupId> current_group_id = std::nullopt;
+  for (TabInterface* tab : *tab_strip_collection_) {
+    std::optional<TabGroupId> tab_group_id = tab->GetGroup();
+    if (!tab_group_id) {
+      current_group_id = std::nullopt;
+      tabs.push_back(ToTabAndroid(tab));
+    } else if (current_group_id != tab_group_id) {
+      current_group_id = tab_group_id;
+      TabGroupAndroid* group =
+          static_cast<TabGroupAndroid*>(GetTabGroupChecked(*tab_group_id));
+
+      std::optional<TabHandle> last_shown_tab = group->last_shown_tab();
+      // By the time a tab group is used in GetRepresentativeTabList it should
+      // have a valid `last_shown_tab`. The only time this should be empty is
+      // either while the tab group is detached or during the synchronous
+      // process of attaching the group. During neither of these times is this
+      // method expected to be called.
+      CHECK(last_shown_tab);
+      TabAndroid* tab_android = TabAndroid::FromTabHandle(*last_shown_tab);
+      CHECK(tab_android);
+      tabs.push_back(tab_android);
+    }
+  }
+  return tabs;
+}
+
+void TabCollectionTabModelImpl::SetLastShownTabForGroup(
+    JNIEnv* env,
+    const base::Token& group_id,
+    TabAndroid* tab_android) {
+  TabGroupAndroid* group = static_cast<TabGroupAndroid*>(GetTabGroupChecked(
+      TabGroupId::FromRawToken(group_id), /*allow_detached=*/true));
+  if (tab_android) {
+    group->set_last_shown_tab(tab_android->GetHandle());
+  } else {
+    group->set_last_shown_tab(std::nullopt);
+  }
+}
+
+TabAndroid* TabCollectionTabModelImpl::GetLastShownTabForGroup(
+    JNIEnv* env,
+    const base::Token& group_id) {
+  TabGroupAndroid* group = static_cast<TabGroupAndroid*>(
+      GetTabGroupChecked(TabGroupId::FromRawToken(group_id),
+                         /*allow_detached=*/true));
+  auto handle = group->last_shown_tab();
+  if (!handle) {
+    return nullptr;
+  }
+  return TabAndroid::FromTabHandle(*handle);
+}
+
+// Private methods:
 
 size_t TabCollectionTabModelImpl::GetSafeIndex(
     const std::optional<size_t>& current_index,
@@ -326,44 +404,36 @@ std::optional<TabGroupId> TabCollectionTabModelImpl::GetGroupIdAt(
   }
 }
 
-const TabGroupVisualData* TabCollectionTabModelImpl::GetTabGroupVisualData(
-    const base::Token& token_id,
+TabGroupTabCollection* TabCollectionTabModelImpl::GetTabGroupCollectionChecked(
+    const TabGroupId& tab_group_id,
     bool allow_detached) const {
-  TabGroupId tab_group_id = TabGroupId::FromRawToken(token_id);
   TabGroupTabCollection* group_collection =
       tab_strip_collection_->GetTabGroupCollection(tab_group_id);
   if (!group_collection && allow_detached) {
     group_collection = tab_strip_collection_->GetDetachedTabGroup(tab_group_id);
   }
   CHECK(group_collection);
+  return group_collection;
+}
+
+TabGroup* TabCollectionTabModelImpl::GetTabGroupChecked(
+    const TabGroupId& tab_group_id,
+    bool allow_detached) const {
+  TabGroupTabCollection* group_collection =
+      GetTabGroupCollectionChecked(tab_group_id, allow_detached);
   TabGroup* group = group_collection->GetTabGroup();
   CHECK(group);
+  return group;
+}
+
+const TabGroupVisualData*
+TabCollectionTabModelImpl::GetTabGroupVisualDataChecked(
+    const TabGroupId& tab_group_id,
+    bool allow_detached) const {
+  TabGroup* group = GetTabGroupChecked(tab_group_id, allow_detached);
   const TabGroupVisualData* visual_data = group->visual_data();
   CHECK(visual_data);
   return visual_data;
-}
-
-std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs(JNIEnv* env) {
-  std::vector<TabAndroid*> tabs;
-  tabs.reserve(tab_strip_collection_->TabCountRecursive());
-
-  for (TabInterface* tab_in_collection : *tab_strip_collection_) {
-    tabs.push_back(ToTabAndroid(tab_in_collection));
-  }
-  return tabs;
-}
-
-std::vector<base::Token> TabCollectionTabModelImpl::GetAllTabGroupIds(
-    JNIEnv* env) {
-  std::vector<TabGroupId> group_ids =
-      tab_strip_collection_->GetAllTabGroupIds();
-
-  std::vector<base::Token> tokens;
-  tokens.reserve(group_ids.size());
-  for (const TabGroupId& group_id : group_ids) {
-    tokens.push_back(group_id.token());
-  }
-  return tokens;
 }
 
 static jlong JNI_TabCollectionTabModelImpl_Init(

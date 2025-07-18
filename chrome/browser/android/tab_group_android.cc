@@ -5,10 +5,12 @@
 #include "chrome/browser/android/tab_group_android.h"
 
 #include <memory>
+#include <optional>
 
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
 
 TabGroupAndroid::TabGroupAndroid(
     Profile* profile,
@@ -21,6 +23,15 @@ TabGroupAndroid::TabGroupAndroid(
 }
 
 TabGroupAndroid::~TabGroupAndroid() = default;
+
+void TabGroupAndroid::set_last_shown_tab(
+    std::optional<tabs::TabHandle> tab_handle) {
+  last_shown_tab_ = tab_handle;
+}
+
+std::optional<tabs::TabHandle> TabGroupAndroid::last_shown_tab() const {
+  return last_shown_tab_;
+}
 
 TabGroupFeatures* TabGroupAndroid::GetTabGroupFeatures() {
   return tab_group_features_.get();
