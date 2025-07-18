@@ -126,7 +126,14 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
     }
     return Study::X86_64;
   }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   NOTREACHED();
+#else
+  // Return a fake value for unsupported architectures
+  // instead of using NOTREACHED() to cause a crash
+  // on Chromium builds
+  return Study::X86_64;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
