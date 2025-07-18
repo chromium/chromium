@@ -6,9 +6,11 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/common/webui_url_constants.h"
@@ -60,6 +62,16 @@ class DiceMigrationServiceInteractiveUiTest
     return Do([&]() {
       GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
           views::Widget::ClosedReason::kCloseButtonClicked);
+    });
+  }
+
+  auto FireToastCloseTimer() {
+    return Do([=, this]() {
+      browser()
+          ->browser_window_features()
+          ->toast_controller()
+          ->GetToastCloseTimerForTesting()
+          ->FireNow();
     });
   }
 
@@ -185,7 +197,11 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest, ShowToast) {
 
                   WaitForHide(DiceMigrationService::kAcceptButtonElementId),
 
-                  WaitForShow(toasts::ToastView::kToastViewId));
+                  WaitForShow(toasts::ToastView::kToastViewId),
+
+                  // The toast should auto dismiss when the timer goes off.
+                  FireToastCloseTimer(),
+                  WaitForHide(toasts::ToastView::kToastViewId));
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
@@ -230,6 +246,66 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   PressButton(toasts::ToastView::kToastCloseButton),
 
                   WaitForHide(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                       ToastDoesNotCloseOnNavigation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  constexpr char16_t kNewUrl[] = u"chrome://version";
+
+  RunTestSequence(TriggerDialog(),
+
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+                  // Press the "Got it" button.
+                  PressButton(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForShow(toasts::ToastView::kToastViewId),
+
+                  // Navigate to another page using the omnibox.
+                  InstrumentTab(kActiveTab),
+                  EnterText(kOmniboxElementId, kNewUrl),
+                  Confirm(kOmniboxElementId),
+                  WaitForWebContentsNavigation(kActiveTab, GURL(kNewUrl)),
+
+                  // The toast should still be visible.
+                  EnsurePresent(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                       ToastDoesNotCloseOnTabSwitch) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
+  constexpr char16_t kNewUrl[] = u"chrome://version";
+
+  RunTestSequence(InstrumentTab(kActiveTab),
+
+                  TriggerDialog(),
+
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+                  // Press the "Got it" button.
+                  PressButton(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForHide(DiceMigrationService::kAcceptButtonElementId),
+
+                  WaitForShow(toasts::ToastView::kToastViewId),
+
+                  // Switch to another tab.
+                  AddInstrumentedTab(kNewTab, GURL(kNewUrl)),
+
+                  // The toast should still be visible because the timeout
+                  // hasn't passed yet.
+                  EnsurePresent(toasts::ToastView::kToastViewId),
+
+                  // Switch back to the original tab.
+                  SelectTab(kTabStripElementId, 0),
+
+                  // The toast should still be visible because the timeout
+                  // hasn't passed yet.
+                  EnsurePresent(toasts::ToastView::kToastViewId));
 }
 
 }  // namespace

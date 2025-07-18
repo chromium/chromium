@@ -283,5 +283,6 @@ void ToastService::RegisterToasts(
                                      chrome::kSyncSetupSubPage);
                                },
                                base::Unretained(browser_window_interface)))
+          .AddGlobalScoped()
           .Build());
 }  // RegisterToasts() end.
