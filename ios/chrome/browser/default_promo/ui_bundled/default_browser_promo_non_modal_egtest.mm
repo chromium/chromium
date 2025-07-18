@@ -94,9 +94,8 @@ id<GREYMatcher> NonModalPasteTitleMatcher() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_longPress()];
 
-  [[[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_VISIT_COPIED_LINK))] atIndex:0]
+  [[[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                           IDS_IOS_VISIT_COPIED_LINK))]
       assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
 
   // Wait until the promo appears.
