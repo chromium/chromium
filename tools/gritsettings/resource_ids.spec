@@ -743,6 +743,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [5230],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip_internals/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [5240],
+  },
   # END chrome/ WebUI resources section
 
   # START chrome/ miscellaneous section.

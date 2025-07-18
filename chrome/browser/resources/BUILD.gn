@@ -337,6 +337,10 @@ group("dev_ui_resources") {
   if (is_android || is_linux || is_chromeos || is_win) {
     public_deps += [ "//chrome/browser/resources/sandbox_internals:resources" ]
   }
+
+  if (enable_session_service) {
+    public_deps += [ "tab_strip_internals:resources" ]
+  }
 }
 
 repack("dev_ui_paks") {
@@ -401,6 +405,10 @@ repack("dev_ui_paks") {
 
   if (is_android || is_linux || is_chromeos || is_win) {
     sources += [ "$root_gen_dir/chrome/sandbox_internals_resources.pak" ]
+  }
+
+  if (enable_session_service) {
+    sources += [ "$root_gen_dir/chrome/tab_strip_internals_resources.pak" ]
   }
 
   deps = [ ":dev_ui_resources" ]
