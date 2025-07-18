@@ -10896,38 +10896,6 @@
             ]
         }
     ],
-    "GlicSettingsDogfood": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "glic-allowed-origins-override": "https://www.google.com",
-                        "glic-fre-url": "https://www.google.com/?",
-                        "glic-guest-url": "https://www.google.com/",
-                        "glic-shortcuts-launcher-toggle-learn-more-url": "https://support.google.com/",
-                        "glic-shortcuts-learn-more-url": "https://support.google.com/",
-                        "glic-shortcuts-location-toggle-learn-more-url": "https://support.google.com/",
-                        "glic-shortcuts-tab-access-toggle-learn-more-url": "https://support.google.com/"
-                    },
-                    "enable_features": [
-                        "GlicAppMenuNewBadge",
-                        "GlicCSPConfig",
-                        "GlicFreURLConfig",
-                        "GlicKeyboardShortcutNewBadge",
-                        "GlicPageContextEligibility",
-                        "GlicURLConfig",
-                        "IPH_GlicPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicTieredRollout": [
         {
             "platforms": [

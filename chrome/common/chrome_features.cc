@@ -445,17 +445,9 @@ const base::FeatureParam<int> kGlicScreenshotEncodeQuality{
 const base::FeatureParam<std::string> kGlicDefaultHotkey{
     &kGlic, "glic-default-hotkey", ""};
 
-BASE_FEATURE(kGlicURLConfig,
-             "GlicURLConfig",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicURLConfig, "GlicURLConfig", base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicGuestURL{
-    &kGlicURLConfig, "glic-guest-url",
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    "https://gemini.google.com/glic"
-#else
-    ""
-#endif
-};
+    &kGlicURLConfig, "glic-guest-url", "https://gemini.google.com/glic"};
 
 BASE_FEATURE_PARAM(std::string,
                    kGlicUserStatusUrl,
@@ -516,21 +508,16 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 BASE_FEATURE(kGlicFreURLConfig,
              "GlicFreURLConfig",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kGlicFreURL,
                    &kGlicFreURLConfig,
                    "glic-fre-url",
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                   "https://gemini.google.com/glic/intro?"
-#else
-                   ""
-#endif
-);
+                   "https://gemini.google.com/glic/intro?");
 
 BASE_FEATURE(kGlicLearnMoreURLConfig,
              "GlicLearnMoreURLConfig",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kGlicShortcutsLearnMoreURL,
                    &kGlicLearnMoreURLConfig,
@@ -563,14 +550,15 @@ BASE_FEATURE_PARAM(std::string,
                    "glic-settings-page-learn-more-url",
                    "");
 
-BASE_FEATURE(kGlicCSPConfig,
-             "GlicCSPConfig",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicCSPConfig, "GlicCSPConfig", base::FEATURE_ENABLED_BY_DEFAULT);
 // TODO(crbug.com/378951332): Set appropriate default.
 const base::FeatureParam<std::string> kGlicAllowedOriginsOverride{
     &kGlicCSPConfig, "glic-allowed-origins-override",
     // Space-delimited set of allowed origins.
-    "https://*.google.com"};
+    "https://gemini.google.com https://gemini-autopush.corp.google.com "
+    "https://gemini-preprod.corp.google.com "
+    "https://gemini-staging.corp.google.com https://gemini-dev.corp.google.com "
+    "https://www.google.com"};
 
 // Enable/disable Glic web client responsiveness check feature.
 BASE_FEATURE(kGlicClientResponsivenessCheck,
@@ -606,11 +594,11 @@ BASE_FEATURE(kGlicUseShaderCache,
 
 BASE_FEATURE(kGlicKeyboardShortcutNewBadge,
              "GlicKeyboardShortcutNewBadge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicAppMenuNewBadge,
              "GlicAppMenuNewBadge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicDebugWebview,
              "GlicDebugWebview",
