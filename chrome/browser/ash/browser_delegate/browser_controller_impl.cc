@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -218,6 +219,11 @@ void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
   }
   browsers_.erase(browser);
   // The corresponding BrowserDelegateImpl, if any, is now dead.
+}
+
+void BrowserControllerImpl::CreateAutofillClientForWebContents(
+    content::WebContents* web_contents) {
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
 }
 
 }  // namespace ash

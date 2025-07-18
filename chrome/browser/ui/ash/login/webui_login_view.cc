@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -81,7 +81,8 @@ void InitializeWebView(views::WebView* web_view) {
   CreateSessionServiceTabHelper(web_contents);
 
   // Create the password manager that is needed for the proxy.
-  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
+  BrowserController::GetInstance()->CreateAutofillClientForWebContents(
+      web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

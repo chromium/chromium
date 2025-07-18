@@ -43,6 +43,7 @@ static_library("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",

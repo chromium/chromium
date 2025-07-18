@@ -47,6 +47,8 @@ class BrowserControllerImpl : public BrowserController,
   BrowserDelegate* CreateCustomTab(
       const AccountId& account_id,
       std::unique_ptr<content::WebContents> contents) override;
+  void CreateAutofillClientForWebContents(
+      content::WebContents* web_contents) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

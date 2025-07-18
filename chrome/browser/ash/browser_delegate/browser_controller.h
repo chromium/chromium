@@ -111,6 +111,10 @@ class BrowserController {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Encapsulates the creation of AutofillClient instances.
+  virtual void CreateAutofillClientForWebContents(
+      content::WebContents* web_contents) = 0;
+
  protected:
   BrowserController();
   BrowserController(const BrowserController&) = delete;

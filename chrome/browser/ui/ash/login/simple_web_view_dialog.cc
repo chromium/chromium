@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -155,7 +155,8 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   DCHECK(web_contents);
 
   // Create the password manager that is needed for the proxy.
-  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
+  BrowserController::GetInstance()->CreateAutofillClientForWebContents(
+      web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
