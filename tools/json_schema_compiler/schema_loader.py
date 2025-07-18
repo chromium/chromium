@@ -7,6 +7,7 @@ import sys
 
 import idl_schema
 import json_schema
+import web_idl_schema
 
 
 class SchemaLoader(object):
@@ -27,6 +28,12 @@ class SchemaLoader(object):
       api_defs = json_schema.Load(schema_path)
     elif schema_extension == '.idl':
       api_defs = idl_schema.Load(schema_path)
+    elif schema_extension == '.webidl':
+      # The use of '.webidl' as a file extension is a temporary measure to
+      # distinguish schemas which should use the modern WebIDL parser and
+      # processor. Once we have migrated everything to that format we should
+      # change them all to use '.idl' and remove the old code path.
+      api_defs = web_idl_schema.Load(schema_path)
     else:
       sys.exit('Did not recognize file extension %s for schema %s' %
                (schema_extension, schema))

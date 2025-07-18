@@ -9,7 +9,7 @@ import("//extensions/buildflags/buildflags.gni")
 # desktop-android build.
 # TODO(https://crbug.com/356905053): Continue moving more here.
 extensions_api_schema_files_ = [
-  "alarms.idl",
+  "alarms.webidl",
   "declarative_net_request.idl",
   "dns.idl",
   "events.json",

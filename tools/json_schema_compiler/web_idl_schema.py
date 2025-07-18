@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import importlib
 import itertools
 import json
 import linecache
@@ -27,14 +28,13 @@ from collections import OrderedDict
 # so let's set things up the way it wants.
 _idl_generators_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                     os.pardir, os.pardir, 'tools')
-if _idl_generators_path in sys.path:
+sys.path.insert(0, _idl_generators_path)
+try:
+  import idl_parser
+  importlib.reload(idl_parser)
   from idl_parser import idl_parser, idl_lexer, idl_node
-else:
-  sys.path.insert(0, _idl_generators_path)
-  try:
-    from idl_parser import idl_parser, idl_lexer, idl_node
-  finally:
-    sys.path.pop(0)
+finally:
+  sys.path.pop(0)
 
 IDLNode = idl_node.IDLNode  # Used for type hints.
 
