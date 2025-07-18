@@ -289,6 +289,7 @@ suite('NewTabPageComposeboxTest', () => {
     // Arrange.
     composeboxElement.$.input.value = 'test';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
     const submitIcon = $$<HTMLElement>(composeboxElement, '#submitIcon');
     assertTrue(!!submitIcon);
     submitIcon.click();
@@ -306,6 +307,7 @@ suite('NewTabPageComposeboxTest', () => {
     // Arrange.
     composeboxElement.$.input.value = '';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
     const submitIcon = $$<HTMLElement>(composeboxElement, '#submitIcon');
     assertTrue(!!submitIcon);
     submitIcon.click();
@@ -313,5 +315,17 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert call does not occur.
     assertEquals(handler.getCallCount('submitQuery'), 0);
+  });
+
+  test('submit button is disabled', async () => {
+    // Arrange.
+    composeboxElement.$.input.value = ' ';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+    const submitIcon = $$<HTMLElement>(composeboxElement, '#submitIcon');
+    assertTrue(!!submitIcon);
+
+    // Assert.
+    assertTrue(submitIcon.hasAttribute('disabled'));
   });
 });
