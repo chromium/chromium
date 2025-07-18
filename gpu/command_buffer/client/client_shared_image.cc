@@ -151,7 +151,8 @@ class ScopedMappingSharedMemoryMapping
 
 class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
  public:
-  ScopedMappingGpuMemoryBuffer() = default;
+  ScopedMappingGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format)
+      : size_(size), format_(format) {}
   ~ScopedMappingGpuMemoryBuffer() override {
     if (buffer_) {
       buffer_->Unmap();
@@ -190,14 +191,8 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
     CHECK(buffer_);
     return buffer_->stride(plane_index);
   }
-  gfx::Size Size() override {
-    CHECK(buffer_);
-    return buffer_->GetSize();
-  }
-  gfx::BufferFormat Format() override {
-    CHECK(buffer_);
-    return buffer_->GetFormat();
-  }
+  gfx::Size Size() override { return size_; }
+  gfx::BufferFormat Format() override { return format_; }
   bool IsSharedMemory() override {
     CHECK(buffer_);
     return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
@@ -225,6 +220,8 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
   // removed.
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
   RAW_PTR_EXCLUSION GpuMemoryBufferImpl* buffer_ = nullptr;
+  gfx::Size size_;
+  gfx::BufferFormat format_;
 };
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
@@ -353,9 +350,13 @@ ClientSharedImage::ScopedMapping::Create(
 
 // static
 std::unique_ptr<ClientSharedImage::ScopedMapping>
-ClientSharedImage::ScopedMapping::Create(GpuMemoryBufferImpl* gpu_memory_buffer,
+ClientSharedImage::ScopedMapping::Create(SharedImageMetadata metadata,
+                                         GpuMemoryBufferImpl* gpu_memory_buffer,
                                          bool is_already_mapped) {
-  auto scoped_mapping = base::WrapUnique(new ScopedMappingGpuMemoryBuffer());
+  auto scoped_mapping = base::WrapUnique(new ScopedMappingGpuMemoryBuffer(
+      metadata.size,
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          metadata.format)));
   if (!scoped_mapping->Init(gpu_memory_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
@@ -365,22 +366,24 @@ ClientSharedImage::ScopedMapping::Create(GpuMemoryBufferImpl* gpu_memory_buffer,
 
 // static
 void ClientSharedImage::ScopedMapping::StartCreateAsync(
+    SharedImageMetadata metadata,
     GpuMemoryBufferImpl* gpu_memory_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
   gpu_memory_buffer->MapAsync(
       base::BindOnce(&ClientSharedImage::ScopedMapping::FinishCreateAsync,
-                     gpu_memory_buffer, std::move(result_cb)));
+                     metadata, gpu_memory_buffer, std::move(result_cb)));
 }
 
 // static
 void ClientSharedImage::ScopedMapping::FinishCreateAsync(
+    SharedImageMetadata metadata,
     GpuMemoryBufferImpl* gpu_memory_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
     bool success) {
   std::unique_ptr<ClientSharedImage::ScopedMapping> mapping;
   if (success) {
     mapping = ClientSharedImage::ScopedMapping::Create(
-        gpu_memory_buffer, /*is_already_mapped=*/true);
+        metadata, gpu_memory_buffer, /*is_already_mapped=*/true);
   }
   std::move(result_cb).Run(std::move(mapping));
 }
@@ -580,7 +583,7 @@ std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   if (shared_memory_mapping_.IsValid()) {
     scoped_mapping = ScopedMapping::Create(metadata_, &shared_memory_mapping_);
   } else {
-    scoped_mapping = ScopedMapping::Create(gpu_memory_buffer_.get(),
+    scoped_mapping = ScopedMapping::Create(metadata_, gpu_memory_buffer_.get(),
                                            /*is_already_mapped=*/false);
   }
 
@@ -616,7 +619,7 @@ void ClientSharedImage::MapAsync(
     return;
   }
 
-  ScopedMapping::StartCreateAsync(gpu_memory_buffer_.get(),
+  ScopedMapping::StartCreateAsync(metadata_, gpu_memory_buffer_.get(),
                                   std::move(result_cb));
 }
 

@@ -118,12 +118,15 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
         SharedImageMetadata metadata_,
         base::WritableSharedMemoryMapping* mapping);
     static std::unique_ptr<ScopedMapping> Create(
+        SharedImageMetadata metadata_,
         GpuMemoryBufferImpl* gpu_memory_buffer,
         bool is_already_mapped);
     static void StartCreateAsync(
+        SharedImageMetadata metadata_,
         GpuMemoryBufferImpl* gpu_memory_buffer,
         base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb);
     static void FinishCreateAsync(
+        SharedImageMetadata metadata_,
         GpuMemoryBufferImpl* gpu_memory_buffer,
         base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
         bool success);
