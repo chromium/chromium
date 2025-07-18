@@ -2204,7 +2204,8 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   // which ::scroll-marker belongs has scroll-marker-group set to `tabs` mode,
   // the originating element of ::scroll-marker is given an implicit
   // role of tabpanel.
-  if (IsOriginatingElementForScrollMarkerInTabsMode(node)) {
+  if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() &&
+      IsOriginatingElementForScrollMarkerInTabsMode(node)) {
     return ax::mojom::blink::Role::kTabPanel;
   }
 
@@ -2259,26 +2260,38 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       return ax::mojom::blink::Role::kButton;
     }
 
-    // Carousel ::scroll-marker-group is either a kTabList or a kNavigation,
-    // based on the scroll-marker-group property of its originating element.
-    if (const auto* scroll_marker_group =
-            DynamicTo<ScrollMarkerGroupPseudoElement>(GetNode())) {
-      return scroll_marker_group->ScrollMarkerGroupMode() ==
-                     ScrollMarkerGroup::ScrollMarkerMode::kTabs
-                 ? ax::mojom::blink::Role::kTabList
-                 : ax::mojom::blink::Role::kNavigation;
-    }
+    if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+      // Carousel ::scroll-marker-group is either a kTabList or a kNavigation,
+      // based on the scroll-marker-group property of its originating element.
+      if (const auto* scroll_marker_group =
+              DynamicTo<ScrollMarkerGroupPseudoElement>(GetNode())) {
+        return scroll_marker_group->ScrollMarkerGroupMode() ==
+                       ScrollMarkerGroup::ScrollMarkerMode::kTabs
+                   ? ax::mojom::blink::Role::kTabList
+                   : ax::mojom::blink::Role::kNavigation;
+      }
 
-    // Carousel ::scroll-marker within a group is either a kTab or a kLink,
-    // based on the scroll-marker-group property of its ::scroll-marker-group's
-    // originating element.
-    if (const auto* scroll_marker =
-            DynamicTo<ScrollMarkerPseudoElement>(GetNode())) {
-      CHECK(scroll_marker->ScrollMarkerGroup());
-      return scroll_marker->ScrollMarkerGroup()->ScrollMarkerGroupMode() ==
-                     ScrollMarkerGroup::ScrollMarkerMode::kTabs
-                 ? ax::mojom::blink::Role::kTab
-                 : ax::mojom::blink::Role::kLink;
+      // Carousel ::scroll-marker within a group is either a kTab or a kLink,
+      // based on the scroll-marker-group property of its
+      // ::scroll-marker-group's originating element.
+      if (const auto* scroll_marker =
+              DynamicTo<ScrollMarkerPseudoElement>(GetNode())) {
+        CHECK(scroll_marker->ScrollMarkerGroup());
+        return scroll_marker->ScrollMarkerGroup()->ScrollMarkerGroupMode() ==
+                       ScrollMarkerGroup::ScrollMarkerMode::kTabs
+                   ? ax::mojom::blink::Role::kTab
+                   : ax::mojom::blink::Role::kLink;
+      }
+    } else {
+      // Carousel ::scroll-marker-group is a kTabList.
+      if (GetNode()->IsScrollMarkerGroupPseudoElement()) {
+        return ax::mojom::blink::Role::kTabList;
+      }
+
+      // Carousel ::scroll-marker within a group is a kTab.
+      if (GetNode()->IsScrollMarkerPseudoElement()) {
+        return ax::mojom::blink::Role::kTab;
+      }
     }
 
     if (GetCSSAltText(GetElement())) {
