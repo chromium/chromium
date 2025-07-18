@@ -3812,19 +3812,45 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
   // viewport)
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          blink::features::kAndroidDesktopWebPrefsLargeDisplays) &&
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-       // Specific to large tablets (10"), by default they request desktop site,
-       // but can per-site optionally override it to request mobile instead.
-       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-        is_request_android_desktop_site))) {
-    // Set page scale factors to be similar to desktop.
-    // The significant change compared to mobile is that we lock the min scale
-    // to 1, so that we don't allow for a birds-eye-view zoom-out (this matches
-    // desktop)
-    prefs.default_minimum_page_scale_factor = 1.f;
-    prefs.default_maximum_page_scale_factor = 4.f;
+          blink::features::kAndroidDesktopWebPrefsLargeDisplays)) {
+    bool apply_desktop_common_settings = false;
+    switch (ui::GetDeviceFormFactor()) {
+      case ui::DEVICE_FORM_FACTOR_DESKTOP:
+        apply_desktop_common_settings = true;
+        // There are no orientation changes in desktop mode.
+        // Might need to revisit for convertible devices (i.e. clamshell ->
+        // tablet).
+        prefs.main_frame_resizes_are_orientation_changes = false;
+        break;
+      case ui::DEVICE_FORM_FACTOR_TABLET:
+        // Specific to large tablets (10"), by default they request desktop
+        // site, but can per-site optionally override it to request mobile
+        // instead.
+        if (is_request_android_desktop_site) {
+          apply_desktop_common_settings = true;
+        }
+        break;
+      default:
+        break;
+    }
+
+    if (apply_desktop_common_settings) {
+      // Settings below matches up with desktop chrome
+
+      // Set page scale factors to be similar to desktop.
+      // The significant change compared to mobile is that we lock the min scale
+      // to 1, so that we don't allow for a birds-eye-view zoom-out (this
+      // matches desktop).
+      prefs.default_minimum_page_scale_factor = 1.f;
+      prefs.default_maximum_page_scale_factor = 4.f;
+
+      // Ensure no further viewport scaling
+      prefs.shrinks_viewport_contents_to_fit = false;
+      // Not needed for larger form factors
+      prefs.text_autosizing_enabled = false;
+    }
   }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
   GetContentClient()->browser()->OverrideWebPreferences(
