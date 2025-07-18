@@ -505,6 +505,12 @@ BASE_FEATURE_PARAM(bool,
                    "find",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationCollaborationMessaging,
+                   &kPageActionsMigration,
+                   "collaboration_messaging",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi,
              "SavePasswordsContextualUi",
              base::FEATURE_DISABLED_BY_DEFAULT);

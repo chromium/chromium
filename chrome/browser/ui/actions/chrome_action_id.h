@@ -180,6 +180,7 @@
   E(kActionShowBetaForum, IDC_SHOW_BETA_FORUM) \
   E(kActionToggleJavascriptAppleEvents, IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS) \
   E(kActionInstallPwa, IDC_INSTALL_PWA) \
+  E(kActionShowCollaborationRecentActivity) \
   E(kActionShowManagementPage, IDC_SHOW_MANAGEMENT_PAGE) \
   E(kActionPasteAndGo, IDC_PASTE_AND_GO) \
   E(kActionShowSaveLocalCardSignInPromoIfApplicable, \

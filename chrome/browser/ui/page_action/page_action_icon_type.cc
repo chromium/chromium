@@ -42,6 +42,8 @@ const base::FeatureParam<bool>* GetPageActionMigrationParam(
       return &features::kPageActionsMigrationAutofillAddress;
     case PageActionIconType::kFind:
       return &features::kPageActionsMigrationFind;
+    case PageActionIconType::kCollaborationMessaging:
+      return &features::kPageActionsMigrationCollaborationMessaging;
     default:
       return nullptr;
   }

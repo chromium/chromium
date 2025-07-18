@@ -27,6 +27,26 @@
 using collaboration::messaging::PersistentMessage;
 
 namespace tab_groups {
+namespace {
+struct CollaborationFallbackAvatarParameters {
+  float scale_factor;
+  const raw_ptr<const ui::ColorProvider> color_provider;
+};
+
+const CollaborationFallbackAvatarParameters
+GetCollaborationAvatarFallbackParametersFromWidget(
+    const views::Widget* widget) {
+  CHECK(widget);
+
+  // Get devices scale factor for scaling the bitmaps.
+  const float scale_factor =
+      widget->GetCompositor() ? widget->GetCompositor()->device_scale_factor()
+                              : 1.0f;
+
+  return CollaborationFallbackAvatarParameters(scale_factor,
+                                               widget->GetColorProvider());
+}
+}  // namespace
 
 CollaborationMessagingTabData::CollaborationMessagingTabData(Profile* profile)
     : profile_(profile) {}
@@ -149,47 +169,52 @@ void CollaborationMessagingTabData::CommitMessage(
 
 ui::ImageModel CollaborationMessagingTabData::GetPageActionImage(
     const views::Widget* widget) const {
-  if (!HasMessage()) {
-    return ui::ImageModel();
-  }
+  auto fallback_params =
+      GetCollaborationAvatarFallbackParametersFromWidget(widget);
 
+  return GetPageActionImage(fallback_params.scale_factor,
+                            fallback_params.color_provider);
+}
+
+ui::ImageModel CollaborationMessagingTabData::GetPageActionImage(
+    float scale_factor,
+    const ui::ColorProvider* color_provider) const {
   const int icon_width = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
-  if (!avatar_.IsEmpty()) {
-    return ui::ImageModel::FromImage(
-        gfx::ResizedImage(avatar_, gfx::Size(icon_width, icon_width)));
-  }
-
-  return CreateSizedFallback(widget, icon_width, /*add_border=*/true);
+  return GetImage(scale_factor, color_provider, icon_width,
+                  /*add_border=*/true);
 }
 
 ui::ImageModel CollaborationMessagingTabData::GetHoverCardImage(
     const views::Widget* widget) const {
+  auto fallback_params =
+      GetCollaborationAvatarFallbackParametersFromWidget(widget);
+  const int icon_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
+  return GetImage(fallback_params.scale_factor, fallback_params.color_provider,
+                  icon_width,
+                  /*add_border=*/false);
+}
+
+ui::ImageModel CollaborationMessagingTabData::GetImage(
+    float scale_factor,
+    const ui::ColorProvider* color_provider,
+    int icon_width,
+    bool add_border) const {
   if (!HasMessage()) {
     return ui::ImageModel();
   }
-
-  const int icon_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
   if (!avatar_.IsEmpty()) {
     return ui::ImageModel::FromImage(
         gfx::ResizedImage(avatar_, gfx::Size(icon_width, icon_width)));
   }
-
-  return CreateSizedFallback(widget, icon_width, /*add_border=*/false);
+  return CreateSizedFallback(scale_factor, color_provider, icon_width,
+                             add_border);
 }
 
 ui::ImageModel CollaborationMessagingTabData::CreateSizedFallback(
-    const views::Widget* widget,
+    float scale_factor,
+    const ui::ColorProvider* color_provider,
     int icon_width,
     bool add_border) const {
-  CHECK(widget);
-
-  // Get devices scale factor for scaling the bitmaps.
-  float scale_factor = 1.0f;
-  if (widget->GetCompositor()) {
-    scale_factor = widget->GetCompositor()->device_scale_factor();
-  }
-
-  const ui::ColorProvider* color_provider = widget->GetColorProvider();
   const int icon_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_PADDING);
 

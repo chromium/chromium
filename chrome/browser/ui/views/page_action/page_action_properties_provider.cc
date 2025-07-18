@@ -105,6 +105,15 @@ constexpr auto kPageActionProperties =
                 .element_identifier = kPasswordsOmniboxKeyIconElementId,
             },
         },
+        {
+            kActionShowCollaborationRecentActivity,
+            {
+                .histogram_name = "ShowCollaborationRecentActivity",
+                .type = PageActionIconType::kCollaborationMessaging,
+                .element_identifier =
+                    kCollaborationMessagingPageActionIconElementId,
+            },
+        },
     });
 }  // namespace
 
