@@ -14,6 +14,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "url/origin.h"
 
 namespace payments::facilitated {
 
@@ -41,8 +42,10 @@ void FacilitatedPaymentsClient::DismissPrompt() {}
 void FacilitatedPaymentsClient::SetUiEventListener(
     base::RepeatingCallback<void(UiEvent)> ui_event_listener) {}
 
-void FacilitatedPaymentsClient::InitPixAccountLinkingFlow() {
-  pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt();
+void FacilitatedPaymentsClient::InitPixAccountLinkingFlow(
+    const url::Origin& pix_payment_page_origin) {
+  pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt(
+      pix_payment_page_origin);
 }
 
 void FacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(

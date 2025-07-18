@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "url/origin.h"
 
 namespace payments::facilitated {
 
@@ -29,7 +30,8 @@ class PixAccountLinkingManager {
 
   // Initialize the Pix account linking flow. Virtual so it can be overridden in
   // tests.
-  virtual void MaybeShowPixAccountLinkingPrompt();
+  virtual void MaybeShowPixAccountLinkingPrompt(
+      const url::Origin& pix_payment_page_origin);
 
  private:
   friend class PixAccountLinkingManagerTestApi;
@@ -69,6 +71,9 @@ class PixAccountLinkingManager {
   // True when the Pix account linking prompt is being shown to the user. Used
   // to catch instances where the prompt is unexpectedly closed.
   bool is_prompt_showing_ = false;
+
+  // The origin of the Pix payment page that triggered the account linking flow.
+  url::Origin pix_payment_page_origin_;
 
   base::WeakPtrFactory<PixAccountLinkingManager> weak_ptr_factory_{this};
 };

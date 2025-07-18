@@ -55,6 +55,7 @@ void PixManager::Reset() {
   initiate_payment_request_details_ =
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
   ui_state_ = UiState::kHidden;
+  pix_payment_page_origin_ = url::Origin();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -80,6 +81,7 @@ void PixManager::OnPixCodeCopiedToClipboard(
   }
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
       render_frame_host_url.host();
+  pix_payment_page_origin_ = render_frame_host_origin;
   // Trigger Pix code validation.
   utility_process_validator_.ValidatePixCode(
       pix_code, base::BindOnce(&PixManager::OnPixCodeValidated,
@@ -152,7 +154,7 @@ void PixManager::OnPixCodeValidated(
   if (!payments_data_manager->HasMaskedBankAccounts()) {
     LogPixFlowExitedReason(PixFlowExitedReason::kNoLinkedAccount);
     if (base::FeatureList::IsEnabled(kEnablePixAccountLinking)) {
-      client_->InitPixAccountLinkingFlow();
+      client_->InitPixAccountLinkingFlow(pix_payment_page_origin_);
     }
     return;
   }

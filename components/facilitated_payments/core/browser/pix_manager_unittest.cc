@@ -616,7 +616,7 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   autofill::prefs::SetAutofillPaymentMethodsEnabled(pref_service_.get(), false);
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_)).Times(0);
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                    base::TimeTicks::Now(),
@@ -652,7 +652,7 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_)).Times(0);
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                    base::TimeTicks::Now(),
@@ -685,7 +685,7 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
-  EXPECT_CALL(*client_, InitPixAccountLinkingFlow);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_));
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                    base::TimeTicks::Now(),
@@ -716,7 +716,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kEnablePixAccountLinking);
 
-  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow(testing::_)).Times(0);
 
   pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                    base::TimeTicks::Now(),

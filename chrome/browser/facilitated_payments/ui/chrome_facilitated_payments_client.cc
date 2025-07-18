@@ -32,6 +32,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "url/origin.h"
 
 ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
     content::WebContents* web_contents,
@@ -53,6 +54,11 @@ void ChromeFacilitatedPaymentsClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> on_risk_data_loaded_callback) {
   autofill::risk_util::LoadRiskData(/*obfuscated_gaia_id=*/0, &GetWebContents(),
                                     std::move(on_risk_data_loaded_callback));
+}
+
+const url::Origin& ChromeFacilitatedPaymentsClient::GetLastCommittedOrigin()
+    const {
+  return GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
 }
 
 autofill::PaymentsDataManager*

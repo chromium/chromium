@@ -22,6 +22,8 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace payments::facilitated {
 
@@ -55,6 +57,8 @@ class PixAccountLinkingManagerTest : public testing::Test {
             multiple_request_payments_network_interface_.get()));
 
     // Success path setup. The Pix account linking user pref is default enabled.
+    ON_CALL(client_, GetLastCommittedOrigin)
+        .WillByDefault(testing::ReturnRef(kPixPaymentPageOrigin));
     ON_CALL(*device_delegate(), IsPixAccountLinkingSupported)
         .WillByDefault(testing::Return(true));
     ON_CALL(client(), IsWebContentsVisibleOrOccluded)
@@ -100,6 +104,8 @@ class PixAccountLinkingManagerTest : public testing::Test {
 
   std::unique_ptr<PrefService> pref_service_;
   std::unique_ptr<autofill::TestPaymentsDataManager> payments_data_manager_;
+  const url::Origin kPixPaymentPageOrigin =
+      url::Origin::Create(GURL("https://example.com"));
 
  private:
   // Order matters here because `manager_` keeps a reference to `client_`.
@@ -115,7 +121,7 @@ class PixAccountLinkingManagerTest : public testing::Test {
 TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 TEST_F(PixAccountLinkingManagerTest,
@@ -125,7 +131,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 TEST_F(PixAccountLinkingManagerTest,
@@ -135,7 +141,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 TEST_F(PixAccountLinkingManagerTest,
@@ -150,7 +156,7 @@ TEST_F(PixAccountLinkingManagerTest,
       .Times(0);
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 TEST_F(PixAccountLinkingManagerTest,
@@ -164,7 +170,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 TEST_F(PixAccountLinkingManagerTest,
@@ -183,7 +189,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 TEST_F(PixAccountLinkingManagerTest, TabNotActive_PromptNotShown) {
@@ -192,7 +198,7 @@ TEST_F(PixAccountLinkingManagerTest, TabNotActive_PromptNotShown) {
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 TEST_F(PixAccountLinkingManagerTest, UserNotReturnedToChrome_PromptNotShown) {
@@ -202,7 +208,20 @@ TEST_F(PixAccountLinkingManagerTest, UserNotReturnedToChrome_PromptNotShown) {
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+}
+
+TEST_F(PixAccountLinkingManagerTest, DifferentOrigin_PromptNotShown) {
+  // Simulate that when the user returns to Chrome, they are on a different
+  // website.
+  url::Origin different_website_origin =
+      url::Origin::Create(GURL("https://www.different.com"));
+  ON_CALL(client(), GetLastCommittedOrigin)
+      .WillByDefault(testing::ReturnRef(different_website_origin));
+
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 TEST_F(PixAccountLinkingManagerTest, DismissPrompt) {
@@ -211,7 +230,7 @@ TEST_F(PixAccountLinkingManagerTest, DismissPrompt) {
   EXPECT_CALL(client(), DismissPrompt);
 
   // The show method is called so the internal UI state is correctly set.
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   test_api().DismissPrompt();
   // This call should not trigger prompt dismissal again.
   test_api().DismissPrompt();
@@ -222,7 +241,7 @@ TEST_F(PixAccountLinkingManagerTest, OnAccepted) {
   EXPECT_CALL(*device_delegate(), LaunchPixAccountLinkingPage);
 
   // The show method is called so the internal UI state is correctly set.
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   test_api().OnAccepted();
 }
 
@@ -234,7 +253,7 @@ TEST_F(PixAccountLinkingManagerTest, PromptDeclined_UserPrefUpdated) {
   EXPECT_CALL(client(), DismissPrompt);
 
   // The show method is called so the internal UI state is correctly set.
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   test_api().OnDeclined();
 
   // Verify that declining the prompt disables the account linking user pref.
@@ -243,7 +262,7 @@ TEST_F(PixAccountLinkingManagerTest, PromptDeclined_UserPrefUpdated) {
 }
 
 TEST_F(PixAccountLinkingManagerTest, Reset_PromptShowing_TriggersDismissal) {
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 
   EXPECT_CALL(client(), DismissPrompt());
 
@@ -274,7 +293,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   // Reset() is called before the user returns to Chrome. This should invalidate
   // the weak pointer for the callback.
   test_api().Reset();
@@ -286,7 +305,7 @@ TEST_F(PixAccountLinkingManagerTest,
 TEST_F(PixAccountLinkingManagerTest, PromptAcceptedLogged) {
   base::HistogramTester histogram_tester;
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   test_api().OnAccepted();
 
   histogram_tester.ExpectUniqueSample(
@@ -298,7 +317,7 @@ TEST_F(PixAccountLinkingManagerTest, PromptAcceptedLogged) {
 TEST_F(PixAccountLinkingManagerTest, ScreenShown_PromptShownLogged) {
   base::HistogramTester histogram_tester;
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   test_api().OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   histogram_tester.ExpectUniqueSample(
@@ -310,7 +329,7 @@ TEST_F(PixAccountLinkingManagerTest, ScreenShown_PromptShownLogged) {
 TEST_F(PixAccountLinkingManagerTest, ScreenNotShown_PromptShownNotLogged) {
   base::HistogramTester histogram_tester;
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   test_api().OnUiScreenEvent(UiEvent::kScreenCouldNotBeShown);
 
   histogram_tester.ExpectUniqueSample(
@@ -325,7 +344,7 @@ TEST_F(PixAccountLinkingManagerTest, ScreenlockNotEnabled_PromptNotShown) {
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
-  manager()->MaybeShowPixAccountLinkingPrompt();
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 }
 
 class PixAccountLinkingManagerParameterizedTest

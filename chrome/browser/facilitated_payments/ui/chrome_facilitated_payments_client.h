@@ -20,6 +20,10 @@
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace autofill {
 class BankAccount;
 class Ewallet;
@@ -66,6 +70,7 @@ class ChromeFacilitatedPaymentsClient
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
 
   // FacilitatedPaymentsClient:
+  const url::Origin& GetLastCommittedOrigin() const final;
   // This returns nullptr if the `Profile` associated is null.
   autofill::PaymentsDataManager* GetPaymentsDataManager() final;
   // This returns nullptr if the `Profile` associated is null.

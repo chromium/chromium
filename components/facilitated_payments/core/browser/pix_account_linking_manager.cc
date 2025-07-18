@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "url/origin.h"
 
 namespace payments::facilitated {
 
@@ -27,9 +28,11 @@ PixAccountLinkingManager::~PixAccountLinkingManager() {
   }
 }
 
-void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
+void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
+    const url::Origin& pix_payment_page_origin) {
   // Reset to default state to prepare for a new account linking flow.
   Reset();
+  pix_payment_page_origin_ = pix_payment_page_origin;
   if (!client_->GetDeviceDelegate()->IsPixAccountLinkingSupported()) {
     return;
   }
@@ -82,6 +85,7 @@ void PixAccountLinkingManager::Reset() {
     client_->DismissPrompt();
   }
   is_prompt_showing_ = false;
+  pix_payment_page_origin_ = url::Origin();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -97,6 +101,16 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
   if (!client_->IsWebContentsVisibleOrOccluded()) {
     // TODO(crbug.com/419108993): Add metrics for when the prompt is not shown
     // because the tab is not active.
+    return;
+  }
+
+  // If the user has navigated to a different website than the one where the Pix
+  // code was copied from, do NOT show the prompt. Same origin means the two
+  // URLs have the same scheme, the same host, and the same port.
+  if (!pix_payment_page_origin_.IsSameOriginWith(
+          client_->GetLastCommittedOrigin())) {
+    // TODO(crbug.com/419108993): Add metrics for when the prompt is not shown
+    // because the user is on a different website.
     return;
   }
 
