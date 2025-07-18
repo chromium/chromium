@@ -683,7 +683,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 
 // Updates the facePile UI and the share state of the consumer.
 - (void)updateFacePileUI {
-  if (!_collaborationService || !_tabGroupSyncService) {
+  if (!_shareKitService || !_collaborationService || !_tabGroupSyncService) {
     return;
   }
 
