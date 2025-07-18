@@ -627,12 +627,35 @@ std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool ShouldForceLaunchIntoProfileWithEmail(
-    const base::CommandLine& command_line) {
-  return command_line.HasSwitch(switches::kCreateProfileEmailIfNotExists) &&
-         !command_line.GetSwitchValueASCII(switches::kProfileEmail).empty() &&
-         base::FeatureList::IsEnabled(features::kCreateProfileIfNoneExists);
+#if !BUILDFLAG(IS_CHROMEOS)
+bool ShouldForceLaunchIntoNewProfileWithEmail(
+    const base::CommandLine& command_line,
+    const Profile* profile) {
+  if (base::FeatureList::IsEnabled(features::kCreateProfileIfNoneExists) &&
+      command_line.HasSwitch(switches::kCreateProfileEmailIfNotExists)) {
+    std::string switch_email =
+        command_line.GetSwitchValueASCII(switches::kProfileEmail);
+    // Only prompt a new profile if there's an email specified. Otherwise,
+    // fall back to the default Chrome behavior.
+    if (switch_email.empty()) {
+      return false;
+    }
+    // If there's no profile then we should prompt a new profile.
+    if (profile == nullptr) {
+      return true;
+    }
+    // In practice, this shouldn't happen because if the switch_email is
+    // specified and a matching profile exists, then the profile username will
+    // match the switch_email. However, we don't know when this function is
+    // called, so we'll check and prompt to create a new profile if the one
+    // passed in doesn't match the switch_email.
+    if (profile != nullptr && profile->GetProfileUserName() != switch_email) {
+      return true;
+    }
+  }
+  return false;
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -730,8 +753,7 @@ void StartupBrowserCreator::LaunchBrowser(
   profile = GetPrivateProfileIfRequested(
       command_line, {profile, StartupProfileMode::kBrowserWindow});
 
-  if (!IsSilentLaunchEnabled(command_line, profile) &&
-      !ShouldForceLaunchIntoProfileWithEmail(command_line)) {
+  if (!IsSilentLaunchEnabled(command_line, profile)) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     auto* fre_service = FirstRunServiceFactory::GetForBrowserContext(profile);
     if (fre_service && fre_service->ShouldOpenFirstRun()) {
@@ -781,7 +803,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 #if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
 #else
-    if (ShouldForceLaunchIntoProfileWithEmail(command_line)) {
+    if (ShouldForceLaunchIntoNewProfileWithEmail(command_line, profile)) {
       std::string email =
           command_line.GetSwitchValueASCII(switches::kProfileEmail);
       ProfilePicker::Show(ProfilePicker::Params::FromStartupWithEmail(email));

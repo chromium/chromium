@@ -148,17 +148,22 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile) {
             StartupProfileModeReason::kSingleProfile);
 }
 
-TEST_F(ProfilePickerTest, ShouldShowAtLaunch_ProfileEmailSwitchCreateProfile) {
+TEST_F(ProfilePickerTest,
+       ShouldShowAtLaunch_ProfileEmailSwitchCreateProfileNoMatchingProfile) {
   {
     base::test::ScopedFeatureList feature_list{
         features::kCreateProfileIfNoneExists};
 
-    testing_profile_manager()->CreateTestingProfile("profile1");
+    TestingProfile* profile1 =
+        testing_profile_manager()->CreateTestingProfile("profile1");
+    GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"),
+                                                u"personal@gmail.com", true);
+
     EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
               StartupProfileModeReason::kSingleProfile);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kProfileEmail, "test@gmail.com");
+        switches::kProfileEmail, "test@corp.com");
     EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
               StartupProfileModeReason::kSingleProfile);
 
@@ -171,6 +176,54 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_ProfileEmailSwitchCreateProfile) {
   feature_list.InitAndDisableFeature(features::kCreateProfileIfNoneExists);
   EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
             StartupProfileModeReason::kSingleProfile);
+}
+
+TEST_F(ProfilePickerTest,
+       ShouldNotShowAtLaunch_ProfileEmailSwitchCreateProfileExistingProfile) {
+  {
+    base::test::ScopedFeatureList feature_list{
+        features::kCreateProfileIfNoneExists};
+
+    TestingProfile* profile1 =
+        testing_profile_manager()->CreateTestingProfile("profile1");
+    GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"), u"test@corp.com",
+                                                true);
+    GetProfileAttributes(profile1)->SetActiveTimeToNow();
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kProfileEmail, "test@corp.com");
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCreateProfileEmailIfNotExists);
+    EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+              StartupProfileModeReason::kSingleProfile);
+  }
+}
+
+TEST_F(
+    ProfilePickerTest,
+    ShouldNotShowAtLaunch_ProfileEmailSwitchCreateProfileMultipleProfiles) {
+  {
+    base::test::ScopedFeatureList feature_list{
+        features::kCreateProfileIfNoneExists};
+
+    TestingProfile* profile1 =
+        testing_profile_manager()->CreateTestingProfile("profile1");
+    GetProfileAttributes(profile1)->SetAuthInfo(GaiaId("foo"), u"test@corp.com",
+                                                true);
+    GetProfileAttributes(profile1)->SetActiveTimeToNow();
+    TestingProfile* profile2 =
+        testing_profile_manager()->CreateTestingProfile("profile2");
+    GetProfileAttributes(profile2)->SetAuthInfo(GaiaId("foo"), u"test2@corp.com",
+                                                true);
+    GetProfileAttributes(profile2)->SetActiveTimeToNow();
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kProfileEmail, "test@corp.com");
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCreateProfileEmailIfNotExists);
+    EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+              StartupProfileModeReason::kMultipleProfiles);
+  }
 }
 
 class ProfilePickerParamsTest : public testing::Test {

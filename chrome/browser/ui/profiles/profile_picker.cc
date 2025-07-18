@@ -164,11 +164,21 @@ StartupProfileModeReason ProfilePicker::GetStartupModeReason() {
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
+  // Only launch the profile creation flow at startup if the user has specified
+  // both a profile email address and the switch to create a new profile. Only
+  // launch the profile creation flow if and a profile with this email does not already
+  // exist.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kCreateProfileEmailIfNotExists) &&
-      !command_line->GetSwitchValueASCII(switches::kProfileEmail).empty() &&
       base::FeatureList::IsEnabled(features::kCreateProfileIfNoneExists)) {
-    return StartupProfileModeReason::kProfileEmailSwitchCreateProfile;
+    std::string switch_email =
+        command_line->GetSwitchValueASCII(switches::kProfileEmail);
+    if (!switch_email.empty() &&
+        profile_manager->GetProfileDirForEmail(switch_email).empty()) {
+      return StartupProfileModeReason::kProfileEmailSwitchCreateProfile;
+    }
+    // TODO(crbug.com/432528395): Return kProfileEmailSwitch for instead of
+    // returning kMultipleProfiles or kSingleProfile.
   }
 
   size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
