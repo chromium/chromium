@@ -15,6 +15,7 @@ source_set("diamond") {
     "//base",
     "//components/omnibox/browser:location_bar",
     "//components/url_formatter",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/location_bar/model",

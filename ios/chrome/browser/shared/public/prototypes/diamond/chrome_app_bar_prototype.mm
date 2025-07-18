@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -19,7 +21,16 @@ UIButtonConfiguration* ButtonConfiguration() {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.imagePlacement = NSDirectionalRectEdgeTop;
+  configuration.imagePadding = 5;
   configuration.baseForegroundColor = UIColor.whiteColor;
+  configuration.titleTextAttributesTransformer =
+      ^NSDictionary<NSAttributedStringKey, id>*(
+          NSDictionary<NSAttributedStringKey, id>* incoming) {
+    NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
+        [incoming mutableCopy];
+    outgoing[NSFontAttributeName] = [UIFont systemFontOfSize:11];
+    return outgoing;
+  };
 
   return configuration;
 }
@@ -50,7 +61,8 @@ UIButtonConfiguration* ButtonConfiguration() {
         DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage, kSymbolSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
-    askGeminiConfiguration.title = @"TODO - gemini";
+    askGeminiConfiguration.title =
+        l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_ASK_GEMINI);
     _askGeminiButton = [UIButton buttonWithConfiguration:askGeminiConfiguration
                                            primaryAction:nil];
     _askGeminiButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -58,7 +70,8 @@ UIButtonConfiguration* ButtonConfiguration() {
     UIButtonConfiguration* openNewTabConfiguration = ButtonConfiguration();
     openNewTabConfiguration.image =
         DefaultSymbolWithPointSize(kPlusInCircleSymbol, kSymbolSize);
-    openNewTabConfiguration.title = @"TODO - new tab";
+    openNewTabConfiguration.title =
+        l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB);
     _openNewTabButton =
         [UIButton buttonWithConfiguration:openNewTabConfiguration
                             primaryAction:nil];
@@ -69,7 +82,8 @@ UIButtonConfiguration* ButtonConfiguration() {
     // including number of tabs.
     tabGridConfiguration.image =
         DefaultSymbolWithPointSize(@"square", kSymbolSize);
-    tabGridConfiguration.title = @"TODO - tab grid";
+    tabGridConfiguration.title =
+        l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_ALL_TABS);
     _tabGridButton = [UIButton buttonWithConfiguration:tabGridConfiguration
                                          primaryAction:nil];
     _tabGridButton.translatesAutoresizingMaskIntoConstraints = NO;
