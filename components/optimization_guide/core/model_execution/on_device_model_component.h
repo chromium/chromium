@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -97,11 +98,9 @@ struct OnDeviceBaseModelSpec {
 };
 
 // Manages the state of the on-device component.
-// This object needs to have lifetime equal to the browser process. This is
-// achieved by holding a scoped_refptr on KeyedServices which need it, and on
-// the installer (which is owned by ComponentUpdaterService).
-class OnDeviceModelComponentStateManager
-    : public base::RefCounted<OnDeviceModelComponentStateManager> {
+// This object needs to have lifetime equal to the browser process, and outside
+// of tests is created by a static NoDestructor initializer.
+class OnDeviceModelComponentStateManager final {
  public:
   class Delegate {
    public:
@@ -120,14 +119,14 @@ class OnDeviceModelComponentStateManager
     // `OnDeviceModelComponentStateManager::SetReady` when the component is
     // ready to use.
     virtual void RegisterInstaller(
-        scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+        base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
         bool is_already_installing) = 0;
 
     // Uninstall the component. Calls
     // `OnDeviceModelComponentStateManager::UninstallComplete()` when uninstall
     // completes.
     virtual void Uninstall(
-        scoped_refptr<OnDeviceModelComponentStateManager> state_manager) = 0;
+        base::WeakPtr<OnDeviceModelComponentStateManager> state_manager) = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -181,11 +180,9 @@ class OnDeviceModelComponentStateManager
     }
   };
 
-  // Creates the instance if one does not already exist. Returns an existing
-  // instance otherwise.
-  static scoped_refptr<OnDeviceModelComponentStateManager> CreateOrGet(
-      PrefService* local_state,
-      std::unique_ptr<Delegate> delegate);
+  OnDeviceModelComponentStateManager(PrefService* local_state,
+                                     std::unique_ptr<Delegate> delegate);
+  ~OnDeviceModelComponentStateManager();
 
   // Returns whether the component installation is valid.
   static bool VerifyInstallation(const base::FilePath& install_dir,
@@ -264,12 +261,7 @@ class OnDeviceModelComponentStateManager
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // Testing functionality:
-  static OnDeviceModelComponentStateManager* GetInstanceForTesting();
-
  private:
-  friend class base::RefCounted<OnDeviceModelComponentStateManager>;
-
   enum class OnDeviceRegistrationDecision {
     // The component should be installed.
     kInstall,
@@ -278,10 +270,6 @@ class OnDeviceModelComponentStateManager
     // The component should not be installed, and does not need removed.
     kDoNotInstall,
   };
-
-  OnDeviceModelComponentStateManager(PrefService* local_state,
-                                     std::unique_ptr<Delegate> delegate);
-  ~OnDeviceModelComponentStateManager();
 
   RegistrationCriteria ComputeRegistrationCriteria(
       int64_t disk_space_free_bytes);

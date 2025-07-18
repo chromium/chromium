@@ -49,7 +49,7 @@ class TestOnDeviceModelComponentStateManager {
   explicit TestOnDeviceModelComponentStateManager(PrefService* local_state);
   ~TestOnDeviceModelComponentStateManager();
 
-  scoped_refptr<OnDeviceModelComponentStateManager> get();
+  base::WeakPtr<OnDeviceModelComponentStateManager> get();
 
   void Reset();
 
@@ -62,7 +62,7 @@ class TestOnDeviceModelComponentStateManager {
 
  private:
   raw_ptr<PrefService> local_state_;
-  scoped_refptr<OnDeviceModelComponentStateManager> manager_;
+  std::unique_ptr<OnDeviceModelComponentStateManager> manager_;
   std::unique_ptr<TestComponentState> state_;
 };
 

@@ -32,12 +32,6 @@
 namespace optimization_guide {
 namespace {
 
-base::WeakPtr<OnDeviceModelComponentStateManager>& GetInstance() {
-  static base::NoDestructor<base::WeakPtr<OnDeviceModelComponentStateManager>>
-      state_manager_instance;
-  return *state_manager_instance.get();
-}
-
 bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
   for (const ModelBasedCapabilityKey key : kAllModelBasedCapabilityKeys) {
     if (!features::internal::GetOptimizationTargetForCapability(key)) {
@@ -315,10 +309,10 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     // Don't allow UpdateRegistration to do anything until after
     // UninstallComplete.
     component_installer_registered_ = true;
-    delegate_->Uninstall(this);
+    delegate_->Uninstall(GetWeakPtr());
   } else if (criteria.should_install() || criteria.is_already_installing) {
     component_installer_registered_ = true;
-    delegate_->RegisterInstaller(this, criteria.is_already_installing);
+    delegate_->RegisterInstaller(GetWeakPtr(), criteria.is_already_installing);
   }
 
   // Log metrics only for first registration attempt.
@@ -379,21 +373,6 @@ OnDeviceModelComponentStateManager::GetState() {
   return is_model_allowed_ ? state_.get() : nullptr;
 }
 
-scoped_refptr<OnDeviceModelComponentStateManager>
-OnDeviceModelComponentStateManager::CreateOrGet(
-    PrefService* local_state,
-    std::unique_ptr<Delegate> delegate) {
-  base::WeakPtr<OnDeviceModelComponentStateManager>& instance = GetInstance();
-  if (!instance) {
-    auto state_manager =
-        base::WrapRefCounted(new OnDeviceModelComponentStateManager(
-            local_state, std::move(delegate)));
-    instance = state_manager->GetWeakPtr();
-    return state_manager;
-  }
-  return scoped_refptr<OnDeviceModelComponentStateManager>(instance.get());
-}
-
 void OnDeviceModelComponentStateManager::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
@@ -402,12 +381,6 @@ void OnDeviceModelComponentStateManager::AddObserver(Observer* observer) {
 void OnDeviceModelComponentStateManager::RemoveObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
-}
-
-// static
-OnDeviceModelComponentStateManager*
-OnDeviceModelComponentStateManager::GetInstanceForTesting() {
-  return GetInstance().get();
 }
 
 // static

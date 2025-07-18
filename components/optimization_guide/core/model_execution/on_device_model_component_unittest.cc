@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_add_feature_flags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -83,8 +84,8 @@ class OnDeviceModelComponentTest : public testing::Test {
               on_device_component_state_manager_.IsInstallerRegistered());
   }
 
-  scoped_refptr<OnDeviceModelComponentStateManager> manager() {
-    return on_device_component_state_manager_.get();
+  base::WeakPtr<OnDeviceModelComponentStateManager> manager() {
+    return on_device_component_state_manager_.get()->GetWeakPtr();
   }
 
   void WaitForStartup() {

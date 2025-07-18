@@ -1130,9 +1130,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        LogOnDeviceMetricsAfterStart) {
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
-  OnDeviceModelComponentStateManager* on_device_component_state_manager =
-      OnDeviceModelComponentStateManager::GetInstanceForTesting();
-  ASSERT_TRUE(on_device_component_state_manager);
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester()
@@ -1151,9 +1148,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        LogOnDeviceMetricsSingleTimeForMultipleProfiles) {
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
-  OnDeviceModelComponentStateManager* on_device_component_state_manager =
-      OnDeviceModelComponentStateManager::GetInstanceForTesting();
-  ASSERT_TRUE(on_device_component_state_manager);
 
   // Add a second profile which should not log performance class.
   ProfileManager* profile_manager = g_browser_process->profile_manager();

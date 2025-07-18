@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_CHROME_MODEL_BROKER_STATE_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_CHROME_MODEL_BROKER_STATE_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
@@ -42,7 +44,7 @@ class ChromeModelBrokerState final
   ChromeModelBrokerState();
   ~ChromeModelBrokerState();
 
-  scoped_refptr<OnDeviceModelComponentStateManager> component_state_manager_;
+  std::unique_ptr<OnDeviceModelComponentStateManager> component_state_manager_;
   scoped_refptr<OnDeviceModelServiceController> service_controller_;
 
   base::WeakPtrFactory<ChromeModelBrokerState> weak_ptr_factory_{this};

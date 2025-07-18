@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -58,20 +59,20 @@ class OnDeviceModelComponentStateManagerDelegate
   }
 
   void RegisterInstaller(
-      scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+      base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
       bool is_already_installing) override {
     if (!g_browser_process) {
       return;
     }
     component_updater::RegisterOptimizationGuideOnDeviceModelComponent(
-        g_browser_process->component_updater(), state_manager->GetWeakPtr(),
+        g_browser_process->component_updater(), std::move(state_manager),
         is_already_installing);
   }
 
-  void Uninstall(scoped_refptr<OnDeviceModelComponentStateManager>
+  void Uninstall(base::WeakPtr<OnDeviceModelComponentStateManager>
                      state_manager) override {
     component_updater::UninstallOptimizationGuideOnDeviceModelComponent(
-        state_manager->GetWeakPtr());
+        std::move(state_manager));
   }
 };
 
@@ -83,9 +84,10 @@ base::WeakPtr<ChromeModelBrokerState>& GetInstance() {
 }  // namespace
 
 ChromeModelBrokerState::ChromeModelBrokerState() {
-  component_state_manager_ = OnDeviceModelComponentStateManager::CreateOrGet(
-      g_browser_process->local_state(),
-      std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
+  component_state_manager_ =
+      std::make_unique<OnDeviceModelComponentStateManager>(
+          g_browser_process->local_state(),
+          std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
   component_state_manager_->OnStartup();
 
   service_controller_ =

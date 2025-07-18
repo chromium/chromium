@@ -25,13 +25,13 @@ class TestComponentState::DelegateImpl
 
   // OnDeviceModelComponentStateManager::Delegate.
   void RegisterInstaller(
-      scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+      base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
       bool is_already_installing) override {
     if (state_) {
       state_->installer_registered_ = true;
     }
   }
-  void Uninstall(scoped_refptr<OnDeviceModelComponentStateManager>
+  void Uninstall(base::WeakPtr<OnDeviceModelComponentStateManager>
                      state_manager) override {
     if (state_) {
       state_->uninstall_called_ = true;
@@ -70,18 +70,15 @@ TestOnDeviceModelComponentStateManager::
   Reset();
 }
 
-scoped_refptr<OnDeviceModelComponentStateManager>
+base::WeakPtr<OnDeviceModelComponentStateManager>
 TestOnDeviceModelComponentStateManager::get() {
   // Note that we create the instance lazily to allow tests time to register
   // prefs.
   if (!manager_) {
-    CHECK(!OnDeviceModelComponentStateManager::GetInstanceForTesting())
-        << "Instance already exists";
-    manager_ = OnDeviceModelComponentStateManager::CreateOrGet(
+    manager_ = std::make_unique<OnDeviceModelComponentStateManager>(
         local_state_, state_->CreateDelegate());
-    CHECK(manager_);
   }
-  return manager_;
+  return manager_->GetWeakPtr();
 }
 
 void TestOnDeviceModelComponentStateManager::Reset() {
