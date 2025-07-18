@@ -9,8 +9,7 @@
 
 <body>
 <script type="module">
-import { buildValidNavigatorCredentialsRequest, buildValidNavigatorCredentialsRequestWithRequestObject, requestIdentityWithActivation } from '/wpt_internal/digital-credentials/support/helper.js';
-
+  import { buildValidNavigatorCredentialsRequest, requestIdentityWithActivation } from '/wpt_internal/digital-credentials/support/helper.js';
 
 // Internal test because the spec currently does not require transient user activation.
 promise_test(async t=>{
@@ -32,11 +31,6 @@ promise_test(async t => {
     JSON.stringify(expectedResponseData),
     JSON.stringify(credential.data));
 }, "navigator.credentials.get() API works in toplevel frame.");
-
-promise_test(async t => {
-  const request = buildValidNavigatorCredentialsRequestWithRequestObject();
-  await promise_rejects_js(t, TypeError, requestIdentityWithActivation(test_driver, request));
-}, "navigator.credentials.get() API fails when IdentityRequestProvider#request is an object instead of stringified JSON object");
 
 promise_test(async t=> {
   let abortController = new AbortController();

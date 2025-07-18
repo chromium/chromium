@@ -2,30 +2,9 @@
 export function buildValidNavigatorCredentialsRequest() {
   return {
       digital: {
-        providers: [{
+      requests: [{
           protocol: "openid4vp",
-          request: JSON.stringify({
-            // Based on https://github.com/openid/OpenID4VP/issues/125
-            client_id: "client.example.org",
-            client_id_scheme: "web-origin",
-            nonce: "n-0S6_WzA2Mj",
-            presentation_definition: {
-              // Presentation Exchange request, omitted for brevity
-            }
-          }),
-        }],
-      },
-  };
-}
-
-// Builds a valid navigator.credentials.get() request where
-// IdentityRequestProvider#request is an object.
-export function buildValidNavigatorCredentialsRequestWithRequestObject() {
-  return {
-      digital: {
-        providers: [{
-          protocol: "openid4vp",
-          request: {
+          data: {
             // Based on https://github.com/openid/OpenID4VP/issues/125
             client_id: "client.example.org",
             client_id_scheme: "web-origin",

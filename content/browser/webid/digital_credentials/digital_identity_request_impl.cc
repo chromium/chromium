@@ -12,11 +12,8 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
-#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/flags.h"
@@ -28,7 +25,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-forward.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using base::Value;
@@ -38,7 +34,6 @@ using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
 using DigitalIdentityInterstitialAbortCallback =
     content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
-using blink::mojom::GetRequestFormat;
 
 namespace content {
 namespace {
@@ -421,32 +416,17 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
   }
 }
 
-// Builds the request to be forwarded to the platform. If nullopt if the request
-// is malformed, specifically if the request is using a mix between the legacy
-// and modern request formats.
-std::optional<Value> BuildGetRequest(
+Value BuildGetRequest(
     const std::vector<blink::mojom::DigitalCredentialGetRequestPtr>&
-        digital_credential_requests,
-    GetRequestFormat format) {
-  const std::string request_key =
-      format == GetRequestFormat::kModern ? "data" : "request";
+        digital_credential_requests) {
   auto requests = Value::List();
   for (const auto& request : digital_credential_requests) {
     auto result = Value::Dict();
     result.Set("protocol", request->protocol);
-    if (request->data->is_str() && format == GetRequestFormat::kLegacy) {
-      result.Set(request_key, request->data->get_str());
-    } else if (request->data->is_value() &&
-               format == GetRequestFormat::kModern) {
-      result.Set(request_key, request->data->get_value().Clone());
-    } else {
-      return std::nullopt;
-    }
+    result.Set("data", request->data.Clone());
     requests.Append(std::move(result));
   }
-  Value::Dict out = Value::Dict().Set(
-      format == GetRequestFormat::kModern ? "requests" : "providers",
-      std::move(requests));
+  Value::Dict out = Value::Dict().Set("requests", std::move(requests));
   return Value(std::move(out));
 }
 
@@ -467,7 +447,6 @@ Value BuildCreateRequest(
 void DigitalIdentityRequestImpl::Get(
     std::vector<blink::mojom::DigitalCredentialGetRequestPtr>
         digital_credential_requests,
-    GetRequestFormat format,
     GetCallback callback) {
   if (!IsWebIdentityDigitalCredentialsEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
@@ -518,11 +497,13 @@ void DigitalIdentityRequestImpl::Get(
           : std::nullopt;
 
   std::optional<Value> request_to_send =
-      BuildGetRequest(digital_credential_requests, format);
+      BuildGetRequest(digital_credential_requests);
   if (!request_to_send.has_value()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorInvalidJson);
     return;
   }
+  // TODO(crbug.com/431999487): Remove the callback and process the requests
+  // directly.
   auto request_parsed_barrier_callback =
       base::BarrierCallback<ProtocolAndParsedRequest>(
           digital_credential_requests.size(),
@@ -531,22 +512,8 @@ void DigitalIdentityRequestImpl::Get(
                          std::move(request_to_send.value())));
 
   for (const auto& request : digital_credential_requests) {
-    if (request->data->is_str()) {
-      data_decoder::DataDecoder::ParseJsonIsolated(
-          request->data->get_str(),
-          base::BindOnce(
-              [](base::RepeatingCallback<void(ProtocolAndParsedRequest)>
-                     barrier,
-                 std::string protocol,
-                 data_decoder::DataDecoder::ValueOrError parsed_request) {
-                barrier.Run(
-                    std::pair(std::move(protocol), std::move(parsed_request)));
-              },
-              request_parsed_barrier_callback, request->protocol));
-    } else {
-      request_parsed_barrier_callback.Run(
-          std::pair(request->protocol, request->data->get_value().Clone()));
-    }
+    request_parsed_barrier_callback.Run(
+        std::pair(request->protocol, request->data.Clone()));
   }
 }
 

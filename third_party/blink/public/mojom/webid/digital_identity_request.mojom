@@ -10,31 +10,16 @@ import "mojo/public/mojom/base/values.mojom";
 //
 // Proposal: https://wicg.github.io/digital-identities
 
-union RequestData {
-  string str;
-  mojo_base.mojom.Value value;
-};
-
 // The specification of the request to digital credentials.
 struct DigitalCredentialGetRequest {
   string protocol;
-  RequestData data;
+  mojo_base.mojom.Value data;
 };
 
 // The specification of the creation request to digital credentials.
 struct DigitalCredentialCreateRequest {
   string protocol;
   mojo_base.mojom.Value data;
-};
-
-
-// Represents the format of the request that should be used when communicating
-// with the digital wallet via the Android platform. Renderer picks a format
-// based on the request that was provided by the website when invoking the
-// digital credential API.
-enum GetRequestFormat {
-  kLegacy,
-  kModern,
 };
 
 // Represents the fetch result from a digital identity request. It is
@@ -62,7 +47,7 @@ interface DigitalIdentityRequest {
   //
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
-  Get(array<DigitalCredentialGetRequest> digital_credential_requests, GetRequestFormat format) =>
+  Get(array<DigitalCredentialGetRequest> digital_credential_requests) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
       mojo_base.mojom.Value? token);

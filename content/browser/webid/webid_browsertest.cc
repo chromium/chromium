@@ -1267,9 +1267,9 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
 std::string BuildDigitalIdentityValidJsRequestDictionary() {
   return R"({
     digital: {
-      providers: [{
+      requests: [{
         protocol: "openid4vp",
-        request: JSON.stringify({
+        data: {
           // Based on https://github.com/openid/OpenID4VP/issues/125
           client_id: "client.example.org",
           client_id_scheme: "web-origin",
@@ -1277,7 +1277,7 @@ std::string BuildDigitalIdentityValidJsRequestDictionary() {
           presentation_definition: {
             // Presentation Exchange request, omitted for brevity
           }
-        })
+        }
       }],
     },
   })";
@@ -1330,15 +1330,15 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
 
   std::string_view request = R"(
   {
-   "providers": [ {
+   "requests": [ {
       "protocol": "openid4vp",
-      "request": "{
-        \"client_id\": \"client.example.org\",
-        \"client_id_scheme\": \"web-origin\",
-        \"nonce\": \"n-0S6_WzA2Mj\",
-        \"presentation_definition\": {
+      "data": {
+        "client_id": "client.example.org",
+        "client_id_scheme": "web-origin",
+        "nonce": "n-0S6_WzA2Mj",
+        "presentation_definition": {
         }
-      }",
+      },
    } ]
   }
   )";

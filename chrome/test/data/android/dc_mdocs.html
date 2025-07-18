@@ -7,9 +7,9 @@
   async function request(fields) {
     const mdoc = await navigator.credentials.get({
       digital: {
-        providers: [{
+        requests: [{
           protocol: "openid4vp",
-          request: JSON.stringify({
+          data: {
             presentation_definition: {
               id: "mDL-request-demo",
               input_descriptors: [{
@@ -19,7 +19,7 @@
                 }
               }]
             }
-          })
+          }
         }]
       }
     });
