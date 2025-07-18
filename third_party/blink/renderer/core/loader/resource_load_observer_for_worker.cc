@@ -63,12 +63,14 @@ void RecordPrivateNetworkAccessFeature(ExecutionContext* execution_context,
   if (!network::IsLessPublicAddressSpace(response.AddressSpace(),
                                          response.ClientAddressSpace()))
     return;
-  // Only record the feature for worker contexts, not worklets. The address
-  // space of worklets is not yet specified.
-  // TODO(https://crbug.com/1291176): Revisit this if worklets should be subject
-  // to PNA checks.
-  if (!execution_context->IsWorkerGlobalScope())
+  // Only record the feature for worker contexts, not worklets. Worklets have
+  // opaque origins and so should never be able to do an LNA request. See
+  // https://crbug.com/1291176 for more information.
+  if (!execution_context->IsWorkerGlobalScope()) {
+    CHECK(execution_context->GetSecurityOrigin() &&
+          execution_context->GetSecurityOrigin()->IsOpaque());
     return;
+  }
   execution_context->CountUse(WebFeature::kPrivateNetworkAccessWithinWorker);
 }
 
