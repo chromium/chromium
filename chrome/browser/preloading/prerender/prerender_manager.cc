@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -214,8 +215,15 @@ PrerenderManager::StartPrerenderDirectUrlInput(
 }
 
 bool PrerenderManager::MaybeStartPrewarmSearchResult() {
+  // TODO(https://crbug.com/423465927): Revalidate the handle when the prewarm
+  // is reused for prerendering.
   if (search_prewarm_handle_ ||
-      !base::FeatureList::IsEnabled(features::kPrewarm)) {
+      !base::FeatureList::IsEnabled(features::kPrewarm) ||
+      headless::IsHeadlessMode() || headless::IsOldHeadlessMode()) {
+    // We just return in the following cases;
+    // - The prewarm was already triggered.
+    // - The prewarm feature is disabled.
+    // - Running in a headless mode.
     return false;
   }
 
