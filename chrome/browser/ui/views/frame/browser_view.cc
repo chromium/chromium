@@ -1029,14 +1029,23 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   watermark_view_ = contents_container->AddChildView(
       std::make_unique<enterprise_watermark::WatermarkView>());
 
+  if (features::kGlicActorUiOverlay.Get()) {
+    auto actor_overlay_view = std::make_unique<views::View>();
+    actor_overlay_view->SetID(VIEW_ID_ACTOR_OVERLAY);
+    actor_overlay_view->SetVisible(false);
+    actor_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+    actor_overlay_view_ =
+        contents_container->AddChildView(std::move(actor_overlay_view));
+  }
+
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, glic_border_, watermark_view_));
+      lens_overlay_view_, glic_border_, watermark_view_, actor_overlay_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, nullptr, watermark_view_));
+      lens_overlay_view_, nullptr, watermark_view_, actor_overlay_view_));
 #endif
 
   toolbar_ = top_container_->AddChildView(
@@ -1176,6 +1185,7 @@ BrowserView::~BrowserView() {
   left_aligned_side_panel_separator_ = nullptr;
   side_panel_rounded_corner_ = nullptr;
   toolbar_button_provider_ = nullptr;
+  actor_overlay_view_ = nullptr;
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -3399,6 +3409,10 @@ views::View* BrowserView::GetTopContainer() {
 
 views::View* BrowserView::GetLensOverlayView() {
   return lens_overlay_view_;
+}
+
+views::View* BrowserView::GetActorOverlayView() {
+  return actor_overlay_view_;
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {

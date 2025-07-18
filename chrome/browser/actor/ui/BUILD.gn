@@ -8,6 +8,8 @@ source_set("ui") {
   sources = [
     "actor_overlay_ui.cc",
     "actor_overlay_ui.h",
+    "actor_overlay_window_controller.cc",
+    "actor_overlay_window_controller.h",
     "actor_ui_state_manager.cc",
     "actor_ui_state_manager.h",
     "actor_ui_state_manager_interface.h",
@@ -28,6 +30,8 @@ source_set("ui") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",
+    "//ui/views:views",
+    "//ui/views/controls/webview:webview",
     "//ui/webui",
   ]
 }
@@ -157,7 +161,9 @@ source_set("browser_tests") {
   sources = [ "actor_overlay_browsertest.cc" ]
 
   deps = [
+    ":ui",
     "//chrome/browser/ui:ui",
+    "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chrome/test:test_support_ui",

@@ -19,6 +19,10 @@ class GlicIphController;
 }  // namespace glic
 #endif
 
+namespace actor::ui {
+class ActorOverlayWindowController;
+}  // namespace actor::ui
+
 class BookmarkBarController;
 class BookmarksSidePanelCoordinator;
 class BreadcrumbManagerBrowserAgent;
@@ -213,6 +217,10 @@ class BrowserWindowFeatures {
 
   lens::LensOverlayEntryPointController* lens_overlay_entry_point_controller() {
     return lens_overlay_entry_point_controller_.get();
+  }
+
+  actor::ui::ActorOverlayWindowController* actor_overlay_window_controller() {
+    return actor_overlay_window_controller_.get();
   }
 
   lens::LensRegionSearchController* lens_region_search_controller() {
@@ -459,6 +467,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<tabs::GlicActorTaskIconController>
       glic_actor_task_icon_controller_;
+
+  std::unique_ptr<actor::ui::ActorOverlayWindowController>
+      actor_overlay_window_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicButtonController> glic_button_controller_;

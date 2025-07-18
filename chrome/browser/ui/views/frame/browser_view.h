@@ -477,6 +477,9 @@ class BrowserView : public BrowserWindow,
   // Returns true if the browser is currently showing tabs in a split view.
   bool IsInSplitView() const;
 
+  // Returns the actor overlay view
+  views::View* GetActorOverlayView();
+
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;
@@ -1267,6 +1270,12 @@ class BrowserView : public BrowserWindow,
   // same bounds as the contents_web_view_, but also be above the
   // contents_web_view_.
   raw_ptr<views::View> lens_overlay_view_ = nullptr;
+
+  // The view that contains the Glic Actor Overlay. The Actor Overlay is a UI
+  // overlay that is shown on top of the web contents. It therefore must always
+  // have the same bounds as the contents_web_view_, but also be above the
+  // contents_web_view_.
+  raw_ptr<views::View> actor_overlay_view_ = nullptr;
 
   // The view that overlays a watermark on the contents container.
   raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;

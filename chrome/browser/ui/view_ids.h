@@ -95,6 +95,9 @@ enum ViewID {
   // Lens overlay.
   VIEW_ID_LENS_OVERLAY,
 
+  // Glic Actor Overlay
+  VIEW_ID_ACTOR_OVERLAY,
+
   // The contents split.
   VIEW_ID_CONTENTS_SPLIT,
 

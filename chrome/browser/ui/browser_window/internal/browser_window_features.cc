@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -479,6 +480,12 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           std::make_unique<media_router::CastBrowserController>(
               browser_view->browser());
     }
+
+    if (features::kGlicActorUiOverlay.Get()) {
+      actor_overlay_window_controller_ =
+          std::make_unique<actor::ui::ActorOverlayWindowController>(
+              browser_view->GetActorOverlayView());
+    }
   }
 
   if (download::IsDownloadBubbleEnabled()) {
@@ -510,6 +517,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   profile_menu_coordinator_.reset();
   toast_service_.reset();
   extension_window_controller_.reset();
+  actor_overlay_window_controller_.reset();
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic_button_controller_.reset();
