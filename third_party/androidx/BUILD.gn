@@ -2304,6 +2304,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_experimental_java",
       ":androidx_collection_collection_java",
+      ":androidx_compose_runtime_runtime_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
