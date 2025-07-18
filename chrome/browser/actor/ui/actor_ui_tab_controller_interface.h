@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 
 namespace actor::ui {
+using UiResultCallback = base::OnceCallback<void(bool)>;
 
 struct UiTabState {
   bool operator==(const UiTabState& other) const = default;
@@ -22,7 +23,8 @@ class ActorUiTabControllerInterface {
   virtual ~ActorUiTabControllerInterface() = default;
 
   // Called whenever the UiTabState changes.
-  virtual void OnUiTabStateChange(const UiTabState& ui_tab_state) = 0;
+  virtual void OnUiTabStateChange(const UiTabState& ui_tab_state,
+                                  UiResultCallback callback) = 0;
 
   // Sets the last active task id actuating on this tab.
   // TODO(crbug.com/425952887): At most one task should be acting on a tab at
@@ -31,6 +33,7 @@ class ActorUiTabControllerInterface {
   virtual void SetActiveTaskId(TaskId task_id) = 0;
   // Clears the last active task id actuating on this tab.
   virtual void ClearActiveTaskId() = 0;
+  virtual base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() = 0;
 };
 
 }  // namespace actor::ui

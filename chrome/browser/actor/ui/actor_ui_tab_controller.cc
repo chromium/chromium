@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor::ui {
@@ -19,14 +20,18 @@ ActorUiTabController::ActorUiTabController(TabInterface& tab) : tab_(tab) {
 }
 
 ActorUiTabController::~ActorUiTabController() = default;
-
-void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state) {
+void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
+                                              UiResultCallback callback) {
   // TODO(crbug.com/425952887): Implement this function.
   if (current_ui_tab_state_ != ui_tab_state) {
     // TODO(crbug.com/428216197): Only notify relevant UI components on change.
     current_ui_tab_state_ = ui_tab_state;
     NotifyTabScopedUiComponents(ui_tab_state, tab_->IsActivated());
   }
+  // TODO(crbug.com/425952887): Change this once ui components are implemented,
+  // for now always return true.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void ActorUiTabController::SetActiveTaskId(TaskId task_id) {
@@ -49,6 +54,11 @@ void ActorUiTabController::NotifyTabScopedUiComponents(
 void ActorUiTabController::OnTabActivationChanged(bool is_activated,
                                                   tabs::TabInterface* tab) {
   NotifyTabScopedUiComponents(current_ui_tab_state_, is_activated);
+}
+
+base::WeakPtr<ActorUiTabControllerInterface>
+ActorUiTabController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace actor::ui

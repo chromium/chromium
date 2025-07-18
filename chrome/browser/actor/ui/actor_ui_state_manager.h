@@ -19,7 +19,6 @@ class TabInterface;
 }
 
 namespace actor::ui {
-
 class ActorUiStateManager : public ActorUiStateManagerInterface {
  public:
   explicit ActorUiStateManager(ActorKeyedService& actor_service);
@@ -28,6 +27,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // ActorUiStateManagerInterface:
   void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) override;
   void OnUiEvent(SyncUiEvent event) override;
+  ActorUiTabControllerInterface* GetUiTabController(
+      tabs::TabInterface* tab) override;
 
 // TODO(crbug.com/424495020): Post-task icon refactor, look into removing this
 // function from AUSM.
@@ -35,8 +36,6 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   void OnGlicUpdateFloatyState(
       glic::GlicWindowController::State floaty_state) override;
 #endif
-  void RunOnUiTabController(tabs::TabInterface* tab,
-                            ActorUiTabControllerCallback callback) override;
 
   // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);

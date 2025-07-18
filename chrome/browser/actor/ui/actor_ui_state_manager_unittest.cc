@@ -38,17 +38,23 @@ class ActorUiStateManagerFake : public ActorUiStateManager {
   explicit ActorUiStateManagerFake(ActorKeyedService& actor_service)
       : ActorUiStateManager(actor_service) {
     mock_tab_controller_ = std::make_unique<MockActorUiTabController>();
-    ON_CALL(*mock_tab_controller_, OnUiTabStateChange(_))
-        .WillByDefault(
-            Invoke([this](UiTabState state) { this->SetUiTabState(state); }));
+    ON_CALL(*mock_tab_controller_, OnUiTabStateChange(_, _))
+        .WillByDefault(Invoke(
+            [this](UiTabState state, base::OnceCallback<void(bool)> callback) {
+              this->SetUiTabState(state, std::move(callback));
+            }));
   }
 
-  void RunOnUiTabController(tabs::TabInterface* tab,
-                            ActorUiTabControllerCallback callback) override {
-    std::move(callback).Run(*mock_tab_controller_);
+  ActorUiTabControllerInterface* GetUiTabController(
+      tabs::TabInterface* tab) override {
+    return mock_tab_controller_.get();
   }
 
-  void SetUiTabState(UiTabState ui_tab_state) { ui_tab_state_ = ui_tab_state; }
+  void SetUiTabState(UiTabState ui_tab_state,
+                     base::OnceCallback<void(bool)> callback) {
+    ui_tab_state_ = ui_tab_state;
+    std::move(callback).Run(true);
+  }
 
   UiTabState GetUiTabState() { return ui_tab_state_; }
 
@@ -102,6 +108,16 @@ class ActorUiStateManagerTest : public testing::Test {
     actor_keyed_service->SetActorUiStateManagerForTesting(
         std::move(actor_ui_state_manager_fake));
     return std::move(actor_keyed_service);
+  }
+
+  void OnUiEventComplete(AsyncUiEvent event) {
+    base::RunLoop loop;
+    actor_ui_state_manager()->OnUiEvent(
+        event, base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+          EXPECT_TRUE(IsOk(*result));
+          loop.Quit();
+        }));
+    loop.Run();
   }
 
   ActorUiStateManagerFake* actor_ui_state_manager() {
@@ -340,13 +356,8 @@ INSTANTIATE_TEST_SUITE_P(ActorUiStateManagerActorTaskUiTabScopedTest,
 class ActorUiStateManagerUiEventUiTabScopedTest
     : public ActorUiStateManagerTest {
  public:
-  // TODO(crbug.com/424495020): Once a callback is added from tabcontroller, add
-  // RunLoop impl.
-  // The state setting portion of `OnUiEvent` is synchronous and the result is
-  // set immediately. The completion callback is posted and
-  // can be ignored for now.
   void VerifyUiEvent(AsyncUiEvent event, UiTabState expected_state) {
-    actor_ui_state_manager()->OnUiEvent(event, base::DoNothing());
+    OnUiEventComplete(event);
     EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_state);
   }
 

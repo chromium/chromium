@@ -56,22 +56,16 @@ auto GetNewUiStateFn(ActorUiStateManager& manager) {
   return Visitor{
       [&manager](const StartingToActOnTab& e) -> TabUiUpdate {
         auto* tab = e.tab_handle.Get();
-        manager.RunOnUiTabController(
-            tab, base::BindOnce(
-                     [](TaskId task_id,
-                        ActorUiTabControllerInterface& tab_controller) {
-                       tab_controller.SetActiveTaskId(task_id);
-                     },
-                     e.task_id));
+        if (auto* tab_controller = manager.GetUiTabController(tab)) {
+          tab_controller->SetActiveTaskId(e.task_id);
+        }
         return TabUiUpdate{tab, GetAgentControlledUiTabState()};
       },
       [&manager](const StoppedActingOnTab& e) -> TabUiUpdate {
         auto* tab = e.tab_handle.Get();
-        manager.RunOnUiTabController(
-            tab,
-            base::BindOnce([](ActorUiTabControllerInterface& tab_controller) {
-              tab_controller.ClearActiveTaskId();
-            }));
+        if (auto* tab_controller = manager.GetUiTabController(tab)) {
+          tab_controller->ClearActiveTaskId();
+        }
         return TabUiUpdate{tab, GetCompletedUiTabState()};
       },
       [](const MouseClick& e) -> TabUiUpdate {
@@ -86,12 +80,28 @@ auto GetNewUiStateFn(ActorUiStateManager& manager) {
       }};
 }
 
+// TODO(crbug.com/424495020): Bool may be converted to a map of ui
+// components:bool depending on what controller returns.
+void OnUiChangeComplete(UiCompleteCallback complete_callback, bool result) {
+  std::move(complete_callback).Run(result ? MakeOkResult() : MakeErrorResult());
+}
+
+void LogUiChangeError(bool result) {
+  if (!result) {
+    LOG(DFATAL)
+        << "Unexpected error when trying to update actor ui components.";
+  }
+}
+
 }  // namespace
 
 ActorUiStateManager::ActorUiStateManager(ActorKeyedService& actor_service)
     : actor_service_(actor_service) {}
 ActorUiStateManager::~ActorUiStateManager() = default;
 
+// TODO(crbug.com/424495020): If the tab doesn't exist we will silently
+// fail/not send a callback in the interim until these tasks are able to
+// accept a callback.
 void ActorUiStateManager::OnActorTaskStateChange(
     TaskId task_id,
     ActorTask::State new_task_state) {
@@ -119,13 +129,10 @@ void ActorUiStateManager::OnActorTaskStateChange(
       break;
   }
   for (const auto& tab : GetTabs(task_id)) {
-    RunOnUiTabController(tab,
-                         base::BindOnce(
-                             [](const UiTabState& state,
-                                ActorUiTabControllerInterface& tab_controller) {
-                               tab_controller.OnUiTabStateChange(state);
-                             },
-                             ui_tab_state));
+    if (auto* tab_controller = GetUiTabController(tab)) {
+      tab_controller->OnUiTabStateChange(ui_tab_state,
+                                         base::BindOnce(&LogUiChangeError));
+    }
   }
 
   // Update profile scoped state change.
@@ -135,19 +142,16 @@ void ActorUiStateManager::OnActorTaskStateChange(
                      weak_factory_.GetWeakPtr()));
 }
 
-// TODO(crbug.com/424495020): If the tab doesn't exist we will silently
-// fail/not send a callback in the interim until these tasks are able to
-// accept a callback.
-void ActorUiStateManager::RunOnUiTabController(
-    tabs::TabInterface* tab,
-    ActorUiTabControllerCallback callback) {
-  if (tab) {
-    auto* tab_controller = tab->GetTabFeatures()->actor_ui_tab_controller();
-    CHECK(tab_controller);
-    std::move(callback).Run(*tab_controller);
-  } else {
+ActorUiTabControllerInterface* ActorUiStateManager::GetUiTabController(
+    tabs::TabInterface* tab) {
+  if (!tab) {
     LOG(ERROR) << "Tab does not exist.";
+    return nullptr;
   }
+  auto* tab_controller = tab->GetTabFeatures()->actor_ui_tab_controller();
+  DCHECK(tab_controller)
+      << "TabController should always exist for a valid tab.";
+  return tab_controller;
 }
 
 std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
@@ -163,29 +167,32 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
   return {};
 }
 
+// TODO(crbug.com/424495020): In the future when a UiEvent can modify multiple
+// scoped ui components, we can look into using BarrierClosure.
 void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
-  const TabUiUpdate new_ui_state = std::visit(GetNewUiStateFn(*this), event);
-  // TODO(crbug.com/424495020): Return a callback from the Ui state once
-  // successful.
-  RunOnUiTabController(new_ui_state.tab,
-                       base::BindOnce(
-                           [](const UiTabState& ui_tab_state,
-                              ActorUiTabControllerInterface& tab_controller) {
-                             tab_controller.OnUiTabStateChange(ui_tab_state);
-                           },
-                           new_ui_state.ui_tab_state));
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
+  const TabUiUpdate update = std::visit(GetNewUiStateFn(*this), event);
+  if (auto* tab_controller = GetUiTabController(update.tab)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ActorUiTabControllerInterface::OnUiTabStateChange,
+            tab_controller->GetWeakPtr(), update.ui_tab_state,
+            base::BindOnce(&OnUiChangeComplete, std::move(callback))));
+  } else {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       MakeResult(mojom::ActionResultCode::kTabWentAway)));
+  }
 }
 
 void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
   std::visit(Visitor{[this](const StartTask& e) {
                        this->MaybeUpdateProfileScopedUiState();
                      },
-                     [this](const TaskStateChanged& ret) {
-                       this->OnActorTaskStateChange(ret.task_id, ret.state);
+                     [this](const TaskStateChanged& e) {
+                       this->OnActorTaskStateChange(e.task_id, e.state);
                      }},
              event);
 }
@@ -229,6 +236,7 @@ void ActorUiStateManager::MaybeUpdateProfileScopedUiState() {
     state_ = new_state;
     // TODO(crbug.com/424495020): Create window controller and send new state
     // via BrowserList::GetInstance()->ForEachCurrentAndNewBrowser...
+    // then wait for a callback.
   }
 }
 

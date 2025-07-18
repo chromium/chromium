@@ -6,7 +6,11 @@
 
 namespace actor::ui {
 
-MockActorUiTabController::MockActorUiTabController() = default;
+MockActorUiTabController::MockActorUiTabController() {
+  ON_CALL(*this, GetWeakPtr())
+      .WillByDefault(testing::Return(weak_factory_.GetWeakPtr()));
+}
+
 MockActorUiTabController::~MockActorUiTabController() = default;
 
 }  // namespace actor::ui

@@ -17,12 +17,20 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
 
   MOCK_METHOD(void,
               OnUiTabStateChange,
-              (const UiTabState& ui_tab_state),
+              (const UiTabState& ui_tab_state, UiResultCallback callback),
               (override));
 
   MOCK_METHOD(void, SetActiveTaskId, (TaskId task_id), (override));
 
   MOCK_METHOD(void, ClearActiveTaskId, (), (override));
+
+  MOCK_METHOD(base::WeakPtr<ActorUiTabControllerInterface>,
+              GetWeakPtr,
+              (),
+              (override));
+
+ private:
+  base::WeakPtrFactory<MockActorUiTabController> weak_factory_{this};
 };
 
 }  // namespace actor::ui

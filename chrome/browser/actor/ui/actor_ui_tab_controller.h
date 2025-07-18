@@ -21,9 +21,11 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   ~ActorUiTabController() override;
 
   // ActorUiTabControllerInterface:
-  void OnUiTabStateChange(const UiTabState& ui_tab_state) override;
+  void OnUiTabStateChange(const UiTabState& ui_tab_state,
+                          UiResultCallback callback) override;
   void SetActiveTaskId(TaskId task_id) override;
   void ClearActiveTaskId() override;
+  base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
 
  private:
   // Notifies tab scoped ui components that their state has changed.
