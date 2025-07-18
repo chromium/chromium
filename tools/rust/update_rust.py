@@ -7,6 +7,10 @@
 When run without arguments, it fetches and unzips the Rust toolchain package
 specieid by the `RUST_REVISION` and `RUST_SUB_REVISION` along with the clang
 version specified in //tools/clang/scripts/update.py.
+
+Specify --output-dir to override the location for the Rust toolchain package,
+which otherwise defaults to //third_party/rust-toolchain.
+(Note that the output dir may be deleted and re-created if it exists.)
 '''
 
 import argparse
@@ -53,8 +57,9 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
-# Path to the VERSION file stored in the archive.
-VERSION_SRC_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
+# Filename and path to the VERSION file stored in the archive.
+VERSION_SRC_FILENAME = 'VERSION'
+VERSION_SRC_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, VERSION_SRC_FILENAME)
 
 
 def GetRustClangRevision():
@@ -87,6 +92,7 @@ def main():
                         action='store_true',
                         help='Print Rust package version (including both the '
                         'Rust and Clang revisions) and quit.')
+    parser.add_argument('--output-dir', help='Where to extract the package.')
     args = parser.parse_args()
 
     if args.print_rust_revision:
@@ -102,6 +108,12 @@ def main():
             return 1
         print(stamp_version)
         return 0
+
+    output_dir = RUST_TOOLCHAIN_OUT_DIR
+    if args.output_dir:
+        global VERSION_SRC_PATH
+        output_dir = os.path.abspath(args.output_dir)
+        VERSION_SRC_PATH = os.path.join(output_dir, VERSION_SRC_FILENAME)
 
     from update import (DownloadAndUnpack, GetDefaultHostOs,
                         GetPlatformUrlPrefix)
@@ -119,17 +131,17 @@ def main():
     # hooks are migrated to be first class deps. In case we need to go back to
     # using a hook, this file will indicate that the previous download was
     # from the first class dep and the dir needs to be cleared.
-    if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+    if os.path.exists(output_dir):
         if version == GetStampVersion() and not glob.glob(
-                os.path.join(RUST_TOOLCHAIN_OUT_DIR, '.*_is_first_class_gcs')):
+                os.path.join(output_dir, '.*_is_first_class_gcs')):
             return 0
 
-    if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-        shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
 
     try:
         url = f'{platform_prefix}rust-toolchain-{version}.tar.xz'
-        DownloadAndUnpack(url, RUST_TOOLCHAIN_OUT_DIR)
+        DownloadAndUnpack(url, output_dir)
     except urllib.error.HTTPError as e:
         print(f'error: Failed to download Rust package')
         return 1
