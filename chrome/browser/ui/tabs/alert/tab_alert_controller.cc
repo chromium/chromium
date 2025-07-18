@@ -75,6 +75,10 @@ std::vector<TabAlert> TabAlertController::GetAllActiveAlerts() {
   return base::ToVector(active_alerts_);
 }
 
+bool TabAlertController::IsAlertActive(TabAlert alert) const {
+  return active_alerts_.contains(alert);
+}
+
 void TabAlertController::OnDiscardContents(TabInterface* tab_interface,
                                            content::WebContents* old_contents,
                                            content::WebContents* new_contents) {

@@ -125,6 +125,23 @@ TEST_F(TabAlertControllerTest, GetAllAlert) {
   EXPECT_EQ(active_alerts[3], TabAlert::AUDIO_PLAYING);
 }
 
+TEST_F(TabAlertControllerTest, AlertIsActive) {
+  tab_alert_controller()->OnAudioStateChanged(true);
+  tab_alert_controller()->OnCapabilityTypesChanged(
+      content::WebContentsCapabilityType::kBluetoothConnected, true);
+  tab_alert_controller()->MediaPictureInPictureChanged(true);
+
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::AUDIO_PLAYING));
+  EXPECT_TRUE(
+      tab_alert_controller()->IsAlertActive(TabAlert::BLUETOOTH_CONNECTED));
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::PIP_PLAYING));
+
+  // When the non-prioritized alert is no longer active, the alert controller
+  // should be updated to reflect that.
+  tab_alert_controller()->MediaPictureInPictureChanged(false);
+  EXPECT_FALSE(tab_alert_controller()->IsAlertActive(TabAlert::PIP_PLAYING));
+}
+
 TEST_F(TabAlertControllerTest, VrStateUpdatesAlertController) {
   EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
   vr::VrTabHelper* const vr_tab_helper =

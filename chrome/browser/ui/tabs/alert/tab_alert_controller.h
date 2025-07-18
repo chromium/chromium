@@ -52,6 +52,10 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // to lowest priority to be shown.
   std::vector<TabAlert> GetAllActiveAlerts();
 
+  // Returns true if `alert` is currently active for this tab and false
+  // otherwise.
+  bool IsAlertActive(TabAlert alert) const;
+
   // WebContentsObserver:
   void OnDiscardContents(TabInterface* tab_interface,
                          content::WebContents* old_contents,
