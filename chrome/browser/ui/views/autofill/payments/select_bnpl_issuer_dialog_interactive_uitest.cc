@@ -285,4 +285,27 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
       /*expected_bucket_count=*/1);
 }
 
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       AccessibleWindowTitleIsSet) {
+  const std::u16string expected_title =
+      u"Choose a pay over time provider. Google Pay logo";
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(
+          {GetTestBnplIssuerContext(IssuerId::kBnplAffirm,
+                                    BnplIssuerEligibilityForPage::kIsEligible),
+           GetTestBnplIssuerContext(
+               IssuerId::kBnplZip,
+               BnplIssuerEligibilityForPage::
+                   kNotEligibleIssuerDoesNotSupportMerchant)}),
+      InSameContext(WithView(
+          views::DialogClientView::kTopViewId,
+          [expected_title](views::View* view) {
+            views::Widget* widget = view->GetWidget();
+            ASSERT_NE(widget, nullptr);
+            EXPECT_EQ(widget->widget_delegate()->GetAccessibleWindowTitle(),
+                      expected_title);
+          })));
+}
+
 }  // namespace autofill::payments

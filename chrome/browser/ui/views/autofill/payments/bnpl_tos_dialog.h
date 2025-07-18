@@ -38,6 +38,7 @@ class BnplTosDialog : public views::DialogDelegateView {
 
  private:
   TitleWithIconAfterLabelView::Icon GetTitleIcon() const;
+  std::u16string GetTitleIconAccessibilityString() const;
   bool OnAccepted();
   bool OnCancelled();
 

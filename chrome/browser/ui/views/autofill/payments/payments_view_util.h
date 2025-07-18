@@ -76,6 +76,8 @@ ui::ImageModel GetProfileAvatar(const AccountInfo& account_info);
 // Defines a title view with a label and an icon, to be used by dialogs
 // that need to present the Google or Google Pay logo and custom
 // horizontal padding.
+// TODO(crbug.com/417538725): Announce Title and GPay logo variants in dialogs
+// by default for accessibility.
 class TitleWithIconAfterLabelView : public views::BoxLayoutView {
   METADATA_HEADER(TitleWithIconAfterLabelView, views::BoxLayoutView)
 

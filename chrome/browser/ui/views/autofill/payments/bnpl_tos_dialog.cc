@@ -118,7 +118,9 @@ void BnplTosDialog::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(title, GetTitleIcon()));
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
-  SetAccessibleTitle(title);
+  SetAccessibleTitle(
+      l10n_util::GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_TITLE_DESCRIPTION, title,
+                                 GetTitleIconAccessibilityString()));
 }
 
 void BnplTosDialog::OnWidgetInitialized() {
@@ -138,6 +140,24 @@ TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
       return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
     case BnplIssuer::IssuerId::kBnplKlarna:
       return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_KLARNA;
+  }
+  NOTREACHED();
+}
+
+std::u16string BnplTosDialog::GetTitleIconAccessibilityString() const {
+  switch (controller_->GetIssuerId()) {
+    case BnplIssuer::IssuerId::kBnplAffirm:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_GOOGLE_PAY_AND_AFFIRM_LOGO_ACCESSIBLE_NAME);
+    case BnplIssuer::IssuerId::kBnplZip:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_GOOGLE_PAY_AND_ZIP_LOGO_ACCESSIBLE_NAME);
+    case BnplIssuer::IssuerId::kBnplAfterpay:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_GOOGLE_PAY_AND_AFTERPAY_LOGO_ACCESSIBLE_NAME);
+    case BnplIssuer::IssuerId::kBnplKlarna:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_GOOGLE_PAY_AND_KLARNA_LOGO_ACCESSIBLE_NAME);
   }
   NOTREACHED();
 }

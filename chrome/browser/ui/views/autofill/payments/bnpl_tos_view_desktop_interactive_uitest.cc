@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/views/interaction/view_focus_observer.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -201,6 +202,74 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
                              "Autofill.Bnpl.TosDialogResult.Affirm",
                              BnplTosDialogResult::kCancelButtonClicked) == 1;
                 }))));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       AccessibleWindowTitleIsSet_Affirm) {
+  const std::u16string expected_title =
+      u"Link account and pay with Affirm? Google Pay, Affirm logo";
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(BnplIssuer::IssuerId::kBnplAffirm),
+      InSameContext(WithView(
+          views::DialogClientView::kTopViewId,
+          [expected_title](views::View* view) {
+            views::Widget* widget = view->GetWidget();
+            ASSERT_NE(widget, nullptr);
+            EXPECT_EQ(widget->widget_delegate()->GetAccessibleWindowTitle(),
+                      expected_title);
+          })));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       AccessibleWindowTitleIsSet_Zip) {
+  const std::u16string expected_title =
+      u"Link account and pay with Zip? Google Pay, Zip logo";
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(BnplIssuer::IssuerId::kBnplZip),
+      InSameContext(WithView(
+          views::DialogClientView::kTopViewId,
+          [expected_title](views::View* view) {
+            views::Widget* widget = view->GetWidget();
+            ASSERT_NE(widget, nullptr);
+            EXPECT_EQ(widget->widget_delegate()->GetAccessibleWindowTitle(),
+                      expected_title);
+          })));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       AccessibleWindowTitleIsSet_Klarna) {
+  const std::u16string expected_title =
+      u"Link account and pay with Klarna? Google Pay, Klarna logo";
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(BnplIssuer::IssuerId::kBnplKlarna),
+      InSameContext(WithView(
+          views::DialogClientView::kTopViewId,
+          [expected_title](views::View* view) {
+            views::Widget* widget = view->GetWidget();
+            ASSERT_NE(widget, nullptr);
+            EXPECT_EQ(widget->widget_delegate()->GetAccessibleWindowTitle(),
+                      expected_title);
+          })));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       AccessibleWindowTitleIsSet_AfterPay) {
+  const std::u16string expected_title =
+      u"Link account and pay with AfterPay? Google Pay, AfterPay logo";
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(BnplIssuer::IssuerId::kBnplAfterpay),
+      InSameContext(WithView(
+          views::DialogClientView::kTopViewId,
+          [expected_title](views::View* view) {
+            views::Widget* widget = view->GetWidget();
+            ASSERT_NE(widget, nullptr);
+            EXPECT_EQ(widget->widget_delegate()->GetAccessibleWindowTitle(),
+                      expected_title);
+          })));
 }
 
 }  // namespace autofill

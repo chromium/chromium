@@ -162,7 +162,9 @@ void SelectBnplIssuerDialog::AddedToWidget() {
       std::make_unique<TitleWithIconAfterLabelView>(
           title, TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
-  SetAccessibleTitle(title);
+  SetAccessibleTitle(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_BNPL_SELECT_PROVIDER_TITLE_DESCRIPTION, title,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)));
 }
 
 void SelectBnplIssuerDialog::OnSettingsLinkClicked() {
