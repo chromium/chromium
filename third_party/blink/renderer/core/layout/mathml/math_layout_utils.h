@@ -94,7 +94,8 @@ RadicalVerticalParameters GetRadicalVerticalParameters(const ComputedStyle&,
 
 // https://w3c.github.io/mathml-core/#dfn-preferred-inline-size-of-a-glyph-stretched-along-the-block-axis
 MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(const ComputedStyle&,
-                                                      UChar character);
+                                                      UChar character,
+                                                      TextDirection direction);
 
 bool IsUnderOverLaidOutAsSubSup(const BlockNode& node);
 bool IsTextOnlyToken(const BlockNode& node);

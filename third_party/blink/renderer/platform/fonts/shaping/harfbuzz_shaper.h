@@ -122,6 +122,7 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                     const LayoutLocale& locale,
                     UScriptCode script,
                     bool is_horizontal,
+                    TextDirection direction,
                     GlyphDataList& glyphs);
   enum FallbackFontStage {
     // There were no unshaped variation sequences found, so we don't need to

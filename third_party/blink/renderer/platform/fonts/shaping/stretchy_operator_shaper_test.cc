@@ -45,9 +45,11 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
   Font* math = CreateMathFont("stretchy.woff");
 
   StretchyOperatorShaper vertical_shaper(
-      kVerticalArrow, OpenTypeMathStretchData::StretchAxis::Vertical);
+      kVerticalArrow, OpenTypeMathStretchData::StretchAxis::Vertical,
+      TextDirection::kLtr);
   StretchyOperatorShaper horizontal_shaper(
-      kHorizontalArrow, OpenTypeMathStretchData::StretchAxis::Horizontal);
+      kHorizontalArrow, OpenTypeMathStretchData::StretchAxis::Horizontal,
+      TextDirection::kLtr);
 
   auto vertical_arrow = math->PrimaryFont()->GlyphForCharacter(kVerticalArrow);
   auto horizontal_arrow =
@@ -256,9 +258,11 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
   Font* math = CreateMathFont("stretchy-centered-on-baseline.woff");
 
   StretchyOperatorShaper vertical_shaper(
-      kVerticalArrow, OpenTypeMathStretchData::StretchAxis::Vertical);
+      kVerticalArrow, OpenTypeMathStretchData::StretchAxis::Vertical,
+      TextDirection::kLtr);
   StretchyOperatorShaper horizontal_shaper(
-      kHorizontalArrow, OpenTypeMathStretchData::StretchAxis::Horizontal);
+      kHorizontalArrow, OpenTypeMathStretchData::StretchAxis::Horizontal,
+      TextDirection::kLtr);
 
   // Calculate glyph indices of stretchy operator's parts.
   Vector<UChar32> v, h;
@@ -333,7 +337,7 @@ TEST_F(StretchyOperatorShaperTest, NonBMPCodePoint) {
 
   StretchyOperatorShaper horizontal_shaper(
       uchar::kArabicMathematicalOperatorHahWithDal,
-      OpenTypeMathStretchData::StretchAxis::Horizontal);
+      OpenTypeMathStretchData::StretchAxis::Horizontal, TextDirection::kLtr);
 
   float target_size = 10000;
   StretchyOperatorShaper::Metrics metrics;
@@ -351,7 +355,7 @@ TEST_F(StretchyOperatorShaperTest, MathItalicCorrection) {
         "largeop-displayoperatorminheight2000-2AFF-italiccorrection3000.woff");
     StretchyOperatorShaper shaper(
         kNAryWhiteVerticalBarCodePoint,
-        OpenTypeMathStretchData::StretchAxis::Vertical);
+        OpenTypeMathStretchData::StretchAxis::Vertical, TextDirection::kLtr);
 
     // Base size.
     StretchyOperatorShaper::Metrics metrics;
@@ -369,7 +373,7 @@ TEST_F(StretchyOperatorShaperTest, MathItalicCorrection) {
         "largeop-displayoperatorminheight7000-2AFF-italiccorrection5000.woff");
     StretchyOperatorShaper shaper(
         kNAryWhiteVerticalBarCodePoint,
-        OpenTypeMathStretchData::StretchAxis::Vertical);
+        OpenTypeMathStretchData::StretchAxis::Vertical, TextDirection::kLtr);
 
     // Base size.
     StretchyOperatorShaper::Metrics metrics;
@@ -380,6 +384,42 @@ TEST_F(StretchyOperatorShaperTest, MathItalicCorrection) {
     float target_size = 7000;
     shaper.Shape(math, target_size, &metrics);
     EXPECT_EQ(metrics.italic_correction, 5000);
+  }
+}
+
+TEST_F(StretchyOperatorShaperTest, RTLGlyphMirroring) {
+  // This font contains the 0x221A character (radical), and a mirrored version
+  // using the rtlm font feature (radical.rtlm). The base, variant and assembly
+  // widths of the original character are 4em, while the ones from the rtlm
+  // version are 1em.
+  Font* math = CreateMathFont("radical-rtlm.woff");
+  StretchyOperatorShaper ltr_shaper(
+      kRadical, OpenTypeMathStretchData::StretchAxis::Vertical,
+      TextDirection::kLtr);
+  StretchyOperatorShaper rtl_shaper(
+      kRadical, OpenTypeMathStretchData::StretchAxis::Vertical,
+      TextDirection::kRtl);
+
+  const unsigned size_count = 4;
+  const float ltr_width = 4000;
+  const float rtl_width = 1000;
+
+  for (unsigned i = 1; i < size_count + 1; i++) {
+    const float target_size = i * 1000 - kSizeError;
+
+    // Metrics of LTR glyph.
+    {
+      StretchyOperatorShaper::Metrics metrics;
+      ltr_shaper.Shape(math, target_size, &metrics);
+      EXPECT_NEAR(metrics.advance, ltr_width, kSizeError);
+    }
+
+    // Metrics of RTL glyph, should use rtlm version.
+    {
+      StretchyOperatorShaper::Metrics metrics;
+      rtl_shaper.Shape(math, target_size, &metrics);
+      EXPECT_NEAR(metrics.advance, rtl_width, kSizeError);
+    }
   }
 }
 

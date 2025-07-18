@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 
 namespace blink {
 
@@ -42,10 +43,13 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     if (!math->PrimaryFont()->GlyphForCharacter(character)) {
       continue;
     }
+    // TODO(crbug.com/432143094): Test different text directions.
     StretchyOperatorShaper vertical_shaper(
-        character, OpenTypeMathStretchData::StretchAxis::Vertical);
+        character, OpenTypeMathStretchData::StretchAxis::Vertical,
+        TextDirection::kLtr);
     StretchyOperatorShaper horizontal_shaper(
-        character, OpenTypeMathStretchData::StretchAxis::Horizontal);
+        character, OpenTypeMathStretchData::StretchAxis::Horizontal,
+        TextDirection::kLtr);
     for (unsigned i = 0; i < kSizeCount; i++) {
       StretchyOperatorShaper::Metrics metrics;
       float target_size = (i + 1) * (kFontSize / 2);

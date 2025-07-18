@@ -87,6 +87,7 @@
 ../../web_tests/external/wpt/fonts/math/radical-kernafterdegreeminus5000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/radical-kernbeforedegree4000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/radical-negativekernbeforedegree1000-rulethickness1000.woff
+../../web_tests/external/wpt/fonts/math/radical-rtlm.woff
 ../../web_tests/external/wpt/fonts/math/radical-rulethickness8000.woff
 ../../web_tests/external/wpt/fonts/math/radical-verticalgap6000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/scriptpercentscaledown0-scriptscriptpercentscaledown40.woff
@@ -113,6 +114,7 @@
 ../../web_tests/external/wpt/fonts/math/stretchstack-gapbelowmin11000.woff
 ../../web_tests/external/wpt/fonts/math/stretchstack-topshiftup5000.woff
 ../../web_tests/external/wpt/fonts/math/stretchy-centered-on-baseline.woff
+../../web_tests/external/wpt/fonts/math/stretchy-text-direction-asymetrical.woff
 ../../web_tests/external/wpt/fonts/math/stretchy.woff
 ../../web_tests/external/wpt/fonts/math/underover-accentbaseheight4000-overbarextraascender3000.woff
 ../../web_tests/external/wpt/fonts/math/underover-accentbaseheight4000-overbarverticalgap11000.woff

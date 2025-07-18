@@ -336,7 +336,7 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   HarfBuzzShaper shaper{String(base::span(kChars))};
   HarfBuzzShaper::GlyphDataList glyph_data_list;
   shaper.GetGlyphData(font, locale, locale.GetScriptForHan(), is_horizontal,
-                      glyph_data_list);
+                      TextDirection::kLtr, glyph_data_list);
 
   // If the font doesn't have any of these glyphs, or uses multiple glyphs for a
   // code point, it's not applicable.

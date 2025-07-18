@@ -138,7 +138,8 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   StretchyOperatorShaper shaper(
       GetBaseCodePoint(),
       element->IsVertical() ? OpenTypeMathStretchData::StretchAxis::Vertical
-                            : OpenTypeMathStretchData::StretchAxis::Horizontal);
+                            : OpenTypeMathStretchData::StretchAxis::Horizontal,
+      GetConstraintSpace().Direction());
   StretchyOperatorShaper::Metrics metrics;
   const ShapeResult* shape_result =
       shaper.Shape(Style().GetFont(), operator_target_size, &metrics);
@@ -211,20 +212,22 @@ MinMaxSizesResult MathOperatorLayoutAlgorithm::ComputeMinMaxSizes(
       // § 3.2.1.1 Layout of <mtext>. Instead, we perform horizontal stretching
       // with target size of 0 so that the size of the base glyph is used.
       StretchyOperatorShaper shaper(GetBaseCodePoint(),
-                                    OpenTypeMathStretchData::Horizontal);
+                                    OpenTypeMathStretchData::Horizontal,
+                                    GetConstraintSpace().Direction());
       StretchyOperatorShaper::Metrics metrics;
       shaper.Shape(Style().GetFont(), 0, &metrics);
       sizes.Encompass(LayoutUnit(metrics.advance));
     } else {
       // "Otherwise, the stretch axis of the operator is block."
-      sizes = GetMinMaxSizesForVerticalStretchyOperator(Style(),
-                                                        GetBaseCodePoint());
+      sizes = GetMinMaxSizesForVerticalStretchyOperator(
+          Style(), GetBaseCodePoint(), GetConstraintSpace().Direction());
     }
   } else {
     // "If the operator has the largeop property and if math-style on the <mo>
     // element is normal."
     StretchyOperatorShaper shaper(GetBaseCodePoint(),
-                                  OpenTypeMathStretchData::Vertical);
+                                  OpenTypeMathStretchData::Vertical,
+                                  GetConstraintSpace().Direction());
     StretchyOperatorShaper::Metrics metrics;
     LayoutUnit operator_target_size = DisplayOperatorMinHeight(Style());
     shaper.Shape(Style().GetFont(), operator_target_size, &metrics);

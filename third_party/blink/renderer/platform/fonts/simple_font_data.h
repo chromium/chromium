@@ -161,6 +161,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   const SimpleFontData* FontDataForCharacter(UChar32) const override;
 
   Glyph GlyphForCharacter(UChar32) const;
+  Glyph GlyphForMathCharacter(UChar32, TextDirection) const;
 
   bool IsCustomFont() const override { return custom_font_data_; }
   bool IsLoading() const override {

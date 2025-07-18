@@ -2965,6 +2965,12 @@
       status: "stable",
     },
     {
+      // Enables mirroring for stretchy and large MathML operators when
+      // the text direction is right to left.
+      name: "MathMLOperatorRTLMirroring",
+      status: "experimental",
+    },
+    {
       name:"MeasureMemory",
       status:"stable",
     },

@@ -1201,17 +1201,25 @@ void HarfBuzzShaper::GetGlyphData(const SimpleFontData& font_data,
                                   const LayoutLocale& locale,
                                   UScriptCode script,
                                   bool is_horizontal,
+                                  TextDirection direction,
                                   GlyphDataList& glyphs) {
   PooledHarfBuzzBuffer pooled_hb_buffer;
   hb_buffer_t* hb_buffer = pooled_hb_buffer.Get();
   hb_buffer_set_language(hb_buffer, locale.HarfbuzzLanguage());
   hb_buffer_set_script(hb_buffer, ICUScriptToHBScript(script));
-  hb_buffer_set_direction(hb_buffer,
-                          is_horizontal ? HB_DIRECTION_LTR : HB_DIRECTION_TTB);
-  CHECK(!text_.Is8Bit());
-  static_assert(sizeof(uint16_t) == sizeof(UChar));
-  auto span = text_.SpanUint16();
-  hb_buffer_add_utf16(hb_buffer, span.data(), span.size(), 0, text_.length());
+  hb_buffer_set_direction(
+      hb_buffer, is_horizontal ? (blink::IsLtr(direction) ? HB_DIRECTION_LTR
+                                                          : HB_DIRECTION_RTL)
+                               : HB_DIRECTION_TTB);
+  if (text_.Is8Bit()) {
+    auto span = text_.Span8();
+    hb_buffer_add_latin1(hb_buffer, span.data(), span.size(), 0,
+                         text_.length());
+  } else {
+    static_assert(sizeof(uint16_t) == sizeof(UChar));
+    auto span = text_.SpanUint16();
+    hb_buffer_add_utf16(hb_buffer, span.data(), span.size(), 0, text_.length());
+  }
 
   const FontPlatformData& platform_data = font_data.PlatformData();
   HarfBuzzFace* const hb_face = platform_data.GetHarfBuzzFace();

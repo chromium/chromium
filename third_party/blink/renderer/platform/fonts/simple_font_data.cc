@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_baseline_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -260,6 +261,30 @@ Glyph SimpleFontData::GlyphForCharacter(UChar32 codepoint) const {
   // where CSS or layout (ellipsis, hyphenation) requires knowledge about a
   // particular character, hence it's important that they match.
   return harfbuzz_face->HbGlyphForCharacter(codepoint);
+}
+
+Glyph SimpleFontData::GlyphForMathCharacter(UChar32 codepoint,
+                                            TextDirection direction) const {
+  // If the text is RTL, try to get a suitable mirrored glyph. This is handled
+  // automatically by harfbuzz when setting HB_DIRECTION_RTL in the buffer.
+  if (RuntimeEnabledFeatures::MathMLOperatorRTLMirroringEnabled() &&
+      direction == TextDirection::kRtl) {
+    StringBuilder builder;
+    builder.Append(codepoint);
+    HarfBuzzShaper shaper(builder.ToString());
+    HarfBuzzShaper::GlyphDataList glyph_data_list;
+    shaper.GetGlyphData(*this, LayoutLocale::GetDefault(),
+                        UScriptCode::USCRIPT_MATHEMATICAL_NOTATION,
+                        /*is_horizontal=*/true, direction, glyph_data_list);
+    // If found, return the first mirrored glyph.
+    if (!glyph_data_list.empty()) {
+      return glyph_data_list[0].glyph;
+    }
+  }
+
+  // When a mirrored glyph can't be found, or when the text direction is LTR,
+  // fall back to the original behaviour.
+  return this->GlyphForCharacter(codepoint);
 }
 
 bool SimpleFontData::IsSegmented() const {

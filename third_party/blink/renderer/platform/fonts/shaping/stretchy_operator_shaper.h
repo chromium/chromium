@@ -18,17 +18,17 @@ class Font;
 class ShapeResult;
 class StretchyOperatorShaper;
 
-// TODO(https://crbug.com/1057589): Add a TextDirection parameter, so that it's
-// possible to perform glyph-level (rtlm feature) or character-level mirroring
-// before stretching.
 // https://w3c.github.io/mathml-core/#algorithms-for-glyph-stretching
 class PLATFORM_EXPORT StretchyOperatorShaper final {
   DISALLOW_NEW();
 
  public:
   StretchyOperatorShaper(UChar32 stretchy_character,
-                         OpenTypeMathStretchData::StretchAxis stretch_axis)
-      : stretchy_character_(stretchy_character), stretch_axis_(stretch_axis) {}
+                         OpenTypeMathStretchData::StretchAxis stretch_axis,
+                         TextDirection direction)
+      : stretchy_character_(stretchy_character),
+        stretch_axis_(stretch_axis),
+        direction_(direction) {}
 
   struct Metrics {
     float advance { 0.0f };
@@ -49,6 +49,7 @@ class PLATFORM_EXPORT StretchyOperatorShaper final {
  private:
   const UChar32 stretchy_character_;
   const OpenTypeMathStretchData::StretchAxis stretch_axis_;
+  const TextDirection direction_;
 };
 
 }  // namespace blink
