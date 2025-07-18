@@ -47,8 +47,8 @@ class SuggestionControllerJavaScriptFeatureTest : public PlatformTest {
   id ExecuteJavaScript(NSString* java_script) {
     autofill::SuggestionControllerJavaScriptFeature* feature =
         autofill::SuggestionControllerJavaScriptFeature::GetInstance();
-    return web::test::ExecuteJavaScriptForFeature(web_state(), java_script,
-                                                  feature);
+    return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+        web_state(), java_script, feature);
   }
   // Returns the active element name from the JS side.
   NSString* GetActiveElementName() {

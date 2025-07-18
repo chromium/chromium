@@ -96,6 +96,21 @@ void ExecuteJavaScriptInWebView(WKWebView* web_view,
   ExecuteJavaScript(web_view, script, error, /*result=*/nil);
 }
 
+void ExecuteJavaScriptForFeature(web::WebState* web_state,
+                                 NSString* script,
+                                 JavaScriptFeature* feature) {
+  JavaScriptFeatureManager* feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(web_state->GetBrowserState());
+  JavaScriptContentWorld* world =
+      feature_manager->GetContentWorldForFeature(feature);
+
+  WKWebView* web_view =
+      [web::WebStateImpl::FromWebState(web_state)->GetWebController()
+          ensureWebViewCreated];
+  web::test::ExecuteJavaScriptInWebViewAndWorld(
+      web_view, world->GetWKContentWorld(), script);
+}
+
 id ExecuteJavaScript(WKWebView* web_view, NSString* script) {
   return ExecuteJavaScript(web_view, script, /*error=*/nil);
 }
@@ -108,9 +123,9 @@ id ExecuteJavaScript(WKWebView* web_view,
   return result;
 }
 
-id ExecuteJavaScriptForFeature(web::WebState* web_state,
-                               NSString* script,
-                               JavaScriptFeature* feature) {
+id ExecuteJavaScriptForFeatureAndReturnResult(web::WebState* web_state,
+                                              NSString* script,
+                                              JavaScriptFeature* feature) {
   JavaScriptFeatureManager* feature_manager =
       JavaScriptFeatureManager::FromBrowserState(web_state->GetBrowserState());
   JavaScriptContentWorld* world =

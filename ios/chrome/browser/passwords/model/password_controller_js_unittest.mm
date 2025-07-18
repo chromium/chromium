@@ -243,7 +243,8 @@ class PasswordControllerJsTest : public PlatformTest {
   id ExecuteJavaScript(NSString* script) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
-    return web::test::ExecuteJavaScriptForFeature(web_state(), script, feature);
+    return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+        web_state(), script, feature);
   }
 
   web::WebState* web_state() { return web_state_.get(); }

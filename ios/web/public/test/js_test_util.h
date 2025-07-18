@@ -26,6 +26,12 @@ void ExecuteJavaScriptInWebView(WKWebView* web_view,
                                 NSString* script,
                                 NSError* __autoreleasing* error);
 
+// Synchronously executes JavaScript in the content world associated with
+// `feature`.
+void ExecuteJavaScriptForFeature(web::WebState* web_state,
+                                 NSString* script,
+                                 JavaScriptFeature* feature);
+
 // These functions synchronously execute JavaScript and return result as id.
 // id will be backed up by different classes depending on resulting JS type:
 // NSString (string), NSNumber (number or boolean), NSDictionary (object),
@@ -44,9 +50,9 @@ id ExecuteJavaScript(WKWebView* web_view, NSString* script);
 
 // Synchronously executes JavaScript in the content world associated with
 // `feature` and returns the result as id.
-id ExecuteJavaScriptForFeature(web::WebState* web_state,
-                               NSString* script,
-                               JavaScriptFeature* feature);
+id ExecuteJavaScriptForFeatureAndReturnResult(web::WebState* web_state,
+                                              NSString* script,
+                                              JavaScriptFeature* feature);
 
 // Synchronously loads `html` into `web_view`. Returns true is successful or
 // false if the `web_view` never finishes loading.

@@ -47,7 +47,7 @@ id AutofillTestWithWebState::ExecuteJavaScript(NSString* script) {
   // although `FormHandlersJavaScriptFeature` is specified, all autofill
   // features must live in the same content world so any one of them could be
   // used here.
-  return web::test::ExecuteJavaScriptForFeature(
+  return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
       web_state(), script,
       autofill::FormHandlersJavaScriptFeature::GetInstance());
 }

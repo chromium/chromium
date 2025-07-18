@@ -971,7 +971,7 @@ void AutofillControllerJsTest::ExecuteJavaScriptOnElementsAndCheck(
 }
 
 id AutofillControllerJsTest::ExecuteJavaScript(NSString* java_script) {
-  return web::test::ExecuteJavaScriptForFeature(
+  return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
       web_state(), java_script,
       autofill::AutofillJavaScriptFeature::GetInstance());
 }
