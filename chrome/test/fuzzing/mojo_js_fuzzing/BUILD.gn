@@ -52,7 +52,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/mojo_js_in_process_fuzzer.html",
+    ]
   }
 
   action("embedded_framesink_provider_grammar_generator") {
@@ -100,7 +103,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/EmbeddedFrameSinkProvider_in_process_fuzzer.html",
+    ]
   }
 
   action("bucket_manager_host_grammar_generator") {
@@ -148,7 +154,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/BucketManagerHost_in_process_fuzzer.html",
+    ]
   }
 
   action("cache_storage_grammar_generator") {
@@ -192,7 +201,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/CacheStorage_in_process_fuzzer.html",
+    ]
   }
 
   action("clipboard_host_grammar_generator") {
@@ -236,7 +248,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/ClipboardHost_in_process_fuzzer.html",
+    ]
   }
 
   action("credential_manager_grammar_generator") {
@@ -281,7 +296,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/CredentialManager_in_process_fuzzer.html",
+    ]
   }
 
   action("digital_identity_request_grammar_generator") {
@@ -325,7 +343,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/DigitalIdentityRequest_in_process_fuzzer.html",
+    ]
   }
 
   action("media_session_service_grammar_generator") {
@@ -370,7 +391,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/MediaSessionService_in_process_fuzzer.html",
+    ]
   }
 
   action("storage_access_handle_grammar_generator") {
@@ -415,7 +439,10 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/StorageAccessHandle_in_process_fuzzer.html",
+    ]
   }
 
   action("video_capture_host_grammar_generator") {
@@ -460,6 +487,9 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
       "//testing/libfuzzer/research/domatolpm:domatolpm_context",
       "//third_party/libprotobuf-mutator",
     ]
-    data = [ "$root_gen_dir/" ]
+    data = [
+      "$root_gen_dir/",
+      "${root_build_dir}/VideoCaptureHost_in_process_fuzzer.html",
+    ]
   }
 }
