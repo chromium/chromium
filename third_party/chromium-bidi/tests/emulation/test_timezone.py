@@ -20,6 +20,7 @@ from test_helpers import execute_command, goto_url
 TIMEZONES = [
     "Asia/Yekaterinburg", "Europe/Berlin", "America/New_York", "Asia/Tokyo"
 ]
+TIMEZONE_OFFSET = "+10:00"
 
 
 @pytest_asyncio.fixture
@@ -228,18 +229,14 @@ async def test_timezone_invalid(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_timezone_unsupported(websocket, context_id):
-    UNSUPORTED_TIMEZONE = "+10:00"
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "unsupported operation",
-                           "message": "Timezone offsets are not yet supported"
-                       })):
-        await execute_command(
-            websocket, {
-                'method': 'emulation.setTimezoneOverride',
-                'params': {
-                    'contexts': [context_id],
-                    'timezone': UNSUPORTED_TIMEZONE
-                }
-            })
+async def test_timezone_offset(websocket, context_id, default_timezone):
+    await execute_command(
+        websocket, {
+            'method': 'emulation.setTimezoneOverride',
+            'params': {
+                'contexts': [context_id],
+                'timezone': TIMEZONE_OFFSET
+            }
+        })
+
+    assert (await get_timezone(websocket, context_id)) == TIMEZONE_OFFSET

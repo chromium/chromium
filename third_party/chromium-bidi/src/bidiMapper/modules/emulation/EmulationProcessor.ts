@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-import {
-  InvalidArgumentException,
-  UnsupportedOperationException,
-} from '../../../protocol/ErrorResponse.js';
+import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
 import type {
   EmptyResult,
   Emulation,
@@ -214,18 +211,15 @@ export class EmulationProcessor {
   async setTimezoneOverride(
     params: Emulation.SetTimezoneOverrideParameters,
   ): Promise<EmptyResult> {
-    const timezone = params.timezone ?? null;
+    let timezone = params.timezone ?? null;
 
     if (timezone !== null && !isValidTimezone(timezone)) {
       throw new InvalidArgumentException(`Invalid timezone "${timezone}"`);
     }
 
     if (timezone !== null && isTimeZoneOffsetString(timezone)) {
-      // CDP does not support timezone offset emulation.
-      // TODO: remove after http://b/432670902 is addressed.
-      throw new UnsupportedOperationException(
-        'Timezone offsets are not yet supported',
-      );
+      // CDP supports offset timezone with `GMT` prefix.
+      timezone = `GMT${timezone}`;
     }
 
     const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
@@ -278,12 +272,6 @@ export function isValidTimezone(timezone: string): boolean {
 }
 
 // Export for testing.
-// TODO: remove after http://b/432670902 is addressed.
-/**
- * Implementation of spec method. Required, until CDP supports :
- * https://tc39.es/ecma262/#sec-istimezoneoffsetstring
- * @param timezone
- */
 export function isTimeZoneOffsetString(timezone: string): boolean {
   return /^[+-](?:2[0-3]|[01]\d)(?::[0-5]\d)?$/.test(timezone);
 }
