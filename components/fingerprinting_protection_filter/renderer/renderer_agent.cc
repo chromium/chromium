@@ -164,12 +164,11 @@ void RendererAgent::DidCreateNewDocument() {
     notified_disallow_ = false;
     auto new_origin = url::Origin::Create(new_document_url);
     auto current_origin = url::Origin::Create(current_document_url_);
-    // Reset the filter handle and re-initialize to get a new activation state
-    // if the origin has changed, meaning this is not just a refresh.
-    if (!new_origin.IsSameOriginWith(current_origin)) {
-      filter_.reset();
-      Initialize();
-    }
+    // Updating the state should always happen. Since the renderer won't know if
+    // a user bypass exception happened or not, we need to always check with the
+    // browser to keep a consistent activation state.
+    filter_.reset();
+    Initialize();
   }
   current_document_url_ = new_document_url;
 }

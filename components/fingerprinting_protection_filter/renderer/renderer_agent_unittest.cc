@@ -340,6 +340,7 @@ TEST_F(RendererAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
 
   ExpectNoFilterGetsInjected();
+  EXPECT_CALL(*agent(), RequestActivationState());
   StartLoadWithoutSettingActivationState();
   FinishLoad();
 
@@ -405,6 +406,7 @@ TEST_F(RendererAgentTest, Enabled_NewRulesetIsPickedUpAtNextLoad) {
       DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
 
   ExpectFilterGetsInjected();
+  EXPECT_CALL(*agent(), RequestActivationState());
   StartLoadAndSetActivationState(
       subresource_filter::mojom::ActivationLevel::kEnabled);
   ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
@@ -452,6 +454,47 @@ TEST_F(
   EXPECT_CALL(*agent(), RequestActivationState());
   EXPECT_CALL(*agent(), GetMainDocumentUrl());
   agent_as_rfo()->DidFailProvisionalLoad();
+
+  histogram_tester.ExpectUniqueSample(
+      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
+}
+
+// Make sure that the activation decision is always refreshed when a new
+// document is created, regardless of whether the origin is the same as the
+// previous or not.
+TEST_F(RendererAgentTest,
+       Enabled_SameOriginNavigationAlwaysRequestsActivationState) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NO_FATAL_FAILURE(
+      SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
+
+  // We want to simulate a refresh to ensure the activation state is updated,
+  // regardless of the origin.
+  ON_CALL(*agent(), GetMainDocumentUrl())
+      .WillByDefault(testing::Return(GURL("http://example.com/")));
+
+  EXPECT_CALL(*agent(), OnSetFilterCalled());
+  // The mocked function `GetMainDocumentUrl` will be called several times in
+  // the stack of `DidCreateNewDocument`.
+  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(2);
+  // Request new activation state, which will be kEnabled.
+  EXPECT_CALL(*agent(), RequestActivationState()).Times(1);
+  StartLoadWithoutSettingActivationState();
+  subresource_filter::mojom::ActivationStatePtr state =
+      subresource_filter::mojom::ActivationState::New();
+  state->activation_level =
+      subresource_filter::mojom::ActivationLevel::kEnabled;
+  state->measure_performance = true;
+  agent()->OnActivationComputed(std::move(state));
+  EXPECT_EQ(agent()->activation_state().activation_level,
+            subresource_filter::mojom::ActivationLevel::kEnabled);
+
+  // Now navigate to example.com a second time like a refresh.
+  EXPECT_CALL(*agent(), RequestActivationState()).Times(1);
+  EXPECT_CALL(*agent(), GetMainDocumentUrl()).Times(2);
+  StartLoadWithoutSettingActivationState();
 
   histogram_tester.ExpectUniqueSample(
       MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
