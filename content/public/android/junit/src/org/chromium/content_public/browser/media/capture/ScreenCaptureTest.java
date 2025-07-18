@@ -17,6 +17,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -571,5 +572,71 @@ public class ScreenCaptureTest {
         assertEquals(0, handler1.getAcquiredImageCountForTesting());
         verify(image1).close();
         verify(reader1, never()).close();
+    }
+
+    @Test
+    public void testImageHandlerMaxImagesLimit() {
+        final Queue<Runnable> pendingReleases = new ArrayDeque<>();
+        doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
+                .when(mNativeMock)
+                .onRgbaFrameAvailable(
+                        anyLong(),
+                        any(Runnable.class),
+                        anyLong(),
+                        any(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt());
+
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        final ImageHandler handler = mImageHandlerStates.get(0).imageHandler;
+        final ImageReader reader = mImageHandlerStates.get(0).imageReader;
+
+        // Push a frame.
+        final Image image0 = createMockImage();
+        when(reader.acquireLatestImage()).thenReturn(image0).thenReturn(null);
+        handler.onImageAvailable(reader);
+        final Runnable releaseCb0 = pendingReleases.remove();
+        assertEquals(1, handler.getAcquiredImageCountForTesting());
+        verify(reader).acquireLatestImage();
+
+        // Push second frame.
+        final Image image1 = createMockImage();
+        when(reader.acquireLatestImage()).thenReturn(image1).thenReturn(null);
+        handler.onImageAvailable(reader);
+        final Runnable releaseCb1 = pendingReleases.remove();
+        assertEquals(2, handler.getAcquiredImageCountForTesting());
+        verify(reader, times(2)).acquireLatestImage();
+
+        // Try to push a third frame, but it exceeds the maximum number of images, meaning that
+        // we can't actually acquire it.
+        handler.onImageAvailable(reader);
+        assertEquals(2, handler.getAcquiredImageCountForTesting());
+        assertTrue(pendingReleases.isEmpty());
+        // We should not try to acquire it (will fail anyway).
+        verify(reader, times(2)).acquireLatestImage();
+
+        // Release the first frame, which should let us acquire the third one.
+        final Image image2 = createMockImage();
+        when(reader.acquireLatestImage()).thenReturn(image2).thenReturn(null);
+        releaseCb0.run();
+        verify(image0).close();
+        assertEquals(2, handler.getAcquiredImageCountForTesting());
+        assertEquals(1, pendingReleases.size());
+        final Runnable releaseCb2 = pendingReleases.remove();
+        verify(reader, times(3)).acquireLatestImage();
+
+        // Clean up remaining frames.
+        releaseCb1.run();
+        releaseCb2.run();
+        verify(image1).close();
+        verify(image2).close();
     }
 }
