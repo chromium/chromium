@@ -36,6 +36,8 @@
 				<true/>
 				<key>SupportsConditionalPasskeyRegistration</key>
 				<true/>
+				<key>SupportsCredentialUpdate</key>
+				<true/>
 			</dict>
 			<key>ASCredentialProviderExtensionShowsConfigurationUI</key>
 			<true/>

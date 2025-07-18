@@ -422,6 +422,31 @@ enum class PasskeyCreationEligibility {
                                            gaia:gaia];
 }
 
+- (void)reportUnknownPublicKeyCredentialForRelyingParty:(NSString*)relyingParty
+                                           credentialID:(NSData*)credentialID {
+  // TODO(crbug.com/432260316): Implement.
+}
+
+- (void)reportPublicKeyCredentialUpdateForRelyingParty:(NSString*)relyingParty
+                                            userHandle:(NSData*)userHandle
+                                               newName:(NSString*)newName {
+  // TODO(crbug.com/432260316): Implement.
+}
+
+- (void)reportAllAcceptedPublicKeyCredentialsForRelyingParty:
+            (NSString*)relyingParty
+                                                  userHandle:(NSData*)userHandle
+                                       acceptedCredentialIDs:
+                                           (NSArray<NSData*>*)
+                                               acceptedCredentialIDs {
+  // TODO(crbug.com/432260316): Implement.
+}
+
+- (void)reportUnusedPasswordCredentialForDomain:(NSString*)domain
+                                       userName:(NSString*)userName {
+  // Password credential updates are currently not handled.
+}
+
 #pragma mark - Properties
 
 - (id<CredentialStore>)credentialStore {
