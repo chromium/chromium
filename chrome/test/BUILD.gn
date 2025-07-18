@@ -155,6 +155,7 @@ static_library("test_support") {
     "//chrome/browser:global_features",
     "//chrome/browser/background:background",
     "//chrome/browser/omnibox",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/status_icons:status_icons",
@@ -169,6 +170,7 @@ static_library("test_support") {
   }
 
   public_deps = []
+
   testonly = true
 
   sources = [
@@ -1410,6 +1412,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/autocomplete",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
@@ -1820,6 +1823,7 @@ if (is_android) {
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/optimization_guide:optimization_guide",
       "//chrome/browser/password_manager/android:test_support",
+      "//chrome/browser/password_manager/factories:password_factory_headers",
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
@@ -5653,6 +5657,7 @@ if (!is_android) {
       ]
       deps += [
         "//chrome/browser/metrics/desktop_session_duration",
+        "//chrome/browser/password_manager/factories",
         "//chrome/browser/safe_browsing:metrics_collector",
         "//chrome/browser/ui/exclusive_access:test_support",
         "//chrome/browser/ui/hats",
@@ -6844,6 +6849,7 @@ test("unit_tests") {
     "//chrome/browser/notifications:unit_tests",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/optimization_guide:unit_tests",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/payments:unittests",
     "//chrome/browser/permissions",
     "//chrome/browser/permissions:test_support",
@@ -10775,6 +10781,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/omnibox",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/privacy_sandbox:headers",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
@@ -11213,6 +11220,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/permissions",
       "//chrome/browser/permissions:interactive_ui_tests",
       "//chrome/browser/picture_in_picture",
@@ -12265,6 +12273,7 @@ source_set("sync_integration_test_support") {
     "//base",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/autofill",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles",
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
@@ -12509,6 +12518,7 @@ if (!is_android) {
       "//chrome/browser/autofill:captured_sites_interactive_tests",
       "//chrome/browser/autofill:test_support_ui",
       "//chrome/browser/devtools",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/sync",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window:browser_window",

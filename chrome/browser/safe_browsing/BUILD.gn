@@ -26,6 +26,7 @@ static_library("safe_browsing") {
     "//chrome/browser:browser_process",
     "//chrome/browser/google",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/password_manager/factories:factories",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",

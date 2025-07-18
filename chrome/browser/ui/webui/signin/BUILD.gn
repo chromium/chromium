@@ -281,6 +281,7 @@ source_set("login_impl") {
       ":signin",
       ":signin_utils",
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/profiles",
       "//chrome/browser/themes",
       "//components/password_manager/core/browser",

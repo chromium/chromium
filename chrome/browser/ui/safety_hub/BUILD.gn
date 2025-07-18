@@ -130,6 +130,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/affiliations",
       "//chrome/browser/extensions",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/signin",
       "//chrome/browser/ui/webui/settings",
       "//components/password_manager/core/browser:password_form",
@@ -160,6 +161,7 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/permissions",
     "//components/content_settings/core/common",
     "//components/sync_preferences:test_support",

@@ -17,6 +17,7 @@ source_set("sync_integration_tests_impl") {
   configs += [ "//build/config:precompiled_headers" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
+    "//chrome/browser/password_manager/factories:factories",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
     "//chrome/browser/reading_list",

@@ -48,7 +48,7 @@ source_set("backend") {
   visibility = [
     ":backend_public",
     ":unit_tests",
-    "//chrome/browser/password_manager:backend_factory",
+    "//chrome/browser/password_manager/factories:backend_factory",
     "//chrome/browser/ui",
   ]
 
@@ -656,6 +656,7 @@ source_set("unit_tests") {
     "//chrome/browser/password_edit_dialog/android:android",
     "//chrome/browser/password_manager/android/access_loss:test_support",
     "//chrome/browser/password_manager/android/add_username_dialog:android",
+    "//chrome/browser/password_manager/factories:factories",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
     "//chrome/browser/sync",
@@ -723,4 +724,33 @@ proto_java_library("unified_password_manager_proto_java") {
     "protos/password_with_local_data.proto",
   ]
   deps = [ "//components/sync/protocol:protocol_java" ]
+}
+
+source_set("shared_preferences_delegate") {
+  sources = [
+    "shared_preferences_delegate_android.cc",
+    "shared_preferences_delegate_android.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/preferences:android",
+    "//components/password_manager/core/browser",
+    "//components/prefs",
+  ]
+}
+
+group("password_manager_android") {
+  public_deps = [
+    ":backend_public",
+    ":jni_headers",
+    ":shared_preferences_delegate",
+    ":utils",
+    ":utils_jni_headers",
+    "access_loss:public",
+    "account_storage_notice",
+    "add_username_dialog:android",
+    "grouped_affiliations:public",
+    "one_time_passwords:backend",
+  ]
 }

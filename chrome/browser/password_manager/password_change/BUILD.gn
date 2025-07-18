@@ -58,6 +58,7 @@ source_set("unit_tests") {
   deps = [
     ":password_change",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/password_manager/factories:password_factory_headers",
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/hats",

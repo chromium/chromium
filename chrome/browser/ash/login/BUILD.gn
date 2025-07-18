@@ -162,6 +162,7 @@ static_library("login") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//chrome/browser/sync",

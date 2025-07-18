@@ -50,6 +50,7 @@ source_set("impl") {
     ":importer",
     "//chrome/browser:shell_integration",
     "//chrome/browser/favicon",
+    "//chrome/browser/password_manager/factories:password_factory_headers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/common/importer:interfaces",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/password_store_backend_factory.h"
+#include "chrome/browser/password_manager/factories/password_store_backend_factory.h"
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
