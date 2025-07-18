@@ -35,10 +35,12 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.Holder;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -458,12 +460,13 @@ public class ChoiceDialogCoordinatorUnitTest {
      * ModalDialogManagerObserver#onDialogDismissed} events.
      */
     private void setUpDialogObserverCapture() {
-        final ModalDialogManagerObserver[] capturedDialogObserverHolder = {null};
+        final Holder<@Nullable ModalDialogManagerObserver> capturedDialogObserverHolder =
+                new Holder<>(null);
 
         lenient()
                 .doAnswer(
                         invocationOnMock -> {
-                            capturedDialogObserverHolder[0] =
+                            capturedDialogObserverHolder.value =
                                     invocationOnMock.getArgument(
                                             0, ModalDialogManagerObserver.class);
                             return null;
@@ -474,9 +477,9 @@ public class ChoiceDialogCoordinatorUnitTest {
         lenient()
                 .doAnswer(
                         invocationOnMock -> {
-                            if (capturedDialogObserverHolder[0]
+                            if (capturedDialogObserverHolder.value
                                     != invocationOnMock.getArgument(0)) {
-                                capturedDialogObserverHolder[0] = null;
+                                capturedDialogObserverHolder.value = null;
                             }
                             return null;
                         })
@@ -486,8 +489,8 @@ public class ChoiceDialogCoordinatorUnitTest {
         lenient()
                 .doAnswer(
                         invocationOnMock -> {
-                            if (capturedDialogObserverHolder[0] != null) {
-                                capturedDialogObserverHolder[0].onDialogAdded(
+                            if (capturedDialogObserverHolder.value != null) {
+                                capturedDialogObserverHolder.value.onDialogAdded(
                                         invocationOnMock.getArgument(0, PropertyModel.class));
                             }
                             return null;
@@ -498,8 +501,8 @@ public class ChoiceDialogCoordinatorUnitTest {
         lenient()
                 .doAnswer(
                         invocationOnMock -> {
-                            if (capturedDialogObserverHolder[0] != null) {
-                                capturedDialogObserverHolder[0].onDialogDismissed(
+                            if (capturedDialogObserverHolder.value != null) {
+                                capturedDialogObserverHolder.value.onDialogDismissed(
                                         invocationOnMock.getArgument(0, PropertyModel.class));
                             }
                             return null;

@@ -425,6 +425,7 @@ android_library("chrome_java_integration_test_support") {
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:holder_java",
     "//base:service_loader_java",
     "//base/test:public_transit_java",
     "//base/version_info/android:version_constants_java",

@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.base.Holder;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -77,10 +79,9 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     @Override
     public TabModelInternal createTabModel() {
         if (ChromeFeatureList.sTabCollectionAndroid.isEnabled()) {
-            TabGroupModelFilter[] filterHolder = new TabGroupModelFilter[1];
+            Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
             TabUngrouper tabUngrouper =
-                    mTabUngrouperFactory.create(
-                            /* isIncognitoBranded= */ true, () -> filterHolder[0]);
+                    mTabUngrouperFactory.create(/* isIncognitoBranded= */ true, filterHolder);
             TabCollectionTabModelImpl model =
                     new TabCollectionTabModelImpl(
                             assumeNonNull(mProfileProvider.getOffTheRecordProfile(true)),
@@ -95,7 +96,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                             mAsyncTabParamsManager,
                             mTabRemover,
                             tabUngrouper);
-            filterHolder[0] = model;
+            filterHolder.value = model;
             return model;
         }
         return new TabModelImpl(

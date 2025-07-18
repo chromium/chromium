@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.Holder;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -130,9 +132,9 @@ public class TabModelHolderFactory {
             AsyncTabParamsManager asyncTabParamsManager,
             TabRemover tabRemover,
             TabUngrouperFactory tabUngrouperFactory) {
-        TabGroupModelFilter[] filterHolder = new TabGroupModelFilter[1];
+        Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
         TabUngrouper tabUngrouper =
-                tabUngrouperFactory.create(/* isIncognitoBranded= */ false, () -> filterHolder[0]);
+                tabUngrouperFactory.create(/* isIncognitoBranded= */ false, filterHolder);
         TabCollectionTabModelImpl regularTabModel =
                 new TabCollectionTabModelImpl(
                         profile,
@@ -147,7 +149,7 @@ public class TabModelHolderFactory {
                         asyncTabParamsManager,
                         tabRemover,
                         tabUngrouper);
-        filterHolder[0] = regularTabModel;
+        filterHolder.value = regularTabModel;
 
         return new TabModelHolder(regularTabModel, regularTabModel);
     }
@@ -252,11 +254,10 @@ public class TabModelHolderFactory {
     private static TabGroupModelFilterInternal createLegacyTabGroupModelFilterInternal(
             TabModelInternal tabModel, TabUngrouperFactory tabUngrouperFactory) {
         boolean isIncognitoBranded = tabModel.isIncognitoBranded();
-        TabGroupModelFilter[] filterHolder = new TabGroupModelFilter[1];
-        TabUngrouper tabUngrouper =
-                tabUngrouperFactory.create(isIncognitoBranded, () -> filterHolder[0]);
+        Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
+        TabUngrouper tabUngrouper = tabUngrouperFactory.create(isIncognitoBranded, filterHolder);
         TabGroupModelFilterInternal filter = new TabGroupModelFilterImpl(tabModel, tabUngrouper);
-        filterHolder[0] = filter;
+        filterHolder.value = filter;
         return filter;
     }
 

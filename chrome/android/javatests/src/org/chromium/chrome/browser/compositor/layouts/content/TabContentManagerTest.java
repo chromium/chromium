@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Holder;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -25,6 +26,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -88,10 +90,10 @@ public class TabContentManagerTest {
         CriteriaHelper.pollUiThread(() -> !currentTab.isLoading());
 
         final CallbackHelper helper = new CallbackHelper();
-        final Bitmap[] bitmapHolder = new Bitmap[1];
+        final Holder<@Nullable Bitmap> bitmapHolder = new Holder<>(null);
         Callback<Bitmap> bitmapCallback =
                 (bitmap) -> {
-                    bitmapHolder[0] = bitmap;
+                    bitmapHolder.value = bitmap;
                     helper.notifyCalled();
                 };
 
@@ -114,7 +116,7 @@ public class TabContentManagerTest {
                 });
 
         helper.waitForOnly();
-        Assert.assertNotNull(bitmapHolder[0]);
+        Assert.assertNotNull(bitmapHolder.value);
     }
 
     /**
@@ -123,7 +125,7 @@ public class TabContentManagerTest {
      */
     private Bitmap captureBitmap() throws Exception {
         CallbackHelper helper = new CallbackHelper();
-        Bitmap[] bitmapHolder = new Bitmap[1];
+        Holder<@Nullable Bitmap> bitmapHolder = new Holder<>(null);
         CompositorView compositorView =
                 ((CompositorViewHolder)
                                 mActivityTestRule
@@ -147,7 +149,7 @@ public class TabContentManagerTest {
                     SurfaceView surfaceView = (SurfaceView) compositorView.getActiveSurfaceView();
                     Assert.assertNotNull(surfaceView);
                     // Assume surface view size will be constant and only allocate the bitmap once.
-                    bitmapHolder[0] =
+                    bitmapHolder.value =
                             Bitmap.createBitmap(
                                     surfaceView.getWidth(),
                                     surfaceView.getHeight(),
@@ -155,17 +157,17 @@ public class TabContentManagerTest {
                     captureBitmapInner(compositorView, bitmapHolder, helper, new Handler());
                 });
         helper.waitForOnly();
-        Assert.assertNotNull(bitmapHolder[0]);
+        Assert.assertNotNull(bitmapHolder.value);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     compositorView.onSelectionHandlesStateChanged(false);
                 });
-        return bitmapHolder[0];
+        return bitmapHolder.value;
     }
 
     private void captureBitmapInner(
             CompositorView compositorView,
-            Bitmap[] bitmapHolder,
+            Holder<Bitmap> bitmapHolder,
             CallbackHelper helper,
             Handler handler) {
         SurfaceView surfaceView = (SurfaceView) compositorView.getActiveSurfaceView();
@@ -188,6 +190,6 @@ public class TabContentManagerTest {
                                 500);
                     }
                 };
-        PixelCopy.request(surfaceView, bitmapHolder[0], listener, handler);
+        PixelCopy.request(surfaceView, bitmapHolder.value, listener, handler);
     }
 }

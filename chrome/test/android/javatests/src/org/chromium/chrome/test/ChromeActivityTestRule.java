@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
+import org.chromium.base.Holder;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -31,6 +32,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -513,6 +515,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
     /**
      * Waits for an Activity of the given class to be started.
+     *
      * @param expectedClass The class of the Activity being waited on.
      * @param maxTimeToPoll Maximum time in milliseconds to poll.
      * @return The Activity.
@@ -520,19 +523,20 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     @SuppressWarnings("unchecked")
     public static <T extends ChromeActivity> T waitFor(
             final Class<T> expectedClass, long maxTimeToPoll) {
-        final Activity[] holder = new Activity[1];
+        final Holder<@Nullable Activity> holder = new Holder<>(null);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    holder[0] = ApplicationStatus.getLastTrackedFocusedActivity();
-                    Criteria.checkThat(holder[0], Matchers.notNullValue());
+                    holder.value = ApplicationStatus.getLastTrackedFocusedActivity();
+                    Criteria.checkThat(holder.value, Matchers.notNullValue());
                     Criteria.checkThat(
-                            holder[0].getClass(), Matchers.typeCompatibleWith(expectedClass));
+                            holder.value.getClass(), Matchers.typeCompatibleWith(expectedClass));
                     Criteria.checkThat(
-                            ((ChromeActivity) holder[0]).getActivityTab(), Matchers.notNullValue());
+                            ((ChromeActivity) holder.value).getActivityTab(),
+                            Matchers.notNullValue());
                 },
                 maxTimeToPoll,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        return (T) holder[0];
+        return (T) holder.value;
     }
 
     /**

@@ -5323,6 +5323,15 @@ if (is_android) {
     ]
   }
 
+  android_library("holder_java") {
+    sources = [ "android/java/src/org/chromium/base/Holder.java" ]
+
+    deps = [
+      ":callback_java",
+      ":supplier_java",
+    ]
+  }
+
   android_aidl("android_info_aidl") {
     import_include = [ "android/java/src" ]
     sources = [ "android/java/src/org/chromium/base/IAndroidInfo.aidl" ]

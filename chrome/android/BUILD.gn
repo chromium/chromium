@@ -387,6 +387,7 @@ if (_is_default_toolchain) {
       "//google_apis/gaia/android:java",
 
       # TODO(ssid): Decouple dependency on internal library.
+      "//base:holder_java",
       "//chrome/browser/autofill/android:third_party_provider_java",
       "//chrome/browser/collaboration:internal_java",
       "//chrome/browser/collaboration:utils_java",

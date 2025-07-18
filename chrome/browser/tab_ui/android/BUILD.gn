@@ -131,6 +131,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:holder_java",
     "//chrome/android/features/tab_ui:java_resources",
     "//chrome/browser/collaboration:messaging_factory_java",
     "//chrome/browser/flags:java",

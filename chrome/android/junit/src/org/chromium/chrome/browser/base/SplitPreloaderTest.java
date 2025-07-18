@@ -21,9 +21,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Holder;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -206,21 +208,21 @@ public class SplitPreloaderTest {
 
     @Test
     public void testPreload_withOnComplete_splitNotInstalled() throws Exception {
-        Context[] backgroundContextHolder = new Context[1];
-        Context[] uiContextHolder = new Context[1];
+        Holder<@Nullable Context> backgroundContextHolder = new Holder<>(null);
+        Holder<@Nullable Context> uiContextHolder = new Holder<>(null);
         CallbackHelper helper = new CallbackHelper();
         mPreloader.preload(
                 SPLIT_A,
                 new SplitPreloader.PreloadHooks() {
                     @Override
                     public void runImmediatelyInBackgroundThread(Context context) {
-                        backgroundContextHolder[0] = context;
+                        backgroundContextHolder.value = context;
                         helper.notifyCalled();
                     }
 
                     @Override
                     public void runInUiThread(Context context) {
-                        uiContextHolder[0] = context;
+                        uiContextHolder.value = context;
                     }
 
                     @Override
@@ -229,12 +231,12 @@ public class SplitPreloaderTest {
                     }
                 });
         helper.waitForOnly();
-        assertEquals(backgroundContextHolder[0], mContext);
+        assertEquals(backgroundContextHolder.value, mContext);
 
         mPreloader.wait(SPLIT_A);
 
         assertThat(mContext.getUiThreadContextNames()).isEmpty();
         assertThat(mContext.getBackgroundThreadContextNames()).isEmpty();
-        assertEquals(uiContextHolder[0], mContext);
+        assertEquals(uiContextHolder.value, mContext);
     }
 }
