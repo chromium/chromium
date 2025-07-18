@@ -7,6 +7,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -94,6 +96,21 @@ class WasmTTSEngineDirectory {
 
 namespace component_updater {
 
+WasmTtsEngineComponentInstallerPolicy::WasmTtsEngineComponentInstallerPolicy(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {}
+
+// static
+void WasmTtsEngineComponentInstallerPolicy::RegisterPrefs(
+    PrefRegistrySimple* registry) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  registry->RegisterTimePref(prefs::kAccessibilityReadAnythingDateLastOpened,
+                             base::Time());
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityReadAnythingTTSEngineReinstalled, false);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
 bool WasmTtsEngineComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
   return true;
@@ -126,8 +143,73 @@ void WasmTtsEngineComponentInstallerPolicy::ComponentReady(
     // via ReadAnythingService once the side panel has been opened. This
     // prevents the extension from being installed unnecessarily for those
     // who aren't using reading mode.
+    // An exception is made for reinstalls at THRESHOLD_RECENT and
+    // THRESHOLD_LONGER amounts of time since reading mode was last opened. At
+    // these points, the WASM TTS Engine is reinstalled in order to clean up
+    // any removed voices.
     WasmTTSEngineDirectory* wasm_directory = WasmTTSEngineDirectory::Get();
     wasm_directory->Set(install_dir);
+
+    MaybeReinstallTtsEngine(install_dir);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+// In order to uninstall unused voices when reading mode has been unused for an
+// extended period of time, Chrome needs to reinstall the TTS engine. This will
+// be removed the next time Chrome is restarted.
+void WasmTtsEngineComponentInstallerPolicy::MaybeReinstallTtsEngine(
+    const base::FilePath& install_dir) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  const base::Time current_time = base::Time::Now();
+  const base::Time date_last_opened =
+      pref_service_->GetTime(prefs::kAccessibilityReadAnythingDateLastOpened);
+  const bool previously_reinstalled = pref_service_->GetBoolean(
+      prefs::kAccessibilityReadAnythingTTSEngineReinstalled);
+
+  // Reading mode hasn't been opened in the last 90 days, so don't reinstall
+  // the engine.
+  if (date_last_opened.is_null()) {
+    return;
+  }
+
+  // Reading mode was opened more than 14 days ago and less than 90 days ago
+  // but the engine was already installed after 14 days to remove unused voices.
+  // Reading mode doesn't need to re-install the engine to clean up voices
+  // until 90 days have passed.
+  if (previously_reinstalled &&
+      (current_time - date_last_opened) < kThresholdLonger) {
+    return;
+  }
+
+  // Reading mode was opened in the last 14 days, so don't reinstall the engine.
+  if ((current_time - date_last_opened) < kThresholdRecent) {
+    return;
+  }
+
+  // If it's been more than 14 days since reading mode was last opened,
+  // re-install the engine so that unused voices can be removed.
+  EmbeddedA11yExtensionLoader::GetInstance()->Init();
+  EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
+      extension_misc::kComponentUpdaterTTSEngineExtensionId, install_dir,
+      kManifestFileName,
+      /*should_localize=*/false);
+
+  // If reading mode hasn't been opened in longer than 14 days but less than
+  // 90 days, update that the TTS engine has been reinstalled to prevent
+  // subsequent reinstalls from day 14 to day 90.
+  if (!previously_reinstalled) {
+    pref_service_->SetBoolean(
+        prefs::kAccessibilityReadAnythingTTSEngineReinstalled, true);
+  }
+
+  // If it's been more than 90 days, clear both preferences for reading mode
+  // last opened state. The engine will now not be reinstalled until reading
+  // mode is reopened.
+  if ((current_time - date_last_opened) >= kThresholdLonger) {
+    pref_service_->ClearPref(prefs::kAccessibilityReadAnythingDateLastOpened);
+    pref_service_->ClearPref(
+        prefs::kAccessibilityReadAnythingTTSEngineReinstalled);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
@@ -176,10 +258,11 @@ WasmTtsEngineComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-void RegisterWasmTtsEngineComponent(ComponentUpdateService* cus) {
+void RegisterWasmTtsEngineComponent(ComponentUpdateService* cus,
+                                    PrefService* prefs) {
   VLOG(1) << "Registering WASM TTS Engine component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<WasmTtsEngineComponentInstallerPolicy>());
+      std::make_unique<WasmTtsEngineComponentInstallerPolicy>(prefs));
   installer->Register(cus, base::OnceClosure());
 }
 

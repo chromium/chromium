@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "extensions/browser/extension_system.h"
@@ -211,6 +213,14 @@ void ReadAnythingService::InstallComponent(const base::FilePath& new_dir) {
   EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
       extension_misc::kComponentUpdaterTTSEngineExtensionId, new_dir, manifest,
       /*should_localize=*/false);
+
+  // Store the last time reading mode was opened and the TTS engine was
+  // installed to be used to uninstall voices if reading mode is unopened for a
+  // long time.
+  g_browser_process->local_state()->SetTime(
+      prefs::kAccessibilityReadAnythingDateLastOpened, base::Time::Now());
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kAccessibilityReadAnythingTTSEngineReinstalled, false);
 }
 void ReadAnythingService::RecordEngineVersion(
     const base::FilePath& engine_version) {

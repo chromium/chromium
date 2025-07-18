@@ -69,6 +69,16 @@ inline constexpr char kAccessibilityReadAnythingImagesEnabled[] =
 inline constexpr char kAccessibilityReadAnythingLanguagesEnabled[] =
     "settings.a11y.read_anything.languages_enabled";
 
+// The date that Reading mode was last opened. This is used to uninstall
+// voices if reading mode has been unopened for a longer period of time.
+// One preference is used to keep track of when reading mode was last opened
+// and one preference is used to keep track of if there was a previous engine
+// reinstall in order to prevent unnecessary reinstalls.
+inline constexpr char kAccessibilityReadAnythingDateLastOpened[] =
+    "settings.a11y.read_anything.last_opened_date";
+inline constexpr char kAccessibilityReadAnythingTTSEngineReinstalled[] =
+    "settings.a11y.read_anything.tts_engine_reinstalled";
+
 }  // namespace prefs
 
 void RegisterReadAnythingProfilePrefs(
