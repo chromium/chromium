@@ -281,6 +281,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:Error) -->
 
+<!-- LINT.IfChange(GlicPrewarmingChecksResult) -->
+
+<enum name="GlicPrewarmingChecksResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Warming Disabled"/>
+  <int value="2" label="Profile Gone"/>
+  <int value="3" label="Profile Not Ready (Unknown)"/>
+  <int value="4" label="Profile Requires Sign In"/>
+  <int value="5" label="Profile Not Eligible"/>
+  <int value="6" label="Profile Not Rolled Out"/>
+  <int value="7" label="Profile Disallowed By Admin"/>
+  <int value="8" label="Profile Not Enabled (Other)"/>
+  <int value="9" label="Profile Is Last Loaded"/>
+  <int value="10" label="Profile Is Last Active"/>
+  <int value="11" label="Blocked By Shown Glic"/>
+  <int value="12" label="Under Memory Pressure"/>
+  <int value="13" label="Cellular Connection"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_profile_manager.h:GlicPrewarmingChecksResult) -->
+
 <!-- LINT.IfChange(GlicRequestEvent) -->
 
 <enum name="GlicRequestEvent">

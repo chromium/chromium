@@ -17,6 +17,8 @@ class Profile;
 
 namespace glic {
 
+enum class GlicPrewarmingChecksResult;
+
 // GlicProfileManager is a GlobalFeature that manages multi-profile Glic state.
 // Among other things it is used for determining which profile to launch from an
 // OS Entry point and ensuring that just one panel is shown across all profiles.
@@ -57,17 +59,17 @@ class GlicProfileManager : public ProfileManagerObserver {
   // respective web clients are being torn down.
   void OnUnloadingClientForService(GlicKeyedService* glic);
 
-  using ShouldPreloadCallback = base::OnceCallback<void(bool)>;
-
-  // Callback will be invoked with true if the given profile should be
+  // Callback will be invoked with kSuccess if the given profile should be
   // considered for preloading.
+  using ShouldPreloadCallback =
+      base::OnceCallback<void(GlicPrewarmingChecksResult)>;
   void ShouldPreloadForProfile(Profile* profile,
                                ShouldPreloadCallback callback);
 
   // Callback will be invoked with true if the given profile should be
   // considered for preloading the FRE.
   void ShouldPreloadFreForProfile(Profile* profile,
-                                  ShouldPreloadCallback callback);
+                                  base::OnceCallback<void(bool)> callback);
 
   // Returns the active Glic service, nullptr if there is none.
   GlicKeyedService* GetLastActiveGlic() const;
@@ -116,6 +118,58 @@ class GlicProfileManager : public ProfileManagerObserver {
   bool did_auto_open_ = false;
   base::WeakPtrFactory<GlicProfileManager> weak_ptr_factory_{this};
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync with
+// GlicPrewarmingChecksResult in enums.xml.
+// LINT.IfChange(GlicPrewarmingChecksResult)
+enum class GlicPrewarmingChecksResult {
+  // Preloading is happening.
+  kSuccess = 0,
+
+  // Warming was disabled by the feature configuration.
+  kWarmingDisabled = 1,
+
+  // The profile doesn't exist or is marked for deletion.
+  kProfileGone = 2,
+
+  // The profile is not ready for Glic, for an unknown reason.
+  kProfileNotReadyUnknown = 3,
+
+  // The account state is paused, and requires sign in.
+  kProfileRequiresSignIn = 4,
+
+  // The profile is not eligible for Glic.
+  kProfileNotEligible = 5,
+
+  // Glic is not rolled out to the user.
+  kProfileNotRolledOut = 6,
+
+  // The profile is disallowed by admin policy.
+  kProfileDisallowedByAdmin = 7,
+
+  // The profile is not enabled for Glic for some other reason.
+  kProfileNotEnabledOther = 8,
+
+  // The profile is already the last loaded profile.
+  kProfileIsLastLoaded = 9,
+
+  // The profile is already the last active profile.
+  kProfileIsLastActive = 10,
+
+  // Preloading is blocked because another Glic is already showing.
+  kBlockedByShownGlic = 11,
+
+  // The system is under memory pressure.
+  kUnderMemoryPressure = 12,
+
+  // The device has a cellular connection.
+  kCellularConnection = 13,
+
+  kMaxValue = kCellularConnection,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingChecksResult)
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_PROFILE_MANAGER_H_

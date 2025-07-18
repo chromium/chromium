@@ -636,6 +636,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Prewarming.ChecksResult"
+    enum="GlicPrewarmingChecksResult" expires_after="2026-01-15">
+  <owner>dullweber@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <owner>jbroman@chromium.org</owner>
+  <summary>
+    Records the reason why Glic preloading was or was not attempted. Recorded
+    each time we try to preload if the user has Glic enabled and went through
+    the FRE.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Response.Attached" enum="Boolean"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
@@ -941,16 +953,6 @@ chromium-metrics-reviews@google.com.
     <variant name="OnUserInputSubmitted"
         summary="the user submits their input"/>
   </token>
-</histogram>
-
-<histogram name="Glic.ShouldPreload" enum="Boolean" expires_after="2026-01-15">
-  <owner>dullweber@chromium.org</owner>
-  <owner>vollick@chromium.org</owner>
-  <summary>
-    Record whether the current profile is eligible to preload glic. Recorded
-    each time we try to preload if the user has glic enabled and went through
-    the FRE.
-  </summary>
 </histogram>
 
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"

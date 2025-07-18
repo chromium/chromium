@@ -36,6 +36,7 @@ class IdentityManager;
 }  // namespace signin
 
 namespace glic {
+
 class AuthController;
 class GlicActorController;
 class GlicEnabling;
@@ -47,6 +48,8 @@ class GlicSharingManagerImpl;
 class GlicWindowController;
 class GlicWindowControllerImpl;
 class Host;
+
+enum class GlicPrewarmingChecksResult;
 
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
 // non-system, etc.) browser profile if Glic flags are enabled, regardless
@@ -226,7 +229,7 @@ class GlicKeyedService : public KeyedService {
           GetZeroStateSuggestionsForFocusedTabCallback callback,
       std::vector<std::string> returned_suggestions);
 
-  void FinishPreload(bool should_preload);
+  void FinishPreload(GlicPrewarmingChecksResult reason);
   void FinishPreloadFre(bool should_preload);
 
   // List of callbacks to be notified when the client requests a change to the
