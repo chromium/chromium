@@ -1,21 +1,27 @@
-# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
+# ![Chromium Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
 
-Chromium is an open-source browser project that aims to build a safer, faster,
-and more stable way for all users to experience the web.
+Chromium is an open-source browser project focused on building a safer, faster, and more stable web experience for everyone.
 
-The project's web site is https://www.chromium.org.
+## 🌐 Project Website  
+[https://www.chromium.org](https://www.chromium.org)
 
-To check out the source code locally, don't use `git clone`! Instead,
-follow [the instructions on how to get the code](docs/get_the_code.md).
+## 📦 Getting the Source Code  
+> **Do not** use `git clone` directly.  
+Instead, follow the official instructions here:  
+[docs/get_the_code.md](docs/get_the_code.md)
 
-Documentation in the source is rooted in [docs/README.md](docs/README.md).
+## 📚 Documentation  
+Primary project documentation is available at:  
+[docs/README.md](docs/README.md)
 
-Learn how to [Get Around the Chromium Source Code Directory
-Structure](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code).
+To understand the layout of the codebase, refer to:  
+[Getting Around the Chromium Source Code Directory Structure](https://www.chromium.org/developers/how-tos/getting-around-the-chrome-source-code)
 
-For historical reasons, there are some small top level directories. Now the
-guidance is that new top level directories are for product (e.g. Chrome,
-Android WebView, Ash). Even if these products have multiple executables, the
-code should be in subdirectories of the product.
+## 🗂️ Directory Structure  
+Due to historical reasons, a few small top-level directories still exist.  
+The current guideline is to use top-level directories only for major products (e.g., `Chrome`, `Android WebView`, `Ash`).  
+Even if a product includes multiple executables, its code should remain within its own subdirectory.
 
-If you found a bug, please file it at https://crbug.com/new.
+## 🐞 Found a Bug?  
+Please file an issue here:  
+[https://crbug.com/new](https://crbug.com/new)
