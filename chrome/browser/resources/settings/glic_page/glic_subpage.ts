@@ -30,6 +30,7 @@ import {AiPageActions} from '../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {GlicBrowserProxy} from './glic_browser_proxy.js';
 import {GlicBrowserProxyImpl} from './glic_browser_proxy.js';
@@ -56,8 +57,8 @@ interface GlicUserStatusPref {
   isEnterpriseAccountDataProtected?: boolean;
 }
 
-const SettingsGlicSubpageElementBase =
-    HelpBubbleMixin(I18nMixin(WebUiListenerMixin(PrefsMixin(PolymerElement))));
+const SettingsGlicSubpageElementBase = SettingsViewMixin(
+    HelpBubbleMixin(I18nMixin(WebUiListenerMixin(PrefsMixin(PolymerElement)))));
 
 export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   static get is() {
@@ -384,6 +385,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     return loadTimeData.getBoolean('glicAssetsV2Enabled') ?
         'settings-internal:sparkv2' :
         'settings-internal:spark';
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

@@ -52,7 +52,7 @@ class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kGlicSettingsPageExists);
     StateChange event;
     event.event = kGlicSettingsPageExists;
-    event.where = {"settings-ui", "settings-main", "settings-basic-page",
+    event.where = {"settings-ui", "settings-main", "settings-ai-page-index",
                    "settings-glic-page"};
     return event;
   }
@@ -62,8 +62,7 @@ class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
                                          bool enabled) {
     StateChange event;
     event.event = type;
-    event.where = {"settings-ui",           "settings-main",
-                   "settings-basic-page",   "settings-glic-page",
+    event.where = {"settings-ui", "settings-main", "settings-ai-page-index",
                    "settings-glic-subpage", std::string(element_id)};
     event.test_function =
         content::JsReplace("el => el.disabled === $1", !enabled);
@@ -74,8 +73,8 @@ class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
                       std::string_view element_id,
                       bool state) {
     WebContentsInteractionTestUtil::DeepQuery where{
-        "settings-ui",        "settings-main",         "settings-basic-page",
-        "settings-glic-page", "settings-glic-subpage", std::string(element_id)};
+        "settings-ui", "settings-main", "settings-ai-page-index",
+        "settings-glic-subpage", std::string(element_id)};
     return ExecuteJsAt(
         tab, where,
         content::JsReplace("el => { if (el.checked !== $1) el.click(); }",
@@ -86,8 +85,8 @@ class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
                         std::string_view element_id,
                         bool state) {
     WebContentsInteractionTestUtil::DeepQuery where{
-        "settings-ui",        "settings-main",         "settings-basic-page",
-        "settings-glic-page", "settings-glic-subpage", std::string(element_id)};
+        "settings-ui", "settings-main", "settings-ai-page-index",
+        "settings-glic-subpage", std::string(element_id)};
     return CheckJsResultAt(
         tab, where, content::JsReplace("el => el.checked === $1", state));
   }
@@ -96,10 +95,9 @@ class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDisabledByAdminNoticeShown);
     StateChange event;
     event.event = kDisabledByAdminNoticeShown;
-    event.where = {
-        "settings-ui",           "settings-main",
-        "settings-basic-page",   "settings-glic-page",
-        "settings-glic-subpage", ".section:has(cr-icon[icon='cr:domain'])"};
+    event.where = {"settings-ui", "settings-main", "settings-ai-page-index",
+                   "settings-glic-subpage",
+                   ".section:has(cr-icon[icon='cr:domain'])"};
     event.test_function = "el => el.textContent";
     event.check_callback = base::BindRepeating([](const base::Value& text) {
       std::string disabled_notice =
@@ -115,10 +113,9 @@ class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
     StateChange event;
     event.event = kDisabledByAdminNoticeNotShown;
     event.type = StateChange::Type::kDoesNotExist;
-    event.where = {
-        "settings-ui",           "settings-main",
-        "settings-basic-page",   "settings-glic-page",
-        "settings-glic-subpage", ".section:has(cr-icon[icon='cr:domain'])"};
+    event.where = {"settings-ui", "settings-main", "settings-ai-page-index",
+                   "settings-glic-subpage",
+                   ".section:has(cr-icon[icon='cr:domain'])"};
     return event;
   }
 

@@ -9,20 +9,20 @@ import '../icons.html.js';
 import '../internal/icons.html.js';
 // </if>
 
-import '../settings_page/settings_subpage.js';
-import './glic_subpage.js';
+import '../settings_page/settings_section.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AiPageActions} from '../ai_page/constants.js';
-import {BaseMixin} from '../base_mixin.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './glic_page.html.js';
 
@@ -34,7 +34,7 @@ export interface SettingsGlicPageElement {
 }
 
 const SettingsGlicPageElementBase =
-    I18nMixin(BaseMixin(PrefsMixin(PolymerElement)));
+    SettingsViewMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   static get is() {
@@ -72,6 +72,21 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     // Prevent navigation to the Glic page if only the learn more link was
     // clicked.
     event.stopPropagation();
+  }
+
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    return new Map([
+      [routes.GEMINI.path, '#glicLinkRow'],
+    ]);
+  }
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
+    assert(childViewId === 'gemini');
+    const control = this.shadowRoot!.querySelector<HTMLElement>('#glicLinkRow');
+    assert(control);
+    return control;
   }
 }
 

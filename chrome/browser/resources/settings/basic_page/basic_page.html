@@ -8,16 +8,6 @@
       :host(:not([in-search-mode])) settings-section:not([active]) {
         display: none;
       }
-
-      settings-section[section="aiInfoCard"] {
-        --cr-card-shadow: none;
-      }
-
-      @media (forced-colors: active) {
-        settings-section[section="aiInfoCard"] {
-          --cr-border-hcm: none;
-        }
-      }
     </style>
     <template is="dom-if" if="[[showBasicPage_(currentRoute_, inSearchMode)]]"
         restamp>
@@ -31,25 +21,6 @@
               section="people">
             <settings-people-page prefs="{{prefs}}"></settings-people-page>
           </settings-section>
-        </template>
-        <template is="dom-if" if="[[showAiPage_(pageVisibility_.ai)]]" restamp>
-          <settings-section section="aiInfoCard" nest-under-section="ai">
-            <settings-ai-info-card></settings-ai-info-card>
-          </settings-section>
-<if expr="enable_glic">
-          <template is="dom-if" if="[[showGlicSection_]]" restamp>
-            <settings-section page-title="$i18n{glicSectionTitle}"
-                nest-under-section="ai" section="glicSection">
-              <settings-glic-page prefs="{{prefs}}"></settings-glic-page>
-            </settings-section>
-          </template>
-</if>
-          <template is="dom-if" if="[[showAiPageAiFeatureSection_]]" restamp>
-            <settings-section page-title="$i18n{aiInnovationsPageTitle}"
-                section="ai">
-              <settings-ai-page prefs="{{prefs}}"></settings-ai-page>
-            </settings-section>
-          </template>
         </template>
         <settings-section id="privacyGuidePromoSection" page-title=""
             hidden$="[[!showPrivacyGuidePromo_]]" nest-under-section="privacy"

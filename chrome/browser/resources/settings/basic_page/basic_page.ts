@@ -11,10 +11,6 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../ai_page/ai_page.js';
-// <if expr="enable_glic">
-import '../glic_page/glic_page.js';
-// </if>
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
@@ -32,7 +28,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 // </if>
 // clang-format on
-
 
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -116,18 +111,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
         value: false,
         reflectToAttribute: true,
       },
-
-      showAiPageAiFeatureSection_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showAiPageAiFeatureSection'),
-      },
-
-      // <if expr="enable_glic">
-      showGlicSection_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showGlicSettings'),
-      },
-      // </if>
     };
   }
 
@@ -143,10 +126,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
 
   declare private currentRoute_: Route;
   declare private advancedTogglingInProgress_: boolean;
-  declare private showAiPageAiFeatureSection_: boolean;
-  // <if expr="enable_glic">
-  declare private showGlicSection_: boolean;
-  // </if>
   declare private showPrivacyGuidePromo_: boolean;
   private privacyGuidePromoWasShown_: boolean;
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
@@ -245,10 +224,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
     }
 
     return this.inSearchMode || routes.BASIC.contains(this.currentRoute_);
-  }
-
-  private showAiPage_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean('showAiPage') && this.showPage_(visibility);
   }
 }
 

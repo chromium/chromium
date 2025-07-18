@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {Route, SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, pageVisibility, resetPageVisibilityForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, pageVisibility, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -35,7 +35,10 @@ suite('SettingsMain', function() {
   }
 
   setup(function() {
-    loadTimeData.overrideValues({isGuest: false});
+    loadTimeData.overrideValues({
+      isGuest: false,
+      showAiPage: false,
+    });
     createSettingsMain();
   });
 
@@ -119,12 +122,12 @@ suite('SettingsMain', function() {
     assertFalse(settingsMain.$.switcher.hasAttribute('show-all'));
   });
 
-  test('RespectsVisibility', function() {
-    function queryView(id: string): HTMLElement|null {
-      return settingsMain.$.switcher.querySelector<HTMLElement>(
-          `#${id}[slot=view]`);
-    }
+  function queryView(id: string): HTMLElement|null {
+    return settingsMain.$.switcher.querySelector<HTMLElement>(
+        `#${id}[slot=view]`);
+  }
 
+  test('RespectsVisibility', function() {
     function assertVisibilityRespected() {
       const viewIds: string[] = [
         'a11y', 'about', 'appearance', 'downloads', 'languages', 'onStartup',
@@ -158,6 +161,17 @@ suite('SettingsMain', function() {
     // Create a new instance for the visibility to have an effect.
     createSettingsMain();
     assertVisibilityRespected();
+  });
+
+  test('RespectsShowAiPage', function() {
+    assertFalse(loadTimeData.getBoolean('showAiPage'));
+    assertFalse(!!queryView('ai'));
+
+    loadTimeData.overrideValues({showAiPage: true});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+    createSettingsMain();
+    assertTrue(!!queryView('ai'));
   });
 
   // Test which section is displayed when chrome://settings/ is visited.

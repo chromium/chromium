@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './ai_policy_indicator.js';
+import '../settings_page/settings_subpage.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -12,13 +13,15 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageCompareInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './ai_compare_subpage.html.js';
 import {getAiLearnMoreUrl} from './ai_learn_more_url_util.js';
 import {isFeatureDisabledByPolicy} from './ai_policy_indicator.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions} from './constants.js';
 
-const SettingsAiCompareSubpageElementBase = PrefsMixin(PolymerElement);
+const SettingsAiCompareSubpageElementBase =
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class SettingsAiCompareSubpageElement extends
     SettingsAiCompareSubpageElementBase {
@@ -81,6 +84,11 @@ export class SettingsAiCompareSubpageElement extends
 
   private isDisabled_(): boolean {
     return isFeatureDisabledByPolicy(this.enterprisePref_);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

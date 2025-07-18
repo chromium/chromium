@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './ai_policy_indicator.js';
+import '../settings_page/settings_subpage.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -10,12 +11,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageTabOrganizationInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getAiLearnMoreUrl} from './ai_learn_more_url_util.js';
 import {getTemplate} from './ai_tab_organization_subpage.html.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions} from './constants.js';
 
-const SettingsAiTabOrganizationSubpageElementBase = PrefsMixin(PolymerElement);
+const SettingsAiTabOrganizationSubpageElementBase =
+    SettingsViewMixin(PrefsMixin(PolymerElement));
 
 export class SettingsAiTabOrganizationSubpageElement extends
     SettingsAiTabOrganizationSubpageElementBase {
@@ -59,6 +62,11 @@ export class SettingsAiTabOrganizationSubpageElement extends
         this.enterprisePref_,
         loadTimeData.getString('tabOrganizationLearnMoreUrl'),
         loadTimeData.getString('tabOrganizationLearnMoreManagedUrl'));
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

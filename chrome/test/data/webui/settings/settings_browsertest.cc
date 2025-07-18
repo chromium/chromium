@@ -194,6 +194,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, EditDictionaryPage) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, AiPageIndex) {
+  RunTest("settings/ai_page_index_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, AiPage) {
   RunTest("settings/ai_page_test.js", "runMochaSuite('AiPage')");
 }
@@ -822,10 +826,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_BasicPage) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyGuidePromo) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('PrivacyGuidePromo')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, AiSections) {
-  RunTest("settings/basic_page_test.js", "runMochaSuite('AiSections')");
 }
 
 using SettingsClearBrowsingDataTest = SettingsBrowserTest;

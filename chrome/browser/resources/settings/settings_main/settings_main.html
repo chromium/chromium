@@ -81,6 +81,17 @@
     </div>
   </template>
 
+  <template is="dom-if" if="[[showAiPage_(pageVisibility_.ai)]]">
+    <div slot="view" id="ai">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.AI, lastRoute_, inSearchMode_)]]">
+        <settings-ai-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-ai-page-index>
+      </template>
+    </div>
+  </template>
+
   <template is="dom-if" if="[[showPage_(pageVisibility_.appearance)]]">
     <div slot="view" id="appearance">
       <template is="dom-if" if="[[renderPlugin_(
