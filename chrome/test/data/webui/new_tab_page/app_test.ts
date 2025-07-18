@@ -1163,6 +1163,24 @@ suite('NewTabPageAppTest', () => {
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
     test(
+        'Clicking the searchbox composebox button displays the composebox',
+        async () => {
+          composeboxHandler.reset();
+          const composeButton = getComposeButton();
+          assertTrue(!!composeButton);
+
+          // Simulate entry point click.
+          composeButton.dispatchEvent(new CustomEvent(
+              'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+          await microtasksFinished();
+
+          // Assert.
+          const composebox = app.shadowRoot.querySelector('ntp-composebox');
+          assertTrue(!!composebox);
+          assertEquals(
+              composeboxHandler.getCallCount('notifySessionStarted'), 1);
+        });
+    test(
         'Clicking the searchbox composebox button with text navigates',
         async () => {
           composeboxHandler.reset();

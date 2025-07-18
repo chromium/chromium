@@ -30,6 +30,7 @@ void ComposeboxHandler::NotifySessionStarted() {
 }
 
 void ComposeboxHandler::NotifySessionAbandoned() {
+  query_controller_->ClearFiles();
   query_controller_->NotifySessionAbandoned();
 }
 
