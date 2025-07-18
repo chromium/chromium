@@ -6429,8 +6429,6 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
     unload_event_monitor_timeout_->Start(kUnloadTimeout);
   }
 
-  // TODO(nasko): If the frame is not live, the RFH should just be deleted by
-  // simulating the receipt of unload ack.
   is_waiting_for_unload_ack_ = true;
 
   if (proxy) {
