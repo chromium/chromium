@@ -7,9 +7,11 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -25,7 +27,8 @@ namespace {
 
 // Section identifiers in the BWG settings table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierBrowsingData = kSectionIdentifierEnumZero,
+  SectionIdentifierLocation = kSectionIdentifierEnumZero,
+  SectionIdentifierPageContent,
   SectionIdentifierActivity,
 };
 
@@ -33,6 +36,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeLocation = kItemTypeEnumZero,
   ItemTypePageContentSharing,
   ItemTypeAppActivity,
+  ItemTypeLocationFooter,
+  ItemTypePageContentSharingFooter,
+  ItemTypeAppActivityFooter,
 };
 
 // Table identifier.
@@ -48,6 +54,9 @@ NSString* const kLocationLinkAction = @"LocationLinkAction";
 NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 }  // namespace
+
+@interface BWGSettingsViewController () <TableViewLinkHeaderFooterItemDelegate>
+@end
 
 @implementation BWGSettingsViewController {
   // Precise location item.
@@ -76,15 +85,14 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 - (void)loadModel {
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierBrowsingData];
+  [model addSectionWithIdentifier:SectionIdentifierLocation];
+  [model addSectionWithIdentifier:SectionIdentifierPageContent];
   [model addSectionWithIdentifier:SectionIdentifierActivity];
 
   _preciseLocationItem =
       [self detailItemWithType:ItemTypeLocation
                              text:l10n_util::GetNSString(
                                       IDS_IOS_BWG_SETTINGS_LOCATION_TITLE)
-                       detailText:l10n_util::GetNSString(
-                                      IDS_IOS_BWG_SETTINGS_LOCATION_DESCRIPTION)
                trailingDetailText:[self preciseLocationTrailingDetailText]
           accessibilityIdentifier:kLocationCellId];
   _pageContentSharingItem = [self
@@ -92,17 +100,41 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                          text:
                              l10n_util::GetNSString(
                                  IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_SHARING_TITLE)
-                   detailText:
-                       l10n_util::GetNSString(
-                           IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_SHARING_DESCRIPTION)
                   switchValue:_pageContentSharingEnabled
       accessibilityIdentifier:kPageContentSharingCellId];
+
+  TableViewLinkHeaderFooterItem* locationFooterItem = [self
+      headerFooterItemWithType:ItemTypeLocationFooter
+                          text:l10n_util::GetNSString(
+                                   IDS_IOS_BWG_SETTINGS_LOCATION_FOOTER_TEXT)
+                       linkURL:GURL(kBWGPreciseLocationURL)];
+  TableViewLinkHeaderFooterItem* pageContentSharingFooterItem = [self
+      headerFooterItemWithType:ItemTypePageContentSharingFooter
+                          text:
+                              l10n_util::GetNSString(
+                                  IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_FOOTER_TEXT)
+                       linkURL:GURL(kBWGPageContentSharingURL)];
+  TableViewLinkHeaderFooterItem* BWGAppActivityFooterItem = [self
+      headerFooterItemWithType:ItemTypeAppActivityFooter
+                          text:
+                              l10n_util::GetNSString(
+                                  IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_FOOTER_TEXT)
+                       linkURL:GURL()];
+
   [model addItem:_preciseLocationItem
-      toSectionWithIdentifier:SectionIdentifierBrowsingData];
+      toSectionWithIdentifier:SectionIdentifierLocation];
+  [model setFooter:locationFooterItem
+      forSectionWithIdentifier:SectionIdentifierLocation];
+
   [model addItem:_pageContentSharingItem
-      toSectionWithIdentifier:SectionIdentifierBrowsingData];
+      toSectionWithIdentifier:SectionIdentifierPageContent];
+  [model setFooter:pageContentSharingFooterItem
+      forSectionWithIdentifier:SectionIdentifierPageContent];
+
   [model addItem:[self BWGAppActivityItem]
       toSectionWithIdentifier:SectionIdentifierActivity];
+  [model setFooter:BWGAppActivityFooterItem
+      forSectionWithIdentifier:SectionIdentifierActivity];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -120,14 +152,12 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 // Creates a multi detail item with multiple options.
 - (TableViewMultiDetailTextItem*)detailItemWithType:(NSInteger)type
                                                text:(NSString*)text
-                                         detailText:(NSString*)detailText
                                  trailingDetailText:(NSString*)trailingText
                             accessibilityIdentifier:
                                 (NSString*)accessibilityIdentifier {
   TableViewMultiDetailTextItem* detailItem =
       [[TableViewMultiDetailTextItem alloc] initWithType:type];
   detailItem.text = text;
-  detailItem.leadingDetailText = detailText;
   detailItem.trailingDetailText = trailingText;
   detailItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -138,17 +168,42 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 // Creates a switch item with multiple options.
 - (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
                                       text:(NSString*)title
-                                detailText:(NSString*)detailText
                                switchValue:(BOOL)isOn
                    accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   TableViewSwitchItem* switchItem =
       [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = title;
-  switchItem.detailText = detailText;
   switchItem.on = isOn;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
 
   return switchItem;
+}
+// Creates a footer item with an optional URL.
+- (TableViewLinkHeaderFooterItem*)headerFooterItemWithType:(NSInteger)type
+                                                      text:(NSString*)footerText
+                                                   linkURL:(GURL)linkURL {
+  TableViewLinkHeaderFooterItem* headerFooterItem =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:type];
+  headerFooterItem.text = footerText;
+
+  if (!linkURL.is_empty()) {
+    NSMutableArray* urls = [[NSMutableArray alloc] init];
+    [urls addObject:[[CrURL alloc] initWithGURL:linkURL]];
+    headerFooterItem.urls = urls;
+  }
+
+  return headerFooterItem;
+}
+
+// Creates the BWG app activity item.
+- (TableViewDetailTextItem*)BWGAppActivityItem {
+  TableViewDetailTextItem* BWGAppActivityItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeAppActivity];
+  BWGAppActivityItem.text =
+      l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_TITLE);
+  BWGAppActivityItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
+  return BWGAppActivityItem;
 }
 
 // Called from the PageContentSharing setting's UIControlEventTouchUpInside.
@@ -167,17 +222,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   return l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
 }
 
-// Creates the BWG app activity item.
-- (TableViewDetailTextItem*)BWGAppActivityItem {
-  TableViewDetailTextItem* BWGAppActivityItem =
-      [[TableViewDetailTextItem alloc] initWithType:ItemTypeAppActivity];
-  BWGAppActivityItem.text =
-      l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_TITLE);
-  BWGAppActivityItem.accessorySymbol =
-      TableViewDetailTextCellAccessorySymbolExternalLink;
-  return BWGAppActivityItem;
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -189,6 +233,16 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     [self.mutator openNewTabWithURL:GURL(kBWGAppActivityURL)];
   }
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* footerView = [super tableView:tableView
+                 viewForFooterInSection:section];
+  TableViewLinkHeaderFooterView* footer =
+      base::apple::ObjCCast<TableViewLinkHeaderFooterView>(footerView);
+  footer.delegate = self;
+  return footerView;
 }
 
 #pragma mark - UITableViewDataSource
@@ -209,6 +263,12 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                     forControlEvents:UIControlEventTouchUpInside];
   }
   return cell;
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  [self.mutator openNewTabWithURL:URL.gurl];
 }
 
 #pragma mark - BWGSettingsConsumer

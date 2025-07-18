@@ -12,6 +12,7 @@ source_set("ui") {
     "//base",
     "//components/prefs",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/bwg/coordinator:protocols",
     "//ios/chrome/browser/shared/model/prefs",

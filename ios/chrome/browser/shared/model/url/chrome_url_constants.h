@@ -157,4 +157,10 @@ extern const char kLearnMoreLensURL[];
 // URL for the BWG App Activity Settings row.
 extern const char kBWGAppActivityURL[];
 
+// URL for the BWG Precise Location Settings row.
+extern const char kBWGPreciseLocationURL[];
+
+// URL for the BWG Page Content Sharing Settings row.
+extern const char kBWGPageContentSharingURL[];
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_CHROME_URL_CONSTANTS_H_
