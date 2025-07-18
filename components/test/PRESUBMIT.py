@@ -48,6 +48,9 @@ def CheckChange(input_api, output_api):
                 'data/offline_pages/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/page_content_annotations/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/paint_preview/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,

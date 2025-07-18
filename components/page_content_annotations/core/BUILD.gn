@@ -117,6 +117,9 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (is_ios) {
+    deps += [ "//components/test:page_content_annotations_test_bundle_data" ]
+  }
 }
 
 if (build_with_tflite_lib) {
