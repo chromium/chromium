@@ -70,6 +70,11 @@ base::flat_map<
 DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND);
 
+// Returns whether any of the `fields` have a non-empty AutofillAI
+// AttributeType.
+[[nodiscard]] bool AreFieldsRelevantForAutofillAi(
+    base::span<const std::unique_ptr<AutofillField>> fields);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_AUTOFILL_AI_DETERMINE_ATTRIBUTE_TYPES_H_

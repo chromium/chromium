@@ -192,7 +192,7 @@ class BaseAutofillAiTest : public testing::Test {
     AutofillField& autofill_ai_field = test_api(*form).PushField();
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
         prediction;
-    prediction.set_type(PASSPORT_NAME_TAG);
+    prediction.set_type(PASSPORT_NUMBER);
     autofill_ai_field.set_server_predictions({prediction});
 
     return form;

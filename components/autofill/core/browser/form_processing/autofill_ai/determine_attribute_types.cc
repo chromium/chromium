@@ -293,4 +293,10 @@ SectionMap DetermineAttributeTypes(
   return r;
 }
 
+bool AreFieldsRelevantForAutofillAi(
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  return !std::ranges::all_of(GetAttributeTypes(fields),
+                              &DenseSet<AttributeType>::empty);
+}
+
 }  // namespace autofill
