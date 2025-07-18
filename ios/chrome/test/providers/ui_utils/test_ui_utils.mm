@@ -18,6 +18,14 @@ id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state) {
   return nil;
 }
 
+UIImageView* CreateAnimatedImageView() {
+  return [[UIImageView alloc] init];
+}
+
+UIImage* CreateAnimatedImageFromData(NSData* data) {
+  return nil;
+}
+
 void HideModalViewStack() {
   // Test provider does not present modals.
 }

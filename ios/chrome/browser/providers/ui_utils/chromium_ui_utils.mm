@@ -18,6 +18,14 @@ id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state) {
   return [[ChromiumLogoController alloc] init];
 }
 
+UIImageView* CreateAnimatedImageView() {
+  return [[UIImageView alloc] init];
+}
+
+UIImage* CreateAnimatedImageFromData(NSData* data) {
+  return nil;
+}
+
 void HideModalViewStack() {
   // Chromium provider does not present modals.
 }

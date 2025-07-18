@@ -23,6 +23,13 @@ void InitializeUI();
 // Creates a new LogoVendor instance.
 id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state);
 
+// Returns a UIImageView to be used with CreateAnimatedImageFromData().
+UIImageView* CreateAnimatedImageView();
+
+// Returns UIImage based based on GIF data. This is to be used with
+// GCRGetAnimatedImageView().
+UIImage* CreateAnimatedImageFromData(NSData* data);
+
 // Hides immediately the modals related to this provider.
 void HideModalViewStack();
 
