@@ -68,10 +68,10 @@ TEST_F(UiEventDebugStringTest, MouseMove) {
 TEST_F(UiEventDebugStringTest, MouseClick) {
   EXPECT_EQ(DebugString(UiEvent(MouseClick(Handle(), MouseClickType::kLeft,
                                            MouseClickCount::kSingle))),
-            "MouseClick[type=LeftClick, count=SingleClick]");
+            "MouseClick[type=kLeft, count=kSingle]");
   EXPECT_EQ(DebugString(AsyncUiEvent(MouseClick(
                 Handle(), MouseClickType::kRight, MouseClickCount::kDouble))),
-            "MouseClick[type=RightClick, count=DoubleClick]");
+            "MouseClick[type=kRight, count=kDouble]");
 }
 
 }  // namespace

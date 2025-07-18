@@ -30,6 +30,12 @@ struct DomNode {
 
 using PageTarget = std::variant<gfx::Point, DomNode>;
 
+std::string DebugString(const MouseClickType& t);
+std::string DebugString(const MouseClickCount& c);
+std::string DebugString(const PageTarget& t);
+
+std::ostream& operator<<(std::ostream& os, const PageTarget& t);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_SHARED_TYPES_H_
