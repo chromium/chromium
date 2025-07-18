@@ -412,7 +412,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(
     // WebStateID. This is cheap, does not require passing a pointer that could
     // become dangling, nor creating a WeakPtr which is expensive, when the only
     // thing we are interested is detecting a change.
-    if (parent_web_state &&
+    if (active_tab_id.valid() && parent_web_state &&
         parent_web_state->GetUniqueIdentifier() != active_tab_id) {
       parent_web_state = nullptr;
     }

@@ -223,16 +223,48 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenInNewTab) {
   ASSERT_EQ(0, web_state_list->count());
 
   // Set a new tab.
-  GURL newtab("chrome://newtab");
-  loader_->Load(
-      UrlLoadParams::InNewTab(web::NavigationManager::WebLoadParams(newtab)));
+  GURL url1("chrome://newtab");
+  loader_->Load(UrlLoadParams::InNewTab(url1));
   EXPECT_EQ(1, web_state_list->count());
+  EXPECT_EQ(web_state_list->GetWebStateAt(0),
+            web_state_list->GetActiveWebState());
 
   // Open another one.
-  GURL url("http://test/2");
-  loader_->Load(
-      UrlLoadParams::InNewTab(web::NavigationManager::WebLoadParams(url)));
+  GURL url2("http://test/2");
+  loader_->Load(UrlLoadParams::InNewTab(url2));
   EXPECT_EQ(2, web_state_list->count());
+  EXPECT_EQ(web_state_list->GetWebStateAt(1),
+            web_state_list->GetActiveWebState());
+
+  // Activate the first tab.
+  web_state_list->ActivateWebStateAt(0);
+  EXPECT_EQ(web_state_list->GetWebStateAt(0),
+            web_state_list->GetActiveWebState());
+
+  // Open another one.
+  GURL url3("http://test/3");
+  loader_->Load(UrlLoadParams::InNewTab(url3));
+  EXPECT_EQ(3, web_state_list->count());
+
+  // Make sure that the new tab is added to the end of the list.
+  EXPECT_EQ(web_state_list->GetWebStateAt(2),
+            web_state_list->GetActiveWebState());
+
+  // Activate the first tab.
+  web_state_list->ActivateWebStateAt(0);
+  EXPECT_EQ(web_state_list->GetWebStateAt(0),
+            web_state_list->GetActiveWebState());
+
+  // Open another one next to the active one.
+  GURL url4("http://test/4");
+  UrlLoadParams params = UrlLoadParams::InNewTab(url4);
+  params.append_to = OpenPosition::kCurrentTab;
+  loader_->Load(params);
+  EXPECT_EQ(4, web_state_list->count());
+
+  // Make sure that the new tab is added next to the previously active tab.
+  EXPECT_EQ(web_state_list->GetWebStateAt(1),
+            web_state_list->GetActiveWebState());
 
   // Check that we had no app level redirection.
   EXPECT_EQ(0, scene_loader_->load_new_tab_call_count_);
