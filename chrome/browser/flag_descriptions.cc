@@ -642,15 +642,6 @@ const char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kAutofillDeprecateAccessibilityApiName[] =
-    "Suppress Autofill Using the Android Accessibility API";
-const char kAutofillDeprecateAccessibilityApiDescription[] =
-    "When enabled, Chrome suppresses calls to the Android Accessibility API for"
-    " Autofill purposes. Chrome Autofill is not affected by this flag. To use"
-    " other Autofill services, enable #enable-autofill-virtual-view-structure.";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 const char kAutofillDropNamesWithInvalidCharactersForCardUploadName[] =
     "Drop names with invalid characters for credit card upload";
 const char kAutofillDropNamesWithInvalidCharactersForCardUploadDescription[] =

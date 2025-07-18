@@ -6413,13 +6413,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillVirtualViewStructureAndroid,
          kAutofillVirtualViewStructureVariation,
          "Skip AutofillService Check")},
-
-    {"suppress-autofill-via-accessibility",
-     flag_descriptions::kAutofillDeprecateAccessibilityApiName,
-     flag_descriptions::kAutofillDeprecateAccessibilityApiDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAndroidAutofillDeprecateAccessibilityApi)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

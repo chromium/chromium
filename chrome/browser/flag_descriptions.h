@@ -421,11 +421,6 @@ extern const char kEnableAutoDisableAccessibilityDescription[];
 extern const char kImageDescriptionsAlternateRoutingName[];
 extern const char kImageDescriptionsAlternateRoutingDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kAutofillDeprecateAccessibilityApiName[];
-extern const char kAutofillDeprecateAccessibilityApiDescription[];
-#endif  // BUILDFLAG(IS_ANDROID)
-
 extern const char kAutofillDropNamesWithInvalidCharactersForCardUploadName[];
 extern const char
     kAutofillDropNamesWithInvalidCharactersForCardUploadDescription[];
