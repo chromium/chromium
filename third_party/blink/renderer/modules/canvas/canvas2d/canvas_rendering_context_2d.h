@@ -266,6 +266,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const override;
+  void SetCanvas2DResourceProviderForTesting(
+      std::unique_ptr<CanvasResourceProvider> provider,
+      const gfx::Size& size);
 
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
