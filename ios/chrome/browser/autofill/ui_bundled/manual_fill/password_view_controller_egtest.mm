@@ -106,10 +106,11 @@ id<GREYMatcher> PasswordDetailsPage() {
   return grey_accessibilityID(kPasswordDetailsViewControllerID);
 }
 
-// Matcher for a cell displaying a backup password.
-id<GREYMatcher> BackupCredentialCellMatcher(NSString* host,
-                                            int cell_index,
-                                            int password_count) {
+// Matcher for a cell displaying a backup password. A backup password cell
+// should come with a backup credential icon and no overflow menu.
+id<GREYMatcher> BackupCredentialCell(NSString* host,
+                                     int cell_index,
+                                     int password_count) {
   NSString* cell_position = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(
@@ -130,17 +131,19 @@ id<GREYMatcher> BackupCredentialCellMatcher(NSString* host,
       kRecoveryPasswordSuggestionIconAccessibilityIdentifier);
 
   return grey_allOf(grey_accessibilityLabel(accessibility_label),
-                    grey_descendant(backup_icon), nullptr);
+                    grey_descendant(backup_icon),
+                    grey_not(grey_descendant(OverflowMenuButton(cell_index))),
+                    nullptr);
 }
 
 // Matcher for the "Autofill form" button shown in a backup password cell.
 id<GREYMatcher> BackupCredentialAutofillFormButton(NSString* host,
                                                    int cell_index,
                                                    int password_count) {
-  return grey_allOf(AutofillFormButton(),
-                    grey_ancestor(BackupCredentialCellMatcher(host, cell_index,
-                                                              password_count)),
-                    nullptr);
+  return grey_allOf(
+      AutofillFormButton(),
+      grey_ancestor(BackupCredentialCell(host, cell_index, password_count)),
+      nullptr);
 }
 
 // Opens the password manual fill view and verifies that the password view

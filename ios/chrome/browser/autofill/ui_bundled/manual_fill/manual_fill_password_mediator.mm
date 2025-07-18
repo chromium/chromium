@@ -302,8 +302,12 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
             ? NO
             : AreCredentialsAtIndicesConnected(credentials, i, i + 1);
 
+    ManualFillCredential* manualFillCredential =
+        credentials[i].manual_fill_credential;
+
     NSArray<UIAction*>* menuActions =
-        IsKeyboardAccessoryUpgradeEnabled()
+        IsKeyboardAccessoryUpgradeEnabled() &&
+                !manualFillCredential.isBackupCredential
             ? @[ [self createMenuEditActionForPassword:credentials[i]
                                                            .password_form] ]
             : @[];
@@ -316,7 +320,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
             base::checked_cast<int>(i + 1)));
 
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
-                 initWithCredential:credentials[i].manual_fill_credential
+                 initWithCredential:manualFillCredential
           isConnectedToPreviousItem:isConnectedToPreviousItem
               isConnectedToNextItem:isConnectedToNextItem
                     contentInjector:self
