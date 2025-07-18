@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
@@ -431,17 +432,18 @@ void ConfigBase::AddKernelObjectToClose(HandleToClose handle_info) {
   switch (handle_info) {
     case HandleToClose::kWindowsShellGlobalCounters:
       handle_closer_.section_windows_global_shell_counters = true;
-      break;
+      return;
     case HandleToClose::kDeviceApi:
       handle_closer_.file_device_api = true;
-      break;
+      return;
     case HandleToClose::kKsecDD:
       handle_closer_.file_ksecdd = true;
-      break;
+      return;
     case HandleToClose::kDisconnectCsrss:
       handle_closer_.disconnect_csrss = true;
-      break;
+      return;
   }
+  NOTREACHED();
 }
 
 void ConfigBase::SetDisconnectCsrss() {

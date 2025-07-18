@@ -42,6 +42,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -180,6 +181,7 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
     case sandbox::mojom::Sandbox::kUtility:
       return &kMinimalConfig;
   }
+  NOTREACHED();
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetServiceDirectoryTaskRunner() {

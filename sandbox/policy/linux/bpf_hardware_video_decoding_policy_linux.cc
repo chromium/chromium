@@ -65,6 +65,7 @@ ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscall(
     case PolicyType::kV4L2:
       return EvaluateSyscallForV4L2(system_call_number);
   }
+  NOTREACHED();
 }
 
 ResultExpr HardwareVideoDecodingProcessPolicy::EvaluateSyscallForVaapiOnIntel(

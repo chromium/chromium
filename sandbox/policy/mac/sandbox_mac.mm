@@ -50,55 +50,44 @@ base::FilePath GetCanonicalPath(const base::FilePath& path) {
 }
 
 std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
-  std::string profile = std::string(kSeatbeltPolicyString_common);
+  std::string profile_suffix = [](sandbox::mojom::Sandbox sandbox_type) {
+    switch (sandbox_type) {
+      case sandbox::mojom::Sandbox::kAudio:
+        return kSeatbeltPolicyString_audio;
+      case sandbox::mojom::Sandbox::kCdm:
+        return kSeatbeltPolicyString_cdm;
+      case sandbox::mojom::Sandbox::kGpu:
+        return kSeatbeltPolicyString_gpu;
+      case sandbox::mojom::Sandbox::kMirroring:
+        return kSeatbeltPolicyString_mirroring;
+      case sandbox::mojom::Sandbox::kNetwork:
+        return kSeatbeltPolicyString_network;
+      case sandbox::mojom::Sandbox::kPrintBackend:
+        return kSeatbeltPolicyString_print_backend;
+      case sandbox::mojom::Sandbox::kPrintCompositor:
+        return kSeatbeltPolicyString_print_compositor;
+      case sandbox::mojom::Sandbox::kScreenAI:
+        return kSeatbeltPolicyString_screen_ai;
+      case sandbox::mojom::Sandbox::kSpeechRecognition:
+        return kSeatbeltPolicyString_speech_recognition;
+      case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+        return kSeatbeltPolicyString_on_device_model_execution;
+      case sandbox::mojom::Sandbox::kOnDeviceTranslation:
+        return kSeatbeltPolicyString_on_device_translation;
+      // `kService` and `kUtility` are the same on OS_MAC, so fallthrough.
+      case sandbox::mojom::Sandbox::kService:
+      case sandbox::mojom::Sandbox::kServiceWithJit:
+      case sandbox::mojom::Sandbox::kUtility:
+        return kSeatbeltPolicyString_utility;
+      case sandbox::mojom::Sandbox::kRenderer:
+        return kSeatbeltPolicyString_renderer;
+      case sandbox::mojom::Sandbox::kNoSandbox:
+        NOTREACHED();
+    }
+    NOTREACHED();
+  }(sandbox_type);
 
-  switch (sandbox_type) {
-    case sandbox::mojom::Sandbox::kAudio:
-      profile += kSeatbeltPolicyString_audio;
-      break;
-    case sandbox::mojom::Sandbox::kCdm:
-      profile += kSeatbeltPolicyString_cdm;
-      break;
-    case sandbox::mojom::Sandbox::kGpu:
-      profile += kSeatbeltPolicyString_gpu;
-      break;
-    case sandbox::mojom::Sandbox::kMirroring:
-      profile += kSeatbeltPolicyString_mirroring;
-      break;
-    case sandbox::mojom::Sandbox::kNetwork:
-      profile += kSeatbeltPolicyString_network;
-      break;
-    case sandbox::mojom::Sandbox::kPrintBackend:
-      profile += kSeatbeltPolicyString_print_backend;
-      break;
-    case sandbox::mojom::Sandbox::kPrintCompositor:
-      profile += kSeatbeltPolicyString_print_compositor;
-      break;
-    case sandbox::mojom::Sandbox::kScreenAI:
-      profile += kSeatbeltPolicyString_screen_ai;
-      break;
-    case sandbox::mojom::Sandbox::kSpeechRecognition:
-      profile += kSeatbeltPolicyString_speech_recognition;
-      break;
-    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
-      profile += kSeatbeltPolicyString_on_device_model_execution;
-      break;
-    case sandbox::mojom::Sandbox::kOnDeviceTranslation:
-      profile += kSeatbeltPolicyString_on_device_translation;
-      break;
-    // kService and kUtility are the same on OS_MAC, so fallthrough.
-    case sandbox::mojom::Sandbox::kService:
-    case sandbox::mojom::Sandbox::kServiceWithJit:
-    case sandbox::mojom::Sandbox::kUtility:
-      profile += kSeatbeltPolicyString_utility;
-      break;
-    case sandbox::mojom::Sandbox::kRenderer:
-      profile += kSeatbeltPolicyString_renderer;
-      break;
-    case sandbox::mojom::Sandbox::kNoSandbox:
-      NOTREACHED();
-  }
-  return profile;
+  return kSeatbeltPolicyString_common + profile_suffix;
 }
 
 bool CanCacheSandboxPolicy(sandbox::mojom::Sandbox sandbox_type) {

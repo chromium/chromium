@@ -681,6 +681,7 @@ std::wstring BrokerServicesBase::GetDesktopName(Desktop desktop) {
     case Desktop::kAlternateDesktop:
       return alt_desktop_->GetDesktopName();
   }
+  NOTREACHED();
 }
 
 ResultCode BrokerServicesBase::UpdateDesktopIntegrity(
@@ -700,6 +701,7 @@ ResultCode BrokerServicesBase::UpdateDesktopIntegrity(
     case Desktop::kAlternateDesktop:
       return alt_desktop_->UpdateDesktopIntegrity(integrity);
   }
+  NOTREACHED();
 }
 
 ResultCode BrokerServicesBase::CreateAlternateDesktop(Desktop desktop) {

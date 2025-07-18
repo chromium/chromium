@@ -85,6 +85,7 @@ std::string GetTokenLevelInEnglish(TokenLevel token) {
       DCHECK(false) << "Unknown TokenType";
       return "Unknown";
   }
+  NOTREACHED();
 }
 
 std::string GetJobLevelInEnglish(JobLevel job) {
@@ -98,6 +99,7 @@ std::string GetJobLevelInEnglish(JobLevel job) {
     case JobLevel::kUnprotected:
       return "Unprotected";
   }
+  NOTREACHED();
 }
 
 std::string GetIntegrityLevelInEnglish(IntegrityLevel integrity) {
@@ -119,6 +121,7 @@ std::string GetIntegrityLevelInEnglish(IntegrityLevel integrity) {
     case INTEGRITY_LEVEL_LAST:
       return "Default";
   }
+  NOTREACHED();
 }
 
 std::wstring GetSidAsString(const base::win::Sid& sid) {
@@ -188,6 +191,7 @@ std::string GetIpcTagAsString(IpcTag service) {
     case IpcTag::NTCREATESECTION:
       return "NtCreateSection";
   }
+  NOTREACHED();
 }
 
 std::string GetOpcodeAction(EvalResult action) {
@@ -209,6 +213,7 @@ std::string GetOpcodeAction(EvalResult action) {
     case FAKE_ACCESS_DENIED:
       return "fakeDenied";
   }
+  NOTREACHED();
 }
 
 std::string GetStringMatchOperation(int pos, uint32_t options) {

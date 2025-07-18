@@ -625,22 +625,23 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
     switch (syscaller_type_) {
       case SyscallerType::IPCSyscaller:
         syscaller_ = std::make_unique<IPCSyscaller>(broker_process_.get());
-        break;
+        return;
       case SyscallerType::DirectSyscaller:
 #if defined(DIRECT_SYSCALLER_ENABLED)
         syscaller_ = std::make_unique<DirectSyscaller>();
-        break;
+        return;
 #else
         NOTREACHED() << "Requested instantiation of DirectSyscaller on a "
                         "platform that doesn't support it";
 #endif
       case SyscallerType::LibcSyscaller:
         syscaller_ = std::make_unique<LibcSyscaller>();
-        break;
+        return;
       case SyscallerType::NoSyscaller:
         syscaller_ = nullptr;
-        break;
+        return;
     }
+    NOTREACHED();
   }
 
  private:

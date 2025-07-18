@@ -118,15 +118,15 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
       } else {
         command_line->AppendSwitch(switches::kNoSandbox);
       }
-      break;
+      return;
     case Sandbox::kRenderer:
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
              switches::kRendererProcess);
-      break;
+      return;
     case Sandbox::kGpu:
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
              switches::kGpuProcess);
-      break;
+      return;
     case Sandbox::kService:
     case Sandbox::kServiceWithJit:
     case Sandbox::kUtility:
@@ -182,12 +182,13 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
       command_line->AppendSwitchASCII(
           switches::kServiceSandboxType,
           StringFromUtilitySandboxType(sandbox_type));
-      break;
+      return;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kZygoteIntermediateSandbox:
-      break;
+      return;
 #endif
   }
+  NOTREACHED();
 }
 
 sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
@@ -329,6 +330,7 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
 #endif
       NOTREACHED();
   }
+  NOTREACHED();
 }
 
 sandbox::mojom::Sandbox UtilitySandboxTypeFromString(

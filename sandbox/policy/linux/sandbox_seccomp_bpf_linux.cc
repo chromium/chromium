@@ -252,6 +252,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
     case sandbox::mojom::Sandbox::kNoSandbox:
       NOTREACHED();
   }
+  NOTREACHED();
 }
 
 // If a BPF policy is engaged for |process_type|, run a few sanity checks.
@@ -289,7 +290,8 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
       CHECK_EQ(-1, syscall_ret);
       CHECK_EQ(EPERM, errno);
 #endif  // !defined(NDEBUG)
-    } break;
+      return;
+    }
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -323,8 +325,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kNoSandbox:
     case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:
       // Otherwise, no checks required.
-      break;
+      return;
   }
+  NOTREACHED();
 }
 
 bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
