@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
@@ -124,7 +125,12 @@ id<GREYMatcher> BackupCredentialCellMatcher(NSString* host,
 
   NSString* accessibility_label =
       [NSString stringWithFormat:@"%@, %@", cell_position, cell_label];
-  return grey_accessibilityLabel(accessibility_label);
+
+  id<GREYMatcher> backup_icon = grey_accessibilityID(
+      kRecoveryPasswordSuggestionIconAccessibilityIdentifier);
+
+  return grey_allOf(grey_accessibilityLabel(accessibility_label),
+                    grey_descendant(backup_icon), nullptr);
 }
 
 // Matcher for the "Autofill form" button shown in a backup password cell.

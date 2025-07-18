@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_text_cell.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -112,11 +113,11 @@ enum ManualFallbackItemType : NSInteger {
 
   switch (itemType) {
     case manual_fill::ManualFallbackItemType::kCredential:
-      // Retrieve favicons for credential cells.
-      [self loadFaviconForCredentialCell:cell indexPath:indexPath];
+      // Set the icon of credential cells.
+      [self setIconForCredentialCell:cell indexPath:indexPath];
       break;
     case manual_fill::ManualFallbackItemType::kPlusAddress:
-      // Retrieve favicons for credential cells.
+      // Retrieve the favicon for plus address cells.
       [self loadFaviconForPlusAddressCell:cell indexPath:indexPath];
       break;
     default:
@@ -278,9 +279,9 @@ enum ManualFallbackItemType : NSInteger {
              }];
 }
 
-// Retrieves favicon from FaviconLoader and sets image in `cell` for passwords.
-- (void)loadFaviconForCredentialCell:(UITableViewCell*)cell
-                           indexPath:(NSIndexPath*)indexPath {
+// Sets the icon for the given credential `cell` at `indexPath`.
+- (void)setIconForCredentialCell:(UITableViewCell*)cell
+                       indexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   DCHECK(item);
   DCHECK(cell);
@@ -294,16 +295,26 @@ enum ManualFallbackItemType : NSInteger {
   ManualFillPasswordCell* passwordCell =
       base::apple::ObjCCastStrict<ManualFillPasswordCell>(cell);
 
-  NSString* itemIdentifier = passwordItem.uniqueIdentifier;
-  CrURL* crurl = [[CrURL alloc] initWithGURL:passwordItem.faviconURL];
+  if ([passwordCell isBackupCredential]) {
+    [passwordCell configureWithSymbol:GetBackupPasswordSuggestionIcon()];
+  } else {
+    [self loadFaviconForCredentialCell:passwordCell item:passwordItem];
+  }
+}
+
+// Retrieves the favicon from the FaviconLoader and sets it as the password cell
+// image.
+- (void)loadFaviconForCredentialCell:(ManualFillPasswordCell*)cell
+                                item:(ManualFillCredentialItem*)item {
+  NSString* itemIdentifier = item.uniqueIdentifier;
+  CrURL* crurl = [[CrURL alloc] initWithGURL:item.faviconURL];
   [self.imageDataSource
       faviconForPageURL:crurl
              completion:^(FaviconAttributes* attributes) {
-               // Only set favicon if the cell hasn't been reused.
-               if ([passwordCell.uniqueIdentifier
-                       isEqualToString:itemIdentifier]) {
+               // Only set the favicon if the cell hasn't been reused.
+               if ([cell.uniqueIdentifier isEqualToString:itemIdentifier]) {
                  CHECK(attributes);
-                 [passwordCell configureWithFaviconAttributes:attributes];
+                 [cell configureWithFaviconAttributes:attributes];
                }
              }];
 }

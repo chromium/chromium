@@ -81,8 +81,14 @@ class GURL;
          showAutofillFormButton:(BOOL)showAutofillFormButton
         fromAllPasswordsContext:(BOOL)fromAllPasswordsContext;
 
+// Returns whether the cell represents a backup credential.
+- (BOOL)isBackupCredential;
+
 // Configures the cell for the passed favicon attributes.
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes;
+
+// Configures the cell with the passed `symbol`.
+- (void)configureWithSymbol:(UIImage*)symbol;
 
 @end
 

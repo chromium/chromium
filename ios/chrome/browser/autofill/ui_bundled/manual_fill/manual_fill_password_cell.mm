@@ -196,6 +196,10 @@ static const CGFloat kOffsetForConnectedCell = 16;
 
   // If `YES`, the cell is displayed in the all password list.
   BOOL _fromAllPasswordsContext;
+
+  // UIImageView for the custom symbol that replaces the favicon in the cell.
+  // Stays nil if not needed.
+  UIImageView* _customSymbolImageView;
 }
 
 #pragma mark - Public
@@ -204,6 +208,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
   [super prepareForReuse];
   [NSLayoutConstraint deactivateConstraints:self.faviconContraints];
   self.faviconView.hidden = YES;
+
+  [_customSymbolImageView removeFromSuperview];
+  _customSymbolImageView = nil;
 
   [NSLayoutConstraint deactivateConstraints:self.dynamicConstraints];
   [self.dynamicConstraints removeAllObjects];
@@ -357,6 +364,10 @@ static const CGFloat kOffsetForConnectedCell = 16;
   return base::SysUTF8ToNSString(self.credential.URL.spec());
 }
 
+- (BOOL)isBackupCredential {
+  return self.credential.isBackupCredential;
+}
+
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes {
   if (attributes.faviconImage) {
     self.faviconView.hidden = NO;
@@ -366,6 +377,31 @@ static const CGFloat kOffsetForConnectedCell = 16;
   }
   [NSLayoutConstraint deactivateConstraints:self.faviconContraints];
   self.faviconView.hidden = YES;
+}
+
+- (void)configureWithSymbol:(UIImage*)symbol {
+  if (!symbol) {
+    return;
+  }
+
+  UIImageView* symbolImageView = [[UIImageView alloc] initWithImage:symbol];
+  symbolImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  symbolImageView.backgroundColor = self.backgroundColor;
+
+  FaviconContainerView* faviconContainerView =
+      static_cast<FaviconContainerView*>(self.faviconView);
+  [faviconContainerView setFaviconBackgroundColor:self.backgroundColor];
+  faviconContainerView.hidden = NO;
+  [faviconContainerView addSubview:symbolImageView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [symbolImageView.centerXAnchor
+        constraintEqualToAnchor:self.faviconView.centerXAnchor],
+    [symbolImageView.centerYAnchor
+        constraintEqualToAnchor:self.faviconView.centerYAnchor],
+  ]];
+
+  _customSymbolImageView = symbolImageView;
 }
 
 #pragma mark - Private
