@@ -17,8 +17,9 @@
 #include "media/base/media_log.h"
 #include "media/base/media_observer.h"
 #include "media/base/renderer_factory_selector.h"
-#include "media/mojo/mojom/media_metrics_provider.mojom.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom-shared.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_player.h"
@@ -88,7 +89,8 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
     base::WeakPtr<media::MediaObserver> media_observer,
     bool enable_instant_source_buffer_gc,
     bool embedded_media_experience_enabled,
-    mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
+    CrossVariantMojoRemote<media::mojom::MediaMetricsProviderInterfaceBase>
+        metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
     bool use_surface_layer,

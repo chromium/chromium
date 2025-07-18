@@ -905,10 +905,8 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
       }
       media::mojom::blink::WebrtcPredictionFeaturesPtr features =
           media::mojom::blink::WebrtcPredictionFeatures::New(
-              /*is_decode_stats=*/true,
-              static_cast<media::mojom::blink::VideoCodecProfile>(
-                  codec_profile),
-              video_pixels, /*hardware_accelerated=*/false);
+              /*is_decode_stats=*/true, codec_profile, video_pixels,
+              /*hardware_accelerated=*/false);
 
       handler->DecodingInfo(
           sdp_audio_format, sdp_video_format, spatial_scalability,
@@ -1140,10 +1138,8 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
       }
       media::mojom::blink::WebrtcPredictionFeaturesPtr features =
           media::mojom::blink::WebrtcPredictionFeatures::New(
-              /*is_decode_stats=*/false,
-              static_cast<media::mojom::blink::VideoCodecProfile>(
-                  codec_profile),
-              video_pixels, /*hardware_accelerated=*/false);
+              /*is_decode_stats=*/false, codec_profile, video_pixels,
+              /*hardware_accelerated=*/false);
 
       handler->EncodingInfo(
           sdp_audio_format, sdp_video_format, scalability_mode,
@@ -1460,7 +1456,7 @@ void MediaCapabilities::GetPerfInfo(
 
   media::mojom::blink::PredictionFeaturesPtr features =
       media::mojom::blink::PredictionFeatures::New(
-          static_cast<media::mojom::blink::VideoCodecProfile>(video_profile),
+          video_profile,
           gfx::Size(video_config->width(), video_config->height()),
           video_config->framerate(), key_system, use_hw_secure_codecs);
 

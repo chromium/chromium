@@ -2,5 +2,5 @@ include_rules = [
   "+base/functional/callback_forward.h",
   "+media/base",
   "+media/capture",
-  "+media/mojo/mojom/media_metrics_provider.mojom-forward.h",
+  "+media/mojo/mojom/media_metrics_provider.mojom-shared.h",
 ]

@@ -4,7 +4,7 @@
 
 #include "media/mojo/mojom/status_mojom_traits.h"
 
-#include "media/mojo/mojom/media_types.mojom.h"
+#include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 
 namespace mojo {

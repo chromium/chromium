@@ -1984,7 +1984,11 @@ _CONFIG = [
             'third_party/blink/renderer/platform/media/',
         ],
         'allowed': [
+            # For interoperability with non-Blink code.
+            'media::mojom::MediaMetricsProviderInterfaceBase',
+
             # TODO(crbug.com/40760651): migrate to Blink variant.
+            'learning::mojom::LearningTaskController',
             'media::mojom::MediaMetricsProvider',
             'media::mojom::PlaybackPropertiesPtr',
             'media::mojom::SecondaryPlaybackPropertiesPtr',

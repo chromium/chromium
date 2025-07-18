@@ -22,7 +22,7 @@
 #include "media/base/mock_filters.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/test_helpers.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
@@ -1779,7 +1779,7 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeBasic) {
   set_preload(MultiBufferDataSource::NONE);
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
-  response1.SetType(network::mojom::FetchResponseType::kBasic);
+  response1.SetType(network::mojom::blink::FetchResponseType::kBasic);
 
   EXPECT_CALL(host_, SetTotalBytes(kFileSize));
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
@@ -1798,7 +1798,7 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeCors) {
   set_preload(MultiBufferDataSource::NONE);
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
-  response1.SetType(network::mojom::FetchResponseType::kCors);
+  response1.SetType(network::mojom::blink::FetchResponseType::kCors);
 
   EXPECT_CALL(host_, SetTotalBytes(kFileSize));
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
@@ -1817,7 +1817,7 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeDefault) {
   set_preload(MultiBufferDataSource::NONE);
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
-  response1.SetType(network::mojom::FetchResponseType::kDefault);
+  response1.SetType(network::mojom::blink::FetchResponseType::kDefault);
 
   EXPECT_CALL(host_, SetTotalBytes(kFileSize));
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
@@ -1836,7 +1836,7 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaque) {
   set_preload(MultiBufferDataSource::NONE);
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
-  response1.SetType(network::mojom::FetchResponseType::kOpaque);
+  response1.SetType(network::mojom::blink::FetchResponseType::kOpaque);
 
   EXPECT_CALL(host_, SetTotalBytes(kFileSize));
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));
@@ -1855,7 +1855,7 @@ TEST_F(MultiBufferDataSourceTest, ResponseTypeOpaqueRedirect) {
   set_preload(MultiBufferDataSource::NONE);
   WebURLResponse response1 =
       response_generator_->GeneratePartial206(0, kDataSize - 1);
-  response1.SetType(network::mojom::FetchResponseType::kOpaqueRedirect);
+  response1.SetType(network::mojom::blink::FetchResponseType::kOpaqueRedirect);
 
   EXPECT_CALL(host_, SetTotalBytes(kFileSize));
   EXPECT_CALL(host_, AddBufferedByteRange(0, kDataSize));

@@ -12,7 +12,7 @@
 #include "media/base/encoder_status.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/status.h"
-#include "media/mojo/mojom/media_types.mojom.h"
+#include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 namespace mojo {

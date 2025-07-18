@@ -21,7 +21,9 @@
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "services/network/public/mojom/cors.mojom-blink.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -86,11 +88,12 @@ void ResourceMultiBufferDataProvider::Start() {
   // Prepare the request.
   WebURLRequest request(url_data_->url());
   request.SetRequestContext(is_client_audio_element_
-                                ? mojom::RequestContextType::AUDIO
-                                : mojom::RequestContextType::VIDEO);
+                                ? mojom::blink::RequestContextType::AUDIO
+                                : mojom::blink::RequestContextType::VIDEO);
   request.SetRequestDestination(
-      is_client_audio_element_ ? network::mojom::RequestDestination::kAudio
-                               : network::mojom::RequestDestination::kVideo);
+      is_client_audio_element_
+          ? network::mojom::blink::RequestDestination::kAudio
+          : network::mojom::blink::RequestDestination::kVideo);
   request.SetHttpHeaderField(
       WebString::FromUTF8(net::HttpRequestHeaders::kRange),
       WebString::FromUTF8(
@@ -113,11 +116,12 @@ void ResourceMultiBufferDataProvider::Start() {
     options.expose_all_response_headers = true;
     // The author header set is empty, no preflight should go ahead.
     options.preflight_policy =
-        network::mojom::CorsPreflightPolicy::kPreventPreflight;
+        network::mojom::blink::CorsPreflightPolicy::kPreventPreflight;
 
-    request.SetMode(network::mojom::RequestMode::kCors);
+    request.SetMode(network::mojom::blink::RequestMode::kCors);
     if (url_data_->cors_mode() != UrlData::CORS_USE_CREDENTIALS) {
-      request.SetCredentialsMode(network::mojom::CredentialsMode::kSameOrigin);
+      request.SetCredentialsMode(
+          network::mojom::blink::CredentialsMode::kSameOrigin);
     }
   }
 

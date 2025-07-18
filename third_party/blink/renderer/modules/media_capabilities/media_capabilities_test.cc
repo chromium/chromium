@@ -208,29 +208,26 @@ class FakeMediaMetricsProvider
   void Initialize(bool is_mse,
                   media::mojom::MediaURLScheme url_scheme,
                   media::mojom::MediaStreamType media_stream_type) override {}
-  void OnStarted(media::mojom::blink::PipelineStatusPtr status) override {}
-  void OnError(media::mojom::blink::PipelineStatusPtr status) override {}
-  void OnFallback(::media::mojom::blink::PipelineStatusPtr status) override {}
+  void OnStarted(const media::PipelineStatus& status) override {}
+  void OnError(const media::PipelineStatus& status) override {}
+  void OnFallback(const media::PipelineStatus& status) override {}
   void SetIsEME() override {}
   void SetTimeToMetadata(base::TimeDelta elapsed) override {}
   void SetTimeToFirstFrame(base::TimeDelta elapsed) override {}
   void SetTimeToPlayReady(base::TimeDelta elapsed) override {}
   void SetContainerName(
-      media::mojom::blink::MediaContainerName container_name) override {}
-  void SetRendererType(
-      media::mojom::blink::RendererType renderer_type) override {}
-  void SetDemuxerType(media::mojom::DemuxerType demuxer_type) override {}
+      media::container_names::MediaContainerName container_name) override {}
+  void SetRendererType(media::RendererType renderer_type) override {}
+  void SetDemuxerType(media::DemuxerType demuxer_type) override {}
   void SetKeySystem(const String& key_system) override {}
   void SetHasWaitingForKey() override {}
   void SetIsHardwareSecure() override {}
   void SetHasPlayed() override {}
   void SetHaveEnough() override {}
-  void SetHasAudio(media::mojom::AudioCodec audio_codec) override {}
-  void SetHasVideo(media::mojom::VideoCodec video_codec) override {}
-  void SetVideoPipelineInfo(
-      media::mojom::blink::VideoPipelineInfoPtr info) override {}
-  void SetAudioPipelineInfo(
-      media::mojom::blink::AudioPipelineInfoPtr info) override {}
+  void SetHasAudio(media::AudioCodec audio_codec) override {}
+  void SetHasVideo(media::VideoCodec video_codec) override {}
+  void SetVideoPipelineInfo(const media::VideoPipelineInfo& info) override {}
+  void SetAudioPipelineInfo(const media::AudioPipelineInfo& info) override {}
 
  private:
   mojo::Receiver<media::mojom::blink::MediaMetricsProvider> receiver_{this};
@@ -486,8 +483,7 @@ MediaEncodingConfiguration* CreateWebrtcEncodingConfig() {
 // constants above.
 media::mojom::blink::PredictionFeatures CreateFeatures() {
   media::mojom::blink::PredictionFeatures features;
-  features.profile =
-      static_cast<media::mojom::blink::VideoCodecProfile>(kCodecProfile);
+  features.profile = kCodecProfile;
   features.video_size = gfx::Size(kWidth, kHeight);
   features.frames_per_sec = kFramerate;
 
@@ -520,8 +516,7 @@ media::mojom::blink::WebrtcPredictionFeatures CreateWebrtcFeatures(
     bool is_decode) {
   media::mojom::blink::WebrtcPredictionFeatures features;
   features.is_decode_stats = is_decode;
-  features.profile =
-      static_cast<media::mojom::blink::VideoCodecProfile>(kCodecProfile);
+  features.profile = kCodecProfile;
   features.video_pixels = kWidth * kHeight;
   return features;
 }

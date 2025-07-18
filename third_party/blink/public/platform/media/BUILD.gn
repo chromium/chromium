@@ -17,8 +17,7 @@ source_set("media") {
     "//base",
     "//cc",
     "//media",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/bindings",
+    "//media/mojo/mojom:mojom_shared",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:blink_headers",
   ]
