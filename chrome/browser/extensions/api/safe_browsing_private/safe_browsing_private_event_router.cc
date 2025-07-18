@@ -745,6 +745,7 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
     const std::string& destination,
     const std::string& mime_type,
     const std::string& trigger,
+    const std::string& source_active_user_email,
     const data_controls::Verdict::TriggeredRules& triggered_rules,
     enterprise_connectors::EventResult event_result,
     int64_t content_size) {
@@ -773,6 +774,9 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
           Profile::FromBrowserContext(context_), tab_url);
   if (!content_area_account_email.empty()) {
     event.Set(kKeyWebAppSignedInAccount, content_area_account_email);
+  }
+  if (!source_active_user_email.empty()) {
+    event.Set(kKeySourceWebAppSignedInAccount, source_active_user_email);
   }
   event.Set(kKeyEventResult,
             enterprise_connectors::EventResultToString(event_result));

@@ -66,6 +66,7 @@ source_set("data_controls") {
       ]
     }
     deps += [
+      "//chrome/browser/enterprise/data_protection",
       "//components/constrained_window",
       "//components/guest_view/browser",
       "//components/reporting/client:report_queue",

@@ -253,8 +253,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
         ->OnDataControlsSensitiveDataEvent(
             GURL(kUrl), GURL(kTabUrl), kSource, kDestination, "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-            triggered_rules, enterprise_connectors::EventResult::BLOCKED,
-            12345);
+            "active_user@gmail.com", triggered_rules,
+            enterprise_connectors::EventResult::BLOCKED, 12345);
   }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
@@ -1176,6 +1176,10 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
   EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult),
             enterprise_connectors::EventResultToString(
                 enterprise_connectors::EventResult::BLOCKED));
+  EXPECT_EQ(
+      *event->FindString(
+          SafeBrowsingPrivateEventRouter::kKeySourceWebAppSignedInAccount),
+      "active_user@gmail.com");
 
   const base::Value::List* triggered_rule_info =
       event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);

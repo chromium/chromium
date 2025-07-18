@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("data_protection") {
+  sources = [
+    "content_area_user_provider.cc",
+    "content_area_user_provider.h",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/enterprise/connectors/core",
+    "//content/public/browser",
+  ]
+}

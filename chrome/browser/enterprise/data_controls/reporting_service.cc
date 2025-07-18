@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
 
+#include "chrome/browser/enterprise/data_protection/content_area_user_provider.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -261,6 +262,8 @@ void ReportingService::ReportCopyOrPaste(
       /*destination=*/destination_string,
       /*mime_type=*/GetMimeType(metadata.format_type),
       /*trigger=*/trigger,
+      /*source_active_user_email=*/
+      enterprise_data_protection::GetActiveContentAreaUser(source),
       /*triggered_rules=*/verdict.triggered_rules(),
       /*event_result=*/event_result,
       /*content_size=*/metadata.size.value_or(-1));

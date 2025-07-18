@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
+#include "chrome/browser/enterprise/data_protection/content_area_user_provider.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/common/files_scan_data.h"
@@ -190,7 +191,7 @@ void PasteIfAllowedByContentAnalysis(
           source, destination,
           enterprise_connectors::kOnBulkDataEntryScopePref);
   dialog_data.source_content_area_email =
-      enterprise_connectors::ContentAreaUserProvider::GetUser(source);
+      enterprise_data_protection::GetActiveContentAreaUser(source);
 
   if (is_files) {
     dialog_data.paths = std::move(clipboard_paste_data.file_paths);

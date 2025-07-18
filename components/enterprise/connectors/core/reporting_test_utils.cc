@@ -672,6 +672,9 @@ void EventReportValidatorBase::ValidateField(
     const std::string& field_key,
     const std::optional<std::string>& expected_value) {
   if (expected_value.has_value()) {
+    ASSERT_TRUE(value->FindString(field_key))
+        << "Mismatch in field " << field_key << "\nNo value was set"
+        << "\nExpected value: " << expected_value.value();
     ASSERT_EQ(*value->FindString(field_key), expected_value.value())
         << "Mismatch in field " << field_key
         << "\nActual value: " << value->FindString(field_key)
@@ -689,6 +692,9 @@ void EventReportValidatorBase::ValidateField(
     const std::optional<std::u16string>& expected_value) {
   const std::string* s = value->FindString(field_key);
   if (expected_value.has_value()) {
+    ASSERT_TRUE(s) << "Mismatch in field " << field_key << "\nNo value was set"
+                   << "\nExpected value: " << expected_value.value();
+
     const std::u16string actual_string_value = base::UTF8ToUTF16(*s);
     ASSERT_EQ(actual_string_value, expected_value.value())
         << "Mismatch in field " << field_key
@@ -706,6 +712,9 @@ void EventReportValidatorBase::ValidateField(
     const std::string& field_key,
     const std::optional<int>& expected_value) {
   if (expected_value.has_value()) {
+    ASSERT_TRUE(value->FindInt(field_key).has_value())
+        << "Mismatch in field " << field_key << "\nNo value was set"
+        << "\nExpected value: " << expected_value.value();
     ASSERT_EQ(value->FindInt(field_key), expected_value)
         << "Mismatch in field " << field_key
         << "\nActual value: " << value->FindInt(field_key).value()
@@ -720,6 +729,9 @@ void EventReportValidatorBase::ValidateField(
 void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
                                              const std::string& field_key,
                                              int expected_value) {
+  ASSERT_TRUE(value->FindInt(field_key).has_value())
+      << "Mismatch in field " << field_key << "\nNo value was set"
+      << "\nExpected value: " << expected_value;
   ASSERT_EQ(value->FindInt(field_key), expected_value)
       << "Mismatch in field " << field_key
       << "\nActual value: " << value->FindInt(field_key).value()
@@ -729,6 +741,9 @@ void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
 void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
                                              const std::string& field_key,
                                              bool expected_value) {
+  ASSERT_TRUE(value->FindBool(field_key).has_value())
+      << "Mismatch in field " << field_key << "\nNo value was set"
+      << "\nExpected value: " << expected_value;
   ASSERT_EQ(value->FindBool(field_key), expected_value)
       << "Mismatch in field " << field_key
       << "\nActual value: " << value->FindBool(field_key).value()

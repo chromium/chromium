@@ -63,7 +63,6 @@ class ContentAnalysisInfo {
 class ContentAreaUserProvider : public ContentAnalysisInfo {
  public:
   static std::string GetUser(Profile* profile, const GURL& tab_url);
-  static std::string GetUser(const content::ClipboardEndpoint& source);
 
  private:
   const AnalysisSettings& settings() const override;

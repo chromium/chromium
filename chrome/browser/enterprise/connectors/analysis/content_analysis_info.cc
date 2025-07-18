@@ -83,19 +83,6 @@ std::string ContentAreaUserProvider::GetUser(Profile* profile,
       .GetContentAreaAccountEmail();
 }
 
-// static
-std::string ContentAreaUserProvider::GetUser(
-    const content::ClipboardEndpoint& source) {
-  if (!source.data_transfer_endpoint() ||
-      !source.data_transfer_endpoint()->IsUrlType() ||
-      !source.data_transfer_endpoint()->GetURL() || !source.browser_context()) {
-    return "";
-  }
-
-  return GetUser(Profile::FromBrowserContext(source.browser_context()),
-                 *source.data_transfer_endpoint()->GetURL());
-}
-
 const GURL& ContentAreaUserProvider::tab_url() const {
   return *tab_url_;
 }
