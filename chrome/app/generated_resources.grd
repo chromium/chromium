@@ -286,6 +286,11 @@ are declared in tools/grit/grit_args.gni.
       <!-- Bookmarks specific strings -->
       <part file="bookmarks_strings.grdp" />
 
+      <!-- Glic specific strings -->
+      <if expr="enable_glic">
+        <part file="glic_strings.grdp" />
+      </if>
+
       <!-- Global Media Controls specific strings -->
       <part file="gmc_strings.grdp" />
 
@@ -19032,13 +19037,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_BLOCKED_LAUNCH_DIALOG_CLOSE_BUTTON" desc="The text of the button to dismiss the dialog displayed when a Chrome App launch is blocked.">
         Got it
-      </message>
-    </if>
-
-    <!-- Glic button context menu. -->
-    <if expr="not is_android">
-      <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
-        Unpin
       </message>
     </if>
 

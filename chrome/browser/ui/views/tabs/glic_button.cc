@@ -12,8 +12,12 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -33,13 +37,6 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace glic {
 
@@ -87,7 +84,6 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   layout_manager->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
 
-#if BUILDFLAG(ENABLE_GLIC)
   // Subscribe to changes in state of glic FRE dialog and glic window.
   glic::GlicKeyedService* service =
       glic::GlicKeyedService::Get(tab_strip_controller_->GetProfile());
@@ -101,12 +97,10 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   fre_subscription_ =
       fre_controller->AddWebUiStateChangedCallback(base::BindRepeating(
           &GlicButton::OnFreWebUiStateChanged, base::Unretained(this)));
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 GlicButton::~GlicButton() = default;
 
-#if BUILDFLAG(ENABLE_GLIC)
 void GlicButton::OnFreWebUiStateChanged(mojom::FreWebUiState new_state) {
   UpdateTooltipText();
 }
@@ -127,7 +121,6 @@ void GlicButton::UpdateTooltipText() {
   SetTooltipText(tooltip_text);
   GetViewAccessibility().SetName(tooltip_text);
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 void GlicButton::SetIsShowingNudge(bool is_showing) {
   if (is_showing) {
@@ -233,14 +226,10 @@ void GlicButton::OnMenuClosed() {
 }
 
 void GlicButton::AnnounceNudgeShown() {
-#if BUILDFLAG(ENABLE_GLIC)
   auto announcement = l10n_util::GetStringFUTF16(
       IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT,
       GlicLauncherConfiguration::GetGlobalHotkey().GetShortcutText());
   GetViewAccessibility().AnnounceAlert(announcement);
-#else
-  NOTIMPLEMENTED();
-#endif
 }
 
 BEGIN_METADATA(GlicButton)

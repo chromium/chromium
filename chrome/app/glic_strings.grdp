@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Glic specific strings (included from generated_resources.grd). -->
+<grit-part>
+  <!-- Glic button context menu. -->
+  <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
+    Unpin
+  </message>
+</grit-part>
