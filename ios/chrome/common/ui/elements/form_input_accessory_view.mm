@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
+#import "base/notreached.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
@@ -19,21 +20,33 @@ namespace {
 // Symbol size for symbols on the keyboard accessory.
 constexpr CGFloat kSymbolImagePointSize = 24;
 
+// Checkmark symbol size.
+constexpr CGFloat kCheckmarkSymbolPointSize = 17;
+
 // Default height for the keyboard accessory.
 constexpr CGFloat kDefaultAccessoryHeight = 44;
 
 // Large height for the keyboard accessory.
 constexpr CGFloat kLargeAccessoryHeight = 59;
 
+// Bottom padding for the large keyboard accessory on iOS 26.0+.
+constexpr CGFloat kBottomAccessoryPadding = 12;
+
+// Side padding for the large keyboard accessory on iOS 26.0+.
+constexpr CGFloat kSideAccessoryPadding = 4;
+
 // Button target area for the large keyboard accessory.
 constexpr CGFloat kLargeButtonTargetArea = 44;
 
 // Trailing horizontal padding.
-constexpr CGFloat kKeyboardHozirontalPadding = 16;
+constexpr CGFloat kKeyboardHorizontalPadding = 16;
 
 // The padding between the image and the title on the manual fill button.
 // Only applies to the iPad version of this button.
 constexpr CGFloat kManualFillTitlePadding = 4;
+
+// Width for the small keyboard accessory.
+constexpr CGFloat kSmallAccessoryWidth = 3 * kLargeButtonTargetArea + 4;
 
 // The font size used for the title of the manual fill button.
 // Only applies to the iPad version of this button.
@@ -51,10 +64,11 @@ constexpr CGFloat ManualFillCloseButtonRightInset = 15;
 // The bottom content inset for the close button.
 constexpr CGFloat ManualFillCloseButtonBottomInset = 4;
 
-// The height for the top and bottom sepparator lines.
+// The height for the top and bottom separator lines.
 constexpr CGFloat ManualFillSeparatorHeight = 0.5;
 
 // Symbols used by FormInputAccessoryView.
+NSString* const kCheckmarkSymbol = @"checkmark";
 NSString* const kChevronDownSymbol = @"chevron.down";
 NSString* const kChevronUpSymbol = @"chevron.up";
 
@@ -66,6 +80,20 @@ UIImage* SymbolNamed(NSString* imageName) {
                            scale:UIImageSymbolScaleMedium];
   return [UIImage systemImageNamed:imageName withConfiguration:configuration];
 }
+
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
+// Alpha of the tint color for the glass effect. A lower alpha will produce a
+// more pronounced glass effect.
+constexpr CGFloat kGlassTintAlpha = 0.5;
+
+// Shadow parameters. Used when the liquid glass effect is enabled.
+constexpr CGFloat kShadowRadius = 0.5;
+constexpr CGFloat kShadowVerticalOffset = 2.0;
+constexpr CGFloat kShadowOpacity = 1.0;
+
+#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
+        // __IPHONE_26_0
 
 }  // namespace
 
@@ -125,6 +153,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   UIView* _backgroundView;
   // Whether we are using the large accessory view.
   BOOL _largeAccessoryViewEnabled;
+  // Whether we are using the small width accessory view.
+  BOOL _smallWidthAccessoryViewEnabled;
   // Whether the current form factor is a tablet.
   BOOL _isTabletFormFactor;
   // Whether the size of the accessory is compact.
@@ -144,6 +174,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 - (void)setUpWithLeadingView:(UIView*)leadingView
           customTrailingView:(UIView*)customTrailingView {
+  [self setSmallWidthAccessoryViewEnabled:!leadingView];
   [self setUpWithLeadingView:leadingView
               customTrailingView:customTrailingView
               navigationDelegate:nil
@@ -156,6 +187,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 - (void)setUpWithLeadingView:(UIView*)leadingView
           navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate {
+  [self setSmallWidthAccessoryViewEnabled:!leadingView];
   [self setUpWithLeadingView:leadingView
               customTrailingView:nil
               navigationDelegate:delegate
@@ -211,6 +243,33 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 }
 
 #pragma mark - Private Methods
+
+// Whether the liquid glass effect is enabled. Restricted to iOS 26+.
+- (BOOL)isLiquidGlassEffectEnabled {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    if (_largeAccessoryViewEnabled || _smallWidthAccessoryViewEnabled) {
+      return YES;
+    }
+  }
+#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
+        // __IPHONE_26_0
+
+  return NO;
+}
+
+// Sets the small width mode. This mode is always disabled on iOS < 26.
+- (void)setSmallWidthAccessoryViewEnabled:(BOOL)enabled {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    _smallWidthAccessoryViewEnabled = enabled;
+    return;
+  }
+#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
+        // __IPHONE_26_0
+
+  _smallWidthAccessoryViewEnabled = NO;
+}
 
 - (void)closeButtonTapped {
   [self.delegate formInputAccessoryViewDidTapCloseButton:self];
@@ -271,23 +330,36 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
   _contentView = [[UIView alloc] init];
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
-  if (_largeAccessoryViewEnabled) {
-    _backgroundView = PrimaryBackgroundBlurView();
+  if (_largeAccessoryViewEnabled || [self isLiquidGlassEffectEnabled]) {
+    _backgroundView = [self backgroundEffectView];
     _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     [_contentView addSubview:_backgroundView];
     AddSameConstraints(_backgroundView, _contentView);
   } else {
-    _contentView.backgroundColor = [self contentBackgroundColor];
+    _contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   }
   [self addSubview:_contentView];
-  AddSameConstraintsToSides(
-      self, _contentView,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  [self.trailingAnchor constraintEqualToAnchor:_contentView.trailingAnchor
+                                      constant:[self sidePadding]]
+      .active = YES;
   // Lower the top constraint as the omniboxTypingShield can be above it.
   NSLayoutConstraint* topConstraint =
       [self.topAnchor constraintEqualToAnchor:_contentView.topAnchor];
   topConstraint.priority = UILayoutPriorityRequired - 1;
   topConstraint.active = YES;
+
+  [self.bottomAnchor constraintEqualToAnchor:_contentView.bottomAnchor
+                                    constant:[self bottomPadding]]
+      .active = YES;
+
+  if (_smallWidthAccessoryViewEnabled) {
+    [_contentView.widthAnchor constraintEqualToConstant:kSmallAccessoryWidth]
+        .active = YES;
+  } else {
+    [self.leadingAnchor constraintEqualToAnchor:_contentView.leadingAnchor
+                                       constant:-[self sidePadding]]
+        .active = YES;
+  }
 
   leadingView = leadingView ?: [[UIView alloc] init];
   self.leadingView = leadingView;
@@ -329,14 +401,14 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     defaultHeightConstraint,
     [leadingViewContainer.topAnchor
         constraintEqualToAnchor:_contentView.topAnchor],
-    [leadingViewContainer.bottomAnchor
-        constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
     [leadingViewContainer.leadingAnchor
         constraintEqualToAnchor:layoutGuide.leadingAnchor],
     [trailingView.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
-    [trailingView.bottomAnchor
-        constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
+
   ]];
+
+  [self setBottomAnchorForView:leadingViewContainer];
+  [self setBottomAnchorForView:trailingView];
 
   if (_isTabletFormFactor && _largeAccessoryViewEnabled) {
     // On tablets, when using the large keyboard accessory, add padding at both
@@ -345,7 +417,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     // Trailing constraint in non compact mode.
     _trailingConstraint = [trailingView.trailingAnchor
         constraintEqualToAnchor:layoutGuide.trailingAnchor
-                       constant:-kKeyboardHozirontalPadding];
+                       constant:-kKeyboardHorizontalPadding];
     // Trailing constraint in compact mode.
     _compactTrailingConstraint = [trailingView.trailingAnchor
         constraintEqualToAnchor:layoutGuide.trailingAnchor];
@@ -450,18 +522,24 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   return navigationView;
 }
 
+// Sets the minimum size constraints for an image button.
+- (void)setMinimumSizeForButton:(UIButton*)button {
+  [button.widthAnchor
+      constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
+      .active = YES;
+  [button.heightAnchor
+      constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
+      .active = YES;
+}
+
 // Create a button with the desired image, action and accessibility label.
 - (UIButton*)createImageButton:(UIImage*)image
                         action:(SEL)action
             accessibilityLabel:(NSString*)accessibilityLabel {
-  UIButton* imageButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [imageButton setImage:image forState:UIControlStateNormal];
-  [imageButton.widthAnchor
-      constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
-      .active = YES;
-  [imageButton.heightAnchor
-      constraintGreaterThanOrEqualToConstant:kLargeButtonTargetArea]
-      .active = YES;
+  UIButton* imageButton = [self createButton:image];
+  [imageButton setImage:[self applySymbolTint:image]
+               forState:UIControlStateNormal];
+  [self setMinimumSizeForButton:imageButton];
   [imageButton addTarget:self
                   action:action
         forControlEvents:UIControlEventTouchUpInside];
@@ -491,9 +569,19 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         [self.delegate textDataforFormInputAccessoryView:self];
     UIFont* font = [UIFont systemFontOfSize:kManualFillTitleFontSize
                                      weight:UIFontWeightMedium];
+    NSDictionary* attributes;
+    if ([self isLiquidGlassEffectEnabled]) {
+      attributes = @{
+        NSFontAttributeName : font,
+        NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor]
+      };
+    } else {
+      attributes = @{NSFontAttributeName : font};
+    }
+
     NSAttributedString* attributedTitle = [[NSAttributedString alloc]
         initWithString:textData.manualFillButtonTitle
-            attributes:@{NSFontAttributeName : font}];
+            attributes:attributes];
     buttonConfiguration.attributedTitle = attributedTitle;
 
     // If the button has both a title and an image, add padding around the
@@ -504,6 +592,28 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   }
 
   manualFillButton.configuration = buttonConfiguration;
+}
+
+// Creates a button of the correct type, depending on whether it is an image
+// button or not.
+- (UIButton*)createButton:(BOOL)isImageButton {
+  // With liquid glass, image buttons apply a tint to the symbols, so the type
+  // needs to be set to UIButtonTypeCustom.
+  return [UIButton
+      buttonWithType:(isImageButton && [self isLiquidGlassEffectEnabled])
+                         ? UIButtonTypeCustom
+                         : UIButtonTypeSystem];
+}
+
+// With liquid glass, we apply a symbol tint to make the symbols visible with
+// the glass background.
+- (UIImage*)applySymbolTint:(UIImage*)image {
+  if ([self isLiquidGlassEffectEnabled]) {
+    return [image imageWithTintColor:[UIColor colorNamed:kTextPrimaryColor]
+                       renderingMode:UIImageRenderingModeAlwaysOriginal];
+  }
+
+  return image;
 }
 
 // Create the manual fill button.
@@ -565,7 +675,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Create the close button.
 - (UIButton*)createCloseButtonWithText:
     (FormInputAccessoryViewTextData*)textData {
-  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  UIButton* closeButton = [self createButton:self.closeButtonSymbol];
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
@@ -573,14 +683,32 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   if (self.closeButtonSymbol) {
-    buttonConfiguration.image = self.closeButtonSymbol;
+    buttonConfiguration.image = [self applySymbolTint:self.closeButtonSymbol];
   } else {
-    buttonConfiguration.title = textData.closeButtonTitle;
+    UIImage* checkmarkSymbol;
+    if ([self isLiquidGlassEffectEnabled]) {
+      UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+          configurationWithPointSize:kCheckmarkSymbolPointSize
+                              weight:UIImageSymbolWeightSemibold
+                               scale:UIImageSymbolScaleMedium];
+      checkmarkSymbol = [UIImage systemImageNamed:kCheckmarkSymbol
+                                withConfiguration:configuration];
+      [self setMinimumSizeForButton:closeButton];
+    }
+
+    if (checkmarkSymbol) {
+      buttonConfiguration.image = [self applySymbolTint:checkmarkSymbol];
+    } else {
+      buttonConfiguration.title = textData.closeButtonTitle;
+    }
   }
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      0, ManualFillCloseButtonLeftInset,
-      self.closeButtonSymbol ? ManualFillCloseButtonBottomInset : 0,
-      ManualFillCloseButtonRightInset);
+
+  if (![self isLiquidGlassEffectEnabled]) {
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, ManualFillCloseButtonLeftInset,
+        self.closeButtonSymbol ? ManualFillCloseButtonBottomInset : 0,
+        ManualFillCloseButtonRightInset);
+  }
   closeButton.configuration = buttonConfiguration;
 
   [closeButton setAccessibilityLabel:textData.closeButtonAccessibilityLabel];
@@ -622,16 +750,67 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Returns the height of the accessory. Returns a larger height when using the
 // large accessory view.
 - (CGFloat)accessoryHeight {
-  return _largeAccessoryViewEnabled ? kLargeAccessoryHeight
-                                    : kDefaultAccessoryHeight;
+  return ((_largeAccessoryViewEnabled || [self isLiquidGlassEffectEnabled])
+              ? kLargeAccessoryHeight
+              : kDefaultAccessoryHeight) -
+         [self bottomPadding];
 }
 
-// Returns the content view's background color. Returns grey when using the
-// large accessory view.
-- (UIColor*)contentBackgroundColor {
-  return _largeAccessoryViewEnabled
-             ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
-             : [UIColor colorNamed:kBackgroundColor];
+- (UIView*)backgroundEffectView {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if ([self isLiquidGlassEffectEnabled]) {
+    // Set content view bounds to match the glass effect.
+    _contentView.clipsToBounds = true;
+    _contentView.layer.cornerRadius = [self accessoryHeight] / 2.0;
+    _contentView.layer.shadowRadius = kShadowRadius;
+    _contentView.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
+    _contentView.layer.shadowOpacity = kShadowOpacity;
+    _contentView.layer.shadowColor =
+        [UIColor colorNamed:kBackgroundShadowColor].CGColor;
+    _contentView.layer.masksToBounds = NO;
+
+    if (@available(iOS 26, *)) {
+      // Create glass effect
+      UIGlassEffect* glassEffect = [[UIGlassEffect alloc] init];
+      glassEffect.interactive = YES;
+      glassEffect.tintColor = [[UIColor colorNamed:kSecondaryBackgroundColor]
+          colorWithAlphaComponent:kGlassTintAlpha];
+      return [[UIVisualEffectView alloc] initWithEffect:glassEffect];
+    } else {
+      static constexpr std::string_view errorMessage =
+          "iOS 26 should always be available when the liquid glass effect is "
+          "enabled.";
+      NOTREACHED() << errorMessage;
+    }
+  }
+#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
+        // __IPHONE_26_0
+
+  return PrimaryBackgroundBlurView();
+}
+
+- (void)setBottomAnchorForView:(UIView*)view {
+  if ([self isLiquidGlassEffectEnabled]) {
+    [view.bottomAnchor
+        constraintGreaterThanOrEqualToAnchor:self.safeAreaLayoutGuide
+                                                 .bottomAnchor
+                                    constant:-[self bottomPadding]]
+        .active = YES;
+  } else {
+    [view.bottomAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor]
+        .active = YES;
+  }
+}
+
+// Returns the bottom padding of the accessory.
+- (CGFloat)bottomPadding {
+  return [self isLiquidGlassEffectEnabled] ? kBottomAccessoryPadding : 0;
+}
+
+// Returns the leading and trailing padding of the accessory.
+- (CGFloat)sidePadding {
+  return [self isLiquidGlassEffectEnabled] ? kSideAccessoryPadding : 0;
 }
 
 // Applies the proper horizontal padding, depending on whether the keyboard

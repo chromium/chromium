@@ -309,6 +309,14 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 }
 
 - (void)keyboardHeightChanged:(CGFloat)newHeight oldHeight:(CGFloat)oldHeight {
+  if (@available(iOS 26, *)) {
+    // On iOS 26, this causes an issue when the keyboard accessory initially
+    // appears, cause it to briefly go up and down by a pixel or 2 (like a
+    // hiccup). This original issue (crbug.com/326590685) no longer seems to
+    // happen on iOS 26, so we're not using this workaround on iOS 26.
+    return;
+  }
+
   if (newHeight < oldHeight) {
     // Add a quick animation to move the keyboard accessory view, which will
     // prevent it from moving if this is a quick flicker of the keyboard.
@@ -452,6 +460,14 @@ UIImage* GetManualFillSymbol() {
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
+    UIImage* closeButtonSymbol = nil;
+    // When using liquid glass (on iOS 26+), the close button symbol uses the
+    // default checkmark symbol.
+    if (!IsLiquidGlassEffectEnabled()) {
+      closeButtonSymbol = DefaultSymbolWithPointSize(kKeyboardDownSymbol,
+                                                     kSymbolActionPointSize);
+    }
+
     [formInputAccessoryView
               setUpWithLeadingView:self.leadingView
                 navigationDelegate:self.navigationDelegate
@@ -463,9 +479,7 @@ UIImage* GetManualFillSymbol() {
                                        kSymbolActionPointSize)
            addressManualFillSymbol:CustomSymbolWithPointSize(
                                        kLocationSymbol, kSymbolActionPointSize)
-                 closeButtonSymbol:DefaultSymbolWithPointSize(
-                                       kKeyboardDownSymbol,
-                                       kSymbolActionPointSize)
+                 closeButtonSymbol:closeButtonSymbol
                 isTabletFormFactor:isTabletFormFactor];
     [formInputAccessoryView setIsCompact:[self isCompact]];
   } else {

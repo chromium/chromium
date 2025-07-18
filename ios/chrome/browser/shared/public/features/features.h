@@ -638,6 +638,12 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly();
 // Whether or not the Keyboard Accessory Upgrade feature is enabled.
 bool IsKeyboardAccessoryUpgradeEnabled();
 
+// Whether the liquid glass effect is enabled. Returns true on iOS 26+ if the
+// Keyboard Accessory Upgrade feature is enabled (pre KA upgrade code is about
+// to be deprecated, so we're not adding liquid glass support to it). Returns
+// false otherwise.
+bool IsLiquidGlassEffectEnabled();
+
 // Feature for the Magic Stack.
 BASE_DECLARE_FEATURE(kMagicStack);
 

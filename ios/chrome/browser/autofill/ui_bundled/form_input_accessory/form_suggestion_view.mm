@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 using autofill::FillingProduct;
@@ -51,6 +52,12 @@ constexpr CGFloat kScrollHintDuration = 0.5;
 
 // Leading horizontal offset.
 constexpr CGFloat kLeadingOffset = 16;
+
+// Top and bottom padding when using liquid glass.
+constexpr CGFloat kLiquidGlassVerticalPadding = 10;
+
+// Width of the suggestion separator when using liquid glass.
+constexpr CGFloat kLiquidGlassSeparatorWidth = 1.0;
 
 // Logs the right histogram when a suggestion from the keyboard accessory is
 // selected. `suggestion_type` is the type of the selected suggestion and
@@ -237,7 +244,13 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
                           : kSuggestionHorizontalMargin;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:stackView];
-  AddSameConstraints(stackView, self);
+  if (IsLiquidGlassEffectEnabled()) {
+    AddSameConstraintsToSides(
+        stackView, self,
+        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  } else {
+    AddSameConstraints(stackView, self);
+  }
   [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor].active =
       true;
 
@@ -253,6 +266,26 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   self.accessibilityIdentifier = kFormSuggestionsViewAccessibilityIdentifier;
 }
 
+// Creates a tiny vertical separator.
+- (UIView*)createSeparatorView {
+  UIView* wrapperContainer = [[UIView alloc] init];
+  wrapperContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* separator = [[UIView alloc] init];
+  separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  separator.translatesAutoresizingMaskIntoConstraints = NO;
+  [wrapperContainer addSubview:separator];
+  [NSLayoutConstraint activateConstraints:@[
+    [separator.widthAnchor
+        constraintEqualToConstant:kLiquidGlassSeparatorWidth],
+    [separator.bottomAnchor
+        constraintEqualToAnchor:wrapperContainer.bottomAnchor
+                       constant:-kLiquidGlassVerticalPadding],
+    [separator.topAnchor constraintEqualToAnchor:wrapperContainer.topAnchor
+                                        constant:kLiquidGlassVerticalPadding],
+  ]];
+  return wrapperContainer;
+}
+
 - (void)createAndInsertArrangedSubviews {
   auto setupBlock = ^(FormSuggestion* suggestion, NSUInteger idx, BOOL* stop) {
     UIView* label = [[FormSuggestionLabel alloc]
@@ -261,6 +294,9 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
                numSuggestions:[self.suggestions count]
         accessoryTrailingView:self.accessoryTrailingView
                      delegate:self];
+    if (IsLiquidGlassEffectEnabled() && idx > 0) {
+      [self.stackView addArrangedSubview:[self createSeparatorView]];
+    }
     [self.stackView addArrangedSubview:label];
     if (idx == 0 &&
         suggestion.featureForIPH != SuggestionFeatureForIPH::kUnknown) {
