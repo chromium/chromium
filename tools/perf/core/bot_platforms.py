@@ -1064,7 +1064,7 @@ ANDROID_PIXEL_FOLD = PerfPlatform(
     'android-pixel-fold-perf',
     'Android U',
     _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS,
-    15,
+    10,
     'android',
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL_TANGOR = PerfPlatform(
