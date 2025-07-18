@@ -185,6 +185,10 @@ using base::UserMetricsAction;
 - (void)showSignin:(SigninPromoViewMediator*)mediator
            command:(ShowSigninCommand*)command {
   CHECK_EQ(self.signinPromoMediator, mediator);
+  if (_signinCoordinator) {
+    // This can occur in case of double tap.
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinatorResult result,
                                  id<SystemIdentity>) {
