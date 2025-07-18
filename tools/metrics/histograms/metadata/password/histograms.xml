@@ -2871,7 +2871,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   <owner>vsemeniuk@google.com</owner>
   <summary>
     Records the state of Password Change recovery flow. It is recorded when a
-    user enters the flow either manually or automatiaclly and when the flow
+    user enters the flow either manually or automatically and when the flow
     results in an updated primary password.
   </summary>
 </histogram>
