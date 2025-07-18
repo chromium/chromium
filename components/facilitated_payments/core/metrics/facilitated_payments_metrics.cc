@@ -16,6 +16,9 @@
 namespace payments::facilitated {
 namespace {
 
+static constexpr std::string_view kPixAccountLinkingHistogramPrefix =
+    "FacilitatedPayments.Pix.AccountLinking.";
+
 // Helper to convert `PurchaseActionResult` to a string for logging.
 std::string GetPurchaseActionResultString(PurchaseActionResult result) {
   switch (result) {
@@ -391,28 +394,30 @@ void LogPixAccountLinkingPromptAccepted() {
       /*sample=*/true);
 }
 
+void LogPixAccountLinkingPromptShown() {
+  base::UmaHistogramBoolean(
+      base::StrCat({kPixAccountLinkingHistogramPrefix, "PromptShown"}),
+      /*sample=*/true);
+}
+
 void LogGetDetailsForCreatePaymentInstrumentResultAndLatency(
     bool is_eligible,
     base::TimeDelta latency) {
   base::UmaHistogramBoolean(
-      "FacilitatedPayments.Pix.AccountLinking."
-      "GetDetailsForCreatePaymentInstrument.Result",
+      base::StrCat({kPixAccountLinkingHistogramPrefix,
+                    "GetDetailsForCreatePaymentInstrument.Result"}),
       is_eligible);
   base::UmaHistogramLongTimes(
-      "FacilitatedPayments.Pix.AccountLinking."
-      "GetDetailsForCreatePaymentInstrument.Latency",
+      base::StrCat({kPixAccountLinkingHistogramPrefix,
+                    "GetDetailsForCreatePaymentInstrument.Latency"}),
       latency);
-}
-
-void LogPixAccountLinkingPromptShown() {
-  base::UmaHistogramBoolean("FacilitatedPayments.Pix.AccountLinkingPromptShown",
-                            /*sample=*/true);
 }
 
 void LogPixAccountLinkingFlowExitedReason(
     PixAccountLinkingFlowExitedReason reason) {
   base::UmaHistogramEnumeration(
-      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason", reason);
+      base::StrCat({kPixAccountLinkingHistogramPrefix, "FlowExitedReason"}),
+      reason);
 }
 
 }  // namespace payments::facilitated

@@ -322,7 +322,7 @@ TEST_F(PixAccountLinkingManagerTest, ScreenShown_PromptShownLogged) {
   test_api().OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinkingPromptShown",
+      "FacilitatedPayments.Pix.AccountLinking.PromptShown",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
 }
@@ -334,7 +334,7 @@ TEST_F(PixAccountLinkingManagerTest, ScreenNotShown_PromptShownNotLogged) {
   test_api().OnUiScreenEvent(UiEvent::kScreenCouldNotBeShown);
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinkingPromptShown",
+      "FacilitatedPayments.Pix.AccountLinking.PromptShown",
       /*sample=*/true,
       /*expected_bucket_count=*/0);
 }

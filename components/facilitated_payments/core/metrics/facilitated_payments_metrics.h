@@ -19,9 +19,6 @@ class TimeDelta;
 
 namespace payments::facilitated {
 
-static constexpr std::string_view kPixAccountLinkingHistogramPrefix =
-    "FacilitatedPayments.Pix.AccountLinking.";
-
 // A payment system that is currently running.
 enum class FacilitatedPaymentsType {
   kEwallet = 0,

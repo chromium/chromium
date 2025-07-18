@@ -193,7 +193,8 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixAccountLinkingPromptShown) {
   LogPixAccountLinkingPromptShown();
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinkingPromptShown", /*sample=*/true,
+      "FacilitatedPayments.Pix.AccountLinking.PromptShown",
+      /*sample=*/true,
       /*expected_bucket_count=*/1);
 }
 
