@@ -6,7 +6,8 @@
 * content. */
 :root {
   color-scheme: light dark;
-  --color--surface-container: light-dark(#F0F4F9, #282A2C);
+  --color--surface-container-light: light-dark(#F8FAFD, #3D3F42);
+  --color--surface-container-dark: light-dark(#DEE3E9, #262627);
 }
 
 html,
@@ -115,9 +116,9 @@ p {
 .skeleton-loader-block {
   width: 100%;
   margin-bottom: 12px;
-  background-color: var(--color--surface-container);
+  background-color: var(--color--surface-container-light);
   border-radius: 12px;
-  animation: 1.5s infinite ease-in-out opacity-fade;
+  animation: 1.5s infinite ease-in-out color-fade;
 }
 
 .container .bottom {
@@ -173,14 +174,14 @@ p {
   animation-delay: 0.6s;
 }
 
-@keyframes opacity-fade {
+@keyframes color-fade {
   0% {
-    opacity: 100%;
+  background-color: var(--color--surface-container-light);
   }
   33% {
-    opacity: 50%;
+  background-color: var(--color--surface-container-dark);
   }
   100% {
-    opacity: 100%;
+  background-color: var(--color--surface-container-light);
   }
 }
