@@ -80,7 +80,7 @@ class PaintPreviewBaseService : public KeyedService {
     gfx::Rect clip_rect;
 
     // Whether to record links.
-    bool capture_links;
+    bool capture_links{false};
 
     // Cap the perframe SkPicture size to |max_per_capture_size| if non-zero.
     size_t max_per_capture_size{0};
