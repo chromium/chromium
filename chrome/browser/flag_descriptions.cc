@@ -8437,6 +8437,13 @@ const char kGroupPromoPrototypeName[] = "Group Promo Prototype";
 const char kGroupPromoPrototypeDescription[] =
     "Enables prototype for group promo.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kGroupPromoPrototypeCpaName[] =
+    "Group Promo Prototype - Contextual page action";
+const char kGroupPromoPrototypeCpaDescription[] =
+    "Enables contextual toolbar button for group promo prototype.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kEnableNetworkServiceSandboxName[] =
     "Enable the network service sandbox.";
