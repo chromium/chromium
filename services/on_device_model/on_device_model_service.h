@@ -23,10 +23,6 @@
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "sandbox/policy/linux/sandbox_linux.h"
-#endif
-
 namespace on_device_model {
 
 inline constexpr base::TimeDelta kDefaultModelIdleTimeout = base::Minutes(5);
@@ -34,19 +30,6 @@ inline constexpr base::TimeDelta kDefaultModelIdleTimeout = base::Minutes(5);
 class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
     : public mojom::OnDeviceModelService {
  public:
-  // Must be called in the service's process before sandbox initialization.
-  // These are defined separately in pre_sandbox_init.cc for explicit security
-  // review coverage.
-  [[nodiscard]] static bool PreSandboxInit();
-
-  // Must be called in the service's process after the run loop finished.
-  [[nodiscard]] static bool Shutdown();
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  static void AddSandboxLinuxOptions(
-      sandbox::policy::SandboxLinux::Options& options);
-#endif
-
   OnDeviceModelService(
       mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
       const ml::ChromeML& impl);

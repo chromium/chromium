@@ -1,1 +1,2 @@
+per-file speech_recognition_sandbox_hook_linux.*=set noparent
 per-file speech_recognition_sandbox_hook_linux.*=file://sandbox/linux/OWNERS

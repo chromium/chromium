@@ -29,12 +29,13 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/utility/content_utility_client.h"
+#include "content/utility/on_device_model/on_device_model_sandbox_init.h"
 #include "content/utility/utility_thread_impl.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
-#include "services/on_device_model/on_device_model_service.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/video_effects/public/cpp/buildflags.h"
 
@@ -281,7 +282,7 @@ int UtilityMain(MainFunctionParams parameters) {
   }
 
   if (utility_sub_type == on_device_model::mojom::OnDeviceModelService::Name_) {
-    CHECK(on_device_model::OnDeviceModelService::PreSandboxInit());
+    CHECK(on_device_model::PreSandboxInit());
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -324,9 +325,8 @@ int UtilityMain(MainFunctionParams parameters) {
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
       break;
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
-      on_device_model::OnDeviceModelService::AddSandboxLinuxOptions(
-          sandbox_options);
-      pre_sandbox_hook = base::BindOnce(&GpuPreSandboxHook);
+      on_device_model::AddSandboxLinuxOptions(sandbox_options);
+      pre_sandbox_hook = base::BindOnce(&on_device_model::PreSandboxHook);
       break;
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       pre_sandbox_hook =
@@ -507,7 +507,7 @@ int UtilityMain(MainFunctionParams parameters) {
   run_loop.Run();
 
   if (utility_sub_type == on_device_model::mojom::OnDeviceModelService::Name_) {
-    CHECK(on_device_model::OnDeviceModelService::Shutdown());
+    CHECK(on_device_model::Shutdown());
   }
 
 #if defined(LEAK_SANITIZER)

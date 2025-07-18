@@ -32,6 +32,7 @@
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/network/network_service.h"
 #include "services/on_device_model/on_device_model_service.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "services/tracing/tracing_service.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"

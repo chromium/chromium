@@ -25,7 +25,6 @@ component("on_device_model_service") {
   sources = [
     "on_device_model_service.cc",
     "on_device_model_service.h",
-    "pre_sandbox_init.cc",
   ]
   deps = [
     ":backend_interfaces",

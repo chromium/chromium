@@ -2,24 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/utility/on_device_model/on_device_model_sandbox_init.h"
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
-#include "services/on_device_model/on_device_model_service.h"
 
 #if defined(ENABLE_ML_INTERNAL)
-#include "services/on_device_model/ml/chrome_ml.h"  // nogncheck
+#include "services/on_device_model/ml/chrome_ml.h"      // nogncheck
 #include "services/on_device_model/ml/gpu_blocklist.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "gpu/config/gpu_info_collector.h"                    // nogncheck
+#include <errno.h>
+
+#include "content/common/gpu_pre_sandbox_hook_linux.h"
+#include "gpu/config/gpu_info_collector.h"  // nogncheck
+#include "sandbox/policy/linux/sandbox_linux.h"
 #endif
 
 #if !BUILDFLAG(IS_FUCHSIA)
+#include "base/feature_list.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
 #include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"         // nogncheck
@@ -73,8 +79,7 @@ BASE_FEATURE(kOnDeviceModelWarmDrivers,
 
 }  // namespace
 
-// static
-bool OnDeviceModelService::PreSandboxInit() {
+bool PreSandboxInit() {
 #if defined(ENABLE_ML_INTERNAL)
   // Ensure the library is loaded before the sandbox is initialized.
   if (!ml::ChromeML::Get()) {
@@ -133,9 +138,7 @@ bool OnDeviceModelService::PreSandboxInit() {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// static
-void OnDeviceModelService::AddSandboxLinuxOptions(
-    sandbox::policy::SandboxLinux::Options& options) {
+void AddSandboxLinuxOptions(sandbox::policy::SandboxLinux::Options& options) {
   // Make sure any necessary vendor-specific options are set.
   gpu::GPUInfo info;
   gpu::CollectBasicGraphicsInfo(&info);
@@ -144,10 +147,27 @@ void OnDeviceModelService::AddSandboxLinuxOptions(
     UpdateSandboxOptionsForGpu(gpu, options);
   }
 }
+
+bool PreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
+  std::vector<sandbox::syscall_broker::BrokerFilePermission> file_permissions =
+      content::FilePermissionsForGpu(options);
+  file_permissions.push_back(
+      sandbox::syscall_broker::BrokerFilePermission::ReadOnly(
+          "/sys/devices/system/cpu/online"));
+
+  sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
+      content::CommandSetForGPU(options), file_permissions, options);
+
+  if (!content::LoadLibrariesForGpu(options)) {
+    return false;
+  }
+
+  errno = 0;
+  return true;
+}
 #endif
 
-// static
-bool OnDeviceModelService::Shutdown() {
+bool Shutdown() {
   return true;
 }
 
