@@ -19,6 +19,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
 namespace actor {
@@ -47,8 +48,10 @@ ToolController::ToolController(ActorTask& task, AggregatedJournal& journal)
 ToolController::~ToolController() = default;
 
 void ToolController::SetState(State state) {
-  VLOG(4) << "ToolController state change: " << StateToString(state_) << " -> "
-          << StateToString(state);
+  journal_->Log(active_state_ ? active_state_->tool->JournalURL() : GURL(),
+                task_->id(), "ToolControllerStateChange",
+                absl::StrFormat("State: %s -> %s", StateToString(state_),
+                                StateToString(state)));
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>> transitions(
       base::StateTransitions<State>({
@@ -130,6 +133,8 @@ void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
   mojom::ActionResultPtr toctou_result =
       active_state_->tool->TimeOfUseValidation(active_state_->last_observation);
   if (!IsOk(*toctou_result)) {
+    journal_->Log(active_state_->tool->JournalURL(), task_->id(),
+                  "TOCTOU Check Failed", ToDebugString(*toctou_result));
     CompleteToolRequest(std::move(toctou_result));
     return;
   }

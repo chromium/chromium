@@ -110,8 +110,10 @@ void ExecutionEngine::SetOwner(ActorTask* task) {
 }
 
 void ExecutionEngine::SetState(State state) {
-  VLOG(1) << "ExecutionEngine state change: " << StateToString(state_) << " -> "
-          << StateToString(state);
+  journal_->Log(GURL(), task_->id(), "ExecutionEngine::StateChange",
+                absl::StrFormat("State %s -> %s", StateToString(state_),
+                                StateToString(state)));
+
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>> transitions(
       base::StateTransitions<State>({
