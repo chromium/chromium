@@ -1671,4 +1671,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   textView.selectedTextRange = nil;
 }
 
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
 @end
