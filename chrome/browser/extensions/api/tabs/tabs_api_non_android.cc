@@ -516,41 +516,6 @@ void ZoomModeToZoomSettings(ZoomController::ZoomMode zoom_mode,
 
 // Windows ---------------------------------------------------------------------
 
-ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
-  std::optional<windows::GetLastFocused::Params> params =
-      windows::GetLastFocused::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  tabs_internal::ApiParameterExtractor<windows::GetLastFocused::Params>
-      extractor(params);
-
-  Browser* last_focused_browser = nullptr;
-  BrowserList* const browser_list = BrowserList::GetInstance();
-  for (auto browser_iterator =
-           browser_list->begin_browsers_ordered_by_activation();
-       browser_iterator != browser_list->end_browsers_ordered_by_activation();
-       ++browser_iterator) {
-    Browser* browser = *browser_iterator;
-    if (windows_util::CanOperateOnWindow(
-            this, BrowserExtensionWindowController::From(browser),
-            extractor.type_filters())) {
-      last_focused_browser = browser;
-      break;
-    }
-  }
-  if (!last_focused_browser) {
-    return RespondNow(Error(tabs_constants::kNoLastFocusedWindowError));
-  }
-
-  WindowController::PopulateTabBehavior populate_tab_behavior =
-      extractor.populate_tabs() ? WindowController::kPopulateTabs
-                                : WindowController::kDontPopulateTabs;
-  base::Value::Dict windows = ExtensionTabUtil::CreateWindowValueForExtension(
-      *last_focused_browser, extension(), populate_tab_behavior,
-      source_context_type());
-  return RespondNow(WithArguments(std::move(windows)));
-}
-
 ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
   std::optional<windows::GetAll::Params> params =
       windows::GetAll::Params::Create(args());

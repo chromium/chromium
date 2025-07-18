@@ -4,11 +4,14 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -74,6 +77,38 @@ ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
                                 : WindowController::kDontPopulateTabs;
   base::Value::Dict windows = window_controller->CreateWindowValueForExtension(
       extension(), populate_tab_behavior, source_context_type());
+  return RespondNow(WithArguments(std::move(windows)));
+}
+
+ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
+  std::optional<windows::GetLastFocused::Params> params =
+      windows::GetLastFocused::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  tabs_internal::ApiParameterExtractor<windows::GetLastFocused::Params>
+      extractor(params);
+
+  BrowserWindowInterface* last_focused_browser = nullptr;
+  std::vector<BrowserWindowInterface*> browsers_by_activation =
+      GetBrowserWindowInterfacesOrderedByActivation();
+  for (BrowserWindowInterface* browser : browsers_by_activation) {
+    if (windows_util::CanOperateOnWindow(
+            this, BrowserExtensionWindowController::From(browser),
+            extractor.type_filters())) {
+      last_focused_browser = browser;
+      break;
+    }
+  }
+  if (!last_focused_browser) {
+    return RespondNow(Error(tabs_constants::kNoLastFocusedWindowError));
+  }
+
+  WindowController::PopulateTabBehavior populate_tab_behavior =
+      extractor.populate_tabs() ? WindowController::kPopulateTabs
+                                : WindowController::kDontPopulateTabs;
+  base::Value::Dict windows = ExtensionTabUtil::CreateWindowValueForExtension(
+      *last_focused_browser, extension(), populate_tab_behavior,
+      source_context_type());
   return RespondNow(WithArguments(std::move(windows)));
 }
 
