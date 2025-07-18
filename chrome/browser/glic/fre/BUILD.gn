@@ -22,6 +22,7 @@ source_set("fre") {
     "glic_fre_ui.cc",
   ]
   deps = [
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/background/glic",
     "//chrome/browser/glic",

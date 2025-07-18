@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/widget/glic_widget.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"

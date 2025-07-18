@@ -49,6 +49,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/grit/branded_strings.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
 

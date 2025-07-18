@@ -2577,6 +2577,91 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Glic Strings -->
+      <if expr="enable_glic">
+        <message name="IDS_GLIC_PROMO_TITLE" desc="Glic promo title." translateable="false">
+          Try Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP" translateable="false" desc="This is the tooltip shown when hovering over the glic entry button in the tab strip while the Glic window is closed.">
+          Open Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE" translateable="false" desc="This is the tooltip shown when hovering over the glic entry button in the tab strip while the Glic window is open.">
+          Close Gemini in Chromium
+        </message>
+
+        <message name="IDS_GLIC_THREE_DOT_MENU_ITEM" desc="Glic three dot menu item entry point." translateable="false">
+          Open Gemini in Chromium
+        </message>
+
+        <!-- Glic status tray icon strings -->
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is closed.">
+          Open Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is closed. It indicates that this is the Canary version of the browser.">
+          Open Gemini (Canary)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_DEV" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is closed. It indicates that this is the Dev version of the browser.">
+          Open Gemini (Dev)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is closed. It indicates that this is the Beta version of the browser.">
+          Open Gemini (Beta)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open.">
+          Close Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_CANARY" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open. It indicates that this is the Canary version of the browser.">
+          Close Gemini (Canary)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_DEV" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open. It indicates that this is the Dev version of the browser.">
+          Close Gemini (Dev)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered and the Glic window is open. It indicates that this is the Beta version of the browser.">
+          Close Gemini (Beta)
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the glic UI.">
+          Open Gemini in Chromium
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_MENU_CLOSE" translateable="false" desc="This is the menu item for closing the Glic window.">
+          Close Gemini in Chromium
+        </message>
+        <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" translateable="false" desc="This is the text of the glic ineligible profile notice.">
+          To use Gemini in Chromium, sign in with a different Google Account
+        </message>
+
+        <!-- Experimental Glic settings -->
+        <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Title of the Glic settings subpage. Also shown as page title in tabstrip.">
+          Gemini in Chromium
+        </message>
+        <message name="IDS_SETTINGS_GLIC_SECTION_TITLE" translateable="false" desc="Text of the Glic section header on the AI settings page.">
+          Gemini in Chromium
+        </message>
+        <message name="IDS_SETTINGS_GLIC_ROW_LABEL" translateable="false" desc="Label of the Glic row button on the AI settings page leading to the Glic subpage.">
+          Gemini in Chromium
+        </message>
+
+        <!-- Profile Picker Glic version-->
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Profile picker main view title for Glic version. 'Glic' has a special styling." translateable="false">
+          Choose a Chromium profile to use with <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Glic<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC_NO_PROFILE" desc="Profile picker main view title for Glic version when no profiles are eligible to use Glic. 'Glic' has a special styling." translateable="false">
+          Sign into Chromium with your Google Account to use <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Glic<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC" desc="Profile picker main view subtitle for Glic version." translateable="false">
+          Select the Chromium profile linked to your Google Account to personalize your Glic experience
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE" desc="Profile picker main view subtitle for Glic version. This version is shown when no profiles are eligibile to use Glic." translateable="false">
+          To add a new profile and use it with Glic, sign in to Chromium with a Google Account. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how to sign in to Chromium<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC" desc="Text shown in the Profile Picker Glic version below the profiles list container that helps the user to create a new profile and sign in to it." translateable="false">
+          To add a new profile and use it with Glic, sign in to Chromium with a different Google Account. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how to add a new Chromium profile<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+
+        <!-- Glic button and tab strip context menu -->
+        <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite announcement that happens when a contextual nudge is shown next to the Glic button." translateable="false">
+          To open Gemini in Chromium, press <ph name="GLOBAL_HOTKEY">$1<ex>⌘+G</ex></ph>
+        </message>
+      </if>
+
       <!-- UNO Promo strings for extensions -->
       <if expr="enable_extensions">
         <message name="IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed at the bottom of the extension installed bubble asking the user to enable UNO.">

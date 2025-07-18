@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/glic_settings_util.h"
 
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"

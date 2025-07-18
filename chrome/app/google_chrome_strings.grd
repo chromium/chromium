@@ -2597,6 +2597,91 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Glic Strings -->
+      <if expr="enable_glic">
+        <message name="IDS_GLIC_PROMO_TITLE" desc="Gemini promo title." translateable="false">
+          Try Gemini in Google Chrome
+        </message>
+        <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP" translateable="false" desc="This is the tooltip shown when hovering over the Gemini entry button in the tab strip while the Gemini window is closed.">
+          Open Gemini in Chrome
+        </message>
+        <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE" translateable="false" desc="This is the tooltip shown when hovering over the Gemini entry button in the tab strip while the Gemini window is open.">
+          Close Gemini in Chrome
+        </message>
+
+        <message name="IDS_GLIC_THREE_DOT_MENU_ITEM" desc="This is the three-dot menu item for opening Gemini." translateable="false">
+          Open Gemini in Chrome
+        </message>
+
+        <!-- Glic status tray icon strings -->
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is closed.">
+          Open Gemini in Chrome
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CANARY" translateable="false" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is closed. It indicates that this is the Canary version of the browser.">
+          Open Gemini in Chrome Canary
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_DEV" translateable="false" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is closed. It indicates that this is the Dev version of the browser.">
+          Open Gemini in Chrome Dev
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_BETA" translateable="false" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is closed. It indicates that this is the Beta version of the browser.">
+          Open Gemini in Chrome Beta
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE" translateable="false" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is open.">
+          Close Gemini in Chrome
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_CANARY" translateable="false" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is open. It indicates that this is the Canary version of the browser.">
+          Close Gemini in Chrome Canary
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_DEV" translateable="false" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is open. It indicates that this is the Dev version of the browser.">
+          Close Gemini in Chrome Dev
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_TOOLTIP_CLOSE_BETA" translateable="false" desc="This is the tooltip that is shown when the Gemini status icon is hovered and the Gemini window is open. It indicates that this is the Beta version of the browser.">
+          Close Gemini in Chrome Beta
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_MENU_SHOW" translateable="false" desc="This is the menu item for showing the Gemini experience in Chrome.">
+          Open Gemini in Chrome
+        </message>
+        <message name="IDS_GLIC_STATUS_ICON_MENU_CLOSE" translateable="false" desc="This is the menu item for closing the Gemini window.">
+          Close Gemini in Chrome
+        </message>
+        <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE" translateable="false" desc="This is the text of the Gemini ineligible profile notice.">
+          To use Gemini in Chrome, sign in with a different Google Account
+        </message>
+
+        <!-- Experimental Glic settings -->
+        <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Title of the Gemini settings subpage. Also shown in tab strip.">
+          Gemini in Chrome
+        </message>
+        <message name="IDS_SETTINGS_GLIC_SECTION_TITLE" translateable="false" desc="Text of the Gemini section header on the AI settings page.">
+          Gemini in Chrome
+        </message>
+        <message name="IDS_SETTINGS_GLIC_ROW_LABEL" translateable="false" desc="Label of the Gemini row button on the AI settings page leading to the Gemini subpage.">
+          Gemini in Chrome
+        </message>
+
+        <!-- Profile Picker Glic version-->
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Heading describing that the section below choosing a Chrome profile to use with Gemini. 'Gemini' has a special styling." translateable="false">
+          Choose a Chrome profile to use with <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Gemini<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC_NO_PROFILE" desc="Sublabel describing to sign with a Google account to use Chrome with Gemini. 'Gemini' has a special styling." translateable="false">
+          Sign into Chrome with your Google Account to use <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Gemini<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC" desc="Sublabel describing that the section below choosing a Chrome profile to use with Gemini" translateable="false">
+          To use Gemini in Chrome, you need to be signed in to Chrome with your Google Account
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE" desc="Sublabel describing that in order to add a new Chrome profile to use with Gemini, sign up with a Google account" translateable="false">
+          When you sign in to Chrome with your Google Account, you can use your Chrome profile with Gemini. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how to sign in to Chrome<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC" desc="Sublabel describing that in order to add a new Chrome profile to use with Gemini, sign up with a different Google account" translateable="false">
+          To use a different Google Account with Gemini in Chrome, <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>create a new profile<ph name="END_LINK">&lt;/a&gt;</ph> and sign in with the account you want
+        </message>
+
+        <!-- Glic button and tab strip context menu -->
+        <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite announcement that happens when a contextual nudge is shown next to the Gemini button." translateable="false">
+          To open Gemini in Chrome, press <ph name="GLOBAL_HOTKEY">$1<ex>⌘+G</ex></ph>
+        </message>
+      </if>
+
       <!-- UNO Promo strings for extensions -->
       <if expr="enable_extensions">
         <message name="IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE" desc="Text of the promo displayed at the bottom of the extension installed bubble asking the user to enable UNO.">
