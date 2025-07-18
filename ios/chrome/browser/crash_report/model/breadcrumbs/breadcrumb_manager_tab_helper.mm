@@ -22,6 +22,8 @@
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 
 using LoggingBlock = void (^)(const std::string& event);
 
@@ -58,8 +60,13 @@ using LoggingBlock = void (^)(const std::string& event);
 BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(web::WebState* web_state)
     : breadcrumbs::BreadcrumbManagerTabHelper(
           InfoBarManagerImpl::FromWebState(web_state),
-          breadcrumbs::BreadcrumbManagerTabHelper::ReserveUniqueId()),
+          web_state->GetUniqueIdentifier().identifier()),
       web_state_(web_state) {
+  // Assert that the WebState unique identifier can be used as unique id.
+  static_assert(
+      std::is_same<decltype(web_state->GetUniqueIdentifier().identifier()),
+                   decltype(this->GetUniqueId())>::value);
+
   web_state_->AddObserver(this);
   if (web_state_->IsRealized()) {
     CreateBreadcrumbScrollingObserver();

@@ -20,11 +20,23 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 
-int GetTabId(const web::WebState* const web_state) {
-  return BreadcrumbManagerTabHelper::FromWebState(web_state)->GetUniqueId();
+// Returns the identifier for `web_state`.
+int GetTabId(const web::WebState* web_state) {
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  if (auto* tab_helper = BreadcrumbManagerTabHelper::FromWebState(web_state)) {
+    // If the tab helper has been created, it should be using the WebState
+    // unique identifier too, so check this is the case.
+    const int identifier = tab_helper->GetUniqueId();
+    CHECK_EQ(identifier, web_state_id.identifier());
+    return identifier;
+  }
+
+  return web_state_id.identifier();
 }
 
 }  // namespace
