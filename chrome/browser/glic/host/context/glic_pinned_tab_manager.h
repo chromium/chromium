@@ -88,6 +88,9 @@ class GlicPinnedTabManager : public TabStripModelObserver {
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer);
 
+  // Visible for testing.
+  virtual bool IsBrowserValidForSharing(BrowserWindowInterface* browser_window);
+
  private:
   class UpdateThrottler;
 

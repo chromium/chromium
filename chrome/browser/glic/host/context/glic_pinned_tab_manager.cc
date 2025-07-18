@@ -248,8 +248,7 @@ bool GlicPinnedTabManager::PinTabs(
     }
     auto* tab = tab_handle.Get();
     if (!tab || IsTabPinned(tab_handle) ||
-        !sharing_manager_->IsBrowserValidForSharing(
-            tab->GetBrowserWindowInterface())) {
+        !IsBrowserValidForSharing(tab->GetBrowserWindowInterface())) {
       pinning_fully_succeeded = false;
       continue;
     }
@@ -397,8 +396,7 @@ GlicPinnedTabManager::GetUnsortedPinCandidates() {
       if (IsTabPinned(tab->GetHandle())) {
         continue;
       }
-      if (!sharing_manager_->IsBrowserValidForSharing(
-              tab->GetBrowserWindowInterface())) {
+      if (!IsBrowserValidForSharing(tab->GetBrowserWindowInterface())) {
         continue;
       }
       auto* web_contents = tab->GetContents();
@@ -458,6 +456,11 @@ void GlicPinnedTabManager::OnTabWillClose(tabs::TabHandle tab_handle) {
   // TODO(b/426644733): Avoid n^2 work when closing all tabs.
   CHECK(UnpinTabs({tab_handle}));
   NotifyPinnedTabsChanged();
+}
+
+bool GlicPinnedTabManager::IsBrowserValidForSharing(
+    BrowserWindowInterface* browser_window) {
+  return sharing_manager_->IsBrowserValidForSharing(browser_window);
 }
 
 }  // namespace glic

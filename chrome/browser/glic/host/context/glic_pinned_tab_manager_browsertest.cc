@@ -96,23 +96,9 @@ class FakePinCandidatesObserver : public mojom::PinCandidatesObserver {
   mojo::Receiver<mojom::PinCandidatesObserver> receiver_{this};
 };
 
-class MockGlicSharingManager : public GlicSharingManager {
+class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManager {
  public:
-  MOCK_METHOD(base::CallbackListSubscription,
-              AddFocusedTabChangedCallback,
-              (FocusedTabChangedCallback),
-              (override));
-  MOCK_METHOD(FocusedTabData, GetFocusedTabData, (), (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              AddTabPinningStatusChangedCallback,
-              (TabPinningStatusChangedCallback),
-              (override));
-  MOCK_METHOD(bool, PinTabs, (base::span<const tabs::TabHandle>), (override));
-  MOCK_METHOD(bool, UnpinTabs, (base::span<const tabs::TabHandle>), (override));
-  MOCK_METHOD(void, UnpinAllTabs, (), (override));
-  MOCK_METHOD(int32_t, GetMaxPinnedTabs, (), (const, override));
-  MOCK_METHOD(int32_t, GetNumPinnedTabs, (), (const, override));
-  MOCK_METHOD(bool, IsTabPinned, (tabs::TabHandle), (const, override));
+  using GlicPinnedTabManager::GlicPinnedTabManager;
   MOCK_METHOD(bool,
               IsBrowserValidForSharing,
               (BrowserWindowInterface*),
@@ -132,12 +118,10 @@ class GlicPinnedTabManagerBrowserTest : public InProcessBrowserTest {
     https_server_handle_ = https_server_.StartAndReturnHandle();
     ASSERT_TRUE(https_server_handle_);
 
-    sharing_manager_ =
-        std::make_unique<testing::NiceMock<MockGlicSharingManager>>();
-    ON_CALL(*sharing_manager_, IsBrowserValidForSharing(_))
+    pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
+        browser()->profile(), nullptr);
+    ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
         .WillByDefault(Return(true));
-    pinned_tab_manager_ = std::make_unique<GlicPinnedTabManager>(
-        browser()->profile(), sharing_manager_.get());
   }
 
   void TearDownOnMainThread() override {
@@ -173,8 +157,7 @@ class GlicPinnedTabManagerBrowserTest : public InProcessBrowserTest {
 
   net::EmbeddedTestServer https_server_;
   net::test_server::EmbeddedTestServerHandle https_server_handle_;
-  std::unique_ptr<MockGlicSharingManager> sharing_manager_;
-  std::unique_ptr<GlicPinnedTabManager> pinned_tab_manager_;
+  std::unique_ptr<GlicPinnedTabManagerWithOverrides> pinned_tab_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
