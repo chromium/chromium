@@ -58,6 +58,10 @@ void DeviceDelegateAndroid::SetOnReturnToChromeCallbackAndObserveAppState(
 
 void DeviceDelegateAndroid::OnApplicationStateChanged(
     base::android::ApplicationState state) {
+  if (on_application_state_changed_callback_for_testing_) {
+    std::move(on_application_state_changed_callback_for_testing_).Run();
+  }
+
   // The observer is initialized only after setting the callback, and is reset
   // after the callback is run.
   CHECK(on_return_to_chrome_callback_);

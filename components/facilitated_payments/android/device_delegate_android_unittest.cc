@@ -6,6 +6,7 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "components/facilitated_payments/android/device_delegate_android_test_api.h"
 #include "content/public/test/test_renderer_host.h"
@@ -58,9 +59,13 @@ TEST_F(DeviceDelegateAndroidTest, ChromeMovedToForeground_CallbackNotRun) {
 
   EXPECT_CALL(mock_callback, Run).Times(0);
 
-  test_api().OnApplicationStateChanged(
+  base::RunLoop run_loop;
+  test_api().SetOnApplicationStateChangedCallbackForTesting(
+      run_loop.QuitClosure());
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::ApplicationState::
           APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  run_loop.Run();
 }
 
 // The current activity can be paused by actions like opening the Settings page.
@@ -74,11 +79,15 @@ TEST_F(DeviceDelegateAndroidTest,
 
   EXPECT_CALL(mock_callback, Run).Times(0);
 
-  test_api().OnApplicationStateChanged(
+  base::RunLoop run_loop;
+  test_api().SetOnApplicationStateChangedCallbackForTesting(
+      run_loop.QuitWhenIdleClosure());
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::ApplicationState::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES);
-  test_api().OnApplicationStateChanged(
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::ApplicationState::
           APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  run_loop.Run();
 }
 
 TEST_F(DeviceDelegateAndroidTest,
@@ -89,12 +98,16 @@ TEST_F(DeviceDelegateAndroidTest,
 
   EXPECT_CALL(mock_callback, Run);
 
-  test_api().OnApplicationStateChanged(
+  base::RunLoop run_loop;
+  test_api().SetOnApplicationStateChangedCallbackForTesting(
+      run_loop.QuitWhenIdleClosure());
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::ApplicationState::
           APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
-  test_api().OnApplicationStateChanged(
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::ApplicationState::
           APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  run_loop.Run();
 }
 
 TEST_F(DeviceDelegateAndroidTest,
@@ -102,12 +115,16 @@ TEST_F(DeviceDelegateAndroidTest,
   delegate()->SetOnReturnToChromeCallbackAndObserveAppState(base::DoNothing());
   ASSERT_TRUE(test_api().app_status_listener());
 
-  test_api().OnApplicationStateChanged(
+  base::RunLoop run_loop;
+  test_api().SetOnApplicationStateChangedCallbackForTesting(
+      run_loop.QuitWhenIdleClosure());
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::ApplicationState::
           APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
-  test_api().OnApplicationStateChanged(
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::ApplicationState::
           APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  run_loop.Run();
 
   EXPECT_FALSE(test_api().app_status_listener());
 }

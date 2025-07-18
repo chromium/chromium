@@ -57,6 +57,9 @@ class DeviceDelegateAndroid : public DeviceDelegate {
   bool is_chrome_in_background_ = false;
   // Callback to be called when Chrome comes back to the foreground.
   base::OnceClosure on_return_to_chrome_callback_;
+  // A test-only callback that is run when `OnApplicationStateChanged` is
+  // called.
+  base::OnceClosure on_application_state_changed_callback_for_testing_;
 
   base::WeakPtrFactory<DeviceDelegateAndroid> weak_ptr_factory_{this};
 };

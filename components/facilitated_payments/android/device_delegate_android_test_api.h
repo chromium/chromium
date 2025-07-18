@@ -7,6 +7,7 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/check_deref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/facilitated_payments/android/device_delegate_android.h"
 
@@ -21,10 +22,12 @@ class DeviceDelegateAndroidTestApi {
       delete;
   ~DeviceDelegateAndroidTestApi() = default;
 
-  // Calls the underlying DeviceDelegateAndroid's private methods.
-  void OnApplicationStateChanged(base::android::ApplicationState state) {
-    delegate_->OnApplicationStateChanged(state);
+  void SetOnApplicationStateChangedCallbackForTesting(
+      base::OnceClosure callback) {
+    delegate_->on_application_state_changed_callback_for_testing_ =
+        std::move(callback);
   }
+
   base::android::ApplicationStatusListener* app_status_listener() {
     return delegate_->app_status_listener_.get();
   }
