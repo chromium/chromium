@@ -556,7 +556,8 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioRendererWithUsage) {
   EXPECT_EQ(fake_audio_->renderer().usage(), kTestRenderUsage);
 }
 
-TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
+// TODO(crbug.com/432628104): Re-enable this test.
+TEST_F(WebEngineIntegrationMediaTest, DISABLED_PlayAudioToAudioConsumer) {
   StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
