@@ -151,12 +151,6 @@ BASE_FEATURE(kOverrideDefaultOzonePlatformHintToAuto,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
-// Update of the virtual keyboard settings UI as described in
-// https://crbug.com/876901.
-BASE_FEATURE(kInputMethodSettingsUiUpdate,
-             "InputMethodSettingsUiUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Uses a stylus-specific tap slop region parameter for gestures.  Stylus taps
 // tend to slip more than touch taps (presumably because the user doesn't feel
 // the movement friction with a stylus).  As a result, it is harder to tap with
