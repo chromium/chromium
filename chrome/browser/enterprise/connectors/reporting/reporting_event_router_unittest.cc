@@ -769,6 +769,8 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
 
   if (use_proto_format()) {
@@ -818,6 +820,7 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
       "exampleDestination", "encrypted.zip", "sha256_of_data",
       "application/zip", "FILE_UPLOAD", "FILE_PASSWORD_PROTECTED",
       "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345, EventResult::ALLOWED);
+  run_loop.Run();
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
@@ -827,6 +830,8 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
 
   if (use_proto_format()) {
@@ -861,7 +866,7 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
         /*expected_trigger=*/"FILE_DOWNLOAD",
         /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
         /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
-        /* expected_result=*/"EVENT_RESULT_BLOCKED",
+        /*expected_result=*/"EVENT_RESULT_BLOCKED",
         /*expected_profile_username=*/profile_->GetProfileUserName(),
         /*expected_profile_identifier=*/GetProfileIdentifier(),
         /*expected_content_transfer_method*/ std::nullopt);
@@ -872,6 +877,194 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
       "exampleDestination", "encrypted.zip", "sha256_of_data",
       "application/zip", "FILE_DOWNLOAD", "FILE_PASSWORD_PROTECTED", "", 12345,
       EventResult::BLOCKED);
+  run_loop.Run();
+}
+
+TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
+  EnableEnhancedFieldsForSecOps();
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeySensitiveDataEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  ContentAnalysisResponse response;
+  response.set_request_token("123");
+  auto* result = response.add_results();
+  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  result->set_tag("dlp");
+
+  validator.ExpectSensitiveDataEvent(
+      /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
+      /*source*/ "exampleSource",
+      /*destination*/ "exampleDestination",
+      /*filename*/ "encrypted.zip",
+      /*sha256*/ "sha256_of_data",
+      /*trigger*/ "FILE_UPLOAD",
+      /*dlp_verdict*/ *result,
+      /*mimetype*/ ZipMimeType(),
+      /*size*/ 200,
+      /*result*/
+      EventResultToString(EventResult::ALLOWED),
+      /*username*/ profile_->GetProfileUserName(),
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ "123",
+      /*content_transfer_method*/ "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
+      /*user_justification*/ std::nullopt);
+  validator.ExpectActiveUser("gaia@gmail.com");
+  validator.ExpectSourceActiveUser("test@gmail.com");
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  reporting_event_router_->OnSensitiveDataEvent(
+      GURL("about:blank"), GURL("about:blank"), "exampleSource",
+      "exampleDestination", "encrypted.zip", "sha256_of_data",
+      "application/zip", "FILE_UPLOAD", "123",
+      "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", "test@gmail.com",
+      "gaia@gmail.com", *result, 200, referrer_chain, EventResult::ALLOWED);
+  run_loop.Run();
+}
+
+TEST_P(ReportingEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
+  EnableEnhancedFieldsForSecOps();
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeySensitiveDataEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  ContentAnalysisResponse response;
+  response.set_request_token("123");
+  auto* result = response.add_results();
+  result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  result->set_tag("dlp");
+
+  validator.ExpectSensitiveDataEvent(
+      /*url*/ "about:blank",
+      /*tab_url*/ "about:blank",
+      /*source*/ "exampleSource",
+      /*destination*/ "exampleDestination",
+      /*filename*/ "encrypted.zip",
+      /*sha256*/ "sha256_of_data",
+      /*trigger*/ "FILE_DOWNLOAD",
+      /*dlp_verdict*/ *result,
+      /*mimetype*/ ZipMimeType(),
+      /*size*/ 200,
+      /*result*/
+      EventResultToString(EventResult::BLOCKED),
+      /*username*/ profile_->GetProfileUserName(),
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ "123",
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
+  validator.ExpectActiveUser("gaia@gmail.com");
+  validator.ExpectSourceActiveUser("test@gmail.com");
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  reporting_event_router_->OnSensitiveDataEvent(
+      GURL("about:blank"), GURL("about:blank"), "exampleSource",
+      "exampleDestination", "encrypted.zip", "sha256_of_data",
+      "application/zip", "FILE_DOWNLOAD", "123", "", "test@gmail.com",
+      "gaia@gmail.com", *result, 200, referrer_chain, EventResult::BLOCKED);
+  run_loop.Run();
+}
+
+TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Warned) {
+  EnableEnhancedFieldsForSecOps();
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyDangerousDownloadEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  validator.ExpectDangerousDeepScanningResult(
+      /*url*/ "https://example.com/download.exe",
+      /*tab_url*/ "https://example.com/",
+      /*source*/ "exampleSource",
+      /*destination*/ "exampleDestination",
+      /*filename*/ "encrypted.zip",
+      /*sha256*/ "sha256_of_data",
+      /*threat_type*/ "POTENTIALLY_UNWANTED",
+      /*trigger*/ "FILE_DOWNLOAD",
+      /*mimetypes*/ ZipMimeType(),
+      /*size*/ 12345,
+      /*result*/ "EVENT_RESULT_WARNED",
+      /*username*/ profile_->GetProfileUserName(),
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ "123");
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  reporting_event_router_->OnDangerousDeepScanningResult(
+      GURL("https://example.com/download.exe"), GURL("https://example.com/"),
+      "exampleSource", "exampleDestination", "encrypted.zip", "sha256_of_data",
+      "POTENTIALLY_UNWANTED", "application/zip", "FILE_DOWNLOAD", 12345,
+      std::move(referrer_chain), EventResult::WARNED, "123", "");
+  run_loop.Run();
+}
+
+TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
+  EnableEnhancedFieldsForSecOps();
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyDangerousDownloadEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  validator.ExpectDangerousDeepScanningResult(
+      /*url*/ "https://example.com/download.exe",
+      /*tab_url*/ "https://example.com/",
+      /*source*/ "exampleSource",
+      /*destination*/ "exampleDestination",
+      /*filename*/ "encrypted.zip",
+      /*sha256*/ "sha256_of_data",
+      /*threat_type*/ "DANGEROUS",
+      /*trigger*/ "FILE_DOWNLOAD",
+      /*mimetypes*/ ZipMimeType(),
+      /*size*/ 12345,
+      /*result*/ "EVENT_RESULT_BLOCKED",
+      /*username*/ profile_->GetProfileUserName(),
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ "123");
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  reporting_event_router_->OnDangerousDeepScanningResult(
+      GURL("https://example.com/download.exe"), GURL("https://example.com/"),
+      "exampleSource", "exampleDestination", "encrypted.zip", "sha256_of_data",
+      "DANGEROUS", "application/zip", "FILE_DOWNLOAD", 12345,
+      std::move(referrer_chain), EventResult::BLOCKED, "123", "");
+  run_loop.Run();
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

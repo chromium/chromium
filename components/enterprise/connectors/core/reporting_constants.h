@@ -37,6 +37,11 @@ inline constexpr char kEnterpriseWarnedBypassTheatType[] =
 inline constexpr char kEnterpriseBlockedSeenThreatType[] =
     "ENTERPRISE_BLOCKED_SEEN";
 
+inline constexpr char kDangerousDownloadThreatType[] = "DANGEROUS";
+inline constexpr char kPotentiallyUnwantedDownloadThreatType[] =
+    "POTENTIALLY_UNWANTED";
+inline constexpr char kUnknownDownloadThreatType[] = "UNKNOWN";
+
 // TODO(crbug.com/432065125): Use these constants for event reporting and delete
 // the duplicates.
 inline constexpr char kFilePasswordProtectedUnscannedReason[] =
@@ -176,7 +181,6 @@ inline constexpr char kKeySource[] = "source";
 inline constexpr char kKeyDestination[] = "destination";
 inline constexpr char kKeyDownloadDigestSha256[] = "downloadDigestSha256";
 inline constexpr char kKeyFileName[] = "fileName";
-inline constexpr char kKeyWebAppSignedInAccount[] = "webAppSignedInAccount";
 inline constexpr char kKeyContentType[] = "contentType";
 inline constexpr char kKeyUnscannedReason[] = "unscannedReason";
 inline constexpr char kKeyContentSize[] = "contentSize";
@@ -197,10 +201,14 @@ inline constexpr char kKeyUrlCategory[] = "urlCategory";
 inline constexpr char kKeyAction[] = "action";
 inline constexpr char kKeyHasWatermarking[] = "hasWatermarking";
 inline constexpr char kKeyReason[] = "reason";
+inline constexpr char kKeyScanId[] = "scanId";
 inline constexpr char kKeyNetErrorCode[] = "netErrorCode";
 inline constexpr char kKeyUserName[] = "userName";
 inline constexpr char kKeyIsPhishingUrl[] = "isPhishingUrl";
 inline constexpr char kKeyReferrers[] = "referrers";
+inline constexpr char kKeySourceWebAppSignedInAccount[] =
+    "sourceWebAppSignedInAccount";
+inline constexpr char kKeyWebAppSignedInAccount[] = "webAppSignedInAccount";
 
 enum EnterpriseRealTimeUrlCheckMode {
   REAL_TIME_CHECK_DISABLED = 0,

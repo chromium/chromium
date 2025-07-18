@@ -90,6 +90,61 @@ class ReportingEventRouter : public KeyedService {
                             const int64_t content_size,
                             EventResult event_result);
 
+  // Notifies listeners that the analysis connector detected a violation.
+  void OnSensitiveDataEvent(
+      const GURL& url,
+      const GURL& tab_url,
+      const std::string& source,
+      const std::string& destination,
+      const std::string& file_name,
+      const std::string& download_digest_sha256,
+      const std::string& mime_type,
+      const std::string& trigger,
+      const std::string& scan_id,
+      const std::string& content_transfer_method,
+      const std::string& source_email,
+      const std::string& content_area_account_email,
+      const enterprise_connectors::ContentAnalysisResponse::Result& result,
+      const int64_t content_size,
+      const ReferrerChain& referrer_chain,
+      enterprise_connectors::EventResult event_result);
+
+  // Notifies listeners that deep scanning detected a dangerous download.
+  void OnDangerousDeepScanningResult(
+      const GURL& download_url,
+      const GURL& tab_url,
+      const std::string& source,
+      const std::string& destination,
+      const std::string& file_name,
+      const std::string& download_digest_sha256,
+      const std::string& threat_type,
+      const std::string& mime_type,
+      const std::string& trigger,
+      const int64_t content_size,
+      const ReferrerChain& referrer_chain,
+      enterprise_connectors::EventResult event_result,
+      const std::string& scan_id,
+      const std::string& content_transfer_method);
+
+  // Notifies listeners that the analysis connector detected a violation.
+  void OnAnalysisConnectorResult(
+      const GURL& url,
+      const GURL& tab_url,
+      const std::string& source,
+      const std::string& destination,
+      const std::string& file_name,
+      const std::string& download_digest_sha256,
+      const std::string& mime_type,
+      const std::string& trigger,
+      const std::string& scan_id,
+      const std::string& content_transfer_method,
+      const std::string& source_email,
+      const std::string& content_area_account_email,
+      const enterprise_connectors::ContentAnalysisResponse::Result& result,
+      const int64_t content_size,
+      const ReferrerChain& referrer_chain,
+      enterprise_connectors::EventResult event_result);
+
  private:
   // Returns filename with full path if full path is required;
   // Otherwise returns only the basename without full path.

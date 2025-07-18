@@ -201,17 +201,6 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
                                           "PHISHING", -201, referrer_chain);
   }
 
-  void TriggerOnDangerousDownloadEvent() {
-    safe_browsing::ReferrerChain referrer_chain;
-    referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
-    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnDangerousDownloadEvent(
-            GURL("https://maybevil.com/warning.exe"),
-            GURL("https://maybe.evil/"), "/path/to/warning.exe",
-            "sha256_of_warning_exe", "POTENTIALLY_UNWANTED", "exe", "scan_id",
-            567, referrer_chain, enterprise_connectors::EventResult::WARNED);
-  }
-
   void TriggerOnDangerousDownloadEventBypass() {
     safe_browsing::ReferrerChain referrer_chain;
     referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
@@ -221,29 +210,6 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             GURL("https://bypass.evil"), "/path/to/bypass.exe",
             "sha256_of_bypass_exe", "BYPASSED_WARNING", "exe", "scan_id", 890,
             referrer_chain);
-  }
-
-  void TriggerOnSensitiveDataEvent(
-      enterprise_connectors::EventResult event_result) {
-    safe_browsing::ReferrerChain referrer_chain;
-    referrer_chain.Add(enterprise_connectors::test::MakeReferrerChainEntry());
-    enterprise_connectors::ContentAnalysisResponse::Result result;
-    result.set_tag("dlp");
-    result.set_status(
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-    auto* rule = result.add_triggered_rules();
-    rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-    rule->set_rule_name("fake rule");
-    rule->set_rule_id("12345");
-    rule->set_url_category("test rule category");
-
-    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnAnalysisConnectorResult(
-            GURL(kUrl), GURL(kTabUrl), kSource, kDestination,
-            "sensitive_data.txt", "sha256_of_data", "text/plain",
-            SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
-            "content_transfer_method", "source_email", result, 12345,
-            referrer_chain, event_result);
   }
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -592,52 +558,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSecurityInterstitialShown) {
       *event->FindBool(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
 }
 
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
-  SetUpRouters();
-  SafeBrowsingEventObserver event_observer(
-      api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
-  event_router_->AddEventObserver(&event_observer);
-
-  base::Value::Dict report;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(CaptureArg(&report));
-
-  TriggerOnDangerousDownloadEvent();
-  base::RunLoop().RunUntilIdle();
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  const base::Value::List* event_list =
-      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
-  ASSERT_NE(nullptr, event_list);
-  ASSERT_EQ(1u, event_list->size());
-  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-  const base::Value::Dict* event =
-      wrapper.FindDict(enterprise_connectors::kKeyDangerousDownloadEvent);
-  EXPECT_NE(nullptr, event);
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1163303): To fix the tests for ChromeOS.
-  EXPECT_EQ("warning.exe",
-#else
-  EXPECT_EQ("/path/to/warning.exe",
-#endif  // BUILDFLAG(IS_CHROMEOS)
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ("exe", *event->FindString(
-                       SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("567", *event->FindString(
-                       SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("POTENTIALLY_UNWANTED",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyThreatType));
-  EXPECT_EQ(
-      enterprise_connectors::EventResultToString(
-          enterprise_connectors::EventResult::WARNED),
-      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
-  EXPECT_EQ("scan_id",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
-  const base::Value::List& referrers =
-      *event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
-  EXPECT_EQ(1u, referrers.size());
-}
-
 TEST_F(SafeBrowsingPrivateEventRouterTest,
        TestOnDangerousDownloadWarningBypass) {
   SetUpRouters();
@@ -811,23 +731,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
-       TestUnauthorizedOnDangerousDownloadWarning) {
-  SetUpRouters(/*authorized=*/false);
-  SafeBrowsingEventObserver event_observer(
-      api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
-  event_router_->AddEventObserver(&event_observer);
-
-  base::Value report;
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
-
-  TriggerOnDangerousDownloadEvent();
-  base::RunLoop().RunUntilIdle();
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  EXPECT_EQ(base::Value::Type::NONE, report.type());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest,
        TestUnauthorizedOnDangerousDownloadWarningBypass) {
   SetUpRouters(/*authorized=*/false);
   SafeBrowsingEventObserver event_observer(
@@ -842,142 +745,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 
   Mock::VerifyAndClearExpectations(client_.get());
   EXPECT_EQ(base::Value::Type::NONE, report.type());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
-  SetUpRouters(/*authorized=*/true);
-
-  base::Value::Dict report;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(CaptureArg(&report));
-
-  TriggerOnSensitiveDataEvent(enterprise_connectors::EventResult::ALLOWED);
-  base::RunLoop().RunUntilIdle();
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  const base::Value::List* event_list =
-      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
-  ASSERT_NE(nullptr, event_list);
-  ASSERT_EQ(1u, event_list->size());
-  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-  const base::Value::Dict* event =
-      wrapper.FindDict(enterprise_connectors::kKeySensitiveDataEvent);
-  ASSERT_NE(nullptr, event);
-
-  EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
-  EXPECT_EQ(kTabUrl,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl));
-  EXPECT_EQ(kSource,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
-  EXPECT_EQ(kDestination, *event->FindString(
-                              SafeBrowsingPrivateEventRouter::kKeyDestination));
-  EXPECT_EQ("12345", *event->FindString(
-                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("text/plain", *event->FindString(
-                              SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("sha256_of_data",
-            *event->FindString(
-                SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256));
-  EXPECT_EQ("sensitive_data.txt",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
-  EXPECT_EQ("content_transfer_method",
-            *event->FindString(
-                SafeBrowsingPrivateEventRouter::kKeyContentTransferMethod));
-  EXPECT_EQ(
-      "source_email",
-      *event->FindString(
-          SafeBrowsingPrivateEventRouter::kKeySourceWebAppSignedInAccount));
-
-  const base::Value::List* triggered_rule_info =
-      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
-  ASSERT_NE(nullptr, triggered_rule_info);
-  ASSERT_EQ(1u, triggered_rule_info->size());
-  const base::Value::Dict& triggered_rule = (*triggered_rule_info)[0].GetDict();
-  EXPECT_EQ(
-      enterprise_connectors::EventResultToString(
-          enterprise_connectors::EventResult::ALLOWED),
-      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
-  EXPECT_EQ("fake rule",
-            *triggered_rule.FindString(
-                SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
-  EXPECT_EQ("test rule category",
-            *triggered_rule.FindString(
-                SafeBrowsingPrivateEventRouter::kKeyUrlCategory));
-  EXPECT_EQ("scan_id",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
-  const base::Value::List* referrers =
-      event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
-  EXPECT_EQ(1u, referrers->size());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
-  SetUpRouters();
-
-  base::Value::Dict report;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(CaptureArg(&report));
-
-  TriggerOnSensitiveDataEvent(enterprise_connectors::EventResult::BLOCKED);
-  base::RunLoop().RunUntilIdle();
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  const base::Value::List* event_list =
-      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
-  ASSERT_NE(nullptr, event_list);
-  ASSERT_EQ(1u, event_list->size());
-  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-  const base::Value::Dict* event =
-      wrapper.FindDict(enterprise_connectors::kKeySensitiveDataEvent);
-  ASSERT_NE(nullptr, event);
-
-  EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
-  EXPECT_EQ(kTabUrl,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl));
-  EXPECT_EQ(kSource,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
-  EXPECT_EQ(kDestination, *event->FindString(
-                              SafeBrowsingPrivateEventRouter::kKeyDestination));
-  EXPECT_EQ("12345", *event->FindString(
-                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ("text/plain", *event->FindString(
-                              SafeBrowsingPrivateEventRouter::kKeyContentType));
-  EXPECT_EQ("sha256_of_data",
-            *event->FindString(
-                SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256));
-  EXPECT_EQ("sensitive_data.txt",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
-  EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
-  EXPECT_EQ("content_transfer_method",
-            *event->FindString(
-                SafeBrowsingPrivateEventRouter::kKeyContentTransferMethod));
-  EXPECT_EQ(
-      "source_email",
-      *event->FindString(
-          SafeBrowsingPrivateEventRouter::kKeySourceWebAppSignedInAccount));
-
-  const base::Value::List* triggered_rule_info =
-      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
-  ASSERT_NE(nullptr, triggered_rule_info);
-  ASSERT_EQ(1u, triggered_rule_info->size());
-  const base::Value::Dict& triggered_rule = (*triggered_rule_info)[0].GetDict();
-  EXPECT_EQ(
-      enterprise_connectors::EventResultToString(
-          enterprise_connectors::EventResult::BLOCKED),
-      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
-  EXPECT_EQ("fake rule",
-            *triggered_rule.FindString(
-                SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
-  EXPECT_EQ("test rule category",
-            *triggered_rule.FindString(
-                SafeBrowsingPrivateEventRouter::kKeyUrlCategory));
-  EXPECT_EQ("scan_id",
-            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
-  const base::Value::List* referrers =
-      event->FindList(SafeBrowsingPrivateEventRouter::kKeyReferrers);
-  EXPECT_EQ(1u, referrers->size());
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
@@ -1080,8 +847,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDangerousDownloadEnabled) {
       api::safe_browsing_private::OnDangerousDownloadOpened::kEventName);
   event_router_->AddEventObserver(&event_observer);
 
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(3);
-  TriggerOnDangerousDownloadEvent();
+  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(2);
   TriggerOnDangerousDownloadEventBypass();
   TriggerOnDangerousDownloadOpenedEvent();
   base::RunLoop().RunUntilIdle();
@@ -1115,21 +881,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestInterstitialEnabled) {
   // Assert the event actually did fire.
   ASSERT_EQ(1u, event_observer1.PassEventArgs().GetList().size());
   ASSERT_EQ(1u, event_observer2.PassEventArgs().GetList().size());
-
-  // Make sure UploadSecurityEventReport was called the expected number of
-  // times.
-  Mock::VerifyAndClearExpectations(client_.get());
-}
-
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestSensitiveDataEnabled) {
-  std::set<std::string> enabled_event_names;
-  enabled_event_names.insert(enterprise_connectors::kKeySensitiveDataEvent);
-  SetUpRouters(/*authorized=*/true, /*realtime_reporting_enable=*/true,
-               enabled_event_names);
-
-  EXPECT_CALL(*client_, UploadSecurityEventReport).Times(1);
-  TriggerOnSensitiveDataEvent(enterprise_connectors::EventResult::BLOCKED);
-  base::RunLoop().RunUntilIdle();
 
   // Make sure UploadSecurityEventReport was called the expected number of
   // times.
@@ -1176,10 +927,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
   EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult),
             enterprise_connectors::EventResultToString(
                 enterprise_connectors::EventResult::BLOCKED));
-  EXPECT_EQ(
-      *event->FindString(
-          SafeBrowsingPrivateEventRouter::kKeySourceWebAppSignedInAccount),
-      "active_user@gmail.com");
+  EXPECT_EQ(*event->FindString(
+                enterprise_connectors::kKeySourceWebAppSignedInAccount),
+            "active_user@gmail.com");
 
   const base::Value::List* triggered_rule_info =
       event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
@@ -1351,9 +1101,7 @@ TEST_P(SafeBrowsingIsRealtimeReportingEventDisabledTest,
   TriggerOnDangerousDownloadOpenedEvent();
   TriggerOnSecurityInterstitialShownEvent();
   TriggerOnSecurityInterstitialProceededEvent();
-  TriggerOnDangerousDownloadEvent();
   TriggerOnDangerousDownloadEventBypass();
-  TriggerOnSensitiveDataEvent(enterprise_connectors::EventResult::BLOCKED);
 
   base::RunLoop().RunUntilIdle();
 
@@ -1376,8 +1124,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::make_tuple(enterprise_connectors::kKeyPasswordChangedEvent, 1),
         testing::make_tuple(enterprise_connectors::kKeyPasswordReuseEvent, 1),
         testing::make_tuple(enterprise_connectors::kKeyDangerousDownloadEvent,
-                            3),
-        testing::make_tuple(enterprise_connectors::kKeyInterstitialEvent, 2),
-        testing::make_tuple(enterprise_connectors::kKeySensitiveDataEvent, 1)));
+                            2),
+        testing::make_tuple(enterprise_connectors::kKeyInterstitialEvent, 2)));
 
 }  // namespace extensions

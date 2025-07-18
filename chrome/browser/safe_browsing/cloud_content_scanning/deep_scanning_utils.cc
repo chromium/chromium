@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -163,6 +164,9 @@ void MaybeReportDeepScanningVerdict(
     const enterprise_connectors::ContentAnalysisResponse& response,
     enterprise_connectors::EventResult event_result) {
   DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
+  // TODO(crbug.com/432679921): Remove unused safe browsing router and make
+  // reporting event router better at handling test cases in which the reporting
+  // set-up is missing.
   auto* safe_browsing_router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   auto* reporting_event_router =
@@ -197,11 +201,13 @@ void MaybeReportDeepScanningVerdict(
           mime_type, trigger, std::move(unscanned_reason),
           content_transfer_method, content_size, event_result);
     } else if (response_result.triggered_rules_size() > 0) {
-      safe_browsing_router->OnAnalysisConnectorResult(
+      reporting_event_router->OnAnalysisConnectorResult(
           url, tab_url, source, destination, file_name, download_digest_sha256,
           mime_type, trigger, response.request_token(), content_transfer_method,
-          source_email, response_result, content_size, referrer_chain,
-          event_result);
+          source_email,
+          enterprise_connectors::ContentAreaUserProvider::GetUser(profile,
+                                                                  tab_url),
+          response_result, content_size, referrer_chain, event_result);
     }
   }
 }
