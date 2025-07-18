@@ -1864,7 +1864,7 @@
     {
       name: "DocumentPatching",
       status: {
-        "default": "experimental",
+        "default": "test",
       },
     },
     {
