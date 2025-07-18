@@ -76,6 +76,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
                                   IDS_LENS_OVERLAY_FEEDBACK_TOAST_MESSAGE);
   html_source->AddLocalizedString("sendFeedbackButtonText",
                                   IDS_LENS_OVERLAY_SEND_FEEDBACK_BUTTON_LABEL);
+  html_source->AddLocalizedString(
+      "closeFeedbackToastAccessibilityLabel",
+      IDS_LENS_OVERLAY_CLOSE_FEEDBACK_TOAST_ACCESSIBILITY_LABEL);
   const bool dark_mode = lens::LensOverlayShouldUseDarkMode(
       ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui)));
 

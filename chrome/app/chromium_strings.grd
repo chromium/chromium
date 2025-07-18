@@ -1710,6 +1710,11 @@ Chromium is unable to recover your settings.
           desc="The label for the button that on click opens a feedback form for the user to send feedback about the feature.">
           Send feedback
         </message>
+        <message name="IDS_LENS_OVERLAY_CLOSE_FEEDBACK_TOAST_ACCESSIBILITY_LABEL"
+          desc="The accessibility label for the button that closes the feedback toast."
+          is_accessibility_with_no_ui="true">
+          Close feedback dialog
+        </message>
         <message name="IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL"
           desc="Text that is shown in the tooltip of the more options button in the Lens Overlay.">
           More options

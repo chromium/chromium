@@ -21,7 +21,8 @@ export function getHtml(this: FeedbackToastElement) {
       ${loadTimeData.getString('sendFeedbackButtonText')}
     </cr-button>
     <cr-icon-button id="closeFeedbackToastButton"
-        aria-label="${loadTimeData.getString('close')}"
+        aria-label="${
+      loadTimeData.getString('closeFeedbackToastAccessibilityLabel')}"
         iron-icon="cr:close" @click="${this.onHideFeedbackToastClick}">
     </cr-icon-button>
   </div>
