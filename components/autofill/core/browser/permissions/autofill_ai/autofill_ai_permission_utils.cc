@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -320,7 +321,8 @@ bool GetAutofillAiOptInStatus(const AutofillClient& client) {
   return value && value->GetIfBool().value_or(false);
 }
 
-bool SetAutofillAiOptInStatus(AutofillClient& client, bool opt_in_status) {
+bool SetAutofillAiOptInStatus(AutofillClient& client,
+                              AutofillAiOptInStatus opt_in_status) {
   if (!MayPerformAutofillAiAction(client, AutofillAiAction::kOptIn)) {
     return false;
   }
@@ -332,7 +334,9 @@ bool SetAutofillAiOptInStatus(AutofillClient& client, bool opt_in_status) {
   CHECK(!gaia_id.empty());
   syncer::SetAccountKeyedPrefValue(
       client.GetPrefs(), prefs::kAutofillAiOptInStatus,
-      signin::GaiaIdHash::FromGaiaId(gaia_id), base::Value(opt_in_status));
+      signin::GaiaIdHash::FromGaiaId(gaia_id),
+      base::Value(opt_in_status == AutofillAiOptInStatus::kOptedIn));
+  base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Change", opt_in_status);
   return true;
 }
 

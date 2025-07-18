@@ -223,7 +223,7 @@ TEST_F(AutofillAiManagerTest, ShouldDisplayIph) {
   FormStructure form_structure = FormStructure(form);
   AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
   AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), false);
+  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
 
   EXPECT_TRUE(
       manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
@@ -237,7 +237,7 @@ TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphWhenOptedIn) {
   FormStructure form_structure = FormStructure(form);
   AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
   AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), true);
+  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedIn);
 
   EXPECT_FALSE(
       manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
@@ -252,7 +252,7 @@ TEST_F(AutofillAiManagerTest,
   FormStructure form_structure = FormStructure(form);
   AddPredictionsToFormStructure(form_structure, {{PASSPORT_ISSUE_DATE}});
   AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), false);
+  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
 
   EXPECT_FALSE(
       manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
@@ -266,7 +266,7 @@ TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphOnUnrelatedField) {
   AddPredictionsToFormStructure(
       form_structure, {{PASSPORT_NUMBER}, {PHONE_HOME_CITY_AND_NUMBER}});
   AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), false);
+  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
 
   EXPECT_FALSE(
       manager().ShouldDisplayIph(form_structure, form.fields()[1].global_id()));

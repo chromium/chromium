@@ -49,7 +49,8 @@ void OnDialogAccepted(content::WebContents* web_contents) {
   autofill::AutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
 
-  autofill::SetAutofillAiOptInStatus(*client, true);
+  autofill::SetAutofillAiOptInStatus(*client,
+                                     autofill::AutofillAiOptInStatus::kOptedIn);
 }
 
 void OnDialogCancelled() {

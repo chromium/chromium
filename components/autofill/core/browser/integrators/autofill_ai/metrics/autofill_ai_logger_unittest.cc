@@ -699,7 +699,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
 // Tests that KeyMetrics MQLS metrics aren't recorded if the user is not opted
 // in for Autofill AI.
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_OptOut) {
-  SetAutofillAiOptInStatus(autofill_client(), false);
+  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
                                                  /*submission_state=*/true,

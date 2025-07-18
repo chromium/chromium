@@ -1198,6 +1198,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.OptIn.Change" enum="AutofillAiOptInStatus"
+    expires_after="2026-06-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records changes to the user's opt-in status to Autofill with AI. The
+    recorded value is the opt-in status after the change. Recorded whenever the
+    user explicitly triggers a change to the opt-in status (i.e., during the
+    first run experience or in settings). Not recorded during implicit changes
+    to the effective opt-in status (e.g., if the user signs out or changes their
+    locale).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.OptInFunnel" enum="AutofillAiOptInFunnelEvents"
     expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>

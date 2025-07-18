@@ -1160,8 +1160,9 @@ AutofillPrivateSetAutofillAiOptInStatusFunction::Run() {
   std::optional<autofill_private::SetAutofillAiOptInStatus::Params> parameters =
       autofill_private::SetAutofillAiOptInStatus::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
-  if (!autofill::SetAutofillAiOptInStatus(*autofill_client(),
-                                          parameters->opted_in)) {
+  using enum autofill::AutofillAiOptInStatus;
+  if (!autofill::SetAutofillAiOptInStatus(
+          *autofill_client(), parameters->opted_in ? kOptedIn : kOptedOut)) {
     return RespondNow(ArgumentList(
         api::autofill_private::SetAutofillAiOptInStatus::Results::Create(
             /*success=*/false)));

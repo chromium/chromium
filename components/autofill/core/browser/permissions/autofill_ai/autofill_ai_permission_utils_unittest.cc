@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -28,6 +29,8 @@ namespace autofill {
 
 namespace {
 
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::Values;
 
 constexpr auto kAutofillPredictionSettingsDisable =
@@ -160,7 +163,7 @@ TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
   feature_list.InitAndDisableFeature(
       feature_engagement::kIPHAutofillAiOptInFeature);
 
-  SetAutofillAiOptInStatus(client(), false);
+  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   const bool is_allowed =
       GetParam() == AutofillAiAction::kOptIn ||
       GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
@@ -206,7 +209,7 @@ TEST_P(AutofillAiMayPerformActionTest,
 // Verifies that IPH, opt-in and list entities are permitted if the user has not
 // opted into AutofillAI.
 TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
-  SetAutofillAiOptInStatus(client(), false);
+  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   const bool is_allowed =
       (GetParam() == AutofillAiAction::kOptIn) ||
       (GetParam() == AutofillAiAction::kIphForOptIn) ||
@@ -219,7 +222,7 @@ TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
 TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillNotOptedIntoAutofillAiButDataSaved) {
   AddEntity();
-  SetAutofillAiOptInStatus(client(), false);
+  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   const bool is_allowed =
       (GetParam() == AutofillAiAction::kOptIn) ||
       (GetParam() == AutofillAiAction::kIphForOptIn) ||
@@ -313,7 +316,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
 // Tests that opt-in status is tied to a GAIA id.
-TEST_F(AutofillAiPermissionUtilsTest, Muh) {
+TEST_F(AutofillAiPermissionUtilsTest, OptInStatus) {
   const std::string initial_email =
       client()
           .GetIdentityManager()
@@ -334,7 +337,8 @@ TEST_F(AutofillAiPermissionUtilsTest, Muh) {
       other_email, signin::ConsentLevel::kSignin);
   client().SetCanUseModelExecutionFeatures(true);
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
-  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), true));
+  EXPECT_TRUE(
+      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedIn));
   EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
 
   // Switch back to the old account and the old opt-in is back.
@@ -346,10 +350,29 @@ TEST_F(AutofillAiPermissionUtilsTest, Muh) {
   EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
 
   // Setting it to `false` works as well.
-  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), false));
+  EXPECT_TRUE(
+      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut));
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Tests that changes to the opt-in status are recorded in metrics.
+TEST_F(AutofillAiPermissionUtilsTest, OptInStatusMetrics) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(GetAutofillAiOptInStatus(client()));
+
+  using enum AutofillAiOptInStatus;
+  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), kOptedOut));
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.OptIn.Change", kOptedOut, 1);
+
+  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), kOptedIn));
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.Ai.OptIn.Change"),
+              BucketsAre(Bucket(kOptedIn, 1), Bucket(kOptedOut, 1)));
+
+  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), kOptedOut));
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.Ai.OptIn.Change"),
+              BucketsAre(Bucket(kOptedIn, 1), Bucket(kOptedOut, 2)));
+}
 
 }  // namespace
 

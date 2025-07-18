@@ -161,6 +161,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FFR was accepted"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillAiOptInStatus) -->
+
+<enum name="AutofillAiOptInStatus">
+  <int value="0" label="Opted out"/>
+  <int value="1" label="Opted in"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h:AutofillAiOptInStatus) -->
+
 <enum name="AutofillAlternativeNameFieldValueCharacterSet">
   <int value="0" label="Katakana"/>
   <int value="1" label="Hiragana"/>

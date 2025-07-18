@@ -497,7 +497,7 @@ class TestAutofillClientTemplate : public T {
         "foo@gmail.com", signin::ConsentLevel::kSignin);
     SetCanUseModelExecutionFeatures(true);
     SetVariationConfigCountryCode(GeoIpCountryCode("US"));
-    return SetAutofillAiOptInStatus(*this, true);
+    return SetAutofillAiOptInStatus(*this, AutofillAiOptInStatus::kOptedIn);
   }
 
   // Updates whether the currently signed in primary account can use model
