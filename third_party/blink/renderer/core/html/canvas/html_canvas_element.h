@@ -302,10 +302,6 @@ class CORE_EXPORT HTMLCanvasElement final
                                   viz::ResourceId resource_id) override;
   void Trace(Visitor*) const override;
 
-  void SetCanvas2DResourceProviderForTesting(
-      std::unique_ptr<CanvasResourceProvider> provider,
-      const gfx::Size& size);
-
   static void RegisterRenderingContextFactory(
       std::unique_ptr<CanvasRenderingContextFactory>);
 

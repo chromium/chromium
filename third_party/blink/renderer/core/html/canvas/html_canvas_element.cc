@@ -1784,18 +1784,6 @@ void HTMLCanvasElement::SetNeedsPushProperties() {
   }
 }
 
-void HTMLCanvasElement::SetCanvas2DResourceProviderForTesting(
-    std::unique_ptr<CanvasResourceProvider> provider,
-    const gfx::Size& size) {
-  CHECK(IsRenderingContext2D());
-  DiscardResources();
-  SetIntegralAttribute(html_names::kWidthAttr, size.width());
-  SetIntegralAttribute(html_names::kHeightAttr, size.height());
-  CanvasRenderingContextHost::SetSize(size);
-  hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  ReplaceResourceProviderForCanvas2D(std::move(provider));
-}
-
 void HTMLCanvasElement::DiscardResources() {
   if (IsHibernating()) {
     // Ensure consistency of metrics reporting across the change from the

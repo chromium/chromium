@@ -1410,7 +1410,10 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
 void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
     std::unique_ptr<CanvasResourceProvider> provider,
     const gfx::Size& size) {
-  canvas()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
+  canvas()->DiscardResources();
+  canvas()->SetSize(size);
+  canvas()->RecreateHibernationHandler();
+  ReplaceResourceProviderForCanvas2D(std::move(provider));
 }
 
 }  // namespace blink
