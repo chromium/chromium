@@ -117,7 +117,7 @@ public interface TabGroupModelFilterObserver {
      * @param destinationGroupColorId The original destination group color id.
      * @param destinationGroupTitleCollapsed Whether the destination group was originally collapsed.
      */
-    default void didCreateGroup(
+    default void showUndoGroupSnackbar(
             List<Tab> tabs,
             List<Integer> tabOriginalIndex,
             List<Integer> tabOriginalRootId,

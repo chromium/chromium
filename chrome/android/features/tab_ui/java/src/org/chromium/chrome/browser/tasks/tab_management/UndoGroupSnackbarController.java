@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * A controller that listens to {@link TabGroupModelFilterObserver#didCreateGroup(List, List, List)}
- * and shows a undo snackbar.
+ * A controller that listens to {@link TabGroupModelFilterObserver#showUndoGroupSnackbar} and shows
+ * a undo snackbar.
  */
 @NullMarked
 public class UndoGroupSnackbarController implements SnackbarManager.SnackbarController {
@@ -92,7 +92,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
                     }
 
                     @Override
-                    public void didCreateGroup(
+                    public void showUndoGroupSnackbar(
                             List<Tab> tabs,
                             List<Integer> tabOriginalIndex,
                             List<Integer> originalRootId,
@@ -119,7 +119,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
                                             destinationGroupColorId,
                                             destinationGroupTitleCollapsed));
                         }
-                        showUndoGroupSnackbar(tabUndoInfo);
+                        showUndoGroupSnackbarInternal(tabUndoInfo);
                     }
                 };
 
@@ -171,7 +171,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         mTabModelSelectorTabModelObserver.destroy();
     }
 
-    private void showUndoGroupSnackbar(List<TabUndoInfo> tabUndoInfo) {
+    private void showUndoGroupSnackbarInternal(List<TabUndoInfo> tabUndoInfo) {
         int mergedGroupSize =
                 currentFilter().getTabCountForGroup(tabUndoInfo.get(0).tab.getTabGroupId());
 

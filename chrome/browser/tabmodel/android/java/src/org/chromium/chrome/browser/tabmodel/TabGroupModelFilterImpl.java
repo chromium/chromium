@@ -349,7 +349,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 // Since the undo group merge logic is unsupported when called from the tab strip,
                 // skip notifying the UndoGroupSnackbarController observer which shows the snackbar.
                 if (!skipUpdateTabModel) {
-                    observer.didCreateGroup(
+                    observer.showUndoGroupSnackbar(
                             tabsIncludingDestination,
                             originalIndexes,
                             originalRootIds,
@@ -477,7 +477,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
             // Do not show a snackbar for new tab group creations as they launch a dialog.
             if (notify && !willMergingCreateNewGroup) {
-                observer.didCreateGroup(
+                observer.showUndoGroupSnackbar(
                         mergedTabs,
                         originalIndexes,
                         originalRootIds,

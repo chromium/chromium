@@ -253,7 +253,6 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         TabGroupModelFilterObserver observer = mTabGroupModelFilterObserverCaptor.getValue();
 
         Tab mockTab = mock();
-        List<Tab> mockTabs = Collections.singletonList(mockTab);
 
         observer.willMergeTabToGroup(mockTab, 0, null);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
@@ -267,7 +266,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);
-        observer.didCreateGroup(mockTabs, null, null, null, null, 0, false);
+        observer.didCreateNewGroup(mockTab, mTabGroupModelFilter);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);

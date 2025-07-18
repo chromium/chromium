@@ -48,14 +48,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
                 }
 
                 @Override
-                public void didCreateGroup(
-                        List<Tab> tabs,
-                        List<Integer> tabOriginalIndex,
-                        List<Integer> tabOriginalRootId,
-                        List<Token> tabOriginalTabGroupId,
-                        @Nullable String destinationGroupTitle,
-                        int destinationGroupColorId,
-                        boolean destinationGroupTitleCollapsed) {
+                public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                     updateText();
                 }
             };

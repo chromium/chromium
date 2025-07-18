@@ -993,7 +993,7 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab1, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab1);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(
+                .showUndoGroupSnackbar(
                         anyList(),
                         anyList(),
                         anyList(),
@@ -1317,7 +1317,7 @@ public class TabGroupModelFilterImplUnitTest {
     public void mergeTabsToGroup_Collapsed() {
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
+                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(true));
     }
 
     @Test
@@ -1326,7 +1326,7 @@ public class TabGroupModelFilterImplUnitTest {
                 .thenReturn(false);
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
+                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(true));
     }
 
     @Test
@@ -1335,7 +1335,7 @@ public class TabGroupModelFilterImplUnitTest {
                 .thenReturn(false);
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(false));
+                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(false));
     }
 
     @Test
@@ -1526,7 +1526,7 @@ public class TabGroupModelFilterImplUnitTest {
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
         mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, true);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
+                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(true));
     }
 
     @Test
@@ -1536,7 +1536,7 @@ public class TabGroupModelFilterImplUnitTest {
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
         mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, true);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
+                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(true));
     }
 
     @Test
@@ -1714,7 +1714,7 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab4);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), anyBoolean());
+                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), anyBoolean());
 
         assertThat(mTab4.getTabGroupId(), equalTo(tabGroupId));
 
@@ -2089,7 +2089,7 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab2, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(
+                .showUndoGroupSnackbar(
                         expectedNotifiedTabs,
                         originalIndexes,
                         originalRootIds,
@@ -2119,7 +2119,7 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab2, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(
+                .showUndoGroupSnackbar(
                         anyList(),
                         anyList(),
                         anyList(),
@@ -2161,7 +2161,7 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab4, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(
+                .showUndoGroupSnackbar(
                         expectedNotifiedTabs,
                         originalIndexes,
                         originalRootIds,
@@ -2191,7 +2191,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(
+                .showUndoGroupSnackbar(
                         anyList(),
                         anyList(),
                         anyList(),
@@ -2215,7 +2215,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), true);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), anyBoolean());
+                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), anyBoolean());
 
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         assertEquals(mTab4.getTabGroupId(), tabGroupId);
@@ -2702,14 +2702,14 @@ public class TabGroupModelFilterImplUnitTest {
         List<Integer> expectedOriginalIndex = Arrays.asList(POSITION4, POSITION1);
         List<Integer> originalRootId = Arrays.asList(TAB4_ROOT_ID, TAB1_ROOT_ID);
         List<Token> originalTabGroupId =  Arrays.asList(TAB1_TAB_GROUP_ID, TAB4_TAB_GROUP_ID);
-        verify(mTabGroupModelFilterObserver, mode).didCreateGroup(
-            eq(expectedGroup),
-            eq(expectedOriginalIndex),
-            eq(originalRootId),
-            eq(originalTabGroupId),
-            anyString(),
-            anyInt(),
-            anyBoolean()
-        );
+        verify(mTabGroupModelFilterObserver, mode)
+                .showUndoGroupSnackbar(
+                        eq(expectedGroup),
+                        eq(expectedOriginalIndex),
+                        eq(originalRootId),
+                        eq(originalTabGroupId),
+                        anyString(),
+                        anyInt(),
+                        anyBoolean());
     }
 }
