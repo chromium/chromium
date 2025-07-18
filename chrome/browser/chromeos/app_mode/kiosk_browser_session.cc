@@ -64,7 +64,7 @@ void DumpPluginProcess(const std::set<int>& child_ids) {
   bool dump_requested = false;
 
   content::BrowserChildProcessHostIterator iter(
-      content::PROCESS_TYPE_PPAPI_PLUGIN);
+      content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED);
   while (!iter.Done()) {
     const content::ChildProcessData& data = iter.GetData();
     if (child_ids.count(data.id) == 1) {

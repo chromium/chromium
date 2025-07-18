@@ -43,7 +43,7 @@ namespace {
 bool g_ignore_histogram_allocator_for_testing = false;
 
 static_assert(static_cast<int>(ProcessTypeForUma::kMaxValue) ==
-                  PROCESS_TYPE_PPAPI_BROKER,
+                  PROCESS_TYPE_PPAPI_BROKER_DEPRECATED,
               "ProcessTypeForUma and CurrentProcessType() require updating");
 
 ProcessTypeForUma CurrentProcessType() {

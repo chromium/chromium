@@ -51,8 +51,8 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
   std::u16string result_title = title;
   if (result_title.empty()) {
     switch (process_type) {
-      case content::PROCESS_TYPE_PPAPI_PLUGIN:
-      case content::PROCESS_TYPE_PPAPI_BROKER:
+      case content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED:
+      case content::PROCESS_TYPE_PPAPI_BROKER_DEPRECATED:
         result_title = l10n_util::GetStringUTF16(
             IDS_TASK_MANAGER_UNKNOWN_PLUGIN_NAME);
         break;
@@ -74,10 +74,10 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
                                         result_title);
     case content::PROCESS_TYPE_GPU:
       return l10n_util::GetStringUTF16(IDS_TASK_MANAGER_GPU_PREFIX);
-    case content::PROCESS_TYPE_PPAPI_PLUGIN:
+    case content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED:
       return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_PREFIX,
                                         result_title);
-    case content::PROCESS_TYPE_PPAPI_BROKER:
+    case content::PROCESS_TYPE_PPAPI_BROKER_DEPRECATED:
       return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX,
                                         result_title);
     case content::PROCESS_TYPE_RENDERER: {
@@ -182,8 +182,8 @@ void ChildProcessTask::Refresh(const base::TimeDelta& update_interval,
 Task::Type ChildProcessTask::GetType() const {
   // Convert |content::ProcessType| to |task_manager::Task::Type|.
   switch (process_type_) {
-    case content::PROCESS_TYPE_PPAPI_PLUGIN:
-    case content::PROCESS_TYPE_PPAPI_BROKER:
+    case content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED:
+    case content::PROCESS_TYPE_PPAPI_BROKER_DEPRECATED:
       return Task::PLUGIN;
     case content::PROCESS_TYPE_UTILITY:
       return Task::UTILITY;

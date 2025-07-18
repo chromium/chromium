@@ -31,12 +31,12 @@ struct ProcessTypeTaskTypePair {
   int process_type_;
   Task::Type expected_task_type_;
 } process_task_types_pairs[] = {
-    { content::PROCESS_TYPE_PPAPI_PLUGIN, Task::PLUGIN },
-    { content::PROCESS_TYPE_PPAPI_BROKER, Task::PLUGIN },
-    { content::PROCESS_TYPE_UTILITY, Task::UTILITY },
-    { content::PROCESS_TYPE_ZYGOTE, Task::ZYGOTE },
-    { content::PROCESS_TYPE_SANDBOX_HELPER, Task::SANDBOX_HELPER },
-    { content::PROCESS_TYPE_GPU, Task::GPU },
+    {content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED, Task::PLUGIN},
+    {content::PROCESS_TYPE_PPAPI_BROKER_DEPRECATED, Task::PLUGIN},
+    {content::PROCESS_TYPE_UTILITY, Task::UTILITY},
+    {content::PROCESS_TYPE_ZYGOTE, Task::ZYGOTE},
+    {content::PROCESS_TYPE_SANDBOX_HELPER, Task::SANDBOX_HELPER},
+    {content::PROCESS_TYPE_GPU, Task::GPU},
 };
 
 }  // namespace
@@ -112,7 +112,8 @@ TEST_F(ChildProcessTaskTest, TestAll) {
   const std::u16string expected_name(
       l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_PREFIX, name));
 
-  ChildProcessData data2(content::PROCESS_TYPE_PPAPI_PLUGIN, unique_id);
+  ChildProcessData data2(content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED,
+                         unique_id);
   data2.SetProcess(base::Process::Current());
   data2.name = name;
   provider.BrowserChildProcessLaunchedAndConnected(data2);
