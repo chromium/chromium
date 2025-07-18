@@ -290,9 +290,6 @@ class PrefetchContainer::SinglePrefetch {
 
   const bool is_isolated_network_context_required_;
 
-  // Whether this |url_| is eligible to be prefetched
-  std::optional<PreloadingEligibility> eligibility_;
-
   // This tracks whether the cookies associated with |url_| have changed at
   // some point after the initial eligibility check.
   std::unique_ptr<PrefetchCookieListener> cookie_listener_;
@@ -876,8 +873,6 @@ void PrefetchContainer::OnAddedToPrefetchService() {
 
 void PrefetchContainer::OnEligibilityCheckComplete(
     PreloadingEligibility eligibility) {
-  SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
-  this_prefetch.eligibility_ = eligibility;
   preload_pipeline_info_->SetPrefetchEligibility(eligibility);
   for (auto& preload_pipeline_info : inherited_preload_pipeline_infos_) {
     preload_pipeline_info->SetPrefetchEligibility(eligibility);
@@ -925,13 +920,6 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       SetPrefetchStatus(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
     }
   }
-}
-
-bool PrefetchContainer::IsInitialPrefetchEligible() const {
-  DCHECK(redirect_chain_.size() > 0);
-  return redirect_chain_[0]->eligibility_ &&
-         redirect_chain_[0]->eligibility_.value() ==
-             PreloadingEligibility::kEligible;
 }
 
 void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {

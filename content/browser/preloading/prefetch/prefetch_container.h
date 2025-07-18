@@ -404,7 +404,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Whether or not the prefetch was determined to be eligibile.
   void OnEligibilityCheckComplete(PreloadingEligibility eligibility);
-  bool IsInitialPrefetchEligible() const;
 
   // Adds a the new URL to |redirect_chain_|.
   void AddRedirectHop(const net::RedirectInfo& redirect_info);

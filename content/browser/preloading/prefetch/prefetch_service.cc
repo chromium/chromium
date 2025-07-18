@@ -2043,8 +2043,15 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
       matching_prefetch = true;
       num_matching_prefetches++;
 
-      if (prefetch_iter.second->IsInitialPrefetchEligible()) {
-        num_matching_eligible_prefetch++;
+      switch (prefetch_iter.second->GetLoadState()) {
+        case PrefetchContainer::LoadState::kNotStarted:
+        case PrefetchContainer::LoadState::kFailedIneligible:
+          break;
+        case PrefetchContainer::LoadState::kEligible:
+        case PrefetchContainer::LoadState::kFailedHeldback:
+        case PrefetchContainer::LoadState::kStarted:
+          num_matching_eligible_prefetch++;
+          break;
       }
 
       switch (
