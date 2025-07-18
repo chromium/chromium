@@ -374,6 +374,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   void BeginAccess(bool readonly);
   void EndAccess(bool readonly);
 
+  void FinishMapAsyncForTests(
+      base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
+      bool success);
+
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
   const std::string debug_label_;
@@ -409,6 +413,9 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
 
   // The texture target returned by `GetTextureTarget()`.
   uint32_t texture_target_ = 0;
+
+  AsyncMapInvokedCallback async_map_invoked_callback_for_testing_;
+  bool premapped_for_testing_;
 
   // The number of active scoped read accesses.
   unsigned int num_readers_ GUARDED_BY(lock_) = 0;

@@ -56,75 +56,56 @@ namespace gpu {
 
 namespace {
 
-class FakeGpuMemoryBuffer : public GpuMemoryBufferImpl {
+class ScopedMappingForTests : public ClientSharedImage::ScopedMapping {
  public:
-  FakeGpuMemoryBuffer() = delete;
-  FakeGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      bool premapped,
-      const ClientSharedImage::AsyncMapInvokedCallback& callback)
-      : GpuMemoryBufferImpl(size, format),
-        premapped_(premapped),
-        async_map_invoked_callback_(callback) {
+  ScopedMappingForTests(const gfx::Size& size, gfx::BufferFormat format)
+      : size_(size), format_(format) {
     int num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format_);
     size_t allocation_size = 0;
     for (int plane_index = 0; plane_index < num_planes; plane_index++) {
       size_t height_in_pixels;
       CHECK(gfx::PlaneHeightForBufferFormatChecked(
-          GetSize().height(), GetFormat(), plane_index, &height_in_pixels));
-      allocation_size += stride(plane_index) * height_in_pixels;
+          Size().height(), Format(), plane_index, &height_in_pixels));
+      allocation_size += Stride(plane_index) * height_in_pixels;
     }
 
     data_ = std::vector<uint8_t>(allocation_size);
-
-    handle_.type = gfx::SHARED_MEMORY_BUFFER;
   }
 
-  FakeGpuMemoryBuffer(const FakeGpuMemoryBuffer&) = delete;
-  FakeGpuMemoryBuffer& operator=(const FakeGpuMemoryBuffer&) = delete;
+  ~ScopedMappingForTests() override = default;
 
-  ~FakeGpuMemoryBuffer() override = default;
+  // ClientSharedImage::ScopedMapping:
+  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
+    size_t height_in_pixels;
+    size_t row_size_in_bytes;
 
-  bool Map() override { return true; }
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(
+        Size().height(), Format(), plane_index, &height_in_pixels));
+    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), Format(),
+                                             plane_index, &row_size_in_bytes));
+    size_t span_length =
+        Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
 
-  void MapAsync(base::OnceCallback<void(bool)> result_cb) override {
-    if (premapped_) {
-      std::move(result_cb).Run(true);
-      return;
-    }
-    async_map_invoked_callback_.Run(std::move(result_cb));
-  }
-
-  bool AsyncMappingIsNonBlocking() const override { return true; }
-
-  void* memory(size_t plane) override {
-    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+    DCHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(format_));
     auto* data_ptr = data_.data();
-    data_ptr += gfx::BufferOffsetForBufferFormat(GetSize(), GetFormat(), plane);
-    return data_ptr;
-  }
+    data_ptr += gfx::BufferOffsetForBufferFormat(Size(), Format(), plane_index);
 
-  void Unmap() override {}
-
-  int stride(size_t plane) const override {
-    DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()));
-    return gfx::RowSizeForBufferFormat(GetSize().width(), GetFormat(), plane);
+    // SAFETY: `data_` has been allocated to have the necessary size.
+    return UNSAFE_BUFFERS(
+        base::span<uint8_t>(reinterpret_cast<uint8_t*>(data_ptr), span_length));
   }
-
-  gfx::GpuMemoryBufferType GetType() const override {
-    return gfx::SHARED_MEMORY_BUFFER;
+  size_t Stride(const uint32_t plane_index) override {
+    DCHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
+    return gfx::RowSizeForBufferFormat(Size().width(), Format(), plane_index);
   }
-
-  gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    return handle_.Clone();
-  }
+  gfx::Size Size() override { return size_; }
+  gfx::BufferFormat Format() override { return format_; }
+  bool IsSharedMemory() override { return true; }
 
  private:
+  gfx::Size size_;
+  gfx::BufferFormat format_;
   std::vector<uint8_t> data_;
-  gfx::GpuMemoryBufferHandle handle_;
-  bool premapped_ = true;
-  ClientSharedImage::AsyncMapInvokedCallback async_map_invoked_callback_;
 };
 
 class ScopedMappingSharedMemoryMapping
@@ -563,6 +544,13 @@ ClientSharedImage::~ClientSharedImage() {
 }
 
 size_t ClientSharedImage::GetStrideForVideoFrame(uint32_t plane_index) const {
+  if (async_map_invoked_callback_for_testing_) {
+    return gfx::RowSizeForBufferFormat(
+        size().width(),
+        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+            format()),
+        plane_index);
+  }
   CHECK(gpu_memory_buffer_);
   return gpu_memory_buffer_->stride(plane_index);
 }
@@ -571,12 +559,18 @@ size_t ClientSharedImage::GetStrideForVideoFrame(uint32_t plane_index) const {
 // Map() the shared image. This method is supposed to be used by VideoFrame
 // temporarily as mentioned above in ::GetStrideForVideoFrame().
 bool ClientSharedImage::IsSharedMemoryForVideoFrame() const {
+  if (async_map_invoked_callback_for_testing_) {
+    return true;
+  }
   CHECK(gpu_memory_buffer_);
   return gpu_memory_buffer_->GetType() ==
          gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
 }
 
 bool ClientSharedImage::AsyncMappingIsNonBlocking() const {
+  if (async_map_invoked_callback_for_testing_) {
+    return true;
+  }
   CHECK(gpu_memory_buffer_);
   return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
 }
@@ -596,8 +590,32 @@ std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   return scoped_mapping;
 }
 
+void ClientSharedImage::FinishMapAsyncForTests(
+    base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
+    bool success) {
+  std::unique_ptr<ScopedMapping> mapping;
+  if (success) {
+    mapping = std::make_unique<ScopedMappingForTests>(
+        size(),
+        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+            format()));
+  }
+  std::move(result_cb).Run(std::move(mapping));
+}
+
 void ClientSharedImage::MapAsync(
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
+  if (async_map_invoked_callback_for_testing_) {
+    if (premapped_for_testing_) {
+      FinishMapAsyncForTests(std::move(result_cb), true);
+    } else {
+      async_map_invoked_callback_for_testing_.Run(
+          base::BindOnce(&ClientSharedImage::FinishMapAsyncForTests,
+                         base::Unretained(this), std::move(result_cb)));
+    }
+    return;
+  }
+
   ScopedMapping::StartCreateAsync(gpu_memory_buffer_.get(),
                                   std::move(result_cb));
 }
@@ -816,16 +834,10 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
   SharedImageInfo info(metadata, "CSICreateForTesting");
 
-  // Create a FakeGpuMemoryBuffer.
-  auto buffer_format =
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          metadata.format);
-  auto fake_gmb = std::make_unique<FakeGpuMemoryBuffer>(
-      metadata.size, buffer_format, premapped, callback);
-
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, info, sync_token, sii_holder, fake_gmb->GetType());
-  client_si->gpu_memory_buffer_ = std::move(fake_gmb);
+      mailbox, info, sync_token, sii_holder, gfx::SHARED_MEMORY_BUFFER);
+  client_si->async_map_invoked_callback_for_testing_ = callback;
+  client_si->premapped_for_testing_ = premapped;
   client_si->buffer_usage_ = buffer_usage;
   return client_si;
 }
