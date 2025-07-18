@@ -232,6 +232,15 @@ IN_PROC_BROWSER_TEST_F(SmartCardPermissionUiTest, AllowedByPolicy) {
       NavigateWebContents(kTestTab, embedded_https_test_server().GetURL(
                                         "a.com", "/simple.html")),
       CheckReaderPermission(/*has_permission=*/false),
+      RequestReaderPermission(),
+      WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
+      CheckViewProperty(PermissionPromptBubbleBaseView::kBlockButtonElementId,
+                        &views::LabelButton::GetText,
+                        l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW)),
+      PressButtonAndWaitResult(
+          PermissionPromptBubbleBaseView::kBlockButtonElementId,
+          /*granted=*/false),
+      CheckReaderPermission(/*has_permission=*/false),
       SetSmartCardConnectAllowedFor(
           embedded_https_test_server().GetURL("a.com", "/")),
       CheckReaderPermission(true));
