@@ -221,9 +221,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disabling the permission element as it needs embedder support in order to
   // function and the webview permission manager cannot support it.
   aw_feature_overrides.DisableFeature(blink::features::kPermissionElement);
+  aw_feature_overrides.DisableFeature(blink::features::kGeolocationElement);
 
-  // Feature parameters can only be set via a field trial.
-  // Note: Performing a field trial here means we cannot include
   // |kBtmTtl| in the testing config json.
   {
     const char kDipsWebViewExperiment[] = "DipsWebViewExperiment";

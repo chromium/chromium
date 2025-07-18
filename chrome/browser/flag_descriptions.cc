@@ -3297,6 +3297,12 @@ const char kPageEmbeddedPermissionControlDescription[] =
     "Enables the Page Embedded Permission Control feature, which allows the "
     "use of the HTML 'permission' element.";
 
+const char kGeolocationPermissionControlName[] =
+    "Geolocation permission control (geolocation element)";
+const char kGeolocationPermissionControlDescription[] =
+    "Enables the Geolocation Permission Control feature, which allows the "
+    "use of the HTML 'geolocation' element.";
+
 const char kPageImageServiceOptimizationGuideSalientImagesName[] =
     "Page Image Service - Optimization Guide Salient Images";
 const char kPageImageServiceOptimizationGuideSalientImagesDescription[] =

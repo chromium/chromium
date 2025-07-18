@@ -2400,7 +2400,7 @@
     ],
     "bases": [],
     "args": [
-      "--disable-blink-features=PermissionElement"
+      "--disable-blink-features=PermissionElement,GeolocationElement"
     ],
     "owners": [
       "permissions-core@google.com"

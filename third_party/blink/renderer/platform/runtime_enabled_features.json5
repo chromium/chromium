@@ -2440,6 +2440,12 @@
       public: true,
     },
     {
+      // Tracking bug for the implementation: https://crbug.com/430204832
+      name: "GeolocationElement",
+      status: "experimental",
+      public: true,
+    },
+    {
       name: "GetAllScreensMedia",
       depends_on: ["GetDisplayMedia"],
       public: true,
@@ -3551,6 +3557,7 @@
       public: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
+      implied_by: ["GeolocationElement"],
     },
     {
       // Tracking bug for the implementation: crbug.com/352249547

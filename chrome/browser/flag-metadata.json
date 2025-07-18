@@ -5260,6 +5260,15 @@
     "expiry_milestone": 135
   },
   {
+    "name": "geolocation-element",
+    "owners": [
+      "andy@chromium.org",
+      "tungnh@chromium.org",
+      "//components/permissions/PERMISSIONS_OWNERS"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "gesture-properties-dbus-service",
     "owners": [ "hcutts@chromium.org", "chromeos-tango@google.com" ],
     // Used by developers for debugging and input device tuning.

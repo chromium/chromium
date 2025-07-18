@@ -1897,6 +1897,9 @@ extern const char kPageContentAnnotationsDescription[];
 extern const char kPageEmbeddedPermissionControlName[];
 extern const char kPageEmbeddedPermissionControlDescription[];
 
+extern const char kGeolocationPermissionControlName[];
+extern const char kGeolocationPermissionControlDescription[];
+
 extern const char kPageContentAnnotationsPersistSalientImageMetadataName[];
 extern const char
     kPageContentAnnotationsPersistSalientImageMetadataDescription[];
