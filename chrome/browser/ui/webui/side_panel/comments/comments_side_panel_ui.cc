@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/webui/side_panel/comments/comments_side_panel_ui.h"
 
 #include "base/feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/side_panel/comments/comments.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/comments/comments_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/side_panel_comments_resources.h"
 #include "chrome/grit/side_panel_comments_resources_map.h"
@@ -25,6 +28,10 @@ bool CommentsSidePanelUIConfig::IsWebUIEnabled(
       collaboration::features::kCollaborationComments);
 }
 
+std::optional<int> CommentsSidePanelUIConfig::GetCommandIdForTesting() {
+  return IDC_SHOW_COMMENTS_SIDE_PANEL;
+}
+
 CommentsSidePanelUI::CommentsSidePanelUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui, true) {
   Profile* const profile = Profile::FromWebUI(web_ui);
@@ -37,3 +44,16 @@ CommentsSidePanelUI::CommentsSidePanelUI(content::WebUI* web_ui)
 CommentsSidePanelUI::~CommentsSidePanelUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CommentsSidePanelUI)
+
+void CommentsSidePanelUI::BindInterface(
+    mojo::PendingReceiver<comments::mojom::PageHandlerFactory> receiver) {
+  comments_page_factory_receiver_.reset();
+  comments_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void CommentsSidePanelUI::CreatePageHandler(
+    mojo::PendingRemote<comments::mojom::Page> page,
+    mojo::PendingReceiver<comments::mojom::PageHandler> receiver) {
+  comments_page_handler_ = std::make_unique<CommentsPageHandler>(
+      std::move(receiver), std::move(page), *this, *web_ui());
+}

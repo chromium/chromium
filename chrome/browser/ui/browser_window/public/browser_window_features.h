@@ -37,6 +37,7 @@ class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
 class ColorProviderBrowserHelper;
+class CommentsSidePanelCoordinator;
 class CookieControlsBubbleCoordinator;
 class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
@@ -189,6 +190,10 @@ class BrowserWindowFeatures {
 
   BookmarksSidePanelCoordinator* bookmarks_side_panel_coordinator() {
     return bookmarks_side_panel_coordinator_.get();
+  }
+
+  CommentsSidePanelCoordinator* comments_side_panel_coordinator() {
+    return comments_side_panel_coordinator_.get();
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -436,6 +441,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<BookmarksSidePanelCoordinator>
       bookmarks_side_panel_coordinator_;
+
+  std::unique_ptr<CommentsSidePanelCoordinator>
+      comments_side_panel_coordinator_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::unique_ptr<pdf::infobar::PdfInfoBarController> pdf_infobar_controller_;

@@ -14,6 +14,8 @@ source_set("side_panel") {
   sources = [
     "bookmarks/bookmarks_side_panel_coordinator.cc",
     "bookmarks/bookmarks_side_panel_coordinator.h",
+    "comments/comments_side_panel_coordinator.cc",
+    "comments/comments_side_panel_coordinator.h",
     "customize_chrome/customize_chrome_utils.cc",
     "customize_chrome/customize_chrome_utils.h",
     "customize_chrome/side_panel_controller_views.cc",

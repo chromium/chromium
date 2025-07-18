@@ -38994,6 +38994,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.Comments.Shown">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the comments side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.Companion.Pinned.BySidePanelHeaderButton">
   <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>

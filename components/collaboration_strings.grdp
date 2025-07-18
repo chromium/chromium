@@ -229,4 +229,13 @@
   </message>
   <!-- Instant Messages -->
 
+  <!-- Comments -->
+  <!-- Excluded from Android to pass LINT check until it needs to be used there. -->
+  <if expr="not is_android">
+    <message name="IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE" desc="Title of the comments side panel." formatter_data="android_java">
+      Comments
+    </message>
+  </if>
+  <!-- Comments -->
+
 </grit-part>

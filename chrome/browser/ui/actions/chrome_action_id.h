@@ -532,6 +532,7 @@
   E(kActionSidePanelShowAboutThisSite) \
   E(kActionSidePanelShowAssistant) \
   E(kActionSidePanelShowBookmarks, IDC_SHOW_BOOKMARK_SIDE_PANEL) \
+  E(kActionSidePanelShowComments, IDC_SHOW_COMMENTS_SIDE_PANEL) \
   E(kActionSidePanelShowCustomizeChrome) \
   E(kActionSidePanelShowCustomizeChromeFooter) \
   E(kActionSidePanelShowCustomizeChromeToolbar) \

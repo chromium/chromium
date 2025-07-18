@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
+#include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
@@ -897,6 +898,16 @@ void BrowserActions::InitializeBrowserActions() {
               base::Unretained(browser)))
           .SetActionId(kActionSidePanelShowCustomizeChromeFooter)
           .Build());
+
+  if (CommentsSidePanelCoordinator::IsSupported()) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kComments,
+                        IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE,
+                        IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE,
+                        vector_icons::kChatIcon, kActionSidePanelShowComments,
+                        browser, false)
+            .Build());
+  }
 
   AddListeners();
 }

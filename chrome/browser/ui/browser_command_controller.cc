@@ -971,6 +971,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_DOWNLOADS:
       ShowDownloads(browser_->GetBrowserForOpeningWebUi());
       break;
+    case IDC_SHOW_COMMENTS_SIDE_PANEL:
+      browser_->GetFeatures().side_panel_ui()->Show(
+          SidePanelEntryId::kComments, SidePanelOpenTrigger::kAppMenu);
+      break;
     case IDC_MANAGE_EXTENSIONS:
     case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
       ShowExtensions(browser_->GetBrowserForOpeningWebUi());
@@ -1463,6 +1467,7 @@ void BrowserCommandController::InitCommandState() {
       IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
       (!guest_session && !profile()->IsSystemProfile()));
   command_updater_.UpdateCommandEnabled(IDC_SHOW_DOWNLOADS, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_COMMENTS_SIDE_PANEL, true);
   command_updater_.UpdateCommandEnabled(IDC_FIND_AND_EDIT_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SAVE_AND_SHARE_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_READING_MODE_SIDE_PANEL, true);
