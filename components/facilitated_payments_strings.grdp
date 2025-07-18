@@ -65,7 +65,7 @@
   <message name="IDS_BANK_ACCOUNT_TYPE_TRANSACTING" desc="A transacting account is a basic account used for regular expenses. It often has limits on the withdrawal amount. Text to describe a transacting bank account." formatter_data="android_java">
     Account
   </message>
-  <!-- Ewallet and Pix bottom sheet related strings -->
+  <!-- Facilitated payments bottom sheet related strings -->
   <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_METHODS_BOTTOM_SHEET_DETAILED_TITLE" desc="Title for the bottom sheet displaying user's accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when it receives signal of intention to pay, and the user has eligible payment accounts. The title string contains either the payment type or the name of the payment provider." formatter_data="android_java">
     Pay with <ph name="PAYMENT_METHOD">%1$s<ex>ChiliPay</ex></ph> without switching apps
   </message>
@@ -107,6 +107,9 @@
   </message>
   <message name="IDS_FACILITATED_PAYMENTS_OK" desc="Generic OK string to be used in any Facilitated Payments UI." formatter_data="android_java">
     OK
+  </message>
+  <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_APP_DESCRIPTION" desc="A message shown within a payment app item in the fop selector to indicate the click will open the app." formatter_data="android_java">
+    Open app
   </message>
 
   <!-- Pix account linking prompt strings -->
