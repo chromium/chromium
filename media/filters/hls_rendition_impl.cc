@@ -144,14 +144,49 @@ void HlsRenditionImpl::CheckState(
     return;
   }
 
-  // If media time comes before the last loaded range, then a seek probably
-  // failed, and we should raise an error.
-  if (std::get<0>(ranges.back()) > media_time) {
+  // If media time is inside the first loaded range, things are OK.
+  // If it comes inside the first `gapless_playback_seek_skip_` or inside the
+  // second loaded range, we've probably hit one of those annoying muxing
+  // issues where we need to seek ahead. See crbug.com/429060503 for more
+  // information.
+  if (ranges.contains(0, media_time)) {
+    // The media time is already buffered. The buffer checks and below will
+    // decide what to do about this.
+  } else if (gapless_playback_seek_skip_.size()) {
+    // There should always be one more range than gaps between ranges, for
+    // obvious reasons.
+    DCHECK_EQ(ranges.size(), gapless_playback_seek_skip_.size() + 1);
+
+    if (gapless_playback_seek_skip_.contains(0, media_time) ||
+        ranges.contains(1, media_time)) {
+      // Seeking into a loaded range won't drop anything, so do it here, and
+      // drop the gapless ranges to match it.
+      engine_host_->Remove(role_, base::TimeDelta(),
+                           gapless_playback_seek_skip_.start(0));
+      gapless_playback_seek_skip_.pop_front();
+      ranges = engine_host_->GetBufferedRanges(role_);
+      if (ranges.size()) {
+        engine_host_->RequestSeek(ranges.start(0));
+        std::move(time_remaining_cb).Run(kNoTimestamp);
+        return;
+      }
+    }
+
+    // Media time wasn't in an expected place - this is probably caused by a
+    // really bad muxing situation with lots of dropped frames all close to
+    // each other. This probably isn't worth trying to play.
     HlsDemuxerStatus error = HlsDemuxerStatus::Codes::kInvalidLoadedRanges;
     rendition_host_->Quit(std::move(error)
                               .WithData("timestamp", media_time)
-                              .WithData("range_start", ranges.back().first)
-                              .WithData("range_end", ranges.back().second));
+                              .WithData("ranges", ranges));
+    return;
+  } else if (std::get<0>(ranges.back()) > media_time) {
+    // All loaded ranges are ahead of us, which means there was probably a
+    // failed seek.
+    HlsDemuxerStatus error = HlsDemuxerStatus::Codes::kInvalidLoadedRanges;
+    rendition_host_->Quit(std::move(error)
+                              .WithData("timestamp", media_time)
+                              .WithData("ranges", ranges));
     return;
   }
 
@@ -483,6 +518,10 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
                                    &parse_offset_);
   }
 
+  // Sometimes slight muxing errors can introduce a very small gap in playback
+  // which we will need to seek over, like a normal MSE player.
+  auto ranges_size_pre_append = engine_host_->GetBufferedRanges(role_).size();
+
   if (!engine_host_->AppendAndParseData(role_, parse_end + base::Seconds(1),
                                         &parse_offset_, stream_data)) {
     rendition_host_->Quit(HlsDemuxerStatus::Codes::kCouldNotAppendData);
@@ -507,7 +546,32 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
   auto ranges = engine_host_->GetBufferedRanges(role_);
   media_log_->SetProperty<MediaLogProperty::kHlsBufferedRanges>(ranges);
 
-  if (ranges.size() && ranges.contains(ranges.size() - 1, required_time)) {
+  // This append/parse has added a playback gap! This is likely caused by a
+  // bad timestamp on a frame or some other muxing error. If the gap is small,
+  // it's probably OK to just skip over it.
+  auto last_end = ranges.size() ? ranges.start(0) : base::Seconds(0);
+  bool contains_required_time = false;
+  for (size_t i = 0; i < ranges.size(); i++) {
+    auto gap = ranges.start(i) - last_end;
+    contains_required_time |= ranges.contains(i, required_time);
+    if (gap.is_zero()) {
+      // The first group has a "gap" of zero, and shouldn't do these checks.
+    } else if (gap < base::Seconds(1)) {
+      // Record this as an "autoseek point". Also handle the case where required
+      // time is inside the gap.
+      gapless_playback_seek_skip_.Add(last_end, ranges.start(i));
+      contains_required_time |=
+          gapless_playback_seek_skip_.contains(i - 1, required_time);
+    } else if (ranges.size() > ranges_size_pre_append) {
+      HlsDemuxerStatus error = HlsDemuxerStatus::Codes::kInvalidLoadedRanges;
+      rendition_host_->Quit(std::move(error)
+                                .WithData("required_time", required_time)
+                                .WithData("ranges", ranges));
+    }
+    last_end = ranges.end(i);
+  }
+
+  if (contains_required_time) {
     std::move(cb).Run();
     return;
   }

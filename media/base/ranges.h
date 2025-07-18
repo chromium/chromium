@@ -49,6 +49,9 @@ class Ranges {
   // Clear all ranges.
   void clear();
 
+  // Removes the first range.
+  void pop_front();
+
   // Computes the intersection between this range and |other|.
   Ranges<T> IntersectionWith(const Ranges<T>& other) const;
 
@@ -63,6 +66,11 @@ class Ranges {
 //////////////////////////////////////////////////////////////////////
 // EVERYTHING BELOW HERE IS IMPLEMENTATION DETAIL!!
 //////////////////////////////////////////////////////////////////////
+
+template <typename T>
+void Ranges<T>::pop_front() {
+  ranges_.erase(ranges_.begin());
+}
 
 template<class T>
 size_t Ranges<T>::Add(T start, T end) {

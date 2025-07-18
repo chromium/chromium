@@ -124,6 +124,9 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
 
   std::unique_ptr<MediaLog> media_log_;
 
+  // What time ranges we should skip due to missing frames.
+  Ranges<base::TimeDelta> gapless_playback_seek_skip_;
+
   // toggleable bool flags.
   bool set_stream_end_ = false;
   bool is_stopped_for_shutdown_ = false;

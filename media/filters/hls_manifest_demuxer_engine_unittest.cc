@@ -517,12 +517,15 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
 
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
       .WillOnce(Return(Ranges<base::TimeDelta>()))  // First CheckState
+      .WillOnce(Return(Ranges<base::TimeDelta>()))  // Before appending A
       .WillOnce(Return(after_seg_a))                // After appending segment A
       .WillOnce(Return(after_seg_a))                // Second CheckState
+      .WillOnce(Return(after_seg_a))                // Before appending B
       .WillOnce(Return(after_seg_b))                // After appending segment B
       .WillOnce(Return(after_seg_b))                // MediaLog
       .WillOnce(Return(after_seg_b))                // Third CheckState
       .WillOnce(Return(after_seg_b))                // Fourth CheckState
+      .WillOnce(Return(after_seg_b))                // Before appending C
       .WillOnce(Return(after_seg_c))                // After appending segment C
       .WillOnce(Return(after_seg_c))                // MediaLog
       .WillOnce(Return(after_seg_c))                // Fifth CheckState
@@ -952,11 +955,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
 
   // `GetBufferedRanges` gets called many times during this process:
   // - HlsVodRendition::CheckState (1) => empty ranges, nothing loaded.
-  // - HlsVodRendition::OnSegmentData (1) => populated by AppendAndParseData
+  // - HlsVodRendition::OnSegmentData (2) => populated by AppendAndParseData
   // - HlsVodRendition::CheckState (2) => still has data
   Ranges<base::TimeDelta> populated_ranges;
   populated_ranges.Add(base::Seconds(0), base::Seconds(5));
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
+      .WillOnce(Return(Ranges<base::TimeDelta>()))
       .WillOnce(Return(Ranges<base::TimeDelta>()))
       .WillOnce(Return(populated_ranges))
       .WillOnce(Return(populated_ranges));

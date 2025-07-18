@@ -153,6 +153,7 @@ const std::string kDiscontinuous =
 
 using testing::_;
 using testing::ElementsAreArray;
+using testing::InSequence;
 using testing::NiceMock;
 using testing::Return;
 
@@ -234,21 +235,18 @@ class HlsRenditionImplUnittest : public testing::Test {
         .WillRepeatedly(Return(ranges));
   }
 
-  void RespondWithRangeTwice(base::TimeDelta A,
-                             base::TimeDelta B,
-                             base::TimeDelta X,
-                             base::TimeDelta Y) {
-    Ranges<base::TimeDelta> ab;
-    if (A != B) {
-      ab.Add(A, B);
+  void RespondWithRangeSet(
+      std::vector<std::tuple<base::TimeDelta, base::TimeDelta>> ranges) {
+    InSequence s;
+    for (const auto& pair : ranges) {
+      Ranges<base::TimeDelta> range;
+      if (std::get<0>(pair) != std::get<1>(pair)) {
+        range.Add(std::get<0>(pair), std::get<1>(pair));
+      }
+      EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+          .Times(1)
+          .WillOnce(Return(range));
     }
-    Ranges<base::TimeDelta> xy;
-    if (X != Y) {
-      xy.Add(X, Y);
-    }
-    EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
-        .WillOnce(Return(ab))
-        .WillOnce(Return(xy));
   }
 
   void SupplyAndExpectJunkData(base::TimeDelta initial_response_start,
@@ -275,7 +273,8 @@ class HlsRenditionImplUnittest : public testing::Test {
     appended_range.Add(fetch_expected_time - base::Seconds(1),
                        fetch_expected_time + base::Seconds(1));
     EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
-        .Times(2)
+        .Times(3)
+        .WillOnce(Return(initial_range))
         .WillOnce(Return(initial_range))
         .WillOnce(Return(appended_range));
   }
@@ -405,8 +404,11 @@ TEST_F(HlsRenditionImplUnittest, TestCreateRenditionPaused) {
 
   // CheckState causes the rentidion to:
   // Check buffered ranges first
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(5));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(5)},
+  });
   // The first segment will be queried
   std::string tscontent = "tscontent";
   RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
@@ -429,8 +431,9 @@ TEST_F(HlsRenditionImplUnittest, TestPausedRenditionHasSomeData) {
   // CheckState causes the rentidion to:
   // Check buffered ranges first. In this case, we've loaded a bunch of content
   // already, and our loaded ranges are [0 - 8)
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(8), base::Seconds(0),
-                        base::Seconds(16));
+  RespondWithRangeSet({{base::Seconds(0), base::Seconds(8)},
+                       {base::Seconds(0), base::Seconds(8)},
+                       {base::Seconds(0), base::Seconds(16)}});
 
   // The next unqueried segment will be queried
   std::string tscontent = "tscontent";
@@ -554,8 +557,11 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   std::string tscontent = "tscontent";
   RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
   RequireAppend(base::as_byte_span(tscontent));
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(2));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(2)},
+  });
   rendition->CheckState(base::Seconds(0), 0.0,
                         BindCheckState(base::Seconds(0)));
   task_environment_.RunUntilIdle();
@@ -616,8 +622,11 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // is not exhausted (it's just been updated!) and so we fetch the next one.
   // After appending and parsing, it's brought our loaded ranges up to 202, and
   // the response to check state is to run it again in 0 seconds.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(32), base::Seconds(0),
-                        base::Seconds(202));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(32)},
+      {base::Seconds(0), base::Seconds(32)},
+      {base::Seconds(0), base::Seconds(202)},
+  });
   std::string newcontent = "newcontent";
   RespondToUrl("http://example.com/playlist_4500Kb_14551349.ts", newcontent);
   RequireAppend(base::as_byte_span(newcontent));
@@ -629,8 +638,11 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // requested again, this time for the next segment. Lets pretend that next
   // segment has 20 seconds of data in it, bringing new range end to 222. The
   // response will still be 0 seconds.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(202), base::Seconds(0),
-                        base::Seconds(222));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(202)},
+      {base::Seconds(0), base::Seconds(202)},
+      {base::Seconds(0), base::Seconds(222)},
+  });
   newcontent = "blah";
   RespondToUrl("http://example.com/playlist_4500Kb_14551350.ts", "blah");
   RequireAppend(base::as_byte_span(newcontent));
@@ -649,34 +661,183 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsRenditionImplUnittest, TestCantSkipOverLargeGaps) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> empty_range;
+  Ranges<base::TimeDelta> split_range;
+  split_range.Add(base::Seconds(0), base::Milliseconds(998));
+  split_range.Add(base::Seconds(3), base::Milliseconds(3999));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(empty_range))   // Once in CheckState
+      .WillOnce(Return(empty_range))   // Before appending
+      .WillOnce(Return(split_range));  // After appending
+  RespondToUrl("https://example.com/bip00.ts", content);
+  RequireAppend(base::as_byte_span(content));
+
+  // The ranges are more than 1 second apart, so failure occurs.
+  EXPECT_CALL(*mock_hrh_, Quit(_));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+}
+
+TEST_F(HlsRenditionImplUnittest, TestSkipsSmallSingleGap) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> empty_range;
+  Ranges<base::TimeDelta> split_range;
+  Ranges<base::TimeDelta> end_range;
+  split_range.Add(base::Seconds(0), base::Milliseconds(998));
+  split_range.Add(base::Seconds(1), base::Seconds(2));
+  end_range.Add(base::Seconds(1), base::Seconds(2));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(empty_range))   // Once in CheckState
+      .WillOnce(Return(empty_range))   // Before appending
+      .WillOnce(Return(split_range));  // After appending
+  RespondToUrl("https://example.com/bip00.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+
+  // The next check state comes in at time 0.999. The rendition impl clears the
+  // things before the gap and seeks to the end of the gap.
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(split_range))  // CheckState initial check
+      .WillOnce(Return(end_range));   // CheckState after removing buffers.
+  EXPECT_CALL(*mock_mdeh_,
+              Remove(_, base::Seconds(0), base::Milliseconds(998)));
+  EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Seconds(1)));
+  rendition->CheckState(base::Seconds(1), 0.0, BindCheckState(kNoTimestamp));
+}
+
+TEST_F(HlsRenditionImplUnittest, TestCantSkipMultipleNearbyGaps) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> empty_range;
+  Ranges<base::TimeDelta> split_range;
+  split_range.Add(base::Seconds(0), base::Milliseconds(998));
+  split_range.Add(base::Milliseconds(1001), base::Milliseconds(1007));
+  split_range.Add(base::Milliseconds(1014), base::Milliseconds(1019));
+  split_range.Add(base::Milliseconds(1028), base::Milliseconds(2000));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(empty_range))   // Once in CheckState
+      .WillOnce(Return(empty_range))   // Before appending
+      .WillOnce(Return(split_range));  // After appending
+  RespondToUrl("https://example.com/bip00.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+
+  // Check State comes in after the first gap, so failure occurs.
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(split_range));
+  EXPECT_CALL(*mock_hrh_, Quit(_));
+  rendition->CheckState(base::Milliseconds(1033), 0.0,
+                        BindCheckStateNoExpect());
+}
+
+TEST_F(HlsRenditionImplUnittest, TestCanSkipIntoRangesWithSpacedOutGaps) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> empty_range;
+  Ranges<base::TimeDelta> split_range;
+  Ranges<base::TimeDelta> end_range;
+  split_range.Add(base::Seconds(0), base::Seconds(1));
+  split_range.Add(base::Milliseconds(1002), base::Seconds(5));
+  split_range.Add(base::Milliseconds(5002), base::Seconds(10));
+  split_range.Add(base::Milliseconds(10002), base::Seconds(15));
+
+  end_range.Add(base::Milliseconds(1002), base::Seconds(5));
+  end_range.Add(base::Milliseconds(5002), base::Seconds(10));
+  end_range.Add(base::Milliseconds(10002), base::Seconds(15));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(empty_range))   // Once in CheckState
+      .WillOnce(Return(empty_range))   // Before appending
+      .WillOnce(Return(split_range));  // After appending
+  RespondToUrl("https://example.com/bip00.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(split_range))  // CheckState initial check
+      .WillOnce(Return(end_range));   // CheckState after removing buffers.
+  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(1)));
+  EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Milliseconds(1002)));
+  rendition->CheckState(base::Milliseconds(1010), 0.0,
+                        BindCheckState(kNoTimestamp));
+}
+
+TEST_F(HlsRenditionImplUnittest, TestGapWasRightWhereRequestedBufferEndIs) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> empty_range;
+  Ranges<base::TimeDelta> split_range;
+  Ranges<base::TimeDelta> end_range;
+  split_range.Add(base::Seconds(0), base::Milliseconds(998));
+  split_range.Add(base::Milliseconds(1002), base::Seconds(3));
+  end_range.Add(base::Milliseconds(1002), base::Seconds(3));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(empty_range))   // Once in CheckState
+      .WillOnce(Return(empty_range))   // Before appending
+      .WillOnce(Return(split_range));  // After appending
+  RespondToUrl("https://example.com/bip00.ts", content);
+  RequireAppend(base::as_byte_span(content));
+
+  // Our requested time landed right in the middle of the gap. but that's OK.
+  // The next CheckState will seek us.
+  rendition->CheckState(base::Seconds(1), 0.0, BindCheck0Sec());
+
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(split_range))  // CheckState initial check
+      .WillOnce(Return(end_range));   // CheckState after removing buffers.
+  EXPECT_CALL(*mock_mdeh_,
+              Remove(_, base::Seconds(0), base::Milliseconds(998)));
+  EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Milliseconds(1002)));
+  rendition->CheckState(base::Seconds(1), 0.0, BindCheckState(kNoTimestamp));
+}
+
 TEST_F(HlsRenditionImplUnittest, TestDiscontinuity) {
   auto rendition = MakeVodRendition(kDiscontinuous);
   ASSERT_NE(rendition, nullptr);
   const std::string content = "ehh, whatever";
 
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(2));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(2)},
+  });
   RespondToUrl("https://example.com/bip00.ts", content);
   RequireAppend(base::as_byte_span(content));
   rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
   task_environment_.RunUntilIdle();
 
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(2));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(2)},
+  });
   RespondToUrl("https://example.com/bip01.ts", content);
   RequireAppend(base::as_byte_span(content));
   rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
   task_environment_.RunUntilIdle();
 
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(2));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(2)},
+  });
   RespondToUrl("https://example.com/bip02.ts", content);
   RequireAppend(base::as_byte_span(content));
   rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
   task_environment_.RunUntilIdle();
 
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(2));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(2)},
+  });
   RespondToUrl("https://example.com/data00.ts", content);
 
   EXPECT_CALL(*mock_mdeh_, ResetParserState("test", base::Seconds(8.6), _));
@@ -685,15 +846,21 @@ TEST_F(HlsRenditionImplUnittest, TestDiscontinuity) {
   rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
   task_environment_.RunUntilIdle();
 
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(2));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(2)},
+  });
   RespondToUrl("https://example.com/data01.ts", content);
   RequireAppend(base::as_byte_span(content));
   rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
   task_environment_.RunUntilIdle();
 
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(2));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(2)},
+  });
   RespondToUrl("https://example.com/data02.ts", content);
   RequireAppend(base::as_byte_span(content));
   rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
@@ -722,8 +889,11 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
   /* START CHECK 1 */
   // CheckState will start the paused player, query BufferedRanges, get 0-0,
   // which will trigger an attempt to fetch.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
-                        base::Seconds(2));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(0)},
+      {base::Seconds(0), base::Seconds(2)},
+  });
 
   // The fetch will request the segment at "media_0.ts", which has an encryption
   // data attached. We need to populate that here so we can use the same key to
@@ -752,8 +922,11 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
 
   // On the second fetch, the encryption data should remain the same,
   // so we can just use new text.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),
-                        base::Seconds(4));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(2)},
+      {base::Seconds(0), base::Seconds(2)},
+      {base::Seconds(0), base::Seconds(4)},
+  });
   RespondToUrl("https://example.com/media_1.ts", ciphertext);
   RequireAppend(base::as_byte_span(cleartext));
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -773,8 +946,11 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
 
   // CheckState will start the paused player, query BufferedRanges, get 0-4
   // which will trigger an attempt to fetch.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(4), base::Seconds(0),
-                        base::Seconds(6));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(4)},
+      {base::Seconds(0), base::Seconds(4)},
+      {base::Seconds(0), base::Seconds(6)},
+  });
 
   // The fetch will request the segment at "media_2.ts", which has a new
   // encryption data.
@@ -803,8 +979,11 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
   rendition->UpdatePlaylist(std::move(parsed).value());
 
   // The encryption data is the same for segment 3, since it didn't change.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),
-                        base::Seconds(4));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(2)},
+      {base::Seconds(0), base::Seconds(2)},
+      {base::Seconds(0), base::Seconds(4)},
+  });
   RespondToUrl("https://example.com/media_3.ts", ciphertext2);
   RequireAppend(base::as_byte_span(cleartext));
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -825,8 +1004,11 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
 
   // CheckState will start the paused player, query BufferedRanges, get 0-4
   // which will trigger an attempt to fetch.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(4), base::Seconds(0),
-                        base::Seconds(6));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(4)},
+      {base::Seconds(0), base::Seconds(4)},
+      {base::Seconds(0), base::Seconds(6)},
+  });
 
   // The fetch will request the segment at "mediax_4.ts", for which the
   // encryption data has not been fetched.
@@ -846,8 +1028,11 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
   /* START CHECK 6 */
 
   // The encryption data is the same for segment 5, since it didn't change.
-  RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),
-                        base::Seconds(4));
+  RespondWithRangeSet({
+      {base::Seconds(0), base::Seconds(2)},
+      {base::Seconds(0), base::Seconds(2)},
+      {base::Seconds(0), base::Seconds(4)},
+  });
   RespondToUrl("https://example.com/mediax_5.ts", ciphertext3);
   RequireAppend(base::as_byte_span(cleartext));
   rendition->CheckState(base::Seconds(0), 0.0,
