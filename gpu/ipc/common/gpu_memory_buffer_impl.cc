@@ -21,14 +21,6 @@ GpuMemoryBufferImpl::~GpuMemoryBufferImpl() {
 #endif
 }
 
-gfx::Size GpuMemoryBufferImpl::GetSize() const {
-  return size_;
-}
-
-gfx::BufferFormat GpuMemoryBufferImpl::GetFormat() const {
-  return format_;
-}
-
 void GpuMemoryBufferImpl::AssertMapped() {
 #if DCHECK_IS_ON()
   base::AutoLock auto_lock(map_lock_);
@@ -50,7 +42,7 @@ base::span<uint8_t> GpuMemoryBufferImpl::memory_span(size_t plane) {
     return {};
   }
   size_t size = 0;
-  if (!PlaneSizeForBufferFormatChecked(GetSize(), GetFormat(), plane, &size)) {
+  if (!PlaneSizeForBufferFormatChecked(size_, format_, plane, &size)) {
     return {};
   }
 

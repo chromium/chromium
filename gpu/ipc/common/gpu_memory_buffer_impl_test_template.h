@@ -233,7 +233,6 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
           TestFixture::CreateGpuMemoryBufferImplFromHandle(
               std::move(handle), kBufferSize, format, usage));
       ASSERT_TRUE(buffer);
-      EXPECT_EQ(buffer->GetFormat(), format);
     }
   }
 }
@@ -464,7 +463,6 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
           TestFixture::CreateGpuMemoryBufferImplFromHandle(
               std::move(output_handle), kBufferSize, format, usage));
       ASSERT_TRUE(buffer);
-      EXPECT_EQ(buffer->GetFormat(), format);
     }
   }
 }
@@ -493,7 +491,6 @@ TYPED_TEST_P(GpuMemoryBufferImplCreateTest, Create) {
     std::unique_ptr<TypeParam> buffer(
         TypeParam::CreateForTesting(kBufferSize, format, usage));
     ASSERT_TRUE(buffer);
-    EXPECT_EQ(buffer->GetFormat(), format);
   }
 }
 // The GpuMemoryBufferImplCreateTest test case verifies behavior that is

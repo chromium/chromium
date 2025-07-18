@@ -31,12 +31,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
 
   virtual ~GpuMemoryBufferImpl();
 
-  // Returns the size in pixels of the first plane of the buffer.
-  gfx::Size GetSize() const;
-
-  // Returns the format for the buffer.
-  gfx::BufferFormat GetFormat() const;
-
   // Maps each plane of the buffer into the client's address space so it can be
   // written to by the CPU. This call may block, for instance if the GPU needs
   // to finish accessing the buffer or if CPU caches need to be synchronized.

@@ -86,12 +86,12 @@ bool GpuMemoryBufferImplNativePixmap::Map() {
   if (map_count_++)
     return true;
 
-  if (gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()) !=
+  if (gfx::NumberOfPlanesForLinearBufferFormat(format_) !=
       pixmap_->GetNumberOfPlanes()) {
     // RGBX8888 and BGR_565 allocates 2 planes while the gfx function returns 1
     LOG(WARNING) << "Mismatched plane count "
-                 << gfx::BufferFormatToString(GetFormat()) << " expected "
-                 << gfx::NumberOfPlanesForLinearBufferFormat(GetFormat())
+                 << gfx::BufferFormatToString(format_) << " expected "
+                 << gfx::NumberOfPlanesForLinearBufferFormat(format_)
                  << " value " << pixmap_->GetNumberOfPlanes();
   }
 
