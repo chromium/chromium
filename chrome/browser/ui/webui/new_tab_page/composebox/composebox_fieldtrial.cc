@@ -89,6 +89,11 @@ const base::FeatureParam<std::string> kConfigParam(&kNtpComposebox,
                                                    "ConfigParam",
                                                    "");
 
+const base::FeatureParam<bool> kEnableWebpEncodingParam(
+    &kNtpComposebox,
+    "EnableWebpEncodingParam",
+    false);
+
 const base::FeatureParam<size_t> kDownscaleMaxImageSizeParam(
     &kNtpComposebox,
     "DownscaleMaxImageSizeParam",
@@ -116,6 +121,7 @@ const base::FeatureParam<bool> kSendLnsSurfaceParam(&kNtpComposebox,
 FeatureConfig::FeatureConfig()
     : enabled(base::FeatureList::IsEnabled(kNtpComposebox)),
       config(GetNTPComposeboxConfig()),
+      enable_webp_encoding(kEnableWebpEncodingParam.Get()),
       downscale_max_image_size(kDownscaleMaxImageSizeParam.Get()),
       downscale_max_image_width(kDownscaleMaxImageWidthParam.Get()),
       downscale_max_image_height(kDownscaleMaxImageHeightParam.Get()),

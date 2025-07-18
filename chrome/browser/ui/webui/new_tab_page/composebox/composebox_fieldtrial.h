@@ -21,6 +21,8 @@ bool IsNtpSearchboxComposeEntrypointEnabled();
 BASE_DECLARE_FEATURE(kNtpComposebox);
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
 extern const base::FeatureParam<std::string> kConfigParam;
+// Whether to enable WebP encoding for transparent image uploads.
+extern const base::FeatureParam<bool> kEnableWebpEncodingParam;
 // The maximum image size downscaling target (in pixels).
 extern const base::FeatureParam<size_t> kDownscaleMaxImageSizeParam;
 // The maximum image width downscaling target (in pixels).
@@ -39,6 +41,8 @@ struct FeatureConfig : omnibox_feature_configs::Config<FeatureConfig> {
   bool enabled = false;
   // The configuration proto for the feature.
   omnibox::NTPComposeboxConfig config;
+  // Whether to enable WebP encoding for transparent image uploads.
+  bool enable_webp_encoding = false;
   // Maximum image size downscaling target (in pixels).
   int downscale_max_image_size = 1;
   // Maximum image width downscaling target (in pixels).

@@ -48,9 +48,12 @@ lens::ImageData DownscaleAndEncodeBitmap(
 
   auto resized_bitmap =
       DownscaleImageIfNeeded(image, client_logs, image_options);
-  if (lens::EncodeImageMaybeWithTransparency(resized_bitmap,
-                                             image_options.compression_quality,
-                                             data, client_logs)) {
+  if (image_options.enable_webp_encoding
+          ? lens::EncodeImageMaybeWithTransparency(
+                resized_bitmap, image_options.compression_quality, data,
+                client_logs)
+          : lens::EncodeImage(resized_bitmap, image_options.compression_quality,
+                              data, client_logs)) {
     image_data.mutable_image_metadata()->set_height(resized_bitmap.height());
     image_data.mutable_image_metadata()->set_width(resized_bitmap.width());
 
