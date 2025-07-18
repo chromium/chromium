@@ -1,6 +1,7 @@
 include_rules = [
   "-chrome",
   "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupCreationDialogManager.java",
+  "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabShareUtils.java",
   "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiFeatureUtilities.java",
   "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiThemeProvider.java",
   "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/PriceTrackingUtilities.java",
