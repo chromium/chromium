@@ -621,10 +621,6 @@ extern bool IsLensOverlaySaveAsImageEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
 
-// Whether to show the contextual searchbox in the Lens Overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayContextualSearchboxEnabled();
-
 // Whether to enable the "open in new tab" option in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlaySidePanelOpenInNewTabEnabled();

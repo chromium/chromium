@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
@@ -205,7 +206,7 @@ bool IsPageContextEligible(
     optimization_guide::PageContextEligibility* page_context_eligibility) {
   if (!page_context_eligibility ||
       !lens::features::IsLensSearchProtectedPageEnabled() ||
-      !lens::features::IsLensOverlayContextualSearchboxEnabled() ||
+      !lens::IsLensOverlayContextualSearchboxEnabled() ||
       !lens::features::UseApcAsContext()) {
     return true;
   }
@@ -1141,7 +1142,7 @@ void LensOverlayController::IssueSearchBoxRequest(
   // on each query is disabled, if the live page is not being displayed, or if
   // the user is not in the contextual search flow (aka, issues an image request
   // already).
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled() ||
+  if (!lens::IsLensOverlayContextualSearchboxEnabled() ||
       !lens::features::ShouldLensOverlayRecontextualizeOnQuery() ||
       state() != State::kLivePageAndResults || !IsContextualSearchbox()) {
     IssueSearchBoxRequestPart2(query_start_time, search_box_text, match_type,
@@ -1660,7 +1661,7 @@ void LensOverlayController::InitializeOverlay(
 
   // If the StartQueryFlow optimization is enabled, the page contents will not
   // be sent with the initial image request, so we need to send it here.
-  if (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
+  if (lens::IsLensOverlayContextualSearchboxEnabled() &&
       lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled() &&
       is_page_context_eligible_) {
     // TODO(crbug.com/418856988): Replace this with a call that starts
@@ -2078,7 +2079,7 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
       backgrounded_state_ != State::kLivePageAndResults) {
     ShowPreselectionBubble();
   }
-  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+  if (lens::IsLensOverlayContextualSearchboxEnabled()) {
     SuppressGhostLoader();
   }
 

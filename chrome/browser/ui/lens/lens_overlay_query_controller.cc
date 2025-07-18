@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/common/channel_info.h"
 #include "components/base32/base32.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -987,7 +988,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // cluster info handshake.
   if (!cluster_info_ &&
       (lens::features::IsLensOverlayClusterInfoOptimizationEnabled() ||
-       lens::features::IsLensOverlayContextualSearchboxEnabled())) {
+       lens::IsLensOverlayContextualSearchboxEnabled())) {
     FetchClusterInfoRequest();
     return;
   }
@@ -1929,7 +1930,7 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
       std::make_optional(encoded_analytics_id),
       *latest_interaction_request_data_->request_id_.get());
 
-  if (!(lens::features::IsLensOverlayContextualSearchboxEnabled() &&
+  if (!(lens::IsLensOverlayContextualSearchboxEnabled() &&
         !lens::features::GetLensOverlaySendImageSignalsForLensSuggest())) {
     // Always include the image signals unless the contextual searchbox is
     // enabled and the image signals feature flag is disabled.

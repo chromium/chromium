@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -83,7 +84,7 @@ void LensPermissionBubbleController::RequestPermission(
   // several times in succession.
   pref_observer_.Reset();
   pref_observer_.Init(pref_service_);
-  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+  if (lens::IsLensOverlayContextualSearchboxEnabled()) {
     pref_observer_.Add(
         prefs::kLensSharingPageContentEnabled,
         base::BindRepeating(
@@ -168,7 +169,7 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel(
           weak_ptr_factory_.GetWeakPtr()));
 
   auto description_text =
-      lens::features::IsLensOverlayContextualSearchboxEnabled()
+      lens::IsLensOverlayContextualSearchboxEnabled()
           ? ui::DialogModelLabel::CreateWithReplacement(
                 IDS_LENS_PERMISSION_BUBBLE_DIALOG_CSB_DESCRIPTION, link)
           : ui::DialogModelLabel::CreateWithReplacement(
@@ -226,7 +227,7 @@ void LensPermissionBubbleController::OnPermissionDialogAccept(
   // the prefs is no longer necessary when the dialog is being closed because
   // the user accepted the dialog.
   pref_observer_.Reset();
-  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+  if (lens::IsLensOverlayContextualSearchboxEnabled()) {
     pref_service_->SetBoolean(prefs::kLensSharingPageContentEnabled, true);
   }
   pref_service_->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);

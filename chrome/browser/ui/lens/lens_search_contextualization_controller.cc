@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/content_extraction/content/browser/inner_text.h"
@@ -135,7 +136,7 @@ bool IsPageContextEligible(
     optimization_guide::PageContextEligibility* page_context_eligibility) {
   if (!page_context_eligibility ||
       !lens::features::IsLensSearchProtectedPageEnabled() ||
-      !lens::features::IsLensOverlayContextualSearchboxEnabled() ||
+      !lens::IsLensOverlayContextualSearchboxEnabled() ||
       !lens::features::UseApcAsContext()) {
     return true;
   }
@@ -178,7 +179,7 @@ void LensSearchContextualizationController::StartContextualization(
 void LensSearchContextualizationController::GetPageContextualization(
     PageContentRetrievedCallback callback) {
   // If the contextual searchbox is disabled, exit early.
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+  if (!lens::IsLensOverlayContextualSearchboxEnabled()) {
     std::move(callback).Run(/*page_contents=*/{}, lens::MimeType::kUnknown,
                             std::nullopt);
     return;
@@ -388,7 +389,7 @@ void LensSearchContextualizationController::UpdatePageContextualization(
     return;
   }
 
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+  if (!lens::IsLensOverlayContextualSearchboxEnabled()) {
     std::move(on_page_context_updated_callback_).Run();
     return;
   }
