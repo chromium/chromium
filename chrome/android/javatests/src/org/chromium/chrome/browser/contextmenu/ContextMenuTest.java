@@ -706,7 +706,7 @@ public class ContextMenuTest {
 
     @Test
     @LargeTest
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testSavePageLongPress() throws TimeoutException {
@@ -1261,7 +1261,7 @@ public class ContextMenuTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testSharePageLongPress() throws Exception {
@@ -1355,7 +1355,7 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testPrintPageLongPress() throws Exception {

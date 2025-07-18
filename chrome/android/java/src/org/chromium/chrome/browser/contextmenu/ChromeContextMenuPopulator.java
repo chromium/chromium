@@ -386,7 +386,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @VisibleForTesting
     boolean shouldShowEmptySpaceContextMenu() {
-        return DeviceInput.supportsPrecisionPointer()
+        // Enable empty space context menu for large screen devices, and devices
+        // (with any screen size) with input periperals attached.
+        return (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                        || (DeviceInput.supportsPrecisionPointer()
+                                && DeviceInput.supportsKeyboard()))
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE);
     }
 
