@@ -391,11 +391,6 @@ void LogPixAccountLinkingPromptAccepted() {
       /*sample=*/true);
 }
 
-void LogPixAccountLinkingPromptShown() {
-  base::UmaHistogramBoolean("FacilitatedPayments.Pix.AccountLinkingPromptShown",
-                            /*sample=*/true);
-}
-
 void LogGetDetailsForCreatePaymentInstrumentResultAndLatency(
     bool is_eligible,
     base::TimeDelta latency) {
@@ -407,6 +402,17 @@ void LogGetDetailsForCreatePaymentInstrumentResultAndLatency(
       "FacilitatedPayments.Pix.AccountLinking."
       "GetDetailsForCreatePaymentInstrument.Latency",
       latency);
+}
+
+void LogPixAccountLinkingPromptShown() {
+  base::UmaHistogramBoolean("FacilitatedPayments.Pix.AccountLinkingPromptShown",
+                            /*sample=*/true);
+}
+
+void LogPixAccountLinkingFlowExitedReason(
+    PixAccountLinkingFlowExitedReason reason) {
+  base::UmaHistogramEnumeration(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason", reason);
 }
 
 }  // namespace payments::facilitated

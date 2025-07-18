@@ -127,6 +127,16 @@ enum class PixFlowExitedReason {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixFlowExitedReason)
 
+// LINT.IfChange(PixAccountLinkingFlowExitedReason)
+enum class PixAccountLinkingFlowExitedReason {
+  kScreenNotShown = 0,
+  kScreenClosedNotByUser = 1,
+  kScreenClosedByUser = 2,
+  kUserDeclined = 3,
+  kMaxValue = kUserDeclined
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.AccountLinking.FlowExitedReason)
+
 // Log when a Pix code is copied to the clippboard on an allowlisted merchant
 // website.
 void LogPixCodeCopied(ukm::SourceId ukm_source_id);
@@ -291,6 +301,10 @@ void LogPixAccountLinkingPromptAccepted();
 void LogGetDetailsForCreatePaymentInstrumentResultAndLatency(
     bool is_eligible,
     base::TimeDelta latency);
+
+// Log the reason for the Pix account linking flow was exited early.
+void LogPixAccountLinkingFlowExitedReason(
+    PixAccountLinkingFlowExitedReason reason);
 
 }  // namespace payments::facilitated
 

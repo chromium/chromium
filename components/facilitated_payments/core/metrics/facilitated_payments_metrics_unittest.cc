@@ -208,6 +208,29 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixAccountLinkingPromptAccepted) {
       /*expected_bucket_count=*/1);
 }
 
+class FacilitatedPaymentsMetricsPixAccountLinkingFlowExitedReasonTest
+    : public testing::TestWithParam<PixAccountLinkingFlowExitedReason> {};
+
+TEST_P(FacilitatedPaymentsMetricsPixAccountLinkingFlowExitedReasonTest,
+       LogPixAccountLinkingFlowExitedReason) {
+  base::HistogramTester histogram_tester;
+
+  LogPixAccountLinkingFlowExitedReason(GetParam());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/GetParam(),
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsPixAccountLinkingFlowExitedReasonTest,
+    testing::Values(PixAccountLinkingFlowExitedReason::kScreenNotShown,
+                    PixAccountLinkingFlowExitedReason::kScreenClosedNotByUser,
+                    PixAccountLinkingFlowExitedReason::kScreenClosedByUser,
+                    PixAccountLinkingFlowExitedReason::kUserDeclined));
+
 TEST(FacilitatedPaymentsMetricsTest,
      LogGetDetailsForCreatePaymentInstrumentResultAndLatency) {
   base::HistogramTester histogram_tester;

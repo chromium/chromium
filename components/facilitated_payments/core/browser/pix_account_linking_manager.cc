@@ -140,7 +140,8 @@ void PixAccountLinkingManager::OnAccepted() {
 }
 
 void PixAccountLinkingManager::OnDeclined() {
-  // TODO(crbug.com/419108993): Add metrics.
+  LogPixAccountLinkingFlowExitedReason(
+      PixAccountLinkingFlowExitedReason::kUserDeclined);
   DismissPrompt();
   client_->GetPaymentsDataManager()
       ->SetFacilitatedPaymentsPixAccountLinkingUserPref(/* enabled= */ false);
@@ -155,24 +156,23 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
     }
     case UiEvent::kScreenCouldNotBeShown: {
       CHECK(is_prompt_showing_);
-      // TODO(crbug.com/419108993): Log that the prompt show failed.
+      LogPixAccountLinkingFlowExitedReason(
+          PixAccountLinkingFlowExitedReason::kScreenNotShown);
       is_prompt_showing_ = false;
       break;
     }
     case UiEvent::kScreenClosedNotByUser: {
       if (is_prompt_showing_) {
-        // TODO(crbug.com/419108993): Log that the prompt was closed
-        // unexpectedly.
+        LogPixAccountLinkingFlowExitedReason(
+            PixAccountLinkingFlowExitedReason::kScreenClosedNotByUser);
       }
-      // TODO(crbug.com/419108993): Add specific logging for Pix Account Linking
-      // prompt closed not by user.
       is_prompt_showing_ = false;
       break;
     }
     case UiEvent::kScreenClosedByUser: {
       CHECK(is_prompt_showing_);
-      // TODO(crbug.com/419108993): Add specific logging for Pix Account Linking
-      // prompt closed by user.
+      LogPixAccountLinkingFlowExitedReason(
+          PixAccountLinkingFlowExitedReason::kScreenClosedByUser);
       is_prompt_showing_ = false;
       break;
     }

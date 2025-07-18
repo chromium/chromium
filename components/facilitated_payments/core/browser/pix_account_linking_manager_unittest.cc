@@ -17,6 +17,7 @@
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager_test_api.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -375,5 +376,63 @@ TEST_P(PixAccountLinkingManagerParameterizedTest,
 INSTANTIATE_TEST_SUITE_P(PixAccountLinkingManagerTestSuite,
                          PixAccountLinkingManagerParameterizedTest,
                          testing::Bool());
+
+TEST_F(PixAccountLinkingManagerTest, FlowExitedReason_UserDeclinedLogged) {
+  base::HistogramTester histogram_tester;
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  test_api().OnDeclined();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kUserDeclined,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kScreenClosedNotByUser,
+      /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/PixAccountLinkingFlowExitedReason::kScreenClosedByUser,
+      /*expected_count=*/0);
+}
+
+class PixAccountLinkingManagerTestForExitedReasons
+    : public PixAccountLinkingManagerTest,
+      public testing::WithParamInterface<
+          std::tuple<UiEvent, PixAccountLinkingFlowExitedReason>> {
+ public:
+  UiEvent ui_event() const { return std::get<0>(GetParam()); }
+
+  PixAccountLinkingFlowExitedReason pix_account_linking_flow_exited_reason()
+      const {
+    return std::get<1>(GetParam());
+  }
+};
+
+TEST_P(PixAccountLinkingManagerTestForExitedReasons, FlowExitedReasonLogged) {
+  base::HistogramTester histogram_tester;
+
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  test_api().OnUiScreenEvent(ui_event());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/pix_account_linking_flow_exited_reason(),
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PixAccountLinkingManagerTestSuite,
+    PixAccountLinkingManagerTestForExitedReasons,
+    testing::ValuesIn({
+        std::make_tuple(UiEvent::kScreenCouldNotBeShown,
+                        PixAccountLinkingFlowExitedReason::kScreenNotShown),
+        std::make_tuple(
+            UiEvent::kScreenClosedNotByUser,
+            PixAccountLinkingFlowExitedReason::kScreenClosedNotByUser),
+        std::make_tuple(UiEvent::kScreenClosedByUser,
+                        PixAccountLinkingFlowExitedReason::kScreenClosedByUser),
+    }));
 
 }  // namespace payments::facilitated

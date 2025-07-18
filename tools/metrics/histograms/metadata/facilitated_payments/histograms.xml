@@ -293,6 +293,20 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason"
+    enum="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason"
+    expires_after="2026-06-01">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This histogram logs the reasons as to why the Pix account linking flow was
+    exited. The flow is said to be completed if Chrome successfully opens
+    Wallet's Pix account linking page. [Trigger] Pix account linking flow was
+    exited early. [Frequency] Logged at most once per payflow.
+  </summary>
+</histogram>
+
 <histogram
     name="FacilitatedPayments.Pix.AccountLinking.GetDetailsForCreatePaymentInstrument.Latency"
     units="ms" expires_after="2026-06-01">

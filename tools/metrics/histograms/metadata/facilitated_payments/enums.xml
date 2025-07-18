@@ -75,6 +75,17 @@ reviewer.
   <int value="2" label="Abandoned"/>
 </enum>
 
+<!-- LINT.IfChange(FacilitatedPayments.Pix.AccountLinking.FlowExitedReason) -->
+
+<enum name="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason">
+  <int value="0" label="Screen not shown"/>
+  <int value="1" label="Screen was closed not by the user"/>
+  <int value="2" label="Screen was closed by the user"/>
+  <int value="3" label="User clicked the No Thanks button"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixAccountLinkingFlowExitedReason) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.PixFlowExitedReason) -->
 
 <enum name="FacilitatedPayments.PixFlowExitedReason">
