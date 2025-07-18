@@ -21,6 +21,7 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -40,7 +41,9 @@
 #include "components/page_content_annotations/core/page_content_annotations_enums.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
+#include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1155,6 +1158,186 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
   // should be empty/unset.
   EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
 }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+class FakeEmbedderMetadataProvider
+    : public passage_embeddings::EmbedderMetadataProvider {
+ public:
+  FakeEmbedderMetadataProvider() = default;
+  ~FakeEmbedderMetadataProvider() override = default;
+
+  // passage_embeddings::EmbedderMetadataProvider:
+  void AddObserver(
+      passage_embeddings::EmbedderMetadataObserver* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+  void RemoveObserver(
+      passage_embeddings::EmbedderMetadataObserver* observer) override {
+    observer_list_.RemoveObserver(observer);
+  }
+
+  void NotifyObservers() {
+    observer_list_.Notify(
+        &passage_embeddings::EmbedderMetadataObserver::EmbedderMetadataUpdated,
+        passage_embeddings::EmbedderMetadata(1, 768));
+  }
+
+ private:
+  base::ObserverList<passage_embeddings::EmbedderMetadataObserver>
+      observer_list_;
+};
+
+class FakeEmbedder : public passage_embeddings::TestEmbedder {
+ public:
+  FakeEmbedder() = default;
+  ~FakeEmbedder() override = default;
+
+  // passage_embeddings::TestEmbedder:
+  passage_embeddings::Embedder::TaskId ComputePassagesEmbeddings(
+      passage_embeddings::PassagePriority priority,
+      std::vector<std::string> passages,
+      ComputePassagesEmbeddingsCallback callback) override {
+    if (status_ == passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
+      passage_embeddings::TestEmbedder::ComputePassagesEmbeddings(
+          priority, passages, std::move(callback));
+      return 0;
+    }
+
+    std::move(callback).Run(passages, {}, 0, status_);
+    return 0;
+  }
+
+  void set_status(passage_embeddings::ComputeEmbeddingsStatus status) {
+    status_ = status;
+  }
+
+ private:
+  passage_embeddings::ComputeEmbeddingsStatus status_ =
+      passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
+};
+
+class PageContentAnnotationsServiceOnDeviceCategoryClassifierTest
+    : public InProcessBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPageContentAnnotations,
+         features::kOnDeviceCategoryClassifier},
+        /*disabled_features=*/{});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    scoped_feature_list_.Reset();
+    InProcessBrowserTest::TearDown();
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* browser_context) override {
+    PageContentAnnotationsServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            browser_context,
+            base::BindRepeating(
+                [](passage_embeddings::EmbedderMetadataProvider*
+                       embedder_metadata_provider,
+                   passage_embeddings::Embedder* embedder,
+                   content::BrowserContext* context)
+                    -> std::unique_ptr<KeyedService> {
+                  Profile* profile = Profile::FromBrowserContext(context);
+                  return TestPageContentAnnotationsService::Create(
+                      OptimizationGuideKeyedServiceFactory::GetForProfile(
+                          profile),
+                      HistoryServiceFactory::GetForProfile(
+                          profile, ServiceAccessType::IMPLICIT_ACCESS),
+                      embedder_metadata_provider, embedder);
+                },
+                &embedder_metadata_provider_, &embedder_));
+  }
+
+  PageContentAnnotationsService* service() {
+    return PageContentAnnotationsServiceFactory::GetForProfile(
+        browser()->profile());
+  }
+
+  void PushClassifierModel(
+      optimization_guide::proto::OptimizationTarget optimization_target) {
+    base::FilePath test_data_dir;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->OverrideTargetModelForTesting(
+            optimization_target,
+            optimization_guide::TestModelInfoBuilder()
+                .SetModelFilePath(test_data_dir.AppendASCII(
+                    "components/test/data/page_content_annotations/"
+                    "edu_classifier.tflite"))
+                .Build());
+  }
+
+  void NotifyEmbedderMetadata() {
+    embedder_metadata_provider_.NotifyObservers();
+  }
+
+  void UpdateEmbedderStatus(
+      passage_embeddings::ComputeEmbeddingsStatus status) {
+    embedder_.set_status(status);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  FakeEmbedderMetadataProvider embedder_metadata_provider_;
+  FakeEmbedder embedder_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceOnDeviceCategoryClassifierTest,
+    EmbedderButNoRegression) {
+  NotifyEmbedderMetadata();
+
+  base::test::TestFuture<std::vector<Category>> future;
+  service()->ClassifyCategoriesForText("some text", future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceOnDeviceCategoryClassifierTest,
+    RegressionButNoEmbedder) {
+  PushClassifierModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER);
+
+  base::test::TestFuture<std::vector<Category>> future;
+  service()->ClassifyCategoriesForText("some text", future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceOnDeviceCategoryClassifierTest,
+    EmbedderFailed) {
+  NotifyEmbedderMetadata();
+  UpdateEmbedderStatus(
+      passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
+  PushClassifierModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER);
+
+  base::test::TestFuture<std::vector<Category>> future;
+  service()->ClassifyCategoriesForText("some text", future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceOnDeviceCategoryClassifierTest,
+    Success) {
+  NotifyEmbedderMetadata();
+  PushClassifierModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER);
+
+  base::test::TestFuture<std::vector<Category>> future;
+  service()->ClassifyCategoriesForText("some text", future.GetCallback());
+  ASSERT_EQ(1u, future.Get().size());
+  EXPECT_EQ(CategoryType::kEducation, future.Get()[0].category_type);
+}
+
+#endif
 
 class PageContentAnnotationsServiceContentExtractionTest
     : public InProcessBrowserTest {

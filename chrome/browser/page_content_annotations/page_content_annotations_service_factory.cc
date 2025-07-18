@@ -17,6 +17,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
+#include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -103,6 +105,8 @@ PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory()
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(ZeroSuggestCacheServiceFactory::GetInstance());
+  DependsOn(
+      passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance());
 }
 
 PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
@@ -132,6 +136,18 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
       TemplateURLServiceFactory::GetForProfile(profile);
   ZeroSuggestCacheService* zero_suggest_cache_service =
       ZeroSuggestCacheServiceFactory::GetForProfile(profile);
+
+  passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider =
+      nullptr;
+  passage_embeddings::Embedder* embedder = nullptr;
+  if (base::FeatureList::IsEnabled(
+          page_content_annotations::features::kOnDeviceCategoryClassifier)) {
+    auto* passage_embeddings_service_controller =
+        passage_embeddings::ChromePassageEmbeddingsServiceController::Get();
+    embedder_metadata_provider = passage_embeddings_service_controller;
+    embedder = passage_embeddings_service_controller->GetEmbedder();
+  }
+
   if (optimization_guide_keyed_service && history_service) {
     std::string country_code =
         GetCurrentCountryCode(g_browser_process->variations_service());
@@ -141,7 +157,7 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
         optimization_guide_keyed_service, history_service, template_url_service,
         zero_suggest_cache_service, proto_db_provider, profile_path,
         optimization_guide_keyed_service->GetOptimizationGuideLogger(),
-        optimization_guide_keyed_service,
+        optimization_guide_keyed_service, embedder_metadata_provider, embedder,
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   }

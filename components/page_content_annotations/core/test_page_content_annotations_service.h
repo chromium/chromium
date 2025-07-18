@@ -22,7 +22,10 @@ class TestPageContentAnnotationsService : public PageContentAnnotationsService {
   static std::unique_ptr<TestPageContentAnnotationsService> Create(
       optimization_guide::OptimizationGuideModelProvider*
           optimization_guide_model_provider,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider =
+          nullptr,
+      passage_embeddings::Embedder* embedder = nullptr);
 
   ~TestPageContentAnnotationsService() override;
   TestPageContentAnnotationsService(const TestPageContentAnnotationsService&) =
@@ -34,7 +37,9 @@ class TestPageContentAnnotationsService : public PageContentAnnotationsService {
   TestPageContentAnnotationsService(
       optimization_guide::OptimizationGuideModelProvider*
           optimization_guide_model_provider,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+      passage_embeddings::Embedder* embedder);
 
   std::unique_ptr<base::ScopedTempDir> temp_dir_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>

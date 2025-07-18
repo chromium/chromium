@@ -56,8 +56,14 @@ class OptimizationGuideModelProvider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
 
+namespace passage_embeddings {
+class Embedder;
+class EmbedderMetadataProvider;
+}  // namespace passage_embeddings
+
 namespace page_content_annotations {
 
+class OnDeviceCategoryClassifier;
 class PageContentAnnotationsModelManager;
 class PageContentAnnotationsServiceBrowserTest;
 class PageContentAnnotationsValidator;
@@ -145,6 +151,8 @@ class PageContentAnnotationsService
       const base::FilePath& database_dir,
       OptimizationGuideLogger* optimization_guide_logger,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+      passage_embeddings::Embedder* embedder,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~PageContentAnnotationsService() override;
   PageContentAnnotationsService(const PageContentAnnotationsService&) = delete;
@@ -216,6 +224,13 @@ class PageContentAnnotationsService
     return optimization_guide_logger_;
   }
 
+  // Classifies categories for a piece of text.
+  //
+  // DO NOT USE. This is temporary until the rest of the API is hooked up.
+  void ClassifyCategoriesForText(
+      const std::string& text,
+      base::OnceCallback<void(std::vector<Category>)> callback);
+
  private:
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Callback invoked when a single |visit| has been annotated.
@@ -253,6 +268,7 @@ class PageContentAnnotationsService
 
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 
+  std::unique_ptr<OnDeviceCategoryClassifier> on_device_category_classifier_;
 #endif
 
   // The annotator to use for requests to |BatchAnnotate| and |Annotate|. In

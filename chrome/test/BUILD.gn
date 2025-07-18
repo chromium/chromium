@@ -3017,6 +3017,7 @@ if (!is_android) {
       "//components/test/data/autofill/",
       "//components/test/data/custom_handlers",
       "//components/test/data/optimization_guide/",
+      "//components/test/data/page_content_annotations/",
       "//components/test/data/payments/",
       "//components/test/data/subresource_filter/",
       "//components/test/data/translate/",

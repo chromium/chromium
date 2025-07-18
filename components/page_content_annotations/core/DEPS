@@ -11,6 +11,7 @@ include_rules = [
   "+components/optimization_guide",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
+  "+components/passage_embeddings",
   "+components/search",
   "+components/search_engines",
   "+net/base",
