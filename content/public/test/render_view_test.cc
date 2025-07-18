@@ -73,7 +73,6 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
@@ -462,15 +461,6 @@ void RenderViewTest::SetUp() {
   // Ensure that we register any necessary schemes when initializing WebKit,
   // since we are using a MockRenderThread.
   RenderThreadImpl::RegisterSchemes();
-
-  // This check is needed because when run under content_browsertests,
-  // ResourceBundle isn't initialized (since we have to use a diferent test
-  // suite implementation than for content_unittests). For browser_tests, this
-  // is already initialized.
-  if (!ui::ResourceBundle::HasSharedInstance()) {
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-  }
 
   process_ = std::make_unique<RenderProcess>();
 
