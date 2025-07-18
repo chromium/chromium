@@ -16,7 +16,7 @@ crbug.com/390246212 external/wpt/ai/writer/writer-create-user-activation.tentati
 crbug.com/390246212 wpt_internal/ai/language-model-api-create-user-activation.https.window.html [ Failure Pass ]
 
 # These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`
-crbug.com/407988949 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.html  [ Failure Pass ]
-crbug.com/407988949 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html  [ Failure Pass ]
-crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html  [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 wpt_internal/ai/language-model-api-iframe.tentative.https.html [ Failure Pass ]
