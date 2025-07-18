@@ -17,6 +17,7 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
@@ -90,6 +91,19 @@ public final class RadioButtonGroupThirdPartyPreference extends Preference {
 
         group.setOnCheckedChangeListener(this::onCheckedChanged);
         setSelectedOption(mSelectedOption); // Update UI according to internal state.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN)) {
+            mDefaultOption.setDescriptionText(
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    R.string.autofill_third_party_filling_default_description_new));
+            mOptInOption.setDescriptionText(
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    R.string.autofill_third_party_filling_opt_in_description_new));
+        }
     }
 
     /**
