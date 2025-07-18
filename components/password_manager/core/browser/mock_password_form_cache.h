@@ -24,6 +24,10 @@ class MockPasswordFormCache : public PasswordFormCache {
               GetPasswordForm,
               (PasswordManagerDriver*, autofill::FieldRendererId),
               (const override));
+  MOCK_METHOD(base::span<const std::unique_ptr<PasswordFormManager>>,
+              GetFormManagers,
+              (),
+              (const override));
 };
 
 }  // namespace password_manager

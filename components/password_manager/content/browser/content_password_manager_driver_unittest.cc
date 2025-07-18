@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
+#include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
@@ -194,20 +195,6 @@ class MockPasswordManager : public PasswordManager {
               (PasswordManagerDriver * driver, const autofill::FormData&),
               (override));
   MOCK_METHOD(PasswordFormCache*, GetPasswordFormCache, (), (override));
-};
-
-class MockPasswordFormCache : public PasswordFormCache {
- public:
-  ~MockPasswordFormCache() override = default;
-
-  MOCK_METHOD(const PasswordForm*,
-              GetPasswordForm,
-              (PasswordManagerDriver*, autofill::FormRendererId),
-              (const override));
-  MOCK_METHOD(const PasswordForm*,
-              GetPasswordForm,
-              (PasswordManagerDriver*, autofill::FieldRendererId),
-              (const override));
 };
 
 PasswordFormFillData GetTestPasswordFormFillData() {

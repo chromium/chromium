@@ -38,10 +38,6 @@ class PasswordFormCacheImpl : public PasswordFormCache {
   void Clear();
   bool IsEmpty() const;
 
-  base::span<const std::unique_ptr<PasswordFormManager>> GetFormManagers()
-      const;
-
- private:
   // PasswordFormCache:
   const PasswordForm* GetPasswordForm(
       PasswordManagerDriver* driver,
@@ -51,7 +47,10 @@ class PasswordFormCacheImpl : public PasswordFormCache {
       autofill::FieldRendererId field_id) const override;
   void AddObserver(PasswordFormManagerObserver* observer) override;
   void RemoveObserver(PasswordFormManagerObserver* observer) override;
+  base::span<const std::unique_ptr<PasswordFormManager>> GetFormManagers()
+      const override;
 
+ private:
   // TODO(b/330313855): Check if `unique_ptr` can be removed here.
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
 

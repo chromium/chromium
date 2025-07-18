@@ -103,11 +103,6 @@ bool PasswordFormCacheImpl::IsEmpty() const {
   return form_managers_.empty();
 }
 
-base::span<const std::unique_ptr<PasswordFormManager>>
-PasswordFormCacheImpl::GetFormManagers() const {
-  return base::span(form_managers_);
-}
-
 void PasswordFormCacheImpl::AddObserver(PasswordFormManagerObserver* observer) {
   if (!form_manager_observers_.HasObserver(observer)) {
     form_manager_observers_.AddObserver(observer);
@@ -123,6 +118,11 @@ void PasswordFormCacheImpl::RemoveObserver(
   for (const std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
     manager->RemoveObserver(observer);
   }
+}
+
+base::span<const std::unique_ptr<PasswordFormManager>>
+PasswordFormCacheImpl::GetFormManagers() const {
+  return base::span(form_managers_);
 }
 
 }  // namespace password_manager

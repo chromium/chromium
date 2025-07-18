@@ -48,6 +48,10 @@ class PasswordFormCache {
   // Removes observer from all current form managers and prevents attaching
   // observer to newly added.
   virtual void RemoveObserver(PasswordFormManagerObserver* observer) {}
+
+  // Returns all the `PasswordFormManager`s for the current page.
+  virtual base::span<const std::unique_ptr<PasswordFormManager>>
+  GetFormManagers() const = 0;
 };
 
 }  // namespace password_manager
