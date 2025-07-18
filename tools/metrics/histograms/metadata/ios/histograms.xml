@@ -652,6 +652,27 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
 </histogram>
 
+<histogram name="IOS.CookieCopyWorkaroundMissingCookies" units="count"
+    expires_after="2026-07-01">
+  <owner>justincohen@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Used by the SkipCookieCaching experiment in the enabled-with-copy-workaround
+    mode. Records the count of cookies that failed a round-trip conversion from
+    NSHTTPCookie to net::CanonicalCookie and back again.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CookieCopyWorkaroundTime" units="ms"
+    expires_after="2026-07-01">
+  <owner>justincohen@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Used by the SkipCookieCaching experiment in the enabled-with-copy-workaround
+    mode. Records the performance overhead of the copy operation.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CredentialExtension.CopyCreationDateCount" units="count"
     expires_after="2025-04-01">
   <owner>tmartino@chromium.org</owner>

@@ -13016,7 +13016,19 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledWithCopyWorkaround",
+                    "params": {
+                        "caching-mode": "enabled-with-copy-workaround"
+                    },
+                    "enable_features": [
+                        "SkipCookieCaching"
+                    ]
+                },
+                {
                     "name": "Enabled",
+                    "params": {
+                        "caching-mode": "enabled"
+                    },
                     "enable_features": [
                         "SkipCookieCaching"
                     ]

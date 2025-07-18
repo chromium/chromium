@@ -6,8 +6,13 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/net/cookies/system_cookie_util.h"
+#import "net/cookies/canonical_cookie.h"
 
 namespace {
 // Prioritizes queued WKHTTPCookieStore completion handlers to run as soon as
@@ -32,6 +37,39 @@ void PrioritizeWKHTTPCookieStoreCallbacks(WKWebsiteDataStore* data_store) {
 BASE_FEATURE(kIOSSkipCookieCaching,
              "SkipCookieCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+enum class SkipCookieCachingMode {
+  // Skip the cookie caching optimization.
+  kEnabled,
+
+  // Instead of skipping the optimization, re-create the list of NSHTTPCookies
+  // by converting to net::CanonicalCookie and back.
+  kEnabledWithCopyWorkAround,
+
+};
+
+constexpr base::FeatureParam<SkipCookieCachingMode>::Option
+    kIOSSkipCookieCachingOptions[] = {
+        {SkipCookieCachingMode::kEnabled, "enabled"},
+        {SkipCookieCachingMode::kEnabledWithCopyWorkAround,
+         "enabled-with-copy-workaround"},
+};
+
+BASE_FEATURE_ENUM_PARAM(SkipCookieCachingMode,
+                        kSkipCookieCachingModeParam,
+                        &kIOSSkipCookieCaching,
+                        "caching-mode",
+                        SkipCookieCachingMode::kEnabledWithCopyWorkAround,
+                        &kIOSSkipCookieCachingOptions);
+
+base::Time GetNSHTTPCookieCreationTime(NSHTTPCookie* cookie) {
+  id created = [[cookie properties] objectForKey:@"Created"];
+  if (created && [created isKindOfClass:[NSNumber class]]) {
+    CFAbsoluteTime absolute_time = [(NSNumber*)created doubleValue];
+    return base::Time::FromCFAbsoluteTime(absolute_time);
+  }
+  return base::Time::Now();
+}
 
 }  // namespace
 
@@ -65,13 +103,43 @@ BASE_FEATURE(kIOSSkipCookieCaching,
   }
 
   __weak __typeof(self) weakSelf = self;
-  [_websiteDataStore.httpCookieStore
-      getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
-        if (!base::FeatureList::IsEnabled(kIOSSkipCookieCaching)) {
-          weakSelf.cachedCookies = cookies;
+  auto getCookiesBlock = ^(NSArray<NSHTTPCookie*>* cookies) {
+    if (!base::FeatureList::IsEnabled(kIOSSkipCookieCaching)) {
+      weakSelf.cachedCookies = cookies;
+      completionHandler(cookies);
+      return;
+    }
+    if (kSkipCookieCachingModeParam.Get() ==
+        SkipCookieCachingMode::kEnabledWithCopyWorkAround) {
+      const base::TimeTicks start = base::TimeTicks::Now();
+      NSMutableArray<NSHTTPCookie*>* cookiesCopy =
+          [NSMutableArray arrayWithCapacity:cookies.count];
+      for (NSHTTPCookie* cookie in cookies) {
+        // Move this logic to ios/net/cookies/system_cookie_util.h if the
+        // experiment proves successful.
+        base::Time creation_time = GetNSHTTPCookieCreationTime(cookie);
+        std::unique_ptr<const net::CanonicalCookie> canonicalCookie =
+            net::CanonicalCookieFromSystemCookie(cookie, creation_time);
+        if (canonicalCookie) {
+          NSHTTPCookie* systemCookie =
+              SystemCookieFromCanonicalCookie(*canonicalCookie);
+          if (systemCookie) {
+            [cookiesCopy addObject:systemCookie];
+          }
         }
-        completionHandler(cookies);
-      }];
+      }
+
+      base::UmaHistogramCounts100("IOS.CookieCopyWorkaroundMissingCookies",
+                                  cookies.count - cookiesCopy.count);
+
+      weakSelf.cachedCookies = cookiesCopy;
+      cookies = weakSelf.cachedCookies;
+      const base::TimeDelta elapsed = base::TimeTicks::Now() - start;
+      base::UmaHistogramTimes("IOS.CookieCopyWorkaroundTime", elapsed);
+    }
+    completionHandler(cookies);
+  };
+  [_websiteDataStore.httpCookieStore getAllCookies:getCookiesBlock];
   PrioritizeWKHTTPCookieStoreCallbacks(_websiteDataStore);
 }
 
