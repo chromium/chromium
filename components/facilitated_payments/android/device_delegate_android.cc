@@ -46,7 +46,11 @@ void DeviceDelegateAndroid::LaunchPixAccountLinkingPage() {
 void DeviceDelegateAndroid::SetOnReturnToChromeCallbackAndObserveAppState(
     base::OnceClosure callback) {
   on_return_to_chrome_callback_ = std::move(callback);
-  is_chrome_in_background_ = false;
+  // It's possible that Chrome is already in the background when the app status
+  // listener is initialized.
+  is_chrome_in_background_ =
+      base::android::ApplicationStatusListener::GetState() ==
+      base::android::ApplicationState::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES;
   app_status_listener_ = base::android::ApplicationStatusListener::New(
       base::BindRepeating(&DeviceDelegateAndroid::OnApplicationStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
