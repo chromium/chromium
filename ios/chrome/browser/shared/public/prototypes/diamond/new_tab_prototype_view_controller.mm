@@ -118,6 +118,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     _omniboxCoordinator.presenterDelegate = self;
 
     [_omniboxCoordinator start];
+
+    if (!isNewTabPage) {
+      [_omniboxCoordinator updateOmniboxState];
+    }
   }
   return self;
 }

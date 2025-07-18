@@ -12,6 +12,9 @@ class Browser;
 // Height of the app bar.
 extern const CGFloat kChromeAppBarPrototypeHeight;
 
+// The corner radius of the browser container.
+extern const CGFloat kDiamondBrowserCornerRadius;
+
 // Starts the gemini panel for Diamond prototype.
 void DiamondPrototypeStartGemini(bool from_tab_grid,
                                  bool incognito_grid,

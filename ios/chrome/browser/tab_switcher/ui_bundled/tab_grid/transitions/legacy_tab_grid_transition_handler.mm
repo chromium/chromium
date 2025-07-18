@@ -275,14 +275,22 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
     tabFinalAlpha = 1;
     tabFinalTransform = tab.transform;
     tab.transform = CGAffineTransformScale(tabFinalTransform, 0.75, 0.75);
-    tabFinalCornerRadius = DeviceCornerRadius();
+    if (IsDiamondPrototypeEnabled()) {
+      tabFinalCornerRadius = kDiamondBrowserCornerRadius;
+    } else {
+      tabFinalCornerRadius = DeviceCornerRadius();
+    }
     tab.layer.cornerRadius = 26.0;
   } else {
     // If dismissing, the the tab view animates out to 0% opacity, 75% scale,
     // and 26px corner radius.
     tabFinalAlpha = 0;
     tabFinalTransform = CGAffineTransformScale(tab.transform, 0.75, 0.75);
-    tab.layer.cornerRadius = DeviceCornerRadius();
+    if (IsDiamondPrototypeEnabled()) {
+      tab.layer.cornerRadius = kDiamondBrowserCornerRadius;
+    } else {
+      tab.layer.cornerRadius = DeviceCornerRadius();
+    }
     tabFinalCornerRadius = 26.0;
   }
 

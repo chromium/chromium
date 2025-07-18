@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -44,8 +46,24 @@ UIButtonConfiguration* ButtonConfiguration() {
   if (self) {
     CHECK(IsDiamondPrototypeEnabled());
 
+    UIColor* backgroundColor =
+        [[UIColor colorNamed:kStaticGrey600Color] colorWithAlphaComponent:0.4];
+    self.backgroundColor = backgroundColor;
+    GradientView* gradientView =
+        [[GradientView alloc] initWithTopColor:UIColor.clearColor
+                                   bottomColor:backgroundColor];
+    gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:gradientView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [gradientView.bottomAnchor constraintEqualToAnchor:self.topAnchor],
+      [gradientView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [gradientView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+      [gradientView.heightAnchor constraintEqualToConstant:16],
+    ]];
+
     UIBlurEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterialDark];
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterialDark];
     UIVisualEffectView* blurBackground =
         [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     blurBackground.translatesAutoresizingMaskIntoConstraints = NO;
