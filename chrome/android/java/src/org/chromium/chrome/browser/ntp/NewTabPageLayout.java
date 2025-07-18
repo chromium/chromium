@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
 import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -423,15 +424,18 @@ public class NewTabPageLayout extends LinearLayout
 
         ViewGroup composeplateView =
                 (ViewGroup) ((ViewStub) findViewById(R.id.composeplate_view_stub)).inflate();
-        mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView);
+        mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
 
         assert mVoiceSearchButtonClickListener != null && mLensButtonClickListener != null;
         mComposeplateCoordinator.setVoiceSearchClickListener(mVoiceSearchButtonClickListener);
         mComposeplateCoordinator.setLensClickListener(mLensButtonClickListener);
-        mComposeplateCoordinator.setIncognitoClickListener(
-                v ->
-                        mManager.getNativePageHost()
-                                .loadUrl(new LoadUrlParams(UrlConstants.NTP_URL), true));
+        mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
+    }
+
+    private void onIncognitoButtonClicked(View view) {
+        if (!IncognitoUtils.isIncognitoModeEnabled(mProfile)) return;
+
+        mManager.getNativePageHost().loadUrl(new LoadUrlParams(UrlConstants.NTP_URL), true);
     }
 
     /**
