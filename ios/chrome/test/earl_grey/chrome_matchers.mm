@@ -503,14 +503,6 @@ id<GREYMatcher> SettingsMenuSafetyCheckButton() {
   return [ChromeMatchersAppInterface settingsMenuSafetyCheckButton];
 }
 
-id<GREYMatcher> PaymentRequestView() {
-  return [ChromeMatchersAppInterface paymentRequestView];
-}
-
-id<GREYMatcher> PaymentRequestErrorView() {
-  return [ChromeMatchersAppInterface paymentRequestErrorView];
-}
-
 id<GREYMatcher> VoiceSearchButton() {
   return [ChromeMatchersAppInterface voiceSearchButton];
 }
@@ -573,18 +565,6 @@ id<GREYMatcher> NTPFeedMenuEnableButton() {
 
 id<GREYMatcher> NTPFeedMenuDisableButton() {
   return [ChromeMatchersAppInterface ntpFeedMenuDisableButton];
-}
-
-id<GREYMatcher> WarningMessageView() {
-  return [ChromeMatchersAppInterface warningMessageView];
-}
-
-id<GREYMatcher> PaymentRequestPickerRow() {
-  return [ChromeMatchersAppInterface paymentRequestPickerRow];
-}
-
-id<GREYMatcher> PaymentRequestPickerSearchBar() {
-  return [ChromeMatchersAppInterface paymentRequestPickerSearchBar];
 }
 
 id<GREYMatcher> OpenNewWindowMenuButton() {

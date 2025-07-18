@@ -404,12 +404,6 @@
 // Returns matcher for the Safety Check cell on the main Settings screen.
 + (id<GREYMatcher>)settingsMenuSafetyCheckButton;
 
-// Returns matcher for the payment request collection view.
-+ (id<GREYMatcher>)paymentRequestView;
-
-// Returns matcher for the error confirmation view for payment request.
-+ (id<GREYMatcher>)paymentRequestErrorView;
-
 // Returns matcher for the voice search button on the main Settings screen.
 + (id<GREYMatcher>)voiceSearchButton;
 
@@ -460,15 +454,6 @@
 
 // Returns matcher for the NTP Feed menu button which disables the feed.
 + (id<GREYMatcher>)ntpFeedMenuDisableButton;
-
-// Returns matcher for the warning message while filling in payment requests.
-+ (id<GREYMatcher>)warningMessageView;
-
-// Returns matcher for the payment picker cell.
-+ (id<GREYMatcher>)paymentRequestPickerRow;
-
-// Returns matcher for the payment request search bar.
-+ (id<GREYMatcher>)paymentRequestPickerSearchBar;
 
 // Returns matcher for the New Window button on the Tools menu.
 + (id<GREYMatcher>)openNewWindowMenuButton;
