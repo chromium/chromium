@@ -5,6 +5,8 @@
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
 
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -62,6 +64,13 @@ bool IsSyncingExtensionsInTransportMode(Profile* profile) {
   return IsSyncingExtensionsEnabled(profile) &&
          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
          !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+}
+
+void UploadExtensionToAccount(content::BrowserContext* context,
+                              const Extension& extension) {
+  AccountExtensionTracker::Get(context)->OnAccountUploadInitiatedForExtension(
+      extension.id());
+  ExtensionSyncService::Get(context)->SyncExtensionChangeIfNeeded(extension);
 }
 
 }  // namespace extensions::sync_util

@@ -378,9 +378,8 @@ void AccountExtensionTracker::PromoteLocalToAccountExtension(
     AccountExtensionType type) {
   // Make sure we're actually promoting a local extension to an account
   // extension!
-  DCHECK_EQ(GetAccountExtensionType(extension_id),
-            AccountExtensionType::kLocal);
-  DCHECK_NE(type, AccountExtensionType::kLocal);
+  CHECK_EQ(GetAccountExtensionType(extension_id), AccountExtensionType::kLocal);
+  CHECK_NE(type, AccountExtensionType::kLocal);
   SetAccountExtensionType(extension_id, type);
 
   // The extension's uploadability may change when its AccountExtensionType

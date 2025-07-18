@@ -9,13 +9,14 @@
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/local_data_description.h"
 #include "extensions/browser/icon_util.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_id.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/gfx/image/image.h"
@@ -105,16 +106,43 @@ void ExtensionLocalDataBatchUploader::GetLocalDataDescription(
 }
 
 void ExtensionLocalDataBatchUploader::TriggerLocalDataMigration() {
-  std::vector<const Extension*> uploadable_extensions =
-      AccountExtensionTracker::Get(profile_)->GetUploadableLocalExtensions();
-  // TODO(crbug.com/425381293): Implement data migration for local uploadable
-  // extensions.
+  TriggerLocalDataMigrationForItemsInternal(/*ids_to_upload=*/std::nullopt);
 }
 
 void ExtensionLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
     std::vector<syncer::LocalDataItemModel::DataId> items) {
-  // TODO(crbug.com/425381293): Implement data migration for local uploadable
-  // extensions.
+  ExtensionIdSet ids_to_upload;
+  for (const auto& item_id : items) {
+    const std::string* item_id_str = std::get_if<std::string>(&item_id);
+    DCHECK(item_id_str);
+    ids_to_upload.insert(*item_id_str);
+  }
+
+  TriggerLocalDataMigrationForItemsInternal(std::move(ids_to_upload));
+}
+
+void ExtensionLocalDataBatchUploader::TriggerLocalDataMigrationForItemsInternal(
+    std::optional<ExtensionIdSet> ids_to_upload) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  CHECK(!account_info.IsEmpty());
+
+  if (!sync_util::IsSyncingExtensionsInTransportMode(profile_)) {
+    return;
+  }
+
+  std::vector<const Extension*> uploadable_extensions =
+      AccountExtensionTracker::Get(profile_)->GetUploadableLocalExtensions();
+
+  // If the extension is specified in `ids_to_upload` or if `ids_to_upload` is
+  // null (implying no filter), upload it to the user's account.
+  for (const Extension* extension : uploadable_extensions) {
+    if (!ids_to_upload || ids_to_upload->contains(extension->id())) {
+      sync_util::UploadExtensionToAccount(profile_, *extension);
+    }
+  }
 }
 
 }  // namespace extensions

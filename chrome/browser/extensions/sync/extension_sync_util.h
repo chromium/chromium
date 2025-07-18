@@ -35,6 +35,10 @@ bool IsSyncingExtensionsEnabled(Profile* profile);
 // extensions is enabled.
 bool IsSyncingExtensionsInTransportMode(Profile* profile);
 
+// Uploads the given `extension` to the user's account in `context`.
+void UploadExtensionToAccount(content::BrowserContext* context,
+                              const Extension& extension);
+
 }  // namespace sync_util
 }  // namespace extensions
 

@@ -40,7 +40,7 @@
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
-#include "chrome/browser/extensions/sync/extension_sync_service.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/platform_util.h"
@@ -642,14 +642,6 @@ DeveloperPrivateUploadExtensionToAccountFunction::
   return base::ok(extension);
 }
 
-void DeveloperPrivateUploadExtensionToAccountFunction::UploadExtensionToAccount(
-    const Extension& extension) {
-  AccountExtensionTracker::Get(browser_context())
-      ->OnAccountUploadInitiatedForExtension(extension.id());
-  ExtensionSyncService::Get(browser_context())
-      ->SyncExtensionChangeIfNeeded(extension);
-}
-
 void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogAccepted() {
   // We cannot proceed if the `browser_context` is not valid as the relevant
   // classes needed to upload the extension will not exist.
@@ -664,7 +656,7 @@ void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogAccepted() {
   }
   const Extension* extension = *result;
 
-  UploadExtensionToAccount(*extension);
+  sync_util::UploadExtensionToAccount(profile_, *extension);
   Respond(WithArguments(true));
 }
 

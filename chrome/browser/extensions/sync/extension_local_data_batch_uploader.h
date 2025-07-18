@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SYNC_EXTENSION_LOCAL_DATA_BATCH_UPLOADER_H_
 #define CHROME_BROWSER_EXTENSIONS_SYNC_EXTENSION_LOCAL_DATA_BATCH_UPLOADER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
 
@@ -32,6 +35,11 @@ class ExtensionLocalDataBatchUploader
       std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
  private:
+  // Uploads all locat extensions, or only those specified in `items` to the
+  // current primary user's account.
+  void TriggerLocalDataMigrationForItemsInternal(
+      std::optional<ExtensionIdSet> ids_to_upload);
+
   const raw_ptr<Profile> profile_;
 };
 

@@ -197,9 +197,6 @@ class DeveloperPrivateUploadExtensionToAccountFunction
   // in user. Returns the extension if successful, otherwise returns an error.
   base::expected<const Extension*, std::string> VerifyExtensionAndSigninState();
 
-  // Uploads the given `extension` to the user's account.
-  void UploadExtensionToAccount(const Extension& extension);
-
   // A callback function to run when the user accepts the action dialog.
   void OnDialogAccepted();
 
