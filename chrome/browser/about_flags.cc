@@ -8925,7 +8925,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"permission-promise-lifetime-modulation",
      flag_descriptions::kPermissionPromiseLifetimeModulationName,
      flag_descriptions::kPermissionPromiseLifetimeModulationDescription,
-     kOsDesktop | kOsAndroid,
+     kOsDesktop,
      FEATURE_VALUE_TYPE(
          permissions::features::kPermissionPromiseLifetimeModulation)},
 
