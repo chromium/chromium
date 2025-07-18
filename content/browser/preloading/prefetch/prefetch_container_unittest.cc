@@ -1208,11 +1208,12 @@ TEST_F(PrefetchContainerTest, RecordRedirectChainSize) {
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
   prefetch_container->MakeResourceRequest({});
 
-  prefetch_container->SetPrefetchStatus(
-      PrefetchStatus::kPrefetchNotFinishedInTime);
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
 
   AddRedirectHop(prefetch_container.get(), GURL("https://redirect1.com"));
   AddRedirectHop(prefetch_container.get(), GURL("https://redirect2.com"));
+  prefetch_container->OnDeterminedHead();
   prefetch_container->OnPrefetchComplete(network::URLLoaderCompletionStatus());
 
   histogram_tester.ExpectUniqueSample(

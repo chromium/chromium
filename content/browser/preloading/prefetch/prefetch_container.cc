@@ -774,8 +774,17 @@ void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
   // only be called once prefetching has actually started, and not for
   // ineligible or eligibled but not started triggers (e.g., holdback triggers,
   // triggers waiting on a queue).
-  if (GetLoadState() == LoadState::kStarted) {
-    SetTriggeringOutcomeAndFailureReasonFromStatus(prefetch_status);
+  switch (GetLoadState()) {
+    case LoadState::kStarted:
+    case LoadState::kDeterminedHead:
+    case LoadState::kCompletedOrFailed:
+      SetTriggeringOutcomeAndFailureReasonFromStatus(prefetch_status);
+      break;
+    case LoadState::kNotStarted:
+    case LoadState::kEligible:
+    case LoadState::kFailedIneligible:
+    case LoadState::kFailedHeldback:
+      break;
   }
   SetPrefetchStatusWithoutUpdatingTriggeringOutcome(prefetch_status);
 }
@@ -856,6 +865,14 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
     case LoadState::kStarted:
     case LoadState::kFailedHeldback:
       CHECK_EQ(load_state_, LoadState::kEligible);
+      break;
+
+    case LoadState::kDeterminedHead:
+      CHECK_EQ(load_state_, LoadState::kStarted);
+      break;
+
+    case LoadState::kCompletedOrFailed:
+      CHECK_EQ(load_state_, LoadState::kDeterminedHead);
       break;
   }
   DVLOG(1) << (*this) << " LoadState " << load_state_ << " -> "
@@ -1265,6 +1282,8 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
 }
 
 void PrefetchContainer::OnDeterminedHead() {
+  SetLoadState(LoadState::kDeterminedHead);
+
   if (GetNonRedirectHead()) {
     time_header_determined_successfully_ = base::TimeTicks::Now();
   }
@@ -1388,6 +1407,7 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
 
 void PrefetchContainer::OnPrefetchComplete(
     const network::URLLoaderCompletionStatus& completion_status) {
+  SetLoadState(LoadState::kCompletedOrFailed);
   OnPrefetchCompleteInternal(completion_status);
 
   std::optional<int> response_code = std::nullopt;
@@ -1443,6 +1463,8 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
         return ServableState::kShouldBlockUntilEligibilityGot;
       case LoadState::kFailedIneligible:
       case LoadState::kStarted:
+      case LoadState::kDeterminedHead:
+      case LoadState::kCompletedOrFailed:
       case LoadState::kFailedHeldback:
         // nop
         break;
@@ -1868,6 +1890,10 @@ std::ostream& operator<<(std::ostream& ostream,
       return ostream << "FailedIneligible";
     case PrefetchContainer::LoadState::kStarted:
       return ostream << "Started";
+    case PrefetchContainer::LoadState::kDeterminedHead:
+      return ostream << "DeterminedHead";
+    case PrefetchContainer::LoadState::kCompletedOrFailed:
+      return ostream << "CompletedOrFailed";
     case PrefetchContainer::LoadState::kFailedHeldback:
       return ostream << "FailedHeldback";
   }

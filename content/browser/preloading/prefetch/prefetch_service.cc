@@ -607,10 +607,16 @@ bool PrefetchService::IsPrefetchStale(
   }
 
   // `PrefetchContainer::LoadState` check.
-  PrefetchContainer::LoadState load_state = prefetch_container->GetLoadState();
-  if (load_state == PrefetchContainer::LoadState::kFailedIneligible ||
-      load_state == PrefetchContainer::LoadState::kFailedHeldback) {
-    return true;
+  switch (prefetch_container->GetLoadState()) {
+    case PrefetchContainer::LoadState::kFailedIneligible:
+    case PrefetchContainer::LoadState::kFailedHeldback:
+      return true;
+    case PrefetchContainer::LoadState::kNotStarted:
+    case PrefetchContainer::LoadState::kEligible:
+    case PrefetchContainer::LoadState::kStarted:
+    case PrefetchContainer::LoadState::kDeterminedHead:
+    case PrefetchContainer::LoadState::kCompletedOrFailed:
+      break;
   }
 
   // `PrefetchContainer::ServableState` check.
@@ -2050,6 +2056,8 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
         case PrefetchContainer::LoadState::kEligible:
         case PrefetchContainer::LoadState::kFailedHeldback:
         case PrefetchContainer::LoadState::kStarted:
+        case PrefetchContainer::LoadState::kDeterminedHead:
+        case PrefetchContainer::LoadState::kCompletedOrFailed:
           num_matching_eligible_prefetch++;
           break;
       }

@@ -373,10 +373,30 @@ class CONTENT_EXPORT PrefetchContainer {
     // --- Phase 3. PrefetchService::StartSinglePrefetch() has been called and
     // the holdback check has completed.
 
-    // [Final state] Not heldback.
+    // Not heldback:
     //
-    // On this state, refer to `PrefetchResponseReader`s for detailed
+    // On these states, refer to `PrefetchResponseReader`s for detailed
     // prefetching state and servability.
+    //
+    // - `kStarted`: Prefetch is started.
+    // - `kDeterminedHead`: `PrefetchContainer::OnDeterminedHead()` is called.
+    //   `Observer::OnDeterminedHead()` is called after transitioning to this
+    //   state.
+    // - [Final state] `kCompletedOrFailed`:
+    //   `PrefetchContainer::OnPrefetchComplete()` is called.
+    //   `Observer::OnPrefetchCompletedOrFailed()` is called after transitioning
+    //   to this state.
+    //
+    // Currently the distinction between these three states is introduced for
+    // CHECK()ing the calling order of `OnDeterminedHead()` and
+    // `OnPrefetchComplete()` (for https://crbug.com/400761083) and shouldn't be
+    // used for
+    // other purposes (i.e. these three enum values should behave in the same
+    // way).
+    //
+    // TODO(https://crbug.com/432518638): Make more strict association with
+    // `PrefetchContainer::LoadState` and `PrefetchResponseReader::LoadState`
+    // and verify it by adding CHECK()s.
     //
     // Also, refer to `attempt_` for triggering outcome and failure reasons for
     // metrics.
@@ -386,6 +406,8 @@ class CONTENT_EXPORT PrefetchContainer {
     // (e.g. `PrefetchResponseReader::GetServableState()` can be still
     // `kServable` even if `attempt_` has a failure).
     kStarted,
+    kDeterminedHead,
+    kCompletedOrFailed,
 
     // [Final state] Heldback due to `PreloadingAttempt::ShouldHoldback()`.
     kFailedHeldback,
