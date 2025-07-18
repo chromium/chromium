@@ -5380,6 +5380,13 @@ void BrowserView::LoadingAnimationTimerCallback() {
 }
 
 void BrowserView::LoadingAnimationCallback(base::TimeTicks timestamp) {
+  // Loading callbacks may trigger during Widget destruction after it has closed
+  // (in response to visibility change callbacks for e.g.). In such cases early
+  // return to avoid dereferencing partially torn-down state.
+  if (!GetWidget() || GetWidget()->IsClosed()) {
+    return;
+  }
+
   if (GetSupportsTabStrip()) {
     // Loading animations are shown in the tab for tabbed windows. Update them
     // even if the tabstrip isn't currently visible so they're in the right
