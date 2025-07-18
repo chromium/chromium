@@ -25,7 +25,7 @@ namespace ash {
 class BrowserDelegate;
 
 // BrowserController is a singleton created by
-// ChromeBrowserMainExtraPartsAsh::PostProfileInit. See also README.md.
+// ChromeBrowserMainPartsAsh::PostProfileInit. See also README.md.
 class BrowserController {
  public:
   // See AddObserver below.

@@ -62,6 +62,7 @@
 #include "chrome/browser/ash/bluetooth/bluetooth_log_controller.h"
 #include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/camera/camera_general_survey_handler.h"
 #include "chrome/browser/ash/certs/system_token_cert_db_initializer.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -1266,6 +1267,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Create cros_healthd data collector.
     cros_healthd_data_collector_ =
         std::make_unique<cros_healthd::internal::DataCollector>();
+
+    // Create the BrowserController instance.
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
 
     // Create the service connection to CrosHealthd platform service instance.
     cros_healthd::ServiceConnection::GetInstance();

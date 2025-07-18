@@ -63,6 +63,7 @@ class ApnMigrator;
 class AudioSurveyHandler;
 class BluetoothLogController;
 class BluetoothPrefStateObserver;
+class BrowserControllerImpl;
 class BulkPrintersCalculatorFactory;
 class CameraGeneralSurveyHandler;
 class ChromeAuthParts;
@@ -262,6 +263,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<cros_healthd::internal::DataCollector>
       cros_healthd_data_collector_;
+
+  std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
 
   std::unique_ptr<chromeos::MahiWebContentsManager> mahi_web_contents_manager_;
 

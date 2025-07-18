@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ash/arc/util",
   "+chrome/browser/ash/auth",
   "+chrome/browser/ash/boca",
-  "+chrome/browser/ash/browser_delegate",
   "+chrome/browser/ash/geolocation",
   "+chrome/browser/ash/growth",
   "+chrome/browser/ash/input_device_settings",

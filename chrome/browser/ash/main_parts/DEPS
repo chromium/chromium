@@ -14,6 +14,7 @@ include_rules = [
   "+chrome/browser/ash/audio",
   "+chrome/browser/ash/bluetooth",
   "+chrome/browser/ash/boot_times_recorder",
+  "+chrome/browser/ash/browser_delegate",
   "+chrome/browser/ash/camera",
   "+chrome/browser/ash/certs",
   "+chrome/browser/ash/chromebox_for_meetings",
