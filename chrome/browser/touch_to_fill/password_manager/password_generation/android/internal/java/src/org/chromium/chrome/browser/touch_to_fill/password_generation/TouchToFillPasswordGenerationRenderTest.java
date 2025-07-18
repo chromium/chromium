@@ -30,7 +30,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -57,7 +59,8 @@ public class TouchToFillPasswordGenerationRenderTest {
                     new ParameterSet().value(false, true).name("RTL"),
                     new ParameterSet().value(true, false).name("NightMode"));
 
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -71,6 +74,7 @@ public class TouchToFillPasswordGenerationRenderTest {
     @Mock private TouchToFillPasswordGenerationCoordinator.Delegate mDelegateMock;
     @Mock private PrefService mPrefService;
 
+    private WebPageStation mPage;
     private BottomSheetController mBottomSheetController;
     private TouchToFillPasswordGenerationCoordinator mCoordinator;
     private static final String sGeneratedPassword = "Strong generated password";
@@ -85,7 +89,7 @@ public class TouchToFillPasswordGenerationRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController =
                 mActivityTestRule

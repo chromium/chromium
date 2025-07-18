@@ -112,7 +112,9 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.PaymentsPayload;
@@ -319,7 +321,8 @@ public class TouchToFillPaymentMethodViewTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private Callback<Integer> mDismissCallback;
     @Mock private Runnable mBackPressHandler;
@@ -330,6 +333,7 @@ public class TouchToFillPaymentMethodViewTest {
     private BottomSheetTestSupport mSheetTestSupport;
     private TouchToFillPaymentMethodView mTouchToFillPaymentMethodView;
     private PropertyModel mTouchToFillPaymentMethodModel;
+    private WebPageStation mPage;
 
     @Before
     public void setupTest() throws InterruptedException {
@@ -337,7 +341,7 @@ public class TouchToFillPaymentMethodViewTest {
                 TouchToFillResourceProvider.class, mResourceProvider);
         when(mResourceProvider.getLoyaltyCardHeaderDrawableId())
                 .thenReturn(R.drawable.ic_globe_24dp);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mBottomSheetController =
                 mActivityTestRule
                         .getActivity()

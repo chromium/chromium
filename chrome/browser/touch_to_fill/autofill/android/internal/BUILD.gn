@@ -122,6 +122,7 @@ android_library("javatests") {
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//components/autofill/android:autofill_java_resources",
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill/android:main_autofill_java",

@@ -53,7 +53,9 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderPro
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -103,8 +105,10 @@ public class TouchToFillRenderTest {
     private TouchToFillView mTouchToFillView;
     private BottomSheetController mBottomSheetController;
     PasswordManagerResourceProvider mResourceProvider;
+    private WebPageStation mPage;
 
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -122,7 +126,7 @@ public class TouchToFillRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController =
                 mActivityTestRule
