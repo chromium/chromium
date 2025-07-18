@@ -15,6 +15,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/media/media_engagement_service.h"
+#include "chrome/browser/media/media_engagement_service_factory.h"
+#include "chrome/browser/media/mock_media_engagement_service.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,6 +31,7 @@
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/media_session.h"
@@ -225,7 +229,15 @@ void WaitForTitle(content::WebContents* web_contents,
 class VideoPictureInPictureWindowControllerBrowserTest
     : public InProcessBrowserTest {
  public:
-  VideoPictureInPictureWindowControllerBrowserTest() = default;
+  VideoPictureInPictureWindowControllerBrowserTest()
+      : dependency_manager_subscription_(
+            BrowserContextDependencyManager::GetInstance()
+                ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                    &VideoPictureInPictureWindowControllerBrowserTest::
+                        SetTestingFactory,
+                    // base::Unretained() is safe because `this` outlives the
+                    // dependency manager subscription.
+                    base::Unretained(this)))) {}
 
   VideoPictureInPictureWindowControllerBrowserTest(
       const VideoPictureInPictureWindowControllerBrowserTest&) = delete;
@@ -346,11 +358,33 @@ class VideoPictureInPictureWindowControllerBrowserTest
     views::test::ButtonTestApi(button).NotifyClick(event);
   }
 
+  MediaEngagementService* GetMediaEngagementService() const {
+    return MediaEngagementServiceFactory::GetForProfile(browser()->profile());
+  }
+
+  void SetExpectedHasHighEngagement(bool has_high_engagenent) const {
+    auto* mock_media_engagement_service =
+        static_cast<MockMediaEngagementService*>(GetMediaEngagementService());
+    EXPECT_CALL(*mock_media_engagement_service, HasHighEngagement(testing::_))
+        .WillRepeatedly(testing::Return(has_high_engagenent));
+  }
+
+  bool IsTrustedForMediaPlayback() {
+    return GetOverlayWindow()->IsTrustedForMediaPlayback();
+  }
+
+ protected:
+  void SetTestingFactory(content::BrowserContext* context) {
+    MediaEngagementServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildMockMediaEngagementService));
+  }
+
  private:
   raw_ptr<content::VideoPictureInPictureWindowController,
           AcrossTasksDanglingUntriaged>
       pip_window_controller_ = nullptr;
   MockVideoPictureInPictureWindowController mock_controller_;
+  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 // Checks the creation of the window controller, as well as basic window
@@ -2216,4 +2250,144 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   // page title.
   ClickButton(hang_up_button);
   WaitForTitle(active_web_contents, u"hangup");
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       IsTrustedForMediaPlayback_FileScheme) {
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents->GetLastCommittedURL().SchemeIsFile());
+
+  // Set MediaSession Play action handler to ensure a MediaSession routed frame
+  // is created.
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('play');"));
+
+  // Verify that the overlay window is trusted for media playback.
+  EXPECT_TRUE(IsTrustedForMediaPlayback());
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       IsTrustedForMediaPlayback_LowEngagement) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "example.com", "/media/picture-in-picture/window-size.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Open Picture-in-Picture window.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  ASSERT_TRUE(active_web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
+
+  // Set MediaSession Play action handler to ensure a MediaSession routed frame
+  // is created.
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('play');"));
+
+  // Verify that the overlay window is not trusted for media playback.
+  SetExpectedHasHighEngagement(false);
+  EXPECT_FALSE(IsTrustedForMediaPlayback());
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       IsTrustedForMediaPlayback_HighEngagement) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "example.com", "/media/picture-in-picture/window-size.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Open Picture-in-Picture window.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  ASSERT_TRUE(active_web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
+
+  // Set MediaSession Play action handler to ensure a MediaSession routed frame
+  // is created.
+  ASSERT_TRUE(
+      ExecJs(active_web_contents, "setMediaSessionActionHandler('play');"));
+
+  // Verify that the overlay window is trusted for media playback.
+  SetExpectedHasHighEngagement(true);
+  EXPECT_TRUE(IsTrustedForMediaPlayback());
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       IsTrustedForMediaPlayback_RemoteIframe) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "a.com", "/media/picture_in_picture/iframe-one-video.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+  WaitForTitle(active_web_contents, u"iframe loaded");
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Get the render frame host for main_frame (a.com) and sub_frame (b.com).
+  auto* main_frame = active_web_contents->GetPrimaryMainFrame();
+  auto* sub_frame = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(sub_frame);
+
+  // Set MediaSession Play action handler to ensure a MediaSession routed frame
+  // is created.
+  ASSERT_TRUE(ExecJs(sub_frame, "setMediaSessionPlayActionHandler();"));
+
+  // Add picture-in-picture event listener to sub frame.
+  ASSERT_TRUE(ExecJs(sub_frame, "addPictureInPictureEventListeners();"));
+
+  // Enter Picture-in-Picture from the iframe.
+  ASSERT_TRUE(ExecJs(main_frame, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // Verify that the overlay window is not trusted for media playback, even with
+  // high media engagement.
+  SetExpectedHasHighEngagement(true);
+  EXPECT_FALSE(IsTrustedForMediaPlayback());
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       IsTrustedForMediaPlayback_NoRoutedFrame) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "example.com", "/media/picture-in-picture/window-size.html")));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  SetUpWindowController(active_web_contents);
+  ASSERT_TRUE(window_controller() != nullptr);
+
+  // Open Picture-in-Picture window.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  ASSERT_TRUE(active_web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
+
+  // Verify that the overlay window is not trusted for media playback, even with
+  // high media engagement.
+  SetExpectedHasHighEngagement(true);
+  EXPECT_FALSE(IsTrustedForMediaPlayback());
 }

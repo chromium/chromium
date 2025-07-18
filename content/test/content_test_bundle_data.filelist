@@ -7843,6 +7843,7 @@ data/media/peerconnection-setConfiguration.html
 data/media/peerconnection-source-feed-switch.html
 data/media/picture_in_picture/audio-and-canvas.html
 data/media/picture_in_picture/canvas-in-pip.html
+data/media/picture_in_picture/iframe-one-video.html
 data/media/picture_in_picture/one-video.html
 data/media/picture_in_picture/two-videos.html
 data/media/session/audio-1second.ogg

@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,7 +43,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/format_duration.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
@@ -64,6 +67,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/non_client_view.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"  // nogncheck
@@ -2519,6 +2523,42 @@ gfx::Rect VideoOverlayWindowViews::GetLiveCaptionDialogBounds() {
     return gfx::Rect();
   }
   return live_caption_dialog_->GetMirroredBounds();
+}
+
+bool VideoOverlayWindowViews::HasHighMediaEngagement(
+    const url::Origin& origin) const {
+  MediaEngagementService* service =
+      MediaEngagementService::Get(Profile::FromBrowserContext(
+          GetController()->GetWebContents()->GetBrowserContext()));
+  if (!service) {
+    return false;
+  }
+
+  return service->HasHighEngagement(origin);
+}
+
+bool VideoOverlayWindowViews::IsTrustedForMediaPlayback() const {
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(GetController()->GetWebContents());
+  if (!media_session) {
+    return false;
+  }
+
+  content::RenderFrameHost* rfh = media_session->GetRoutedFrame();
+  if (rfh == nullptr) {
+    return false;
+  }
+
+  if (!rfh->IsInPrimaryMainFrame()) {
+    return false;
+  }
+
+  const url::Origin origin = rfh->GetLastCommittedOrigin();
+  if (origin.GetURL().SchemeIsFile()) {
+    return true;
+  }
+
+  return HasHighMediaEngagement(origin);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

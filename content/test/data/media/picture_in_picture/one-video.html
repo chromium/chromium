@@ -10,9 +10,19 @@
   <script>
     const video = document.querySelector('video');
 
+    window.addEventListener('message', event => {
+      if (event.data.action === 'enterpictureinpicture') {
+        enterPictureInPicture();
+      }
+    });
+
     function addPictureInPictureEventListeners() {
       video.addEventListener('enterpictureinpicture', _ => {
         document.title = 'enterpictureinpicture';
+
+        if (window.parent !== window) {
+          window.parent.postMessage({ event: 'enterpictureinpicture' }, '*');
+        }
       });
       video.addEventListener('leavepictureinpicture', _ => {
         document.title = 'leavepictureinpicture';

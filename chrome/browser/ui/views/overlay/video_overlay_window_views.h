@@ -259,6 +259,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
       content::VideoPictureInPictureWindowController* controller);
 
  private:
+  friend class VideoPictureInPictureWindowControllerBrowserTest;
+
   // Return the work area for the nearest display the widget is on.
   gfx::Rect GetWorkAreaForWindow() const;
 
@@ -359,6 +361,19 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // Returns true if the title and top scrim are visible.
   bool AreTitleAndScrimVisible() const;
+
+  bool HasHighMediaEngagement(const url::Origin& origin) const;
+
+  // Returns true if the current Picture-in-Picture window is trusted for media
+  // playback.
+  //
+  // A Picture-in-Picture window is trusted for media playback if all of the
+  // following conditions are met:
+  //    * `MediaSession` exists
+  //    * `MediaSession` routed frame exists
+  //    * The `MediaSession` routed frame is the primary main frame
+  //    * The origin URL has high media engagement or is a file
+  bool IsTrustedForMediaPlayback() const;
 
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
