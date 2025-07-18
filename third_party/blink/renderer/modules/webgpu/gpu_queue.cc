@@ -452,7 +452,6 @@ void GPUQueue::submit(ScriptState* script_state,
   UseCounter::Count(execution_context, WebFeature::kWebGPUQueueSubmit);
 }
 
-#if defined(WGPU_BREAKING_CHANGE_QUEUE_WORK_DONE_CALLBACK_MESSAGE)
 void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
                         wgpu::QueueWorkDoneStatus status,
                         wgpu::StringView message) {
@@ -470,26 +469,6 @@ void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
       break;
   }
 }
-#else   // defined(WGPU_BREAKING_CHANGE_QUEUE_WORK_DONE_CALLBACK_MESSAGE)
-void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
-                        wgpu::QueueWorkDoneStatus status) {
-  switch (status) {
-    case wgpu::QueueWorkDoneStatus::Success:
-      resolver->Resolve();
-      break;
-    case wgpu::QueueWorkDoneStatus::Error:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "Unexpected failure in onSubmittedWorkDone");
-      break;
-    case wgpu::QueueWorkDoneStatus::CallbackCancelled:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "Instance dropped in onSubmittedWorkDone");
-      break;
-  }
-}
-#endif  // defined(WGPU_BREAKING_CHANGE_QUEUE_WORK_DONE_CALLBACK_MESSAGE)
 
 ScriptPromise<IDLUndefined> GPUQueue::onSubmittedWorkDone(
     ScriptState* script_state) {

@@ -59,14 +59,10 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
     dawnProcSetProcs(&dawn::native::GetProcs());
 
     wgpu::InstanceDescriptor instance_desc = {};
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_FEATURES_LIMITS
     static constexpr auto kTimedWaitAny =
         wgpu::InstanceFeatureName::TimedWaitAny;
     instance_desc.requiredFeatureCount = 1;
     instance_desc.requiredFeatures = &kTimedWaitAny;
-#else
-    instance_desc.capabilities.timedWaitAnyEnable = true;
-#endif
     dawn::native::Instance dawn_instance(&instance_desc);
 
     wgpu::RequestAdapterOptions options = {};

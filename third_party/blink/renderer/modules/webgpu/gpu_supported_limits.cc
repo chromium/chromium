@@ -140,20 +140,14 @@ void GPUSupportedLimits::ComboLimits::UnlinkedCopyTo(
     GPUSupportedLimits::ComboLimits* o) const {
   *static_cast<wgpu::Limits*>(o) = *this;
   o->wgpu::Limits::nextInChain = nullptr;
-#ifdef WGPU_BREAKING_CHANGE_COMPATIBILITY_MODE_LIMITS
   *static_cast<wgpu::CompatibilityModeLimits*>(o) = *this;
   o->wgpu::CompatibilityModeLimits::nextInChain = nullptr;
-#endif
 }
 
 wgpu::Limits* GPUSupportedLimits::ComboLimits::GetLinked() {
-#ifdef WGPU_BREAKING_CHANGE_COMPATIBILITY_MODE_LIMITS
   this->wgpu::Limits::nextInChain =
       static_cast<wgpu::CompatibilityModeLimits*>(this);
   this->wgpu::CompatibilityModeLimits::nextInChain = nullptr;
-#else
-  this->wgpu::Limits::nextInChain = nullptr;
-#endif
   return this;
 }
 

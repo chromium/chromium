@@ -21,12 +21,8 @@ class GPUSupportedLimits final : public ScriptWrappable {
  public:
   // TODO(crbug.com/421950205): Make this more like dawn::utils::ComboLimits
   // (for chaining safety) or replace it with a similar webgpu_cpp.h helper.
-  struct ComboLimits : public wgpu::Limits
-#ifdef WGPU_BREAKING_CHANGE_COMPATIBILITY_MODE_LIMITS
-      ,
-                       public wgpu::CompatibilityModeLimits
-#endif
-  {
+  struct ComboLimits : public wgpu::Limits,
+                       public wgpu::CompatibilityModeLimits {
     ComboLimits();
     ComboLimits(const ComboLimits&) = delete;
     void operator=(ComboLimits&) = delete;
