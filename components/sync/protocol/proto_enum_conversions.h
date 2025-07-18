@@ -153,6 +153,8 @@ const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::CardBenefitSource
         card_benefit_source);
 
+const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::CardCreationSource card_creation_source);
 
 const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState

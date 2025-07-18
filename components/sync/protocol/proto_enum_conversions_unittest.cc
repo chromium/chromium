@@ -147,6 +147,10 @@ TEST(ProtoEnumConversionsTest, GetCardBenefitSourceString) {
   TestEnumStringsNonEmpty(sync_pb::WalletMaskedCreditCard::CardBenefitSource);
 }
 
+TEST(ProtoEnumConversionsTest, GetCardCreationSourceString) {
+  TestEnumStringsNonEmpty(sync_pb::WalletMaskedCreditCard::CardCreationSource);
+}
+
 TEST(ProtoEnumConversionsTest, GetActionRequiredString) {
   TestEnumStringsNonEmpty(sync_pb::PaymentInstrument::ActionRequired);
 }

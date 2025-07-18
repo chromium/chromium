@@ -418,6 +418,12 @@ message WalletMaskedCreditCard {
     SOURCE_CURINOS = 3;
   }
 
+  enum CardCreationSource {
+    CREATION_SOURCE_UNSPECIFIED = 0;
+    CREATION_SOURCE_CHROME_PAYMENTS = 1;
+    CREATION_SOURCE_NON_CHROME_PAYMENTS = 2;
+  }
+
   // Server-generated unique ID string. This is opaque to the client.
   // This is the legacy version of `instrument_id`.
   optional string id = 1;
@@ -490,6 +496,11 @@ message WalletMaskedCreditCard {
   // The source of the card's benefits. eg: Curinos. Each card can only have one
   // single benefit source, even if there are multiple benefits.
   optional CardBenefitSource card_benefit_source = 23;
+
+  // The source of the card creation, indicating whether the card was added
+  // through a Chrome-related service, or through an external service (which
+  // includes Android Autofill).
+  optional CardCreationSource card_creation_source = 24;
 }
 
 // Unused by the client since M121.
