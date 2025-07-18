@@ -133,7 +133,12 @@ BASE_FEATURE(kWebSigninLeadsToImplicitlySignedInState,
 // Enable experimental binding session credentials to the device.
 BASE_FEATURE(kEnableBoundSessionCredentials,
              "EnableBoundSessionCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 bool IsBoundSessionCredentialsEnabled(const PrefService* profile_prefs) {
   // Enterprise policy takes precedence over the feature value.

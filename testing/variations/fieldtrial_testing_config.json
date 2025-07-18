@@ -7565,25 +7565,6 @@
             ]
         }
     ],
-    "DbscPhase1aStudy": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "dice-support": "enabled",
-                        "exclusive-registration-path": ""
-                    },
-                    "enable_features": [
-                        "EnableBoundSessionCredentials"
-                    ]
-                }
-            ]
-        }
-    ],
     "DecommitPooledPages": [
         {
             "platforms": [
