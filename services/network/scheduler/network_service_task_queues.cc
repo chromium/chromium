@@ -10,42 +10,10 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/trace_event/trace_event.h"
 #include "services/network/public/cpp/network_service_task_priority.h"
 
 namespace network {
-
-// Observes task execution on a specific network service task queue and records
-// metrics.
-class NetworkServiceTaskObserver : public base::TaskObserver {
- public:
-  explicit NetworkServiceTaskObserver(
-      std::string queue_name,
-      base::sequence_manager::TaskQueue::Handle* queue)
-      : queue_name_(std::move(queue_name)), queue_(queue) {}
-
-  void WillProcessTask(const base::PendingTask& pending_task,
-                       bool was_blocked_or_low_priority) override {
-    // Sample with a 0.001 probability to reduce metrics overhead.
-    if (sampler_.ShouldSample(0.001)) {
-      base::UmaHistogramCounts100(
-          base::StrCat(
-              {"NetworkService.Scheduler.IOThread.NumberOfPendingTasks.",
-               queue_name_, "Queue"}),
-          (*queue_)->GetNumberOfPendingTasks());
-      base::UmaHistogramTimes(
-          base::StrCat({"NetworkService.Scheduler.IOThread.QueuingTime.",
-                        queue_name_, "Queue"}),
-          base::TimeTicks::Now() - pending_task.queue_time);
-    }
-  }
-  void DidProcessTask(const base::PendingTask& pending_task) override {}
-
- private:
-  const std::string queue_name_;
-  // `queue_` outlives this task observer.
-  raw_ptr<base::sequence_manager::TaskQueue::Handle> queue_;
-  const base::MetricsSubSampler sampler_;
-};
 
 namespace {
 
@@ -77,6 +45,56 @@ const char* QueueTypeToString(QueueType type) {
 
 }  // namespace
 
+// Observes task execution on a specific network service task queue and records
+// metrics.
+class NetworkServiceTaskObserver : public base::TaskObserver {
+ public:
+  explicit NetworkServiceTaskObserver(
+      QueueType queue_type,
+      base::sequence_manager::TaskQueue::Handle* queue)
+      : queue_type_(queue_type),
+        queue_name_(QueueTypeToString(queue_type)),
+        queue_(queue) {}
+
+  void WillProcessTask(const base::PendingTask& pending_task,
+                       bool was_blocked_or_low_priority) override {
+    size_t pending_tasks = (*queue_)->GetNumberOfPendingTasks();
+
+    // The track name for TRACE_COUNTER must be a const expression.
+    switch (queue_type_) {
+      case QueueType::kDefault:
+        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                      "NumberOfPendingTasksDefaultQueue", pending_tasks);
+        break;
+      case QueueType::kHigh:
+        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                      "NumberOfPendingTasksHighQueue", pending_tasks);
+        break;
+    }
+
+    // Sample with a 0.001 probability to reduce metrics overhead.
+    if (sampler_.ShouldSample(0.001)) {
+      base::UmaHistogramCounts100(
+          base::StrCat(
+              {"NetworkService.Scheduler.IOThread.NumberOfPendingTasks.",
+               queue_name_, "Queue"}),
+          pending_tasks);
+      base::UmaHistogramTimes(
+          base::StrCat({"NetworkService.Scheduler.IOThread.QueuingTime.",
+                        queue_name_, "Queue"}),
+          base::TimeTicks::Now() - pending_task.queue_time);
+    }
+  }
+  void DidProcessTask(const base::PendingTask& pending_task) override {}
+
+ private:
+  const NetworkServiceTaskQueues::QueueType queue_type_;
+  const std::string queue_name_;
+  // `queue_` outlives this task observer.
+  raw_ptr<base::sequence_manager::TaskQueue::Handle> queue_;
+  const base::MetricsSubSampler sampler_;
+};
+
 NetworkServiceTaskQueues::NetworkServiceTaskQueues(
     base::sequence_manager::SequenceManager* sequence_manager) {
   CreateTaskQueues(sequence_manager);
@@ -92,7 +110,7 @@ void NetworkServiceTaskQueues::CreateTaskQueues(
         base::sequence_manager::TaskQueue::Spec(
             GetTaskQueueName(static_cast<QueueType>(i))));
     task_observers_[i] = std::make_unique<NetworkServiceTaskObserver>(
-        QueueTypeToString(static_cast<QueueType>(i)), &task_queues_[i]);
+        static_cast<QueueType>(i), &task_queues_[i]);
     task_queues_[i]->AddTaskObserver(task_observers_[i].get());
   }
 
