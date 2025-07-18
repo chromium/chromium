@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.core.util.Pair;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,12 +32,6 @@ public class PermissionDialogCustomViewProperties {
     public static final PropertyModel.ReadableObjectPropertyKey<List<Pair<Integer, Integer>>>
             BOLDED_RANGES = new PropertyModel.ReadableObjectPropertyKey();
 
-    public static final PropertyModel.WritableObjectPropertyKey<List<CharSequence>> RADIO_BUTTONS =
-            new PropertyModel.WritableObjectPropertyKey();
-
-    public static final PropertyModel.WritableObjectPropertyKey<Callback<Integer>>
-            RADIO_BUTTON_CALLBACK = new PropertyModel.WritableObjectPropertyKey();
-
     public static final PropertyModel.WritableObjectPropertyKey<Runnable> CLOSE_BUTTON_CALLBACK =
             new PropertyModel.WritableObjectPropertyKey();
 
@@ -47,8 +40,6 @@ public class PermissionDialogCustomViewProperties {
         ICON_TINT,
         MESSAGE_TEXT,
         BOLDED_RANGES,
-        RADIO_BUTTONS,
-        RADIO_BUTTON_CALLBACK,
         CLOSE_BUTTON_CALLBACK
     };
 }

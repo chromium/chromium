@@ -40,12 +40,6 @@ class PermissionDialogCustomViewModelFactory {
                         AppCompatResources.getColorStateList(
                                 context, R.color.default_icon_color_accent1_tint_list))
                 .with(
-                        PermissionDialogCustomViewProperties.RADIO_BUTTONS,
-                        delegate.getRadioButtons())
-                .with(
-                        PermissionDialogCustomViewProperties.RADIO_BUTTON_CALLBACK,
-                        delegate::onRadioButtonSelectionChanged)
-                .with(
                         PermissionDialogCustomViewProperties.CLOSE_BUTTON_CALLBACK,
                         delegate::onCloseButtonClicked)
                 .build();

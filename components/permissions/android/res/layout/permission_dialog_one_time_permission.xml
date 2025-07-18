@@ -24,11 +24,4 @@ found in the LICENSE file.
         android:layout_marginBottom="8dp"
         android:visibility="gone"> </LinearLayout>
 
-    <org.chromium.components.browser_ui.widget.RadioButtonLayout
-        android:id="@+id/radio_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/one_time_permission_prompt_padding"
-        android:visibility="gone" />
-
 </LinearLayout>
