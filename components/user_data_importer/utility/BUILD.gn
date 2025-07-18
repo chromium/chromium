@@ -10,6 +10,7 @@ source_set("safari_data_importer") {
     "bookmark_parser.cc",
     "bookmark_parser.h",
     "history_callback_from_rust.h",
+    "safari_data_import_client.h",
     "safari_data_importer.cc",
     "safari_data_importer.h",
   ]

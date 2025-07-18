@@ -9,6 +9,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
+#include "components/user_data_importer/utility/safari_data_import_client.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
 namespace autofill {
@@ -46,15 +47,13 @@ class RustHistoryCallback;
 // can't live in the components layer (because of platform dependencies).
 class SafariDataImporter {
  public:
-  // A callback used to obtain the number of successfully imported bookmarks,
-  // urls (for history import) or payment cards.
-  using ImportCallback = base::OnceCallback<void(int)>;
-
   using PasswordImportCallback =
       password_manager::PasswordImporter::ImportResultsCallback;
   using PasswordImportResults = password_manager::ImportResults;
 
-  SafariDataImporter(password_manager::SavedPasswordsPresenter* presenter,
+  // All arguments passed as pointers are expected to outlive this importer.
+  SafariDataImporter(SafariDataImportClient* client,
+                     password_manager::SavedPasswordsPresenter* presenter,
                      autofill::PaymentsDataManager* payments_data_manager,
                      history::HistoryService* history_service,
                      bookmarks::BookmarkModel* bookmark_model,
@@ -66,27 +65,12 @@ class SafariDataImporter {
   // Opens the ZIP file provided in `path` and prepares to import the data
   // (passwords, payment cards, bookmarks, and history) contained inside. Each
   // data type is optional and may or may not be present.
-  // `passwords_callback` may indicate conflicts that need to be resolved to
-  // successfully complete import.
-  // `bookmarks_callback`, `history_callback` and `payment_cards_callback` will
-  // be called to indicate the number of items of those types that we will
-  // attempt to import. (For history, the number is an estimate.)
-  void PrepareImport(const base::FilePath& path,
-                     PasswordImportCallback passwords_callback,
-                     ImportCallback bookmarks_callback,
-                     ImportCallback history_callback,
-                     ImportCallback payment_cards_callback);
+  void PrepareImport(const base::FilePath& path);
 
   // Called after calling `PrepareImport` in order to complete the import
   // process. In case of password conflicts, `selected_password_ids` provides
   // the list of conflicting passwords to import.
-  // Callbacks are invoked to indicate the results of import, i.e., how many
-  // of each type were actually imported.
-  void CompleteImport(const std::vector<int>& selected_password_ids,
-                      PasswordImportCallback passwords_callback,
-                      ImportCallback bookmarks_callback,
-                      ImportCallback history_callback,
-                      ImportCallback payment_cards_callback);
+  void CompleteImport(const std::vector<int>& selected_password_ids);
 
   // Called after calling "Import" in order to cancel the import process.
   void CancelImport();
@@ -144,45 +128,41 @@ class SafariDataImporter {
 
   // Once the ZIP archive has been created, checks its validity and triggers the
   // next step in the parsing pipeline.
-  void OnZipArchiveReady(PasswordImportCallback passwords_callback,
-                         ImportCallback bookmarks_callback,
-                         ImportCallback history_callback,
-                         ImportCallback payment_cards_callback,
-                         bool success);
+  void OnZipArchiveReady(bool success);
 
   // Parses the provided `csv_data` and determines if any conflicts with
   // existing passwords will occur. Stops before actually committing any data.
-  // Calls `passwords_callback` with the results, which may include conflicts
-  // that need to be resolved prior to finally committing data.
-  void PreparePasswords(PasswordImportCallback passwords_callback,
-                        std::string csv_data);
+  // Informs `client_` that passwords are ready when done.
+  void PreparePasswords(std::string csv_data);
 
-  // Converts payment_cards to autofill::CreditCard objects.
-  // Calls `payment_cards_callback` when done.
-  void PreparePaymentCards(ImportCallback payment_cards_callback,
-                           std::vector<PaymentCardEntry> payment_cards);
+  // Converts payment_cards to autofill::CreditCard objects. Informs `client_`
+  // that cards are ready when done.
+  void PreparePaymentCards(std::vector<PaymentCardEntry> payment_cards);
 
-  // Attempts to parse the provided HTML data. Calls `bookmarks_callback` when
-  // done.
-  void PrepareBookmarks(ImportCallback bookmarks_callback,
-                        std::optional<base::FilePath> html);
+  // Attempts to parse the provided HTML data. Informs `client_` that bookmarks
+  // are ready when done.
+  void PrepareBookmarks(std::optional<base::FilePath> html);
 
   // Receives the result of parsing bookmarks, stores them for later use,
   // and invokes `callback` with the number of parsed bookmarks.
-  void OnBookmarksParsed(ImportCallback callback,
-                         BookmarkParser::BookmarkParsingResult result);
+  void OnBookmarksParsed(BookmarkParser::BookmarkParsingResult result);
 
   // Calls `history_callback` with an approximation of the number of URLs
   // contained in one or more files with total size `file_size_bytes`.
-  void PrepareHistory(ImportCallback history_callback, size_t file_size_bytes);
+  void PrepareHistory(size_t file_size_bytes);
 
   // Transforms the HistoryEntry objects into URLRow objects and uses the
   // history service to import them.
-  void ImportHistoryEntries(std::vector<HistoryEntry> history_entries,
-                            ImportCallback history_callback);
+  void ImportHistoryEntries(std::vector<HistoryEntry> history_entries);
+
+  // Invoked once parsing of history is completed. Forwards the results to
+  // `client_`.
+  void OnHistoryImportCompleted();
 
   // Imports Credit Cards to the Payments Data Manager.
-  void ContinueImportPaymentCards(ImportCallback payment_cards_callback);
+  void ContinueImportPaymentCards();
+
+  // Objects used by this importer to do work (esp. parsing)
 
   // A queue for tasks which may block (e.g., I/O).
   scoped_refptr<base::SequencedTaskRunner> blocking_queue_;
@@ -192,6 +172,13 @@ class SafariDataImporter {
 
   // The password importer used to import passwords and resolve conflicts.
   std::unique_ptr<password_manager::PasswordImporter> password_importer_;
+
+  // Interaction with UI layer
+
+  // The client to inform when various processing events occur.
+  const raw_ref<SafariDataImportClient> client_;
+
+  // Model-layer objects used to actually save imported data
 
   // The payments data manager.
   const raw_ref<autofill::PaymentsDataManager> payments_data_manager_;
@@ -207,6 +194,8 @@ class SafariDataImporter {
 
   // The model-layer object used to parse bookmarks from an HTML file.
   std::unique_ptr<BookmarkParser> bookmark_parser_;
+
+  // Internal state
 
   // Stores the credit cards parsed from the "PaymentCards" JSON file.
   std::vector<autofill::CreditCard> cards_to_import_;

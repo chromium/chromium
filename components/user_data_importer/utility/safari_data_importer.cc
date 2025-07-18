@@ -156,14 +156,12 @@ class RustHistoryCallback final
     : public user_data_importer::HistoryCallbackFromRust<HistoryEntry> {
  public:
   using ParseHistoryCallback = base::RepeatingCallback<void(
-      std::vector<user_data_importer::HistoryEntry>,
-      user_data_importer::SafariDataImporter::ImportCallback)>;
+      std::vector<user_data_importer::HistoryEntry>)>;
 
-  explicit RustHistoryCallback(
-      ParseHistoryCallback parse_history_callback,
-      user_data_importer::SafariDataImporter::ImportCallback done_callback)
+  explicit RustHistoryCallback(ParseHistoryCallback parse_history_callback,
+                               base::OnceClosure done_closure)
       : parse_history_callback_(parse_history_callback),
-        done_callback_(std::move(done_callback)) {}
+        done_closure_(std::move(done_closure)) {}
 
   ~RustHistoryCallback() override = default;
 
@@ -171,25 +169,27 @@ class RustHistoryCallback final
   void ImportHistoryEntries(
       std::vector<user_data_importer::HistoryEntry>& history_entries,
       bool completed) override {
-    parse_history_callback_.Run(
-        std::move(history_entries),
-        completed ? std::move(done_callback_) : base::DoNothing());
+    parse_history_callback_.Run(std::move(history_entries));
 
     // "history_entries" should be empty after std::move, but make sure it is in
     // a valid state by explicitly calling "clear" on it.
     history_entries.clear();
+
+    if (completed) {
+      std::move(done_closure_).Run();
+    }
   }
 
   // Calls `done_callback_` with 0 to signal that parsing has failed.
-  void Fail() { std::move(done_callback_).Run(0); }
+  void Fail() { std::move(done_closure_).Run(); }
 
  private:
   ParseHistoryCallback parse_history_callback_;
-
-  user_data_importer::SafariDataImporter::ImportCallback done_callback_;
+  base::OnceClosure done_closure_;
 };
 
 SafariDataImporter::SafariDataImporter(
+    SafariDataImportClient* client,
     password_manager::SavedPasswordsPresenter* presenter,
     autofill::PaymentsDataManager* payments_data_manager,
     history::HistoryService* history_service,
@@ -203,6 +203,7 @@ SafariDataImporter::SafariDataImporter(
       password_importer_(std::make_unique<password_manager::PasswordImporter>(
           presenter,
           /*user_confirmation_required=*/true)),
+      client_(CHECK_DEREF(client)),
       payments_data_manager_(CHECK_DEREF(payments_data_manager)),
       history_service_(CHECK_DEREF(history_service)),
       bookmark_model_(CHECK_DEREF(bookmark_model)),
@@ -212,60 +213,53 @@ SafariDataImporter::SafariDataImporter(
 
 SafariDataImporter::~SafariDataImporter() = default;
 
-void SafariDataImporter::PrepareImport(
-    const base::FilePath& path,
-    PasswordImportCallback passwords_callback,
-    ImportCallback bookmarks_callback,
-    ImportCallback history_callback,
-    ImportCallback payment_cards_callback) {
+void SafariDataImporter::PrepareImport(const base::FilePath& path) {
   std::string zip_filename = path.MaybeAsASCII();
   if (zip_filename.empty()) {
-    // Nothing to import, early exit.
-    std::move(passwords_callback).Run({});
-    std::move(bookmarks_callback).Run(/*number_of_imports=*/0);
-    std::move(history_callback).Run(/*number_of_imports=*/0);
-    std::move(payment_cards_callback).Run(/*number_of_imports=*/0);
+    // TODO(crbug.com/407587751): Log error.
+    client_->OnTotalFailure();
     return;
   }
 
   blocking_worker_.AsyncCall(&BlockingWorker::CreateZipFileArchive)
       .WithArgs(std::move(zip_filename))
-      .Then(base::BindOnce(
-          &SafariDataImporter::OnZipArchiveReady, weak_factory_.GetWeakPtr(),
-          std::move(passwords_callback), std::move(bookmarks_callback),
-          std::move(history_callback), std::move(payment_cards_callback)));
+      .Then(base::BindOnce(&SafariDataImporter::OnZipArchiveReady,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void SafariDataImporter::CompleteImport(
-    const std::vector<int>& selected_password_ids,
-    PasswordImportCallback passwords_callback,
-    ImportCallback bookmarks_callback,
-    ImportCallback history_callback,
-    ImportCallback payment_cards_callback) {
+    const std::vector<int>& selected_password_ids) {
   // The history import process is the only one requiring reading the zip file,
   // so launch it first.
   history_urls_imported_ = 0;
-  RustHistoryCallback::ParseHistoryCallback parse_callback = base::BindPostTask(
-      GetRunner(),
-      base::BindRepeating(&SafariDataImporter::ImportHistoryEntries,
-                          weak_factory_.GetWeakPtr()));
+  RustHistoryCallback::ParseHistoryCallback parse_history_callback =
+      base::BindPostTask(
+          GetRunner(),
+          base::BindRepeating(&SafariDataImporter::ImportHistoryEntries,
+                              weak_factory_.GetWeakPtr()));
+
+  base::OnceClosure done_history_closure = base::BindPostTask(
+      GetRunner(), base::BindOnce(&SafariDataImporter::OnHistoryImportCompleted,
+                                  weak_factory_.GetWeakPtr()));
 
   blocking_worker_.AsyncCall(&BlockingWorker::ImportHistory)
       .WithArgs(std::make_unique<RustHistoryCallback>(
-                    std::move(parse_callback), std::move(history_callback)),
+                    std::move(parse_history_callback),
+                    std::move(done_history_closure)),
                 history_size_threshold_);
 
   // TODO(crbug.com/407587751): Move this to a task.
-  password_importer_->ContinueImport(selected_password_ids,
-                                     std::move(passwords_callback));
+  password_importer_->ContinueImport(
+      selected_password_ids,
+      base::BindOnce(&SafariDataImportClient::OnPasswordsImported,
+                     client_->AsWeakPtr()));
 
   // TODO(crbug.com/407587751): Import other types here.
-  std::move(bookmarks_callback).Run(/*number_of_imports=*/0);
+  client_->OnBookmarksImported(/*count=*/0);
 
   GetRunner()->PostTask(
       FROM_HERE, base::BindOnce(&SafariDataImporter::ContinueImportPaymentCards,
-                                weak_factory_.GetWeakPtr(),
-                                std::move(payment_cards_callback)));
+                                weak_factory_.GetWeakPtr()));
 }
 
 // Called after calling "Import" in order to cancel the import process.
@@ -361,19 +355,10 @@ void SafariDataImporter::BlockingWorker::ImportHistory(
   CloseZipFileArchive();
 }
 
-void SafariDataImporter::OnZipArchiveReady(
-    PasswordImportCallback passwords_callback,
-    ImportCallback bookmarks_callback,
-    ImportCallback history_callback,
-    ImportCallback payment_cards_callback,
-    bool success) {
+void SafariDataImporter::OnZipArchiveReady(bool success) {
   if (!success) {
     // Nothing to import, early exit.
-    PasswordImportResults results;
-    std::move(passwords_callback).Run(std::move(results));
-    std::move(bookmarks_callback).Run(/*number_of_imports=*/0);
-    std::move(history_callback).Run(/*number_of_imports=*/0);
-    std::move(payment_cards_callback).Run(/*number_of_imports=*/0);
+    client_->OnTotalFailure();
     return;
   }
 
@@ -381,43 +366,38 @@ void SafariDataImporter::OnZipArchiveReady(
   blocking_worker_.AsyncCall(&BlockingWorker::Unzip)
       .WithArgs(FileType::Passwords)
       .Then(base::BindOnce(&SafariDataImporter::PreparePasswords,
-                           weak_factory_.GetWeakPtr(),
-                           std::move(passwords_callback)));
+                           weak_factory_.GetWeakPtr()));
 
   blocking_worker_.AsyncCall(&BlockingWorker::ParsePaymentCards)
       .Then(base::BindOnce(&SafariDataImporter::PreparePaymentCards,
-                           weak_factory_.GetWeakPtr(),
-                           std::move(payment_cards_callback)));
+                           weak_factory_.GetWeakPtr()));
 
   blocking_worker_.AsyncCall(&BlockingWorker::WriteBookmarksToTmpFile)
       .Then(base::BindOnce(&SafariDataImporter::PrepareBookmarks,
-                           weak_factory_.GetWeakPtr(),
-                           std::move(bookmarks_callback)));
+                           weak_factory_.GetWeakPtr()));
 
   blocking_worker_.AsyncCall(&BlockingWorker::GetUncompressedFileSizeInBytes)
       .WithArgs(FileType::History)
       .Then(base::BindOnce(&SafariDataImporter::PrepareHistory,
-                           weak_factory_.GetWeakPtr(),
-                           std::move(history_callback)));
+                           weak_factory_.GetWeakPtr()));
 }
 
-void SafariDataImporter::PreparePasswords(
-    PasswordImportCallback passwords_callback,
-    std::string csv_data) {
+void SafariDataImporter::PreparePasswords(std::string csv_data) {
   // TODO(crbug.com/407587751): Pick a store based on whether the user is
   // signed in to their account.
   password_manager::PasswordForm::Store to_store =
       password_manager::PasswordForm::Store::kAccountStore;
 
-  password_importer_->Import(std::move(csv_data), to_store,
-                             std::move(passwords_callback));
+  password_importer_->Import(
+      std::move(csv_data), to_store,
+      base::BindOnce(&SafariDataImportClient::OnPasswordsReady,
+                     client_->AsWeakPtr()));
 }
 
 void SafariDataImporter::PreparePaymentCards(
-    ImportCallback payment_cards_callback,
     std::vector<PaymentCardEntry> payment_cards) {
   if (payment_cards.empty()) {
-    std::move(payment_cards_callback).Run(/*number_of_imports=*/0);
+    client_->OnPaymentCardsReady(/* count= */ 0);
     return;
   }
 
@@ -429,15 +409,13 @@ void SafariDataImporter::PreparePaymentCards(
                                                               app_locale_);
                          });
 
-  std::move(payment_cards_callback).Run(cards_to_import_.size());
+  client_->OnPaymentCardsReady(cards_to_import_.size());
 }
 
 void SafariDataImporter::PrepareBookmarks(
-    ImportCallback bookmarks_callback,
     std::optional<base::FilePath> bookmarks_html) {
   if (!bookmarks_html || bookmarks_html->empty()) {
-    // TODO(crbug.com/407587751): Log error.
-    std::move(bookmarks_callback).Run(/*number_of_imports=*/0);
+    client_->OnBookmarksReady(/* count= */ 0);
     return;
   }
 
@@ -445,40 +423,37 @@ void SafariDataImporter::PrepareBookmarks(
       *bookmarks_html,
       base::BindPostTask(GetRunner(),
                          base::BindOnce(&SafariDataImporter::OnBookmarksParsed,
-                                        weak_factory_.GetWeakPtr(),
-                                        std::move(bookmarks_callback))));
+                                        weak_factory_.GetWeakPtr())));
 }
 
 void SafariDataImporter::OnBookmarksParsed(
-    ImportCallback callback,
     BookmarkParser::BookmarkParsingResult result) {
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
-                   [&callback](auto) {
+                   [this](auto) {
                      // TODO(crbug.com/407587751): Log error to UMA.
-                     std::move(callback).Run(0);
+                     client_->OnBookmarksReady(/* count= */ 0);
                    });
 
   pending_bookmarks_ = std::move(value.bookmarks);
   pending_reading_list_ = std::move(value.reading_list);
 
-  std::move(callback).Run(pending_bookmarks_.size() +
-                          pending_reading_list_.size());
+  client_->OnBookmarksReady(pending_bookmarks_.size() +
+                            pending_reading_list_.size());
 }
 
-void SafariDataImporter::PrepareHistory(ImportCallback history_callback,
-                                        size_t file_size_bytes) {
+void SafariDataImporter::PrepareHistory(size_t file_size_bytes) {
   // This is an approximation of the number of bytes per URL entry in the
   // history file.
   static const size_t kBytesPerURL = 250;
   size_t approximate_number_of_urls =
       (file_size_bytes > 0) ? (file_size_bytes / kBytesPerURL) + 1 : 0;
-  std::move(history_callback)
-      .Run(/*number_of_imports=*/approximate_number_of_urls);
+
+  // TODO(crbug.com/407587751): Pass list of profiles.
+  client_->OnHistoryReady(approximate_number_of_urls, {});
 }
 
 void SafariDataImporter::ImportHistoryEntries(
-    std::vector<HistoryEntry> history_entries,
-    ImportCallback history_callback) {
+    std::vector<HistoryEntry> history_entries) {
   history::URLRows url_rows;
   url_rows.reserve(history_entries.size());
   for (auto history_entry : history_entries) {
@@ -494,13 +469,17 @@ void SafariDataImporter::ImportHistoryEntries(
 
     history_urls_imported_ += url_rows.size();
   }
-  std::move(history_callback).Run(history_urls_imported_);
 }
 
-void SafariDataImporter::ContinueImportPaymentCards(
-    ImportCallback payment_cards_callback) {
+// Invoked once parsing of history is completed. Forwards the results to
+// `client_`.
+void SafariDataImporter::OnHistoryImportCompleted() {
+  client_->OnHistoryImported(history_urls_imported_);
+}
+
+void SafariDataImporter::ContinueImportPaymentCards() {
   if (cards_to_import_.empty()) {
-    std::move(payment_cards_callback).Run(/*number_of_imports=*/0);
+    client_->OnPaymentCardsImported(/* count= */ 0);
     return;
   }
 
@@ -526,7 +505,7 @@ void SafariDataImporter::ContinueImportPaymentCards(
     imported_credit_cards++;
   }
 
-  std::move(payment_cards_callback).Run(imported_credit_cards);
+  client_->OnPaymentCardsImported(imported_credit_cards);
 }
 
 }  // namespace user_data_importer
