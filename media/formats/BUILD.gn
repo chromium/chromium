@@ -393,6 +393,10 @@ source_set("unit_tests") {
     "hls/types_unittest.cc",
     "hls/variable_dictionary_unittest.cc",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
