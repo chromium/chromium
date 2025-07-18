@@ -515,10 +515,6 @@ void CloseGroupAtIndex(int group_cell_index) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  // Cancel button only exists on iPhone. Skip the test on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad");
-  }
 
   [ChromeEarlGreyUI openTabGrid];
 
@@ -533,7 +529,17 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Cancel ungrouping a group in the confirmation dialog.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:UngroupConfirmationButton()];
-  [[EarlGrey selectElementWithMatcher:CancelButton()] performAction:grey_tap()];
+
+  // No cancel button on iPad and newer iOS; use the identifier of the
+  // popover window instead.
+  if (iOS26_OR_ABOVE() || [ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey
+        selectElementWithMatcher:GREYAccessibilityID(@"PopoverDismissRegion")]
+        performAction:GREYTapAtPoint(CGPointMake(0, 0))];
+  } else {
+    [[EarlGrey selectElementWithMatcher:CancelButton()]
+        performAction:grey_tap()];
+  }
 
   // Wait until the confirmation dialog disappears.
   [ChromeEarlGrey
@@ -564,10 +570,6 @@ void CloseGroupAtIndex(int group_cell_index) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  // Cancel button only exists on iPhone. Skip the test on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad");
-  }
 
   [ChromeEarlGreyUI openTabGrid];
 
@@ -595,7 +597,17 @@ void CloseGroupAtIndex(int group_cell_index) {
   // Cancel the deletion in the confirmation dialog.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:DeleteGroupConfirmationButton()];
-  [[EarlGrey selectElementWithMatcher:CancelButton()] performAction:grey_tap()];
+
+  // No cancel button on iPad and newer iOS; use the identifier of the popover
+  // window instead.
+  if (iOS26_OR_ABOVE() || [ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey
+        selectElementWithMatcher:GREYAccessibilityID(@"PopoverDismissRegion")]
+        performAction:GREYTapAtPoint(CGPointMake(0, 0))];
+  } else {
+    [[EarlGrey selectElementWithMatcher:CancelButton()]
+        performAction:grey_tap()];
+  }
 
   // Wait until the confirmation dialog disappears.
   [ChromeEarlGrey
