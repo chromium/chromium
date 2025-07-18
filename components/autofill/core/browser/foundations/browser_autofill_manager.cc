@@ -601,14 +601,16 @@ bool WasEmailOverrideAppliedOnSuggestions(
 void MaybeImportFromSubmittedForm(AutofillClient& client,
                                   ukm::SourceId ukm_source_id,
                                   const FormStructure& form_structure,
-                                  const FormData& form_data,
-                                  bool autofill_ai_shows_bubble) {
+                                  const FormData& form_data) {
   // This intentionally happens prior to `ImportAndProcessFormData()`. See
   // crbug.com/381205586.
   ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
       form_structure, form_data,
       client.GetPersonalDataManager().address_data_manager());
 
+  AutofillAiManager* const ai_manager = client.GetAutofillAiManager();
+  const bool autofill_ai_shows_bubble =
+      ai_manager && ai_manager->OnFormSubmitted(form_structure, ukm_source_id);
   if (!autofill_ai_shows_bubble) {
     // Update Personal Data with the form's submitted data.
     client.GetFormDataImporter()->ImportAndProcessFormData(
@@ -869,14 +871,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   submitted_form->set_submission_source(source);
   LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
 
-  bool autofill_ai_shows_bubble = false;
-  if (AutofillAiManager* ai_manager = client().GetAutofillAiManager()) {
-    autofill_ai_shows_bubble = ai_manager->OnFormSubmitted(
-        *submitted_form, driver().GetPageUkmSourceId());
-  }
-
   MaybeImportFromSubmittedForm(client(), driver().GetPageUkmSourceId(),
-                               *submitted_form, form, autofill_ai_shows_bubble);
+                               *submitted_form, form);
   MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
   client().GetVotesUploader().MaybeStartVoteUploadProcess(
       std::move(submitted_form),
