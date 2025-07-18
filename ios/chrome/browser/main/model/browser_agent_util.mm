@@ -57,12 +57,12 @@
 #endif
 
 void AttachBrowserAgents(Browser* browser) {
+  const bool browser_is_off_record = browser->GetProfile()->IsOffTheRecord();
+  const bool browser_is_inactive = browser->IsInactive();
+
   if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
     BreadcrumbManagerBrowserAgent::CreateForBrowser(browser);
   }
-
-  const bool browser_is_off_record = browser->GetProfile()->IsOffTheRecord();
-  const bool browser_is_inactive = browser->IsInactive();
 
   LiveTabContextBrowserAgent::CreateForBrowser(browser);
   TabInsertionBrowserAgent::CreateForBrowser(browser);
@@ -74,9 +74,9 @@ void AttachBrowserAgents(Browser* browser) {
   AppLauncherBrowserAgent::CreateForBrowser(browser);
   OmniboxPositionBrowserAgent::CreateForBrowser(browser);
 
-  // TODO(crbug.com/40277656): Do not create FullscreenController and
-  // FullscreenWebStateListObserver for an inactive browser.
-  FullscreenController::CreateForBrowser(browser);
+  if (!browser_is_inactive) {
+    FullscreenController::CreateForBrowser(browser);
+  }
 
   // LensBrowserAgent must be created before WebNavigationBrowserAgent.
   LensBrowserAgent::CreateForBrowser(browser);
