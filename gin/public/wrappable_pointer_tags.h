@@ -21,28 +21,31 @@ enum WrappablePointerTag : uint16_t {
   // The type tags for gin::Wrappable start at the end of the value range to
   // avoid overlaps with the type tags of blink::ScriptWrappable.
   kFirstPointerTag = 1501,
-  kAPIBindingBridge = 1501,             // extensions::APIBindingBridge
-  kAPIBindingJSUtil,                    // extensions::APIBindingJSUtil
-  kAutomationPosition,                  // ui::AutomationPosition
-  kChromePluginPlaceholder,             // ChromePluginPlaceholder
-  kChromeSetting,                       // extensions::ChromeSetting
-  kContentSetting,                      // extensions::ContentSetting
-  kDeclarativeEvent,                    // extensions::DeclarativeEvent
-  kDomAutomationController,             // content::DomAutomationController
-  kGamepadControllerBindings,           // content::GameControllerBindings
-  kGinPort,                             // extensions::GinPort
-  kGpuBenchmarking,                     // content::GpuBenchmarking
-  kJsBinding,                           // js_injection::JsBinding
-  kJSHookInterface,                     // extensions::JSHookInterface
-  kLastErrorObject,                     // extensions::LastErrorObject
-  kLocalStorageArea,                    // extensions::LocalStorageArea
-  kManagedStorageArea,                  // extensions::ManagedStorageArea
-  kMojo,                                // ax::Mojo
-  kMojoHandle,                          // ax::MojoHandle
-  kNetErrorPageController,              // NetErrorPageController
-  kPDFPluginPlaceholder,                // PDFPluginPlaceholder
-  kPluginPlaceholder,                   // plugins::PluginPlaceholder
-  kReadAnythingAppController,           // ReadAnythingAppController
+  kAccessibilityControllerBindings,  // content::AccessibilityControllerBindings
+  kAPIBindingBridge,                 // extensions::APIBindingBridge
+  kAPIBindingJSUtil,                 // extensions::APIBindingJSUtil
+  kAutomationPosition,               // ui::AutomationPosition
+  kChromePluginPlaceholder,          // ChromePluginPlaceholder
+  kChromeSetting,                    // extensions::ChromeSetting
+  kContentSetting,                   // extensions::ContentSetting
+  kDeclarativeEvent,                 // extensions::DeclarativeEvent
+  kDomAutomationController,          // content::DomAutomationController
+  kEventSenderBindings,              // content::EventSenderBindings
+  kGamepadControllerBindings,        // content::GameControllerBindings
+  kGCController,                     // content::GCController
+  kGinPort,                          // extensions::GinPort
+  kGpuBenchmarking,                  // content::GpuBenchmarking
+  kJsBinding,                        // js_injection::JsBinding
+  kJSHookInterface,                  // extensions::JSHookInterface
+  kLastErrorObject,                  // extensions::LastErrorObject
+  kLocalStorageArea,                 // extensions::LocalStorageArea
+  kManagedStorageArea,               // extensions::ManagedStorageArea
+  kMojo,                             // ax::Mojo
+  kMojoHandle,                       // ax::MojoHandle
+  kNetErrorPageController,           // NetErrorPageController
+  kPDFPluginPlaceholder,             // PDFPluginPlaceholder
+  kPluginPlaceholder,                // plugins::PluginPlaceholder
+  kReadAnythingAppController,        // ReadAnythingAppController
   kSecurityInterstitialPageController,  // SecurityInterstitialPageController
   kSearchBoxBindings,                   // SearchBoxBindings
   kSessionStorageArea,                  // extensions::SessionStorageArea
@@ -54,8 +57,11 @@ enum WrappablePointerTag : uint16_t {
   kTestGinWrappable,                    // GinWrappable
   kTestObject,                          // gin::TestGinObject
   kTestObject2,                         // gin::MyObject2
+  kTestRunnerBindings,                  // content::TestRunnerBindings
   kTextDecoder,                         // ax::TextDecoder
   kTextEncoder,                         // ax::TextEncoder
+  kTextInputControllerBindings,         // content::TextInputControllerBindings
+  kWebAXObjectProxy,                    // content::WebAXObjectProxy
   kWrappedExceptionHandler,             // extensions::WrappedExceptionHandler
   kLastPointerTag = kWrappedExceptionHandler,
 };

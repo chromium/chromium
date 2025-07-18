@@ -9,16 +9,14 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gin/arguments.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
 namespace content {
-
-gin::DeprecatedWrapperInfo GCController::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 // static
 void GCController::Install(blink::WebLocalFrame* frame) {
@@ -30,15 +28,14 @@ void GCController::Install(blink::WebLocalFrame* frame) {
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<GCController> controller =
-      gin::CreateHandle(isolate, new GCController(frame));
-  if (controller.IsEmpty()) {
+  auto* controller = cppgc::MakeGarbageCollected<GCController>(
+      isolate->GetCppHeap()->GetAllocationHandle(), frame);
+  v8::Local<v8::Object> wrapper;
+  if (!controller->GetWrapper(isolate).ToLocal(&wrapper)) {
     return;
   }
   v8::Local<v8::Object> global = context->Global();
-  global
-      ->Set(context, gin::StringToV8(isolate, "GCController"),
-            controller.ToV8())
+  global->Set(context, gin::StringToV8(isolate, "GCController"), wrapper)
       .Check();
 }
 
@@ -46,10 +43,13 @@ GCController::GCController(blink::WebLocalFrame* frame) : frame_(frame) {}
 
 GCController::~GCController() = default;
 
+const gin::WrapperInfo* GCController::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 gin::ObjectTemplateBuilder GCController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<GCController>::GetObjectTemplateBuilder(
-             isolate)
+  return gin::Wrappable<GCController>::GetObjectTemplateBuilder(isolate)
       .SetMethod("collect", &GCController::Collect)
       .SetMethod("collectAll", &GCController::CollectAll)
       .SetMethod("minorCollect", &GCController::MinorCollect)
