@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/task/sequenced_task_runner.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_platform_key_util.h"
@@ -80,11 +79,6 @@ class SSLPrivateKeyWithPreferences : public SSLPrivateKey {
 };
 
 }  // namespace
-
-scoped_refptr<SSLPrivateKey> WrapRSAPrivateKey(
-    crypto::RSAPrivateKey* rsa_private_key) {
-  return net::WrapOpenSSLPrivateKey(bssl::UpRef(rsa_private_key->key()));
-}
 
 scoped_refptr<SSLPrivateKey> CreateFailSigningSSLPrivateKey() {
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(

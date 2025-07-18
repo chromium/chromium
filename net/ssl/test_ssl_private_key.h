@@ -8,18 +8,9 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 
-namespace crypto {
-class RSAPrivateKey;
-}
-
 namespace net {
 
 class SSLPrivateKey;
-
-// Returns a new `SSLPrivateKey` which uses `rsa_private_key` for signing
-// operations or `nullptr` on error.
-scoped_refptr<SSLPrivateKey> WrapRSAPrivateKey(
-    crypto::RSAPrivateKey* rsa_private_key);
 
 // Returns a new `SSLPrivateKey` which fails all signing operations.
 scoped_refptr<SSLPrivateKey> CreateFailSigningSSLPrivateKey();

@@ -6,7 +6,8 @@
 
 #include <memory>
 
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
+#include "crypto/test_support.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/ssl_private_key.h"
@@ -17,15 +18,13 @@ namespace net {
 TEST(ClientCertIdentitySorter, SortClientCertificates) {
   ClientCertIdentityList certs;
 
-  std::unique_ptr<crypto::RSAPrivateKey> key(
-      crypto::RSAPrivateKey::Create(1024));
-  ASSERT_TRUE(key);
+  auto key = crypto::test::FixedRsa2048PrivateKeyForTesting();
 
   scoped_refptr<X509Certificate> cert;
   std::string der_cert;
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
-      key->key(), x509_util::DIGEST_SHA256, "CN=expired", 1,
+      key.key(), x509_util::DIGEST_SHA256, "CN=expired", 1,
       base::Time::UnixEpoch(), base::Time::UnixEpoch(), {}, &der_cert));
   cert = X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert);
@@ -34,21 +33,21 @@ TEST(ClientCertIdentitySorter, SortClientCertificates) {
   const base::Time now = base::Time::Now();
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
-      key->key(), x509_util::DIGEST_SHA256, "CN=not yet valid", 2,
+      key.key(), x509_util::DIGEST_SHA256, "CN=not yet valid", 2,
       now + base::Days(10), now + base::Days(15), {}, &der_cert));
   cert = X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert);
   certs.push_back(std::make_unique<FakeClientCertIdentity>(cert, nullptr));
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
-      key->key(), x509_util::DIGEST_SHA256, "CN=older cert", 3,
+      key.key(), x509_util::DIGEST_SHA256, "CN=older cert", 3,
       now - base::Days(5), now + base::Days(5), {}, &der_cert));
   cert = X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert);
   certs.push_back(std::make_unique<FakeClientCertIdentity>(cert, nullptr));
 
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
-      key->key(), x509_util::DIGEST_SHA256, "CN=newer cert", 2,
+      key.key(), x509_util::DIGEST_SHA256, "CN=newer cert", 2,
       now - base::Days(3), now + base::Days(5), {}, &der_cert));
   cert = X509Certificate::CreateFromBytes(base::as_byte_span(der_cert));
   ASSERT_TRUE(cert);
