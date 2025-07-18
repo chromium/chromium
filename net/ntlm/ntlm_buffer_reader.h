@@ -90,13 +90,6 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
   // Reads |len| bytes and copies them into |buffer|.
   [[nodiscard]] bool ReadBytes(base::span<uint8_t> buffer);
 
-  // Reads |sec_buf.length| bytes from offset |sec_buf.offset| and copies them
-  // into |buffer|. If the security buffer specifies a payload outside the
-  // buffer, then the call fails. Unlike the other Read* methods, this does
-  // not move the cursor.
-  [[nodiscard]] bool ReadBytesFrom(const SecurityBuffer& sec_buf,
-                                   base::span<uint8_t> buffer);
-
   // Reads |sec_buf.length| bytes from offset |sec_buf.offset| and assigns
   // |reader| an |NtlmBufferReader| representing the payload. If the security
   //  buffer specifies a payload outside the buffer, then the call fails, and

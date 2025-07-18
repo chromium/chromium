@@ -185,6 +185,16 @@ TEST(NtlmBufferReaderTest, ReadPayloadBadOffset) {
       reader.ReadPayloadAsBufferReader(SecurityBuffer(4, 1), &sub_reader));
 }
 
+TEST(NtlmBufferReaderTest, ReadPayloadBadOffsetZeroLength) {
+  const uint8_t buf[4] = {};
+  NtlmBufferReader reader(buf);
+
+  NtlmBufferReader sub_reader;
+  ASSERT_TRUE(
+      reader.ReadPayloadAsBufferReader(SecurityBuffer(500, 0), &sub_reader));
+  EXPECT_TRUE(sub_reader.IsEndOfBuffer());
+}
+
 TEST(NtlmBufferReaderTest, ReadPayloadBadLength) {
   const uint8_t buf[4] = {};
   NtlmBufferReader reader(buf);

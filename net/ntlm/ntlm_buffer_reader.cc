@@ -63,25 +63,15 @@ bool NtlmBufferReader::ReadBytes(base::span<uint8_t> buffer) {
   return true;
 }
 
-bool NtlmBufferReader::ReadBytesFrom(const SecurityBuffer& sec_buf,
-                                     base::span<uint8_t> buffer) {
-  if (!CanReadFrom(sec_buf) || buffer.size() < sec_buf.length)
-    return false;
-
-  if (buffer.empty())
-    return true;
-
-  buffer.copy_prefix_from(buffer_.subspan(sec_buf.offset, sec_buf.length));
-
-  return true;
-}
-
 bool NtlmBufferReader::ReadPayloadAsBufferReader(const SecurityBuffer& sec_buf,
                                                  NtlmBufferReader* reader) {
   if (!CanReadFrom(sec_buf))
     return false;
 
-  *reader = NtlmBufferReader(buffer_.subspan(sec_buf.offset, sec_buf.length));
+  *reader =
+      sec_buf.length
+          ? NtlmBufferReader(buffer_.subspan(sec_buf.offset, sec_buf.length))
+          : NtlmBufferReader();
   return true;
 }
 

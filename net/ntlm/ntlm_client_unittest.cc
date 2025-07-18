@@ -38,11 +38,20 @@ bool GetAuthMsgResult(const NtlmClient& client,
   return !GenerateAuthMsg(client, challenge_writer).empty();
 }
 
+bool ReadBytesFrom(NtlmBufferReader* reader,
+                   const SecurityBuffer& sec_buf,
+                   base::span<uint8_t> buffer) {
+  CHECK_EQ(sec_buf.length, buffer.size());
+  NtlmBufferReader portion_reader;
+  return reader->ReadPayloadAsBufferReader(sec_buf, &portion_reader) &&
+         portion_reader.ReadBytes(buffer);
+}
+
 bool ReadBytesPayload(NtlmBufferReader* reader, base::span<uint8_t> buffer) {
   SecurityBuffer sec_buf;
   return reader->ReadSecurityBuffer(&sec_buf) &&
          (sec_buf.length == buffer.size()) &&
-         reader->ReadBytesFrom(sec_buf, buffer);
+         ReadBytesFrom(reader, sec_buf, buffer);
 }
 
 // Reads bytes from a payload and assigns them to a string. This makes
@@ -53,7 +62,7 @@ bool ReadStringPayload(NtlmBufferReader* reader, std::string* str) {
     return false;
 
   str->resize(sec_buf.length);
-  if (!reader->ReadBytesFrom(sec_buf, base::as_writable_byte_span(*str))) {
+  if (!ReadBytesFrom(reader, sec_buf, base::as_writable_byte_span(*str))) {
     return false;
   }
 
@@ -69,8 +78,9 @@ bool ReadString16Payload(NtlmBufferReader* reader, std::u16string* str) {
     return false;
 
   std::vector<uint8_t> raw(sec_buf.length);
-  if (!reader->ReadBytesFrom(sec_buf, raw))
+  if (!ReadBytesFrom(reader, sec_buf, raw)) {
     return false;
+  }
 
 #if defined(ARCH_CPU_BIG_ENDIAN)
   for (size_t i = 0; i < raw.size(); i += 2) {
