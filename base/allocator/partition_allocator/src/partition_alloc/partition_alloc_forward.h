@@ -68,8 +68,9 @@ struct MaybeConst {
 template <const MetadataKind kind, typename T>
 using MaybeConstT = typename MaybeConst<kind, T>::Type;
 
-template <MetadataKind>
-struct SlotSpanMetadata;
+struct SlotSpanMetadataBase;
+template <const MetadataKind kind>
+using SlotSpanMetadata = SlotSpanMetadataBase;
 
 }  // namespace internal
 

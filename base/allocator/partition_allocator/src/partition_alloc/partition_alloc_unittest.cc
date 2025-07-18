@@ -759,8 +759,7 @@ class MockPartitionStatsDumper : public PartitionStatsDumper {
 // Regarding IsManagedByDirectMap(), this rarely happens because of allocation
 // size. But we should also check who allocates the memory.
 bool IsNormalBucketsAllocatedByRoot(uintptr_t address, PartitionRoot* root) {
-  partition_alloc::internal::PartitionSuperPageExtentEntry<
-      partition_alloc::internal::MetadataKind::kReadOnly>* extent =
+  partition_alloc::internal::PartitionSuperPageExtentEntry* extent =
       root->first_extent;
   while (extent != nullptr) {
     uintptr_t super_page =
@@ -779,8 +778,7 @@ bool IsDirectMapAllocatedByRoot(uintptr_t address, PartitionRoot* root) {
   ::partition_alloc::internal::ScopedGuard locker{
       partition_alloc::internal::PartitionRootLock(root)};
 
-  partition_alloc::internal::PartitionDirectMapExtent<
-      partition_alloc::internal::MetadataKind::kReadOnly>* extent =
+  partition_alloc::internal::PartitionDirectMapExtent* extent =
       root->direct_map_list;
   while (extent != nullptr) {
     uintptr_t super_page =
@@ -6089,14 +6087,13 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
     for (size_t i = 0; i < count; i++) {
       slot_spans.emplace_back(&bucket);
       auto& slot_span = slot_spans.back();
-      slot_span.ToWritable(nullptr)->num_unprovisioned_slots =
+      slot_span.num_unprovisioned_slots =
           partition_alloc::internal::base::RandGenerator(
               bucket.get_slots_per_span() / 2);
-      slot_span.ToWritable(nullptr)->num_allocated_slots =
+      slot_span.num_allocated_slots =
           partition_alloc::internal::base::RandGenerator(
               bucket.get_slots_per_span() - slot_span.num_unprovisioned_slots);
-      slot_span.ToWritable(nullptr)->next_slot_span =
-          bucket.active_slot_spans_head;
+      slot_span.next_slot_span = bucket.active_slot_spans_head;
       bucket.active_slot_spans_head = &slot_span;
     }
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)

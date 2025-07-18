@@ -226,20 +226,15 @@ enum class StraightenLargerSlotSpanFreeListsMode {
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
 struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
+  using SlotSpanMetadataBase = internal::SlotSpanMetadataBase;
   using ReadOnlySlotSpanMetadata =
       internal::SlotSpanMetadata<internal::MetadataKind::kReadOnly>;
   using WritableSlotSpanMetadata =
       internal::SlotSpanMetadata<internal::MetadataKind::kWritable>;
   using Bucket = internal::PartitionBucket;
   using FreeListEntry = internal::FreelistEntry;
-  using WritableSuperPageExtentEntry = internal::PartitionSuperPageExtentEntry<
-      internal::MetadataKind::kWritable>;
-  using ReadOnlySuperPageExtentEntry = internal::PartitionSuperPageExtentEntry<
-      internal::MetadataKind::kReadOnly>;
-  using WritableDirectMapExtent =
-      internal::PartitionDirectMapExtent<internal::MetadataKind::kWritable>;
-  using ReadOnlyDirectMapExtent =
-      internal::PartitionDirectMapExtent<internal::MetadataKind::kReadOnly>;
+  using SuperPageExtentEntry = internal::PartitionSuperPageExtentEntry;
+  using DirectMapExtent = internal::PartitionDirectMapExtent;
 
   enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 
@@ -369,9 +364,9 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   uintptr_t next_super_page = 0;
   uintptr_t next_partition_page = 0;
   uintptr_t next_partition_page_end = 0;
-  ReadOnlySuperPageExtentEntry* current_extent = nullptr;
-  ReadOnlySuperPageExtentEntry* first_extent = nullptr;
-  ReadOnlyDirectMapExtent* direct_map_list
+  SuperPageExtentEntry* current_extent = nullptr;
+  SuperPageExtentEntry* first_extent = nullptr;
+  DirectMapExtent* direct_map_list
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = nullptr;
   ReadOnlySlotSpanMetadata* global_empty_slot_span_ring
       [internal::kMaxEmptySlotSpanRingSize] PA_GUARDED_BY(
@@ -444,9 +439,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       PA_LOCKS_EXCLUDED(thread_cache_construction_lock, lock_);
 
   PA_ALWAYS_INLINE static PartitionRoot* FromSlotSpanMetadata(
-      const ReadOnlySlotSpanMetadata* slot_span);
-  PA_ALWAYS_INLINE static PartitionRoot* FromSlotSpanMetadata(
-      WritableSlotSpanMetadata* slot_span);
+      const SlotSpanMetadataBase* slot_span);
 
   // These two functions work unconditionally for normal buckets.
   // For direct map, they only work for the first super page of a reservation,
@@ -1119,8 +1112,7 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
   // there may be padding for alignment. The first page metadata holds an offset
   // to where direct map metadata, and thus direct map start, are located.
   auto* first_page_metadata =
-      PartitionPageMetadata<MetadataKind::kReadOnly>::FromAddr(
-          reservation_start + PartitionPageSize());
+      PartitionPageMetadata::FromAddr(reservation_start + PartitionPageSize());
   auto* page_metadata =
       first_page_metadata + first_page_metadata->slot_span_metadata_offset;
   PA_DCHECK(page_metadata->is_valid);
@@ -1130,8 +1122,7 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
       SlotSpanMetadata<MetadataKind::kReadOnly>::ToSlotSpanStart(slot_span);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   auto* direct_map_metadata =
-      PartitionDirectMapMetadata<MetadataKind::kReadOnly>::FromSlotSpanMetadata(
-          slot_span);
+      PartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span);
   size_t padding_for_alignment =
       direct_map_metadata->direct_map_extent.padding_for_alignment;
   PA_DCHECK(padding_for_alignment ==
@@ -1258,7 +1249,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     PA_DCHECK(!slot_span->CanStoreRawSize());
     PA_DCHECK(!slot_span->bucket->is_direct_mapped());
 
-    void* entry = slot_span->ToWritable(this)->PopForAlloc(bucket->slot_size);
+    void* entry = slot_span->PopForAlloc(bucket->slot_size);
 
     PA_DCHECK(internal::SlotStartPtr2Addr(entry) == slot_start);
 
@@ -1626,7 +1617,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInSlotSpan(
   DecreaseTotalSizeOfAllocatedBytes(slot_start,
                                     slot_span->GetSlotSizeForBookkeeping());
 
-  return slot_span->ToWritable(this)->Free(slot_start, this);
+  return slot_span->Free(slot_start, this);
 }
 
 #if PA_CONFIG(IS_NONCLANG_MSVC)
@@ -1773,15 +1764,8 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeLocked(uintptr_t slot_start) {
 }
 
 PA_ALWAYS_INLINE PartitionRoot* PartitionRoot::FromSlotSpanMetadata(
-    const ReadOnlySlotSpanMetadata* slot_span) {
-  auto* extent_entry = reinterpret_cast<ReadOnlySuperPageExtentEntry*>(
-      reinterpret_cast<uintptr_t>(slot_span) & internal::SystemPageBaseMask());
-  return extent_entry->root;
-}
-
-PA_ALWAYS_INLINE PartitionRoot* PartitionRoot::FromSlotSpanMetadata(
-    WritableSlotSpanMetadata* slot_span) {
-  auto* extent_entry = reinterpret_cast<WritableSuperPageExtentEntry*>(
+    const SlotSpanMetadataBase* slot_span) {
+  auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
       reinterpret_cast<uintptr_t>(slot_span) & internal::SystemPageBaseMask());
   return extent_entry->root;
 }

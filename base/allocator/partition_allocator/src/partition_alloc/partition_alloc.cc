@@ -46,12 +46,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       (internal::PartitionPageSize() & internal::SystemPageOffsetMask()) == 0,
       "ok partition page multiple");
   static_assert(
-      sizeof(
-          internal::PartitionPageMetadata<internal::MetadataKind::kReadOnly>) <=
-              internal::kPageMetadataSize &&
-          sizeof(internal::PartitionPageMetadata<
-                 internal::MetadataKind::kWritable>) <=
-              internal::kPageMetadataSize,
+      sizeof(internal::PartitionPageMetadata) <= internal::kPageMetadataSize,
       "PartitionPage should not be too big");
   STATIC_ASSERT_OR_PA_CHECK(
       internal::kPageMetadataSize * internal::NumPartitionPagesPerSuperPage() <=

@@ -387,8 +387,8 @@ void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
   }
 
   // For normal-bucketed.
-  for (const internal::PartitionSuperPageExtentEntry<
-           internal::MetadataKind::kReadOnly>* extent = root->first_extent;
+  for (const internal::PartitionSuperPageExtentEntry* extent =
+           root->first_extent;
        extent != nullptr; extent = extent->next) {
     //  The page which contains the extent is in-used and shared mapping.
     uintptr_t super_page = SuperPagesBeginFromExtent(extent);
@@ -401,8 +401,7 @@ void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
   }
 
   // For direct-mapped.
-  for (const internal::PartitionDirectMapExtent<
-           internal::MetadataKind::kReadOnly>* extent = root->direct_map_list;
+  for (const internal::PartitionDirectMapExtent* extent = root->direct_map_list;
        extent != nullptr; extent = extent->next_extent) {
     internal::PartitionAddressSpace::MapMetadata(
         reinterpret_cast<uintptr_t>(extent) & internal::kSuperPageBaseMask,
@@ -576,8 +575,7 @@ static size_t PartitionPurgeSlotSpan(
     size_t new_unprovisioned_slots =
         truncated_slots + slot_span->num_unprovisioned_slots;
     PA_DCHECK(new_unprovisioned_slots <= bucket->get_slots_per_span());
-    slot_span->ToWritable(root)->num_unprovisioned_slots =
-        new_unprovisioned_slots;
+    slot_span->num_unprovisioned_slots = new_unprovisioned_slots;
 
     size_t num_new_freelist_entries = 0;
     internal::FreelistEntry* back = nullptr;
@@ -606,7 +604,7 @@ static size_t PartitionPurgeSlotSpan(
         if (num_new_freelist_entries) {
           back->SetNext(entry);
         } else {
-          slot_span->ToWritable(root)->SetFreelistHead(entry, root);
+          slot_span->SetFreelistHead(entry, root);
         }
         back = entry;
         num_new_freelist_entries++;
@@ -631,7 +629,7 @@ static size_t PartitionPurgeSlotSpan(
           if (num_new_freelist_entries) {
             back->SetNext(entry);
           } else {
-            slot_span->ToWritable(root)->SetFreelistHead(entry, root);
+            slot_span->SetFreelistHead(entry, root);
           }
           skipped = false;
         }
@@ -654,7 +652,7 @@ static size_t PartitionPurgeSlotSpan(
 #endif
       } else {
         PA_DCHECK(!back);
-        slot_span->ToWritable(root)->SetFreelistHead(nullptr, root);
+        slot_span->SetFreelistHead(nullptr, root);
       }
       PA_DCHECK(num_new_freelist_entries ==
                 num_provisioned_slots - slot_span->num_allocated_slots);
@@ -1307,7 +1305,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
       reinterpret_cast<uintptr_t>(slot_span)));
 
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
-  auto* extent = ReadOnlyDirectMapExtent::FromSlotSpanMetadata(slot_span);
+  auto* extent = DirectMapExtent::FromSlotSpanMetadata(slot_span);
   size_t current_reservation_size = extent->reservation_size;
   // Calculate the new reservation size the way PartitionDirectMap() would, but
   // skip the alignment, because this call isn't requesting it.
@@ -1395,7 +1393,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
 
   DecreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
                                     slot_span->bucket->slot_size);
-  slot_span->ToWritable(this)->SetRawSize(raw_size);
+  slot_span->SetRawSize(raw_size);
 #if !PA_CONFIG(ENABLE_SHADOW_METADATA)
   slot_span->bucket->slot_size = new_slot_size;
 #else
@@ -1457,7 +1455,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // PA_BUILDFLAG(DCHECKS_ARE_ON)
     size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
-    slot_span->ToWritable(this)->SetRawSize(new_raw_size);
+    slot_span->SetRawSize(new_raw_size);
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && PA_BUILDFLAG(DCHECKS_ARE_ON)
     if (brp_enabled()) [[likely]] {
       internal::InSlotMetadata* new_ref_count =
@@ -1581,7 +1579,7 @@ void PartitionRoot::ShrinkEmptySlotSpansRing(size_t limit) {
         global_empty_slot_span_ring[index];
     // The ring is not always full, may be nullptr.
     if (slot_span) {
-      slot_span->ToWritable(this)->DecommitIfPossible(this);
+      slot_span->DecommitIfPossible(this);
       // DecommitIfPossible() should set the buffer to null.
       PA_DCHECK(!global_empty_slot_span_ring[index]);
     }
@@ -1674,7 +1672,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
       }
     }
 
-    for (const ReadOnlyDirectMapExtent* extent = direct_map_list;
+    for (const DirectMapExtent* extent = direct_map_list;
          extent && num_direct_mapped_allocations < kMaxReportableDirectMaps;
          extent = extent->next_extent, ++num_direct_mapped_allocations) {
       PA_DCHECK(!extent->next_extent ||
