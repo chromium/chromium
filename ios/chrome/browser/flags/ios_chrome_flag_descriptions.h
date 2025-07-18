@@ -768,6 +768,9 @@ extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 extern const char kNotificationSettingsMenuItemName[];
 extern const char kNotificationSettingsMenuItemDescription[];
 
+extern const char kRcapsDynamicProfileCountryName[];
+extern const char kRcapsDynamicProfileCountryDescription[];
+
 extern const char kReaderModeName[];
 extern const char kReaderModeDescription[];
 

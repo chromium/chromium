@@ -1318,6 +1318,11 @@ const char kNotificationSettingsMenuItemDescription[] =
     "Displays the menu item for the notification controls inside the chrome "
     "settings UI.";
 
+const char kRcapsDynamicProfileCountryName[] = "Dynamic Profile Country";
+const char kRcapsDynamicProfileCountryDescription[] =
+    "When enabled, Chrome updates the country associated with "
+    "the profile on open";
+
 const char kReaderModeName[] = "Enables Reader Mode";
 const char kReaderModeDescription[] =
     "Enables Reader Mode UI and entry points.";

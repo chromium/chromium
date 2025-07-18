@@ -2803,6 +2803,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)},
+    {"rcaps-dynamic-profile-country",
+     flag_descriptions::kRcapsDynamicProfileCountryName,
+     flag_descriptions::kRcapsDynamicProfileCountryDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(switches::kDynamicProfileCountry)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

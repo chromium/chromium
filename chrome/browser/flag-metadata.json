@@ -8181,6 +8181,15 @@
     "expiry_milestone": 140
   },
   {
+    "name": "rcaps-dynamic-profile-country",
+    "owners": [
+      "lamzin@google.com",
+      "dgn@chromium.org",
+      "//components/regional_capabilities/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "read-aloud",
     "owners": [
       "basiaz@google.com",

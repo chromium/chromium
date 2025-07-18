@@ -10445,6 +10445,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kReadAloudTapToSeek)},
 #endif
 
+    {"rcaps-dynamic-profile-country",
+     flag_descriptions::kRcapsDynamicProfileCountryName,
+     flag_descriptions::kRcapsDynamicProfileCountryDescription, kOsAll,
+     FEATURE_VALUE_TYPE(switches::kDynamicProfileCountry)},
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {"third-party-profile-management",
      flag_descriptions::kThirdPartyProfileManagementName,

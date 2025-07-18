@@ -2087,6 +2087,9 @@ extern const char kRendererSideContentDecodingDescription[];
 extern const char kDeviceBoundSessionAccessObserverSharedRemoteName[];
 extern const char kDeviceBoundSessionAccessObserverSharedRemoteDescription[];
 
+extern const char kRcapsDynamicProfileCountryName[];
+extern const char kRcapsDynamicProfileCountryDescription[];
+
 extern const char kRustyPngName[];
 extern const char kRustyPngDescription[];
 
