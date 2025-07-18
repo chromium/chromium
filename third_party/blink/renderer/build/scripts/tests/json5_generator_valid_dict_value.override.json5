@@ -1,0 +1,16 @@
+{
+  data: [
+    {
+      name: "item1",
+      param1: {"keys": "valid", "default": "values"},
+    },
+    {
+      name: "item3",
+      param2: {"key": "single", "default": "value"},
+    },
+    {
+      name: "item4",
+      param1: {"keys": "valid", "random": "values"},
+    },
+  ],
+}

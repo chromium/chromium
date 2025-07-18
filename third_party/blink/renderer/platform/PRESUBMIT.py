@@ -29,7 +29,8 @@ def RuntimeEnabledFeatures(input_api, filename):
         sys.path.remove(json5_path)
 
 
-def _CheckRuntimeEnabledFeaturesSorted(features, output_api):
+def _CheckRuntimeEnabledFeaturesSorted(features, features_filename,
+                                       output_api):
     """Check: runtime_enabled_features.json5 feature list sorted alphabetically.
     """
     names = [feature['name'] for feature in features]
@@ -44,18 +45,17 @@ def _CheckRuntimeEnabledFeaturesSorted(features, output_api):
     differ = difflib.Differ()
     diff = differ.compare(names, names_sorted)
     return [
-        output_api.PresubmitError(
-            'runtime_enabled_features.json5 features must be sorted alphabetically. '
-            'Diff of feature order follows:',
-            long_text='\n'.join(diff))
+        output_api.PresubmitError(features_filename +
+                                  ' features must be sorted alphabetically. '
+                                  'Diff of feature order follows:',
+                                  long_text='\n'.join(diff))
     ]
 
 
-def _CommonChecks(input_api, output_api):
+def _CheckRuntimeEnabledFile(file_name, input_api, output_api):
     """Checks common to both upload and commit."""
-    # Read runtime_enabled_features.json5 using the JSON5 parser.
-    features_filename = os.path.join(input_api.PresubmitLocalPath(),
-                                     'runtime_enabled_features.json5')
+    # Read json5 using the JSON5 parser.
+    features_filename = os.path.join(input_api.PresubmitLocalPath(), file_name)
     try:
         features = RuntimeEnabledFeatures(input_api, features_filename)
     except:
@@ -65,7 +65,22 @@ def _CommonChecks(input_api, output_api):
         ]
 
     results = []
-    results.extend(_CheckRuntimeEnabledFeaturesSorted(features, output_api))
+    results.extend(
+        _CheckRuntimeEnabledFeaturesSorted(features, features_filename,
+                                           output_api))
+
+    return results
+
+
+def _CommonChecks(input_api, output_api):
+    """Checks common to both upload and commit."""
+    results = []
+    results.extend(
+        _CheckRuntimeEnabledFile('runtime_enabled_features.json5', input_api,
+                                 output_api))
+    results.extend(
+        _CheckRuntimeEnabledFile('runtime_enabled_features.override.json5',
+                                 input_api, output_api))
 
     return results
 

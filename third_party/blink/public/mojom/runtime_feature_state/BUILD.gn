@@ -42,6 +42,7 @@ blink_python_runner("generate_runtime_feature") {
         "../../../renderer/build/scripts/make_runtime_features.py",
         "../../../renderer/build/scripts/templates/runtime_feature.mojom.tmpl",
         "../../../renderer/platform/runtime_enabled_features.json5",
+        "../../../renderer/platform/runtime_enabled_features.override.json5",
       ]
   outputs = [ "$root_gen_dir/third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom" ]
 }

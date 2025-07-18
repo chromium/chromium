@@ -45,6 +45,7 @@ blink_python_runner("make_generated_features") {
              "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/features_generated.cc.tmpl",
              "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/platform/runtime_enabled_features.override.json5",
            ]
   outputs = [ "$root_gen_dir/third_party/blink/common/features_generated.cc" ]
 
@@ -69,6 +70,7 @@ blink_python_runner("make_generated_origin_trials") {
              "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/origin_trials.cc.tmpl",
              "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/platform/runtime_enabled_features.override.json5",
            ]
   outputs = [
     "$root_gen_dir/third_party/blink/common/origin_trials/origin_trials.cc",
@@ -92,6 +94,7 @@ blink_python_runner("make_runtime_feature_state_contexts_impl") {
              "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/runtime_feature_state_context.cc.tmpl",
              "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/platform/runtime_enabled_features.override.json5",
            ]
 
   outputs = [ "$root_gen_dir/third_party/blink/common/runtime_feature_state/runtime_feature_state_context.cc" ]
