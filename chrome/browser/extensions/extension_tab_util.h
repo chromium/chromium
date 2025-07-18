@@ -372,13 +372,20 @@ class ExtensionTabUtil {
   // contexts.
   static void ClearBackForwardCache();
 
-#if !BUILDFLAG(IS_ANDROID)
   // Check TabStripModel editability in every browser because a drag session
   // could be running in another browser that reverts to the current browser. Or
   // a drag could be mid-handoff if from one browser to another.
   static bool IsTabStripEditable();
 
+  // Retrieve the corresponding TabListInterface for the specified `browser` if
+  // and only if every browser's tab list is editable. See comments above
+  // IsTabStripEditable() for details.
+  static TabListInterface* GetEditableTabList(BrowserWindowInterface& browser);
+
+#if !BUILDFLAG(IS_ANDROID)
   // Retrieve a TabStripModel only if every browser is editable.
+  // TODO(https://crbug.com/430344931): Remove this in favor of
+  // GetEditableTabList().
   static TabStripModel* GetEditableTabStripModel(Browser* browser);
 
   static bool TabIsInSavedTabGroup(content::WebContents* contents,

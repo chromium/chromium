@@ -1084,19 +1084,19 @@ ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
   if (!browser) {
     return RespondNow(Error(ExtensionTabUtil::kNoCrashBrowserError));
   }
-  TabStripModel* tab_strip =
-      ExtensionTabUtil::GetEditableTabStripModel(browser);
-  if (!tab_strip) {
+  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(*browser);
+  if (!tab_list) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
-  WebContents* contents = tab_strip->GetActiveWebContents();
-  if (!contents) {
+  ::tabs::TabInterface* tab = tab_list->GetActiveTab();
+  if (!tab) {
     return RespondNow(Error(tabs_constants::kNoSelectedTabError));
   }
 
-  return RespondNow(ArgumentList(tabs::Get::Results::Create(
-      CreateTabObjectHelper(contents, extension(), source_context_type(),
-                            browser, tab_strip->active_index()))));
+  return RespondNow(
+      ArgumentList(tabs::Get::Results::Create(CreateTabObjectHelper(
+          tab->GetContents(), extension(), source_context_type(), browser,
+          tab_list->GetActiveIndex()))));
 }
 
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {

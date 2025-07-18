@@ -1482,7 +1482,6 @@ void ExtensionTabUtil::ClearBackForwardCache() {
   }));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // static
 bool ExtensionTabUtil::IsTabStripEditable() {
   // See comments in the header for why we need to check all of them.
@@ -1494,6 +1493,15 @@ bool ExtensionTabUtil::IsTabStripEditable() {
   return true;
 }
 
+TabListInterface* ExtensionTabUtil::GetEditableTabList(
+    BrowserWindowInterface& browser) {
+  if (!IsTabStripEditable()) {
+    return nullptr;
+  }
+  return TabListInterface::From(&browser);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 // static
 TabStripModel* ExtensionTabUtil::GetEditableTabStripModel(Browser* browser) {
   if (!IsTabStripEditable())
