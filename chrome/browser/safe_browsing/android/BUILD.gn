@@ -150,6 +150,7 @@ android_library("javatests") {
     "//chrome/browser/settings:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/permissions/android:core_java",

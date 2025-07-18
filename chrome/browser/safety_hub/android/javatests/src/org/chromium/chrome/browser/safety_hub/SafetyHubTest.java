@@ -93,7 +93,9 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -185,7 +187,8 @@ public final class SafetyHubTest {
                     .build();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
@@ -195,6 +198,7 @@ public final class SafetyHubTest {
     private final FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
             new FakeNotificationPermissionReviewBridge();
 
+    private WebPageStation mPage;
     private Profile mProfile;
 
     private void executeWhileCapturingIntents(Runnable func) {
@@ -223,7 +227,7 @@ public final class SafetyHubTest {
         NotificationPermissionReviewBridgeJni.setInstanceForTesting(
                 mNotificationPermissionReviewBridge);
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
 
         // Reset state to the default of the compromised passwords count and the browsing data

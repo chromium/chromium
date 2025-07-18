@@ -38,7 +38,9 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
 
@@ -58,7 +60,8 @@ public class SafetyHubHatsHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private SafetyHubHatsBridge.Natives mSafetyHubHatsBridgeNatives;
     @Mock private SafetyHubFetchService mSafetyHubFetchService;
@@ -73,6 +76,7 @@ public class SafetyHubHatsHelperTest {
     private TabModelSelector mTabModelSelector;
     private Profile mProfile;
     private ChromeTabbedActivity mActivity;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws ExecutionException {
@@ -101,13 +105,13 @@ public class SafetyHubHatsHelperTest {
                 .when(mSafeBrowsingBridgeNativeMock)
                 .getSafeBrowsingState(mProfile);
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityNativeInitializationComplete();
         mActivityTestRule.waitForActivityCompletelyLoaded();
-        mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
+        mTabModelSelector = mPage.getTabModelSelector();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mProfile = ProfileManager.getLastUsedRegularProfile());
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = mPage.getActivity();
     }
 
     @Test

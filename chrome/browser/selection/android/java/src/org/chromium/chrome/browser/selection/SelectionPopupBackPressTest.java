@@ -27,7 +27,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -43,7 +45,8 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 public class SelectionPopupBackPressTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_PAGE =
             UrlUtils.encodeHtmlDataUri(
@@ -63,8 +66,8 @@ public class SelectionPopupBackPressTest {
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
     public void testBackPressHandlerOnTabSwitched() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        final ChromeTabbedActivity activity = page.getActivity();
         final BackPressHandler selectionPopupHandler =
                 activity.getBackPressManagerForTesting()
                         .getHandlersForTesting()[BackPressHandler.Type.SELECTION_POPUP];
@@ -92,8 +95,8 @@ public class SelectionPopupBackPressTest {
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
     public void testBackPressHandlerOnWebContentChanged() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        final ChromeTabbedActivity activity = page.getActivity();
         final SelectionPopupBackPressHandler selectionPopupHandler =
                 (SelectionPopupBackPressHandler)
                         activity.getBackPressManagerForTesting()
@@ -117,7 +120,7 @@ public class SelectionPopupBackPressTest {
     }
 
     private void testBackPressClearSelectionInternal() throws TimeoutException {
-        mActivityTestRule.startMainActivityWithURL(TEST_PAGE);
+        mActivityTestRule.startOnUrl(TEST_PAGE);
         DOMUtils.longPressNodeByJs(
                 mActivityTestRule.getWebContents(),
                 "document.getElementById('selection_popup_text')");

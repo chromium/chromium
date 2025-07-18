@@ -18,7 +18,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 
@@ -33,8 +34,8 @@ public class AdvancedProtectionMediatorIntegrationTest {
             new AdvancedProtectionTestRule();
 
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String ADVANCED_PROTECTION_UMA =
             "SafeBrowsing.Android.AdvancedProtection.Enabled";
@@ -50,7 +51,7 @@ public class AdvancedProtectionMediatorIntegrationTest {
         sAdvancedProtectionTestRule.setIsAdvancedProtectionRequestedByOs(true);
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(ADVANCED_PROTECTION_UMA, true);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
 
@@ -60,7 +61,7 @@ public class AdvancedProtectionMediatorIntegrationTest {
         sAdvancedProtectionTestRule.setIsAdvancedProtectionRequestedByOs(false);
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(ADVANCED_PROTECTION_UMA, false);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
 }

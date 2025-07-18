@@ -34,6 +34,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/segmentation_platform:factory_java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_transit",
       "//components/segmentation_platform/public:public_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
