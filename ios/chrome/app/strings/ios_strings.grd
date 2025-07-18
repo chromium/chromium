@@ -3191,7 +3191,7 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEEP_RECENT_PASSWORD" desc="Action button which will keep the most recently used password for a given site, and discard any older passwords, when the user is moving a password to their Google Account. [iOS only]">
         Keep recent password
       </message>
-      <message name="IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL" desc="Accessibility label for a recovery password suggestion available in the keyboard accessory. Indicates to the user that the recovery password can be used to log in if the main password doesn't work. [iOS only]">
+      <message name="IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL" desc="Accessibility label for a recovery password suggestion available in the keyboard accessory. Indicates to the user that the recovery password can be used to log in if the main password doesn't work. A recovery password is a temporary backup of an old password that is kept after an automated password change occurred. It acts as a safety net in case the new password doesn't work. [iOS only]">
         Temp recovery in case of trouble
       </message>
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS" desc="Accessibility label for a button that opens Lens [iOS only].">
@@ -3659,7 +3659,7 @@ See your search engine’s instructions for deleting your search history, if app
              =1 {{position} of {count} payment method}
              other {{position} of {count} payment methods}}
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_RECOVERY_PASSWORD_SUGGESTION_TITLE" desc="The title for a recovery password suggestion shown in the password manual fallback screen.">
+      <message name="IDS_IOS_MANUAL_FALLBACK_RECOVERY_PASSWORD_SUGGESTION_TITLE" desc="The title for a recovery password suggestion shown in the password manual fallback screen. A recovery password is a temporary backup of an old password that is kept after an automated password change occurred. It acts as a safety net in case the new password doesn't work.">
         Recovery password
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE" desc="The contents of a dialog asking the user to confirm they trust the current site before selecting a saved password to fill.">
@@ -4293,7 +4293,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_PASSWORD_MANAGER" desc="The password bottom sheet's long press menu item to open the password manager.">
         Password Manager
       </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL" desc="Text shown for a recovery password suggestion available in the Password Bottom Sheet. Indicates to the user that the recovery password can be used to log in if the main password doesn't work. [iOS only]">
+      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL" desc="Text shown for a recovery password suggestion available in the Password Bottom Sheet. Indicates to the user that the recovery password can be used to log in if the main password doesn't work. A recovery password is a temporary backup of an old password that is kept after an automated password change occurred. It acts as a safety net in case the new password doesn't work. [iOS only]">
         Temp recovery in case of trouble
       </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SELECT_PASSWORD" desc="This message is mentioned right after the title when the Password Bottom Sheet opens. For example, in English, it would say: 'Google Password Manager. Select a password to fill.'. This is spoken by VoiceOver. [iOS only]">
