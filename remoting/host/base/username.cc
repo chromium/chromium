@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
+#include <errno.h>
 #include <pwd.h>
 #include <stdlib.h>
 #include <sys/types.h>
