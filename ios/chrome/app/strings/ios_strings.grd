@@ -7240,7 +7240,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         https://support.google.com/chrome/?p=chrome_help&amp;hl=[GRITLANGCODE]&amp;ios=1
       </message>
       <message name="IDS_IOS_TOOLS_MENU_HIDE_READER_MODE" desc="The iOS menu item for closing the Reading Mode UI displayed for the current page. [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
-        Hide Reading Mode
+        Turn off Reading Mode
       </message>
       <message name="IDS_IOS_TOOLS_MENU_HISTORY" desc="The Tools menu item for opening the navigation history menu" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
         History
@@ -7285,7 +7285,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Scan QR Code
       </message>
       <message name="IDS_IOS_TOOLS_MENU_READER_MODE" desc="The iOS menu item for opening the current page in Reading Mode. [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
-        Show Reading Mode
+        Turn on Reading Mode
       </message>
       <message name="IDS_IOS_TOOLS_MENU_READING_LIST" desc="The iOS menu item for opening the reading list [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
         Reading List
