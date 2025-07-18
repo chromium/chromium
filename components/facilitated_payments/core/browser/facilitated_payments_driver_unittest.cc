@@ -16,6 +16,8 @@
 #include "components/facilitated_payments/core/browser/pix_manager.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace payments::facilitated {
 
@@ -32,10 +34,11 @@ class MockPixManager : public PixManager {
                    optimization_guide_decider) {}
   ~MockPixManager() override = default;
 
-  MOCK_METHOD(void,
-              OnPixCodeCopiedToClipboard,
-              (const GURL&, const std::string&, ukm::SourceId),
-              (override));
+  MOCK_METHOD(
+      void,
+      OnPixCodeCopiedToClipboard,
+      (const GURL&, const url::Origin&, const std::string&, ukm::SourceId),
+      (override));
 };
 
 class FacilitatedPaymentsDriverTest : public testing::Test {
@@ -64,12 +67,14 @@ class FacilitatedPaymentsDriverTest : public testing::Test {
 TEST_F(FacilitatedPaymentsDriverTest,
        PixIdentifierExists_OnPixCodeCopiedToClipboardTriggered) {
   GURL url("https://example.com/");
+  url::Origin origin = url::Origin::Create(url);
 
   EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard);
 
   // "0014br.gov.bcb.pix" is the Pix identifier.
   driver_->OnTextCopiedToClipboard(
-      /*render_frame_host_url=*/url, /*copied_text=*/
+      /*render_frame_host_url=*/url,
+      /*render_frame_host_origin=*/origin, /*copied_text=*/
       u"00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       /*ukm_source_id=*/123);
 }
@@ -77,11 +82,13 @@ TEST_F(FacilitatedPaymentsDriverTest,
 TEST_F(FacilitatedPaymentsDriverTest,
        PixIdentifierAbsent_OnPixCodeCopiedToClipboardNotTriggered) {
   GURL url("https://example.com/");
+  url::Origin origin = url::Origin::Create(url);
 
   EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard).Times(0);
 
   driver_->OnTextCopiedToClipboard(
-      /*render_frame_host_url=*/url, /*copied_text=*/u"notAValidPixIdentifier",
+      /*render_frame_host_url=*/url, /*render_frame_host_origin=*/origin,
+      /*copied_text=*/u"notAValidPixIdentifier",
       /*ukm_source_id=*/123);
 }
 

@@ -34,6 +34,7 @@ void FacilitatedPaymentsDriver::DidNavigateToOrAwayFromPage() const {
 
 void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
     const GURL& render_frame_host_url,
+    const url::Origin& render_frame_host_origin,
     const std::u16string& copied_text,
     ukm::SourceId ukm_source_id) {
   if (!PixCodeValidator::ContainsPixIdentifier(
@@ -46,7 +47,8 @@ void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
         facilitated_payments_client_->GetOptimizationGuideDecider());
   }
   pix_manager_->OnPixCodeCopiedToClipboard(
-      render_frame_host_url, base::UTF16ToUTF8(copied_text), ukm_source_id);
+      render_frame_host_url, render_frame_host_origin,
+      base::UTF16ToUTF8(copied_text), ukm_source_id);
 }
 
 void FacilitatedPaymentsDriver::TriggerPaymentLinkPushPayment(

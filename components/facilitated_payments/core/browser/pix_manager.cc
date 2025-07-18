@@ -58,9 +58,11 @@ void PixManager::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void PixManager::OnPixCodeCopiedToClipboard(const GURL& render_frame_host_url,
-                                            const std::string& pix_code,
-                                            ukm::SourceId ukm_source_id) {
+void PixManager::OnPixCodeCopiedToClipboard(
+    const GURL& render_frame_host_url,
+    const url::Origin& render_frame_host_origin,
+    const std::string& pix_code,
+    ukm::SourceId ukm_source_id) {
   if (has_payflow_started_) {
     return;
   }

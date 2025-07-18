@@ -30,6 +30,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace payments::facilitated {
 
 class FacilitatedPaymentsClient;
@@ -53,9 +57,11 @@ class PixManager {
   // `pix_code` before trigger the Pix payments flow. Note: If the Pix payment
   // flow has already been triggered by the other code detection methods like
   // DOM search then this method is a no-op.
-  virtual void OnPixCodeCopiedToClipboard(const GURL& render_frame_host_url,
-                                          const std::string& pix_code,
-                                          ukm::SourceId ukm_source_id);
+  virtual void OnPixCodeCopiedToClipboard(
+      const GURL& render_frame_host_url,
+      const url::Origin& render_frame_host_origin,
+      const std::string& pix_code,
+      ukm::SourceId ukm_source_id);
 
  private:
   friend class PixManagerTest;
