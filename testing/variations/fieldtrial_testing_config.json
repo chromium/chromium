@@ -12917,22 +12917,6 @@
             ]
         }
     ],
-    "IOSReaderMode": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableReaderMode",
-                        "EnableReaderModePageEligibilityForToolsMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSReaderModeMetrics": [
         {
             "platforms": [
