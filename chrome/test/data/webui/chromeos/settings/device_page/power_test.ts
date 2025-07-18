@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsPowerElement} from 'chrome://os-settings/lazy_load.js';
-import type {BatteryStatus, CrButtonElement, CrDialogElement, CrRadioButtonElement, PowerSource, SettingsToggleButtonElement, SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
+import type {BatteryStatus, CrButtonElement, CrDialogElement, CrPolicyIndicatorElement, CrRadioButtonElement, PowerSource, SettingsToggleButtonElement, SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
 import {DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, OptimizedChargingStrategy, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -652,6 +652,12 @@ suite('<settings-power>', () => {
           null;
     }
 
+    function queryOptimizedChargingPolicyIndicator(): CrPolicyIndicatorElement|
+        null {
+      return powerSubpage.shadowRoot!.querySelector<CrPolicyIndicatorElement>(
+          '#optimizedChargingManagedIndicator');
+    }
+
     async function openChangeDialog() {
       const changeButton = queryOptimizedChargingChangeButton();
       assertTrue(!!changeButton, 'Change button should exist');
@@ -1075,6 +1081,58 @@ suite('<settings-power>', () => {
       // Verify the Charge Limit radio button is still selected by default.
       assertTrue(chargeLimitRadio.checked);
       assertFalse(adaptiveChargingRadio.checked);
+    });
+
+    test(
+        'should disable change button and slider toggle when managed.',
+        async () => {
+          loadTimeData.overrideValues({
+            isAdaptiveChargingEnabled: true,
+            isBatteryChargeLimitAvailable: true,
+          });
+          await initSubpage();
+
+          // Set the adaptive charging pref to unmanaged (user-controlled).
+          sendPowerManagementSettings({adaptiveChargingManaged: false});
+          await flushTasks();
+          await waitAfterNextRender(powerSubpage);
+
+          // Assert the Change Button and Slider toggle are enabled.
+          assertFalse(queryOptimizedChargingChangeButton()?.disabled ?? true);
+          assertFalse(queryOptimizedChargingToggle()?.disabled ?? true);
+
+          // Set the adaptive charging pref to managed (policy-controlled).
+          sendPowerManagementSettings({adaptiveChargingManaged: true});
+          await flushTasks();
+          await waitAfterNextRender(powerSubpage);
+
+          // Assert the Change Button and Slider toggle are newly disabled.
+          assertTrue(queryOptimizedChargingChangeButton()?.disabled ?? false);
+          assertTrue(queryOptimizedChargingToggle()?.disabled ?? false);
+        });
+
+    test('should have a policy indicator present when managed.', async () => {
+      loadTimeData.overrideValues({
+        isAdaptiveChargingEnabled: true,
+        isBatteryChargeLimitAvailable: true,
+      });
+      await initSubpage();
+
+      // Set the adaptive charging pref to unmanaged (user-controlled).
+      sendPowerManagementSettings({adaptiveChargingManaged: false});
+      await flushTasks();
+      await waitAfterNextRender(powerSubpage);
+
+      // Assert the policy indicator is invisible.
+      assertFalse(isVisible(queryOptimizedChargingPolicyIndicator()));
+
+      // Set the adaptive charging pref to managed (policy-controlled).
+      sendPowerManagementSettings({adaptiveChargingManaged: true});
+      await flushTasks();
+      await waitAfterNextRender(powerSubpage);
+
+      // Assert the policy indicator is newly visible.
+      assertTrue(isVisible(queryOptimizedChargingPolicyIndicator()));
     });
   });
 });

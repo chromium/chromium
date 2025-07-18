@@ -15,6 +15,7 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import './power_optimized_charging_dialog.js';
 
+import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -54,8 +55,9 @@ export interface SettingsPowerElement {
   };
 }
 
-const SettingsPowerElementBase = DeepLinkingMixin(RouteObserverMixin(
-    PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
+const SettingsPowerElementBase =
+    CrPolicyPrefMixin(DeepLinkingMixin(RouteObserverMixin(
+        PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))));
 
 export class SettingsPowerElement extends SettingsPowerElementBase {
   static readonly OPTIMIZED_CHARGING_STRATEGY_PREF_NAME =
