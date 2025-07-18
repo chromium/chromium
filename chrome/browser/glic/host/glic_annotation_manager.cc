@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,7 +30,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
-#include "components/pdf/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace glic {
@@ -58,25 +59,69 @@ std::string AttachmentResultToString(blink::mojom::AttachmentResult result) {
   return string;
 }
 
+std::variant<content::RenderFrameHost*, mojom::ScrollToErrorReason>
+GetVerifiedAnnotationTargetFrameForPDF(const mojom::ScrollToParams& params,
+                                       content::WebContents* focused_contents) {
 #if BUILDFLAG(ENABLE_PDF)
-content::RenderFrameHost* GetAnnotationTargetFrameForPDF(
-    std::optional<shared_highlighting::TextFragment> text_fragment,
-    content::WebContents* focused_contents) {
   if (!features::kGlicScrollToPDF.Get()) {
-    return nullptr;
+    return mojom::ScrollToErrorReason::kNotSupported;
   }
-  // PDFs don't support node selectors.
-  if (!text_fragment) {
-    return nullptr;
+
+  if (params.selector->is_node_selector()) {
+    return mojom::ScrollToErrorReason::kNotSupported;
   }
+
   auto* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(focused_contents);
   if (!pdf_helper || !pdf_helper->IsDocumentLoadComplete()) {
-    return nullptr;
+    return mojom::ScrollToErrorReason::kNoMatchingDocument;
   }
+
+  // TODO(crbug.com/422728758): Implement url verification for PDFs.
   return &pdf_helper->render_frame_host();
-}
+#else
+  return mojom::ScrollToErrorReason::kNotSupported;
 #endif  // BUILDFLAG(ENABLE_PDF)
+}
+
+std::variant<content::RenderFrameHost*, mojom::ScrollToErrorReason>
+GetVerifiedAnnotationTargetFrame(content::WebContents* focused_contents,
+                                 const mojom::ScrollToParams& params) {
+  content::Page& focused_primary_page = focused_contents->GetPrimaryPage();
+  content::RenderFrameHost* focused_rfh =
+      &focused_primary_page.GetMainDocument();
+
+  // TODO(crbug.com/427455182): Expand the scrollTo support to the embedded
+  // PDFs. Currently only the main-frame PDF can be scrolled and highlighted.
+  if (focused_primary_page.GetContentsMimeType() == pdf::kPDFMimeType) {
+    return GetVerifiedAnnotationTargetFrameForPDF(params, focused_contents);
+  }
+
+  // The caller currently only enforces if the documentId is set when DOMNodeId
+  // selector parameters are set. If this is configured to be true, we will
+  // always check that the documentId is set, and fail otherwise.
+  const bool fail_without_document_id =
+      features::kGlicScrollToEnforceDocumentId.Get();
+  if (fail_without_document_id && !params.document_id) {
+    return mojom::ScrollToErrorReason::kNotSupported;
+  }
+
+  // Verifies that the document_id parameter (if set) refers to the primary
+  // document in the currently focused tab.
+  if (params.document_id) {
+    // We only support scrolling the currently focused tab's main frame.
+    auto* document_identifier_user_data =
+        optimization_guide::DocumentIdentifierUserData::GetForCurrentDocument(
+            focused_rfh);
+    if (!document_identifier_user_data ||
+        document_identifier_user_data->serialized_token() !=
+            params.document_id) {
+      return mojom::ScrollToErrorReason::kNoMatchingDocument;
+    }
+  }
+
+  return focused_rfh;
+}
 }  // namespace
 
 GlicAnnotationManager::GlicAnnotationManager(GlicKeyedService* service)
@@ -174,16 +219,6 @@ void GlicAnnotationManager::ScrollTo(
     return;
   }
 
-  auto focused_tab_data = service_->sharing_manager().GetFocusedTabData();
-  if (!focused_tab_data.focus()) {
-    std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
-    return;
-  }
-  content::WebContents* focused_contents =
-      focused_tab_data.focus()->GetContents();
-  CHECK(focused_contents);
-  content::Page& focused_primary_page = focused_contents->GetPrimaryPage();
-
   // Note: `GlicWindowController::IsShowing()` will be false when
   // `GlicWindowController` is running the close animation.
   if (!service_->window_controller().IsShowing()) {
@@ -191,23 +226,23 @@ void GlicAnnotationManager::ScrollTo(
     return;
   }
 
-  // We only support scrolling the currently focused tab's main frame.
-  content::RenderFrameHost* focused_rfh =
-      &focused_primary_page.GetMainDocument();
-
-#if BUILDFLAG(ENABLE_PDF)
-  // TODO(crbug.com/427455182): Expand the scrollTo support to the embedded
-  // PDFs. Currently only the main-frame PDF can be scrolled and highlighted.
-  if (focused_primary_page.GetContentsMimeType() == pdf::kPDFMimeType) {
-    focused_rfh =
-        GetAnnotationTargetFrameForPDF(text_fragment, focused_contents);
-    if (!focused_rfh) {
-      std::move(wrapped_callback)
-          .Run(mojom::ScrollToErrorReason::kNotSupported);
-      return;
-    }
+  auto focused_tab_data = service_->sharing_manager().GetFocusedTabData();
+  if (!focused_tab_data.focus()) {
+    std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
+    return;
   }
-#endif  // BUILDFLAG(ENABLE_PDF)
+
+  content::WebContents* focused_contents =
+      focused_tab_data.focus()->GetContents();
+  CHECK(focused_contents);
+  std::variant<content::RenderFrameHost*, mojom::ScrollToErrorReason> result =
+      GetVerifiedAnnotationTargetFrame(focused_contents, *params);
+  if (auto* error_reason = std::get_if<mojom::ScrollToErrorReason>(&result)) {
+    std::move(wrapped_callback).Run(*error_reason);
+    return;
+  }
+  content::RenderFrameHost* focused_rfh =
+      std::get<content::RenderFrameHost*>(result);
 
   if (annotation_agent_container_.has_value() &&
       annotation_agent_container_->document.AsRenderFrameHostIfValid() !=
@@ -220,31 +255,6 @@ void GlicAnnotationManager::ScrollTo(
     annotation_agent_container_->document = focused_rfh->GetWeakDocumentPtr();
     focused_rfh->GetRemoteInterfaces()->GetInterface(
         annotation_agent_container_->remote.BindNewPipeAndPassReceiver());
-  }
-
-  // The caller currently only enforces if the documentId is set when DOMNodeId
-  // selector parameters are set. If this is configured to be true, we will
-  // always check that the documentId is set, and fail otherwise.
-  const bool fail_without_document_id =
-      features::kGlicScrollToEnforceDocumentId.Get();
-  if (fail_without_document_id && !params->document_id) {
-    std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNotSupported);
-    return;
-  }
-
-  // Verifies that the document_id parameter (if set) refers to the primary
-  // document in the currently focused tab.
-  if (params->document_id) {
-    auto* document_identifier_user_data =
-        optimization_guide::DocumentIdentifierUserData::GetForCurrentDocument(
-            focused_rfh);
-    if (!document_identifier_user_data ||
-        document_identifier_user_data->serialized_token() !=
-            params->document_id) {
-      std::move(wrapped_callback)
-          .Run(mojom::ScrollToErrorReason::kNoMatchingDocument);
-      return;
-    }
   }
 
   blink::mojom::SelectorPtr blink_mojom_selector;
