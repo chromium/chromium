@@ -14,12 +14,21 @@ complete a task. Everything is intended to work with gemini-cli.
 - `templates/`: This directory contains reusable snippets of prompts or
   instructions that can be included in other prompts.
 
-## Using Prompts
+## Creating the System Instruction Prompt
 
-`common.GEMINI.md` can be copied to `chromium/src/GEMINI.md` and modified with
-references to prompt templates to add functionality.
+Create a local, untracked file `chromium/src/GEMINI.md`. Include the relevant
+prompts using @, for example, a typical desktop developer will use:
 
-For example, if you plan to use ctags to find symbols in the codebase, you can
-append `@agents/prompts/templates/ctags.md` to the end of your `GEMINI.md` file
-to include ctags instructions. You can confirm the file was imported by using
-the `/memory show` command in gemini-cli.
+```src/GEMINI.md`
+@agents/prompts/common.GEMINI.md
+@agents/prompts/templates/desktop.md
+```
+
+You can confirm that prompts were successfully imported by running the `/memory
+show` command in gemini-cli.
+
+## Known problems
+
+All imports must be scoped to the current prompt file. a/prompt.md can import
+a/prompt2.md or a/b/prompt3.md, but cannot import c/prompt4.md. See
+https://github.com/google-gemini/gemini-cli/issues/4098.

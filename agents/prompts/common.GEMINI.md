@@ -28,6 +28,8 @@
     '/stdout:/,$p;/stderr:/,$p' out/{USERS_OUT_DIR}/siso_output`. While
     `{REQUESTED_TARGET}` may be given with preceding `//`, always remove the
     preceding `//`. Eg. if `//base:base_java` was given, use `base:base_java`.
+  * When using the ReadFile tool, always set the 'limit' parameter to 20000 to
+    prevent truncation for long files.
 
 @../../internal/agents/prompts/general_workflow.md
 
@@ -104,8 +106,8 @@ the user about the reason to skip.
       * **ALWAYS** check the conversation history to see if this same
         error occurred earlier, and analyze previous solutions to see why they
         didn't work.
-      * **NEVER** make speculative fixes. You should be confidant before
-        applying any fix that it will work. If you are not confidant, read more
+      * **NEVER** make speculative fixes. You should be confident before
+        applying any fix that it will work. If you are not confident, read more
         files.
 6.  **Test:** **ALWAYS** run relevant tests (e.g., `tools/autotest.py --quiet --run-all -C
     out/{USERS_OUT_DIR} {RELEVANT_TEST_FILES}`) after a successful build. If you
