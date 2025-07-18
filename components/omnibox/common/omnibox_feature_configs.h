@@ -230,6 +230,9 @@ struct Toolbelt : Config<Toolbelt> {
   DECLARE_FEATURE(kOmniboxToolbelt);
 
   Toolbelt();
+  Toolbelt(const Toolbelt&);
+  Toolbelt& operator=(const Toolbelt&);
+  ~Toolbelt();
 
   // Whether the toolbelt is to be included in the omnibox.
   bool enabled;

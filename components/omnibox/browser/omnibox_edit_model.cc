@@ -2012,11 +2012,16 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
           ask_keyword ? IDS_ACC_ASK_KEYWORD_MODE : IDS_ACC_KEYWORD_MODE;
       return l10n_util::GetStringFUTF16(message_id, replacement_string);
     }
-    case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
+    case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION: {
       // When pedal button is focused, the autocomplete suggestion isn't
       // read because it's not relevant to the button's action.
-      DCHECK(match.GetActionAt(0u));
-      return match.GetActionAt(0u)->GetLabelStrings().accessibility_hint;
+      // When dealing with toolbelt actions, we need to ensure that the proper
+      // action a11y label is announced based on the action index.
+      DCHECK(match.GetActionAt(popup_selection_.action_index));
+      return match.GetActionAt(popup_selection_.action_index)
+          ->GetLabelStrings()
+          .accessibility_hint;
+    }
     case OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP:
       additional_message_id = IDS_ACC_THUMBS_UP_SUGGESTION_FOCUSED_PREFIX;
       break;

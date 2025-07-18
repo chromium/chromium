@@ -88,7 +88,7 @@ struct OmniboxPopupSelection {
   // When `state` is `FOCUSED_BUTTON_ACTION`, this indicates which action
   // is selected by index into `AutocompleteMatch::actions`. Other states
   // keep an unused zero index.
-  size_t action_index;
+  size_t action_index = 0u;
 
   explicit OmniboxPopupSelection(size_t line,
                                  LineState state = NORMAL,

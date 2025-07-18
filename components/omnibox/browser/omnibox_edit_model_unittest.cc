@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/prefs/testing_pref_service.h"
@@ -871,6 +872,11 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
 // Actions are not part of the selection stepping in Android and iOS at all.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::Toolbelt>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+
   ACMatches matches;
   for (size_t i = 0; i < 4; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
@@ -879,6 +885,18 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
+
+  // The toolbelt match has three normal actions.
+  AutocompleteMatch toolbelt_match(nullptr, 1000, false,
+                                   AutocompleteMatchType::NULL_RESULT_MESSAGE);
+  toolbelt_match.actions.push_back(base::MakeRefCounted<OmniboxAction>(
+      OmniboxAction::LabelStrings(u"", u"", u"", u"foo"), GURL()));
+  toolbelt_match.actions.push_back(base::MakeRefCounted<OmniboxAction>(
+      OmniboxAction::LabelStrings(u"", u"", u"", u"bar"), GURL()));
+  toolbelt_match.actions.push_back(base::MakeRefCounted<OmniboxAction>(
+      OmniboxAction::LabelStrings(u"", u"", u"", u"spam"), GURL()));
+  matches.push_back(toolbelt_match);
+
   // The second match has a normal action.
   matches[1].actions.push_back(base::MakeRefCounted<OmniboxAction>(
       OmniboxAction::LabelStrings(), GURL()));
@@ -909,19 +927,37 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
     EXPECT_EQ(n, model()->GetPopupSelection().line);
   }
 
+  std::vector<std::u16string> expected_labels = {u"foo", u"bar", u"spam"};
+  auto test_a11y_label = [&](size_t action_index, std::u16string a11y_label) {
+    DCHECK(action_index < expected_labels.size());
+    EXPECT_EQ(expected_labels[action_index], a11y_label);
+  };
+
   // Step by states forward.
   for (auto selection : {
            Selection(1, Selection::NORMAL),
            Selection(1, Selection::FOCUSED_BUTTON_ACTION),
            Selection(2, Selection::NORMAL),
            Selection(3, Selection::NORMAL),
+           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/0),
+           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/1),
+           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/2),
            Selection(0, Selection::NORMAL),
        }) {
     model()->OnTabPressed(false);
-    EXPECT_EQ(selection, model()->GetPopupSelection());
+    auto popup_selection = model()->GetPopupSelection();
+    EXPECT_EQ(selection, popup_selection);
+    if (matches[popup_selection.line].IsToolbelt()) {
+      test_a11y_label(popup_selection.action_index,
+                      model()->GetPopupAccessibilityLabelForCurrentSelection(
+                          u"", false, nullptr));
+    }
   }
   // Step by states backward.
   for (auto selection : {
+           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/2),
+           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/1),
+           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/0),
            Selection(3, Selection::NORMAL),
            Selection(2, Selection::NORMAL),
            Selection(1, Selection::FOCUSED_BUTTON_ACTION),
@@ -929,7 +965,13 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
            Selection(0, Selection::NORMAL),
        }) {
     model()->OnTabPressed(true);
-    EXPECT_EQ(selection, model()->GetPopupSelection());
+    auto popup_selection = model()->GetPopupSelection();
+    EXPECT_EQ(selection, popup_selection);
+    if (matches[popup_selection.line].IsToolbelt()) {
+      test_a11y_label(popup_selection.action_index,
+                      model()->GetPopupAccessibilityLabelForCurrentSelection(
+                          u"", false, nullptr));
+    }
   }
 
   // Try the `kAllLines` step behavior.

@@ -260,6 +260,10 @@ Toolbelt::Toolbelt() {
           .Get();
 }
 
+Toolbelt::Toolbelt(const Toolbelt&) = default;
+Toolbelt& Toolbelt::operator=(const Toolbelt&) = default;
+Toolbelt::~Toolbelt() = default;
+
 DocumentProvider::DocumentProvider() {
   enabled = base::FeatureList::IsEnabled(omnibox::kDocumentProvider);
   min_query_length =
