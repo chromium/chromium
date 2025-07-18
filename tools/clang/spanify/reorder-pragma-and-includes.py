@@ -47,6 +47,8 @@ class ReorderTarget:
             self.insertion_point = max(pragma_end, guard_line)
         except TypeError:
             self.insertion_point = pragma_end or guard_line
+        if self.insertion_point is None:
+            return
         self.lines_to_reorder = {
             k: v
             for (k, v) in self.lines_to_reorder.items()
