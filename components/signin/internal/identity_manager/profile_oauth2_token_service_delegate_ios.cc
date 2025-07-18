@@ -210,7 +210,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentialsInternal(
     UpdateAuthError(primary_account_id,
                     GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
                         GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                            CREDENTIALS_MISSING));
+                            CREDENTIALS_MISSING),
+                    /*fire_auth_error_changed=*/false);
     FireRefreshTokenAvailable(primary_account_id);
     set_load_credentials_state(
         signin::LoadCredentialsState::
@@ -435,7 +436,6 @@ void ProfileOAuth2TokenServiceIOSDelegate::AddOrUpdateAccount(
   accounts_.insert(account_id);
   UpdateAuthError(account_id, error,
                   /*fire_auth_error_changed=*/false);
-  FireAuthErrorChanged(account_id, error);
   FireRefreshTokenAvailable(account_id);
 }
 

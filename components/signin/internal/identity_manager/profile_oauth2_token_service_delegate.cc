@@ -179,6 +179,9 @@ void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenAvailable(
   ScopedBatchChange batch(this);
   for (auto& observer : observer_list_) {
     observer.OnRefreshTokenAvailable(account_id);
+    // Always call `OnAuthErrorChanged()` when refresh token is updated.
+    observer.OnAuthErrorChanged(account_id, token_error,
+                                update_refresh_token_source_);
   }
 }
 

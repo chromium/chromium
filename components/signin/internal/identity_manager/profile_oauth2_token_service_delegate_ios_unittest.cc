@@ -380,14 +380,14 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest,
   {
     testing::InSequence in_sequence;
     base::RunLoop run_loop;
-    // `OnAuthErrorChanged()` is called *before* `OnRefreshTokenAvailable()`
+    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    // `OnAuthErrorChanged()` is called after `OnRefreshTokenAvailable()`
     // after adding a new account on iOS.
     EXPECT_CALL(
         observer,
         OnAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone(),
                            testing::_));
-    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id))
-        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     EXPECT_CALL(observer, OnEndBatchChanges());
     oauth2_delegate_->ReloadAllAccountsFromSystemWithPrimaryAccount(
         std::nullopt);

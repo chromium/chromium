@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -244,10 +245,18 @@ void ProfilePickerDiceReauthProvider::OnRefreshTokenUpdatedForAccount(
   // want the user to proceed with success. Since at this point this would be a
   // new sign in, the account should be signed out.
   if (!success) {
-    identity_manager_->GetAccountsMutator()->RemoveAccount(
-        account_info.account_id,
-        signin_metrics::SourceForRefreshTokenOperation::
-            kForceSigninReauthWithDifferentAccount);
+    // Removing account asynchronously to avoid modifying accounts within an
+    // observer method.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<signin::IdentityManager> identity_manager,
+               const CoreAccountId& account_id) {
+              identity_manager->GetAccountsMutator()->RemoveAccount(
+                  account_id, signin_metrics::SourceForRefreshTokenOperation::
+                                  kForceSigninReauthWithDifferentAccount);
+            },
+            identity_manager_->GetWeakPtr(), account_info.account_id));
   }
 
   Finish(success, success ? ProfilePickerReauthResult::kSuccess

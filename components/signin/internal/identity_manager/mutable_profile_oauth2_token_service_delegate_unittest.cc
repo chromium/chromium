@@ -1236,13 +1236,13 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   {
     testing::InSequence sequence;
-    // `OnAuthErrorChanged()` is called *before* `OnRefreshTokenAvailable()`
+    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
+    // `OnAuthErrorChanged()` is called after `OnRefreshTokenAvailable()`
     // after adding a new account on Desktop.
     EXPECT_CALL(
         observer,
         OnAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone(),
                            testing::_));
-    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
     EXPECT_CALL(observer, OnEndBatchChanges());
     oauth2_service_delegate_->UpdateCredentials(account_id, "first_token");
     testing::Mock::VerifyAndClearExpectations(&observer);
@@ -1250,12 +1250,12 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   {
     testing::InSequence sequence;
+    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
     // `OnAuthErrorChanged()` is also called when a token is updated.
     EXPECT_CALL(
         observer,
         OnAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone(),
                            testing::_));
-    EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
     EXPECT_CALL(observer, OnEndBatchChanges());
 
     oauth2_service_delegate_->UpdateCredentials(account_id, "second_token");
@@ -1294,16 +1294,17 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetAuthError) {
             oauth2_service_delegate_->GetAuthError(account_id_2));
 }
 
-// Checks that OnAuthErrorChanged() is called before OnRefreshTokenAvailable,
-// and that the error state is correctly available from within both calls.
+// Checks that the error state is correctly available from within both
+// `OnAuthErrorChanged()` and `OnRefreshTokenAvailable()` observer events.
 // Regression test for https://crbug.com/824791.
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
-       InvalidTokenObserverCallsOrdering) {
+       TokenUpdateDoesntExposeIntermediateState) {
   class TokenServiceErrorObserver : public ProfileOAuth2TokenServiceObserver {
    public:
     explicit TokenServiceErrorObserver(
-        MutableProfileOAuth2TokenServiceDelegate* delegate)
-        : delegate_(delegate) {}
+        MutableProfileOAuth2TokenServiceDelegate* delegate) {
+      scoped_observation_.Observe(delegate);
+    }
 
     TokenServiceErrorObserver(const TokenServiceErrorObserver&) = delete;
     TokenServiceErrorObserver& operator=(const TokenServiceErrorObserver&) =
@@ -1314,9 +1315,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
         const GoogleServiceAuthError& auth_error,
         signin_metrics::SourceForRefreshTokenOperation source) override {
       error_changed_ = true;
-      EXPECT_FALSE(token_available_)
-          << "OnAuthErrorChanged() should be called first";
-      EXPECT_EQ(auth_error, delegate_->GetAuthError(account_id));
+      EXPECT_EQ(auth_error,
+                scoped_observation_.GetSource()->GetAuthError(account_id));
       CheckTokenState(account_id);
       EXPECT_EQ(signin_metrics::SourceForRefreshTokenOperation::
                     kDiceResponseHandler_Signout,
@@ -1325,21 +1325,22 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
     void OnRefreshTokenAvailable(const CoreAccountId& account_id) override {
       token_available_ = true;
-      EXPECT_TRUE(error_changed_)
-          << "OnAuthErrorChanged() should be called first";
       CheckTokenState(account_id);
     }
 
     void CheckTokenState(const CoreAccountId& account_id) {
       EXPECT_EQ("account_id", account_id.ToString());
-      EXPECT_TRUE(delegate_->RefreshTokenIsAvailable(account_id));
+      EXPECT_TRUE(
+          scoped_observation_.GetSource()->RefreshTokenIsAvailable(account_id));
       EXPECT_EQ(GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
                     GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                         CREDENTIALS_REJECTED_BY_CLIENT),
-                delegate_->GetAuthError(account_id));
+                scoped_observation_.GetSource()->GetAuthError(account_id));
     }
 
-    raw_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate_;
+    base::ScopedObservation<MutableProfileOAuth2TokenServiceDelegate,
+                            ProfileOAuth2TokenServiceObserver>
+        scoped_observation_{this};
     bool error_changed_ = false;
     bool token_available_ = false;
   };
@@ -1347,7 +1348,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
   TokenServiceErrorObserver token_service_observer(
       oauth2_service_delegate_.get());
-  oauth2_service_delegate_->AddObserver(&token_service_observer);
   oauth2_service_delegate_->UpdateCredentials(
       CoreAccountId::FromGaiaId(GaiaId("account_id")),
       GaiaConstants::kInvalidRefreshToken,
@@ -1355,7 +1355,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
           kDiceResponseHandler_Signout);
   EXPECT_TRUE(token_service_observer.token_available_);
   EXPECT_TRUE(token_service_observer.error_changed_);
-  oauth2_service_delegate_->RemoveObserver(&token_service_observer);
 }
 
 // Checks that set_revoke_all_tokens_on_first_load() revokes the tokens,

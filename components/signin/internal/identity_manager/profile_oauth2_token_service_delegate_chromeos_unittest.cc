@@ -406,10 +406,10 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
     base::RunLoop upsert_run_loop;
     EXPECT_CALL(observer, OnRefreshTokenAvailable)
         .WillOnce(base::test::RunClosure(upsert_run_loop.QuitClosure()));
-    EXPECT_CALL(observer, OnEndBatchChanges);
-    // `OnAuthErrorChanged()` is called *after* `OnRefreshTokenAvailable()`
-    // *and* `OnEndBatchChanges()` after adding a new account on ChromeOS.
+    // `OnAuthErrorChanged()` is called after `OnRefreshTokenAvailable()`
+    // after adding a new account on ChromeOS.
     EXPECT_CALL(observer, OnAuthErrorChanged);
+    EXPECT_CALL(observer, OnEndBatchChanges);
     account_manager_.UpsertAccount(gaia_account_key(), kUserEmail, kGaiaToken);
     upsert_run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&observer);
@@ -420,10 +420,10 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
     base::RunLoop update_run_loop;
     EXPECT_CALL(observer, OnRefreshTokenAvailable)
         .WillOnce(base::test::RunClosure(update_run_loop.QuitClosure()));
-    EXPECT_CALL(observer, OnEndBatchChanges);
     // `OnAuthErrorChanged()` is also called when a token is updated without
     // changing its error state.
     EXPECT_CALL(observer, OnAuthErrorChanged);
+    EXPECT_CALL(observer, OnEndBatchChanges);
     account_manager_.UpdateToken(gaia_account_key(), "new-gaia-token");
     update_run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&observer);

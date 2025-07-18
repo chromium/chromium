@@ -175,10 +175,8 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
                       CREDENTIALS_REJECTED_BY_CLIENT)
             : GoogleServiceAuthError(GoogleServiceAuthError::NONE);
 
-    // The main difference with this call compared to the production call is
-    // that it is also called for newly added accounts.
     UpdateAuthError(account_id, error,
-                    /*fire_auth_error_changed=*/true);
+                    /*fire_auth_error_changed=*/false);
 
     FireRefreshTokenAvailable(account_id);
   }

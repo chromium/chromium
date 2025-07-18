@@ -543,11 +543,6 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
             GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                 CREDENTIALS_MISSING));
-    // Always call `OnAuthErrorChanged()` when refresh token is updated.
-    // TODO(https://crbug.com/366067964): change the notification order to match
-    // the documentation.
-    FireAuthErrorChanged(loading_primary_account_id_,
-                         GetAuthError(loading_primary_account_id_));
     FireRefreshTokenAvailable(loading_primary_account_id_);
   }
 
@@ -635,10 +630,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       RecordAccountAvailabilityStartup(account_id, refresh_token);
 
       UpdateCredentialsInMemory(account_id, refresh_token, wrapped_binding_key);
-      // Always call `OnAuthErrorChanged()` when refresh token is updated.
-      // TODO(https://crbug.com/366067964): change the notification order to
-      // match the documentation.
-      FireAuthErrorChanged(account_id, GetAuthError(account_id));
       FireRefreshTokenAvailable(account_id);
     } else {
       RevokeCredentialsOnServer(refresh_token);
@@ -666,10 +657,6 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(
   if (GetRefreshToken(account_id) != refresh_token) {
     UpdateCredentialsInMemory(account_id, refresh_token, wrapped_binding_key);
     PersistCredentials(account_id, refresh_token, wrapped_binding_key);
-    // Always call `OnAuthErrorChanged()` when refresh token is updated.
-    // TODO(https://crbug.com/366067964): change the notification order to match
-    // the documentation.
-    FireAuthErrorChanged(account_id, GetAuthError(account_id));
     FireRefreshTokenAvailable(account_id);
   }
 }

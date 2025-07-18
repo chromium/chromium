@@ -151,6 +151,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       {account1_}, account1_.account_id);
@@ -184,9 +188,17 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account2_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
 
   delegate_->SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       {account1_, account2_}, account2_.account_id);
@@ -243,6 +255,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
 
   delegate_->UpdateAccountList(account1_.account_id, {},
                                {account1_.account_id});
@@ -261,6 +277,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
 
   delegate_->UpdateAccountList(account1_.account_id, {account1_.account_id},
                                {account1_.account_id});
@@ -280,6 +300,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
   EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
@@ -349,9 +373,17 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account2_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
 
   delegate_->UpdateAccountList(account2_.account_id, {},
                                {account1_.account_id, account2_.account_id});
@@ -371,9 +403,17 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account2_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
   delegate_->UpdateAccountList(account1_.account_id, {account2_.account_id},
                                {account1_.account_id, account2_.account_id});
   EXPECT_THAT(
@@ -392,6 +432,10 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
+  EXPECT_CALL(*observer_,
+              OnAuthErrorChanged(account1_.account_id,
+                                 GoogleServiceAuthError::AuthErrorNone(), _))
+      .InSequence(seq);
   EXPECT_CALL(*observer_, OnRefreshTokenRevoked(account2_.account_id))
       .InSequence(seq)
       .WillOnce(Return());
@@ -411,10 +455,12 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   {
     InSequence in_sequence;
-    // `OnAuthErrorChanged()` is not called after adding a new account on
-    // Android.
-    EXPECT_CALL(*observer_, OnAuthErrorChanged).Times(0);
     EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id));
+    // `OnAuthErrorChanged()` is called after `OnRefreshTokenAvailable()`
+    // after adding a new account on Android.
+    EXPECT_CALL(*observer_,
+                OnAuthErrorChanged(account1_.account_id,
+                                   GoogleServiceAuthError::AuthErrorNone(), _));
     EXPECT_CALL(*observer_, OnEndBatchChanges());
     delegate_->UpdateAccountList(account1_.account_id, {},
                                  {account1_.account_id});
@@ -423,10 +469,12 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   {
     InSequence in_sequence;
-    // `OnAuthErrorChanged()` is not called when a token is updated without
-    // changing its error state.
-    EXPECT_CALL(*observer_, OnAuthErrorChanged).Times(0);
     EXPECT_CALL(*observer_, OnRefreshTokenAvailable(account1_.account_id));
+    // `OnAuthErrorChanged()` is also called when a token is updated without
+    // changing its error state.
+    EXPECT_CALL(*observer_,
+                OnAuthErrorChanged(account1_.account_id,
+                                   GoogleServiceAuthError::AuthErrorNone(), _));
     EXPECT_CALL(*observer_, OnEndBatchChanges());
     delegate_->UpdateAccountList(account1_.account_id, {account1_.account_id},
                                  {account1_.account_id});

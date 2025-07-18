@@ -428,11 +428,15 @@ TEST_F(ProfileOAuth2TokenServiceTest, NotificationOrderOnRefreshTokenAdded) {
         oauth2_service_.get());
   }
 
-  // `OnAuthErrorChanged()` is not called after adding a new account in tests.
   testing::InSequence sequence;
-  // First, all observers will receive `OnRefreshTokenAvailable()` notification.
+  // First, all observers will receive `OnRefreshTokenAvailable()` and
+  // `OnAuthErrorChanged()` notifications.
   for (auto& observer : observers) {
     EXPECT_CALL(*observer, OnRefreshTokenAvailable(account_id_));
+    EXPECT_CALL(*observer,
+                OnAuthErrorChanged(
+                    account_id_, GoogleServiceAuthError::AuthErrorNone(),
+                    signin_metrics::SourceForRefreshTokenOperation::kUnknown));
   }
   // Then, `OnEndBatchChanges()` is called.
   for (auto& observer : observers) {
@@ -766,13 +770,6 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
       std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>();
   ProfileOAuth2TokenService token_service(&prefs_, std::move(delegate));
   signin::MockProfileOAuth2TokenServiceObserver observer(&token_service);
-  EXPECT_CALL(observer,
-              OnAuthErrorChanged(
-                  account_id_,
-                  GoogleServiceAuthError(
-                      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
-                  signin_metrics::SourceForRefreshTokenOperation::kUnknown))
-      .Times(1);
 
   token_service.GetDelegate()->UpdateCredentials(
       account_id_, "refreshToken",
@@ -784,6 +781,14 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
       account_id_2, "refreshToken2",
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
+
+  EXPECT_CALL(observer,
+              OnAuthErrorChanged(
+                  account_id_,
+                  GoogleServiceAuthError(
+                      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
+                  signin_metrics::SourceForRefreshTokenOperation::kUnknown))
+      .Times(1);
   token_service.InvalidateTokenForMultilogin(account_id_, "refreshToken");
   // Check that refresh tokens for failed accounts are set in error.
   EXPECT_EQ(token_service.GetDelegate()->GetAuthError(account_id_).state(),
@@ -794,13 +799,6 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
 
 TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
   signin::MockProfileOAuth2TokenServiceObserver observer(oauth2_service_.get());
-  EXPECT_CALL(
-      observer,
-      OnAuthErrorChanged(account_id_,
-                         GoogleServiceAuthError(
-                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
-                         testing::_))
-      .Times(0);
 
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
                                                     "refreshToken");
@@ -808,7 +806,14 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
       CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_2,
                                                     "refreshToken2");
-  ;
+
+  EXPECT_CALL(
+      observer,
+      OnAuthErrorChanged(account_id_,
+                         GoogleServiceAuthError(
+                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
+                         testing::_))
+      .Times(0);
   oauth2_service_->InvalidateTokenForMultilogin(account_id_, "refreshToken");
   // Check that refresh tokens are not affected.
   EXPECT_EQ(oauth2_service_->GetDelegate()->GetAuthError(account_id_).state(),
