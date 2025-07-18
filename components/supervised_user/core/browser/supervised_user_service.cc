@@ -229,13 +229,6 @@ SupervisedUserService::SupervisedUserService(
   search_content_filters_observer_->Init();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  main_pref_change_registrar_.Init(&user_prefs_.get());
-  main_pref_change_registrar_.Add(
-      policy::policy_prefs::kIncognitoModeAvailability,
-      base::BindRepeating(
-          &SupervisedUserService::OnIncognitoModeAvailabilityChanged,
-          base::Unretained(this)));
-
   // Bumps this instance to read the current state of parental controls.
   controls_state_.Notify();
 }
@@ -272,7 +265,10 @@ void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
   // Remove the handlers of the disabled parental controls mode.
   RemoveURLFilterPrefChangeHandlers();
 
+  // Also disables incognito mode.
   SetSettingsServiceActive(true);
+  platform_delegate_->CloseIncognitoTabs();
+
   remote_web_approvals_manager_.AddApprovalRequestCreator(
       std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
                                                      url_loader_factory_));
@@ -352,24 +348,6 @@ void SupervisedUserService::OnCustodianInfoChanged() {
   observer_list_.Notify(&SupervisedUserServiceObserver::OnCustodianInfoChanged);
 }
 
-void SupervisedUserService::OnIncognitoModeAvailabilityChanged() {
-  // This is called in the following cases:
-  // 1) When kSupervisedUserId changes state and indicates child account, the
-  //    `setings_service_`::SetActive(true) call notifies all subscribers that
-  //    settings have changed. SupervisedUserPrefStore is one of these
-  //    subscribers, and it unconditionally disables the incognito mode.
-  // 2) When user supervision is enabled - then this service sets the pref
-  //    directly.
-  // 3) When incognito mode is explicitly disabled, regardless kSupervisedUserId
-  //    status.
-  // 4) Backing policy pref is updated independently from supervised user
-  //    features. Closing incognito tabs in this situation seems the right thing
-  //    to do and closing incognito tabs is idempotent.
-  if (platform_delegate_->ShouldCloseIncognitoTabs()) {
-    platform_delegate_->CloseIncognitoTabs();
-  }
-}
-
 void SupervisedUserService::OnURLFilterChanged(const std::string& pref_name) {
   CHECK(IsSubjectToParentalControls(user_prefs_.get()))
       << "Url filter setting `" << pref_name
@@ -437,6 +415,8 @@ void SupervisedUserService::EnableSearchContentFilters() {
 
   ::supervised_user::EnableSearchContentFilters(user_prefs_.get());
   ::supervised_user::DisableIncognitoMode(user_prefs_.get());
+  platform_delegate_->CloseIncognitoTabs();
+
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
@@ -463,6 +443,8 @@ void SupervisedUserService::EnableBrowserContentFilters() {
 
   ::supervised_user::EnableBrowserContentFilters(user_prefs_.get());
   ::supervised_user::DisableIncognitoMode(user_prefs_.get());
+  platform_delegate_->CloseIncognitoTabs();
+
   observer_list_.Notify(
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
 }

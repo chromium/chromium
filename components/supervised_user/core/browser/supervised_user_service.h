@@ -193,8 +193,6 @@ class SupervisedUserService : public KeyedService {
   // Common handler when supervision is disabled. Intentionally idempotent.
   void OnParentalControlsDisabled();
 
-  void OnIncognitoModeAvailabilityChanged();
-
   // Single handler for all url filter changes.
   // If present, `pref_name` indicates the actual pref that changed and might
   // dispatch additional work to the URL filter (eg. to update its internal data
@@ -242,8 +240,6 @@ class SupervisedUserService : public KeyedService {
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 
-  // Registrar for core prefs that drive this service.
-  PrefChangeRegistrar main_pref_change_registrar_;
   // Registrar for preferences that drive URL filtering. All prefs except for
   // the safe sites mode are observed only when the profile is subject to
   // parental controls. The safe sites pref is observed at all times, with
