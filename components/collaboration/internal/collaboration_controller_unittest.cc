@@ -385,7 +385,7 @@ TEST_F(CollaborationControllerTest, JoinFlowSignedOutManagedAccountAsync) {
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 }
 
-TEST_F(CollaborationControllerTest, JoinFlowManagedAccount) {
+TEST_F(CollaborationControllerTest, JoinFlowManagedAccountSharingDisabled) {
   // Start Join flow.
   InitializeJoinController(base::DoNothing());
 
@@ -424,6 +424,38 @@ TEST_F(CollaborationControllerTest, JoinFlowManagedAccount) {
 
   std::move(authentication_ui_calback).Run(Outcome::kSuccess);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
+}
+
+TEST_F(CollaborationControllerTest, ManageFlowManagedAccountSharingDisabled) {
+  // Start manage flow with a local shared tab group.
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  tab_groups::EitherGroupID either_id = local_id;
+  SavedTabGroup tab_group(std::u16string(u"title"),
+                          tab_groups::TabGroupColorId::kGrey, {});
+  tab_group.SetLocalGroupId(local_id);
+  tab_group.SetCollaborationId(tab_groups::CollaborationId(kGroupId.value()));
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
+      .WillRepeatedly(Return(tab_group));
+
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, local_id));
+
+  // 1. Pending state.
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
+
+  // Simulate managed device sharing disabled.
+  ServiceStatus status;
+  status.signin_status = SigninStatus::kSignedIn;
+  status.sync_status = SyncStatus::kSyncEnabled;
+  status.collaboration_status = CollaborationStatus::kDisabledForPolicy;
+  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
+      .WillRepeatedly(Return(status));
+
+  // The share flow is allowed to proceed to share screen.
+  // 2. Pending -> Showing share screen state.
+  std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kShowingManageScreen);
 }
 
 TEST_F(CollaborationControllerTest, UrlHandlingError) {

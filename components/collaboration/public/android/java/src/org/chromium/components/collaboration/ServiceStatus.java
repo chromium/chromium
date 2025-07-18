@@ -43,8 +43,8 @@ public class ServiceStatus {
         switch (collaborationStatus) {
             case CollaborationStatus.DISABLED:
             case CollaborationStatus.DISABLED_PENDING:
-            case CollaborationStatus.DISABLED_FOR_POLICY:
                 return false;
+            case CollaborationStatus.DISABLED_FOR_POLICY:
             case CollaborationStatus.ALLOWED_TO_JOIN:
             case CollaborationStatus.ENABLED_JOIN_ONLY:
             case CollaborationStatus.ENABLED_CREATE_AND_JOIN:

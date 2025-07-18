@@ -202,9 +202,6 @@ class CollaborationController
       const CollaborationService::Observer::ServiceStatusUpdate& update)
       override;
 
-  // Called when enterprise policy disabled the feature.
-  void TransitionForEnterprisePolicy(ServiceStatus status);
-
  private:
   static constexpr std::array<std::pair<StateId, StateId>, 41>
       kValidTransitions = {{
