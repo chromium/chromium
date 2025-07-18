@@ -205,6 +205,17 @@ void SetAdaptiveChargingPreference(bool enabled) {
   prefs->SetBoolean(prefs::kPowerAdaptiveChargingEnabled, enabled);
 }
 
+void SetChargeLimitPreference(bool enabled) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!prefs) {
+    return;
+  }
+
+  prefs->SetBoolean(prefs::kPowerChargeLimitEnabled, enabled);
+}
+
+
 }  // namespace
 
 class PowerPrefsTest : public NoSessionAshTestBase {
@@ -686,10 +697,10 @@ TEST_F(PowerPrefsTest, ChargeLimit_EnabledByPrefWhenAdaptiveChargingDisabled) {
   SetAdaptiveChargingPreference(false);
   EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
 
-  managed_pref_store_->SetBoolean(prefs::kPowerChargeLimitEnabled, true);
+  SetChargeLimitPreference(true);
   EXPECT_TRUE(power_manager_client()->policy().charge_limit_enabled());
 
-  managed_pref_store_->SetBoolean(prefs::kPowerChargeLimitEnabled, false);
+  SetChargeLimitPreference(false);
   EXPECT_FALSE(power_manager_client()->policy().charge_limit_enabled());
 }
 
@@ -702,7 +713,7 @@ TEST_F(PowerPrefsTest, AdaptiveChargingAndChargeLimit_MutuallyExclusive) {
   // When both adaptive charging and charge limit enabled, adaptive charging
   // should be disabled. This ensures that the two features do not conflict.
   SetAdaptiveChargingPreference(true);
-  managed_pref_store_->SetBoolean(prefs::kPowerChargeLimitEnabled, true);
+  SetChargeLimitPreference(true);
   EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
   EXPECT_TRUE(power_manager_client()->policy().charge_limit_enabled());
 }

@@ -15,7 +15,7 @@
             "value": false
           },
           "power.charge_limit_enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "default_value": false
           }
         }
@@ -54,7 +54,7 @@
             "value": false
           },
           "power.charge_limit_enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "value": false
           }
         }
@@ -71,7 +71,7 @@
             "value": false
           },
           "power.charge_limit_enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "value": false
           }
         }
@@ -87,7 +87,7 @@
             "value": true
           },
           "power.charge_limit_enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "value": false
           }
         }
@@ -104,7 +104,7 @@
             "value": true
           },
           "power.charge_limit_enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "value": false
           }
         }
@@ -120,7 +120,7 @@
             "value": false
           },
           "power.charge_limit_enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "value": true
           }
         }
@@ -137,7 +137,7 @@
             "value": false
           },
           "power.charge_limit_enabled": {
-            "location": "local_state",
+            "location": "user_profile",
             "value": true
           }
         }

@@ -203,6 +203,7 @@ void PowerHandler::OnJavascriptAllowed() {
   pref_change_registrar_->Add(ash::prefs::kPowerLidClosedAction, callback);
   pref_change_registrar_->Add(ash::prefs::kPowerAdaptiveChargingEnabled,
                               callback);
+  pref_change_registrar_->Add(ash::prefs::kPowerChargeLimitEnabled, callback);
 }
 
 void PowerHandler::OnJavascriptDisallowed() {
