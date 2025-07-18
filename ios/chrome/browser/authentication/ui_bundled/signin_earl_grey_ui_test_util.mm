@@ -64,7 +64,7 @@ void CloseManagedAccountSignOutAndDeleteDataDialog() {
   // Verify whether there is a confirmation dialog and interact with it to
   // complete the sign-in flow if present.
   id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:
+      actionSheetItemWithAccessibilityLabelID:
           IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:acceptButton];
   [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
