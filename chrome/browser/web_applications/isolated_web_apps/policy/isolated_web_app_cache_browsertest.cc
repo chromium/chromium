@@ -1383,9 +1383,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest, InstallBetaChannel) {
   AddNewIwaToServer(
       IwaServerConfig{kWebBundleId, kUpdateVersion, kPublicKeyPair});
 
-  // When the version is pinned, no initial update is done, therefore do not
-  // wait for it result as usual.
-  LaunchSession(kWebBundleId, /*should_wait_for_initial_update=*/false);
+  LaunchSession(kWebBundleId);
 
   AssertAppInstalledAtVersion(kWebBundleId, kBaseVersion);
 }
