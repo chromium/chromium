@@ -6,6 +6,7 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("tab_grid") {
   sources = [
+    "grid_coordinator_audience.h",
     "tab_grid_coordinator.h",
     "tab_grid_coordinator.mm",
     "tab_grid_coordinator_delegate.h",
@@ -92,8 +93,8 @@ source_set("tab_grid") {
     "//ios/chrome/browser/supervised_user/model:capabilities",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_mediator_delegate",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_toolbars_mutator",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui",
@@ -120,6 +121,11 @@ source_set("tab_grid") {
   ]
 
   frameworks = [ "UniformTypeIdentifiers.framework" ]
+}
+
+source_set("grid_coordinator_audience") {
+  sources = [ "grid_coordinator_audience.h" ]
+  deps = []
 }
 
 source_set("tab_grid_activity_observer") {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
-#define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
+#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_GRID_BASE_GRID_UI_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
+#define IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_GRID_BASE_GRID_UI_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 
@@ -11,9 +11,6 @@
 @protocol FacePileProviding;
 @class GridItemIdentifier;
 @class TabSnapshotAndFavicon;
-namespace web {
-class WebStateID;
-}  // namespace web
 
 // Block invoked when a TabSnapshotAndFavicon fetching operation completes.
 typedef void (^GroupTabSnapshotAndFaviconCompletionBlock)(
@@ -45,4 +42,4 @@ typedef void (^GroupTabSnapshotAndFaviconCompletionBlock)(
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
+#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_TAB_GRID_BASE_GRID_UI_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_

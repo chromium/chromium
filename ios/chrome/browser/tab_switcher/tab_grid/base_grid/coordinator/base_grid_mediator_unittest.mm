@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_mediator.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/base_grid_mediator.h"
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -863,7 +863,6 @@ TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
   ASSERT_TRUE(saved_group.has_value());
   EXPECT_EQ(1u, other_web_state_list->GetGroups().size());
   EXPECT_EQ(7, other_web_state_list->count());
-
 
   [mediator_ ungroupTabGroup:group];
   std::optional<SavedTabGroup> updated_group =

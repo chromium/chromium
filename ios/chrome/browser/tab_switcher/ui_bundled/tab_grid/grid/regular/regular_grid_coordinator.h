@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_REGULAR_REGULAR_GRID_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/public/commands/tabs_animation_commands.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_coordinator+subclassing.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/base_grid_coordinator+subclassing.h"
 
 @protocol GridCommands;
 @class PinnedTabsMediator;

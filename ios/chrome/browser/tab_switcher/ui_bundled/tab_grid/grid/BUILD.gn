@@ -2,124 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("grid") {
-  sources = [
-    "base_grid_coordinator+subclassing.h",
-    "base_grid_coordinator.h",
-    "base_grid_coordinator.mm",
-    "grid_coordinator_audience.h",
-  ]
-  deps = [
-    ":grid_item_identifier",
-    ":grid_mediator",
-    ":grid_ui",
-    ":tab_group_grid_ui",
-    "//base",
-    "//components/collaboration/public",
-    "//components/feature_engagement/public",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/collaboration/model",
-    "//ios/chrome/browser/collaboration/model:collaboration_delegate",
-    "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/menu/ui_bundled:tab_context_menu_delegate",
-    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
-    "//ios/chrome/browser/share_kit/model",
-    "//ios/chrome/browser/shared/coordinator/alert",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
-    "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu:tab_item",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_group_creation",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_ui",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions",
-    "//ios/third_party/material_components_ios",
-    "//ios/web/public",
-  ]
-}
-
-source_set("grid_mediator") {
-  sources = [
-    "base_grid_mediator.h",
-    "base_grid_mediator.mm",
-  ]
-  deps = [
-    ":grid_consumer",
-    ":grid_item_identifier",
-    ":grid_mediator_delegate",
-    ":grid_mediator_item_provider",
-    ":grid_toolbars_mutator",
-    ":grid_ui",
-    ":grid_utils",
-    ":grid_view_controller_mutator",
-    ":selected_grid_items",
-    "//base",
-    "//components/bookmarks/browser",
-    "//components/bookmarks/common",
-    "//components/collaboration/public",
-    "//components/data_sharing/public",
-    "//components/prefs",
-    "//components/saved_tab_groups/public",
-    "//components/tab_groups",
-    "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/bubble/model",
-    "//ios/chrome/browser/collaboration/model",
-    "//ios/chrome/browser/collaboration/model:features",
-    "//ios/chrome/browser/commerce/model",
-    "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/drag_and_drop/model",
-    "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/main/model",
-    "//ios/chrome/browser/menu/ui_bundled",
-    "//ios/chrome/browser/reading_list/model",
-    "//ios/chrome/browser/saved_tab_groups/model",
-    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/url",
-    "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/model/web_state_list:utils",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/commands:shared_group_last_tab_commands",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/shared/ui/util:url_with_title",
-    "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/snapshots/model:model_common",
-    "//ios/chrome/browser/snapshots/model:model_swift",
-    "//ios/chrome/browser/tab_switcher/ui_bundled",
-    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
-    "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
-    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_idle_status_handler",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_metrics",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_mode",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_page_mutator",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/suggested_actions",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu:tab_item",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:toolbars_ui",
-    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
-    "//ios/chrome/browser/tabs_search/model",
-    "//ios/chrome/browser/tabs_search/model:model_factory",
-    "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
-    "//ios/web/public",
-    "//ios/web/public/navigation",
-    "//net",
-    "//ui/gfx",
-  ]
-}
-
 source_set("grid_ui_constants") {
   sources = [
     "grid_constants.h",
@@ -178,10 +60,6 @@ source_set("grid_utils") {
 
 source_set("grid_ui") {
   sources = [
-    "base_grid_view_controller+Testing.h",
-    "base_grid_view_controller+subclassing.h",
-    "base_grid_view_controller.h",
-    "base_grid_view_controller.mm",
     "disabled_grid_view_controller.h",
     "disabled_grid_view_controller.mm",
     "grid_cell.h",
@@ -206,7 +84,6 @@ source_set("grid_ui") {
 
   deps = [
     ":grid_item_identifier",
-    ":grid_mediator_item_provider",
     ":grid_ui_constants",
     ":grid_view_controller_mutator",
     "//base",
@@ -272,12 +149,6 @@ source_set("grid_view_delegate") {
   deps = [ "//base" ]
 }
 
-source_set("grid_mediator_item_provider") {
-  sources = [ "base_grid_mediator_items_provider.h" ]
-
-  deps = [ "//ios/chrome/browser/tab_switcher/ui_bundled:items" ]
-}
-
 source_set("grid_toolbars_configuration_provider") {
   sources = [ "grid_toolbars_configuration_provider.h" ]
 
@@ -316,6 +187,7 @@ source_set("tab_group_grid_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
@@ -352,16 +224,13 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "base_grid_mediator_unittest.mm",
     "grid_item_identifier_unittest.mm",
     "grid_utils_unittest.mm",
     "grid_view_controller_unittest.mm",
   ]
 
   deps = [
-    ":grid",
     ":grid_item_identifier",
-    ":grid_mediator",
     ":grid_ui",
     ":grid_utils",
     ":test_fixture",
@@ -389,6 +258,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_mode",
@@ -414,8 +285,6 @@ source_set("test_fixture") {
   ]
 
   deps = [
-    ":grid",
-    ":grid_mediator",
     "//base",
     "//base/test:test_support",
     "//components/saved_tab_groups/test_support",
@@ -444,6 +313,7 @@ source_set("test_fixture") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/tab_insertion/model",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:mediator",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/test:fakes",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:fakes",
     "//ios/chrome/browser/tips_manager/model:factory",
