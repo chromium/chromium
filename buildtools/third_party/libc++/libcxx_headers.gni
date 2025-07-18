@@ -2,12 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Generate the list via
-# $ find third_party/libc++/src/include/ -type f | fgrep -v "cxx03" | sed -E 's:(.*):"  //\1",:g' | LANG=C sort
+# DO NOT EDIT. This file is generated.
+# To regenerate, run buildtools/third_party/libc++/generate_libcxx_headers.py
 
 libcxx_headers = [
-  # go/keep-sorted start
-  "//third_party/libc++/src/include/CMakeLists.txt",
   "//third_party/libc++/src/include/__algorithm/adjacent_find.h",
   "//third_party/libc++/src/include/__algorithm/all_of.h",
   "//third_party/libc++/src/include/__algorithm/any_of.h",
@@ -1099,6 +1097,4 @@ libcxx_headers = [
   "//third_party/libc++/src/include/version",
   "//third_party/libc++/src/include/wchar.h",
   "//third_party/libc++/src/include/wctype.h",
-
-  # go/keep-sorted end
 ]
