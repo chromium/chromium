@@ -5526,6 +5526,10 @@ static_library("ui") {
       "//ui/webui/resources:code_cache_resources",
     ]
   }
+
+  if (enable_session_service) {
+    deps += [ "//chrome/browser/ui/webui/tab_strip_internals" ]
+  }
 }
 
 # These are the dependencies for the "ui" target that are outside of

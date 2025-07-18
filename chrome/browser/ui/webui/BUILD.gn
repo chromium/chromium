@@ -112,6 +112,10 @@ source_set("configs") {
   if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
   }
+
+  if (enable_session_service) {
+    deps += [ "//chrome/browser/ui/webui/tab_strip_internals" ]
+  }
 }
 
 source_set("webui") {

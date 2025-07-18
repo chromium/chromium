@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(enable_session_service)
+
+source_set("tab_strip_internals") {
+  sources = [
+    "tab_strip_internals_ui.cc",
+    "tab_strip_internals_ui.h",
+  ]
+
+  deps = [
+    "//chrome/browser/resources/tab_strip_internals:resources_grit",
+    "//chrome/browser/ui/tabs",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

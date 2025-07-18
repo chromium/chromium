@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/webui/inspect/inspect_ui.h"
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
+#include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_ui.h"
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/media_router/media_router_internals_ui.h"
@@ -309,6 +310,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<InspectUIConfig>());
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   map.AddWebUIConfig(std::make_unique<InternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<TabStripInternalsUIConfig>());
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
   map.AddWebUIConfig(std::make_unique<ManagementUIConfig>());
   map.AddWebUIConfig(

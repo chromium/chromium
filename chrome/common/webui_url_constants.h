@@ -627,6 +627,12 @@ inline constexpr char kChromeUIWatermarkHost[] = "watermark";
 inline constexpr char kChromeUIWatermarkURL[] = "chrome://watermark/";
 #endif
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+inline constexpr char kChromeUITabStripInternalsHost[] = "tab-strip-internals";
+inline constexpr char kChromeUITabStripInternalsURL[] =
+    "chrome://tab-strip-internals";
+#endif
+
 // Settings sub-pages.
 //
 // NOTE: Add sub page paths to |kChromeSettingsSubPages| in

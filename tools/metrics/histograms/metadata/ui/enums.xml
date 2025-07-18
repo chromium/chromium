@@ -585,6 +585,7 @@ chromium-metrics-reviews@google.com.
   <int value="-2084645929" label="chrome://infobar-internals/"/>
   <int value="-2069349961" label="chrome://history-clusters-internals/"/>
   <int value="-2061366287" label="chrome://dev-ui-loader/"/>
+  <int value="-2038391710" label="chrome://tab-strip-internals/"/>
   <int value="-2034706497" label="chrome://net-internals/"/>
   <int value="-2031269077" label="chrome://signin-error/"/>
   <int value="-2025866230" label="chrome://usb-internals/"/>
