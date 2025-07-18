@@ -2154,11 +2154,6 @@ BASE_FEATURE(kPrerender2EarlyDocumentLifecycleUpdate,
              "Prerender2EarlyDocumentLifecycleUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable limiting previews loading hints to specific resource types.
-BASE_FEATURE(kPreviewsResourceLoadingHintsSpecificResourceTypes,
-             "PreviewsResourceLoadingHintsSpecificResourceTypes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kPrewarmDefaultFontFamilies,
              "PrewarmDefaultFontFamilies",

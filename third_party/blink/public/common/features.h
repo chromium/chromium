@@ -1456,9 +1456,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // crbug.com/353628449 for more details.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPageHideEventForPrerender2);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kPreviewsResourceLoadingHintsSpecificResourceTypes);
-
 #if BUILDFLAG(IS_WIN)
 // Enables prewarming the default font families.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrewarmDefaultFontFamilies);
