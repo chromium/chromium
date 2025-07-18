@@ -31,6 +31,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabResolver.java",
     "java/src/org/chromium/chrome/browser/tab/TabState.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributes.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateStorageServiceFactory.java",
     "java/src/org/chromium/chrome/browser/tab/TabSupplierObserver.java",
     "java/src/org/chromium/chrome/browser/tab/TabViewManager.java",
     "java/src/org/chromium/chrome/browser/tab/TabViewProvider.java",
@@ -134,6 +136,8 @@ android_resources("java_resources") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateStorageServiceFactory.java",
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
@@ -168,6 +172,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab/protocol:proto_java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",

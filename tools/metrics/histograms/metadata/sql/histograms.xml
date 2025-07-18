@@ -72,6 +72,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SharedStorage" summary="SharedStorage"/>
   <variant name="Shortcuts" summary="Shortcuts"/>
   <variant name="SQLiteDiagnostics" summary="SQLiteDiagnostics"/>
+  <variant name="TabStateStorage" summary="TabStateStorage"/>
   <variant name="Test" summary="Test"/>
   <variant name="Thumbnail" summary="Thumbnail"/>
   <variant name="TopSites" summary="TopSites"/>
