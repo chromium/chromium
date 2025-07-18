@@ -404,11 +404,7 @@ bool GetStatusForSigninPolicy() {
 #pragma mark - Private
 
 - (void)reloadUniqueSection {
-  TableViewModel* model = self.consumer.tableViewModel;
-  NSUInteger sectionIndex =
-      [model sectionForSectionIdentifier:NonPersonalizedSectionIdentifier];
-  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
-  [self.consumer reloadSections:indexSet];
+  [self.consumer reload];
 }
 
 // Creates an item with a switch toggle.

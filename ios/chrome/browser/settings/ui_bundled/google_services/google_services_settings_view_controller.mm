@@ -186,41 +186,12 @@
 
 #pragma mark - GoogleServicesSettingsConsumer
 
-- (void)insertSections:(NSIndexSet*)sections {
+- (void)reload {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  [self.tableView insertSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
-}
-
-- (void)deleteSections:(NSIndexSet*)sections {
-  if (!self.tableViewModel) {
-    // No need to reload since the model has not been loaded yet.
-    return;
-  }
-  [self.tableView deleteSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
-}
-
-- (void)reloadSections:(NSIndexSet*)sections {
-  if (!self.tableViewModel) {
-    // No need to reload since the model has not been loaded yet.
-    return;
-  }
-  [self.tableView reloadSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
-}
-
-- (void)reloadItem:(TableViewItem*)item {
-  if (!self.tableViewModel) {
-    // No need to reload since the model has not been loaded yet.
-    return;
-  }
-  NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
-  [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
-                        withRowAnimation:UITableViewRowAnimationNone];
+  [self.tableView reloadData];
 }
 
 #pragma mark - CollectionViewController
