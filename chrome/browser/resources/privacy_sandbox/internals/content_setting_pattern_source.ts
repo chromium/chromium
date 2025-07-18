@@ -4,6 +4,7 @@
 import './value_display.js';
 import './mojo_timestamp.js';
 import './mojo_timedelta.js';
+import './text_copy_button.js';
 
 import type {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
@@ -57,8 +58,6 @@ function sessionModelLogicalValue(v: Value) {
 }
 
 export class ContentSettingPatternSourceElement extends CustomElement {
-  static observedAttributes = ['collapsed'];
-
   static override get template() {
     return getTemplate();
   }
@@ -75,6 +74,14 @@ export class ContentSettingPatternSourceElement extends CustomElement {
     const elemToFill = this.getFieldElement(key);
     if (elemToFill) {
       elemToFill.textContent = value;
+      elemToFill.title = value;
+
+      const patternHeader = this.getFieldElement(key + '-header');
+      if (patternHeader) {
+        const copyButton = document.createElement('text-copy-button');
+        copyButton.textToCopy = value;
+        patternHeader.appendChild(copyButton);
+      }
     }
   }
 
@@ -143,26 +150,6 @@ export class ContentSettingPatternSourceElement extends CustomElement {
     sessionModel.intValue = cs.metadata.sessionModel;
     this.setFieldValue('session-model', sessionModel, sessionModelLogicalValue);
     this.setFieldDuration('lifetime', cs.metadata.lifetime);
-
-    this.shadowRoot!.querySelector<HTMLElement>(
-                        '#expand-button')!.addEventListener('click', () => {
-      if (this.getAttribute('collapsed') === 'true') {
-        this.setAttribute('collapsed', 'false');
-      } else {
-        this.setAttribute('collapsed', 'true');
-      }
-    });
-  }
-
-  attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
-    if (name === 'collapsed') {
-      const table = this.shadowRoot!.querySelector<HTMLElement>('#metadata')!;
-      if (newValue === 'true') {
-        table.classList.add('hidden');
-      } else {
-        table.classList.remove('hidden');
-      }
-    }
   }
 }
 

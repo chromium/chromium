@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://privacy-sandbox-internals/mojo_timestamp.js';
-import 'chrome://privacy-sandbox-internals/mojo_timedelta.js';
-import 'chrome://privacy-sandbox-internals/value_display.js';
-import 'chrome://privacy-sandbox-internals/pref_display.js';
 import 'chrome://privacy-sandbox-internals/expandable_json_viewer.js';
 import 'chrome://privacy-sandbox-internals/internals_page.js';
+import 'chrome://privacy-sandbox-internals/mojo_timestamp.js';
+import 'chrome://privacy-sandbox-internals/mojo_timedelta.js';
+import 'chrome://privacy-sandbox-internals/pref_display.js';
+import 'chrome://privacy-sandbox-internals/text_copy_button.js';
+import 'chrome://privacy-sandbox-internals/value_display.js';
 
 import type {CrFrameListElement} from 'chrome://privacy-sandbox-internals/cr_frame_list.js';
 import type {ExpandableJsonViewerElement} from 'chrome://privacy-sandbox-internals/expandable_json_viewer.js';
@@ -16,10 +17,12 @@ import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_d
 import type {PrivacySandboxInternalsPref} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals.mojom-webui.js';
 import {PrivacySandboxInternalsBrowserProxy} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals_browser_proxy.js';
 import {Router} from 'chrome://privacy-sandbox-internals/router.js';
+import type {TextCopyButton} from 'chrome://privacy-sandbox-internals/text_copy_button.js';
 import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {defaultLogicalFn, timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
 import type {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrivacySandboxInternalsBrowserProxy} from './test_privacy_sandbox_internals_browser_proxy.js';
@@ -780,5 +783,120 @@ suite('ExpandableJsonViewerElement', function() {
 
   test('rendersTitleInJsonHeader', () => {
     assertEquals(jsonViewer.getTitleTextForTesting(), kJsonViewerTitle);
+  });
+});
+
+// Test the <text-copy-button> element.
+suite('TextCopyButton', function() {
+  let clipboardData = '';
+  let textCopyButton: TextCopyButton;
+  const kTextToCopy = 'Sample text';
+  const textRecentlyCopiedAttribute = 'text-recently-copied';
+
+  suiteSetup(async function() {
+    await customElements.whenDefined('text-copy-button');
+
+    const mockClipboard = {
+      writeText: async (data: string) => {
+        clipboardData = data;
+        return Promise.resolve();
+      },
+      readText: async () => {
+        return Promise.resolve(clipboardData);
+      },
+    };
+
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      get: () => mockClipboard,
+    });
+  });
+
+  const getCopyIconElementOrFail = () => {
+    const span = textCopyButton.$('.copy-icon');
+    assertTrue(!!span);
+    return span;
+  };
+
+  const getTickIconElementOrFail = () => {
+    const span = textCopyButton.$('.tick-icon');
+    assertTrue(!!span);
+    return span;
+  };
+
+  suiteTeardown(function() {
+    delete (navigator as any).clipboard;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    textCopyButton = document.createElement('text-copy-button');
+    textCopyButton.textToCopy = kTextToCopy;
+    document.body.appendChild(textCopyButton);
+  });
+
+  test('clickingButtonCopiesText', async () => {
+    textCopyButton.click();
+    const clipboardText = await navigator.clipboard.readText();
+    assertEquals(clipboardText, kTextToCopy);
+  });
+
+  test('clickingButtonSetsRecentlyTextCopiedAttribute', async () => {
+    assertFalse(textCopyButton.hasAttribute(textRecentlyCopiedAttribute));
+    textCopyButton.click();
+    await waitForCondition(
+        () => textCopyButton.hasAttribute(textRecentlyCopiedAttribute));
+    assertTrue(textCopyButton.hasAttribute(textRecentlyCopiedAttribute));
+  });
+
+  test('textCopiedAttributeGetsReverted', async () => {
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    textCopyButton.click();
+    // Awaiting navigator.clipboard.readText() allows us to make sure that the
+    // writeText() call is completed. await waitForCondition() would have been
+    // more ideal here, but MockTimer mocks setTimeout and prevents us from
+    // being able to rely on waitForCondition.
+    await navigator.clipboard.readText();
+    await Promise.resolve();
+    assertTrue(textCopyButton.hasAttribute(textRecentlyCopiedAttribute));
+    mockTimer.tick(textCopyButton.revertIconWaitDuration);
+    await Promise.resolve();
+    assertFalse(textCopyButton.hasAttribute(textRecentlyCopiedAttribute));
+    mockTimer.uninstall();
+  });
+
+  test('onClickIconVisibilityIsSetAndReverted', async () => {
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+    const copyIcon = getCopyIconElementOrFail();
+    const tickIcon = getTickIconElementOrFail();
+
+    // Just the copy icon should be shown by default
+    assertEquals(
+        window.getComputedStyle(copyIcon).getPropertyValue('display'), 'block');
+    assertEquals(
+        window.getComputedStyle(tickIcon).getPropertyValue('display'), 'none');
+
+    // Just tick icon should be shown after the icon is clicked
+    textCopyButton.click();
+    await navigator.clipboard.readText();
+    await Promise.resolve();
+    assertEquals(
+        window.getComputedStyle(copyIcon).getPropertyValue('display'), 'none');
+    assertEquals(
+        window.getComputedStyle(tickIcon).getPropertyValue('display'), 'block');
+
+    // The check icon should be shown after the timeout
+    mockTimer.tick(textCopyButton.revertIconWaitDuration);
+    await Promise.resolve();
+    assertEquals(
+        window.getComputedStyle(copyIcon).getPropertyValue('display'), 'block');
+    assertEquals(
+        window.getComputedStyle(tickIcon).getPropertyValue('display'), 'none');
+
+
+    mockTimer.uninstall();
   });
 });

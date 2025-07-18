@@ -153,7 +153,7 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     const tabBox =
         this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page')!;
     this.loadAndDisplayPrefs();
-    const csPanels = new Map<string, HTMLElement>();
+    const csPanelContainers = new Map<string, HTMLElement>();
     const handler = this.browserProxy_.handler;
     const shouldShowTpcdMetadataGrants =
         this.browserProxy_.shouldShowTpcdMetadataGrants();
@@ -173,14 +173,16 @@ export class InternalsPage extends CustomElement implements RouteObserver {
 
       const panel = document.createElement('div');
       panel.setAttribute('slot', 'panel');
-      panel.setAttribute('style', 'content-settings');
       panel.setAttribute('title', ContentSettingsType[i]);
       const panelTitle = document.createElement('h2');
       panelTitle.innerText = ContentSettingsType[i];
+      const contentSettingsContainer = document.createElement('div');
+      contentSettingsContainer.classList.add('content-settings');
       panel.appendChild(panelTitle);
+      panel.appendChild(contentSettingsContainer);
       tabBox.appendChild(panel);
 
-      csPanels.set(ContentSettingsType[i], panel);
+      csPanelContainers.set(ContentSettingsType[i], contentSettingsContainer);
     }
 
     for (let i = ContentSettingsType.MIN_VALUE;
@@ -198,7 +200,7 @@ export class InternalsPage extends CustomElement implements RouteObserver {
         mojoResponse = await handler.readContentSettings(i);
       }
       mojoResponse.contentSettings.forEach((cs: any) => {
-        const panel = csPanels.get(ContentSettingsType[i])!;
+        const panel = csPanelContainers.get(ContentSettingsType[i])!;
         const item = document.createElement('content-setting-pattern-source');
         panel.appendChild(item);
         item.configure(handler, cs);
