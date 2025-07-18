@@ -1096,6 +1096,13 @@ BASE_FEATURE(kAllowNonSecureOverlays,
              "AllowNonSecureOverlays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables automatic Picture-in-Picture on Android for supported websites.
+// This triggers for active video playback or camera/microphone usage on sites
+// that have registered an auto picture-in-picture action.
+BASE_FEATURE(kAutoPictureInPictureAndroid,
+             "AutoPictureInPictureAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables block model (LinearBlock) on supported devices.
 BASE_FEATURE(kMediaCodecBlockModel,
              "MediaCodecBlockModel",
