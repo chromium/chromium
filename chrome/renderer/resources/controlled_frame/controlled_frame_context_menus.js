@@ -65,13 +65,11 @@ $Object.setPrototypeOf(
 
 function getCallbackIndex(name) {
   let foundMethodDetails = undefined;
-  for (const methodDetails of
-           CHROME_WEB_VIEW_CONTEXT_MENUS_PROMISE_API_METHODS) {
-    if (methodDetails.name === name) {
-      foundMethodDetails = methodDetails;
-      break;
-    }
-  }
+
+  foundMethodDetails = $Array.find(
+      CHROME_WEB_VIEW_CONTEXT_MENUS_PROMISE_API_METHODS,
+      el => el.name === name);
+
   logging.CHECK(
       foundMethodDetails !== undefined,
       'could not find context menus method details');

@@ -85,7 +85,7 @@ const char kScript[] =
     "saveBuiltin(Array,\n"
     "            ['concat', 'forEach', 'includes', 'indexOf', 'join', 'push',\n"
     "             'slice', 'splice', 'map', 'filter', 'shift', 'unshift',\n"
-    "             'pop', 'push', 'reverse'],\n"
+    "             'pop', 'push', 'reverse', 'find'],\n"
     "            ['from', 'isArray']);\n"
     "saveBuiltin(String,\n"
     "            ['indexOf', 'slice', 'split', 'substr', 'toLowerCase',\n"
