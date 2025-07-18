@@ -1016,7 +1016,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabStripLayoutOptimization =
             newCachedFlag(
                     TAB_STRIP_LAYOUT_OPTIMIZATION,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
@@ -1705,7 +1705,9 @@ public abstract class ChromeFeatureList {
     public static final StringCachedFeatureParam
             sTabStripLayoutOptimizationOnExternalDisplayOemDenylist =
                     newStringCachedFeatureParam(
-                            TAB_STRIP_LAYOUT_OPTIMIZATION, "external_display_oem_denylist", "");
+                            TAB_STRIP_LAYOUT_OPTIMIZATION,
+                            "external_display_oem_denylist",
+                            "samsung");
 
     public static final IntCachedFeatureParam
             sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs =
