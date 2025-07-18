@@ -295,7 +295,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   void VerifyFilterBuilder(const std::string& options,
                            content::BrowsingDataFilterBuilder* filter_builder) {
     delegate()->ExpectCall(
-        base::Time::UnixEpoch(), base::Time::Max(),
+        base::Time(), base::Time::Max(),
         content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE, UNPROTECTED_WEB,
         filter_builder);
     auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
@@ -616,7 +616,7 @@ TEST_F(BrowsingDataApiTest, RemoveCookiesWithFilter) {
   auto filter_builder = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::Mode::kPreserve);
   filter_builder->AddRegisterableDomain("example.com");
-  delegate()->ExpectCall(base::Time::UnixEpoch(), base::Time::Max(),
+  delegate()->ExpectCall(base::Time(), base::Time::Max(),
                          content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                          UNPROTECTED_WEB, filter_builder.get());
 
@@ -635,7 +635,7 @@ TEST_F(BrowsingDataApiTest, RemoveCookiesAndStorageWithFilter) {
   auto filter_builder1 = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder1->AddRegisterableDomain("example.com");
-  delegate()->ExpectCall(base::Time::UnixEpoch(), base::Time::Max(),
+  delegate()->ExpectCall(base::Time(), base::Time::Max(),
                          content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                          UNPROTECTED_WEB, filter_builder1.get());
 
@@ -643,7 +643,7 @@ TEST_F(BrowsingDataApiTest, RemoveCookiesAndStorageWithFilter) {
       content::BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder2->AddOrigin(
       url::Origin::Create(GURL("http://www.example.com")));
-  delegate()->ExpectCall(base::Time::UnixEpoch(), base::Time::Max(),
+  delegate()->ExpectCall(base::Time(), base::Time::Max(),
                          content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE,
                          UNPROTECTED_WEB, filter_builder2.get());
 

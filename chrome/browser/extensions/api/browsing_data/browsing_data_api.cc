@@ -252,7 +252,10 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
   // base::Time takes a double that represents seconds since epoch. JavaScript
   // gives developers milliseconds, so do a quick conversion before populating
   // the object.
-  remove_since_ = base::Time::FromMillisecondsSinceUnixEpoch(ms_since_epoch);
+  remove_since_ =
+      ms_since_epoch == 0
+          ? base::Time()
+          : base::Time::FromMillisecondsSinceUnixEpoch(ms_since_epoch);
 
   EXTENSION_FUNCTION_VALIDATE(GetRemovalMask(&removal_mask_));
 
