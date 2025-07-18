@@ -979,15 +979,13 @@ class QuicSessionPool::QuicCryptoClientConfigOwner {
   const raw_ptr<QuicSessionPool> quic_session_pool_;
 };
 
-// Key for QuicCryptoClienConfigOwners within a session pool.k
+// Key for QuicCryptoClienConfigOwners within a session pool.
 struct NET_EXPORT_PRIVATE QuicSessionPool::QuicCryptoClientConfigKey {
   QuicCryptoClientConfigKey() = default;
   explicit QuicCryptoClientConfigKey(const QuicSessionKey& session_key)
       : network_anonymization_key(session_key.network_anonymization_key()),
         proxy_chain(session_key.proxy_chain()),
         session_usage(session_key.session_usage()) {}
-  explicit QuicCryptoClientConfigKey(const NetworkAnonymizationKey& nak)
-      : network_anonymization_key(nak) {}
 
   bool operator==(const QuicCryptoClientConfigKey& other) const;
   bool operator<(const QuicCryptoClientConfigKey& other) const;
