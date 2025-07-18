@@ -5,16 +5,21 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.WindowMetrics;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
@@ -136,7 +141,30 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
 
             // Use the PendingIntent to send the intent that originally launched Chrome. The intent
             // will go back to the ChromeLauncherActivity, which will route it accordingly.
-            pendingIntent.send(Activity.RESULT_OK, onFinished, null);
+            boolean isFeatureListInitialized = FeatureList.isNativeInitialized();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                    && isFeatureListInitialized
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.ANDROID_FIRST_RUN_LAUNCH_BOUNDS)) {
+
+                ActivityOptions options = ActivityOptions.makeBasic();
+                WindowMetrics windowMetrics =
+                        getWindow().getWindowManager().getCurrentWindowMetrics();
+                options.setLaunchBounds(windowMetrics.getBounds());
+                pendingIntent.send(
+                        this,
+                        Activity.RESULT_OK,
+                        /* intent= */ null,
+                        onFinished,
+                        /* handler= */ null,
+                        /* requiredPermission= */ null,
+                        options.toBundle());
+            } else {
+                if (!isFeatureListInitialized) {
+                    Log.w(TAG, "Pending intent sent before feature list initialized.");
+                }
+                pendingIntent.send(Activity.RESULT_OK, onFinished, /* handler= */ null);
+            }
 
             // Use fade-out animation for the transition from this activity to the original intent.
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

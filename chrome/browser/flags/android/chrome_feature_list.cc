@@ -205,6 +205,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBookmarkBar,
     &kAndroidBottomToolbar,
     &kAndroidElegantTextHeight,
+    &kAndroidFirstRunLaunchBounds,
     &kAndroidNativePagesInNewTab,
     &kAndroidProgressBarVisualUpdate,
     &kAndroidNoVisibleHintForDifferentTLD,
@@ -563,6 +564,10 @@ BASE_FEATURE(kAndroidBottomToolbar,
 BASE_FEATURE(kAndroidElegantTextHeight,
              "AndroidElegantTextHeight",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidFirstRunLaunchBounds,
+             "AndroidFirstRunLaunchBounds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidNativePagesInNewTab,
              "AndroidNativePagesInNewTab",
