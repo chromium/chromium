@@ -11,7 +11,10 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -31,6 +34,19 @@ namespace tabs_internal {
 bool ExtensionHasLockedFullscreenPermission(const Extension* extension) {
   return extension && extension->permissions_data()->HasAPIPermission(
                           mojom::APIPermissionID::kLockWindowFullscreenPrivate);
+}
+
+api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
+                                     const Extension* extension,
+                                     mojom::ContextType context,
+                                     BrowserWindowInterface* browser,
+                                     int tab_index) {
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(extension, context, contents);
+  TabListInterface* tab_list =
+      browser ? TabListInterface::From(browser) : nullptr;
+  return ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior,
+                                           extension, tab_list, tab_index);
 }
 
 }  // namespace tabs_internal
@@ -170,6 +186,45 @@ ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
   }
   window_controller->window()->Close();
   return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
+  // windowId defaults to "current" window.
+  int window_id = extension_misc::kCurrentWindowId;
+
+  std::optional<tabs::GetSelected::Params> params =
+      tabs::GetSelected::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  if (params->window_id) {
+    window_id = *params->window_id;
+  }
+
+  std::string error;
+  WindowController* window_controller =
+      ExtensionTabUtil::GetControllerFromWindowID(
+          ChromeExtensionFunctionDetails(this), window_id, &error);
+  if (!window_controller) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  BrowserWindowInterface* browser =
+      window_controller->GetBrowserWindowInterface();
+  if (!browser) {
+    return RespondNow(Error(ExtensionTabUtil::kNoCrashBrowserError));
+  }
+  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(*browser);
+  if (!tab_list) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+  ::tabs::TabInterface* tab = tab_list->GetActiveTab();
+  if (!tab) {
+    return RespondNow(Error(tabs_constants::kNoSelectedTabError));
+  }
+
+  return RespondNow(ArgumentList(
+      tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
+          tab->GetContents(), extension(), source_context_type(), browser,
+          tab_list->GetActiveIndex()))));
 }
 
 ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {

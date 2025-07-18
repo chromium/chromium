@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #endif
 
+class BrowserWindowInterface;
 class GURL;
 class SkBitmap;
 class TabStripModel;
@@ -92,6 +93,14 @@ class ApiParameterExtractor {
 // Returns true if the given `extension` has API access to the locked
 // fullscreen permission.
 bool ExtensionHasLockedFullscreenPermission(const Extension* extension);
+
+// Helper method to generate a new tab object for the given `contents`,
+// appropriately scrubbed of data for the given `extension`.
+api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
+                                     const Extension* extension,
+                                     mojom::ContextType context,
+                                     BrowserWindowInterface* browser,
+                                     int tab_index);
 
 }  // namespace tabs_internal
 

@@ -69,13 +69,6 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 
 // Tabs ------------------------------------------------------------------------
 
-ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
-  std::optional<tabs::GetSelected::Params> params =
-      tabs::GetSelected::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   std::optional<tabs::Query::Params> params =
       tabs::Query::Params::Create(args());

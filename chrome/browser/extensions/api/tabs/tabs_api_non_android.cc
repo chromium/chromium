@@ -304,19 +304,6 @@ bool IsValidStateForWindowsCreateFunction(
   NOTREACHED();
 }
 
-api::tabs::Tab CreateTabObjectHelper(WebContents* contents,
-                                     const Extension* extension,
-                                     mojom::ContextType context,
-                                     BrowserWindowInterface* browser,
-                                     int tab_index) {
-  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(extension, context, contents);
-  TabListInterface* tab_list =
-      browser ? TabListInterface::From(browser) : nullptr;
-  return ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior,
-                                           extension, tab_list, tab_index);
-}
-
 // Moves the given tab to the |target_browser|. On success, returns the
 // new index of the tab in the target tabstrip. On failure, returns -1.
 // Assumes that the caller has already checked whether the target window is
@@ -1061,44 +1048,6 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
 
 // Tabs ------------------------------------------------------------------------
 
-ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
-  // windowId defaults to "current" window.
-  int window_id = extension_misc::kCurrentWindowId;
-
-  std::optional<tabs::GetSelected::Params> params =
-      tabs::GetSelected::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  if (params->window_id) {
-    window_id = *params->window_id;
-  }
-
-  std::string error;
-  WindowController* window_controller =
-      ExtensionTabUtil::GetControllerFromWindowID(
-          ChromeExtensionFunctionDetails(this), window_id, &error);
-  if (!window_controller) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  Browser* browser = window_controller->GetBrowser();
-  if (!browser) {
-    return RespondNow(Error(ExtensionTabUtil::kNoCrashBrowserError));
-  }
-  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(*browser);
-  if (!tab_list) {
-    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-  }
-  ::tabs::TabInterface* tab = tab_list->GetActiveTab();
-  if (!tab) {
-    return RespondNow(Error(tabs_constants::kNoSelectedTabError));
-  }
-
-  return RespondNow(
-      ArgumentList(tabs::Get::Results::Create(CreateTabObjectHelper(
-          tab->GetContents(), extension(), source_context_type(), browser,
-          tab_list->GetActiveIndex()))));
-}
-
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   std::optional<tabs::Query::Params> params =
       tabs::Query::Params::Create(args());
@@ -1313,9 +1262,10 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
         continue;
       }
 
-      result.Append(CreateTabObjectHelper(web_contents, extension(),
-                                          source_context_type(), browser, i)
-                        .ToValue());
+      result.Append(
+          tabs_internal::CreateTabObjectHelper(
+              web_contents, extension(), source_context_type(), browser, i)
+              .ToValue());
     }
   }
 
@@ -1428,8 +1378,8 @@ ExtensionFunction::ResponseAction TabsGetFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  return RespondNow(
-      ArgumentList(tabs::Get::Results::Create(CreateTabObjectHelper(
+  return RespondNow(ArgumentList(
+      tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
           contents, extension(), source_context_type(),
           window ? window->GetBrowserWindowInterface() : nullptr, tab_index))));
 }
@@ -1441,9 +1391,10 @@ ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
   // empty tab (hence returning true).
   WebContents* caller_contents = GetSenderWebContents();
   if (caller_contents && ExtensionTabUtil::GetTabId(caller_contents) >= 0) {
-    return RespondNow(ArgumentList(tabs::Get::Results::Create(
-        CreateTabObjectHelper(caller_contents, extension(),
-                              source_context_type(), nullptr, -1))));
+    return RespondNow(ArgumentList(
+        tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
+            caller_contents, extension(), source_context_type(), nullptr,
+            -1))));
   }
   return RespondNow(NoArguments());
 }
@@ -1762,8 +1713,9 @@ ExtensionFunction::ResponseValue TabsUpdateFunction::GetResult() {
     return NoArguments();
   }
 
-  return ArgumentList(tabs::Get::Results::Create(CreateTabObjectHelper(
-      web_contents_, extension(), source_context_type(), nullptr, -1)));
+  return ArgumentList(
+      tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
+          web_contents_, extension(), source_context_type(), nullptr, -1)));
 }
 
 ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
@@ -1858,9 +1810,9 @@ bool TabsMoveFunction::MoveTab(int tab_id,
       content::WebContents* web_contents =
           target_controller->GetWebContentsAt(inserted_index);
 
-      tab_values.Append(CreateTabObjectHelper(web_contents, extension(),
-                                              source_context_type(),
-                                              target_browser, inserted_index)
+      tab_values.Append(tabs_internal::CreateTabObjectHelper(
+                            web_contents, extension(), source_context_type(),
+                            target_browser, inserted_index)
                             .ToValue());
     }
 
@@ -1886,11 +1838,11 @@ bool TabsMoveFunction::MoveTab(int tab_id,
   }
 
   if (has_callback()) {
-    tab_values.Append(
-        CreateTabObjectHelper(contents, extension(), source_context_type(),
-                              source_window->GetBrowserWindowInterface(),
-                              *new_index)
-            .ToValue());
+    tab_values.Append(tabs_internal::CreateTabObjectHelper(
+                          contents, extension(), source_context_type(),
+                          source_window->GetBrowserWindowInterface(),
+                          *new_index)
+                          .ToValue());
   }
 
   // Insert the tabs one after another.
@@ -2849,8 +2801,8 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
                                 : kCannotFindTabToDiscard));
   }
 
-  return RespondNow(
-      ArgumentList(tabs::Discard::Results::Create(CreateTabObjectHelper(
+  return RespondNow(ArgumentList(
+      tabs::Discard::Results::Create(tabs_internal::CreateTabObjectHelper(
           contents, extension(), source_context_type(), nullptr, -1))));
 }
 
