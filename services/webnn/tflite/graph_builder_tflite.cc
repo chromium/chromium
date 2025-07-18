@@ -710,8 +710,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // any dimension.
        /*reduce_sum_square_input=*/
        {kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
+       // ReLU is sometimes emulated using maximum.
        /*relu_input=*/
-       {kFloat16To32AndInt8To64, SupportedRanks::UpTo(8)},
+       {kFloat16To32AndInt8To64, SupportedRanks::UpTo(5)},
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/resize_bilinear.h
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/resize_nearest_neighbor.h
        /*resample2d_input=*/
