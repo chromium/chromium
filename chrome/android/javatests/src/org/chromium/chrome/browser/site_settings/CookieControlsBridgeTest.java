@@ -69,7 +69,9 @@ public class CookieControlsBridgeTest {
                 @CookieBlocking3pcdStatus int blockingStatus,
                 long expiration) {
             mCookieControlsVisible = controlsState != CookieControlsState.HIDDEN;
-            mThirdPartyCookiesBlocked = controlsState == CookieControlsState.BLOCKED3PC;
+            mThirdPartyCookiesBlocked =
+                    controlsState == CookieControlsState.BLOCKED3PC
+                            || controlsState == CookieControlsState.ACTIVE_TP;
             mEnforcement = enforcement;
             mExpiration = expiration;
             mHelper.notifyCalled();
