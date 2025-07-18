@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.native_page;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,11 +46,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -214,7 +217,11 @@ public class NativePageFactory {
 
         protected NativePage buildNewTabPage(Tab tab, String url) {
             NativePageHost nativePageHost =
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector);
+                    new TabShim(
+                            tab,
+                            mBrowserControlsManager,
+                            mTabModelSelector,
+                            mEdgeToEdgeControllerSupplier);
             if (tab.isIncognito()) {
                 return new IncognitoNewTabPage(
                         mActivity, nativePageHost, tab.getProfile(), mEdgeToEdgeControllerSupplier);
@@ -250,7 +257,11 @@ public class NativePageFactory {
             return new BookmarkPage(
                     mSnackbarManagerSupplier.get(),
                     tab.getProfile(),
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
+                    new TabShim(
+                            tab,
+                            mBrowserControlsManager,
+                            mTabModelSelector,
+                            mEdgeToEdgeControllerSupplier),
                     mActivity.getComponentName());
         }
 
@@ -261,13 +272,21 @@ public class NativePageFactory {
                     mSnackbarManagerSupplier.get(),
                     mWindowAndroid.getModalDialogManager(),
                     profile.getOtrProfileId(),
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
+                    new TabShim(
+                            tab,
+                            mBrowserControlsManager,
+                            mTabModelSelector,
+                            mEdgeToEdgeControllerSupplier));
         }
 
         protected NativePage buildHistoryPage(Tab tab, String url) {
             return new HistoryPage(
                     mActivity,
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
+                    new TabShim(
+                            tab,
+                            mBrowserControlsManager,
+                            mTabModelSelector,
+                            mEdgeToEdgeControllerSupplier),
                     mSnackbarManagerSupplier.get(),
                     tab.getProfile(),
                     mBottomSheetController,
@@ -285,6 +304,7 @@ public class NativePageFactory {
                             () ->
                                     HistoryManagerUtils.showHistoryManager(
                                             mActivity, tab, tab.getProfile()));
+
             return new RecentTabsPage(
                     mActivity,
                     recentTabsManager,
@@ -295,7 +315,12 @@ public class NativePageFactory {
 
         protected NativePage buildManagementPage(Tab tab) {
             return new ManagementPage(
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector), tab.getProfile());
+                    new TabShim(
+                            tab,
+                            mBrowserControlsManager,
+                            mTabModelSelector,
+                            mEdgeToEdgeControllerSupplier),
+                    tab.getProfile());
         }
 
         protected NativePage buildPdfPage(Tab tab, String url, PdfInfo pdfInfo) {
@@ -413,7 +438,7 @@ public class NativePageFactory {
             return sTestPage;
         }
         return new PdfPage(
-                new TabShim(tab, browserControlsManager, tabModelSelector),
+                new TabShim(tab, browserControlsManager, tabModelSelector, null),
                 tab.getProfile(),
                 activity,
                 url,
@@ -427,14 +452,17 @@ public class NativePageFactory {
         private final Tab mTab;
         private final BrowserControlsStateProvider mBrowserControlsStateProvider;
         private final TabModelSelector mTabModelSelector;
+        private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
         public TabShim(
                 Tab tab,
                 BrowserControlsStateProvider browserControlsStateProvider,
-                TabModelSelector tabModelSelector) {
+                TabModelSelector tabModelSelector,
+                @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
             mTab = tab;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mTabModelSelector = tabModelSelector;
+            mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         }
 
         @Override
@@ -475,6 +503,12 @@ public class NativePageFactory {
         @Override
         public DestroyableObservableSupplier<Rect> createDefaultMarginSupplier() {
             return new BrowserControlsMarginSupplier(mBrowserControlsStateProvider);
+        }
+
+        @Override
+        public EdgeToEdgePadAdjuster createEdgeToEdgePadAdjuster(View view) {
+            return EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                    view, mEdgeToEdgeControllerSupplier);
         }
     }
 

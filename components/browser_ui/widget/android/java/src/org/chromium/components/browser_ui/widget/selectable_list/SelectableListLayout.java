@@ -32,6 +32,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.R;
@@ -47,6 +48,7 @@ import org.chromium.ui.widget.LoadingView;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Contains UI elements common to selectable list views: a loading view, empty view, selection
@@ -75,6 +77,7 @@ public class SelectableListLayout<E> extends FrameLayout
     private RecyclerView mRecyclerView;
     private @Nullable ItemAnimator mItemAnimator;
     SelectableListToolbar<E> mToolbar;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     private FadingShadowView mToolbarShadow;
 
@@ -154,6 +157,17 @@ public class SelectableListLayout<E> extends FrameLayout
      */
     public RecyclerView initializeRecyclerView(RecyclerView.Adapter adapter) {
         return initializeRecyclerView(adapter, null);
+    }
+
+    public RecyclerView initializeRecyclerView(
+            RecyclerView.Adapter adapter,
+            @Nullable RecyclerView recyclerView,
+            @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
+        RecyclerView view = initializeRecyclerView(adapter, recyclerView);
+        if (edgeToEdgePadAdjusterGenerator != null) {
+            mEdgeToEdgePadAdjuster = edgeToEdgePadAdjusterGenerator.apply(view);
+        }
+        return view;
     }
 
     /**
@@ -406,6 +420,9 @@ public class SelectableListLayout<E> extends FrameLayout
         mToolbar.destroy();
         mLoadingView.destroy();
         mRecyclerView.setAdapter(null);
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+        }
     }
 
     /**
