@@ -8,12 +8,16 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -28,6 +32,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
@@ -88,6 +93,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 @interface AccountMenuCoordinator () <
     AccountMenuMediatorDelegate,
     SettingsNavigationControllerDelegate,
+    ReauthCoordinatorDelegate,
     SyncErrorSettingsCommandHandler,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
@@ -117,6 +123,8 @@ void maybeShowSettingsIPH(Browser* browser) {
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // The child signin coordinator if it’s open.
   SigninCoordinator* _addAccountSigninCoordinator;
+  // Reauth coordinator for the reauthentication flow if it's open.
+  ReauthCoordinator* _reauthCoordinator;
   // Clicked view, used to anchor the menu to it when using
   // UIModalPresentationPopover mode
   UIView* _anchorView;
@@ -461,6 +469,28 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 - (void)openPrimaryAccountReauthDialog {
+  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
+    // In case of double-tap, we must stop the first coordinator. This may occur
+    // because, up to iOS 18, the view may have disappeared without calling the
+    // signin completion. See crbug.com/395959814
+    [self stopReauthCoordinator];
+
+    CoreAccountInfo account =
+        _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    if (account.IsEmpty()) {
+      // A sign-out was triggered in the meantime, don't do anything.
+      return;
+    }
+    _reauthCoordinator = [[ReauthCoordinator alloc]
+        initWithBaseViewController:_navigationController
+                           browser:self.browser
+                           account:account
+                 reauthAccessPoint:signin_metrics::ReauthAccessPoint::
+                                       kAccountMenu];
+    _reauthCoordinator.delegate = self;
+    [_reauthCoordinator start];
+    return;
+  }
   // In case of double-tap, we must stop the first coordinator. This may occur
   // because, up to iOS 18, the view may have disappeared without calling the
   // signin completion. See crbug.com/395959814
@@ -525,6 +555,12 @@ void maybeShowSettingsIPH(Browser* browser) {
   _manageAccountsNavigationController = nil;
 }
 
+- (void)stopReauthCoordinator {
+  [_reauthCoordinator stop];
+  _reauthCoordinator.delegate = nil;
+  _reauthCoordinator = nil;
+}
+
 - (void)resetAccountDetailsControllerDismissCallback {
   _accountDetailsControllerDismissCallback.Reset();
 }
@@ -553,6 +589,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   }
   [self stopSignoutActionSheetCoordinator];
   [self stopAddAccountCoordinator];
+  [self stopReauthCoordinator];
   // Add Account coordinator should be stopped before the Manage Accounts
   // Coordinator, as the former may be presented by the latter.
   [self stopManageAccountsNavigationController];
@@ -575,6 +612,12 @@ void maybeShowSettingsIPH(Browser* browser) {
   _viewController = nil;
   [navigationController dismissViewControllerAnimated:animated
                                            completion:completion];
+}
+
+#pragma mark - ReauthCoordinatorDelegate
+
+- (void)reauthFinishedWithResult:(ReauthResult)result {
+  [self stopReauthCoordinator];
 }
 
 #pragma mark - SyncEncryptionPassphraseTableViewControllerPresentationDelegate
