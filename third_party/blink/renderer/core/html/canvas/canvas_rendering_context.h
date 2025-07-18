@@ -208,11 +208,6 @@ class CORE_EXPORT CanvasRenderingContext
   }
   void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
 
-  virtual std::unique_ptr<CanvasResourceProvider>
-  CreateCanvasResourceProvider() {
-    NOTREACHED();
-  }
-
   // Returns a StaticBitmapImage containing the current content, or nullptr if
   // it was not possible to obtain that content.
   virtual scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(

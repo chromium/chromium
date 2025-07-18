@@ -201,9 +201,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
-  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider()
-      override;
-
   void PreFinalizeFrame() override;
   void FinalizeFrame(FlushReason) override;
 
@@ -289,6 +286,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   friend class CanvasRenderingContext2DTestBase;
   FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTestAccelerated,
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
+
+  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
 
   void EnableAccelerationIfPossible() override;
 
