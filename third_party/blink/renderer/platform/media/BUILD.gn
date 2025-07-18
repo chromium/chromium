@@ -19,7 +19,7 @@ blink_platform_sources("media_final") {
   public_deps = [
     "//base",
     "//media",
-    "//media/mojo/mojom",
+    "//media/mojo/mojom:mojom_blink",
     "//mojo/public/cpp/bindings",
     "//ui/gfx",
     "//url",

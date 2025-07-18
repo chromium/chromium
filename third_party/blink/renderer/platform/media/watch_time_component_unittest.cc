@@ -6,21 +6,22 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class WatchTimeInterceptor : public media::mojom::WatchTimeRecorder {
+class WatchTimeInterceptor : public media::mojom::blink::WatchTimeRecorder {
  public:
   WatchTimeInterceptor() = default;
   ~WatchTimeInterceptor() override = default;
 
-  // media::mojom::WatchTimeRecorder implementation:
+  // media::mojom::blink::WatchTimeRecorder implementation:
   MOCK_METHOD2(RecordWatchTime, void(media::WatchTimeKey, base::TimeDelta));
-  MOCK_METHOD1(FinalizeWatchTime,
-               void(const std::vector<media::WatchTimeKey>&));
+  MOCK_METHOD1(FinalizeWatchTime, void(const Vector<media::WatchTimeKey>&));
   MOCK_METHOD1(OnError, void(const media::PipelineStatus&));
   MOCK_METHOD1(SetAutoplayInitiated, void(bool));
   MOCK_METHOD1(OnDurationChanged, void(base::TimeDelta));
@@ -28,7 +29,7 @@ class WatchTimeInterceptor : public media::mojom::WatchTimeRecorder {
   MOCK_METHOD1(UpdateUnderflowCount, void(int32_t));
   MOCK_METHOD2(UpdateUnderflowDuration, void(int32_t, base::TimeDelta));
   MOCK_METHOD1(UpdateSecondaryProperties,
-               void(media::mojom::SecondaryPlaybackPropertiesPtr));
+               void(media::mojom::blink::SecondaryPlaybackPropertiesPtr));
 };
 
 class WatchTimeComponentTest : public testing::Test {
@@ -42,7 +43,7 @@ class WatchTimeComponentTest : public testing::Test {
   template <typename T>
   std::unique_ptr<WatchTimeComponent<T>> CreateComponent(
       T initial_value,
-      std::vector<media::WatchTimeKey> keys_to_finalize,
+      Vector<media::WatchTimeKey> keys_to_finalize,
       typename WatchTimeComponent<T>::ValueToKeyCB value_to_key_cb) {
     return std::make_unique<WatchTimeComponent<T>>(
         initial_value, std::move(keys_to_finalize), std::move(value_to_key_cb),
@@ -123,7 +124,7 @@ TEST_F(WatchTimeComponentTest, BasicFlow) {
 
   // Trigger finalize which should transition the pending value to the current
   // value as well as clear the finalize.
-  std::vector<media::WatchTimeKey> finalize_keys;
+  Vector<media::WatchTimeKey> finalize_keys;
   test_component->Finalize(&finalize_keys);
   EXPECT_FALSE(test_component->current_value_for_testing());
   EXPECT_FALSE(test_component->NeedsFinalize());
@@ -216,7 +217,7 @@ TEST_F(WatchTimeComponentTest, SetPendingValue) {
 
 // Tests RecordWatchTime() behavior when a ValueToKeyCB is provided.
 TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
-  const std::vector<media::WatchTimeKey> finalize_keys = {
+  const Vector<media::WatchTimeKey> finalize_keys = {
       media::WatchTimeKey::kAudioVideoDisplayInline,
       media::WatchTimeKey::kAudioVideoDisplayFullscreen,
       media::WatchTimeKey::kAudioVideoDisplayPictureInPicture};
@@ -284,7 +285,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Verify finalize sends all three keys.
-  std::vector<media::WatchTimeKey> actual_finalize_keys;
+  Vector<media::WatchTimeKey> actual_finalize_keys;
   const base::TimeDelta kFinalWatchTime = base::Seconds(5);
   EXPECT_CALL(*this, GetMediaTime()).WillOnce(testing::Return(kFinalWatchTime));
   test_component->SetPendingValue(WebMediaPlayer::DisplayType::kFullscreen);

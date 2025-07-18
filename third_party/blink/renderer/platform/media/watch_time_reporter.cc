@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/media/watch_time_reporter.h"
 
 #include <numeric>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/power_monitor/power_monitor.h"
@@ -15,6 +14,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -51,11 +51,11 @@ PropertyAction HandlePropertyChange(T new_value,
 }
 
 WatchTimeReporter::WatchTimeReporter(
-    media::mojom::PlaybackPropertiesPtr properties,
+    media::mojom::blink::PlaybackPropertiesPtr properties,
     const gfx::Size& natural_size,
     GetMediaTimeCB get_media_time_cb,
     GetPipelineStatsCB get_pipeline_stats_cb,
-    media::mojom::MediaMetricsProvider* provider,
+    media::mojom::blink::MediaMetricsProvider* provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : WatchTimeReporter(std::move(properties),
@@ -69,13 +69,13 @@ WatchTimeReporter::WatchTimeReporter(
                         tick_clock) {}
 
 WatchTimeReporter::WatchTimeReporter(
-    media::mojom::PlaybackPropertiesPtr properties,
+    media::mojom::blink::PlaybackPropertiesPtr properties,
     bool is_background,
     bool is_muted,
     const gfx::Size& natural_size,
     GetMediaTimeCB get_media_time_cb,
     GetPipelineStatsCB get_pipeline_stats_cb,
-    media::mojom::MediaMetricsProvider* provider,
+    media::mojom::blink::MediaMetricsProvider* provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : properties_(std::move(properties)),
@@ -311,7 +311,7 @@ void WatchTimeReporter::OnDisplayTypeDocumentPictureInPicture() {
 }
 
 void WatchTimeReporter::UpdateSecondaryProperties(
-    media::mojom::SecondaryPlaybackPropertiesPtr secondary_properties) {
+    media::mojom::blink::SecondaryPlaybackPropertiesPtr secondary_properties) {
   // Flush any unrecorded watch time before updating the secondary properties to
   // ensure the UKM record is finalized with up-to-date watch time information.
   if (reporting_timer_.IsRunning())
@@ -552,7 +552,7 @@ void WatchTimeReporter::UpdateWatchTime() {
   RecordWatchTime();
 
   // Second, process any pending finalize events.
-  std::vector<media::WatchTimeKey> keys_to_finalize;
+  Vector<media::WatchTimeKey> keys_to_finalize;
   if (power_component_->NeedsFinalize())
     power_component_->Finalize(&keys_to_finalize);
   if (display_type_component_ && display_type_component_->NeedsFinalize()) {
@@ -598,7 +598,7 @@ void WatchTimeReporter::ResetUnderflowState() {
 
 std::unique_ptr<WatchTimeComponent<bool>>
 WatchTimeReporter::CreateBaseComponent() {
-  std::vector<media::WatchTimeKey> keys_to_finalize;
+  Vector<media::WatchTimeKey> keys_to_finalize;
   keys_to_finalize.emplace_back(NORMAL_KEY(All));
 
   if (properties_->has_video && properties_->has_audio && !is_background_ &&
@@ -631,8 +631,8 @@ WatchTimeReporter::CreateBaseComponent() {
 
 std::unique_ptr<WatchTimeComponent<bool>>
 WatchTimeReporter::CreatePowerComponent() {
-  std::vector<media::WatchTimeKey> keys_to_finalize{NORMAL_KEY(Battery),
-                                                    NORMAL_KEY(Ac)};
+  Vector<media::WatchTimeKey> keys_to_finalize{NORMAL_KEY(Battery),
+                                               NORMAL_KEY(Ac)};
 
   return std::make_unique<WatchTimeComponent<bool>>(
       IsOnBatteryPower(), std::move(keys_to_finalize),
@@ -657,7 +657,7 @@ std::unique_ptr<WatchTimeComponent<bool>>
 WatchTimeReporter::CreateControlsComponent() {
   DCHECK(!is_background_);
 
-  std::vector<media::WatchTimeKey> keys_to_finalize{
+  Vector<media::WatchTimeKey> keys_to_finalize{
       FOREGROUND_KEY(NativeControlsOn), FOREGROUND_KEY(NativeControlsOff)};
 
   return std::make_unique<WatchTimeComponent<bool>>(
@@ -687,7 +687,7 @@ WatchTimeReporter::CreateDisplayTypeComponent() {
   DCHECK(properties_->has_video || properties_->has_audio);
   DCHECK(!is_background_);
 
-  std::vector<media::WatchTimeKey> keys_to_finalize{
+  Vector<media::WatchTimeKey> keys_to_finalize{
       DISPLAY_TYPE_KEY(DisplayInline), DISPLAY_TYPE_KEY(DisplayFullscreen),
       DISPLAY_TYPE_KEY(DisplayPictureInPicture)};
 

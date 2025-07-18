@@ -25,6 +25,7 @@ include_rules = [
   "+media/formats",
   "+media/learning/common",
   "+media/learning/mojo/public/cpp",
+  "+media/learning/mojo/public/mojom",
   "+media/media_buildflags.h",
   "+media/mojo/mojom",
   "+media/renderers/paint_canvas_video_renderer.h",

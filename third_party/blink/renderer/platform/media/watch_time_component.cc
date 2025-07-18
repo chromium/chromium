@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/media/watch_time_component.h"
 
 #include "base/time/time.h"
+#include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -13,10 +14,10 @@ namespace blink {
 template <typename T>
 WatchTimeComponent<T>::WatchTimeComponent(
     T initial_value,
-    std::vector<media::WatchTimeKey> keys_to_finalize,
+    Vector<media::WatchTimeKey> keys_to_finalize,
     ValueToKeyCB value_to_key_cb,
     GetMediaTimeCB get_media_time_cb,
-    media::mojom::WatchTimeRecorder* recorder)
+    media::mojom::blink::WatchTimeRecorder* recorder)
     : keys_to_finalize_(std::move(keys_to_finalize)),
       value_to_key_cb_(std::move(value_to_key_cb)),
       get_media_time_cb_(std::move(get_media_time_cb)),
@@ -102,7 +103,7 @@ void WatchTimeComponent<T>::RecordWatchTime(base::TimeDelta current_timestamp) {
 
 template <typename T>
 void WatchTimeComponent<T>::Finalize(
-    std::vector<media::WatchTimeKey>* keys_to_finalize) {
+    Vector<media::WatchTimeKey>* keys_to_finalize) {
   DCHECK(NeedsFinalize());
   // Update |current_value_| and |start_timestamp_| to |end_timestamp_| since
   // that's when the |pending_value_| was set.
@@ -111,8 +112,7 @@ void WatchTimeComponent<T>::Finalize(
 
   // Complete the finalize and indicate which keys need to be finalized.
   end_timestamp_ = media::kNoTimestamp;
-  keys_to_finalize->insert(keys_to_finalize->end(), keys_to_finalize_.begin(),
-                           keys_to_finalize_.end());
+  keys_to_finalize->AppendVector(keys_to_finalize_);
   DCHECK(!NeedsFinalize());
 }
 

@@ -156,6 +156,10 @@ mojom("mojom") {
           cpp = "::media::AudioPipelineInfo"
         },
         {
+          mojom = "media.mojom.PipelineStatistics"
+          cpp = "::media::PipelineStatistics"
+        },
+        {
           mojom = "media.mojom.VideoPipelineInfo"
           cpp = "::media::VideoPipelineInfo"
         },
@@ -194,6 +198,18 @@ mojom("mojom") {
           cpp = "::media::AudioCodec"
         },
         {
+          mojom = "media.mojom.AudioCodecProfile"
+          cpp = "::media::AudioCodecProfile"
+        },
+        {
+          mojom = "media.mojom.AudioDecoderType"
+          cpp = "::media::AudioDecoderType"
+        },
+        {
+          mojom = "media.mojom.EncryptionScheme"
+          cpp = "::media::EncryptionScheme"
+        },
+        {
           mojom = "media.mojom.FullscreenVideoStatus"
           cpp = "::blink::WebFullscreenVideoStatus"
         },
@@ -212,6 +228,14 @@ mojom("mojom") {
         {
           mojom = "media.mojom.VideoCodecProfile"
           cpp = "::media::VideoCodecProfile"
+        },
+        {
+          mojom = "media.mojom.VideoDecoderType"
+          cpp = "::media::VideoDecoderType"
+        },
+        {
+          mojom = "media.mojom.WatchTimeKey"
+          cpp = "::media::WatchTimeKey"
         },
       ]
       traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
@@ -346,15 +370,6 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "cdm_config_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "media.mojom.PipelineStatistics"
-          cpp = "::media::PipelineStatistics"
-        },
-      ]
-      traits_headers = [ "pipeline_status_mojom_traits.h" ]
     },
     {
       types = [
@@ -529,14 +544,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "media.mojom.AudioCodecProfile"
-          cpp = "::media::AudioCodecProfile"
-        },
-        {
-          mojom = "media.mojom.AudioDecoderType"
-          cpp = "::media::AudioDecoderType"
-        },
-        {
           mojom = "media.mojom.BufferingState"
           cpp = "::media::BufferingState"
         },
@@ -581,10 +588,6 @@ mojom("mojom") {
           cpp = "::media::EmeInitDataType"
         },
         {
-          mojom = "media.mojom.EncryptionScheme"
-          cpp = "::media::EncryptionScheme"
-        },
-        {
           mojom = "media.mojom.HdcpVersion"
           cpp = "::media::HdcpVersion"
         },
@@ -613,20 +616,12 @@ mojom("mojom") {
           cpp = "::media::SubsampleEntry"
         },
         {
-          mojom = "media.mojom.VideoDecoderType"
-          cpp = "::media::VideoDecoderType"
-        },
-        {
           mojom = "media.mojom.VideoPixelFormat"
           cpp = "::media::VideoPixelFormat"
         },
         {
           mojom = "media.mojom.WaitingReason"
           cpp = "::media::WaitingReason"
-        },
-        {
-          mojom = "media.mojom.WatchTimeKey"
-          cpp = "::media::WatchTimeKey"
         },
       ]
       traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]

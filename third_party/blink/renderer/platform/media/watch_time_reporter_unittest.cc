@@ -18,8 +18,8 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/test_helpers.h"
 #include "media/base/watch_time_keys.h"
-#include "media/mojo/mojom/media_metrics_provider.mojom.h"
-#include "media/mojo/mojom/watch_time_recorder.mojom.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
+#include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +28,8 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/platform/media/watch_time_component.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -109,7 +111,7 @@ using WatchTimeReporterTestData = std::tuple<bool, bool>;
 class WatchTimeReporterTest
     : public testing::TestWithParam<WatchTimeReporterTestData> {
  public:
-  class WatchTimeInterceptor : public media::mojom::WatchTimeRecorder {
+  class WatchTimeInterceptor : public media::mojom::blink::WatchTimeRecorder {
    public:
     WatchTimeInterceptor(
         media::PictureInPictureEventsInfo::AutoPipReasonCallback
@@ -120,13 +122,13 @@ class WatchTimeReporterTest
     WatchTimeInterceptor& operator=(const WatchTimeInterceptor&) = delete;
     ~WatchTimeInterceptor() override = default;
 
-    // mojom::WatchTimeRecorder implementation:
+    // mojom::blink::WatchTimeRecorder implementation:
     void RecordWatchTime(WatchTimeKey key, base::TimeDelta value) override {
       parent_->OnWatchTimeUpdate(key, value);
     }
 
     void FinalizeWatchTime(
-        const std::vector<WatchTimeKey>& watch_time_keys) override {
+        const Vector<WatchTimeKey>& watch_time_keys) override {
       if (watch_time_keys.empty()) {
         parent_->OnWatchTimeFinalized();
       } else {
@@ -225,8 +227,9 @@ class WatchTimeReporterTest
       parent_->OnError(status);
     }
 
-    void UpdateSecondaryProperties(media::mojom::SecondaryPlaybackPropertiesPtr
-                                       secondary_properties) override {
+    void UpdateSecondaryProperties(
+        media::mojom::blink::SecondaryPlaybackPropertiesPtr
+            secondary_properties) override {
       parent_->OnUpdateSecondaryProperties(std::move(secondary_properties));
     }
 
@@ -259,16 +262,17 @@ class WatchTimeReporterTest
     raw_ptr<WatchTimeReporterTest> parent_;
   };
 
-  class FakeMediaMetricsProvider : public media::mojom::MediaMetricsProvider {
+  class FakeMediaMetricsProvider
+      : public media::mojom::blink::MediaMetricsProvider {
    public:
     explicit FakeMediaMetricsProvider(WatchTimeReporterTest* parent)
         : parent_(parent) {}
     ~FakeMediaMetricsProvider() override {}
 
-    // mojom::WatchTimeRecorderProvider implementation:
+    // mojom::blink::WatchTimeRecorderProvider implementation:
     void AcquireWatchTimeRecorder(
-        media::mojom::PlaybackPropertiesPtr properties,
-        mojo::PendingReceiver<media::mojom::WatchTimeRecorder> receiver)
+        media::mojom::blink::PlaybackPropertiesPtr properties,
+        mojo::PendingReceiver<media::mojom::blink::WatchTimeRecorder> receiver)
         override {
       mojo::MakeSelfOwnedReceiver(
           std::make_unique<WatchTimeInterceptor>(
@@ -278,20 +282,22 @@ class WatchTimeReporterTest
           std::move(receiver));
     }
     void AcquireVideoDecodeStatsRecorder(
-        mojo::PendingReceiver<media::mojom::VideoDecodeStatsRecorder> receiver)
-        override {
+        mojo::PendingReceiver<media::mojom::blink::VideoDecodeStatsRecorder>
+            receiver) override {
       FAIL();
     }
     void AcquireLearningTaskController(
-        const std::string& taskName,
-        mojo::PendingReceiver<media::learning::mojom::LearningTaskController>
-            receiver) override {}
-    void AcquirePlaybackEventsRecorder(
-        mojo::PendingReceiver<media::mojom::PlaybackEventsRecorder> receiver)
+        const String& taskName,
+        mojo::PendingReceiver<
+            media::learning::mojom::blink::LearningTaskController> receiver)
         override {}
-    void Initialize(bool is_mse,
-                    media::mojom::MediaURLScheme url_scheme,
-                    media::mojom::MediaStreamType media_stream_type) override {}
+    void AcquirePlaybackEventsRecorder(
+        mojo::PendingReceiver<media::mojom::blink::PlaybackEventsRecorder>
+            receiver) override {}
+    void Initialize(
+        bool is_mse,
+        media::mojom::blink::MediaURLScheme url_scheme,
+        media::mojom::blink::MediaStreamType media_stream_type) override {}
     void OnStarted(const media::PipelineStatus& status) override {}
     void OnError(const media::PipelineStatus& status) override {}
     void OnFallback(const media::PipelineStatus& status) override {}
@@ -303,7 +309,7 @@ class WatchTimeReporterTest
         media::container_names::MediaContainerName container_name) override {}
     void SetRendererType(media::RendererType renderer_type) override {}
     void SetDemuxerType(media::DemuxerType demuxer_type) override {}
-    void SetKeySystem(const std::string& key_system) override {}
+    void SetKeySystem(const String& key_system) override {}
     void SetHasWaitingForKey() override {}
     void SetIsHardwareSecure() override {}
     void SetHasPlayed() override {}
@@ -348,9 +354,9 @@ class WatchTimeReporterTest
       EXPECT_WATCH_TIME_FINALIZED();
 
     wtr_ = std::make_unique<WatchTimeReporter>(
-        media::mojom::PlaybackProperties::New(
+        media::mojom::blink::PlaybackProperties::New(
             has_audio_, has_video_, false, false, is_mse, is_encrypted, false,
-            media::mojom::MediaStreamType::kNone, renderer_type),
+            media::mojom::blink::MediaStreamType::kNone, renderer_type),
         initial_video_size,
         WTF::BindRepeating(&WatchTimeReporterTest::GetCurrentMediaTime,
                            WTF::Unretained(this)),
@@ -672,7 +678,7 @@ class WatchTimeReporterTest
   MOCK_METHOD2(OnUnderflowDurationUpdate, void(int, base::TimeDelta));
   MOCK_METHOD1(OnError, void(media::PipelineStatus));
   MOCK_METHOD1(OnUpdateSecondaryProperties,
-               void(media::mojom::SecondaryPlaybackPropertiesPtr));
+               void(media::mojom::blink::SecondaryPlaybackPropertiesPtr));
   MOCK_METHOD1(OnSetAutoplayInitiated, void(bool));
   MOCK_METHOD1(OnDurationChanged, void(base::TimeDelta));
   MOCK_METHOD2(OnUpdateVideoDecodeStats, void(uint32_t, uint32_t));
@@ -1123,7 +1129,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNoUnderflowDoubleReport) {
 TEST_P(WatchTimeReporterTest, WatchTimeReporterSecondaryProperties) {
   Initialize(true, true, kSizeJustRight);
 
-  auto properties = media::mojom::SecondaryPlaybackProperties::New(
+  auto properties = media::mojom::blink::SecondaryPlaybackProperties::New(
       has_audio_ ? media::AudioCodec::kAAC : media::AudioCodec::kUnknown,
       has_video_ ? media::VideoCodec::kH264 : media::VideoCodec::kUnknown,
       has_audio_ ? media::AudioCodecProfile::kXHE_AAC
@@ -1169,7 +1175,7 @@ TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeIncreased) {
   EXPECT_CALL(*this, OnUpdateSecondaryProperties(_))
       .Times((has_audio_ && has_video_) ? 3 : 2);
   wtr_->UpdateSecondaryProperties(
-      media::mojom::SecondaryPlaybackProperties::New(
+      media::mojom::blink::SecondaryPlaybackProperties::New(
           media::AudioCodec::kUnknown, media::VideoCodec::kUnknown,
           media::AudioCodecProfile::kUnknown,
           media::VIDEO_CODEC_PROFILE_UNKNOWN, media::AudioDecoderType::kUnknown,
@@ -1194,7 +1200,7 @@ TEST_P(WatchTimeReporterTest, SecondaryProperties_SizeDecreased) {
   EXPECT_CALL(*this, OnUpdateSecondaryProperties(_))
       .Times((has_audio_ && has_video_) ? 3 : 2);
   wtr_->UpdateSecondaryProperties(
-      media::mojom::SecondaryPlaybackProperties::New(
+      media::mojom::blink::SecondaryPlaybackProperties::New(
           media::AudioCodec::kUnknown, media::VideoCodec::kUnknown,
           media::AudioCodecProfile::kUnknown,
           media::VIDEO_CODEC_PROFILE_UNKNOWN, media::AudioDecoderType::kUnknown,

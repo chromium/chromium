@@ -5,15 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_COMPONENT_H_
 
-#include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
-#include "media/mojo/mojom/watch_time_recorder.mojom.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "media/mojo/mojom/watch_time_recorder.mojom-blink-forward.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -47,10 +45,10 @@ class WatchTimeComponent {
   //
   // See WatchTimeReporter constructor for |get_media_time_cb| and |recorder|.
   WatchTimeComponent(T initial_value,
-                     std::vector<media::WatchTimeKey> keys_to_finalize,
+                     Vector<media::WatchTimeKey> keys_to_finalize,
                      ValueToKeyCB value_to_key_cb,
                      GetMediaTimeCB get_media_time_cb,
-                     media::mojom::WatchTimeRecorder* recorder);
+                     media::mojom::blink::WatchTimeRecorder* recorder);
   WatchTimeComponent(const WatchTimeComponent&) = delete;
   WatchTimeComponent& operator=(const WatchTimeComponent&) = delete;
   ~WatchTimeComponent();
@@ -73,10 +71,10 @@ class WatchTimeComponent {
   void SetCurrentValue(T new_value);
 
   // If there's no pending finalize, records the amount of watch time which has
-  // elapsed between |current_timestamp| and |start_timestamp_| by calling into
-  // mojom::WatchTimeRecorder::RecordWatchTime(). The key to be recorded to is
-  // determined by the |value_to_key_cb_|; or if none is present, all keys in
-  // |keys_to_finalize_| are recorded to.
+  // elapsed between `current_timestamp` and `start_timestamp_` by calling into
+  // mojom::blink::WatchTimeRecorder::RecordWatchTime(). The key to be recorded
+  // to is determined by the |value_to_key_cb_|; or if none is present, all keys
+  // in `keys_to_finalize_` are recorded to.
   //
   // If there's a pending finalize it records the delta between |end_timestamp_|
   // and |start_timestamp_| if |end_timestamp_| < |current_timestamp|. Does not
@@ -96,7 +94,7 @@ class WatchTimeComponent {
   //
   // E.g., some components may stop reporting upon Finalize() while others want
   // to report to a new key for all watch time going forward.
-  void Finalize(std::vector<media::WatchTimeKey>* keys_to_finalize);
+  void Finalize(Vector<media::WatchTimeKey>* keys_to_finalize);
 
   // Returns true if Finalize() should be called.
   bool NeedsFinalize() const;
@@ -108,11 +106,10 @@ class WatchTimeComponent {
 
  private:
   // Initialized during construction. See constructor for details.
-  const std::vector<media::WatchTimeKey> keys_to_finalize_
-      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651): Pending migration");
+  const Vector<media::WatchTimeKey> keys_to_finalize_;
   const ValueToKeyCB value_to_key_cb_;
   const GetMediaTimeCB get_media_time_cb_;
-  const raw_ptr<media::mojom::WatchTimeRecorder> recorder_;
+  const raw_ptr<media::mojom::blink::WatchTimeRecorder> recorder_;
 
   // The current value which will be used to select keys for reporting WatchTime
   // during the next RecordWatchTime() call.

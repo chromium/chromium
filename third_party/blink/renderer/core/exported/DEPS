@@ -33,6 +33,7 @@ specific_include_rules = {
     "+media/filters",
     "+media/cdm/clear_key_cdm_common.h",
     "+media/mojo/services",
+    "+media/mojo/mojom/media_metrics_provider.mojom-blink.h",
     "+media/renderers",
     "+gin/v8_initializer.h",
     "+mojo/core/embedder/embedder.h",

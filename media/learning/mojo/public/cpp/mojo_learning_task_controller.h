@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
@@ -21,7 +22,7 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskController
   // whatever |controller| uses.
   MojoLearningTaskController(
       const LearningTask& task,
-      mojo::Remote<mojom::LearningTaskController> controller);
+      mojo::PendingRemote<mojom::LearningTaskController> controller);
 
   MojoLearningTaskController(const MojoLearningTaskController&) = delete;
   MojoLearningTaskController& operator=(const MojoLearningTaskController&) =

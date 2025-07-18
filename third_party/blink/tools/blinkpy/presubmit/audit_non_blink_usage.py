@@ -1985,14 +1985,8 @@ _CONFIG = [
         ],
         'allowed': [
             # For interoperability with non-Blink code.
+            'learning::mojom::LearningTaskControllerInterfaceBase',
             'media::mojom::MediaMetricsProviderInterfaceBase',
-
-            # TODO(crbug.com/40760651): migrate to Blink variant.
-            'learning::mojom::LearningTaskController',
-            'media::mojom::MediaMetricsProvider',
-            'media::mojom::PlaybackPropertiesPtr',
-            'media::mojom::SecondaryPlaybackPropertiesPtr',
-            'media::mojom::WatchTimeRecorder',
         ],
     },
     {

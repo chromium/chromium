@@ -11,7 +11,7 @@ namespace learning {
 
 MojoLearningTaskController::MojoLearningTaskController(
     const LearningTask& task,
-    mojo::Remote<mojom::LearningTaskController> controller)
+    mojo::PendingRemote<mojom::LearningTaskController> controller)
     : task_(task), controller_(std::move(controller)) {}
 
 MojoLearningTaskController::~MojoLearningTaskController() = default;

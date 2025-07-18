@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_MEDIA_PLAYER_UTIL_H_
 
 #include "media/base/output_device_info.h"
-#include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

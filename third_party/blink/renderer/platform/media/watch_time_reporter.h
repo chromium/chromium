@@ -16,8 +16,8 @@
 #include "media/base/media_log.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
-#include "media/mojo/mojom/media_metrics_provider.mojom.h"
-#include "media/mojo/mojom/watch_time_recorder.mojom.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
+#include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -67,26 +67,26 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // before attempting construction as incorrect values will result in the wrong
   // watch time metrics being reported.
   //
-  // |properties| Properties describing the playback; these are considered
+  // `properties` Properties describing the playback; these are considered
   // immutable over the lifetime of the reporter. If any of them change a new
   // WatchTimeReporter should be created with updated properties.
   //
-  // |get_media_time_cb| must return the current playback time in terms of media
+  // `get_media_time_cb` must return the current playback time in terms of media
   // time, not wall clock time! Using media time instead of wall clock time
   // allows us to avoid a whole class of issues around clock changes during
   // suspend and resume.
   //
-  // |provider| A provider of mojom::WatchTimeRecorder instances which will be
-  // created and used to handle caching of metrics outside of the current
-  // process.
+  // `provider` A provider of mojom::blink::WatchTimeRecorder instances which
+  // will be created and used to handle caching of metrics outside of the
+  // current process.
   //
   // TODO(dalecurtis): Should we only report when rate == 1.0? Should we scale
   // the elapsed media time instead?
-  WatchTimeReporter(media::mojom::PlaybackPropertiesPtr properties,
+  WatchTimeReporter(media::mojom::blink::PlaybackPropertiesPtr properties,
                     const gfx::Size& natural_size,
                     GetMediaTimeCB get_media_time_cb,
                     GetPipelineStatsCB get_pipeline_stats_cb,
-                    media::mojom::MediaMetricsProvider* provider,
+                    media::mojom::blink::MediaMetricsProvider* provider,
                     scoped_refptr<base::SequencedTaskRunner> task_runner,
                     const base::TickClock* tick_clock = nullptr);
   WatchTimeReporter(const WatchTimeReporter&) = delete;
@@ -148,7 +148,7 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // Note: Both UMA and UMK watch time will be interrupted if the natural size
   // transitions above/below kMinimumVideoSize.
   void UpdateSecondaryProperties(
-      media::mojom::SecondaryPlaybackPropertiesPtr secondary_properties);
+      media::mojom::blink::SecondaryPlaybackPropertiesPtr secondary_properties);
 
   // Notifies the autoplay status of the playback. Must not be called multiple
   // times with different values.
@@ -162,13 +162,13 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   friend class WatchTimeReporterTest;
 
   // Internal constructor for marking background status.
-  WatchTimeReporter(media::mojom::PlaybackPropertiesPtr properties,
+  WatchTimeReporter(media::mojom::blink::PlaybackPropertiesPtr properties,
                     bool is_background,
                     bool is_muted,
                     const gfx::Size& natural_size,
                     GetMediaTimeCB get_media_time_cb,
                     GetPipelineStatsCB get_pipeline_stats_cb,
-                    media::mojom::MediaMetricsProvider* provider,
+                    media::mojom::blink::MediaMetricsProvider* provider,
                     scoped_refptr<base::SequencedTaskRunner> task_runner,
                     const base::TickClock* tick_clock);
 
@@ -210,12 +210,12 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
       WebMediaPlayer::DisplayType display_type);
 
   // Initialized during construction.
-  const media::mojom::PlaybackPropertiesPtr properties_;
+  const media::mojom::blink::PlaybackPropertiesPtr properties_;
   const bool is_background_;
   const bool is_muted_;
   const GetMediaTimeCB get_media_time_cb_;
   const GetPipelineStatsCB get_pipeline_stats_cb_;
-  mojo::Remote<media::mojom::WatchTimeRecorder> recorder_;
+  mojo::Remote<media::mojom::blink::WatchTimeRecorder> recorder_;
 
   // The amount of time between each UpdateWatchTime(); this is the frequency by
   // which the watch times are updated. In the event of a process crash or kill

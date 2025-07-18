@@ -10,13 +10,15 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capabilities/bucket_utility.h"
-#include "media/mojo/mojom/media_types.mojom.h"
+#include "media/mojo/mojom/media_types.mojom-blink.h"
+#include "media/mojo/mojom/video_decode_stats_recorder.mojom-blink.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 VideoDecodeStatsReporter::VideoDecodeStatsReporter(
-    mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder> recorder_remote,
+    mojo::PendingRemote<media::mojom::blink::VideoDecodeStatsRecorder>
+        recorder_remote,
     GetPipelineStatsCB get_pipeline_stats_cb,
     media::VideoCodecProfile codec_profile,
     const gfx::Size& natural_size,
@@ -149,7 +151,7 @@ void VideoDecodeStatsReporter::StartNewRecord(
       frames_decoded_power_efficient_offset;
 
   bool use_hw_secure_codecs = use_hw_secure_codecs_;
-  auto features = media::mojom::PredictionFeatures::New(
+  auto features = media::mojom::blink::PredictionFeatures::New(
       codec_profile_, natural_size_, last_observed_fps_, key_system_,
       use_hw_secure_codecs);
 
@@ -316,7 +318,7 @@ void VideoDecodeStatsReporter::UpdateStats() {
                    frames_decoded_power_efficient_offset_,
                frames_decoded);
 
-  auto targets = media::mojom::PredictionTargets::New(
+  auto targets = media::mojom::blink::PredictionTargets::New(
       frames_decoded, frames_dropped, frames_power_efficient);
 
   DVLOG(2) << __func__ << " Recording -- dropped:" << targets->frames_dropped

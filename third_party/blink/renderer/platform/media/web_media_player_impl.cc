@@ -62,8 +62,13 @@
 #include "media/learning/common/learning_task_controller.h"
 #include "media/learning/common/media_learning_tasks.h"
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
+#include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
+#include "media/mojo/mojom/media_types.mojom-blink.h"
+#include "media/mojo/mojom/playback_events_recorder.mojom-blink.h"
+#include "media/mojo/mojom/video_decode_stats_recorder.mojom-blink.h"
+#include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/data_url.h"
@@ -71,6 +76,7 @@
 #include "net/url_request/url_request_job.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
@@ -105,6 +111,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -443,7 +450,8 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     base::WeakPtr<media::MediaObserver> media_observer,
     bool enable_instant_source_buffer_gc,
     bool embedded_media_experience_enabled,
-    mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
+    mojo::PendingRemote<media::mojom::blink::MediaMetricsProvider>
+        metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
     bool use_surface_layer,
@@ -1765,7 +1773,7 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
 
   media_log_->SetProperty<MediaLogProperty::kSetCdm>(cdm_config_.value());
 
-  media_metrics_provider_->SetKeySystem(cdm_config_->key_system);
+  media_metrics_provider_->SetKeySystem(String(cdm_config_->key_system));
   if (cdm_config_->use_hw_secure_codecs)
     media_metrics_provider_->SetIsHardwareSecure();
   CreateVideoDecodeStatsReporter();
@@ -2214,7 +2222,7 @@ void WebMediaPlayerImpl::CreateVideoDecodeStatsReporter() {
     DCHECK(!cdm_config_->key_system.empty());
   }
 
-  mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder> recorder;
+  mojo::PendingRemote<media::mojom::blink::VideoDecodeStatsRecorder> recorder;
   media_metrics_provider_->AcquireVideoDecodeStatsRecorder(
       recorder.InitWithNewPipeAndPassReceiver());
 
@@ -3520,11 +3528,11 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
 
   // Create the watch time reporter and synchronize its initial state.
   watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
-      media::mojom::PlaybackProperties::New(
+      media::mojom::blink::PlaybackProperties::New(
           pipeline_metadata_.has_audio, pipeline_metadata_.has_video, false,
           false, GetDemuxerType() == media::DemuxerType::kChunkDemuxer,
           is_encrypted_, embedded_media_experience_enabled_,
-          media::mojom::MediaStreamType::kNone, renderer_type_),
+          media::mojom::blink::MediaStreamType::kNone, renderer_type_),
       pipeline_metadata_.natural_size,
       WTF::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
                          WTF::Unretained(this)),
@@ -3572,7 +3580,7 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
 
 void WebMediaPlayerImpl::UpdateSecondaryProperties() {
   watch_time_reporter_->UpdateSecondaryProperties(
-      media::mojom::SecondaryPlaybackProperties::New(
+      media::mojom::blink::SecondaryPlaybackProperties::New(
           pipeline_metadata_.audio_decoder_config.codec(),
           pipeline_metadata_.video_decoder_config.codec(),
           pipeline_metadata_.audio_decoder_config.profile(),
@@ -4126,11 +4134,17 @@ WebMediaPlayerImpl::GetLearningTaskController(const char* task_name) {
   learning::LearningTask task = learning::MediaLearningTasks::Get(task_name);
   DCHECK_EQ(task.name, task_name);
 
-  mojo::Remote<learning::mojom::LearningTaskController> remote_ltc;
+  mojo::PendingRemote<learning::mojom::blink::LearningTaskController>
+      remote_ltc;
   media_metrics_provider_->AcquireLearningTaskController(
-      task.name, remote_ltc.BindNewPipeAndPassReceiver());
+      String(task.name),
+      CrossVariantMojoReceiver<
+          learning::mojom::LearningTaskControllerInterfaceBase>(
+          remote_ltc.InitWithNewPipeAndPassReceiver()));
   return std::make_unique<learning::MojoLearningTaskController>(
-      task, std::move(remote_ltc));
+      task, CrossVariantMojoRemote<
+                learning::mojom::LearningTaskControllerInterfaceBase>(
+                std::move(remote_ltc)));
 }
 
 bool WebMediaPlayerImpl::HasUnmutedAudio() const {

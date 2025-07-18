@@ -89,9 +89,9 @@ class MojoLearningTaskControllerTest : public ::testing::Test {
     // Create a LearningTask.
     task_.name = "MyLearningTask";
 
-    // Tell |learning_controller_| to forward to the fake learner impl.
-    mojo::Remote<media::learning::mojom::LearningTaskController> remote(
-        learning_controller_receiver_.BindNewPipeAndPassRemote());
+    // Tell `learning_controller_` to forward to the fake learner impl.
+    mojo::PendingRemote<media::learning::mojom::LearningTaskController> remote =
+        learning_controller_receiver_.BindNewPipeAndPassRemote();
     learning_controller_ =
         std::make_unique<MojoLearningTaskController>(task_, std::move(remote));
   }
