@@ -44,13 +44,6 @@ BASE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting,
              "CertProvisioningUseOnlyInvalidationsForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeviceCertProvisioningInvalidationWithDirectMessagesEnabled,
-             "DeviceCertProvisioningInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kUserCertProvisioningInvalidationWithDirectMessagesEnabled,
-             "UserCertProvisioningInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 std::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
@@ -102,17 +95,6 @@ void DeleteVaKeysWithMatchBehavior(
 
 bool IsValidKeyType(const std::string& key_type) {
   return key_type == "rsa" || key_type == "ec";
-}
-
-bool IsDirectInvalidationEnabledForScope(CertScope scope) {
-  switch (scope) {
-    case CertScope::kUser:
-      return base::FeatureList::IsEnabled(
-          kUserCertProvisioningInvalidationWithDirectMessagesEnabled);
-    case CertScope::kDevice:
-      return base::FeatureList::IsEnabled(
-          kDeviceCertProvisioningInvalidationWithDirectMessagesEnabled);
-  }
 }
 
 }  // namespace
@@ -395,13 +377,6 @@ std::string MakeInvalidationListenerType(const std::string& cert_prov_id) {
 bool ShouldOnlyUseInvalidations() {
   return base::FeatureList::IsEnabled(
       kCertProvisioningUseOnlyInvalidationsForTesting);
-}
-
-int64_t GetCertProvisioningInvalidationProjectNumber(CertScope scope) {
-  if (IsDirectInvalidationEnabledForScope(scope)) {
-    return kCertProvisioningInvalidationProjectNumber;
-  }
-  return policy::kPolicyFCMInvalidationSenderID;
 }
 
 }  // namespace cert_provisioning

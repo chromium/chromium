@@ -9,8 +9,6 @@ if (is_android) {
 static_library("invalidation") {
   sources = [
     "invalidation_constants.h",
-    "invalidation_factory.cc",
-    "invalidation_factory.h",
     "invalidation_listener.cc",
     "invalidation_listener.h",
     "invalidation_listener_impl.cc",
@@ -29,7 +27,6 @@ static_library("invalidation") {
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/signin/public/identity_manager",
     "//google_apis",
   ]
 }
@@ -51,10 +48,7 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "invalidation_factory_unittest.cc",
-    "invalidation_listener_impl_unittest.cc",
-  ]
+  sources = [ "invalidation_listener_impl_unittest.cc" ]
   deps = [
     "//base",
     "//components/gcm_driver:test_support",
@@ -62,7 +56,6 @@ source_set("unit_tests") {
     "//components/invalidation",
     "//components/invalidation:test_support",
     "//components/invalidation/impl",
-    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//google_apis:test_support",
     "//google_apis/gcm:gcm",

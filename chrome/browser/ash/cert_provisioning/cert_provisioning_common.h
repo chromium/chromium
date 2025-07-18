@@ -46,11 +46,6 @@ namespace cert_provisioning {
 // done.
 BASE_DECLARE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting);
 
-BASE_DECLARE_FEATURE(
-    kDeviceCertProvisioningInvalidationWithDirectMessagesEnabled);
-BASE_DECLARE_FEATURE(
-    kUserCertProvisioningInvalidationWithDirectMessagesEnabled);
-
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix
 using DeleteVaKeyCallback = base::OnceCallback<void(bool)>;
 
@@ -314,9 +309,6 @@ std::string MakeInvalidationListenerType(
 // Returns true if workers should only progress when they receive an
 // invalidation (not on timeout).
 bool ShouldOnlyUseInvalidations();
-
-// Returns GCP number for cert provisioning invalidations of given `scope`.
-int64_t GetCertProvisioningInvalidationProjectNumber(CertScope scope);
 
 }  // namespace cert_provisioning
 }  // namespace ash

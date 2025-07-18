@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -43,6 +42,13 @@ constexpr char kUserRemoteCommandsInvalidatorTypeName[] =
     "PROFILE_REMOTE_COMMAND";
 #endif
 
+template <typename T, typename U>
+auto PointerVariantToRawPointer(const std::variant<T*, U*>& v) {
+  return std::visit(
+      [](auto&& arg) -> std::variant<raw_ptr<T>, raw_ptr<U>> { return arg; },
+      v);
+}
+
 }  // namespace
 
 RemoteCommandsInvalidator::RemoteCommandsInvalidator(
@@ -70,8 +76,8 @@ void RemoteCommandsInvalidator::Initialize(
         std::get<invalidation::InvalidationListener*>(
             invalidation_service_or_listener))
       << "InvalidationListener is used but is null";
-  invalidation_service_or_listener_ = invalidation::PointerVariantToRawPointer(
-      invalidation_service_or_listener);
+  invalidation_service_or_listener_ =
+      PointerVariantToRawPointer(invalidation_service_or_listener);
 
   state_ = STOPPED;
 

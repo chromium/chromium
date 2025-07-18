@@ -11,7 +11,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation.h"
@@ -41,6 +40,13 @@ const char* CertScopeToString(CertScope scope) {
   }
 
   NOTREACHED() << "Unknown cert scope: " << static_cast<int>(scope);
+}
+
+template <typename T, typename U>
+auto PointerVariantToRawPointer(const std::variant<T*, U*>& v) {
+  return std::visit(
+      [](auto&& arg) -> std::variant<raw_ptr<T>, raw_ptr<U>> { return arg; },
+      v);
 }
 
 }  // namespace
@@ -80,8 +86,7 @@ CertProvisioningInvalidationHandler::CertProvisioningInvalidationHandler(
     OnInvalidationEventCallback on_invalidation_event_callback)
     : scope_(scope),
       invalidation_service_or_listener_(
-          invalidation::PointerVariantToRawPointer(
-              invalidation_service_or_listener)),
+          PointerVariantToRawPointer(invalidation_service_or_listener)),
       topic_(topic),
       listener_type_(listener_type),
       on_invalidation_event_callback_(

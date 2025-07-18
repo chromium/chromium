@@ -16,7 +16,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -108,6 +107,13 @@ auto CalculatePolicyHash(const enterprise_management::PolicyData* policy) {
   }
 
   return base::Hash(policy->policy_value());
+}
+
+template <typename T, typename U>
+auto PointerVariantToRawPointer(const std::variant<T*, U*>& v) {
+  return std::visit(
+      [](auto&& arg) -> std::variant<raw_ptr<T>, raw_ptr<U>> { return arg; },
+      v);
 }
 
 }  // namespace
@@ -229,8 +235,8 @@ void CloudPolicyInvalidator::Initialize(
         std::get<invalidation::InvalidationListener*>(
             invalidation_service_or_listener))
       << "InvalidationListener is used but is null";
-  invalidation_service_or_listener_ = invalidation::PointerVariantToRawPointer(
-      invalidation_service_or_listener);
+  invalidation_service_or_listener_ =
+      PointerVariantToRawPointer(invalidation_service_or_listener);
   state_ = State::STOPPED;
   core_observation_.Observe(core_);
   if (core_->refresh_scheduler())
