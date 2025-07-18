@@ -66,6 +66,7 @@ import("//third_party/blink/renderer/core/scheduler/build.gni")
 import(
     "//third_party/blink/renderer/core/scheduler_integration_tests/build.gni")
 import("//third_party/blink/renderer/core/script/build.gni")
+import("//third_party/blink/renderer/core/script_tools/build.gni")
 import("//third_party/blink/renderer/core/scroll/build.gni")
 import("//third_party/blink/renderer/core/shadow_realm/build.gni")
 import("//third_party/blink/renderer/core/speculation_rules/build.gni")
@@ -271,6 +272,7 @@ component("core") {
   sources += rebase_path(blink_core_sources_display_lock, "", "display_lock")
   sources +=
       rebase_path(blink_core_sources_view_transition, "", "view_transition")
+  sources += rebase_path(blink_core_sources_script_tools, "", "script_tools")
   sources += rebase_path(blink_core_sources_dom, "", "dom")
   sources += rebase_path(blink_core_sources_editing, "", "editing")
   sources += rebase_path(blink_core_sources_events, "", "events")

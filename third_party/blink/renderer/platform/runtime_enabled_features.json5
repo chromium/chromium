@@ -4146,6 +4146,10 @@
       base_feature: "none",
     },
     {
+      name: "ScriptTools",
+      status: "test",
+    },
+    {
       name: "ScrollAnchorPriorityCandidateSubtree",
       status: "stable",
     },

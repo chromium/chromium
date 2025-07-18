@@ -356,6 +356,11 @@ interface AudioWorkletNode : AudioNode
     getter port
     method constructor
     setter onprocessorerror
+interface AutomationDelegate
+    attribute @@toStringTag
+    method constructor
+    method registerTool
+    method unregisterTool
 interface BackForwardCacheRestoration : PerformanceEntry
     attribute @@toStringTag
     getter pageshowEventEnd
@@ -12041,6 +12046,7 @@ namespace console
     attribute awConsole
     attribute globalThis
     attribute propertyNamesInGlobal
+    getter automationDelegate
     getter caches
     getter clientInformation
     getter closed
@@ -12287,6 +12293,7 @@ namespace console
     method structuredClone
     method webkitCancelAnimationFrame
     method webkitRequestAnimationFrame
+    setter automationDelegate
     setter clientInformation
     setter devicePixelRatio
     setter event

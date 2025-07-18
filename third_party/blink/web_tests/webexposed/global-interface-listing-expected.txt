@@ -377,6 +377,11 @@ interface AuthenticatorResponse
     attribute @@toStringTag
     getter clientDataJSON
     method constructor
+interface AutomationDelegate
+    attribute @@toStringTag
+    method constructor
+    method registerTool
+    method unregisterTool
 interface BackForwardCacheRestoration : PerformanceEntry
     attribute @@toStringTag
     getter pageshowEventEnd
@@ -13116,6 +13121,7 @@ namespace console
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
+    getter automationDelegate
     getter caches
     getter clientInformation
     getter closed
@@ -13368,6 +13374,7 @@ namespace console
     method webkitRequestAnimationFrame
     method webkitRequestFileSystem
     method webkitResolveLocalFileSystemURL
+    setter automationDelegate
     setter clientInformation
     setter devicePixelRatio
     setter event
