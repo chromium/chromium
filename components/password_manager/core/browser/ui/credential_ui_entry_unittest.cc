@@ -10,6 +10,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -65,6 +66,7 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromFormRecoveryFlagOn) {
   form.password_value = kPassword;
   form.in_store = PasswordForm::Store::kProfileStore;
   form.SetPasswordBackupNote(kBackupPassword);
+  auto backup_creation_timestamp = form.GetPasswordBackupDateCreated();
 
   CredentialUIEntry entry = CredentialUIEntry(form);
 
@@ -75,7 +77,9 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromFormRecoveryFlagOn) {
   EXPECT_EQ(entry.stored_in.size(), size);
   EXPECT_EQ(entry.username, kUsername);
   EXPECT_EQ(entry.password, kPassword);
-  EXPECT_EQ(entry.backup_password, kBackupPassword);
+  EXPECT_EQ(entry.backup_password->value, kBackupPassword);
+  EXPECT_EQ(entry.backup_password->creation_timestamp,
+            backup_creation_timestamp);
   EXPECT_EQ(entry.blocked_by_user, false);
 }
 
@@ -140,6 +144,7 @@ TEST(CredentialUIEntryTest,
   form2.SetNoteWithEmptyUniqueDisplayName(kNote);
   form2.in_store = PasswordForm::Store::kAccountStore;
   form2.SetPasswordBackupNote(kBackupPassword);
+  auto backup_creation_timestamp = form2.GetPasswordBackupDateCreated();
   forms.push_back(std::move(form2));
 
   PasswordForm form3;
@@ -162,7 +167,9 @@ TEST(CredentialUIEntryTest,
   EXPECT_EQ(entry.stored_in.size(), stored_in_size);
   EXPECT_EQ(entry.username, kUsername);
   EXPECT_EQ(entry.password, kPassword);
-  EXPECT_EQ(entry.backup_password, kBackupPassword);
+  EXPECT_EQ(entry.backup_password->value, kBackupPassword);
+  EXPECT_EQ(entry.backup_password->creation_timestamp,
+            backup_creation_timestamp);
   EXPECT_EQ(entry.note, kNote);
   EXPECT_EQ(entry.blocked_by_user, false);
 }

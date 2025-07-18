@@ -150,7 +150,7 @@ suite('PasswordDetailsSectionTest', function() {
         createPasswordEntry({
           id: 1,
           username: 'test2',
-          backupPassword: 'backup',
+          backupPassword: {value: 'backup', creationDate: 'Mar 17'},
         }),
         createPasswordEntry({isPasskey: true, id: 2, username: 'test3'}),
       ],

@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
@@ -1443,6 +1444,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
       CreateSampleForm(PasswordForm::Store::kProfileStore, u"username2");
   const std::u16string backup_password = u"backup";
   password2.SetPasswordBackupNote(backup_password);
+  api::passwords_private::BackupPasswordInfo backup_password_info;
+  backup_password_info.value = base::UTF16ToUTF8(backup_password);
+  backup_password_info.creation_date =
+      base::UTF16ToUTF8(base::LocalizedTimeFormatWithPattern(
+          password2.GetPasswordBackupDateCreated().value(), "MMM dd"));
 
   SetUpPasswordStores({password1, password2});
 
@@ -1462,7 +1468,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
   expected_entry2.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry2.username = "username2";
   expected_entry2.stored_in = api::passwords_private::PasswordStoreSet::kDevice;
-  expected_entry2.backup_password = base::UTF16ToUTF8(backup_password);
+  expected_entry2.backup_password = std::move(backup_password_info);
   EXPECT_THAT(groups[0].entries,
               testing::UnorderedElementsAre(
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry1)),

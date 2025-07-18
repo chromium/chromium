@@ -135,13 +135,18 @@ declare global {
         signonRealm: string;
       }
 
+      export interface BackupPasswordInfo {
+        value: string;
+        creationDate: string;
+      }
+
       export interface PasswordUiEntry {
         isPasskey: boolean;
         affiliatedDomains: DomainInfo[];
         username: string;
         displayName?: string;
         password?: string;
-        backupPassword?: string;
+        backupPassword?: BackupPasswordInfo;
         federationText?: string;
         id: number;
         storedIn: PasswordStoreSet;

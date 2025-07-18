@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -1320,10 +1321,16 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
   if (change_password_url.has_value()) {
     entry.change_password_url = change_password_url->spec();
   }
-  entry.backup_password =
-      credential.backup_password.has_value()
-          ? std::optional(base::UTF16ToUTF8(credential.backup_password.value()))
-          : std::nullopt;
+  if (credential.backup_password.has_value()) {
+    api::passwords_private::BackupPasswordInfo backup_password_info;
+    backup_password_info.value =
+        base::UTF16ToUTF8(credential.backup_password->value);
+    backup_password_info.creation_date =
+        base::UTF16ToUTF8(base::LocalizedTimeFormatWithPattern(
+            credential.backup_password->creation_timestamp,
+            /*pattern=*/"MMM dd"));
+    entry.backup_password = std::move(backup_password_info);
+  }
   entry.id = credential_id_generator_.GenerateId(std::move(credential));
   return entry;
 }

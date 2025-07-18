@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -75,7 +76,9 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
       last_used_time(form.date_last_used) {
   if (form.GetPasswordBackup() &&
       base::FeatureList::IsEnabled(features::kShowRecoveryPassword)) {
-    backup_password = form.GetPasswordBackup();
+    backup_password = {
+        .value = form.GetPasswordBackup().value(),
+        .creation_timestamp = form.GetPasswordBackupDateCreated().value()};
   }
   CredentialFacet facet;
   facet.display_name = form.app_display_name;
@@ -134,7 +137,9 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
     // separate card for each of them.
     if (form.GetPasswordBackup() &&
         base::FeatureList::IsEnabled(features::kShowRecoveryPassword)) {
-      backup_password = form.GetPasswordBackup();
+      backup_password = {
+          .value = form.GetPasswordBackup().value(),
+          .creation_timestamp = form.GetPasswordBackupDateCreated().value()};
     }
   }
 }

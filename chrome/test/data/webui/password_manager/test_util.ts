@@ -48,7 +48,7 @@ export interface PasswordEntryParams {
   username?: string;
   displayName?: string;
   password?: string;
-  backupPassword?: string;
+  backupPassword?: chrome.passwordsPrivate.BackupPasswordInfo;
   federationText?: string;
   id?: number;
   inAccountStore?: boolean;

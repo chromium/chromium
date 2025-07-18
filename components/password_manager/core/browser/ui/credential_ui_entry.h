@@ -75,6 +75,16 @@ struct CredentialUIEntry {
     std::string signon_realm;
   };
 
+  // Structure which represents a recovery password for a password changed in a
+  // password change flow.
+  struct BackupPasswordInfo {
+    // The value of the backup password.
+    std::u16string value;
+
+    // The timestamp of when the backup password was set.
+    base::Time creation_timestamp;
+  };
+
   struct Less {
     bool operator()(const CredentialUIEntry& lhs,
                     const CredentialUIEntry& rhs) const;
@@ -113,7 +123,7 @@ struct CredentialUIEntry {
   std::u16string password;
 
   // Recovery password for automatic password change.
-  std::optional<std::u16string> backup_password;
+  std::optional<BackupPasswordInfo> backup_password;
 
   // The origin of identity provider used for federated login.
   url::SchemeHostPort federation_origin;
