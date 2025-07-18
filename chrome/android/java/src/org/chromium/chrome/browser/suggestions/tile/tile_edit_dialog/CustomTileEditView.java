@@ -104,10 +104,10 @@ class CustomTileEditView extends FrameLayout
     @Override
     public void onClick(PropertyModel modelDialogModel, int buttonType) {
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-            @Nullable Editable title = mNameField.getText();
+            @Nullable Editable name = mNameField.getText();
             @Nullable Editable urlText = mUrlField.getText();
             mMediatorDelegate.onSave(
-                    (title == null) ? "" : title.toString(),
+                    (name == null) ? "" : name.toString(),
                     (urlText == null) ? "" : urlText.toString());
         } else {
             mMediatorDelegate.onCancel();
@@ -157,6 +157,8 @@ class CustomTileEditView extends FrameLayout
     @Override
     public void focusOnName() {
         mNameField.requestFocus();
+        @Nullable Editable name = mNameField.getText();
+        mNameField.setSelection((name == null) ? 0 : name.length());
         KeyboardUtils.showKeyboard(mNameField);
     }
 
