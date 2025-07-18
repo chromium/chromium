@@ -481,40 +481,47 @@ void ReloadInternal(Browser* browser,
   const WebContents* const active_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  // Reloading a tab may change the selection (see crbug.com/339061099), so take
-  // a defensive copy into a more stable form before we begin. We take
-  // WebContents* so we can follow the tabs as they shift within the same
-  // tabstrip (e.g. if `disposition` is NEW_BACKGROUND_TAB).
-  std::vector<WebContents*> selected_tabs;
-  for (const int selected_index :
-       browser->tab_strip_model()->selection_model().selected_indices()) {
-    selected_tabs.push_back(
-        browser->tab_strip_model()->GetWebContentsAt(selected_index));
+  std::vector<WebContents*> tabs_to_reload;
+
+  if (base::FeatureList::IsEnabled(features::kReloadSelectionModel)) {
+    tabs_to_reload.push_back(
+        browser->tab_strip_model()->GetActiveWebContents());
+  } else {
+    // Reloading a tab may change the selection (see crbug.com/339061099), so
+    // take
+    // a defensive copy into a more stable form before we begin. We take
+    // WebContents* so we can follow the tabs as they shift within the same
+    // tabstrip (e.g. if `disposition` is NEW_BACKGROUND_TAB).
+    for (const int selected_index :
+         browser->tab_strip_model()->selection_model().selected_indices()) {
+      tabs_to_reload.push_back(
+          browser->tab_strip_model()->GetWebContentsAt(selected_index));
+    }
   }
 
-  base::UmaHistogramCounts100("TabStrip.Tab.ReloadCount", selected_tabs.size());
+  base::UmaHistogramCounts100("TabStrip.Tab.ReloadCount",
+                              tabs_to_reload.size());
 
-  for (WebContents* const selected_tab : selected_tabs) {
+  for (WebContents* const tab : tabs_to_reload) {
     // Skip this tab if it is no longer part of this tabstrip. N.B. we do this
     // instead of using WeakPtr<WebContents> because we do not want to reload
     // tabs that move to another browser.
-    if (browser->tab_strip_model()->GetIndexOfWebContents(selected_tab) ==
+    if (browser->tab_strip_model()->GetIndexOfWebContents(tab) ==
         TabStripModel::kNoTab) {
       continue;
     }
 
     WebContents* const new_tab =
-        GetTabAndRevertIfNecessaryHelper(browser, disposition, selected_tab);
+        GetTabAndRevertIfNecessaryHelper(browser, disposition, tab);
 
-    // If the selected_tab is the activated page, give the focus to it, as this
-    // is caused by a user action
-    if (selected_tab == active_contents &&
-        !new_tab->FocusLocationBarByDefault()) {
+    // If the `tab` is the activated page, give the focus to it, as this is
+    // caused by a user action
+    if (tab == active_contents && !new_tab->FocusLocationBarByDefault()) {
       new_tab->Focus();
     }
 
     // User reloads is a possible breakage indicator from blocking 3P cookies.
-    RecordReloadWithCookieBlocking(browser, selected_tab);
+    RecordReloadWithCookieBlocking(browser, tab);
 
     DevToolsWindow* const devtools =
         DevToolsWindow::GetInstanceForInspectedWebContents(new_tab);

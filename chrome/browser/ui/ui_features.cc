@@ -100,6 +100,13 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              "PressAndHoldEscToExitBrowserFullscreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, reloading using the toolbar button, hotkey, and web contents
+// context menu will only reload the active tab. The tab context menu will still
+// use the selection model to reload.
+BASE_FEATURE(kReloadSelectionModel,
+             "ReloadSelectionModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, a scrim is shown behind window modal dialogs to cover the
 // entire browser window. This gives user a visual cue that the browser window
 // is not interactable.
