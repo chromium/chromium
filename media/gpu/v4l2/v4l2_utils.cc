@@ -527,7 +527,8 @@ void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
   memset(&frame_size, 0, sizeof(frame_size));
   frame_size.pixel_format = pixelformat;
   if (ioctl_cb.Run(VIDIOC_ENUM_FRAMESIZES, &frame_size) == kIoctlOk) {
-    if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
+    if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE ||
+        frame_size.type == V4L2_FRMSIZE_TYPE_CONTINUOUS) {
       max_resolution->SetSize(frame_size.stepwise.max_width,
                               frame_size.stepwise.max_height);
       min_resolution->SetSize(frame_size.stepwise.min_width,
