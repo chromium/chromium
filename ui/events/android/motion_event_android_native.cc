@@ -163,8 +163,8 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
 
 int MotionEventAndroidNative::GetPointerId(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].id;
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerId(pointer_index);
   }
   return AMotionEvent_getPointerId(native_event_.a_input_event(),
                                    pointer_index);
@@ -172,16 +172,16 @@ int MotionEventAndroidNative::GetPointerId(size_t pointer_index) const {
 
 float MotionEventAndroidNative::GetX(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].position.x();
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerPosition(pointer_index).x();
   }
   return ToDips(
       AMotionEvent_getX(native_event_.a_input_event(), pointer_index));
 }
 float MotionEventAndroidNative::GetY(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].position.y();
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerPosition(pointer_index).y();
   }
   return ToDips(
       AMotionEvent_getY(native_event_.a_input_event(), pointer_index) +
@@ -190,8 +190,8 @@ float MotionEventAndroidNative::GetY(size_t pointer_index) const {
 
 float MotionEventAndroidNative::GetTouchMajor(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].touch_major;
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerTouchMajor(pointer_index);
   }
   return ToDips(
       AMotionEvent_getTouchMajor(native_event_.a_input_event(), pointer_index));
@@ -199,8 +199,8 @@ float MotionEventAndroidNative::GetTouchMajor(size_t pointer_index) const {
 
 float MotionEventAndroidNative::GetTouchMinor(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].touch_minor;
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerTouchMinor(pointer_index);
   }
   return ToDips(
       AMotionEvent_getTouchMajor(native_event_.a_input_event(), pointer_index));
@@ -208,8 +208,8 @@ float MotionEventAndroidNative::GetTouchMinor(size_t pointer_index) const {
 
 float MotionEventAndroidNative::GetOrientation(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].orientation;
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerOrientation(pointer_index);
   }
   return ToValidFloat(AMotionEvent_getOrientation(native_event_.a_input_event(),
                                                   pointer_index));
@@ -224,8 +224,8 @@ float MotionEventAndroidNative::GetPressure(size_t pointer_index) const {
 
 float MotionEventAndroidNative::GetTiltX(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].tilt_x;
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerTiltX(pointer_index);
   }
   float tilt_x, tilt_y;
   float tilt_rad = ToValidFloat(AMotionEvent_getAxisValue(
@@ -237,8 +237,8 @@ float MotionEventAndroidNative::GetTiltX(size_t pointer_index) const {
 }
 
 float MotionEventAndroidNative::GetTiltY(size_t pointer_index) const {
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].tilt_y;
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerTiltY(pointer_index);
   }
   float tilt_x, tilt_y;
   float tilt_rad = ToValidFloat(AMotionEvent_getAxisValue(
@@ -285,8 +285,8 @@ float MotionEventAndroidNative::GetHistoricalY(size_t pointer_index,
 ui::MotionEvent::ToolType MotionEventAndroidNative::GetToolType(
     size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (pointer_index < MAX_POINTERS_TO_CACHE) {
-    return cached_pointers_[pointer_index].tool_type;
+  if (IsPointerCacheable(pointer_index)) {
+    return GetCachedPointerToolType(pointer_index);
   }
   return FromAndroidToolType(
       AMotionEvent_getToolType(native_event_.a_input_event(), pointer_index));

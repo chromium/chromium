@@ -314,6 +314,60 @@ float MotionEventAndroid::ToDips(float pixels) const {
   return pixels * pix_to_dip_;
 }
 
+bool MotionEventAndroid::IsPointerCacheable(size_t pointer_index) const {
+  return pointer_index < MAX_POINTERS_TO_CACHE;
+}
+
+int MotionEventAndroid::GetCachedPointerId(size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].id;
+}
+
+const gfx::PointF& MotionEventAndroid::GetCachedPointerPosition(
+    size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].position;
+}
+
+float MotionEventAndroid::GetCachedPointerTouchMajor(
+    size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].touch_major;
+}
+
+float MotionEventAndroid::GetCachedPointerTouchMinor(
+    size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].touch_minor;
+}
+
+float MotionEventAndroid::GetCachedPointerPressure(size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].pressure;
+}
+
+float MotionEventAndroid::GetCachedPointerOrientation(
+    size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].orientation;
+}
+
+float MotionEventAndroid::GetCachedPointerTiltX(size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].tilt_x;
+}
+
+float MotionEventAndroid::GetCachedPointerTiltY(size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].tilt_y;
+}
+
+MotionEvent::ToolType MotionEventAndroid::GetCachedPointerToolType(
+    size_t pointer_index) const {
+  CHECK(IsPointerCacheable(pointer_index));
+  return cached_pointers_[pointer_index].tool_type;
+}
+
 #define TOOL_TYPE_CASE(x)              \
   case JNI_MotionEvent::TOOL_TYPE_##x: \
     return MotionEventAndroid::ToolType::x

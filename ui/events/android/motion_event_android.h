@@ -133,8 +133,44 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   // redundant JNI fetches for the same bits.
   enum { MAX_POINTERS_TO_CACHE = 2 };
 
+  // Returns true if the pointer at `pointer_index` is cached and its data
+  // should be retrieved from the cache.
+  bool IsPointerCacheable(size_t pointer_index) const;
+
+  // Returns the id of the pointer at `pointer_index` from the cache.
+  int GetCachedPointerId(size_t pointer_index) const;
+
+  // Returns the position of the pointer at `pointer_index` from the cache.
+  const gfx::PointF& GetCachedPointerPosition(size_t pointer_index) const;
+
+  // Returns the touch major/minor of the pointer at `pointer_index` from the
+  // cache.
+  float GetCachedPointerTouchMajor(size_t pointer_index) const;
+  float GetCachedPointerTouchMinor(size_t pointer_index) const;
+
+  // Returns the pressure/orientation of the pointer at `pointer_index` from the
+  // cache.
+  float GetCachedPointerPressure(size_t pointer_index) const;
+  float GetCachedPointerOrientation(size_t pointer_index) const;
+
+  // Returns the tilt of the pointer at `pointer_index` from the cache.
+  float GetCachedPointerTiltX(size_t pointer_index) const;
+  float GetCachedPointerTiltY(size_t pointer_index) const;
+
+  // Returns the tool type of the pointer at `pointer_index` from the cache.
+  ToolType GetCachedPointerToolType(size_t pointer_index) const;
+
   MotionEventAndroid(const MotionEventAndroid& e, const gfx::PointF& point);
 
+  static ToolType FromAndroidToolType(int android_tool_type);
+  static base::TimeTicks FromAndroidTime(base::TimeTicks time);
+  static float ToValidFloat(float x);
+  static void ConvertTiltOrientationToTiltXY(float tilt_rad,
+                                             float orientation_rad,
+                                             float* tilt_x,
+                                             float* tilt_y);
+
+ private:
   struct CachedPointer {
     CachedPointer();
     int id = 0;
@@ -150,15 +186,6 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
 
   std::array<CachedPointer, MAX_POINTERS_TO_CACHE> cached_pointers_;
 
-  static ToolType FromAndroidToolType(int android_tool_type);
-  static base::TimeTicks FromAndroidTime(base::TimeTicks time);
-  static float ToValidFloat(float x);
-  static void ConvertTiltOrientationToTiltXY(float tilt_rad,
-                                             float orientation_rad,
-                                             float* tilt_x,
-                                             float* tilt_y);
-
- private:
   CachedPointer FromAndroidPointer(const Pointer& pointer) const;
   CachedPointer CreateCachedPointer(const CachedPointer& pointer,
                                     const gfx::PointF& point) const;
