@@ -750,9 +750,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                                         supportLibResult));
                     };
             mAwInit.startUpWebView(
-                    callback,
-                    webViewStartUpConfig.shouldRunUiThreadStartUpTasks(),
-                    webViewStartUpConfig.getProfileNamesToLoad());
+                    callback, webViewStartUpConfig.shouldRunUiThreadStartUpTasks(), null);
         }
     }
 }
