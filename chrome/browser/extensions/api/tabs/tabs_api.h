@@ -102,6 +102,19 @@ api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
                                      BrowserWindowInterface* browser,
                                      int tab_index);
 
+// Retrieves the tab associated with the given `tab_id`, populating
+// `contents_out`, `window_out`, and `index_out` with the result. If the tab
+// isn't found and `error_out` is non-null, populates `error_out` with an
+// appropriate error.
+// Returns true if the tab was found.
+bool GetTabById(int tab_id,
+                content::BrowserContext* context,
+                bool include_incognito,
+                WindowController** window_out,
+                content::WebContents** contents_out,
+                int* index_out,
+                std::string* error_out);
+
 }  // namespace tabs_internal
 
 // Converts a ZoomMode to its ZoomSettings representation.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -47,6 +48,26 @@ api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
       browser ? TabListInterface::From(browser) : nullptr;
   return ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior,
                                            extension, tab_list, tab_index);
+}
+
+bool GetTabById(int tab_id,
+                content::BrowserContext* context,
+                bool include_incognito,
+                WindowController** window_out,
+                content::WebContents** contents_out,
+                int* index_out,
+                std::string* error_out) {
+  if (ExtensionTabUtil::GetTabById(tab_id, context, include_incognito,
+                                   window_out, contents_out, index_out)) {
+    return true;
+  }
+
+  if (error_out) {
+    *error_out = ErrorUtils::FormatErrorMessage(
+        ExtensionTabUtil::kTabNotFoundError, base::NumberToString(tab_id));
+  }
+
+  return false;
 }
 
 }  // namespace tabs_internal
@@ -186,6 +207,27 @@ ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
   }
   window_controller->window()->Close();
   return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction TabsGetFunction::Run() {
+  std::optional<tabs::Get::Params> params = tabs::Get::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  int tab_id = params->tab_id;
+
+  WindowController* window = nullptr;
+  content::WebContents* contents = nullptr;
+  int tab_index = -1;
+  std::string error;
+  if (!tabs_internal::GetTabById(tab_id, browser_context(),
+                                 include_incognito_information(), &window,
+                                 &contents, &tab_index, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  return RespondNow(ArgumentList(
+      tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
+          contents, extension(), source_context_type(),
+          window ? window->GetBrowserWindowInterface() : nullptr, tab_index))));
 }
 
 ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {

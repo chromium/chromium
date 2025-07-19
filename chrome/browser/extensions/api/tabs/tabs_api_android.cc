@@ -192,12 +192,6 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction TabsGetFunction::Run() {
-  std::optional<tabs::Get::Params> params = tabs::Get::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
