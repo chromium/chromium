@@ -47,10 +47,6 @@ extern const char kAutofillDisableProfileUpdatesDescription[];
 extern const char kAutofillDisableSilentProfileUpdatesName[];
 extern const char kAutofillDisableSilentProfileUpdatesDescription[];
 
-extern const char kAutofillDropNamesWithInvalidCharactersForCardUploadName[];
-extern const char
-    kAutofillDropNamesWithInvalidCharactersForCardUploadDescription[];
-
 extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
 extern const char
     kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];

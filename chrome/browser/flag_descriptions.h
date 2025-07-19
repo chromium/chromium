@@ -395,10 +395,6 @@ extern const char kEnableAutoDisableAccessibilityDescription[];
 extern const char kImageDescriptionsAlternateRoutingName[];
 extern const char kImageDescriptionsAlternateRoutingDescription[];
 
-extern const char kAutofillDropNamesWithInvalidCharactersForCardUploadName[];
-extern const char
-    kAutofillDropNamesWithInvalidCharactersForCardUploadDescription[];
-
 extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
 extern const char
     kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];

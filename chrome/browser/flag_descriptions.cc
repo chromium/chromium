@@ -599,14 +599,6 @@ const char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
-const char kAutofillDropNamesWithInvalidCharactersForCardUploadName[] =
-    "Drop names with invalid characters for credit card upload";
-const char kAutofillDropNamesWithInvalidCharactersForCardUploadDescription[] =
-    "When enabled, cardholder and address names considered during the credit "
-    "card upload flow will be cleared out if they contain characters "
-    "considered invalid by Google Payments, such as numbers or various "
-    "punctuation marks.";
-
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[] =
     "Enable allowlist for showing category benefits for BMO cards";
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =

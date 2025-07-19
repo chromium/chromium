@@ -14,13 +14,6 @@ BASE_FEATURE(kAutofillDisableDefaultSaveCardFixFlowDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// When enabled, cardholder and address names considered during the credit card
-// upload flow will be cleared out if they contain characters considered invalid
-// by Google Payments, such as numbers or various punctuation marks.
-BASE_FEATURE(kAutofillDropNamesWithInvalidCharactersForCardUpload,
-             "AutofillDropNamesWithInvalidCharactersForCardUpload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, card category benefits offered by BMO will be shown in Autofill
 // suggestions on the allowlisted merchant websites.
 BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,

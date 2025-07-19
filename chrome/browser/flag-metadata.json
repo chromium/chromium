@@ -663,11 +663,6 @@
     "expiry_milestone": 141
   },
   {
-    "name": "autofill-drop-names-with-invalid-characters-for-card-upload",
-    "owners": [ "osaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-enable-allowlist-for-bmo-card-category-benefits",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 145

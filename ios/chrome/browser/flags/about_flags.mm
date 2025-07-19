@@ -2670,15 +2670,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSMiniMapUniversalLinkName,
      flag_descriptions::kIOSMiniMapUniversalLinkDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSMiniMapUniversalLink)},
-    {"autofill-drop-names-with-invalid-characters-for-card-upload",
-     flag_descriptions::
-         kAutofillDropNamesWithInvalidCharactersForCardUploadName,
-     flag_descriptions::
-         kAutofillDropNamesWithInvalidCharactersForCardUploadDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillDropNamesWithInvalidCharactersForCardUpload)},
     {"autofill-require-cvc-for-possible-card-update",
      flag_descriptions::kAutofillRequireCvcForPossibleCardUpdateName,
      flag_descriptions::kAutofillRequireCvcForPossibleCardUpdateDescription,
