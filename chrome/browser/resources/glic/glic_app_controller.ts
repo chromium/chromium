@@ -83,6 +83,19 @@ export enum WebClientUnresponsiveState {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebClientUnresponsiveState)
 
+// Enum for specific stages of loading the web client, reported if loading times
+// out.
+// LINT.IfChange(LoadingStage)
+export enum LoadingStage {
+  NOT_LOADING = 0,
+  AWAITING_PROFILE_READY = 1,
+  AWAITING_COOKIE_SYNC = 2,
+  LOADING_WEB_CLIENT = 3,
+  AWAITING_NOTIFY_PANEL_WILL_OPEN = 4,
+  MAX_VALUE = AWAITING_NOTIFY_PANEL_WILL_OPEN,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:LoadingStage)
+
 export class GlicAppController implements PageInterface, WebviewDelegate,
                                           ApiHostEmbedder {
   loadingTimer: number|undefined;
@@ -108,6 +121,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
   private profileReadyInitialState = Promise.withResolvers<void>();
 
   private enteredUnresponsiveTimestampMs?: number;
+  // Loading stage, affects metrics only.
+  private loadingStage: LoadingStage = LoadingStage.NOT_LOADING;
 
   state: WebUiState|undefined;
 
@@ -308,6 +323,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       WebUiState.kReady,
       {
         onEnter: () => {
+          this.loadingStage = LoadingStage.NOT_LOADING;
           $.guestPanel.classList.toggle('show-header', false);
           this.showPanel('guestPanel');
         },
@@ -372,7 +388,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
 
   private async load(): Promise<void> {
     // profileReadyState isn't available right away. Wait until it's ready.
+    this.loadingStage = LoadingStage.AWAITING_PROFILE_READY;
     await this.profileReadyInitialState.promise;
+    this.loadingStage = LoadingStage.NOT_LOADING;
 
     const readyState = this.profileReadyState;
     switch (readyState) {
@@ -392,7 +410,10 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
 
     // Blocking on cookie syncing here introduces latency, we should consider
     // ways to avoid it.
+    this.loadingStage = LoadingStage.AWAITING_COOKIE_SYNC;
     const {result} = await this.browserProxy.handler.prepareForClient();
+    this.loadingStage = LoadingStage.NOT_LOADING;
+
     switch (result) {
       case PrepareForClientResult.kSuccess:
         break;
@@ -406,6 +427,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     }
 
     // Load the web client only after cookie sync is complete.
+    this.loadingStage = LoadingStage.LOADING_WEB_CLIENT;
     this.destroyWebview();
     this.webview = new WebviewController(
         $.webviewContainer, this.browserProxy, this, this,
@@ -452,6 +474,19 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
         console.warn('Exceeded timeout waiting for client to load');
         this.setState(WebUiState.kError);
       }
+
+      if (this.state !== WebUiState.kReady) {
+        let loadingStage = this.loadingStage;
+        if (loadingStage === LoadingStage.LOADING_WEB_CLIENT &&
+            this.webview?.waitingOnPanelWillOpen()) {
+          loadingStage = LoadingStage.AWAITING_NOTIFY_PANEL_WILL_OPEN;
+        }
+        chrome.metricsPrivate.recordEnumerationValue(
+            'Glic.Host.LoadingTimedOut', loadingStage,
+            LoadingStage.MAX_VALUE + 1);
+        this.webview?.onLoadTimeOut();
+      }
+      this.loadingStage = LoadingStage.NOT_LOADING;
     }, kMaxWaitTimeMs - kMinHoldLoadingTimeMs);
   }
 

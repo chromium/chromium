@@ -186,6 +186,15 @@ export class WebviewController {
     return this.host?.waitingOnPanelWillOpen() ?? false;
   }
 
+  onLoadTimeOut(): void {
+    if (this.host) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'Glic.Host.WebClientState.OnLoadTimeOut',
+          this.host.getDetailedWebClientState(),
+          DetailedWebClientState.MAX_VALUE + 1);
+    }
+  }
+
   private onLoadCommit(e: any): void {
     this.loadCommit(e.url, e.isTopLevel);
   }
