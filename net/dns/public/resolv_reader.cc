@@ -33,6 +33,30 @@ std::unique_ptr<ScopedResState> ResolvReader::GetResState() {
   return res;
 }
 
+bool ResolvReader::IsLikelySystemdResolved() {
+#if BUILDFLAG(IS_LINUX)
+  // Look for a single 127.0.0.53:53 nameserver endpoint. The only known
+  // significant usage of such a configuration is the systemd-resolved local
+  // resolver, so it is then a fairly safe assumption that any DNS queries to
+  // the nameserver will be handled by systemd-resolved.
+  //
+  // This code path is only reachable if the system has nss-resolve configured
+  // in nsswitch.conf, which is another indicator that systemd-resolved is
+  // likely to be in use.
+  std::unique_ptr<ScopedResState> res = GetResState();
+  if (res) {
+    std::optional<std::vector<IPEndPoint>> nameservers =
+        GetNameservers(res->state());
+    if (nameservers) {
+      return nameservers->size() == 1 &&
+             nameservers->front() == IPEndPoint(IPAddress(127, 0, 0, 53), 53);
+    }
+  }
+#endif
+
+  return false;
+}
+
 std::optional<std::vector<IPEndPoint>> GetNameservers(
     const struct __res_state& res) {
   std::vector<IPEndPoint> nameservers;
