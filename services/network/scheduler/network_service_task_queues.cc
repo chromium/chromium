@@ -74,7 +74,7 @@ class NetworkServiceTaskObserver : public base::TaskObserver {
 
     // Sample with a 0.001 probability to reduce metrics overhead.
     if (sampler_.ShouldSample(0.001)) {
-      base::UmaHistogramCounts100(
+      base::UmaHistogramCounts1000(
           base::StrCat(
               {"NetworkService.Scheduler.IOThread.NumberOfPendingTasks.",
                queue_name_, "Queue"}),
