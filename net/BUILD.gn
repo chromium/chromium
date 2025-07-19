@@ -2343,6 +2343,10 @@ static_library("test_support") {
       "reporting/reporting_test_util.h",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_ios && !is_android) {
@@ -3485,6 +3489,10 @@ target(_test_target_type, "net_unittests") {
       data_deps += [ "//third_party/sqlite:sqlite_dev_shell" ]
     }
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # !is_android && !is_win && !is_mac
