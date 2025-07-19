@@ -110,9 +110,6 @@ class CONTENT_EXPORT KeepAliveURLLoader
   using URLLoaderThrottlesGetter = base::RepeatingCallback<
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(void)>;
 
-  static constexpr char kRetryGuidHeader[] = "Retry-GUID";
-  static constexpr char kRetryAttemptsHeader[] = "Retry-Attempts";
-
   // Must only be constructed by a `KeepAliveURLLoaderService`.
   //
   // Note that calling ctor does not mean loading the request. `Start()` must

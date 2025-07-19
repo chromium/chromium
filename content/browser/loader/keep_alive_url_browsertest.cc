@@ -1144,7 +1144,6 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
   ASSERT_TRUE(server()->Start());
   const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
   int request_count = 0;
-  std::string initial_request_guid;
   URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url != beacon_url) {
@@ -1155,20 +1154,9 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
           // Fail the first fetch with a network changed error.
           params->client->OnComplete(
               network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED));
-          initial_request_guid =
-              params->url_request.headers
-                  .GetHeader(KeepAliveURLLoader::kRetryGuidHeader)
-                  .value();
           return true;
         } else {
           //  Ensure the retry succeeds.
-          EXPECT_EQ(params->url_request.headers.GetHeader(
-                        KeepAliveURLLoader::kRetryAttemptsHeader),
-                    "1");
-          EXPECT_EQ(params->url_request.headers
-                        .GetHeader(KeepAliveURLLoader::kRetryGuidHeader)
-                        .value(),
-                    initial_request_guid);
           URLLoaderInterceptor::WriteResponse(
               "HTTP/1.1 200 OK\n"
               "Content-type: text/html\n",
