@@ -146,7 +146,8 @@ class VectorBuffer {
     if constexpr (is_trivially_copyable_or_relocatable<T>) {
       // We can't use span::copy_from() as it tries to call copy constructors,
       // and fails to compile on move-only trivially-relocatable types.
-      memcpy(to.data(), from.data(), to.size_bytes());
+      // TODO(https://crbug.com/432507886): find a way to remove the void* cast
+      memcpy(static_cast<void*>(to.data()), from.data(), to.size_bytes());
       // Destructors are skipped because they are trivial or should be elided in
       // trivial relocation (https://reviews.llvm.org/D114732).
     } else {
