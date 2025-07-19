@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_uncaptured_error_event.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_validation_error.h"
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
@@ -505,11 +506,22 @@ GPUQueue* GPUDevice::queue() {
 void GPUDevice::destroy(v8::Isolate* isolate) {
   destroyed_ = true;
   external_texture_cache_->Destroy();
-  // Dissociate mailboxes before destroying the device. This ensures that
-  // mailbox operations which run during dissociation can succeed.
-  DissociateMailboxes();
   UnmapAllMappableBuffers(isolate);
+
+  // Texture dissociate mailbox will clear texture contents to black if device
+  // is destroyed/lost. Make sure to destroy the device before dissociating the
+  // mailboxes.
   GetHandle().Destroy();
+
+  for (auto& texture : textures_with_mailbox_) {
+    // Since the device is now lost, the texture will be fully cleared (using
+    // Skia) before presenting, so there's no need to run the AlphaClearer. (The
+    // AlphaClearer wouldn't work on the destroyed device anyway.)
+    texture->GetMailboxTexture()->UnsetAlphaClearer();
+    texture->DissociateMailbox();
+  }
+  textures_with_mailbox_.clear();
+
   FlushNow();
 }
 
@@ -746,13 +758,6 @@ void GPUDevice::Dispose() {
   if (external_texture_cache_ != nullptr) {
     external_texture_cache_->Destroy();
   }
-}
-
-void GPUDevice::DissociateMailboxes() {
-  for (auto& texture : textures_with_mailbox_) {
-    texture->DissociateMailbox();
-  }
-  textures_with_mailbox_.clear();
 }
 
 void GPUDevice::UnmapAllMappableBuffers(v8::Isolate* isolate) {

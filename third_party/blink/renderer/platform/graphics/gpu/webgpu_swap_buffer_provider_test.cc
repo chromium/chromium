@@ -102,7 +102,6 @@ class FakeProviderClient : public WebGPUSwapBufferProvider::Client {
   }
   void InitializeLayer(cc::Layer* layer) override {}
   void SetNeedsCompositingUpdate() override {}
-  bool IsGPUDeviceDestroyed() override { return false; }
 
   scoped_refptr<WebGPUMailboxTexture> texture;
 };

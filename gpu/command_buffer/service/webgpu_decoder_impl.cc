@@ -2275,6 +2275,8 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     return error::kInvalidArguments;
   }
 
+  bool is_device_lost = dawn::native::IsDeviceLost(device.Get());
+
   Mailbox mailbox = it->second->mailbox();
   wgpu::Texture texture = it->second->texture();
   DCHECK(texture);
@@ -2283,8 +2285,10 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
 
   associated_shared_image_map_.erase(it);
   // The compositor renders uninitialized textures as red. If the texture is
-  // not initialized, we need to explicitly clear its contents to black.
-  if (!is_initialized && !ClearSharedImageWithSkia(mailbox)) {
+  // not initialized or gpu device is lost, we need to explicitly clear its
+  // contents to black.
+  bool clear_shared_image = !is_initialized || is_device_lost;
+  if (clear_shared_image && !ClearSharedImageWithSkia(mailbox)) {
     return error::kInvalidArguments;
   }
   return error::kNoError;

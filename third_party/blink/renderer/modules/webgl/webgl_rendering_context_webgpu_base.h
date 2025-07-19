@@ -1302,7 +1302,6 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void OnTextureTransferred() override;
   void InitializeLayer(cc::Layer* layer) override;
   void SetNeedsCompositingUpdate() override;
-  bool IsGPUDeviceDestroyed() override;
 
   void Trace(Visitor*) const override;
 

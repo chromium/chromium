@@ -825,10 +825,6 @@ void GPUCanvasContext::SetNeedsCompositingUpdate() {
   }
 }
 
-bool GPUCanvasContext::IsGPUDeviceDestroyed() {
-  return device_->IsDestroyed();
-}
-
 void GPUCanvasContext::CopyToSwapTexture() {
   DCHECK(copy_to_swap_texture_required_);
   DCHECK(texture_);
