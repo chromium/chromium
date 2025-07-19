@@ -330,8 +330,9 @@ void GlicActorController::OnActionFinished(
   // the same permission checks, etc. should apply here.
   if (tab) {
     const GURL& url = tab->GetContents()->GetLastCommittedURL();
-    auto journal_entry =
-        journal.CreatePendingAsyncEntry(url, task_id, "FetchPageContext", "");
+    auto journal_entry = journal.CreatePendingAsyncEntry(
+        url, task_id, "FetchPageContext",
+        "TabHandle:" + base::ToString(tab->GetHandle()));
 
     FetchPageContext(tab, *ActionableOptions(options),
                      base::BindOnce(OnFetchPageContext, url,
