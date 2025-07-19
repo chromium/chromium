@@ -16,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cookies/canonical_cookie.h"

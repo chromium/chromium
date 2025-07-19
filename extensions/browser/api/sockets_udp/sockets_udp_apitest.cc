@@ -5,6 +5,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/socket/write_quota_checker.h"
 #include "extensions/browser/api/sockets_udp/sockets_udp_api.h"

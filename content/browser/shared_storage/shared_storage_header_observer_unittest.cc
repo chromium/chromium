@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/content_client.h"

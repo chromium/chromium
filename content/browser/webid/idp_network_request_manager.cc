@@ -23,6 +23,7 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/webid_utils.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/webid/constants.h"

@@ -24,6 +24,7 @@
 #include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents_user_data.h"
