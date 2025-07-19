@@ -505,7 +505,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddInteger("composeboxFileMaxCount", 1);
 
   source->AddBoolean("searchboxShowComposeEntrypoint",
-                     ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled() &&
+                     ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
+                         g_browser_process) &&
                          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
   source->AddBoolean("searchboxShowComposebox",
                      ntp_composebox::FeatureConfig::Get().enabled &&

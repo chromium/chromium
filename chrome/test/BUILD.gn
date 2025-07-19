@@ -3942,6 +3942,7 @@ if (!is_android) {
       "//chrome/browser/ui/toolbar/pinned_toolbar",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
       "//chrome/browser/ui/webauthn",
+      "//chrome/browser/ui/webui/new_tab_page/composebox:browser_tests",
       "//chrome/browser/ui/window_name_prompt:browser_tests",
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/webauthn",

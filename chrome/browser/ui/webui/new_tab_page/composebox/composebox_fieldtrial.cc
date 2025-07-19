@@ -9,6 +9,11 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+#include "components/variations/service/variations_service.h"
 
 namespace ntp_composebox {
 
@@ -67,6 +72,24 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   return default_config;
 }
 
+std::string GetCountryCode(variations::VariationsService* variations_service) {
+  std::string country_code;
+  if (variations_service) {
+    country_code = variations_service->GetStoredPermanentCountry();
+    if (country_code.empty()) {
+      country_code = variations_service->GetLatestCountry();
+    }
+  }
+  return country_code;
+}
+
+bool IsUSCountry(const std::string& country) {
+  return country == "us";
+}
+
+bool IsEnglishLocale(const std::string& locale) {
+  return base::StartsWith(locale, "en", base::CompareCase::SENSITIVE);
+}
 }  // namespace
 
 // If enabled, the Compose entrypoint will appear in the NTP Searchbox.
@@ -74,9 +97,26 @@ BASE_FEATURE(kNtpSearchboxComposeEntrypoint,
              "NtpSearchboxComposeEntrypoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsNtpSearchboxComposeEntrypointEnabled() {
-  return base::FeatureList::IsEnabled(kNtpSearchboxComposeEntrypoint) ||
-         FeatureConfig::Get().enabled;
+BASE_FEATURE(kNtpSearchboxComposeEntrypointEnglishUS,
+             "NtpSearchboxComposeEntrypointEnglishUS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNtpSearchboxComposeEntrypointEnabled(BrowserProcess* browser_process) {
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list &&
+      feature_list->IsFeatureOverridden(kNtpSearchboxComposeEntrypoint.name)) {
+    return base::FeatureList::IsEnabled(kNtpSearchboxComposeEntrypoint);
+  }
+
+  auto locale =
+      browser_process->GetFeatures()->application_locale_storage()->Get();
+  auto country = GetCountryCode(browser_process->variations_service());
+
+  if (IsEnglishLocale(locale) && IsUSCountry(country)) {
+    return base::FeatureList::IsEnabled(
+        kNtpSearchboxComposeEntrypointEnglishUS);
+  }
+  return base::FeatureList::IsEnabled(kNtpSearchboxComposeEntrypoint);
 }
 
 // If enabled, the Composebox will appear upon clicking the NTP Compose

@@ -16,9 +16,13 @@ source_set("composebox") {
   deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//components/application_locale_storage",
     "//components/omnibox/common",
     "//components/omnibox/composebox",
     "//components/search",
+    "//components/variations/service",
     "//content/public/browser",
     "//third_party/omnibox_proto",
     "//ui/base:base",
@@ -48,5 +52,17 @@ source_set("unit_tests") {
     "//components/omnibox/composebox:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "composebox_fieldtrial_browsertest.cc" ]
+  deps = [
+    ":composebox",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//components/variations/service:service",
   ]
 }
