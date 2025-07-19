@@ -19,7 +19,6 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -518,8 +517,10 @@ class CachedFontSet {
 };
 
 typedef std::map<std::string, std::unique_ptr<CachedFontSet>> FontSetCache;
-base::LazyInstance<FontSetCache>::Leaky g_font_sets_by_locale =
-    LAZY_INSTANCE_INITIALIZER;
+FontSetCache& GetFontSetsByLocale() {
+  static base::NoDestructor<FontSetCache> font_sets_by_locale;
+  return *font_sets_by_locale;
+}
 
 }  // namespace
 
@@ -531,7 +532,7 @@ FallbackFontData& FallbackFontData::operator=(const FallbackFontData& other) =
 bool GetFallbackFontForChar(UChar32 c,
                             const std::string& locale,
                             FallbackFontData* fallback_font) {
-  auto& cached_font_set = g_font_sets_by_locale.Get()[locale];
+  auto& cached_font_set = GetFontSetsByLocale()[locale];
   if (!cached_font_set)
     cached_font_set = CachedFontSet::CreateForLocale(locale);
   return cached_font_set->GetFallbackFontForChar(c, fallback_font);

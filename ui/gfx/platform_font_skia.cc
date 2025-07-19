@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <string>
 
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -48,8 +48,10 @@ const char kFallbackFontFamilyName[] = "sans";
 constexpr SkGlyphID kUnsupportedGlyph = 0;
 
 // The default font, used for the default constructor.
-base::LazyInstance<scoped_refptr<PlatformFontSkia>>::Leaky g_default_font =
-    LAZY_INSTANCE_INITIALIZER;
+scoped_refptr<PlatformFontSkia>& GetDefaultFont() {
+  static base::NoDestructor<scoped_refptr<PlatformFontSkia>> default_font;
+  return *default_font;
+}
 
 // Creates a SkTypeface for the passed-in Font::FontStyle and family. If a
 // fallback typeface is used instead of the requested family, |family| will be
@@ -99,7 +101,7 @@ std::string* PlatformFontSkia::default_font_description_ = NULL;
 
 PlatformFontSkia::PlatformFontSkia() {
   EnsuresDefaultFontIsInitialized();
-  InitFromPlatformFont(g_default_font.Get().get());
+  InitFromPlatformFont(GetDefaultFont().get());
 }
 
 PlatformFontSkia::PlatformFontSkia(const std::string& font_name,
@@ -146,8 +148,9 @@ PlatformFontSkia::PlatformFontSkia(
 
 // static
 void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
-  if (g_default_font.Get())
+  if (GetDefaultFont()) {
     return;
+  }
 
   std::string family = kFallbackFontFamilyName;
   int size_pixels = PlatformFont::kDefaultBaseFontSize;
@@ -216,14 +219,14 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
   // nothing we can do about it and Chrome won't be able to work.
   CHECK(typeface.get()) << "No typeface available";
 
-  g_default_font.Get() = new PlatformFontSkia(
-      std::move(typeface), family, size_pixels, style, weight, params);
+  GetDefaultFont() = new PlatformFontSkia(std::move(typeface), family,
+                                          size_pixels, style, weight, params);
 }
 
 // static
 void PlatformFontSkia::ReloadDefaultFont() {
   // Reset the scoped_refptr.
-  g_default_font.Get() = nullptr;
+  GetDefaultFont() = nullptr;
 }
 
 // static
@@ -362,7 +365,7 @@ void PlatformFontSkia::InitFromDetails(sk_sp<SkTypeface> typeface,
 
   if (!success) {
     EnsuresDefaultFontIsInitialized();
-    InitFromPlatformFont(g_default_font.Get().get());
+    InitFromPlatformFont(GetDefaultFont().get());
     return;
   }
 

@@ -14,6 +14,7 @@
 #include "base/apple/mach_logging.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/md5.h"

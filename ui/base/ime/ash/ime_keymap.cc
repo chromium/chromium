@@ -8,7 +8,7 @@
 
 #include <map>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ash {
@@ -185,16 +185,19 @@ class KeyCodeMap {
   std::map<KeyboardCode, std::string> map_key_dom_;
 };
 
-base::LazyInstance<KeyCodeMap>::Leaky g_keycode_map = LAZY_INSTANCE_INITIALIZER;
+const KeyCodeMap& GetKeyCodeMap() {
+  static base::NoDestructor<KeyCodeMap> keycode_map;
+  return *keycode_map;
+}
 
 }  // namespace
 
 KeyboardCode DomKeycodeToKeyboardCode(const std::string& code) {
-  return g_keycode_map.Get().GetKeyboardCode(code);
+  return GetKeyCodeMap().GetKeyboardCode(code);
 }
 
 std::string KeyboardCodeToDomKeycode(KeyboardCode code) {
-  return g_keycode_map.Get().GetDomKeycode(code);
+  return GetKeyCodeMap().GetDomKeycode(code);
 }
 
 }  // namespace ash

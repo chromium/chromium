@@ -12,8 +12,8 @@
 
 #include "base/command_line.h"
 #include "base/containers/lru_cache.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -104,8 +104,10 @@ struct SynchronizedCache {
   Cache cache;
 };
 
-base::LazyInstance<SynchronizedCache>::Leaky g_synchronized_cache =
-    LAZY_INSTANCE_INITIALIZER;
+SynchronizedCache& GetSynchronizedCache() {
+  static base::NoDestructor<SynchronizedCache> synchronized_cache;
+  return *synchronized_cache;
+}
 
 // Serialize |query| into a string value suitable for use as a cache key.
 std::string GetFontRenderParamsQueryKey(const FontRenderParamsQuery& query) {
@@ -201,13 +203,13 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     actual_query.device_scale_factor = device_scale_factor_;
 
   std::string query_key = GetFontRenderParamsQueryKey(actual_query);
-  SynchronizedCache* synchronized_cache = g_synchronized_cache.Pointer();
+  SynchronizedCache& synchronized_cache = GetSynchronizedCache();
 
   {
     // Try to find a cached result so Fontconfig doesn't need to be queried.
-    base::AutoLock lock(synchronized_cache->lock);
-    Cache::const_iterator it = synchronized_cache->cache.Get(query_key);
-    if (it != synchronized_cache->cache.end()) {
+    base::AutoLock lock(synchronized_cache.lock);
+    Cache::const_iterator it = synchronized_cache.cache.Get(query_key);
+    if (it != synchronized_cache.cache.end()) {
       DVLOG(1) << "Returning cached params for " << query_key;
       const QueryResult& result = it->second;
       if (family_out)
@@ -264,8 +266,8 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   {
     // Store the result. It's fine if this overwrites a result that was cached
     // by a different thread in the meantime; the values should be identical.
-    base::AutoLock lock(synchronized_cache->lock);
-    synchronized_cache->cache.Put(
+    base::AutoLock lock(synchronized_cache.lock);
+    synchronized_cache.cache.Put(
         query_key,
         QueryResult(params, family_out ? *family_out : std::string()));
   }
@@ -274,9 +276,9 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
 }
 
 void ClearFontRenderParamsCacheForTest() {
-  SynchronizedCache* synchronized_cache = g_synchronized_cache.Pointer();
-  base::AutoLock lock(synchronized_cache->lock);
-  synchronized_cache->cache.Clear();
+  SynchronizedCache& synchronized_cache = GetSynchronizedCache();
+  base::AutoLock lock(synchronized_cache.lock);
+  synchronized_cache.cache.Clear();
 }
 
 float GetFontRenderParamsDeviceScaleFactor() {

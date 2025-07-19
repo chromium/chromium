@@ -111,9 +111,6 @@ class PumpableTaskRunner : public base::SingleThreadTaskRunner {
   scoped_refptr<base::SingleThreadTaskRunner> target_task_runner_;
 };
 
-base::LazyInstance<WindowResizeHelperMac>::Leaky g_window_resize_helper =
-    LAZY_INSTANCE_INITIALIZER;
-
 ////////////////////////////////////////////////////////////////////////////////
 // WrappedTask
 
@@ -292,7 +289,8 @@ scoped_refptr<base::SingleThreadTaskRunner> WindowResizeHelperMac::task_runner()
 
 // static
 WindowResizeHelperMac* WindowResizeHelperMac::Get() {
-  return g_window_resize_helper.Pointer();
+  static base::NoDestructor<WindowResizeHelperMac> instance;
+  return instance.get();
 }
 
 void WindowResizeHelperMac::Init(
