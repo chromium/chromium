@@ -4146,6 +4146,11 @@
       base_feature: "none",
     },
     {
+      // crbug.com/378692756
+      name: "ScriptRunIteratorCombiningMarkAlways",
+      status: "stable",
+    },
+    {
       name: "ScriptTools",
       status: "test",
     },
