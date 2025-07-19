@@ -15,11 +15,16 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace content {
 enum class WebContentsCapabilityType;
 class WebContents;
 }  // namespace content
+
+namespace glic {
+class GlicKeyedService;
+}  // namespace glic
 
 namespace tabs {
 class TabInterface;
@@ -38,6 +43,9 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
                            public vr::VrTabHelper::Observer {
  public:
   explicit TabAlertController(TabInterface& tab);
+
+  TabAlertController(TabInterface& tab,
+                     glic::GlicKeyedService* glic_keyed_service);
   TabAlertController(const TabAlertController&) = delete;
   TabAlertController& operator=(const TabAlertController&) = delete;
   ~TabAlertController() override;
@@ -83,6 +91,10 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   void OnIsContentDisplayedInHeadsetChanged(bool state) override;
 
  private:
+  void OnGlicTabPinningChanged(tabs::TabInterface* tab_interface,
+                               bool is_sharing);
+  void ObserveAlerts();
+
   // Adds `alert` to the set of already active alerts for this tab if it isn't
   // currently active. Otherwise, removes `alert` from the set and is considered
   // inactive.
@@ -106,6 +118,9 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // is displaying content to a headset.
   base::ScopedObservation<vr::VrTabHelper, vr::VrTabHelper::Observer>
       vr_tab_helper_observation_{this};
+
+  // Subscription to be notified when glic sharing status has changed.
+  base::CallbackListSubscription glic_sharing_status_changed_subscription_;
 };
 }  // namespace tabs
 

@@ -19,12 +19,12 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 
 namespace glic {
 
@@ -258,11 +258,7 @@ bool GlicPinnedTabManager::PinTabs(
     // its context pulled.
     // TODO(crbug.com/422767952): prevent pinned tabs from being discarded.
     if (tab->GetContents()) {
-      ::mojom::LifecycleUnitState tab_lifecycle_state =
-          resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-              tab->GetContents())
-              ->GetTabState();
-      if (tab_lifecycle_state == ::mojom::LifecycleUnitState::DISCARDED) {
+      if (tab->GetContents()->WasDiscarded()) {
         tab->GetContents()->GetController().SetNeedsReload();
       }
       tab->GetContents()->GetController().LoadIfNecessary();
@@ -294,7 +290,7 @@ bool GlicPinnedTabManager::UnpinTabs(
     std::erase_if(pinned_tabs_, [tab_handle](const PinnedTabEntry& entry) {
       return entry.tab_handle == tab_handle;
     });
-    pinning_status_changed_callback_list_.Notify(tab_handle.Get(), true);
+    pinning_status_changed_callback_list_.Notify(tab_handle.Get(), false);
   }
   NotifyPinnedTabsChanged();
   return unpinning_fully_succeeded;
