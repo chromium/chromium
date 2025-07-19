@@ -18,6 +18,9 @@ import "url/mojom/url.mojom";
 // script. It is should always be false for service workers.
 interface EventDispatcher {
     // Sent to the renderer to dispatch an event to a listener.
+    // TODO(crbug.com/380898785): remove the UnlimitedSize tag once
+    // the responsible extensions are identified.
+    [UnlimitedSize]
     DispatchEvent(DispatchEventParams params,
                   mojo_base.mojom.ListValue event_args) => (
                     // TODO(crbug.com/40277737): Remove this variable once
