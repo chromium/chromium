@@ -202,6 +202,7 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
+#include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -9503,10 +9504,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  ui::MotionEventAndroidJava event(env, obj, 1.f / root_view->GetDipScale(),
-                                   0.f, 0.f, 0.f, base::TimeTicks(), 0, 1, 0, 0,
-                                   0, 0, 0, 0, 0, false, &pointer0, nullptr);
-  root_view->OnTouchEventForTesting(event);
+  auto event = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, obj,
+      /*pix_to_dip=*/1.f / root_view->GetDipScale(),
+      /*ticks_x=*/0.f,
+      /*ticks_y=*/0.f,
+      /*tick_multiplier=*/0.f,
+      /*oldest_event_time=*/base::TimeTicks(),
+      /*android_action=*/0,
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&pointer0,
+      /*pointer1=*/nullptr);
+  root_view->OnTouchEventForTesting(*event);
 
   EXPECT_TRUE(mock_handler.did_receive_event());
   EXPECT_FALSE(mock_handler_speculative.did_receive_event());
@@ -9847,11 +9864,26 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
         JNI_MotionEvent::Java_MotionEvent_obtain(
             env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0,
             /*y=*/0, /*metaState=*/0);
-    ui::MotionEventAndroidJava touch(
-        env, obj, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
-        ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0,
-        0, false, &p, nullptr);
-    view->OnTouchEvent(touch);
+    auto touch = ui::MotionEventAndroidFactory::CreateFromJava(
+        env, obj,
+        /*pix_to_dip=*/1.f,
+        /*ticks_x=*/0,
+        /*ticks_y=*/0,
+        /*tick_multiplier=*/0,
+        /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+        /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
+        /*pointer_count=*/1,
+        /*history_size=*/0,
+        /*action_index=*/0,
+        /*android_action_button=*/0,
+        /*android_gesture_classification=*/0,
+        /*android_button_state=*/0,
+        /*raw_offset_x_pixels=*/0,
+        /*raw_offset_y_pixels=*/0,
+        /*for_touch_handle=*/false,
+        /*pointer0=*/&p,
+        /*pointer1=*/nullptr);
+    view->OnTouchEvent(*touch);
   }
 
   raw_ptr<RenderWidgetHostViewAndroid, DanglingUntriaged> root_rwhv_;

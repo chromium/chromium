@@ -401,6 +401,7 @@ component("events") {
       "android/gesture_event_type.h",
       "android/key_event_utils.h",
       "android/motion_event_android.h",
+      "android/motion_event_android_factory.h",
       "android/motion_event_android_java.h",
       "android/motion_event_android_native.h",
 
@@ -416,6 +417,7 @@ component("events") {
       "android/gesture_event_android.cc",
       "android/key_event_utils.cc",
       "android/motion_event_android.cc",
+      "android/motion_event_android_factory.cc",
       "android/motion_event_android_java.cc",
       "android/motion_event_android_native.cc",
       "back_gesture_event.cc",

@@ -20,11 +20,51 @@
 
 namespace ui {
 
+class MotionEventAndroidFactory;
+
 // Implementation of ui::MotionEventAndroid wrapping a java Android MotionEvent.
 // All *input* coordinates are in device pixels (as with Android MotionEvent),
 // while all *output* coordinates are in DIPs (as with WebTouchEvent).
 class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
  public:
+  ~MotionEventAndroidJava() override;
+  friend class MotionEventAndroidFactory;
+  // Disallow copy/assign.
+  MotionEventAndroidJava(const MotionEventAndroidJava& e) = delete;
+  void operator=(const MotionEventAndroidJava&) = delete;
+
+  // Start ui::MotionEvent overrides
+  int GetPointerId(size_t pointer_index) const override;
+  float GetX(size_t pointer_index) const override;
+  float GetY(size_t pointer_index) const override;
+  float GetTouchMajor(size_t pointer_index) const override;
+  float GetTouchMinor(size_t pointer_index) const override;
+  float GetOrientation(size_t pointer_index) const override;
+  float GetPressure(size_t pointer_index) const override;
+  float GetTiltX(size_t pointer_index) const override;
+  float GetTiltY(size_t pointer_index) const override;
+  base::TimeTicks GetHistoricalEventTime(
+      size_t historical_index) const override;
+  float GetHistoricalTouchMajor(size_t pointer_index,
+                                size_t historical_index) const override;
+  float GetHistoricalX(size_t pointer_index,
+                       size_t historical_index) const override;
+  float GetHistoricalY(size_t pointer_index,
+                       size_t historical_index) const override;
+  ToolType GetToolType(size_t pointer_index) const override;
+  bool IsLatestEventTimeResampled() const override;
+  // End ui::MotionEvent overrides
+
+  // Start MotionEventAndroid overrides
+  std::unique_ptr<MotionEventAndroid> CreateFor(
+      const gfx::PointF& point) const override;
+  float GetXPix(size_t pointer_index) const override;
+  float GetYPix(size_t pointer_index) const override;
+  int GetSource() const override;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
+  // End MotionEventAndroid overrides
+
+ private:
   // Forcing the caller to provide all cached values upon construction
   // eliminates the need to perform a JNI call to retrieve values individually.
   MotionEventAndroidJava(JNIEnv* env,
@@ -69,45 +109,6 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          const Pointer* const pointer0,
                          const Pointer* const pointer1,
                          bool is_latest_event_time_resampled);
-
-  ~MotionEventAndroidJava() override;
-
-  // Disallow copy/assign.
-  MotionEventAndroidJava(const MotionEventAndroidJava& e) = delete;
-  void operator=(const MotionEventAndroidJava&) = delete;
-
-  // Start ui::MotionEvent overrides
-  int GetPointerId(size_t pointer_index) const override;
-  float GetX(size_t pointer_index) const override;
-  float GetY(size_t pointer_index) const override;
-  float GetTouchMajor(size_t pointer_index) const override;
-  float GetTouchMinor(size_t pointer_index) const override;
-  float GetOrientation(size_t pointer_index) const override;
-  float GetPressure(size_t pointer_index) const override;
-  float GetTiltX(size_t pointer_index) const override;
-  float GetTiltY(size_t pointer_index) const override;
-  base::TimeTicks GetHistoricalEventTime(
-      size_t historical_index) const override;
-  float GetHistoricalTouchMajor(size_t pointer_index,
-                                size_t historical_index) const override;
-  float GetHistoricalX(size_t pointer_index,
-                       size_t historical_index) const override;
-  float GetHistoricalY(size_t pointer_index,
-                       size_t historical_index) const override;
-  ToolType GetToolType(size_t pointer_index) const override;
-  bool IsLatestEventTimeResampled() const override;
-  // End ui::MotionEvent overrides
-
-  // Start MotionEventAndroid overrides
-  std::unique_ptr<MotionEventAndroid> CreateFor(
-      const gfx::PointF& point) const override;
-  float GetXPix(size_t pointer_index) const override;
-  float GetYPix(size_t pointer_index) const override;
-  int GetSource() const override;
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
-  // End MotionEventAndroid overrides
-
- private:
   // The Java reference to the underlying MotionEvent.
   base::android::ScopedJavaGlobalRef<jobject> event_;
 

@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "ui/base/ui_base_features.h"
@@ -129,9 +130,7 @@ MotionEventAndroidJava::MotionEventAndroidJava(const MotionEventAndroidJava& e,
 
 std::unique_ptr<MotionEventAndroid> MotionEventAndroidJava::CreateFor(
     const gfx::PointF& point) const {
-  std::unique_ptr<MotionEventAndroid> event(
-      new MotionEventAndroidJava(*this, point));
-  return event;
+  return base::WrapUnique(new MotionEventAndroidJava(*this, point));
 }
 
 MotionEventAndroidJava::~MotionEventAndroidJava() = default;

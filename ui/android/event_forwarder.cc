@@ -15,6 +15,7 @@
 #include "ui/events/android/gesture_event_android.h"
 #include "ui/events/android/gesture_event_type.h"
 #include "ui/events/android/key_event_android.h"
+#include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -135,14 +136,20 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
   // base::TimeTicks::FromUptimeMillis to get base::TimeTicks for this
   // milliseconds timestamp.
   base::TimeTicks down_time = base::TimeTicks::FromUptimeMillis(down_time_ms);
-  ui::MotionEventAndroidJava event(
-      env, motion_event, 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
+  auto event = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, /*event=*/motion_event,
+      /*pix_to_dip=*/1.f / view_->GetDipScale(),
+      /*ticks_x=*/0.f,
+      /*ticks_y=*/0.f,
+      /*tick_multiplier=*/0.f,
       base::TimeTicks::FromJavaNanoTime(oldest_event_time_ns),
       base::TimeTicks::FromJavaNanoTime(latest_event_time_ns), down_time,
       android_action, pointer_count, history_size, action_index,
-      0 /* action_button */, android_gesture_classification,
-      android_button_state, raw_pos_x - pos_x_0, raw_pos_y - pos_y_0,
-      for_touch_handle, &pointer0, pointer1.get(), is_latest_event_resampled);
+      /*android_action_button=*/0, android_gesture_classification,
+      android_button_state,
+      /*raw_offset_x_pixels=*/raw_pos_x - pos_x_0,
+      /*raw_offset_y_pixels=*/raw_pos_y - pos_y_0, for_touch_handle, &pointer0,
+      pointer1.get(), is_latest_event_resampled);
 
   if (send_touch_moves_to_observers ||
       android_action !=
@@ -153,10 +160,10 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
     // cleanup the observer API.
     // TODO(b/328601354): Confirm touch moves are not required, and if they are
     // not required cleanup the observer API.
-    observers_.Notify(&Observer::OnTouchEvent, event);
+    observers_.Notify(&Observer::OnTouchEvent, *event);
   }
 
-  return view_->OnTouchEvent(event);
+  return view_->OnTouchEvent(*event);
 }
 
 void EventForwarder::OnMouseEvent(
@@ -181,17 +188,27 @@ void EventForwarder::OnMouseEvent(
       /*touch_major_pixels=*/0.0f, /*touch_minor_pixels=*/0.0f,
       /*pressure=*/pressure, /*orientation_rad=*/orientation, /*tilt_rad=*/tilt,
       /*tool_type=*/android_tool_type);
-  ui::MotionEventAndroidJava event(
-      env, /*event=*/motion_event, 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
-      base::TimeTicks::FromJavaNanoTime(time_ns), android_action,
-      /*pointer_count=*/1, /*history_size=*/0, /*action_index=*/0,
-      android_action_button, /*android_gesture_classification=*/0,
-      android_button_state, /*raw_offset_x_pixels=*/0,
-      /*raw_offset_y_pixels=*/0, /*for_touch_handle=*/false, &pointer, nullptr);
+  auto event = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, /*event=*/motion_event,
+      /*pix_to_dip=*/1.f / view_->GetDipScale(),
+      /*ticks_x=*/0.f,
+      /*ticks_y=*/0.f,
+      /*tick_multiplier=*/0.f,
+      /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+      android_action,
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0, android_action_button,
+      /*android_gesture_classification=*/0, android_button_state,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&pointer,
+      /*pointer1=*/nullptr);
 
-  observers_.Notify(&Observer::OnMouseEvent, event);
+  observers_.Notify(&Observer::OnMouseEvent, *event);
 
-  view_->OnMouseEvent(event);
+  view_->OnMouseEvent(*event);
 }
 
 void EventForwarder::OnDragEvent(JNIEnv* env,
@@ -250,15 +267,32 @@ jboolean EventForwarder::OnGenericMotionEvent(
   // base::TimeTicks::FromUptimeMillis to get base::TimeTicks for this
   // milliseconds timestamp.
   base::TimeTicks down_time = base::TimeTicks::FromUptimeMillis(down_time_ms);
-  ui::MotionEventAndroidJava event(
-      env, motion_event, 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
-      base::TimeTicks::FromJavaNanoTime(event_time_ns),
-      base::TimeTicks::FromJavaNanoTime(event_time_ns), down_time, 0, 1, 0, 0,
-      0, 0, 0, 0, 0, false, &pointer0, nullptr, false);
+  auto event = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, /*event=*/motion_event,
+      /*pix_to_dip=*/1.f / view_->GetDipScale(),
+      /*ticks_x=*/0.f,
+      /*ticks_y=*/0.f,
+      /*tick_multiplier=*/0.f,
+      /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(event_time_ns),
+      /*latest_event_time=*/base::TimeTicks::FromJavaNanoTime(event_time_ns),
+      down_time,
+      /*android_action=*/0,
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&pointer0,
+      /*pointer1=*/nullptr,
+      /*is_latest_event_time_resampled=*/false);
 
-  observers_.Notify(&Observer::OnGenericMotionEvent, event);
+  observers_.Notify(&Observer::OnGenericMotionEvent, *event);
 
-  return view_->OnGenericMotionEvent(event);
+  return view_->OnGenericMotionEvent(*event);
 }
 
 jboolean EventForwarder::OnKeyUp(JNIEnv* env,

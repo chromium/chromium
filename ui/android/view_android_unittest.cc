@@ -13,6 +13,7 @@
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
+#include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
@@ -86,10 +87,25 @@ class ViewAndroidBoundsTest : public testing::Test {
             env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0,
             /*y=*/0, /*metaState=*/0);
 
-    ui::MotionEventAndroidJava event(env, obj, 1.f, 0, 0, 0, base::TimeTicks(),
-                                     0, 1, 0, 0, 0, 0, 0, 0, 0, false,
-                                     &pointer0, nullptr);
-    root_.OnTouchEvent(event);
+    auto event = ui::MotionEventAndroidFactory::CreateFromJava(
+        env, obj,
+        /*pix_to_dip=*/1.f,
+        /*ticks_x=*/0,
+        /*ticks_y=*/0,
+        /*tick_multiplier=*/0,
+        /*oldest_event_time=*/base::TimeTicks(),
+        /*android_action=*/0,
+        /*pointer_count=*/1,
+        /*history_size=*/0,
+        /*action_index=*/0,
+        /*android_action_button=*/0,
+        /*android_gesture_classification=*/0,
+        /*android_button_state=*/0,
+        /*raw_offset_x_pixels=*/0,
+        /*raw_offset_y_pixels=*/0,
+        /*for_touch_handle=*/false, &pointer0,
+        /*pointer1=*/nullptr);
+    root_.OnTouchEvent(*event);
   }
 
   void ExpectHit(const TestEventHandler& hitHandler) {

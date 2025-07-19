@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/key_event_utils.h"
+#include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -216,14 +217,28 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/AMETA_ALT_ON);
-  ui::MotionEventAndroidJava motion_event(
-      env, obj, kPixToDip, 0.f, 0.f, 0.f,
+  auto motion_event = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, obj, kPixToDip,
+      /*ticks_x=*/0.f,
+      /*ticks_y=*/0.f,
+      /*tick_multiplier=*/0.f,
+      /*oldest_event_time=*/
       base::TimeTicks() + base::Nanoseconds(kEventTimeNs),
-      AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, raw_offset_x, raw_offset_y,
-      false, &p0, nullptr);
+      /*android_action=*/AMOTION_EVENT_ACTION_DOWN,
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/-1,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/1,
+      /*raw_offset_x_pixels=*/raw_offset_x,
+      /*raw_offset_y_pixels=*/raw_offset_y,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&p0,
+      /*pointer1=*/nullptr);
 
   WebMouseEvent web_event = input::WebMouseEventBuilder::Build(
-      motion_event, blink::WebInputEvent::Type::kMouseDown, 1,
+      *motion_event, blink::WebInputEvent::Type::kMouseDown, 1,
       ui::MotionEvent::BUTTON_PRIMARY);
   EXPECT_EQ(web_event.PositionInWidget().x(), p0.pos_x_pixels * kPixToDip);
   EXPECT_EQ(web_event.PositionInWidget().y(), p0.pos_y_pixels * kPixToDip);

@@ -28,6 +28,7 @@
 #include "ui/android/test_view_android_delegate.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
@@ -482,18 +483,33 @@ TEST_F(RenderWidgetHostViewAndroidTest,
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  ui::MotionEventAndroidJava touch_down(
-      env, obj, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
-      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      false, &p, nullptr);
+  auto touch_down = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, obj,
+      /*pix_to_dip=*/1.f,
+      /*ticks_x=*/0,
+      /*ticks_y=*/0,
+      /*tick_multiplier=*/0,
+      /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+      /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&p,
+      /*pointer1=*/nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
   EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
-  rwhva->OnTouchEvent(touch_down);
+  rwhva->OnTouchEvent(*touch_down);
   EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(false));
-  rwhva->OnTouchEvent(touch_down);
+  rwhva->OnTouchEvent(*touch_down);
   EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
 }
 
@@ -510,11 +526,26 @@ TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  ui::MotionEventAndroidJava touch_down(
-      env, obj, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
-      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      false, &p, nullptr);
-  rwhva->OnTouchEvent(touch_down);
+  auto touch_down = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, obj,
+      /*pix_to_dip=*/1.f,
+      /*ticks_x=*/0,
+      /*ticks_y=*/0,
+      /*tick_multiplier=*/0,
+      /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+      /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&p,
+      /*pointer1=*/nullptr);
+  rwhva->OnTouchEvent(*touch_down);
 
   auto& gesture_provider = rwhva->GetGestureProvider();
   EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
@@ -579,13 +610,28 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  ui::MotionEventAndroidJava touch_down1(
-      env, obj1, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
-      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      false, &p, nullptr);
+  auto touch_down1 = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, obj1,
+      /*pix_to_dip=*/1.f,
+      /*ticks_x=*/0,
+      /*ticks_y=*/0,
+      /*tick_multiplier=*/0,
+      /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+      /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&p,
+      /*pointer1=*/nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
-  rwhva->OnTouchEvent(touch_down1);
+  rwhva->OnTouchEvent(*touch_down1);
 
   time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
 
@@ -593,13 +639,28 @@ TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
       JNI_MotionEvent::Java_MotionEvent_obtain(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
-  ui::MotionEventAndroidJava touch_down2(
-      env, obj2, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
-      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      false, &p, nullptr);
+  auto touch_down2 = ui::MotionEventAndroidFactory::CreateFromJava(
+      env, obj2,
+      /*pix_to_dip=*/1.f,
+      /*ticks_x=*/0,
+      /*ticks_y=*/0,
+      /*tick_multiplier=*/0,
+      /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+      /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&p,
+      /*pointer1=*/nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(false));
-  rwhva->OnTouchEvent(touch_down2);
+  rwhva->OnTouchEvent(*touch_down2);
   // Expect a call to StopFlingingOnViz mojo method if the input sequence hasn't
   // been transferred to VizCompositorThread for handling.
   EXPECT_CALL(rir_delegate, StopFlingingOnViz).Times(1);

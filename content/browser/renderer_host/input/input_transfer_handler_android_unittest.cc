@@ -15,6 +15,7 @@
 #include "components/input/utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 #include "ui/events/velocity_tracker/motion_event_generic.h"
@@ -54,7 +55,7 @@ class MockJniDelegate : public InputTransferHandlerAndroid::JniDelegate {
   MOCK_METHOD((int), TransferInputToViz, (int), (override));
 };
 
-ui::MotionEventAndroidJava GetMotionEventAndroid(
+std::unique_ptr<ui::MotionEventAndroid> GetMotionEventAndroid(
     ui::MotionEvent::Action action,
     base::TimeTicks event_time,
     base::TimeTicks down_time,
@@ -67,10 +68,27 @@ ui::MotionEventAndroidJava GetMotionEventAndroid(
           env, /*downTime=*/0, /*eventTime=*/0, /*action=*/0, /*x=*/0, /*y=*/0,
           /*metaState=*/0);
 
-  return ui::MotionEventAndroidJava(
-      env, obj, pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time, down_time,
-      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
-      false, &pointer, nullptr, false);
+  return ui::MotionEventAndroidFactory::CreateFromJava(
+      env, obj, pix_to_dip,
+      /*ticks_x=*/0.f,
+      /*ticks_y=*/0.f,
+      /*tick_multiplier=*/0.f,
+      /*oldest_event_time=*/event_time,
+      /*latest_event_time=*/event_time,
+      /*down_time_ms=*/down_time,
+      /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&pointer,
+      /*pointer1=*/nullptr,
+      /*is_latest_event_time_resampled=*/false);
 }
 
 }  // namespace
@@ -121,7 +139,7 @@ class InputTransferHandlerTest : public testing::Test {
 TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
   base::TimeTicks event_time = base::TimeTicks::Now();
 
-  ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+  auto down_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
@@ -129,44 +147,44 @@ TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
   EXPECT_CALL(*input_transfer_handler_client_,
               SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
       .Times(1);
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
 
-  ui::MotionEventAndroidJava move_event = GetMotionEventAndroid(
+  auto move_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer_);
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(move_event));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(move_event));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*move_event));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*move_event));
 
-  ui::MotionEventAndroidJava cancel_event = GetMotionEventAndroid(
+  auto cancel_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, event_time, finger_pointer_);
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event));
 
   transfer_handler_->OnTouchEnd(event_time + base::Milliseconds(10));
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
       .WillOnce(Return(kFailureTransferring));
   // New events shouldn't be consumed due the expectation set in line above.
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(move_event));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*move_event));
 }
 
 TEST_F(InputTransferHandlerTest, EmitsTouchMovesSeenAfterTransferHistogram) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+  auto down_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
-  ui::MotionEventAndroidJava move_event = GetMotionEventAndroid(
+  auto move_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer_);
-  ui::MotionEventAndroidJava cancel_event = GetMotionEventAndroid(
+  auto cancel_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, event_time, finger_pointer_);
 
   for (int touch_moves_seen = 0; touch_moves_seen <= 2; touch_moves_seen++) {
     base::HistogramTester histogram_tester;
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
         .WillOnce(Return(kSuccessfullyTransferred));
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
     for (int ind = 1; ind <= touch_moves_seen; ind++) {
-      EXPECT_TRUE(transfer_handler_->OnTouchEvent(move_event));
+      EXPECT_TRUE(transfer_handler_->OnTouchEvent(*move_event));
     }
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event));
     histogram_tester.ExpectUniqueSample(
         InputTransferHandlerAndroid::kTouchMovesSeenHistogram, touch_moves_seen,
         1);
@@ -175,11 +193,11 @@ TEST_F(InputTransferHandlerTest, EmitsTouchMovesSeenAfterTransferHistogram) {
 
 TEST_F(InputTransferHandlerTest, EmitsEventsAfterTransferHistogram) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+  auto down_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
-  ui::MotionEventAndroidJava move_event = GetMotionEventAndroid(
+  auto move_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer_);
-  ui::MotionEventAndroidJava cancel_event = GetMotionEventAndroid(
+  auto cancel_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, event_time, finger_pointer_);
 
   const std::vector<std::pair<ui::MotionEvent::Action, int>>
@@ -197,36 +215,36 @@ TEST_F(InputTransferHandlerTest, EmitsEventsAfterTransferHistogram) {
     base::HistogramTester histogram_tester;
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
         .WillOnce(Return(kSuccessfullyTransferred));
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
 
-    ui::MotionEventAndroidJava event = GetMotionEventAndroid(
-        event_action, event_time, event_time, finger_pointer_);
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(event));
+    auto event = GetMotionEventAndroid(event_action, event_time, event_time,
+                                       finger_pointer_);
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*event));
     histogram_tester.ExpectUniqueSample(
         InputTransferHandlerAndroid::kEventsAfterTransferHistogram,
         expected_histogram_sample, 1);
 
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event));
   }
 }
 
 TEST_F(InputTransferHandlerTest, DoNotConsumeEventsIfSequenceNotTransferred) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+  auto down_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
       .WillOnce(Return(kFailureTransferring));
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event));
 
-  ui::MotionEventAndroidJava move_event = GetMotionEventAndroid(
+  auto move_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::MOVE, event_time, event_time, finger_pointer_);
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(move_event));
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(move_event));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*move_event));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*move_event));
 
-  ui::MotionEventAndroidJava cancel_event = GetMotionEventAndroid(
+  auto cancel_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, event_time, finger_pointer_);
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(cancel_event));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*cancel_event));
 }
 
 TEST_F(InputTransferHandlerTest, DoNotConsumeNonFingerEvents) {
@@ -241,15 +259,15 @@ TEST_F(InputTransferHandlerTest, DoNotConsumeNonFingerEvents) {
     ui::MotionEventAndroid::Pointer non_finger_pointer(0, 0, 0, 0, 0, 0, 0, 0,
                                                        0);
     non_finger_pointer.tool_type = tool_type;
-    ui::MotionEventAndroidJava down_event =
+    auto down_event =
         GetMotionEventAndroid(ui::MotionEvent::Action::DOWN, event_time,
                               event_time, non_finger_pointer);
-    ui::MotionEventAndroidJava up_event =
+    auto up_event =
         GetMotionEventAndroid(ui::MotionEvent::Action::UP, event_time,
                               event_time, non_finger_pointer);
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).Times(0);
-    EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
-    EXPECT_FALSE(transfer_handler_->OnTouchEvent(up_event));
+    EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event));
+    EXPECT_FALSE(transfer_handler_->OnTouchEvent(*up_event));
   }
 }
 
@@ -265,17 +283,17 @@ TEST_F(InputTransferHandlerTest, EmitsTransferInputToVizResultHistogram) {
       // Arbitrary non-finger tooltype.
       pointer.tool_type = static_cast<int>(ui::MotionEvent::ToolType::STYLUS);
     }
-    ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
-        ui::MotionEvent::Action::DOWN, event_time, event_time, pointer);
-    ui::MotionEventAndroidJava up_event = GetMotionEventAndroid(
-        ui::MotionEvent::Action::CANCEL, event_time, event_time, pointer);
+    auto down_event = GetMotionEventAndroid(ui::MotionEvent::Action::DOWN,
+                                            event_time, event_time, pointer);
+    auto up_event = GetMotionEventAndroid(ui::MotionEvent::Action::CANCEL,
+                                          event_time, event_time, pointer);
     if (transfer_result !=
         static_cast<int>(TransferInputToVizResult::kNonFingerToolType)) {
       EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
           .WillOnce(Return(transfer_result));
     }
-    transfer_handler_->OnTouchEvent(down_event);
-    transfer_handler_->OnTouchEvent(up_event);
+    transfer_handler_->OnTouchEvent(*down_event);
+    transfer_handler_->OnTouchEvent(*up_event);
 
     histogram_tester.ExpectUniqueSample(
         InputTransferHandlerAndroid::kTransferInputToVizResultHistogram,
@@ -297,10 +315,10 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
        transfer_result++) {
     event_time += base::Milliseconds(8);
     base::TimeTicks down_time = event_time;
-    ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+    auto down_event = GetMotionEventAndroid(
         ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
     event_time += base::Milliseconds(8);
-    ui::MotionEventAndroidJava cancel_event =
+    auto cancel_event =
         GetMotionEventAndroid(ui::MotionEvent::Action::CANCEL, event_time,
                               down_time, finger_pointer_);
 
@@ -310,8 +328,8 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
         *input_transfer_handler_client_,
         SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
         .Times(1);
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event));
 
     testing::Mock::VerifyAndClearExpectations(mock_);
     testing::Mock::VerifyAndClearExpectations(
@@ -319,10 +337,10 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
 
     event_time += base::Milliseconds(20);
     down_time = event_time;
-    ui::MotionEventAndroidJava down_event_2 = GetMotionEventAndroid(
+    auto down_event_2 = GetMotionEventAndroid(
         ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
     event_time += base::Milliseconds(8);
-    ui::MotionEventAndroidJava cancel_event_2 =
+    auto cancel_event_2 =
         GetMotionEventAndroid(ui::MotionEvent::Action::CANCEL, event_time,
                               down_time, finger_pointer_);
 
@@ -342,8 +360,8 @@ TEST_F(InputTransferHandlerTest, RetryTransfer) {
           .Times(1);
     }
 
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event_2));
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event_2));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event_2));
 
     event_time += base::Milliseconds(20);
     transfer_handler_->OnTouchEnd(event_time);
@@ -358,26 +376,26 @@ TEST_F(InputTransferHandlerTest,
        DropFailedTransferSequenceWhileVizHandlesInput) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
   base::TimeTicks down_time = event_time;
-  ui::MotionEventAndroidJava down_event_1 = GetMotionEventAndroid(
+  auto down_event_1 = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
   event_time += base::Milliseconds(8);
-  ui::MotionEventAndroidJava cancel_event_1 = GetMotionEventAndroid(
+  auto cancel_event_1 = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, down_time, finger_pointer_);
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
       .WillOnce(Return(kSuccessfullyTransferred));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event_1));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event_1));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_1));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event_1));
 
   event_time += base::Milliseconds(20);
   down_time = event_time;
-  ui::MotionEventAndroidJava down_event_2 = GetMotionEventAndroid(
+  auto down_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
   event_time += base::Milliseconds(8);
-  ui::MotionEventAndroidJava move_event_2 = GetMotionEventAndroid(
+  auto move_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::MOVE, event_time, down_time, finger_pointer_);
   event_time += base::Milliseconds(8);
-  ui::MotionEventAndroidJava cancel_event_2 = GetMotionEventAndroid(
+  auto cancel_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, down_time, finger_pointer_);
   // The next sequence fails to transfer.
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
@@ -387,9 +405,9 @@ TEST_F(InputTransferHandlerTest,
   // The new sequence should be dropped, instead of Browser and Viz
   // potentially handling the seequence at same time.
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event_2));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(move_event_2));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event_2));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*move_event_2));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event_2));
   const int num_dropped_events = 3;
   histogram_tester.ExpectUniqueSample(
       InputTransferHandlerAndroid::kEventsInDroppedSequenceHistogram,
@@ -409,37 +427,37 @@ TEST_F(InputTransferHandlerTest,
        BrowserHandlesSequenceAfterTouchEndNotification) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
   base::TimeTicks down_time = event_time;
-  ui::MotionEventAndroidJava down_event_1 = GetMotionEventAndroid(
+  auto down_event_1 = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
   event_time += base::Milliseconds(8);
-  ui::MotionEventAndroidJava cancel_event_1 = GetMotionEventAndroid(
+  auto cancel_event_1 = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, down_time, finger_pointer_);
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
       .WillOnce(Return(kSuccessfullyTransferred));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event_1));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event_1));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_1));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event_1));
 
   event_time += base::Milliseconds(8);
   transfer_handler_->OnTouchEnd(event_time);
 
   event_time += base::Milliseconds(20);
   down_time = event_time;
-  ui::MotionEventAndroidJava down_event_2 = GetMotionEventAndroid(
+  auto down_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
   event_time += base::Milliseconds(8);
-  ui::MotionEventAndroidJava move_event_2 = GetMotionEventAndroid(
+  auto move_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::MOVE, event_time, down_time, finger_pointer_);
   event_time += base::Milliseconds(8);
-  ui::MotionEventAndroidJava cancel_event_2 = GetMotionEventAndroid(
+  auto cancel_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, down_time, finger_pointer_);
   // The next sequence fails to transfer.
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
       .WillOnce(Return(kFailureTransferring));
 
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event_2));
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(move_event_2));
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(cancel_event_2));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event_2));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*move_event_2));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*cancel_event_2));
 }
 
 TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
@@ -456,10 +474,10 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
        transfer_result++) {
     event_time += base::Milliseconds(8);
     base::TimeTicks down_time = event_time;
-    ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+    auto down_event = GetMotionEventAndroid(
         ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
     event_time += base::Milliseconds(8);
-    ui::MotionEventAndroidJava cancel_event =
+    auto cancel_event =
         GetMotionEventAndroid(ui::MotionEvent::Action::CANCEL, event_time,
                               down_time, finger_pointer_);
 
@@ -469,8 +487,8 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
         *input_transfer_handler_client_,
         SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
         .Times(1);
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
-    EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
+    EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event));
 
     testing::Mock::VerifyAndClearExpectations(mock_);
     testing::Mock::VerifyAndClearExpectations(
@@ -481,10 +499,10 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
 
     event_time += base::Milliseconds(20);
     down_time = event_time;
-    ui::MotionEventAndroidJava down_event_2 = GetMotionEventAndroid(
+    auto down_event_2 = GetMotionEventAndroid(
         ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
     event_time += base::Milliseconds(8);
-    ui::MotionEventAndroidJava cancel_event_2 =
+    auto cancel_event_2 =
         GetMotionEventAndroid(ui::MotionEvent::Action::CANCEL, event_time,
                               down_time, finger_pointer_);
 
@@ -504,8 +522,8 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
     }
 
     const bool consume_sequence = transfer_result == kSuccessfullyTransferred;
-    EXPECT_EQ(transfer_handler_->OnTouchEvent(down_event_2), consume_sequence);
-    EXPECT_EQ(transfer_handler_->OnTouchEvent(cancel_event_2),
+    EXPECT_EQ(transfer_handler_->OnTouchEvent(*down_event_2), consume_sequence);
+    EXPECT_EQ(transfer_handler_->OnTouchEvent(*cancel_event_2),
               consume_sequence);
 
     event_time += base::Milliseconds(20);
@@ -521,11 +539,11 @@ TEST_F(InputTransferHandlerTest, DownTimeAfterEventTimeBrowserHandlesSequence) {
   base::HistogramTester histogram_tester;
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
   base::TimeTicks down_time = event_time + base::Milliseconds(8);
-  ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+  auto down_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).Times(0);
-  EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(*down_event));
   histogram_tester.ExpectUniqueSample(
       InputTransferHandlerAndroid::kTransferInputToVizResultHistogram,
       TransferInputToVizResult::kDownTimeAfterEventTime, 1);
@@ -535,24 +553,24 @@ TEST_F(InputTransferHandlerTest,
        DownTimeAfterEventTimeButActiveTouchSequenceOnViz) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
   base::TimeTicks down_time = event_time;
-  ui::MotionEventAndroidJava down_event_1 = GetMotionEventAndroid(
+  auto down_event_1 = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
   event_time += base::Milliseconds(8);
-  ui::MotionEventAndroidJava cancel_event_1 = GetMotionEventAndroid(
+  auto cancel_event_1 = GetMotionEventAndroid(
       ui::MotionEvent::Action::CANCEL, event_time, down_time, finger_pointer_);
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
       .WillOnce(Return(kSuccessfullyTransferred));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event_1));
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event_1));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_1));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*cancel_event_1));
 
   // Touch end hasn't been received from Viz.
   event_time += base::Milliseconds(20);
   // Down time is later than the event time of input event.
   down_time = event_time + base::Milliseconds(8);
-  ui::MotionEventAndroidJava down_event_2 = GetMotionEventAndroid(
+  auto down_event_2 = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
-  EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event_2));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event_2));
 }
 
 }  // namespace content

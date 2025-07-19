@@ -18,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 
@@ -31,9 +32,25 @@ std::unique_ptr<ui::MotionEventAndroid> CreateTouchEventAt(
     base::TimeTicks event_time = base::TimeTicks()) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0, 0);
-  return std::unique_ptr<ui::MotionEventAndroid>(new ui::MotionEventAndroidJava(
-      env, event, 1.f, 0, 0, 0, event_time, 0, 1, 0, 0, 0, 0, 0, 0, 0, false,
-      &pointer0, nullptr));
+  return ui::MotionEventAndroidFactory::CreateFromJava(
+      env, event,
+      /*pix_to_dip=*/1.f,
+      /*ticks_x=*/0,
+      /*ticks_y=*/0,
+      /*tick_multiplier=*/0,
+      /*oldest_event_time=*/event_time,
+      /*android_action=*/0,
+      /*pointer_count=*/1,
+      /*history_size=*/0,
+      /*action_index=*/0,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&pointer0,
+      /*pointer1=*/nullptr);
 }
 
 }  // namespace
