@@ -683,6 +683,49 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientContextHasCorrectValues) {
   EXPECT_EQ(client_context.locale_context().time_zone(), kTimeZone);
 }
 
+TEST_F(ComposeboxQueryControllerTest,
+       UnimodalTextQuerySubmittedWithInvalidClusterInfoSuccess) {
+  controller().set_next_cluster_info_request_should_return_error(true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo(QueryControllerState::kClusterInfoInvalid);
+
+  // Act: Generate the destination URL for the query.
+  GURL aim_url = controller().CreateAimUrl("test", kTestQueryStartTime);
+
+  // Assert: Validate the state change.
+  EXPECT_EQ(SessionState::kQuerySubmitted, controller().session_state());
+
+  // Assert: Lens request id is NOT added to unimodal text queries.
+  std::string vsrid_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                          &vsrid_value));
+
+  // Assert: Visual input type is NOT added to unimodal text queries.
+  std::string vit_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
+                                          &vit_value));
+
+  // Assert: Gsession id is NOT added to unimodal text queries.
+  std::string gsession_id_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
+                                          &gsession_id_value));
+
+  // Check that the timestamps are attached to the url.
+  std::string qsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
+
+  std::string pqsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
+      &pqsubts_value));
+  EXPECT_EQ(pqsubts_value, "1000");
+}
+
 TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   // Act: Start the session.
   controller().NotifySessionStarted();
@@ -690,8 +733,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
 
-  // Act: Generate the destination URL for the query. The destination URL can
-  // only be created after the cluster info is received.
+  // Act: Generate the destination URL for the query.
   GURL aim_url = controller().CreateAimUrl("test", kTestQueryStartTime);
 
   // Assert: Validate the state change.
@@ -775,6 +817,58 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
       aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
       &pqsubts_value));
   EXPECT_EQ(pqsubts_value, "1000");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       QuerySubmittedWithUploadedPdfButInvalidClusterInfoIsUnimodal) {
+  // Enable cluster info TTL.
+  controller().set_enable_cluster_info_ttl(true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Ensure that future cluster info requests fail.
+  controller().set_next_cluster_info_request_should_return_error(true);
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(
+      file_token,
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token);
+
+  // Wait 1 hour.
+  task_environment().FastForwardBy(base::Hours(1));
+
+  // Assert: Validate cluster info request and state changes.
+  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
+            controller().query_controller_state());
+
+  // Act: Create the destination URL for the query.
+  GURL aim_url = controller().CreateAimUrl("hello", kTestQueryStartTime);
+
+  // Assert: Validate the state change.
+  EXPECT_EQ(SessionState::kQuerySubmitted, controller().session_state());
+
+  // Assert: Lens request id is NOT added to unimodal text queries.
+  std::string vsrid_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                          &vsrid_value));
+
+  // Assert: Visual input type is NOT added to unimodal text queries.
+  std::string vit_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
+                                          &vit_value));
+
+  // Assert: Gsession id is NOT added to unimodal text queries.
+  std::string gsession_id_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
+                                          &gsession_id_value));
 }
 
 TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {

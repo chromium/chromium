@@ -155,6 +155,15 @@ void CreateFileUploadRequestProtoWithImageDataAndContinue(
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+// Returns true if the file upload status is valid to include in the multimodal
+// request.
+bool IsValidFileUploadStatusForMultimodalRequest(
+    FileUploadStatus upload_status) {
+  return upload_status == FileUploadStatus::kProcessing ||
+         upload_status == FileUploadStatus::kUploadStarted ||
+         upload_status == FileUploadStatus::kUploadSuccessful;
+}
+
 }  // namespace
 
 ComposeboxQueryController::ComposeboxQueryController(
@@ -203,22 +212,28 @@ void ComposeboxQueryController::NotifySessionAbandoned() {
 
 GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
                                              base::Time query_start_time) {
-  CHECK(cluster_info_.has_value());
   session_state_ = SessionState::kQuerySubmitted;
-  if (!active_files_.empty()) {
+  if (!active_files_.empty() && cluster_info_.has_value()) {
     // Since multiple file upload isn't supported right now, use the last file
     // uploaded to determine `vit` param.
     // TODO(crbug.com/428967670): Support multiple file upload.
     const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
-    return GetUrlForMultimodalAim(
-        template_url_service_, kEntrypointParameterValue, query_start_time,
-        cluster_info_->search_session_id(),
-        request_id_generator_.GetNextRequestId(
-            lens::RequestIdUpdateMode::kSearchUrl),
-        last_file->mime_type_,
-        send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
-        base::UTF8ToUTF16(query_text));
+    if (IsValidFileUploadStatusForMultimodalRequest(
+            last_file->upload_status_)) {
+      return GetUrlForMultimodalAim(
+          template_url_service_, kEntrypointParameterValue, query_start_time,
+          cluster_info_->search_session_id(),
+          request_id_generator_.GetNextRequestId(
+              lens::RequestIdUpdateMode::kSearchUrl),
+          last_file->mime_type_,
+          send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
+          base::UTF8ToUTF16(query_text));
+    }
   }
+  // Treat queries in which the cluster info has expired, or the last file is
+  // not valid, as unimodal text queries.
+  // TODO(crbug.com/432125987): Handle file reupload after cluster info
+  // expiration.
   return GetUrlForAim(template_url_service_, kEntrypointParameterValue,
                       query_start_time, base::UTF8ToUTF16(query_text));
 }
