@@ -18,6 +18,7 @@
 #include "net/base/net_export.h"
 #include "net/base/reconnect_notifier.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_endpoint.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_attempt.h"
@@ -105,6 +106,11 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
       manager_->OnJobComplete(this);
       // `this` is deleted.
     }
+  }
+
+  void OnOriginFrameMatched(QuicChromiumClientSession* session) {
+    NotifyRequestsAndComplete(OK, session, NetErrorDetails());
+    // `this` is deleted.
   }
 
   // QuicSessionAttempt::Delegate implementation.
@@ -233,6 +239,25 @@ void QuicSessionAttemptManager::RemoveRequest(
     return;
   }
   it->second->RemoveRequest(request);
+}
+
+void QuicSessionAttemptManager::OnOriginFrame(
+    QuicChromiumClientSession* session) {
+  // Collect jobs that can be completed with `session` and then notify them
+  // later to avoid erasing jobs during the loop.
+  std::vector<Job*> matched_jobs;
+  for (auto& [key, job] : active_jobs_) {
+    if (pool_->CanWaiveIpMatching(key.destination(), session) &&
+        session->CanPool(key.session_key().host(), key.session_key())) {
+      matched_jobs.push_back(job.get());
+    }
+  }
+
+  for (auto job : matched_jobs) {
+    job->OnOriginFrameMatched(session);
+    // `job` was removed from `active_jobs_` and it was deleted.
+  }
+  matched_jobs.clear();
 }
 
 void QuicSessionAttemptManager::OnJobComplete(Job* job) {

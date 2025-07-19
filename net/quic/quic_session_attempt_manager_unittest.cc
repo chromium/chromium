@@ -64,6 +64,11 @@ class SessionRequester {
 
   ~SessionRequester() = default;
 
+  SessionRequester& SetDestination(url::SchemeHostPort destination) {
+    destination_ = std::move(destination);
+    return *this;
+  }
+
   SessionRequester& SetIPEndPoint(IPEndPoint ip_endpoint) {
     endpoint_ = QuicEndpoint(quic_version_, std::move(ip_endpoint),
                              ConnectionEndpointMetadata());
@@ -110,8 +115,12 @@ class SessionRequester {
   }
 
   std::optional<int> result() const { return result_; }
+
+  QuicChromiumClientSession* session() { return session_; }
   const QuicChromiumClientSession* session() const { return session_; }
   const NetErrorDetails& error_details() const { return error_details_; }
+
+  const url::SchemeHostPort& destination() const { return destination_; }
 
  private:
   void OnComplete(int result) {
@@ -475,6 +484,52 @@ TEST_P(QuicSessionAttemptManagerTest, DestroyManagerWithPendingRequests) {
   EXPECT_THAT(requester1.WaitForResult(), IsError(ERR_ABORTED));
   EXPECT_THAT(requester2.WaitForResult(), IsError(ERR_ABORTED));
   EXPECT_THAT(requester3.WaitForResult(), IsError(ERR_ABORTED));
+}
+
+TEST_P(QuicSessionAttemptManagerTest, OnOriginFrame) {
+  InitializeWithDefaultProofVerifyDetails();
+
+  // 1. Make a request for `kDefaultServerHostName` that will be pending.
+  MockQuicData socket_data1(version_);
+  socket_data1.AddConnect(ASYNC, ERR_IO_PENDING);
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester1 = CreateRequester();
+  requester1.SetIPEndPoint(MakeIPEndPoint("192.0.2.1"));
+  EXPECT_THAT(requester1.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(
+      session_attempt_manager()->HasActiveJobForTesting(requester1.key()));
+  const QuicSessionAliasKey key1 = requester1.key();
+
+  // 2. Create a new session for `other.example.org`.
+  const char* kOtherHostname = "other.example.org";
+  const url::SchemeHostPort kOtherDestination(url::kHttpsScheme, kOtherHostname,
+                                              443);
+
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddWrite(ASYNC, ConstructInitialSettingsPacket());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester2 = CreateRequester();
+  requester2.SetDestination(kOtherDestination);
+  requester2.SetIPEndPoint(MakeIPEndPoint("192.0.2.2"));
+  EXPECT_THAT(requester2.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(requester2.WaitForResult(), IsOk());
+  QuicChromiumClientSession* session2 = requester2.session();
+  EXPECT_TRUE(session2);
+
+  // 3. Simulate an Origin Frame reception.
+  quic::OriginFrame origin_frame;
+  origin_frame.origins.emplace_back(requester1.destination().Serialize());
+  session2->OnOriginFrame(origin_frame);
+
+  // 4. The first request should complete with `session2`.
+  EXPECT_THAT(requester1.WaitForResult(), IsOk());
+  EXPECT_EQ(requester1.session(), session2);
+
+  // The job for `requester1` should be gone.
+  EXPECT_FALSE(session_attempt_manager()->HasActiveJobForTesting(key1));
 }
 
 }  // namespace net::test

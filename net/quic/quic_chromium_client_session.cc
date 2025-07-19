@@ -57,6 +57,7 @@
 #include "net/quic/quic_chromium_packet_writer.h"
 #include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_attempt_manager.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
@@ -1276,6 +1277,10 @@ void QuicChromiumClientSession::OnOriginFrame(const quic::OriginFrame& frame) {
                     [&] { return NetLogReceivedOrigins(received_origins_); });
   base::UmaHistogramCounts100("Net.QuicSession.NumReceivedOrigins",
                               received_origins_.size());
+
+  if (session_pool_ && session_pool_->session_attempt_manager()) {
+    session_pool_->session_attempt_manager()->OnOriginFrame(this);
+  }
 }
 
 void QuicChromiumClientSession::AddHandle(Handle* handle) {

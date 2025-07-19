@@ -21,6 +21,7 @@
 
 namespace net {
 
+class QuicChromiumClientSession;
 class QuicSessionAttemptRequest;
 class NetLogWithSource;
 
@@ -71,6 +72,11 @@ class NET_EXPORT_PRIVATE QuicSessionAttemptManager {
 
   // Called by QuicSessionAttemptRequest to remove itself from the manager.
   void RemoveRequest(QuicSessionAttemptRequest* request);
+
+  // Called when `session` received an HTTP/3 Origin frame. Checks if `session`
+  // can be used to satisfy any active jobs. All jobs that can be satisfied by
+  // `session` are completed successfully.
+  void OnOriginFrame(QuicChromiumClientSession* session);
 
   bool HasActiveJobForTesting(const QuicSessionAliasKey& key) const {
     return active_jobs_.find(key) != active_jobs_.end();

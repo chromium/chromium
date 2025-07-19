@@ -554,6 +554,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
   friend class QuicSessionAttempt;
+  friend class QuicSessionAttemptManager;
   friend class MockQuicSessionPool;
   friend class test::QuicSessionPoolPeer;
 
