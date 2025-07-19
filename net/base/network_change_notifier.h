@@ -15,10 +15,10 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/strings/cstring_view.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "net/base/address_map_linux.h"
