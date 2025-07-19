@@ -480,6 +480,10 @@ int CertVerifyProc::Verify(X509Certificate* cert,
                           verify_result, net_log);
 
   CHECK(verify_result->verified_cert);
+  if (rv == OK) {
+    CHECK_EQ(verify_result->verified_cert->intermediate_buffers().size() + 1,
+             verify_result->public_key_hashes.size());
+  }
 
   // Check for mismatched signature algorithms and unknown signature algorithms
   // in the chain. Also fills in the has_* booleans for the digest algorithms

@@ -14,6 +14,7 @@
 #include "components/url_matcher/url_matcher.h"
 #include "net/base/hash_value.h"
 #include "net/cert/require_ct_delegate.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 class X509Certificate;
@@ -79,17 +80,16 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
   void AddFilters(const std::vector<std::string>& host_patterns,
                   url_matcher::URLMatcherConditionSet::Vector* conditions);
 
-  // Parses the SPKIs from |spki_list|, setting |*hashes| to the sorted set of
-  // all valid SPKIs.
+  // Parses the SPKIs from |spki_list|, setting |*hashes| to the set of all
+  // valid SPKIs.
   void ParseSpkiHashes(const std::vector<std::string> spki_list,
-                       std::vector<net::SHA256HashValue>* hashes) const;
+                       absl::flat_hash_set<net::SHA256HashValue>* hashes) const;
 
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
   base::MatcherStringPattern::ID next_id_;
   std::map<base::MatcherStringPattern::ID, Filter> filters_;
 
-  // SPKI list is sorted.
-  std::vector<net::SHA256HashValue> spkis_;
+  absl::flat_hash_set<net::SHA256HashValue> spkis_;
 };
 
 }  // namespace certificate_transparency

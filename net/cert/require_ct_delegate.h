@@ -38,9 +38,8 @@ class NET_EXPORT RequireCTDelegate
   // the default handling of Certificate Transparency requirements, if
   // desired.
   // |hostname| contains the host being contacted, serving the certificate
-  // |chain|, with the set of hashes |hashes|. Note that |hashes| and
-  // |chain| are not guaranteed to be in the same order - that is, the first
-  // hash in |hashes| is NOT guaranteed to be for the leaf cert in |chain|.
+  // |chain|, with the hashes |hashes| which must be in the same order as the
+  // certificate chain (leaf to root).
   virtual CTRequirementLevel IsCTRequiredForHost(
       std::string_view hostname,
       const X509Certificate* chain,
@@ -52,6 +51,9 @@ class NET_EXPORT RequireCTDelegate
   // with valid Certificate Transparency information that complies with the
   // connection's CTPolicyEnforcer and |policy_compliance| indicates that
   // the connection does not comply.
+  //
+  // |public_key_hashes| must be in the same order as the certificate chain
+  // (leaf to root).
   //
   // If |delegate| is null, CT will not be required.
   static ct::CTRequirementsStatus CheckCTRequirements(

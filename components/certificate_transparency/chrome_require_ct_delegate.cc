@@ -21,6 +21,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/zip.h"
 #include "base/values.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_matcher/url_matcher.h"
@@ -225,46 +226,26 @@ bool ChromeRequireCTDelegate::MatchSPKI(
   if (spkis_.empty())
     return false;
 
-  // TODO(crbug.com/41286522): simplify this to require the input hashes match
-  // the order of the certs in the chain, so that we don't have to jump through
-  // hoops to figure out which certificate's SPKI hash actually matched.
-
-  // Scan the constrained SPKIs via |hashes| first, as an optimization. If
-  // there are matches, the SPKI hash will have to be recomputed anyways to
-  // find the matching certificate, but avoid recomputing all the hashes for
-  // the case where there is no match.
-  std::vector<net::SHA256HashValue> matches;
-  for (const auto& hash : hashes) {
-    if (std::binary_search(spkis_.begin(), spkis_.end(), hash)) {
-      matches.push_back(hash);
-    }
-  }
-  if (matches.empty())
-    return false;
-
-  CRYPTO_BUFFER* leaf_cert = chain->cert_buffer();
-
-  // As an optimization, since the leaf is allowed to be listed as an SPKI,
-  // a match on the leaf's SPKI hash can return early, without comparing
-  // the organization information to itself.
-  net::SHA256HashValue hash;
-  if (net::x509_util::CalculateSha256SpkiHash(leaf_cert, &hash) &&
-      base::Contains(matches, hash)) {
+  if (spkis_.contains(hashes.front())) {
+    // As an optimization, since the leaf is allowed to be listed as an
+    // SPKI, a match on the leaf's SPKI hash can return early, without
+    // comparing the organization information to itself.
     return true;
   }
 
-  // If there was a match (or multiple matches), it's necessary to recompute
-  // the hashes to find the associated certificate.
   std::vector<CRYPTO_BUFFER*> candidates;
-  for (const auto& buffer : chain->intermediate_buffers()) {
-    if (net::x509_util::CalculateSha256SpkiHash(buffer.get(), &hash) &&
-        base::Contains(matches, hash)) {
-      candidates.push_back(buffer.get());
+  auto intermediate_hashes = base::span(hashes).subspan(1u);
+  for (auto [hash, cert_buffer] :
+       base::zip(intermediate_hashes, chain->intermediate_buffers())) {
+    if (spkis_.contains(hash)) {
+      candidates.push_back(cert_buffer.get());
     }
   }
-
-  if (candidates.empty())
+  if (candidates.empty()) {
     return false;
+  }
+
+  CRYPTO_BUFFER* leaf_cert = chain->cert_buffer();
 
   std::shared_ptr<const bssl::ParsedCertificate> parsed_leaf =
       bssl::ParsedCertificate::Create(bssl::UpRef(leaf_cert),
@@ -348,7 +329,7 @@ void ChromeRequireCTDelegate::AddFilters(
 
 void ChromeRequireCTDelegate::ParseSpkiHashes(
     const std::vector<std::string> spki_list,
-    std::vector<net::SHA256HashValue>* hashes) const {
+    absl::flat_hash_set<net::SHA256HashValue>* hashes) const {
   hashes->clear();
   for (const auto& value : spki_list) {
     net::HashValue hash;
@@ -358,9 +339,8 @@ void ChromeRequireCTDelegate::ParseSpkiHashes(
     if (hash.tag() != net::HASH_VALUE_SHA256) {
       continue;
     }
-    hashes->push_back(hash.sha256hashvalue());
+    hashes->insert(hash.sha256hashvalue());
   }
-  std::sort(hashes->begin(), hashes->end());
 }
 
 }  // namespace certificate_transparency
