@@ -143,7 +143,7 @@ BASE_FEATURE(kWaylandSessionManagement,
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_FEATURE(kOverrideDefaultOzonePlatformHintToAuto,
              "OverrideDefaultOzonePlatformHintToAuto",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Uses a stylus-specific tap slop region parameter for gestures.  Stylus taps
