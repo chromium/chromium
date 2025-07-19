@@ -491,6 +491,10 @@ class SystemNetworkContextManagerNetworkServiceSandboxBrowsertest
 IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerNetworkServiceSandboxBrowsertest,
     NetworkServiceRestartsFailingLaunches) {
+  if (!sandbox::policy::features::IsNetworkSandboxSupported()) {
+    GTEST_SKIP() << "This test requires platform sandbox support.";
+  }
+
   // Check network service is sandboxed initially.
   EXPECT_TRUE(network_service_sandboxed_);
 
