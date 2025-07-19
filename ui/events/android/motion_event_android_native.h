@@ -10,9 +10,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-#include <optional>
-
 #include "base/android/scoped_input_event.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +20,8 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
+
+class MotionEventAndroidFactory;
 
 class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
  public:
@@ -59,17 +58,9 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
   int GetSource() const override;
   // End MotionEventAndroid overrides
 
-  struct EventTimes {
-    base::TimeTicks oldest;
-    base::TimeTicks latest;
-  };
-  static std::unique_ptr<MotionEventAndroid> Create(
-      base::android::ScopedInputEvent input_event,
-      float pix_to_dip,
-      float y_offset_pix,
-      std::optional<EventTimes> event_times);
-
  private:
+  friend class MotionEventAndroidFactory;
+
   MotionEventAndroidNative(base::android::ScopedInputEvent input_event,
                            float pix_to_dip,
                            float ticks_x,

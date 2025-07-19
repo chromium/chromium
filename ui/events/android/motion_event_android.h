@@ -26,6 +26,12 @@ namespace ui {
 // while all *output* coordinates are in DIPs (as with WebTouchEvent).
 class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
  public:
+  // A struct to hold the oldest and latest event times.
+  struct EventTimes {
+    base::TimeTicks oldest;
+    base::TimeTicks latest;
+  };
+
   // Returns the motion event action defined in Java layer for a given
   // MotionEvent::Action.
   static int GetAndroidAction(Action action);

@@ -405,10 +405,11 @@ TEST(MotionEventAndroidTest, NativeBackedConstructor) {
   }
   CHECK(native_event != nullptr);
 
-  std::unique_ptr<MotionEventAndroid> event = MotionEventAndroidNative::Create(
-      base::android::ScopedInputEvent(native_event), kPixToDip,
-      /* y_offset_pix= */ 0,
-      /* event_times= */ std::nullopt);
+  std::unique_ptr<MotionEventAndroid> event =
+      MotionEventAndroidFactory::CreateFromNative(
+          base::android::ScopedInputEvent(native_event), kPixToDip,
+          /* y_offset_pix= */ 0,
+          /* event_times= */ std::nullopt);
 
   EXPECT_EQ(event->GetX(0), x * kPixToDip);
   EXPECT_EQ(event->GetY(0), y * kPixToDip);
