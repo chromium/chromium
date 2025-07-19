@@ -121,10 +121,7 @@ void FrameMetadataObserverRegistry::OnDomContentLoaded() {
 }
 
 void FrameMetadataObserverRegistry::OnPaidContentMetadataChanged() {
-  PaidContent paid_content;
-  // TODO(gklassen): Add a variant of QueryPaidElements that just checks for
-  // presence and doesn't look for elements.
-  bool has_paid_content = paid_content.QueryPaidElements(*GetSupplementable());
+  bool has_paid_content = PaidContent::HasPaidContent(*GetSupplementable());
 
   // TODO(gklassen): Add a MuationObserver to monitor for changes during the
   // lifetime of the page.

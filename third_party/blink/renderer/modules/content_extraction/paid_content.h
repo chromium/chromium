@@ -18,6 +18,10 @@ class PaidContent final {
   STACK_ALLOCATED();
 
  public:
+  // Returns true if the document has paid content (marked as
+  // isAccessibleForFree=false)
+  static bool HasPaidContent(Document& document);
+
   // Queries the document for elements marked as isAccessibleForFree=false.
   bool QueryPaidElements(Document& document);
 

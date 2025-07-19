@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
-#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -20,10 +20,10 @@ namespace {
 
 const char kIsAccessibleForFree[] = "isAccessibleForFree";
 
-bool ObjectValuePresentAndEquals(const JSONObject* object,
+bool ObjectValuePresentAndEquals(const JSONObject& object,
                                  const String& key,
                                  const String& value) {
-  JSONValue* json_value = object->Get(key);
+  JSONValue* json_value = object.Get(key);
   if (!json_value) {
     return false;
   }
@@ -35,10 +35,10 @@ bool ObjectValuePresentAndEquals(const JSONObject* object,
   return str_val == value;
 }
 
-bool ObjectValuePresentAndEndsWith(const JSONObject* object,
+bool ObjectValuePresentAndEndsWith(const JSONObject& object,
                                    const String& key,
                                    const String& value) {
-  JSONValue* json_value = object->Get(key);
+  JSONValue* json_value = object.Get(key);
   if (!json_value) {
     return false;
   }
@@ -50,8 +50,8 @@ bool ObjectValuePresentAndEndsWith(const JSONObject* object,
   return str_val.EndsWith(value);
 }
 
-bool ObjectValuePresentAndFalse(const JSONObject* object, const String& key) {
-  JSONValue* json_value = object->Get(key);
+bool ObjectValuePresentAndFalse(const JSONObject& object, const String& key) {
+  JSONValue* json_value = object.Get(key);
   if (!json_value) {
     return false;
   }
@@ -93,6 +93,55 @@ bool PaidContent::IsPaidElement(const Element* element) const {
   return false;
 }
 
+// Check if the script element is ld+json and has paid content.  Returns the
+// script object if paid content is found, and nullptr otherwise.
+std::unique_ptr<JSONObject> ScriptHasPaidContent(HTMLScriptElement& script_element) {
+  ScriptElementBase& script_element_base =
+      static_cast<ScriptElementBase&>(script_element);
+  if (script_element_base.TypeAttributeValue() != "application/ld+json") {
+    return nullptr;
+  }
+  std::unique_ptr<JSONValue> json_value = ParseJSON(script_element.textContent());
+  if (!json_value || json_value->GetType() != JSONValue::kTypeObject) {
+    // JSON parsing failed or it's not an object.
+    return nullptr;
+  }
+  // We know it's an object, so we can safely cast and transfer ownership.
+  std::unique_ptr<JSONObject> script_obj =
+      std::unique_ptr<JSONObject>(static_cast<JSONObject*>(json_value.release()));
+
+  // check for "@context":"https://schema.org" (or "http://schema.org")
+  if (!ObjectValuePresentAndEndsWith(*script_obj, "@context", "//schema.org")) {
+    return nullptr;
+  }
+
+  // If we decided to filter for "@type" that should be done here.
+  // Supported types are
+  // Article, NewsArticle, Blog, Comment, Course, HowTo, Message, Review,
+  // and WebPage. Multiple types are supported.
+
+  // check for isAccessibleForFree=false
+  if (!ObjectValuePresentAndFalse(*script_obj, kIsAccessibleForFree)) {
+    return nullptr;
+  };
+  return script_obj;
+}
+
+bool PaidContent::HasPaidContent(Document& document) {
+  // check each ld+json script child of the head element
+  const HTMLHeadElement* head = document.head();
+  if (head) {
+    for (HTMLScriptElement& script_element :
+         Traversal<HTMLScriptElement>::ChildrenOf(*head)) {
+      if (ScriptHasPaidContent(script_element)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 bool PaidContent::QueryPaidElements(Document& document) {
   bool paid_content_present = false;
 
@@ -103,34 +152,8 @@ bool PaidContent::QueryPaidElements(Document& document) {
   }
   for (HTMLScriptElement& script_element :
        Traversal<HTMLScriptElement>::ChildrenOf(*head)) {
-    ScriptElementBase& script_element_base =
-        static_cast<ScriptElementBase&>(script_element);
-    if (script_element_base.TypeAttributeValue() != "application/ld+json") {
-      continue;
-    }
-    auto json_value = ParseJSON(script_element.textContent());
-    if (!json_value.get() || json_value->GetType() != JSONValue::kTypeObject) {
-      // JSON parsing failed.
-      continue;
-    }
-    JSONObject* script_obj = JSONObject::Cast(json_value.get());
+    std::unique_ptr<JSONObject> script_obj = ScriptHasPaidContent(script_element);
     if (!script_obj) {
-      continue;
-    }
-
-    // check for "@context":"https://schema.org" (or "http://schema.org")
-    if (!ObjectValuePresentAndEndsWith(script_obj, "@context",
-                                       "//schema.org")) {
-      continue;
-    }
-
-    // If we decided to filter for "@type" that should be done here.
-    // Supported types are
-    // Article, NewsArticle, Blog, Comment, Course, HowTo, Message, Review,
-    // and WebPage. Multiple types are supported.
-
-    // check for isAccessibleForFree=false
-    if (!ObjectValuePresentAndFalse(script_obj, kIsAccessibleForFree)) {
       continue;
     }
     paid_content_present = true;
@@ -169,8 +192,8 @@ bool PaidContent::QueryPaidElements(Document& document) {
 
 bool PaidContent::AppendHasPartElements(Document& document,
                                         JSONObject& hasPart_obj) {
-  if (ObjectValuePresentAndEquals(&hasPart_obj, "@type", "WebPageElement") &&
-      ObjectValuePresentAndFalse(&hasPart_obj, kIsAccessibleForFree)) {
+  if (ObjectValuePresentAndEquals(hasPart_obj, "@type", "WebPageElement") &&
+      ObjectValuePresentAndFalse(hasPart_obj, kIsAccessibleForFree)) {
     JSONValue* selector_val = hasPart_obj.Get("cssSelector");
     if (selector_val && selector_val->GetType() == JSONValue::kTypeString) {
       String selector;
