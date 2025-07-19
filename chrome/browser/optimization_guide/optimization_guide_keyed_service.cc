@@ -267,6 +267,8 @@ void OptimizationGuideKeyedService::Initialize() {
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
   }
+  chrome_model_broker_state_ =
+      optimization_guide::ChromeModelBrokerState::CreateOrGet();
 
   optimization_guide_logger_ = OptimizationGuideLogger::GetInstance();
   DCHECK(optimization_guide_logger_);
@@ -278,7 +280,7 @@ void OptimizationGuideKeyedService::Initialize() {
       optimization_guide_logger_.get());
 
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      optimization_guide::ChromePredictionModelStore::GetInstance(),
+      &chrome_model_broker_state_->prediction_model_store(),
       g_browser_process->shared_url_loader_factory(),
       g_browser_process->local_state(),
       g_browser_process->GetApplicationLocale(),
@@ -339,9 +341,6 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
         optimization_guide::UserVisibleFeatureKey::kHistorySearch,
         "HistorySearch");
   }
-
-  chrome_model_broker_state_ =
-      optimization_guide::ChromeModelBrokerState::CreateOrGet();
 
   scoped_refptr<optimization_guide::OnDeviceModelServiceController>
       service_controller;

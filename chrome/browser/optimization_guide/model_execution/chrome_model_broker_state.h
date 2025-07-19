@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
@@ -35,6 +36,10 @@ class ChromeModelBrokerState final
     return service_controller_;
   }
 
+  ChromePredictionModelStore& prediction_model_store() {
+    return prediction_model_store_;
+  }
+
   // Create a new asset manager to provide extra models/configs to the broker.
   std::unique_ptr<OnDeviceAssetManager> CreateAssetManager(
       OptimizationGuideModelProvider* provider);
@@ -46,6 +51,8 @@ class ChromeModelBrokerState final
 
   std::unique_ptr<OnDeviceModelComponentStateManager> component_state_manager_;
   scoped_refptr<OnDeviceModelServiceController> service_controller_;
+
+  ChromePredictionModelStore prediction_model_store_;
 
   base::WeakPtrFactory<ChromeModelBrokerState> weak_ptr_factory_{this};
 };

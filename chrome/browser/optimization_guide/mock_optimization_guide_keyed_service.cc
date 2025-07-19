@@ -12,21 +12,10 @@
 
 // static
 void MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState() {
-  // Create and initialize the install-wide model store.
-  base::FilePath model_downloads_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
-  model_downloads_dir = model_downloads_dir.Append(
-      optimization_guide::kOptimizationGuideModelStoreDirPrefix);
-  optimization_guide::ChromePredictionModelStore::GetInstance()->Initialize(
-      model_downloads_dir);
 }
 
 // static
 void MockOptimizationGuideKeyedService::ResetForTesting() {
-  // Reinitialize the store, so that tests do not use state from the
-  // previous test.
-  optimization_guide::ChromePredictionModelStore::GetInstance()
-      ->ResetForTesting();
 }
 
 MockOptimizationGuideKeyedService::MockOptimizationGuideKeyedService()

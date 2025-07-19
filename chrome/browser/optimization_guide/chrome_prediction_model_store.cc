@@ -4,17 +4,23 @@
 
 #include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
 
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/chrome_paths.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 
 namespace optimization_guide {
 
-// static
-ChromePredictionModelStore* ChromePredictionModelStore::GetInstance() {
-  static base::NoDestructor<ChromePredictionModelStore> model_store;
-  return model_store.get();
+ChromePredictionModelStore::ChromePredictionModelStore() {
+  base::FilePath model_downloads_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
+  model_downloads_dir = model_downloads_dir.Append(
+      optimization_guide::kOptimizationGuideModelStoreDirPrefix);
+  // Create and initialize the install-wide model store.
+  Initialize(model_downloads_dir);
 }
 
-ChromePredictionModelStore::ChromePredictionModelStore() = default;
 ChromePredictionModelStore::~ChromePredictionModelStore() = default;
 
 PrefService* ChromePredictionModelStore::GetLocalState() const {
