@@ -106,6 +106,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2290014774651636340">Googles API-nycklar saknas. Vissa funktioner i Google Chrome kommer att vara inaktiverade.</translation>
 <translation id="2290095356545025170">Är du säker på att du vill avinstallera Google Chrome?</translation>
+<translation id="2301513536169703857">Logga in i Chrome om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter</translation>
 <translation id="2309047409763057870">Det här är en sekundär installation av Google Chrome. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="2345992953227471816">Chrome har upptäckt att dessa tillägg innehåller skadlig kod:</translation>
 <translation id="2348335408836342058">Du behöver ge Chrome behörighet att använda kameran och mikrofonen på webbplatsen</translation>
@@ -436,6 +437,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6326175484149238433">Ta bort från Chrome</translation>
 <translation id="6327105987658262776">Det finns ingen tillgänglig uppdatering.</translation>
 <translation id="6360449101159168105">När den här fliken var inaktiv frigjordes minne för att hålla Chrome snabbt. Du kan välja att aldrig inaktivera den här webbplatsen.</translation>
+<translation id="6388799252195623474">hjälp mig med det här</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisationen avslutar Chrome automatiskt när det inte har använts på 1 minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Organisationen avslutar Chrome automatiskt när det inte har använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="6418662306461808273">Vill du byta till en befintlig Chrome-profil?</translation>

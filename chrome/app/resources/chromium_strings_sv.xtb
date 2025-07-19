@@ -135,6 +135,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2711502716910134313">Chromium-flik</translation>
 <translation id="2718390899429598676">Din data krypteras i Chromium för att öka säkerheten.</translation>
 <translation id="2721354645805494590">Du kan ta bort Google-kontot från Chromium genom att logga ut</translation>
+<translation id="2722636413143664436">Logga in i Chromium om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter</translation>
 <translation id="2738871930057338499">Det går inte att ansluta till internet. HTTP 403 Förbjuden. Kontrollera proxykonfigurationen.</translation>
 <translation id="2753623023919742414">Klicka för att söka</translation>
 <translation id="2768103863314748511">Ställ in Chromium som standard PDF-läsare</translation>
@@ -405,6 +406,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="6366160072964553914">Den här nedladdningen blockerades av Chromium eftersom filen inte brukar laddas ned och den kan vara farlig</translation>
 <translation id="6373523479360886564">Vill du avinstallera Chromium?</translation>
 <translation id="6375219077595103062">Lägg till en genväg till Lösenordshantering</translation>
+<translation id="6388799252195623474">hjälp mig med det här</translation>
 <translation id="6390800440335263989">Logga in i Chromium som <ph name="EMAIL" /> om du vill fortsätta. Detta säkerställer att du har organisationens policyer.</translation>
 <translation id="6400112897226594999">Chromium-logotyp på en datorskärm.</translation>
 <translation id="6403826409255603130">Chromium är en webbläsare som kör webbsidor och appar blixtsnabbt. Den är snabb, stabil och lätt att använda. Surfa säkrare med Chromiums skydd mot skadliga program och lösenordsfiske.</translation>

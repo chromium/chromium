@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ <ph name="BEGIN_WHITEPAPER_LINK" />URL, പരിമിത സിസ്‌റ്റം വിവരങ്ങൾ, ചില പേജുകളുടെ ഉള്ളടക്കം<ph name="END_WHITEPAPER_LINK" /> എന്നിവ Google-ലേക്ക് അയച്ച് എല്ലാവർക്കുമായി വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക. <ph name="BEGIN_PRIVACY_PAGE_LINK" />സ്വകാര്യതാ നയം<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">നിങ്ങളുടെ ടെക്‌സ്റ്റും പേജ് ഉള്ളടക്കവും Google-ന് അയയ്‌ക്കുന്നു, ഈ ഫീച്ചർ മെച്ചപ്പെടുത്താൻ അവ ഉപയോഗിച്ചേക്കാം.
   <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഒരു ഓപ്ഷനായി കാർഡ് ഇതര പേയ്മെന്റ് രീതികൾ കാണുക</translation>
 <translation id="196146181975453736">കൂടുതൽ വേഗത്തിൽ പേ ചെയ്യാൻ ഒറ്റത്തവണ സുരക്ഷാ പരിശോധന പൂർത്തിയാക്കുക</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="1973335181906896915">സീരിയലൈസേഷൻ പിശക്</translation>
@@ -3034,6 +3035,7 @@
 <translation id="6101583188322746099">പലചരക്ക് ഡെലിവറി സേവനങ്ങൾ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">സൈറ്റ് സൃഷ്ടിക്കുക</translation>
+<translation id="6105511947520166941">അടുത്ത തവണ Chrome-ൽ നേരിട്ട് Pix-ലൂടെ പേ ചെയ്യൂ</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> എന്നതിലെ വെബ്‌പേജ് താല്‍ക്കാലികമായി പ്രവർത്തനരഹിതമായിരിക്കാം, അല്ലെങ്കില്‍ അത് ശാശ്വതമായി ഒരു പുതിയ വെബ് വിലാസത്തിലേക്ക് മാറ്റിയിരിക്കാം.</translation>
 <translation id="6107012941649240045">ഇതിന് നല്‍‌കി</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ഗ്രൂപ്പിന്റെ പേര് മാറ്റി</translation>

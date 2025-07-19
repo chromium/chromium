@@ -671,6 +671,7 @@
 <translation id="1462850958694534228">અપડેટ કરેલા આઇકનનો રિવ્યૂ કરો</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" />ને વિગતવાર સુરક્ષા દ્વારા બ્લૉક કરેલી હતી.</translation>
 <translation id="1464044141348608623">સાઇટને તમે સક્રિય રીતે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણવાની મંજૂરી આપશો નહીં</translation>
+<translation id="1464047267926346987">તમારા પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું સ્ટોર કરો</translation>
 <translation id="1464258312790801189">તમારા એકાઉન્ટ્સ</translation>
 <translation id="1464597059227482327">જો તમે તમારા સંપર્કોમાં ન હોય એવા Chromebook સાથે શેર કરી રહ્યાં હો, તો ખાતરી કરો કે Chromebookમાં "નજીકની દૃશ્યતા" સુવિધા ચાલુ કરી હોય. "નજીકની દૃશ્યતા" સુવિધા ચાલુ કરવા માટે, સૌથી નીચે જમણો ખૂણો પસંદ કરો અને પછી "નજીકની દૃશ્યતા" સુવિધા ચાલુ કરવાનો વિકલ્પ પસંદ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">ડિવાઇસની પસંદગીઓ માટે, સેટિંગ પર જાઓ.</translation>
@@ -812,6 +813,7 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> પર કાસ્ટ કરવાનું ફરી શરૂ કરો</translation>
 <translation id="1561331397460162942">આમ કરવાથી સિસ્ટમ સર્વિસને તથા લોકેશનની પરવાનગી ધરાવતી ઍપ અને વેબસાઇટને લોકેશનના ઍક્સેસની મંજૂરી મળે છે</translation>
 <translation id="1562119309884184621">આ સંપર્કને ઉમેરવાથી, આગલી વખતે તેઓ શેર કરતી વખતે સિસ્ટમ આ યાદ રાખી શકશે</translation>
+<translation id="1562585387501039294">તમારી સંસ્થા, <ph name="ACCOUNT_MANAGER" />, માટે મેનેજ કરેલી પ્રોફાઇલ આવશ્યક છે અને તે અમુક માહિતી જોઈ શકશે, જેમાં આ શામેલ હશે</translation>
 <translation id="1566049601598938765">વેબસાઇટ</translation>
 <translation id="15662109988763471">પસંદ કરેલું પ્રિન્ટર ઉપલબ્ધ નથી અથવા યોગ્ય રીતે ઇન્સ્ટૉલ કરેલું નથી. તમારું પ્રિન્ટર ચેક કરો અથવા બીજું પ્રિન્ટર પસંદ કરી જુઓ.</translation>
 <translation id="1566329594234563241">જ્યારે નિષ્ક્રિય અને પ્લગ ઇન કરેલું હોય</translation>
@@ -907,6 +909,7 @@
 <translation id="1616298854599875024">એક્સટેંશન "<ph name="IMPORT_NAME" />" આયાત કરવામાં અસમર્થ કારણ કે તે કોઈ શેર કરેલ મૉડ્યૂલ નથી</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{આ ડેટાને તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સંબંધે ચેક કરીએ છીએ...}=1{આ ફાઇલને તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સંબંધે ચેક કરીએ છીએ...}one{આ ફાઇલને તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સંબંધે ચેક કરીએ છીએ...}other{આ ફાઇલોને તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સંબંધે ચેક કરીએ છીએ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
+<translation id="1618142905422922351">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM" /> અને વધુ છે. તમારી સંસ્થા, <ph name="ACCOUNT_MANAGER" />, આ ડેટા જોઈ અને મેનેજ કરી શકશે.</translation>
 <translation id="1618268899808219593">સ&amp;હાય કેન્દ્ર</translation>
 <translation id="1619829618836636922">પ્લૅટફૉર્મ પરના ક્લાયન્ટ સર્ટિફિકેટ</translation>
 <translation id="1619879934359211038">Google Play સાથે કનેક્ટ કરી શકાયું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
@@ -4124,6 +4127,7 @@
 <translation id="3844888638014364087">ઇમોજી ઉમેર્યું</translation>
 <translation id="3846116211488856547">વેબસાઇટ, Android ઍપ અને બીજા ઘણા માટે વિકાસના સાધનો મેળવો. Linux ઇન્સ્ટૉલ કરવાથી <ph name="DOWNLOAD_SIZE" /> ડેટા ડાઉનલોડ થશે.</translation>
 <translation id="3847319713229060696">વેબ પરની દરેક વ્યક્તિ માટે સુરક્ષાને બહેતર બનાવવા સહાય કરો</translation>
+<translation id="3847734730889093333"><ph name="RATE" />x</translation>
 <translation id="3848547754896969219">&amp;છૂપી વિન્ડોમાં ખોલો</translation>
 <translation id="3850172593216628215">સુરક્ષા અપડેટ મળવાનું સમાપ્ત થયું છે. નવી Chromebook પર $50 અથવા વધુની બચત કરો.</translation>
 <translation id="385051799172605136">પાછળ</translation>
@@ -6103,6 +6107,7 @@
 <translation id="5267572070504076962">જોખમી સાઇટ સામે સંરક્ષણ મેળવવા માટે Safe Browsingની સુવિધા ચાલુ કરો</translation>
 <translation id="5269977353971873915">પ્રિન્ટ કાઢવામાં નિષ્ફળ</translation>
 <translation id="5271578170655641944">Google Drive પરના ઍક્સેસ કાઢી નાખીએ?</translation>
+<translation id="527335345740023523">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> અને વધુ છે. તમારી સંસ્થા, <ph name="ACCOUNT_MANAGER" />, આ ડેટા જોઈ અને મેનેજ કરી શકશે.</translation>
 <translation id="5273806377963980154">સાઇટના URLમાં ફેરફાર કરો</translation>
 <translation id="5275084684151588738">વપરાશકર્તા શબ્દકોશો</translation>
 <translation id="5275338516105640560">સાચવેલા ટૅબ ગ્રૂપનું બટન</translation>
@@ -6302,6 +6307,7 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે</translation>
 <translation id="5420935737933866496">&amp;લિંક કૉપિ કરો</translation>
 <translation id="5421048291985386320">ફરીથી &amp;સાઇન ઇન કરો</translation>
+<translation id="542237158771780634">ચાલુ હોય, ત્યારે ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે અને તમારા બધા ડિવાઇસ પર તેનો ઉપયોગ કરી શકાય છે. બંધ હોય ત્યારે, ડેટા ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
 <translation id="5422781158178868512">માફ કરશો, તમારો બાહ્ય સ્ટોરેજ ઉપકરણ ઓળખી શકાયું નથી.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">તમારી આગલી મુલાકાત વખતે, <ph name="SITE" /> ડિફૉલ્ટ પરવાનગીઓનો ઉપયોગ કરશે</translation>
@@ -6556,6 +6562,7 @@
 <translation id="5600706100022181951">અપડેટ ડાઉનલોડ કરવામાં <ph name="UPDATE_SIZE_MB" /> MB મોબાઇલ ડેટા વપરાશે. શું તમે ચાલુ રાખવા માગો છો?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">બ્લૂટૂથ ડિવાઇસ શોધવા માટે સાઇટને મંજૂરી આપશો નહીં</translation>
+<translation id="560213628963806709">આ ઍપ દ્વારા <ph name="OPENINGS_COUNT" /> નવા Chrome ટૅબ ખોલવામાં આવ્યા છે. તમે "પૉપ-અપ અને રીડાયરેક્ટ"ની પરવાનગી હેઠળ આ વર્તણૂકને મેનેજ કરી શકો છો.</translation>
 <translation id="5602586420788540146">નવા ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="5605758115928394442">તમે જ છો તે કન્ફર્મ કરવા માટે તમારા ફોન પર નોટિફિકેશન મોકલવામાં આવ્યું હતું.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}one{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}other{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યા છે}}</translation>
@@ -7037,6 +7044,7 @@ USB ડિવાઇસ</translation>
 <translation id="5952020381407136867">ટચપૅડ</translation>
 <translation id="5953211687820750364">આ સૂચિ <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           અને <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> દ્વારા અસરગ્રસ્ત થઈ છે</translation>
+<translation id="5955192144223994637">આ પ્રોફાઇલમાં કાર્ય કરવાનું ચાલુ રાખો</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">કોઈ વેબસાઇટ આ ઍપ્લિકેશન ખોલવા માગે છે.</translation>
 <translation id="5955809630138889698">આ ડિવાઇસ ઑનલાઇન ડેમો મોડ માટે જ પાત્ર હોઈ શકે છે. વધુ વિગતો માટે કૃપા કરીને તમારા સપોર્ટ પ્રતિનિધિનો સંપર્ક કરો.</translation>
@@ -7767,6 +7775,7 @@ USB ડિવાઇસ</translation>
 <translation id="6493991254603208962">તેજસ્વીતા ઘટાડો</translation>
 <translation id="6494327278868541139">વધારાની સુરક્ષાની વિગતો બતાવો</translation>
 <translation id="6494483173119160146">ડિવાઇસમાં એવી ભૂલ આવી છે જેના કારણે રિકવરી કરવી અશક્ય છે. કૃપા કરીને તમારું ડિવાઇસ રીસેટ કરો (તેનાથી વપરાશકર્તાનો બધો ડેટા કાઢી નાખવામાં આવશે) અને ફરી પ્રયાસ કરો.</translation>
+<translation id="6495261233408033662">ખોલેલા ટૅબ બંધ કરો</translation>
 <translation id="6495266441917713704">વાઇ-ફાઇ ટ્રાન્સફર કરી શકતા નથી</translation>
 <translation id="6495453178162183932">થીમને ડિફૉલ્ટ Chrome પર અપડેટ કરી</translation>
 <translation id="6497784818439587832">તમારી સ્ક્રીન પરની આઇટમને વધુ નાની અથવા વધુ મોટી કરવા માટે ડિસ્પ્લેનું કદ બદલો</translation>
@@ -8026,6 +8035,7 @@ USB ડિવાઇસ</translation>
 <translation id="6673898378497337661">કીબોર્ડનું બ્રાઇટનેસ વધારવાની કી</translation>
 <translation id="6674571176963658787">સિંક કરવાનું શરૂ કરવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6675665718701918026">પોઇંટિંગ ઉપકરણ કનેક્ટ કર્યું</translation>
+<translation id="6675717447295898330">મારા હાલના ડેટા વિના ઑફિસ માટે નવી પ્રોફાઇલ બનાવો</translation>
 <translation id="6676212663108450937">તમારા અવાજને તાલીમ આપતી વખતે કૃપા કરીને હૅડફોનનો ઉપયોગ કરવાનું વિચારો</translation>
 <translation id="6676291960742508499">તમારા ટૅબ, પેજના શીર્ષકો અને URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="667752334740867460">વાઇ-ફાઇની માહિતી મેળવી રહ્યાં છીએ...</translation>
@@ -9085,6 +9095,7 @@ USB ડિવાઇસ</translation>
 <translation id="7427348830195639090">બૅકગ્રાઉન્ડ પેજ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">આ પ્રોફાઇલને મેનેજ કરવામાં આવે છે</translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> તરફથી કૉલ</translation>
+<translation id="7429004613638800673"><ph name="APP_NAME" /> દ્વારા એકથી વધુ ટૅબ ખોલવામાં આવ્યા છે.</translation>
 <translation id="7429415133937917139">રિફ્રેશ કરી શકાય તેવા બ્રેઇલ ડિસ્પ્લેના આઉટપુટની નકલ
     સ્ક્રીનની ટોચ પર આવેલા ChromeVox પૅનલમાં રજૂ કરે છે</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> જોખમી હોઈ શકે છે. જો તમે Chrome દ્વારા તેને ચકાસવા માગતા હો, તો પાસવર્ડ ઉમેરો અથવા તમે તેને સીધી ડાઉનલોડ કરી શકો છો.</translation>
@@ -9624,6 +9635,7 @@ USB ડિવાઇસ</translation>
 <translation id="7796453472368605346">ડાયાક્રિટિક</translation>
 <translation id="7797571222998226653">બંધ</translation>
 <translation id="7798504574384119986">વેબની પરવાનગીઓ જુઓ</translation>
+<translation id="7798559336183476274"><ph name="BUTTON_TITLE" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ઑટોમૅટિક રીતે બ્લૉક થઈ</translation>
 <translation id="7799650166313181433">માત્ર <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા ડિવાઇસ જ આ ડિવાઇસ સાથે શેર કરી શકશે. તમને તમારા ડિવાઇસ વચ્ચે શેરિંગ મંજૂર કરવાની કોઈ જરૂર રહેશે નહીં.</translation>
 <translation id="7800485561443537737">તમારી <ph name="DEVICE_TYPE" />ના મોબાઇલ ડેટાનો ઉપયોગ કરે છે અને તમારા મોબાઇલ ઑપરેટર વધારાની ફી વસૂલી શકે છે. બૅટરીના વપરાશમાં વધારો થઈ શકે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9920,6 +9932,7 @@ USB ડિવાઇસ</translation>
 <translation id="8000020256436988724">ટૂલબાર</translation>
 <translation id="800117767980299235">વૉઇસ હાઇલાઇટ</translation>
 <translation id="8002274832045662704">વિગતવાર પ્રિન્ટરની ગોઠવણી</translation>
+<translation id="8002531372108263935">તમારી સંસ્થા, <ph name="ACCOUNT_MANAGER" />, આ ડેટા જોઈ કે મેનેજ કરી શકશે નહીં. તે હાલની પ્રોફાઇલમાં જ રહેશે.</translation>
 <translation id="8002597610026749658">Chrome અહીં બતાવેલી ભાષાઓ માટે કૅપ્શન બનાવી શકે છે</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> હવે ઉપલબ્ધ નથી</translation>
 <translation id="8004092996156083991">જો તમારા પાસવર્ડ સાથે ચેડાં કરાયેલા હોય, તો અમે તમને જણાવીશું.</translation>
@@ -10805,6 +10818,7 @@ USB ડિવાઇસ</translation>
 <translation id="862542460444371744">&amp;એક્સ્ટેન્શન્સ</translation>
 <translation id="8625663000550647058">તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="8625916342247441948">સાઇટને HID ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપશો નહીં</translation>
+<translation id="8626569226218260115">આ પ્રોફાઇલ મેનેજ કરવામાં આવશે</translation>
 <translation id="862727964348362408">સસ્પેન્ડેડ</translation>
 <translation id="862750493060684461">CSS કૅશ મેમરી</translation>
 <translation id="8627795981664801467">ફક્ત સુરક્ષિત કનેક્શન્સ</translation>
@@ -11220,6 +11234,7 @@ USB ડિવાઇસ</translation>
 <translation id="8890529496706615641">પ્રોફાઇલનું નામ બદલી શકાયું નથી. કૃપા કરીને ફરીથી પ્રયાસ કરો અથવા ટેક્નિકલ સપોર્ટ માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="8892168913673237979">બધું સેટ છે!</translation>
 <translation id="8892246501904593980">તમારા તમામ બુકમાર્ક 'બુકમાર્ક અને સૂચિઓ'માં જુઓ</translation>
+<translation id="8893779047492837414">અત્યારે તમારી પાસે <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> અને વધુ છે. તમારી સંસ્થા, <ph name="ACCOUNT_MANAGER" />, આ ડેટા જોઈ અને મેનેજ કરી શકશે.</translation>
 <translation id="8893801527741465188">અનઇન્સ્ટૉલ કરવું પૂર્ણ</translation>
 <translation id="8893928184421379330">માફ કરશો, ઉપકરણ <ph name="DEVICE_LABEL" /> ઓળખી શકાયું નથી.</translation>
 <translation id="8894761918470382415">પેરિફેરલ માટે ડેટા ઍક્સેસનું સંરક્ષણ</translation>

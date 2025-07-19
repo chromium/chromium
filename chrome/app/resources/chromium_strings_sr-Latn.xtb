@@ -135,6 +135,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2711502716910134313">Kartica Chromium</translation>
 <translation id="2718390899429598676">Chromium će šifrovati podatke radi dodatne sigurnosti.</translation>
 <translation id="2721354645805494590">Da biste uklonili Google nalog iz Chromium-a, odjavite se</translation>
+<translation id="2722636413143664436">Da bi vam lozinke, obeleživači i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chromium</translation>
 <translation id="2738871930057338499">Povezivanje sa internetom nije uspelo. Zabranjen je pristup (HTTP 403). Proverite konfiguraciju proksija.</translation>
 <translation id="2753623023919742414">Kliknite da biste pretražili</translation>
 <translation id="2768103863314748511">Podesite Chromium kao podrazumevani PDF pregledač</translation>
@@ -405,6 +406,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="6366160072964553914">Chromium je blokirao ovo preuzimanje jer se ovaj fajl ne preuzima često i može da bude opasan</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite da deinstalirate Chromium?</translation>
 <translation id="6375219077595103062">Dodajte prečicu u Menadžer lozinki</translation>
+<translation id="6388799252195623474">pomoć u vezi sa ovim</translation>
 <translation id="6390800440335263989">Da biste nastavili, prijavite se u Chromium kao <ph name="EMAIL" />. Time se omogućava da se na nalog primenjuju smernice organizacije.</translation>
 <translation id="6400112897226594999">Chromium logotip na ekranu računara.</translation>
 <translation id="6403826409255603130">Chromium je veb pregledač koji pokreće veb-stranice i aplikacije munjevitom brzinom. Brz je, stabilan i jednostavan za korišćenje. Pregledajte Veb bezbednije sa zaštitom od malvera i „pecanja“ koja je ugrađena u Chromium.</translation>

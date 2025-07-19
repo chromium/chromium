@@ -2713,6 +2713,7 @@
 <translation id="2855243985454069333">Тарихты барлық синхрондалған құрылғыдан жояды.</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> арқылы кіру</translation>
 <translation id="2856776373509145513">Жаңа контейнер жасау</translation>
+<translation id="2857047802954430547">Барлық құрылғыда құпия сөздер, бетбелгілер және т.б. ақпарат алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="2859741939921354763">Құпия сөздерді <ph name="BRAND" /> қолданбасына импорттау</translation>
 <translation id="2860710618359053450">Иегіңізді оңға қисайтыңыз.</translation>
 <translation id="2861301611394761800">Жүйе жаңартылып болды. Жүйені қайта іске қосыңыз.</translation>
@@ -11385,6 +11386,7 @@
 <translation id="9003185744423389627">Құрылғы менеджері серверіне қосылу мүмкін болмады. Күйі: "<ph name="STATUS_TEXT" />", уақыты: <ph name="FAILURE_TIME" />.</translation>
 <translation id="90033698482696970">Қолжетімді eSIM профильдерін автоматты түрде іздеу керек пе?</translation>
 <translation id="9003647077635673607">Барлық веб-сайттарда рұқсат беру</translation>
+<translation id="9005774573776346118">Құпия сөздерді, бетбелгілер мен басқа деректерді барлық құрылғыдан алу үшін <ph name="EMAIL" /> ретінде кіріңіз.</translation>
 <translation id="9007688236643268728">&amp;Қайта кіру</translation>
 <translation id="9008201768610948239">Елемеу</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> мәліметтер бетіндегі артқа түймесі</translation>

@@ -240,6 +240,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2088833076121753253">Slutför konfigureringen av autofyll genom att starta om Chrome nu. Flikarna öppnas igen automatiskt.</translation>
 <translation id="2091863218454846791">Visar kompakt vy</translation>
 <translation id="2093731487903423814">de senaste 15 minuterna</translation>
+<translation id="2096577711562668473">Vill du ändra autofylltjänsten?</translation>
 <translation id="2100273922101894616">Automatisk inloggning</translation>
 <translation id="2109384632594340939">din profilbild</translation>
 <translation id="2111511281910874386">Öppna sida</translation>
@@ -325,6 +326,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2497852260688568942">Synkronisering har inaktiverats av administratören</translation>
 <translation id="250020030759455918">Din inloggningsstatus, webbdata och webbplatsdata för <ph name="SITE_NAME" /> visas i Chrome</translation>
+<translation id="2502798195266898572">Arket på nedre delen av skärmen för läsläget har öppnats över hela skärmen</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> installeras …</translation>
 <translation id="2512234228327349533">Sök efter köpalternativ</translation>
 <translation id="2513403576141822879">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synkronisering och Googles tjänster<ph name="END_LINK" /></translation>
@@ -935,6 +937,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Filen laddas ned …}other{# filer laddas ned …}}</translation>
 <translation id="5210286577605176222">Hoppa till föregående flik</translation>
 <translation id="5210365745912300556">Stäng flik</translation>
+<translation id="5212800876504289412">Starta om Chrome för att slutföra ändringen. Flikarna öppnas automatiskt när du startar om.</translation>
 <translation id="5215957675041756913">Styra din data och ditt konto</translation>
 <translation id="5218324087477576825">Kortnummer, obligatoriskt</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> med flera <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom du inte har besökt webbplatsen nyligen</translation>
@@ -1063,6 +1066,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Visa avisering}other{Visa aviseringar}}</translation>
 <translation id="5814749351757353073">Håll dig uppdaterad om dina favoritwebbplatser</translation>
 <translation id="5823093032261493462">Vill du ladda ned <ph name="FILE_NAME" /> från <ph name="DOWNLOAD_DOMAIN" /> ändå?</translation>
+<translation id="5825135637446025843">När Chrome har startats om används informationen som sparats från den nya leverantören för att fylla i lösenord, nycklar, adresser, betalningsmetoder och annan information automatiskt.</translation>
 <translation id="5828921839638612740">Du kan radera data i Chrome-inställningarna</translation>
 <translation id="5829586821381540080">Har sparats i <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Okänd</translation>
@@ -1179,6 +1183,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6296366034485697675">Exportera och radera</translation>
 <translation id="629730747756840877">Konto</translation>
+<translation id="6300697579369314762">Arket på nedre delen av skärmen för läsläget har öppnats över halva skärmen</translation>
 <translation id="6301526076346731664">Öppna Utvecklarverktyg</translation>
 <translation id="6303969859164067831">Logga ut och inaktivera synkronisering</translation>
 <translation id="6307241780749477694">Verifiera din identitet för att få alla dina lösenord på den här enheten</translation>
@@ -1399,6 +1404,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="71503698506017927">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
 
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">Arket på nedre delen av skärmen för läsläget har stängts</translation>
 <translation id="7165972437814027679">Läs mer om varför vissa filer blockeras i Chrome</translation>
 <translation id="7168323970702333693">Inloggad som <ph name="USER_NAME" />. Öppnar inställningarna.</translation>
 <translation id="7173114856073700355">Inställningar</translation>

@@ -106,6 +106,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2236949375853147973">Moje aktivnosti</translation>
 <translation id="2290014774651636340">Nedostaju šifre za Google API. Neke funkcije Google Chrome-a će biti onemogućene.</translation>
 <translation id="2290095356545025170">Da li stvarno želite da deinstalirate Google Chrome?</translation>
+<translation id="2301513536169703857">Da bi vam lozinke, obeleživači i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chrome</translation>
 <translation id="2309047409763057870">Ovo je sekundarna instalacija Google Chrome-a pa ne možete da ga podesite kao podrazumevani pregledač.</translation>
 <translation id="2345992953227471816">Chrome je otkrio malver u ovim dodacima:</translation>
 <translation id="2348335408836342058">Chrome traži dozvolu da pristupi kameri i mikrofonu za ovaj sajt</translation>
@@ -436,6 +437,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6326175484149238433">Ukloni iz Chrome-a</translation>
 <translation id="6327105987658262776">Nema dostupnih ažuriranja.</translation>
 <translation id="6360449101159168105">Dok je ova kartica bila neaktivna, memorija je oslobođena da bi Chrome bio brz. Možete da odaberete da uvek izuzmete ovaj sajt iz neaktivnosti.</translation>
+<translation id="6388799252195623474">pomoć u vezi sa ovim</translation>
 <translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizacija automatski zatvara Chrome kada se ne koristi 1 minut. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}one{Organizacija automatski zatvara Chrome kada se ne koristi # minut. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}few{Organizacija automatski zatvara Chrome kada se ne koristi # minuta. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}other{Organizacija automatski zatvara Chrome kada se ne koristi # minuta. Podaci pregledanja se brišu. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="6418662306461808273">Želite da pređete na postojeći Chrome profil?</translation>

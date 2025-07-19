@@ -314,6 +314,7 @@ I pattern corrispondenti alle origini di questa policy non possono però contene
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
+<translation id="1238150413700645698">Contenuti protetti</translation>
 <translation id="1238868319430505522">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Consente di stabilire se i siti web possono o meno effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro.
 
@@ -629,6 +630,7 @@ la modifica della password, ma può essere applicata in modo forzato anche da de
       Se la policy viene impostata su Fast, se possibile <ph name="PRODUCT_NAME" /> eviterà la rasterizzazione: ridurre la quantità di rasterizzazione può contribuire a diminuire le dimensioni dei processi di stampa e ad aumentare la velocità di stampa.
 
       Se la policy non viene impostata, <ph name="PRODUCT_NAME" /> sarà in modalità Full.</translation>
+<translation id="1453707129684226879">Controlla le policy per i contenuti protetti.</translation>
 <translation id="1455351936334569779">Per le stampanti dei tipi inseriti nell'elenco di tipi non consentiti verranno disattivati il rilevamento o il recupero delle relative funzionalità.
 
       L'inserimento di tutti i tipi di stampanti nell'elenco di tipi non consentiti comporta essenzialmente la disattivazione della stampa, perché non ci sarebbero destinazioni disponibili a cui inviare un documento da stampare.
@@ -4965,6 +4967,27 @@ Questa policy non ha effetto se viene attivata, lasciata vuota o se non viene co
       Questa policy viene applicata soltanto per gli utenti che si sono autenticati tramite GAIA senza SAML.
 
       Il valore della policy deve essere specificato in giorni.</translation>
+<translation id="4523997900743255417">Una policy per controllare se la funzionalità <ph name="IP_PROTECTION_NAME" /> di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
+
+<ph name="IP_PROTECTION_NAME" /> è una funzionalità che limita la disponibilità dell'indirizzo IP originale di un utente per determinate richieste di rete di terze parti effettuate durante la navigazione in modalità di navigazione in incognito, migliorando le protezioni contro il monitoraggio tra siti durante le sessioni di navigazione in incognito.
+
+Se la policy viene disattivata, la funzionalità <ph name="IP_PROTECTION_NAME" /> verrà disattivata e gli utenti non potranno attivarla tramite le impostazioni della UI.
+Se la policy viene attivata, la funzionalità <ph name="IP_PROTECTION_NAME" /> verrà attivata e gli utenti non potranno disattivarla tramite le impostazioni della UI.
+Se la policy non viene configurata, la funzionalità <ph name="IP_PROTECTION_NAME" /> verrà attivata per impostazione predefinita e gli utenti potranno controllarla sul proprio dispositivo tramite le impostazioni della UI.
+
+Alcune considerazioni sul fatto che le aziende debbano o meno disattivare <ph name="IP_PROTECTION_NAME" />:
+
+- Le ricerche DNS non verranno eseguite per le richieste trasferite al proxy, il che potrebbe influire sul monitoraggio o sul filtro basato su DNS.
+
+- Le applicazioni aziendali potrebbero non funzionare correttamente se usate in modalità di navigazione in incognito, in quanto si basano su richieste a domini (o a sottodomini di questi) in Masked Domain List (<ph name="MASKED_DOMAIN_LIST_URL" />) e richiedono che queste richieste provengano da intervalli di indirizzi IP specifici.
+
+- Il traffico potrebbe non essere trasferito al proxy in modalità di navigazione in incognito in determinate condizioni, ad esempio quando gli utenti avviano la modalità di navigazione in incognito da un profilo Chrome a cui non hanno eseguito l'accesso. In generale, la funzionalità richiede che l'utente abbia eseguito l'accesso a Chrome con un Account Google personale quando avvia la modalità di navigazione in incognito.
+
+- L'elenco dei domini in Masked Domain List può cambiare nel tempo e le nuove versioni vengono automaticamente trasferite agli utenti. Per maggiori informazioni su Masked Domain List, consulta: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
+
+Per maggiori informazioni su <ph name="IP_PROTECTION_NAME" />, consulta: <ph name="IP_PROTECTION_README_URL" />.
+
+La funzionalità <ph name="IP_PROTECTION_NAME" /> verrà lanciata non prima della versione M139.</translation>
 <translation id="4525328580251166229">Consente di gestire le policy relative al sottosistema Bruschetta.</translation>
 <translation id="4528981768990874684">Disattiva la funzionalità <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Questa norma è obsoleta.</translation>
@@ -5209,6 +5232,7 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
 
       Nota: questa impostazione sostituisce <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, se presente.</translation>
 <translation id="4658380868451934335">Attiva la dettatura nella schermata di accesso</translation>
+<translation id="4658420696622830453">Controlli dei contenuti protetti</translation>
 <translation id="4660356908994631271">Mostra il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="4661885151480410620">Le modifiche del comportamento potrebbero essere applicate in base al processo di lancio delle funzionalità.</translation>
 <translation id="4661889655253181651">Le impostazioni contenuti consentono di specificare la modalità di gestione di determinati tipi di contenuto (ad esempio Cookie, Immagini o JavaScript).</translation>
@@ -6476,6 +6500,9 @@ Per <ph name="PRODUCT_OS_NAME" />, vedi <ph name="DEVICE_METRICS_REPORTING_ENABL
 <translation id="5488268615614906498">Questa policy consente di stabilire se all'utente è consentito salvare file su <ph name="GOOGLE_DRIVE_NAME" /> direttamente da Gestione dei download.
 Se la policy viene attivata o se non viene configurata, all'utente è consentito salvare file su <ph name="GOOGLE_DRIVE_NAME" /> da Gestione dei download. Se viene disattivata, gli utenti non visualizzano l'opzione in Gestione dei download.
 Questa policy non impedisce agli utenti di salvare file su <ph name="GOOGLE_DRIVE_NAME" /> utilizzando metodi diversi da Gestione dei download.</translation>
+<translation id="5490462588616309068">Se la policy viene impostata su true o se non viene configurata, è consentito l'uso di identificatori di contenuti protetti, il che può contribuire a una riproduzione di contenuti protetti di qualità superiore.
+
+Se la policy viene impostata su false, non è consentito utilizzare gli identificatori di contenuti protetti.</translation>
 <translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
 
       Se viene selezionata l'opzione "Enabled" o se la policy non viene impostata, è possibile aprire le pagine in modalità di navigazione in incognito.
@@ -6761,6 +6788,7 @@ Se non viene configurata o se la durata della release non può essere determinat
       È possibile eseguire l'override della policy per pattern URL specifici utilizzando le policy <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Questa policy incide soltanto sulle operazioni relative agli appunti controllate dall'autorizzazione di accesso dei siti agli appunti e non sulle scritture di appunti purificate o sulle operazioni di copia e incolla affidabili.</translation>
+<translation id="5649788773465136073">Disattiva l'uso degli identificatori di contenuti protetti con i siti, il che potrebbe comportare una qualità inferiore della riproduzione dei contenuti protetti.</translation>
 <translation id="5650256117857913687">Non consente agli utenti che accedono da remoto di aprire gli URL lato host nel browser client locale</translation>
 <translation id="5650716720715977549">Applica limitazioni alle richieste agli endpoint di rete con un livello di protezione più alto</translation>
 <translation id="5651538748810288218">Se la policy viene impostata su 1, i siti web possono accedere ai sensori, ad esempio di movimento e di luce, e usarli. Se la policy viene impostata su 2, viene negato l'accesso ai sensori.
@@ -7057,6 +7085,7 @@ gli utenti non potranno modificarla o eseguirne l'override.</translation>
       Se la policy è impostata su False o se non viene configurata, <ph name="PLUGIN_VM_NAME" /> non è autorizzato a raccogliere i dati.
       Se è impostata su True, <ph name="PLUGIN_VM_NAME" /> potrebbe raccogliere i dati sull'utilizzo di <ph name="PLUGIN_VM_NAME" /> che verranno poi combinati e analizzati nel dettaglio per migliorare l'esperienza di <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="5872738620659477303">Associa le credenziali Google a un dispositivo</translation>
+<translation id="5873333871812203119">Consente alle pagine web di utilizzare identificatori per la riproduzione di contenuti protetti</translation>
 <translation id="5875873062228321803">Consente di configurare il requisito della versione minima consentita di <ph name="PRODUCT_OS_NAME" />.
 
       Se per questa policy viene impostato un elenco non vuoto:
@@ -11903,6 +11932,7 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="9197740283131855199">Percentuale di regolazione del ritardo di oscuramento dello schermo se l'utente diventa attivo dopo l'oscuramento</translation>
 <translation id="9200828125069750521">Parametri per l'URL dell'immagine che utilizza POST</translation>
 <translation id="9202520409249547230">Non consentire la compilazione automatica con l'AI.</translation>
+<translation id="9204520300236345497">Consenti l'uso degli identificatori di contenuti protetti con i siti, il che può contribuire a migliorare la qualità della riproduzione dei contenuti protetti.</translation>
 <translation id="9204863016826119209">Le chiavi aziendali possono essere utilizzate dalle app per Android installate ed elencate in questa policy.</translation>
 <translation id="9206472508136116830">Non consentire il rilevamento condivisioni NetBIOS</translation>
 <translation id="9207596996305971030">Gli eventi di accesso/uscita non vengono segnalati</translation>

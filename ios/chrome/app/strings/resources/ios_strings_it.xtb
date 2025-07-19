@@ -885,6 +885,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="461440297010471931">Ricerca con Google</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4619615317237390068">Schede di altri dispositivi</translation>
+<translation id="4621768135601674446">Apri le opzioni della modalità Lettura</translation>
 <translation id="4624080227980645783">Nuova finestra di navigazione in incognito</translation>
 <translation id="4627107755957573804">Consenti a siti e app di eseguire l'upgrade degli account esistenti per utilizzare le passkey</translation>
 <translation id="4630212057753624203">Fumetto di esempio</translation>
@@ -1005,6 +1006,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5024511550058813796">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati, quindi potrai continuare ciò che stavi facendo</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5050810143224996149">Condividi password</translation>
+<translation id="5055015094595227120">Posizione esatta</translation>
 <translation id="5056446788882570708">Sono stati riscontrati problemi <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
@@ -1169,6 +1171,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5683499062697987550">Verifica la tua identità per usare e salvare le password nel tuo Account Google.</translation>
 <translation id="5684761169742812828">Questa password è stata compromessa nell'ambito di una violazione dei dati su internet. Se al momento non hai tempo per cambiarla, Google consiglia di conservare questo avviso per ricordarti di farlo in un secondo momento.</translation>
 <translation id="5694848685995373177">Salvato in Drive per <ph name="USER_EMAIL" />.</translation>
+<translation id="5701749750962143173">Per ottenere i risultati più precisi di Gemini, invece di una posizione stimata in base al tuo indirizzo IP, usa la tua posizione esatta. Scopri di più</translation>
 <translation id="570209299585559496">Puoi cambiare la visualizzazione predefinita del sito in Desktop andando in Impostazioni, quindi in Impostazioni dei contenuti</translation>
 <translation id="5702108177581350218">Quando condividi una copia del tuo nome utente e della tua password, il membro del tuo gruppo Famiglia può inserire questi dati utilizzando Gestore delle password di Google.</translation>
 <translation id="5704908597376970822">Impossibile eseguire l'accesso.</translation>
@@ -1690,6 +1693,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7711440461521638739">Non stai riutilizzando alcuna password</translation>
 <translation id="7712361583414030698">Visualizzazione versione offline</translation>
 <translation id="7719038820139380048">Accedi per ricevere contenuti basati sui tuoi interessi.</translation>
+<translation id="7720901330179380635">Ricerca effettuata con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7724085059277147439">{count,plural, =1{Elemento salvato nel tuo Account Google, {email}}other{Elementi salvati nel tuo Account Google, {email}}}</translation>
 <translation id="7729458878441927652">Per vedere le schede degli altri tuoi dispositivi, sincronizza le schede e la cronologia.</translation>
 <translation id="7730020510075123961">No, unisci i dati</translation>
@@ -1734,6 +1738,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7887174313503389866">Fai un tour guidato dei controlli per la privacy e la sicurezza più importanti. Per altre opzioni, vai alle impostazioni individuali.</translation>
 <translation id="7887198238286927132">Per tutelare la tua privacy, Chrome non compilerà automaticamente questo campo.</translation>
 <translation id="7887552845761062935">Tocca due volte e tieni premuto per aprire altre opzioni</translation>
+<translation id="7889049308054594504">Condividi i contenuti della pagina con Gemini per ricevere risposte più pertinenti. Quando condividi una pagina con Gemini, i contenuti completi e l'URL della pagina vengono inviati a Google. Scopri di più</translation>
 <translation id="7889910613639381518">Accesso facile e sicuro con il widget Gestore delle password di Google.</translation>
 <translation id="7899199123054742721">Segna tutti come da leggere</translation>
 <translation id="7908957400505794782">Tocca <ph name="BEGIN_BOLD" />Fine<ph name="END_BOLD" /></translation>
@@ -1766,6 +1771,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="7993170188789685695">Tocca due volte per chiudere questa notifica.</translation>
 <translation id="7993619969781047893">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="7996239959906074962">Configura…</translation>
+<translation id="8001561107130904792">Condivisione dei contenuti della pagina</translation>
 <translation id="800361585186029508">Consente di aprire gli URL inseriti in Google Chrome.</translation>
 <translation id="8005666035647241369">In Gestore delle password di Google su questo dispositivo</translation>
 <translation id="8010488806779226127">Esplora le funzionalità che possono aiutarti a fare di più mentre navighi</translation>

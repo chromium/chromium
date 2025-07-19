@@ -885,6 +885,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="461440297010471931">Mencari dengan Google</translation>
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
 <translation id="4619615317237390068">Tab daripada peranti lain</translation>
+<translation id="4621768135601674446">Buka pilihan Mod membaca</translation>
 <translation id="4624080227980645783">Tetingkap Inkognito baharu</translation>
 <translation id="4627107755957573804">Benarkan laman dan apl meningkatkan akaun sedia ada untuk menggunakan kunci laluan</translation>
 <translation id="4630212057753624203">Sampel gelembung</translation>
@@ -1005,6 +1006,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5024511550058813796">Sejarah anda boleh didapati pada semua peranti tersegerak anda supaya anda boleh meneruskan perkara yang sedang anda lakukan</translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5050810143224996149">Kongsi Kata Laluan</translation>
+<translation id="5055015094595227120">Lokasi tepat</translation>
 <translation id="5056446788882570708">Isu ditemukan pada <ph name="TIME" /></translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Pasang Google Drive</translation>
@@ -1169,6 +1171,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5683499062697987550">Untuk menggunakan dan menyimpan kata laluan dalam Google Account anda, sahkan identiti anda.</translation>
 <translation id="5684761169742812828">Kata laluan ini terdedah kepada pelanggaran data pada Internet. Jika anda tiada masa untuk menukar kata laluan sekarang, Google mengesyorkan untuk amaran ini mengingatkan anda semula nanti.</translation>
 <translation id="5694848685995373177">Disimpan dalam Drive untuk <ph name="USER_EMAIL" />.</translation>
+<translation id="5701749750962143173">Gunakan lokasi tepat anda untuk hasil carian Gemini yang paling tepat, bukannya lokasi anggaran berdasarkan alamat IP anda. Ketahui lebih lanjut</translation>
 <translation id="570209299585559496">Anda boleh menukar paparan laman lalai pada desktop dalam tetapan kemudian tetapan kandungan</translation>
 <translation id="5702108177581350218">Apabila anda berkongsi salinan nama pengguna dan kata laluan anda, ahli keluarga anda boleh mengisi nama pengguna dan kata laluan tersebut menggunakan Google Password Manager.</translation>
 <translation id="5704908597376970822">Tidak dapat log masuk.</translation>
@@ -1690,6 +1693,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7711440461521638739">Anda tidak menggunakan semula apa-apa kata laluan</translation>
 <translation id="7712361583414030698">Melihat versi luar talian</translation>
 <translation id="7719038820139380048">Log masuk untuk mendapatkan kandungan berdasarkan minat anda.</translation>
+<translation id="7720901330179380635">Mencari menggunakan <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7724085059277147439">{count,plural, =1{Item yang disimpan dalam Google Account anda, {email}}other{Item yang disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="7729458878441927652">Untuk melihat tab daripada peranti anda yang lain, segerakkan tab dan sejarah anda.</translation>
 <translation id="7730020510075123961">Tidak, gabungkan data</translation>
@@ -1734,6 +1738,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7887174313503389866">Ikuti lawatan berpandu privasi dan kawalan keselamatan utama. Untuk mendapatkan lagi pilihan, pergi ke tetapan individu.</translation>
 <translation id="7887198238286927132">Untuk melindungi privasi anda, Chrome tidak akan mengisi medan ini secara automatik.</translation>
 <translation id="7887552845761062935">Ketik dua kali dan tahan untuk membuka lebih banyak pilihan</translation>
+<translation id="7889049308054594504">Kongsi kandungan halaman dengan Gemini untuk mendapatkan jawapan yang lebih berkaitan. Apabila anda berkongsi halaman dengan Gemini, kandungan penuh halaman dan URL dihantar kepada Google. Ketahui lebih lanjut</translation>
 <translation id="7889910613639381518">Akses mudah dan selamat dengan widget Google Password Manager.</translation>
 <translation id="7899199123054742721">Tandai semua sebagai belum dibaca</translation>
 <translation id="7908957400505794782">Ketik <ph name="BEGIN_BOLD" />Selesai<ph name="END_BOLD" /></translation>
@@ -1766,6 +1771,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="7993170188789685695">Ketik dua kali untuk menutup pemberitahuan ini.</translation>
 <translation id="7993619969781047893">Ciri pada sesetengah tapak mungkin rosak</translation>
 <translation id="7996239959906074962">Sediakan…</translation>
+<translation id="8001561107130904792">Perkongsian kandungan halaman</translation>
 <translation id="800361585186029508">Membuka URL yang dimasukkan dalam Google Chrome.</translation>
 <translation id="8005666035647241369">Kepada Pengurus Kata Laluan Google pada peranti ini</translation>
 <translation id="8010488806779226127">Terokai ciri yang boleh membantu anda melakukan lebih banyak perkara sambil anda menyemak imbas</translation>

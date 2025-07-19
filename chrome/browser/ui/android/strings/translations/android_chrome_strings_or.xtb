@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">ଅଟୋଫିଲ ସେଟ ଅପ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ବର୍ତ୍ତମାନ Chromeକୁ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ। ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ସ୍ଵତଃ ଖୋଲିବ।</translation>
 <translation id="2091863218454846791">କମ୍ପାକ୍ଟ ଭ୍ୟୁ ଦେଖାଯାଉଛି</translation>
 <translation id="2093731487903423814">ଗତ 15 ମିନିଟ</translation>
+<translation id="2096577711562668473">ଅଟୋଫିଲ ସେବା ପରିବର୍ତ୍ତନ କରିବେ?</translation>
 <translation id="2100273922101894616">ସ୍ୱତଃ ସାଇନ୍-ଇନ୍‌</translation>
 <translation id="2109384632594340939">ପ୍ରୋଫାଇଲ ଛବି</translation>
 <translation id="2111511281910874386">ପୃଷ୍ଠାକୁ ଯାଆନ୍ତୁ</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି</translation>
 <translation id="2497852260688568942">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ସିଙ୍କ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="250020030759455918">ଆପଣ <ph name="SITE_NAME" />ରେ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ ସ୍ଥିତି, ବ୍ରାଉଜିଂ ଡାଟା ଏବଂ ସାଇଟ୍ ଡାଟା, Chromeରେ ଦେଖିବେ</translation>
+<translation id="2502798195266898572">ରିଡିଂ ମୋଡ ବଟମ ସିଟ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" />କୁ ଇନଷ୍ଟଲ କରାଯାଉଛି...</translation>
 <translation id="2512234228327349533">କ୍ରୟ ବିକଳ୍ପ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2513403576141822879">ଗୋପନୀୟତା, ସୁରକ୍ଷା ଏବଂ ଡାଟା ସଂଗ୍ରହ ସହ ସମ୍ବନ୍ଧିତ ଅଧିକ ସେଟିଂସ ପାଇଁ <ph name="BEGIN_LINK" />ସିଙ୍କ ଓ Google ସେବା<ph name="END_LINK" /> ଦେଖନ୍ତୁ</translation>
@@ -934,6 +936,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରାଯାଉଛି…}other{#ଟି ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରାଯାଉଛି…}}</translation>
 <translation id="5210286577605176222">ପୂର୍ବବର୍ତ୍ତୀ ଟାବ୍‍କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5210365745912300556">ଟାବ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5212800876504289412">ଏହି ପରିବର୍ତ୍ତନ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ Chrome ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ। ଆପଣ ରିଷ୍ଟାର୍ଟ କଲେ ଟାବଗୁଡ଼ିକ ସ୍ୱତଃ ପୁଣି ଖୋଲିବ।</translation>
 <translation id="5215957675041756913">ଆପଣଙ୍କ ଡାଟା ଓ ଆକାଉଣ୍ଟ ନିୟନ୍ତ୍ରଣ କରିବା</translation>
 <translation id="5218324087477576825">କାର୍ଡ ନମ୍ବର, ଆବଶ୍ୟକ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ ଆହୁରି ଅନେକ କିଛି <ph name="SEPARATOR" /> ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
@@ -1062,6 +1065,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ବିଜ୍ଞପ୍ତି ଦେଖାନ୍ତୁ}other{ବିଜ୍ଞପ୍ତି ଦେଖାନ୍ତୁ}}</translation>
 <translation id="5814749351757353073">ଆପଣଙ୍କ ପସନ୍ଦର ସାଇଟଗୁଡ଼ିକ ସହ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="5823093032261493462">ଆପଣ ଯେ କୌଣସି ପ୍ରକାରେ <ph name="DOWNLOAD_DOMAIN" />ରୁ "<ph name="FILE_NAME" />"କୁ ଡାଉନଲୋଡ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="5825135637446025843">Chrome ରିଷ୍ଟାର୍ଟ ହେବା ପରେ, ଆପଣଙ୍କ ନୂଆ ପ୍ରଦାନକାରୀଠାରୁ ସେଭ କରାଯାଇଥିବା ଆପଣଙ୍କର ସୂଚନାକୁ ପାସୱାର୍ଡ, ପାସକୀ, ଠିକଣା, ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ ଅନ୍ୟ ସୂଚନା ଅଟୋଫିଲ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯିବ।</translation>
 <translation id="5828921839638612740">ଆପଣ Chrome ସେଟିଂସରେ ଡାଟାକୁ ଡିଲିଟ କରିପାରିବେ</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />ରେ ସେଭ କରାଯାଇଛି</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
@@ -1178,6 +1182,7 @@
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="6296366034485697675">ଏକ୍ସପୋର୍ଟ ଏବଂ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
+<translation id="6300697579369314762">ରିଡିଂ ମୋଡ ବଟମ ସିଟ ଅଧା ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="6301526076346731664">ଡେଭେଲପର ଟୁଲ ଖୋଲନ୍ତୁ</translation>
 <translation id="6303969859164067831">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6307241780749477694">ଏହି ଡିଭାଇସରେ ଆପଣଙ୍କର ସମସ୍ତ ପାସୱାର୍ଡ ପାଇବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -1398,6 +1403,7 @@
 <translation id="71503698506017927">ପାସଫ୍ରେଜ ଏନକ୍ରିପସନ Google Payରୁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ।
 
 ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="7151332203500147130">ରିଡିଂ ମୋଡ ବଟମ ସିଟ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="7165972437814027679">Chrome କାହିଁକି କିଛି ଫାଇଲକୁ ବ୍ଲକ କରେ ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। ସେଟିଂସ ଖୋଲେ।</translation>
 <translation id="7173114856073700355">ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>

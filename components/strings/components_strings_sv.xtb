@@ -576,6 +576,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1959001866257244765">Hjälp oss att göra webben säkrare för alla genom att skicka <ph name="BEGIN_WHITEPAPER_LINK" />webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll<ph name="END_WHITEPAPER_LINK" /> till Google <ph name="BEGIN_PRIVACY_PAGE_LINK" />Integritetspolicy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Din text och ditt sidinnehåll skickas till Google och kan användas för att förbättra den här funktionen.
   <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Visa betalningsmetoder som inte är kort som alternativ när du gör köp i Chrome</translation>
 <translation id="196146181975453736">Gör en säkerhetskontroll en gång för att betala snabbare</translation>
 <translation id="1962204205936693436">Bokmärken på <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Serieproduktionsfel</translation>
@@ -3035,6 +3036,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6101583188322746099">Hemkörning av livsmedel</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Skapa webbplats</translation>
+<translation id="6105511947520166941">Betala med Pix direkt i Chrome nästa gång</translation>
 <translation id="6106989379647458772">Webbsidan på <ph name="PAGE" /> kan vara nere tillfälligt eller ha flyttats permanent till en ny webbadress.</translation>
 <translation id="6107012941649240045">Utfärdat till</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ändrade gruppnamnet</translation>

@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">Помогнете да се подобри безбедноста на интернет за сите преку испраќање <ph name="BEGIN_WHITEPAPER_LINK" />URL-адреси од некои страници што ги посетувате, ограничени податоци за системот и некои содржини од страниците<ph name="END_WHITEPAPER_LINK" /> до Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Политика за приватност<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Вашиот текст и содржини на страницата се испраќаат до Google и може да се користат за подобрување на функцијава.
   <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Кога купувате во Chrome, погледнете ги начините на плаќање што не се картичка како опција</translation>
 <translation id="196146181975453736">Извршете еднократна безбедносна проверка за да платите побрзо</translation>
 <translation id="1962204205936693436">Обележувачи на <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Грешка во серијализацијата</translation>
@@ -3035,6 +3036,7 @@
 <translation id="6101583188322746099">Служби за испорака на намирници</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Создајте сајт</translation>
+<translation id="6105511947520166941">Следниот пат, платете со Pix директно во Chrome</translation>
 <translation id="6106989379647458772">Веб-страницата на <ph name="PAGE" /> можеби привремено не работи или можеби трајно е преместена на нова веб-адреса.</translation>
 <translation id="6107012941649240045">Издадено на</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> го промени името на групата</translation>

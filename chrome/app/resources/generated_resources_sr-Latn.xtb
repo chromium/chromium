@@ -2714,6 +2714,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2855243985454069333">Briše istoriju sa svih sinhronizovanih uređaja</translation>
 <translation id="2855812646048059450">Prijavite se na <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Napravite novi kontejner</translation>
+<translation id="2857047802954430547">Prijavite se da biste pristupali lozinkama, obeleživačima i drugom sadržaju na svim uređajima</translation>
 <translation id="2859741939921354763">Uvezite lozinke u <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Pomerite vilicu udesno</translation>
 <translation id="2861301611394761800">Ažuriranje sistema je dovršeno. Restartujte sistem.</translation>
@@ -11401,6 +11402,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9003185744423389627">Veza sa serverom za upravljanje uređajima nije uspela uz status <ph name="STATUS_TEXT" /> u <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Želite li automatski da skenirate dostupne eSIM profile?</translation>
 <translation id="9003647077635673607">Dozvoli na svim veb-sajtovima</translation>
+<translation id="9005774573776346118">Da bi vam lozinke, obeleživači i drugi sadržaj bili dostupni na svim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">Prijavi me ponovo</translation>
 <translation id="9008201768610948239">Ignoriši</translation>
 <translation id="9008201858626224558">Dugme Nazad na stranici sa detaljima <ph name="SUBPAGE_TITLE" /></translation>

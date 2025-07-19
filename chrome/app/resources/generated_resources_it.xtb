@@ -670,6 +670,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1462850958694534228">Controlla l'aggiornamento dell'icona</translation>
 <translation id="1463112138205428654">Il file <ph name="FILE_NAME" /> è stato bloccato dalla protezione avanzata.</translation>
 <translation id="1464044141348608623">Non consentire ai siti di sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
+<translation id="1464047267926346987">Memorizza password, preferiti e altro</translation>
 <translation id="1464258312790801189">I tuoi account</translation>
 <translation id="1464597059227482327">Se vuoi attivare la condivisione con un Chromebook non presente nei tuoi contatti, assicurati che sul dispositivo in questione sia attiva l'opzione "Visibilità nelle vicinanze". Per attivare l'opzione "Visibilità nelle vicinanze", seleziona l'angolo in basso a destra, quindi attiva l'opzione. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Per le preferenze del dispositivo, vai alle Impostazioni.</translation>
@@ -814,6 +815,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1558671750917454373">Riprendi la trasmissione su <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Consente l'accesso alla posizione per le app e i siti web che dispongono dell'autorizzazione di accesso alla posizione e ai servizi di sistema</translation>
 <translation id="1562119309884184621">Se aggiungi questo contatto, verrà memorizzato e riconosciuto la volta successiva che condividerà file</translation>
+<translation id="1562585387501039294">La tua organizzazione, <ph name="ACCOUNT_MANAGER" />, richiede un profilo gestito e potrà visualizzare alcune informazioni, tra cui</translation>
 <translation id="1566049601598938765">Sito web</translation>
 <translation id="15662109988763471">La stampante selezionata non è disponibile o non è installata correttamente. Controlla la stampante o prova a selezionarne un'altra.</translation>
 <translation id="1566329594234563241">Quando inattivo e collegato</translation>
@@ -910,6 +912,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1616298854599875024">Impossibile importare l'estensione "<ph name="IMPORT_NAME" />" perché non è un modulo condiviso</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Controllo della conformità di questi dati alle norme di sicurezza della tua organizzazione in corso…}=1{Controllo della conformità di questo file alle norme di sicurezza della tua organizzazione in corso…}other{Controllo della conformità di questi file alle norme di sicurezza della tua organizzazione in corso…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
+<translation id="1618142905422922351">Attualmente hai <ph name="NUMBERED_ITEM" /> e altro. La tua organizzazione, <ph name="ACCOUNT_MANAGER" />, potrà visualizzare e gestire questi dati.</translation>
 <translation id="1618268899808219593">Centro assistenza</translation>
 <translation id="1619829618836636922">Certificati client dalla piattaforma</translation>
 <translation id="1619879934359211038">Impossibile connettersi a Google Play. Controlla la connessione di rete e riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
@@ -4126,6 +4129,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3844888638014364087">Emoji inserita</translation>
 <translation id="3846116211488856547">Scarica strumenti per sviluppare siti web, app Android e non solo. Se installi Linux verranno scaricati <ph name="DOWNLOAD_SIZE" /> di dati.</translation>
 <translation id="3847319713229060696">Contribuisci ad aumentare la sicurezza sul web per tutti gli utenti</translation>
+<translation id="3847734730889093333">x<ph name="RATE" /></translation>
 <translation id="3848547754896969219">Apri l'URL nella finestra di navigazione in &amp;incognito</translation>
 <translation id="3850172593216628215">Gli aggiornamenti della sicurezza sono terminati. Risparmia 50 $ o più su un nuovo Chromebook.</translation>
 <translation id="385051799172605136">Indietro</translation>
@@ -6104,6 +6108,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5267572070504076962">Attiva Navigazione sicura per proteggerti da siti pericolosi</translation>
 <translation id="5269977353971873915">Stampa non riuscita</translation>
 <translation id="5271578170655641944">Vuoi rimuovere l'accesso a Google Drive?</translation>
+<translation id="527335345740023523">Attualmente hai <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> e altro. La tua organizzazione, <ph name="ACCOUNT_MANAGER" />, potrà visualizzare e gestire questi dati.</translation>
 <translation id="5273806377963980154">Modifica l'URL del sito</translation>
 <translation id="5275084684151588738">Dizionari utente</translation>
 <translation id="5275338516105640560">Pulsante Gruppo di schede salvato</translation>
@@ -6303,6 +6308,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderà immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="5420935737933866496">Copia &amp;link</translation>
 <translation id="5421048291985386320">&amp;Accedi di nuovo</translation>
+<translation id="542237158771780634">Se l'opzione è attiva, i dati vengono salvati nel tuo Account Google e possono essere utilizzati su tutti i tuoi dispositivi. In caso di disattivazione, i dati vengono salvati solo su questo dispositivo.</translation>
 <translation id="5422781158178868512">Spiacenti, impossibile riconoscere il dispositivo di archiviazione esterno.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">La prossima volta che visiti il sito, <ph name="SITE" /> utilizzerà le autorizzazioni predefinite</translation>
@@ -6557,6 +6563,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5600706100022181951">Il download dell'aggiornamento richiederà <ph name="UPDATE_SIZE_MB" /> MB di dati mobili. Vuoi continuare?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601833336918638013">Non consentire ai siti di cercare dispositivi Bluetooth</translation>
+<translation id="560213628963806709">Questa app ha aperto <ph name="OPENINGS_COUNT" /> nuove schede di Chrome. Puoi gestire questo comportamento nell'autorizzazione "Popup e reindirizzamenti".</translation>
 <translation id="5602586420788540146">Apri in un nuovo gruppo di schede</translation>
 <translation id="5605758115928394442">È stata inviata una notifica al tuo telefono per verificare la tua identità.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Questa estensione è bloccata}other{Queste estensioni sono bloccate}}</translation>
@@ -7033,6 +7040,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">Touchpad</translation>
 <translation id="5953211687820750364">Questo elenco è influenzato da <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
+<translation id="5955192144223994637">Continua a usare questo profilo per il lavoro</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Un sito web vuole aprire questa applicazione.</translation>
 <translation id="5955809630138889698">Questo dispositivo potrebbe essere idoneo soltanto per la modalità demo online. Per ulteriori informazioni, contatta il tuo rappresentante dell'assistenza.</translation>
@@ -7763,6 +7771,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6493991254603208962">Diminuisci luminosità</translation>
 <translation id="6494327278868541139">Mostra dettagli della protezione avanzata</translation>
 <translation id="6494483173119160146">Si è verificato un errore irreversibile con il dispositivo. Reimposta il dispositivo (verranno cancellati tutti i dati utente) e riprova.</translation>
+<translation id="6495261233408033662">Chiudi le schede aperte</translation>
 <translation id="6495266441917713704">Impossibile trasferire il Wi-Fi</translation>
 <translation id="6495453178162183932">Tema aggiornato con il predefinito di Chrome</translation>
 <translation id="6497784818439587832">Modifica le dimensioni del display per ingrandire o ridurre gli elementi visualizzati sullo schermo</translation>
@@ -8020,6 +8029,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6673898378497337661">aumenta la luminosità della tastiera</translation>
 <translation id="6674571176963658787">Per avviare la sincronizzazione devi inserire la tua passphrase</translation>
 <translation id="6675665718701918026">Dispositivo di puntamento collegato</translation>
+<translation id="6675717447295898330">Crea un nuovo profilo di lavoro senza i miei dati esistenti</translation>
 <translation id="6676212663108450937">Considera l'uso di cuffie mentre eserciti il riconoscimento vocale</translation>
 <translation id="6676291960742508499">Le tue schede, i titoli delle pagine e gli URL vengono inviati a Google</translation>
 <translation id="667752334740867460">Ricezione di informazioni sulla rete Wi-Fi in corso…</translation>
@@ -9079,6 +9089,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7427348830195639090">Pagina di sfondo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">Questo profilo è gestito</translation>
 <translation id="7427798576651127129">Chiamata da <ph name="DEVICE_NAME" /></translation>
+<translation id="7429004613638800673"><ph name="APP_NAME" /> ha aperto più schede.</translation>
 <translation id="7429415133937917139">Consente di simulare l'output di un display braille aggiornabile
     nel riquadro ChromeVox nella parte superiore dello schermo</translation>
 <translation id="7429568074268678162">Il file <ph name="FILENAME" /> potrebbe essere pericoloso. Aggiungi una password se vuoi che Chrome lo controlli oppure puoi scaricarlo direttamente.</translation>
@@ -9619,6 +9630,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7796453472368605346">Segni diacritici</translation>
 <translation id="7797571222998226653">Off</translation>
 <translation id="7798504574384119986">Visualizza autorizzazioni web</translation>
+<translation id="7798559336183476274">Altre azioni per <ph name="BUTTON_TITLE" /></translation>
 <translation id="7798844538707273832">Autorizzazione <ph name="PERMISSION" /> bloccata automaticamente</translation>
 <translation id="7799650166313181433">Soltanto i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /> possono condividere contenuti con questo dispositivo. Non dovrai approvare la condivisione tra i tuoi dispositivi.</translation>
 <translation id="7800485561443537737">Usa i dati mobili di <ph name="DEVICE_TYPE" /> e il tuo operatore potrebbe addebitare costi aggiuntivi. Potrebbe anche aumentare l'utilizzo della batteria. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9920,6 +9932,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8000020256436988724">Barra degli strumenti</translation>
 <translation id="800117767980299235">Punto saliente vocale</translation>
 <translation id="8002274832045662704">Configurazione avanzata stampante</translation>
+<translation id="8002531372108263935">La tua organizzazione, <ph name="ACCOUNT_MANAGER" />, non potrà visualizzare o gestire questi dati, che rimarranno nel profilo esistente.</translation>
 <translation id="8002597610026749658">Chrome può creare sottotitoli codificati per le lingue mostrate qui</translation>
 <translation id="8002670234429879764">La stampante <ph name="PRINTER_NAME" /> non è più disponibile</translation>
 <translation id="8004092996156083991">Ti informeremo se le tue password vengono compromesse</translation>
@@ -10805,6 +10818,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="862542460444371744">&amp;Estensioni</translation>
 <translation id="8625663000550647058">Non possono utilizzare il microfono</translation>
 <translation id="8625916342247441948">Non consentire ai siti di connettersi ai dispositivi HID</translation>
+<translation id="8626569226218260115">Questo profilo verrà gestito</translation>
 <translation id="862727964348362408">Sospeso</translation>
 <translation id="862750493060684461">Cache CSS</translation>
 <translation id="8627795981664801467">Solo connessioni protette</translation>
@@ -11219,6 +11233,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8890529496706615641">Impossibile rinominare il profilo. Riprova oppure contatta il tuo operatore per ricevere assistenza tecnica.</translation>
 <translation id="8892168913673237979">Finito.</translation>
 <translation id="8892246501904593980">Visualizza tutti i tuoi preferiti in Preferiti ed elenchi</translation>
+<translation id="8893779047492837414">Attualmente hai <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> e altro. La tua organizzazione, <ph name="ACCOUNT_MANAGER" />, potrà visualizzare e gestire questi dati.</translation>
 <translation id="8893801527741465188">Disinstallazione completata</translation>
 <translation id="8893928184421379330">Spiacenti, impossibile riconoscere il dispositivo <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Protezione dell'accesso ai dati per le periferiche</translation>

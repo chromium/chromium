@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">Google लाई आफूले हेर्ने केही पृष्ठका <ph name="BEGIN_WHITEPAPER_LINK" />URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू<ph name="END_WHITEPAPER_LINK" /> पठाएर वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित राख्न मद्दत गर्नुहोस्। <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">तपाईंको टेक्स्ट र पेजमा भएको सामग्री Google मा पठाइन्छन् र यो सुविधाको गुणस्तर सुधार्नका निम्ति प्रयोग गरिन सक्छ।
   <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">तपाईंले Chrome मा सामग्री खरिद गर्दा तपाईं कार्डरहित भुक्तानी विधिहरूको विकल्प देख्नु हुने छ</translation>
 <translation id="196146181975453736">अझ छिटो भुक्तानी गर्न एक पटके सुरक्षा जाँच पूरा गर्नुहोस्</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्कहरू</translation>
 <translation id="1973335181906896915">अनुक्रमण त्रुटि</translation>
@@ -3033,6 +3034,7 @@
 <translation id="6101583188322746099">किराना सामान डेलिभरी गर्ने सेवा</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">साइट बनाउनुहोस्</translation>
+<translation id="6105511947520166941">अर्को पटक Chrome बाटै Pix मार्फत भुक्तानी गर्नुहोस्</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> को वेबपृष्ठ अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="6107012941649240045">लाई जारी गरिएको</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ले समूहको नाम परिवर्तन गर्नुभयो</translation>

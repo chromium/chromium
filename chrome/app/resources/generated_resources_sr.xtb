@@ -2714,6 +2714,7 @@
 <translation id="2855243985454069333">Брише историју са свих синхронизованих уређаја</translation>
 <translation id="2855812646048059450">Пријавите се на <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Направите нови контејнер</translation>
+<translation id="2857047802954430547">Пријавите се да бисте приступали лозинкама, обележивачима и другом садржају на свим уређајима</translation>
 <translation id="2859741939921354763">Увезите лозинке у <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Померите вилицу удесно</translation>
 <translation id="2861301611394761800">Ажурирање система је довршено. Рестартујте систем.</translation>
@@ -11401,6 +11402,7 @@
 <translation id="9003185744423389627">Веза са сервером за управљање уређајима није успела уз статус <ph name="STATUS_TEXT" /> у <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Желите ли аутоматски да скенирате доступне eSIM профиле?</translation>
 <translation id="9003647077635673607">Дозволи на свим веб-сајтовима</translation>
+<translation id="9005774573776346118">Да би вам лозинке, обележивачи и други садржај били доступни на свим уређајима, пријавите се као <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">Пријави ме поново</translation>
 <translation id="9008201768610948239">Игнориши</translation>
 <translation id="9008201858626224558">Дугме Назад на страници са детаљима <ph name="SUBPAGE_TITLE" /></translation>
