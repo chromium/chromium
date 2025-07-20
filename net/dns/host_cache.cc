@@ -387,8 +387,6 @@ HostCache::Entry::Entry(
 
     // Even if otherwise empty, having the metadata result object signifies
     // receiving a compatible HTTPS record.
-    https_record_compatibility_ = std::vector<bool>{true};
-
     if (data_results.empty() && endpoint_metadatas_.empty()) {
       error_ = ERR_NAME_NOT_RESOLVED;
     }
@@ -467,8 +465,6 @@ HostCache::Entry HostCache::Entry::MergeEntries(Entry front, Entry back) {
   MergeContainers(front.aliases_, back.aliases_);
   MergeLists(front.text_records_, back.text_records());
   MergeLists(front.hostnames_, back.hostnames());
-  MergeLists(front.https_record_compatibility_,
-             back.https_record_compatibility_);
   MergeContainers(front.canonical_names_, back.canonical_names_);
 
   // Only expected to merge entries from same source.
@@ -579,7 +575,6 @@ HostCache::Entry::Entry(const HostCache::Entry& entry,
       aliases_(entry.aliases()),
       text_records_(entry.text_records()),
       hostnames_(entry.hostnames()),
-      https_record_compatibility_(entry.https_record_compatibility_),
       source_(entry.source()),
       pinning_(entry.pinning()),
       canonical_names_(entry.canonical_names()),
@@ -595,7 +590,6 @@ HostCache::Entry::Entry(
     std::set<std::string> aliases,
     std::vector<std::string>&& text_records,
     std::vector<HostPortPair>&& hostnames,
-    std::vector<bool>&& https_record_compatibility,
     Source source,
     base::TimeTicks expires,
     int network_changes)
@@ -605,14 +599,9 @@ HostCache::Entry::Entry(
       aliases_(std::move(aliases)),
       text_records_(std::move(text_records)),
       hostnames_(std::move(hostnames)),
-      https_record_compatibility_(std::move(https_record_compatibility)),
       source_(source),
       expires_(expires),
       network_changes_(network_changes) {}
-
-void HostCache::Entry::PrepareForCacheInsertion() {
-  https_record_compatibility_.clear();
-}
 
 bool HostCache::Entry::IsStale(base::TimeTicks now, int network_changes) const {
   EntryStaleness stale;
@@ -888,7 +877,6 @@ void HostCache::Set(const Key& key,
 
   Entry entry_for_cache(entry, now, ttl, network_changes_);
   entry_for_cache.set_pinning(entry.pinning().value_or(has_active_pin));
-  entry_for_cache.PrepareForCacheInsertion();
   AddEntry(key, std::move(entry_for_cache));
 
   if (delegate_ && result_changed)
@@ -1209,9 +1197,6 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
       }
     }
 
-    // We do not intend to serialize experimental results with the host cache.
-    std::vector<bool> experimental_results;
-
     Key key(std::move(host), dns_query_type.value(), flags,
             static_cast<HostResolverSource>(host_resolver_source),
             network_anonymization_key);
@@ -1224,8 +1209,8 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
       Entry new_entry(error, std::move(ip_endpoints),
                       std::move(endpoint_metadatas), std::move(aliases),
                       std::move(text_records), std::move(hostname_records),
-                      std::move(experimental_results), Entry::SOURCE_UNKNOWN,
-                      expiration_time, network_changes_ - 1);
+                      Entry::SOURCE_UNKNOWN, expiration_time,
+                      network_changes_ - 1);
       new_entry.set_pinning(maybe_pinned.value_or(false));
       new_entry.set_canonical_names(std::move(canonical_names));
       AddEntry(key, std::move(new_entry));

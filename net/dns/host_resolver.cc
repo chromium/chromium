@@ -304,11 +304,6 @@ HostResolver::ManagerOptions::ManagerOptions(ManagerOptions&& other) = default;
 
 HostResolver::ManagerOptions::~ManagerOptions() = default;
 
-const std::vector<bool>*
-HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
-  NOTREACHED();
-}
-
 std::unique_ptr<HostResolver> HostResolver::Factory::CreateResolver(
     HostResolverManager* manager,
     std::string_view host_mapping_rules,

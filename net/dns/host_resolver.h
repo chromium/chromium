@@ -171,13 +171,6 @@ class NET_EXPORT HostResolver {
     // canonical name).
     virtual const std::set<std::string>* GetDnsAliasResults() const = 0;
 
-    // Result of an experimental query. Meaning depends on the specific query
-    // type, but each boolean value generally refers to a valid or invalid
-    // record of the experimental type. May return nullptr or empty for requests
-    // without experimental result behavior.
-    NET_EXPORT virtual const std::vector<bool>*
-    GetExperimentalResultsForTesting() const;
-
     // Error info for the request.
     //
     // Should only be called after Start() signals completion, either by

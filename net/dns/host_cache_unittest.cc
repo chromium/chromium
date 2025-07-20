@@ -2534,15 +2534,13 @@ TEST(HostCacheTest, ConvertFromInternalMetadataResult) {
   // Expect kTtl2 because it is the min TTL.
   HostCache::Entry expected(OK, kMetadatas, HostCache::Entry::SOURCE_DNS,
                             kTtl2);
-  expected.set_https_record_compatibility(std::vector<bool>{true});
 
   EXPECT_EQ(converted, expected);
 }
 
 // Test the case of compatible HTTPS records but no metadata of use to Chrome.
 // Represented in internal result type as an empty metadata result. Represented
-// in HostCache::Entry as empty metadata with at least one true in
-// `https_record_compatibility_`.
+// in HostCache::Entry as empty metadata.
 TEST(HostCacheTest, ConvertFromCompatibleOnlyInternalMetadataResult) {
   const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
       kMetadatas;
@@ -2570,7 +2568,6 @@ TEST(HostCacheTest, ConvertFromCompatibleOnlyInternalMetadataResult) {
   // Expect kTtl2 because it is the min TTL.
   HostCache::Entry expected(ERR_NAME_NOT_RESOLVED, kMetadatas,
                             HostCache::Entry::SOURCE_DNS, kTtl2);
-  expected.set_https_record_compatibility(std::vector<bool>{true});
 
   EXPECT_EQ(converted, expected);
 }
@@ -2758,7 +2755,6 @@ TEST(HostCacheTest, ConvertFromInternalMergedResult) {
   expected.set_ip_endpoints({kIpv6, kIpv4});
   expected.set_canonical_names(std::set<std::string>{"endpoint.test"});
   expected.set_aliases({"endpoint.test", "domain1.test"});
-  expected.set_https_record_compatibility(std::vector<bool>{true});
 
   EXPECT_EQ(converted, expected);
 }
@@ -2810,7 +2806,6 @@ TEST(HostCacheTest, ConvertFromInternalMergedResultWithPartialError) {
   expected.set_ip_endpoints({kIpv6});
   expected.set_canonical_names(std::set<std::string>{"endpoint.test"});
   expected.set_aliases({"endpoint.test", "domain1.test"});
-  expected.set_https_record_compatibility(std::vector<bool>{true});
 
   EXPECT_EQ(converted, expected);
 }

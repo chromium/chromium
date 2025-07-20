@@ -141,12 +141,6 @@ HostResolverManager::RequestImpl::GetDnsAliasResults() const {
   return base::OptionalToPtr(fixed_up_dns_alias_results_);
 }
 
-const std::vector<bool>*
-HostResolverManager::RequestImpl::GetExperimentalResultsForTesting() const {
-  DCHECK(complete_);
-  return results_ ? &results_.value().https_record_compatibility() : nullptr;
-}
-
 net::ResolveErrorInfo HostResolverManager::RequestImpl::GetResolveErrorInfo()
     const {
   DCHECK(complete_);

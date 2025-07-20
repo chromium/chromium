@@ -69,7 +69,6 @@ class HostResolverManager::RequestImpl
   const std::vector<std::string>* GetTextResults() const override;
   const std::vector<HostPortPair>* GetHostnameResults() const override;
   const std::set<std::string>* GetDnsAliasResults() const override;
-  const std::vector<bool>* GetExperimentalResultsForTesting() const override;
   net::ResolveErrorInfo GetResolveErrorInfo() const override;
   const std::optional<HostCache::EntryStaleness>& GetStaleInfo() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
