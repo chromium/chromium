@@ -1,0 +1,5 @@
+[Exposed=Window, RuntimeEnabled=DocumentPatching, ImplementedAs=DOMPatchStatus]
+interface PatchStatus {
+  [SameObject, CallWith=ScriptState] readonly attribute Promise<undefined> finished;
+  [SameObject] readonly attribute HTMLTemplateElement source;
+};

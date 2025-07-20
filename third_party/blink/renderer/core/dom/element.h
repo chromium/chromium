@@ -86,6 +86,7 @@ class CSSPseudoElement;
 class CSSStyleDeclaration;
 class CustomElementDefinition;
 class CustomElementRegistry;
+class DOMPatchStatus;
 class DOMRect;
 class DOMRectList;
 class DOMStringMap;
@@ -1165,7 +1166,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // this triggering element. (E.g. if the popover is just open on its own and
   // wasn't triggered by this invoker, this will return nullptr.)
   HTMLElement* GetOpenPopoverTarget() const;
-
   // Represents the current state of an interest invoker.
   enum class InterestState {
     // No interest.
@@ -1506,6 +1506,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void setEditContext(EditContext* editContext, ExceptionState&);
   EditContext* editContext() const;
+
+  // https://github.com/WICG/declarative-partial-updates
+  DOMPatchStatus* currentPatch();
 
   // Helpers for V8DOMActivityLogger::logEvent.  They call logEvent only if
   // the element is isConnected() and the context is an isolated world.

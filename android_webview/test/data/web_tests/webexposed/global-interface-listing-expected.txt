@@ -2393,6 +2393,7 @@ interface Element : Node
     getter containerTiming
     getter containerTimingIgnore
     getter currentCSSZoom
+    getter currentPatch
     getter elementTiming
     getter firstElementChild
     getter headingOffset
@@ -6881,6 +6882,11 @@ interface PasswordCredential : Credential
     getter iconURL
     getter name
     getter password
+    method constructor
+interface PatchStatus
+    attribute @@toStringTag
+    getter finished
+    getter source
     method constructor
 interface Path2D
     attribute @@toStringTag

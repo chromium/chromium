@@ -35,7 +35,9 @@
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -78,7 +80,26 @@ void HTMLTemplateElement::DidMoveToNewDocument(Document& old_document) {
 void HTMLTemplateElement::Trace(Visitor* visitor) const {
   visitor->Trace(content_);
   visitor->Trace(override_insertion_target_);
+  visitor->Trace(patch_status_);
   HTMLElement::Trace(visitor);
+}
+
+void HTMLTemplateElement::BeginPatch(ContainerNode& target) {
+  SetOverrideInsertionTarget(target);
+  // A patch replaces the existing children of the target.
+  target.RemoveChildren();
+  patch_status_ = MakeGarbageCollected<DOMPatchStatus>(this, &target);
+  PatchSupplement::From(target.GetDocument())->DidStart(target, patch_status_);
+}
+
+void HTMLTemplateElement::FinishParsingChildren() {
+  HTMLElement::FinishParsingChildren();
+  if (!patch_status_) {
+    return;
+  }
+  CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+  patch_status_->OnComplete();
+  patch_status_.Release();
 }
 
 }  // namespace blink

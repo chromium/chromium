@@ -920,12 +920,9 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
         // Like with shadowrootmode, the template is discarded.
         should_attach_template = false;
 
-        // A patch replaces the existing children of the target.
-        patch_target->RemoveChildren();
-
         // From now on, parsed children of the template are inserted directly to
         // the patch target.
-        template_element->SetOverrideInsertionTarget(*patch_target);
+        template_element->BeginPatch(*patch_target);
       }
     }
   }
