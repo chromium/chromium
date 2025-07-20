@@ -578,6 +578,7 @@
 <translation id="1959001866257244765">ជួយពង្រឹង​សុវត្ថិភាព​នៅលើ​អ៊ីនធឺណិត​សម្រាប់​អ្នករាល់គ្នា​តាមរយៈការផ្ញើ <ph name="BEGIN_WHITEPAPER_LINK" />URL របស់ទំព័រ​មួយចំនួន​ដែលអ្នកចូលមើល ព័ត៌មាន​ប្រព័ន្ធមួយចំនួន និងខ្លឹមសារទំព័រ​មួយចំនួន<ph name="END_WHITEPAPER_LINK" />ទៅ Google។ <ph name="BEGIN_PRIVACY_PAGE_LINK" />គោលការណ៍​ឯកជនភាព<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">ខ្លឹមសារជាអក្សរ និងខ្លឹមសារទំព័ររបស់អ្នកត្រូវបានផ្ញើទៅ Google និងអាចត្រូវបានប្រើ ដើម្បីកែលម្អមុខងារនេះ។
   <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">នៅពេល​អ្នកទិញ​នៅក្នុង Chrome សូមមើល​វិធីបង់ប្រាក់​ដែលមិន​ប្រើកាត​ជាជម្រើស</translation>
 <translation id="196146181975453736">បញ្ចប់ការត្រួតពិនិត្យ​សុវត្ថិភាពតែមួយលើក ដើម្បីបង់ប្រាក់កាន់តែលឿន</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> ចំណាំ</translation>
 <translation id="1973335181906896915">កំហុសឆ្គងប្រតិបត្តិការជាសេរ៊ី</translation>
@@ -3039,6 +3040,7 @@
 <translation id="6101583188322746099">សេវាកម្ម​ដឹកជញ្ជូន​គ្រឿងទេស</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">បង្កើត​គេហទំព័រ</translation>
+<translation id="6105511947520166941">ទូទាត់តាម Pix ដោយផ្ទាល់​នៅក្នុង Chrome នៅពេល​ក្រោយ</translation>
 <translation id="6106989379647458772">គេហទំព័រនៅ <ph name="PAGE" /> អាចមិនដំណើរការបណ្តោះអាសន្ន ឬវាអាចត្រូវបានផ្លាស់ទីទៅអាសយដ្ឋានគេហទំព័រថ្មី។</translation>
 <translation id="6107012941649240045">បោះផ្សាយជូន</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> បានប្ដូរ​ឈ្មោះក្រុម</translation>
