@@ -2354,7 +2354,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.NewNavigationWithSameOriginTab" enum="Boolean"
     expires_after="2024-02-11">
   <owner>gjc@google.com</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
   <summary>
     Whether another tab under the same origin can be found when a tab has
     finished a navigation to a new security origin. This can happen when a new

@@ -883,7 +883,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-01-04">
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent for parsing the stylesheet. Recorded when the stylesheet finishes
@@ -2463,7 +2463,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.Fonts.BackgroundDecodeTime" units="microseconds"
     expires_after="2024-08-17">
   <owner>horo@chromium.org</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
   <summary>
     Time spent for decoding the fonts on the background thread. Recorded when a
     font resource creates its decoded data. This histogram is only logged in
@@ -2474,7 +2474,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.Fonts.DecodeTime" units="microseconds"
     expires_after="2025-12-28">
   <owner>gjc@chromium.org</owner>
-  <owner>blink-network-dev@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
   <summary>
     Time spent for decoding the fonts. Recorded when a font resource creates its
     decoded data. This histogram is only logged in platforms with
