@@ -15,8 +15,38 @@ class MockCommentsService : public CommentsService {
   MockCommentsService();
   ~MockCommentsService() override;
 
+  // CommentsService implementation.
   MOCK_METHOD(bool, IsInitialized, (), (const, override));
   MOCK_METHOD(bool, IsEmptyService, (), (const, override));
+  MOCK_METHOD(CommentId,
+              AddComment,
+              (const CollaborationId&,
+               const GURL&,
+               const std::string&,
+               const std::optional<CommentId>&,
+               base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              EditComment,
+              (const CommentId&,
+               const std::string&,
+               base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              DeleteComment,
+              (const CommentId&, base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              QueryComments,
+              (const FilterCriteria&,
+               const PaginationCriteria&,
+               base::OnceCallback<void(QueryResult)>),
+              (override));
+  MOCK_METHOD(void,
+              AddObserver,
+              (CommentsObserver*, const FilterCriteria&),
+              (override));
+  MOCK_METHOD(void, RemoveObserver, (CommentsObserver*), (override));
 };
 
 }  // namespace collaboration::comments

@@ -50,11 +50,18 @@ source_set("comments_public") {
     "//components/collaboration/internal:comments_internal",
     "//components/collaboration/internal:comments_unit_tests",
   ]
-  sources = [ "comments/comments_service.h" ]
+  sources = [
+    "comments/comments_service.cc",
+    "comments/comments_service.h",
+  ]
 
   deps = [ "//components/keyed_service/core" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/data_sharing/public",
+    "//url",
+  ]
 }
 
 source_set("data_type_controller") {
