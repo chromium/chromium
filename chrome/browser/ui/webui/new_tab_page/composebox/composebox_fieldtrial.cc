@@ -99,7 +99,7 @@ BASE_FEATURE(kNtpSearchboxComposeEntrypoint,
 
 BASE_FEATURE(kNtpSearchboxComposeEntrypointEnglishUS,
              "NtpSearchboxComposeEntrypointEnglishUS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNtpSearchboxComposeEntrypointEnabled(BrowserProcess* browser_process) {
   auto* feature_list = base::FeatureList::GetInstance();

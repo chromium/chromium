@@ -17,8 +17,9 @@ class NtpComposeboxFieldTrialBrowserTest : public InProcessBrowserTest {
  public:
   NtpComposeboxFieldTrialBrowserTest() {
     feature_list_.InitWithFeatures(
-        {ntp_composebox::kNtpSearchboxComposeEntrypointEnglishUS},
-        {ntp_composebox::kNtpSearchboxComposeEntrypoint});
+        {ntp_composebox::kNtpSearchboxComposeEntrypointEnglishUS,
+         ntp_composebox::kNtpSearchboxComposeEntrypoint},
+        {});
   }
   ~NtpComposeboxFieldTrialBrowserTest() override = default;
 
@@ -58,8 +59,7 @@ IN_PROC_BROWSER_TEST_F(NtpComposeboxFieldTrialBrowserTest,
                        EnableEntrypointUSEnglishTot) {
   auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
-  // Once enabled by default, change to EXPECT_TRUE.
-  EXPECT_FALSE(ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
+  EXPECT_TRUE(ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
       g_browser_process));
 }
 
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(NtpComposeboxFieldTrialBrowserTest,
                        DisableEntrypointForNonUSEnglish) {
   auto locale = std::make_unique<ScopedBrowserLocale>("en-CA");
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("ca");
-  EXPECT_FALSE(ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
+  EXPECT_TRUE(ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
       g_browser_process));
 }
 
