@@ -700,7 +700,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
                          params.referrer_policy,
                          mojom::blink::FetchPriorityHint::kAuto,
                          RenderBlockingBehavior::kNonBlocking),
-      Referrer::NoReferrer(), TextPosition::MinimumPosition(),
+      Referrer::ClientReferrerString(), TextPosition::MinimumPosition(),
       ModuleImportPhase::kEvaluation);
 
   // Step 13. "Fetch a modulepreload module script graph given url, destination,
