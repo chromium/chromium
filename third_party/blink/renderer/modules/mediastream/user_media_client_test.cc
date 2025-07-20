@@ -576,16 +576,17 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
       // RunUntilIdle is required for this task to complete.
       blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
           FROM_HERE,
-          base::BindOnce(&UserMediaProcessorUnderTest::SignalSourceReady,
-                         std::move(source_ready), source.get()));
+          WTF::BindOnce(&UserMediaProcessorUnderTest::SignalSourceReady,
+                        std::move(source_ready),
+                        WTF::Unretained(source.get())));
     } else if (source_creation_status_ ==
                    SourceCreationStatus::kFailedSystemPermissionError &&
                local_audio_source_) {
       blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
           FROM_HERE,
-          base::BindOnce(
+          WTF::BindOnce(
               &UserMediaProcessorUnderTest::SignalSystemPermissionError,
-              local_audio_source_.get()));
+              WTF::Unretained(local_audio_source_.get())));
     }
 
     return source;

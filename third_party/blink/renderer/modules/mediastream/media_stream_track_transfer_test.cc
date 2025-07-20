@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
@@ -64,8 +65,8 @@ class MockUserMediaProcessor : public UserMediaProcessor {
     source->SetDevice(device);
     // RunUntilIdle is required for this task to complete.
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-        FROM_HERE, base::BindOnce(&SignalSourceReady, std::move(source_ready),
-                                  source.get()));
+        FROM_HERE, WTF::BindOnce(&SignalSourceReady, std::move(source_ready),
+                                 WTF::Unretained(source.get())));
     return source;
   }
 };

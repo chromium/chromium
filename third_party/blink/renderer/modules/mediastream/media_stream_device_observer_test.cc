@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -137,8 +138,8 @@ TEST_F(MediaStreamDeviceObserverTest, GetNonScreenCaptureDevices) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId1, "device_path",
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      base::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                     base::Unretained(this), run_loop1.QuitClosure()));
+      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                    WTF::Unretained(this), run_loop1.QuitClosure()));
   run_loop1.Run();
   String stream_label1 = stream_label_;
 
@@ -147,8 +148,8 @@ TEST_F(MediaStreamDeviceObserverTest, GetNonScreenCaptureDevices) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId2, "screen_capture",
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      base::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                     base::Unretained(this), run_loop2.QuitClosure()));
+      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                    WTF::Unretained(this), run_loop2.QuitClosure()));
   run_loop2.Run();
   String stream_label2 = stream_label_;
 
@@ -184,8 +185,8 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceStopped) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId, "device_path",
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      base::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                     base::Unretained(this), run_loop1.QuitClosure()));
+      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                    WTF::Unretained(this), run_loop1.QuitClosure()));
   run_loop1.Run();
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
@@ -209,8 +210,8 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChanged) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId1, example_video_id1,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      base::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                     base::Unretained(this), run_loop1.QuitClosure()));
+      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                    WTF::Unretained(this), run_loop1.QuitClosure()));
   run_loop1.Run();
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
@@ -296,8 +297,8 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceRequestStateChange) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId, "device_path",
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      base::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                     base::Unretained(this), run_loop1.QuitClosure()));
+      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                    WTF::Unretained(this), run_loop1.QuitClosure()));
   run_loop1.Run();
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
