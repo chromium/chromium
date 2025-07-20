@@ -272,6 +272,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     viewport_damage_rect_ = gfx::Rect();
   }
 
+  bool HasPendingRasterInvalidationScrollForTesting(ElementId id) const {
+    return pending_invalidation_raster_inducing_scrolls_.contains(id);
+  }
+
   virtual void WillSendBeginMainFrame() {}
   virtual void BeginMainFrameAborted(
       CommitEarlyOutReason reason,

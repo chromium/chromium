@@ -5958,6 +5958,8 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   scroll_tree.GetOrCreateSyncedScrollOffsetForTesting(scroll_element_id1)
       ->SetCurrent(gfx::PointF(0, 100.25f));
   host_impl()->pending_tree()->DidUpdateScrollOffset(scroll_element_id1, false);
+  EXPECT_TRUE(host_impl()->HasPendingRasterInvalidationScrollForTesting(
+      scroll_element_id1));
   property_trees->transform_tree_mutable().UpdateTransforms(
       scroll_tree.Node(scroll_node_id1)->transform_id);
 

@@ -261,7 +261,9 @@ void LayerTreeImpl::DidUpdateScrollOffset(
     transform_node->SetTransformChanged(DamageReason::kCompositorScroll);
     property_trees()->set_changed(true);
     set_needs_update_draw_properties();
-  } else if (can_realize_on_pending_tree) {
+  }
+
+  if (can_realize_on_pending_tree) {
     host_impl_->RequestImplSideInvalidationForRasterInducingScroll(id);
   }
 
