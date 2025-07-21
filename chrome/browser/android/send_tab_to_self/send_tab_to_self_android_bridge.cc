@@ -141,13 +141,7 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
   // TODO(crbug.com/40772220): Having an empty optional/null to represent the
   // hidden entry point doesn't seem worth it after all. Make that just another
   // value in the enum, sparing the complexity here.
-  ScopedJavaLocalRef<jclass> integer_class =
-      base::android::GetClass(env, "java/lang/Integer");
-  jmethodID constructor =
-      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
-          env, integer_class.obj(), "<init>", "(I)V");
-  return ScopedJavaLocalRef<jobject>(
-      env, env->NewObject(integer_class.obj(), constructor, *reason));
+  return jni_zero::ToJavaInteger(env, static_cast<int32_t>(*reason));
 }
 
 }  // namespace send_tab_to_self
