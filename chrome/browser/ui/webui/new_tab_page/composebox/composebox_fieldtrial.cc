@@ -116,7 +116,8 @@ bool IsNtpSearchboxComposeEntrypointEnabled(BrowserProcess* browser_process) {
     return base::FeatureList::IsEnabled(
         kNtpSearchboxComposeEntrypointEnglishUS);
   }
-  return base::FeatureList::IsEnabled(kNtpSearchboxComposeEntrypoint);
+  return base::FeatureList::IsEnabled(kNtpSearchboxComposeEntrypoint) ||
+         FeatureConfig::Get().enabled;
 }
 
 // If enabled, the Composebox will appear upon clicking the NTP Compose
