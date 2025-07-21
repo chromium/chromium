@@ -548,10 +548,6 @@ def _WriteLintJson(params, lint_json, main_config):
     if path := c.get('aar_path'):
       aars.add(path)
 
-  if path := params.get('res_sources_path'):
-    resource_sources.add(path)
-  if path := params.get('resources_zip'):
-    resource_zips.add(path)
   for c in params.resource_deps():
     if c.get('chromium_code', True):
       # Prefer res_sources_path to resources_zips so that lint errors have
@@ -559,7 +555,8 @@ def _WriteLintJson(params, lint_json, main_config):
       if path := c.get('res_sources_path'):
         resource_sources.add(path)
       else:
-        resource_zips.add(c['resources_zip'])
+        resource_zips.add(
+            c.get('resources_zip') or c.get('resources_overlay_zip'))
 
   if params.is_bundle():
     classpath = OrderedSet()

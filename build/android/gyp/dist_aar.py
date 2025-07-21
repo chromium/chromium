@@ -72,7 +72,9 @@ def main(args):
   action_helpers.add_depfile_arg(parser)
   parser.add_argument('--output', required=True, help='Path to output aar.')
   parser.add_argument('--jars', required=True, help='GN list of jar inputs.')
-  parser.add_argument('--dependencies-res-zips', required=True,
+  parser.add_argument('--dependencies-res-zips',
+                      required=True,
+                      action='append',
                       help='GN list of resource zips')
   parser.add_argument('--r-text-files', required=True,
                       help='GN list of R.txt files to merge')
@@ -84,8 +86,8 @@ def main(args):
       default=os.path.join(_ANDROID_BUILD_DIR, 'AndroidManifest.xml'))
   parser.add_argument('--native-libraries',
                       default='',
-                      help='GN list of native libraries. If non-empty then \
-                      ABI must be specified.')
+                      help='GN list of native libraries. If non-empty then '
+                      'ABI must be specified.')
   parser.add_argument('--abi',
                       help='ABI (e.g. armeabi-v7a) for native libraries.')
   parser.add_argument(

@@ -1743,6 +1743,7 @@ if (!is_robolectric && enable_java_templates) {
         "--output",
         rebase_path(invoker.output, root_build_dir),
         "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zips)",
+        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zip_overlays)",
         "--r-text-files=@FileArg($_rebased_build_config:dependency_rtxt_files)",
         "--proguard-configs=@FileArg($_rebased_build_config:proguard_all_configs)",
       ]

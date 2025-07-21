@@ -434,9 +434,11 @@ template("write_build_config") {
         android_manifest = rebase_path(invoker.android_manifest, root_build_dir)
       }
       if (defined(invoker.resources_zip)) {
-        resources_zip = rebase_path(invoker.resources_zip, root_build_dir)
         if (defined(invoker.resource_overlay) && invoker.resource_overlay) {
-          resources_overlay_zip = resources_zip
+          resources_overlay_zip =
+              rebase_path(invoker.resources_zip, root_build_dir)
+        } else {
+          resources_zip = rebase_path(invoker.resources_zip, root_build_dir)
         }
       }
       if (defined(invoker.rtxt_path)) {
@@ -2140,12 +2142,25 @@ if (enable_java_templates) {
       "--include-resources=$_rebased_android_sdk_jar",
       "--aapt2-path",
       rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
-      "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zips)",
       "--extra-res-packages=@FileArg($_rebased_build_config:extra_package_names)",
       "--min-sdk-version=${invoker.min_sdk_version}",
       "--target-sdk-version=${_target_sdk_version}",
       "--webp-cache-dir=obj/android-webp-cache",
     ]
+
+    if (!defined(testonly) || !testonly ||
+        (defined(invoker.enforce_resource_overlays_in_tests) &&
+         invoker.enforce_resource_overlays_in_tests)) {
+      _args += [
+        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zips)",
+        "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:dependency_zip_overlays)",
+      ]
+    } else {
+      _args += [
+        "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:dependency_zips)",
+        "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:dependency_zip_overlays)",
+      ]
+    }
 
     _inputs += [ invoker.android_manifest ]
     _outputs = [ _final_srcjar_path ]
@@ -2255,14 +2270,6 @@ if (enable_java_templates) {
     if (defined(invoker.shared_resources_allowlist_locales)) {
       _args += [ "--shared-resources-allowlist-locales=" +
                  "${invoker.shared_resources_allowlist_locales}" ]
-    }
-
-    if (!defined(testonly) || !testonly ||
-        (defined(invoker.enforce_resource_overlays_in_tests) &&
-         invoker.enforce_resource_overlays_in_tests)) {
-      _args += [ "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:dependency_zip_overlays)" ]
-    } else {
-      _args += [ "--dependencies-res-zip-overlays=@FileArg($_rebased_build_config:dependency_zips)" ]
     }
 
     if (defined(invoker.proguard_file)) {
@@ -2520,6 +2527,7 @@ if (enable_java_templates) {
         rebase_path(invoker.output_config, root_build_dir),
         "--r-text-in=@FileArg($_rebased_build_config:rtxt_path)",
         "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zips)",
+        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zip_overlays)",
         "--depfile",
         rebase_path(depfile, root_build_dir),
       ]
@@ -3818,7 +3826,8 @@ if (enable_java_templates) {
         } else {
           _min_sdk_version = default_min_sdk_version
         }
-        if (_min_sdk_version < default_min_sdk_version || _min_sdk_version < 24) {
+        if (_min_sdk_version < default_min_sdk_version ||
+            _min_sdk_version < 24) {
           dex_needs_classpath = true
         }
       }

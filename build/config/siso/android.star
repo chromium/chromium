@@ -347,14 +347,14 @@ def __android_compile_resources_handler(ctx, cmd):
     #   --webp-cache-dir=obj/android-webp-cache
     inputs = []
     for i, arg in enumerate(cmd.args):
-        for k in ["--dependencies-res-zips=", "--dependencies-res-zip-overlays=", "--extra-res-packages="]:
+        for k in ["--dependencies-res-zips=", "--dependencies-res-zip-overlays="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
                 _, v = __filearg(ctx, arg)
                 for f in v:
                     f = ctx.fs.canonpath(f)
                     inputs.append(f)
-                    if k == "--dependencies-res-zips=" and ctx.fs.exists(f + ".info"):
+                    if ctx.fs.exists(f + ".info"):
                         inputs.append(f + ".info")
 
     ctx.actions.fix(
