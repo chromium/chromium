@@ -4547,6 +4547,10 @@ const char kAndroidSurfaceControlDescription[] =
     " DisplayCompositor on Android. This feature is only available on "
     " android Q+ devices";
 
+const char kAndroidDataImporterServiceName[] = "Data Importer Service";
+const char kAndroidDataImporterServiceDescription[] =
+    "Enables the service for importing user data from other browsers.";
+
 const char kAndroidElegantTextHeightName[] = "Android Elegant Text Height";
 const char kAndroidElegantTextHeightDescription[] =
     "Enables elegant text height in core BrowserUI theme.";

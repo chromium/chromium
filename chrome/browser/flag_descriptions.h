@@ -2621,6 +2621,9 @@ extern const char kAnimatedImageDragShadowDescription[];
 extern const char kAnimateSuggestionsListAppearanceName[];
 extern const char kAnimateSuggestionsListAppearanceDescription[];
 
+extern const char kAndroidDataImporterServiceName[];
+extern const char kAndroidDataImporterServiceDescription[];
+
 extern const char kAndroidElegantTextHeightName[];
 extern const char kAndroidElegantTextHeightDescription[];
 

@@ -13672,6 +13672,7 @@ from previous Chrome versions.
   <int value="-143121333" label="WebXRIncubations:enabled"/>
   <int value="-142004292" label="QuickActionShowBubbleLauncher:disabled"/>
   <int value="-141516902" label="UseModernMediaControls:enabled"/>
+  <int value="-141188521" label="AndroidDataImporterService:disabled"/>
   <int value="-140763100"
       label="EnableServiceWorkersForChromeUntrusted:disabled"/>
   <int value="-140665765" label="MultiCaptureReworkedUsageIndicators:enabled"/>
@@ -15917,6 +15918,7 @@ from previous Chrome versions.
   <int value="689903349" label="TreatBootstrapAsDefault:disabled"/>
   <int value="689984419" label="PermissionSiteSettingsRadioButton:enabled"/>
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
+  <int value="690408242" label="AndroidDataImporterService:enabled"/>
   <int value="690901353" label="WindowsSystemTracing:enabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691523087" label="GlicPanelResetOnStart:disabled"/>

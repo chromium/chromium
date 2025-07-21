@@ -241,6 +241,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-data-importer-service",
+    "owners": [ "treib@chromium.org", "fsenra@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "android-desktop-webprefs-large-display",
     "owners": [ "lokeric@google.com", "clank-large-form-factors@google.com"],
     "expiry_milestone": 145

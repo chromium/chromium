@@ -12842,6 +12842,13 @@ const FeatureEntry kFeatureEntries[] = {
          kSafetyHubDisruptiveNotificationRevocationVariations,
          "SafetyHubDisruptiveNotificationRevocation")},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-data-importer-service",
+     flag_descriptions::kAndroidDataImporterServiceName,
+     flag_descriptions::kAndroidDataImporterServiceDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidDataImporterService)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
