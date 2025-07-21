@@ -45,7 +45,9 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
@@ -57,8 +59,8 @@ import java.util.concurrent.TimeoutException;
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 public class AddressAccessoryIntegrationTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private final ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mActivityTestRule);
 
@@ -67,13 +69,15 @@ public class AddressAccessoryIntegrationTest {
         mHelper.clear();
     }
 
-    private void loadTestPage(ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate)
+    private WebPageStation startAtTestPage(
+            ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate)
             throws TimeoutException {
-        mHelper.loadTestPage(
-                "/chrome/test/data/autofill/autofill_test_form.html",
-                false,
-                false,
-                keyboardDelegate);
+        WebPageStation page =
+                mHelper.startAtTestPage(
+                        "/chrome/test/data/autofill/autofill_test_form.html",
+                        /* isRtl= */ false,
+                        /* waitForNode= */ false,
+                        keyboardDelegate);
         new AutofillTestHelper()
                 .setProfile(
                         AutofillProfile.builder()
@@ -89,12 +93,13 @@ public class AddressAccessoryIntegrationTest {
                                 .setLanguageCode("en")
                                 .build());
         DOMUtils.waitForNonZeroNodeBounds(mHelper.getWebContents(), "NAME_FIRST");
+        return page;
     }
 
     @Test
     @SmallTest
     public void testAddressSheetIsAvailable() {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -106,7 +111,7 @@ public class AddressAccessoryIntegrationTest {
     @Test
     @SmallTest
     public void testDisplaysEmptyStateMessageWithoutSavedAddresses() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -127,7 +132,7 @@ public class AddressAccessoryIntegrationTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/418234086,https://crbug.com/40190628")
     public void testFillsSuggestionOnClick() throws TimeoutException {
-        loadTestPage(FakeKeyboard::new);
+        startAtTestPage(FakeKeyboard::new);
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 

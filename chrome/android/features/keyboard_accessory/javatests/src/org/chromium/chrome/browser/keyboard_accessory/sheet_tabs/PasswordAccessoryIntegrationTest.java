@@ -46,7 +46,8 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
@@ -59,7 +60,8 @@ import java.util.concurrent.TimeoutException;
 @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 public class PasswordAccessoryIntegrationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private EmbeddedTestServer mTestServer;
     private PasswordStoreBridge mPasswordStoreBridge;
@@ -81,7 +83,7 @@ public class PasswordAccessoryIntegrationTest {
     @Test
     @SmallTest
     public void testPasswordSheetIsAvailable() {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -117,7 +119,7 @@ public class PasswordAccessoryIntegrationTest {
 
     private void preparePasswordBridge() {
         Looper.prepare();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -129,7 +131,7 @@ public class PasswordAccessoryIntegrationTest {
     @Test
     @SmallTest
     public void testPasswordSheetDisplaysOptions() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
         // Marking the origin as denylisted shows only a very minimal accessory.
         mHelper.cacheCredentials(new String[0], new String[0], true);
 
@@ -174,7 +176,7 @@ public class PasswordAccessoryIntegrationTest {
     @Test
     @SmallTest
     public void testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
         // Mark the origin as denylisted to have a reason to show the accessory in the first place.
         mHelper.cacheCredentials(new String[0], new String[0], true);
 

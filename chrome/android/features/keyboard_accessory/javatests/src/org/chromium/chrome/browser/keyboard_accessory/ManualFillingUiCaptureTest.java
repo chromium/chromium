@@ -29,7 +29,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -44,8 +45,8 @@ import java.util.concurrent.TimeoutException;
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 public class ManualFillingUiCaptureTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public final ScreenShooter mScreenShooter = new ScreenShooter();
 
@@ -61,7 +62,7 @@ public class ManualFillingUiCaptureTest {
     @Feature({"KeyboardAccessory", "LTR", "UiCatalogue"})
     public void testCaptureKeyboardAccessoryWithPasswords()
             throws InterruptedException, TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
         ManualFillingTestHelper.createAutofillTestProfiles();
         mHelper.cacheTestCredentials();
         mHelper.focusPasswordField();
@@ -93,7 +94,7 @@ public class ManualFillingUiCaptureTest {
     @Feature({"KeyboardAccessory", "RTL", "UiCatalogue"})
     public void testCaptureKeyboardAccessoryWithPasswordsRTL()
             throws InterruptedException, TimeoutException {
-        mHelper.loadTestPage(true);
+        mHelper.startAtTestPage(/* isRtl= */ true);
         ManualFillingTestHelper.createAutofillTestProfiles();
         mHelper.cacheTestCredentials();
         mHelper.focusPasswordField();

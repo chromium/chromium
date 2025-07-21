@@ -61,7 +61,8 @@ import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
@@ -85,7 +86,7 @@ public class ManualFillingTestHelper {
     private static final String SUBMIT_NODE_ID = "input_submit_button";
     private static final String NO_COMPLETION_FIELD_ID = "field_without_completion";
 
-    private final ChromeTabbedActivityTestRule mActivityTestRule;
+    private final FreshCtaTransitTestRule mActivityTestRule;
     private final AtomicReference<WebContents> mWebContentsRef = new AtomicReference<>();
     private TestInputMethodManagerWrapper mInputMethodManagerWrapper;
 
@@ -97,7 +98,7 @@ public class ManualFillingTestHelper {
         return (FakeKeyboard) mActivityTestRule.getKeyboardDelegate();
     }
 
-    public ManualFillingTestHelper(ChromeTabbedActivityTestRule activityTestRule) {
+    public ManualFillingTestHelper(FreshCtaTransitTestRule activityTestRule) {
         mActivityTestRule = activityTestRule;
     }
 
@@ -111,30 +112,31 @@ public class ManualFillingTestHelper {
         return mEmbeddedTestServer;
     }
 
-    public void loadTestPage(boolean isRtl) {
-        loadTestPage("/chrome/test/data/password/password_form.html", isRtl);
+    public WebPageStation startAtTestPage(boolean isRtl) {
+        return startAtTestPage("/chrome/test/data/password/password_form.html", isRtl);
     }
 
-    public void loadTestPage(String url, boolean isRtl) {
-        loadTestPage(url, isRtl, false, FakeKeyboard::new);
+    public WebPageStation startAtTestPage(String url, boolean isRtl) {
+        return startAtTestPage(url, isRtl, /* waitForNode= */ false, FakeKeyboard::new);
     }
 
-    public void loadTestPage(
+    public WebPageStation startAtTestPage(
             String url,
             boolean isRtl,
             boolean waitForNode,
             ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate) {
+        assert mActivityTestRule.getActivity() == null;
         getOrCreateTestServer();
         ChromeWindow.setKeyboardVisibilityDelegateFactory(keyboardDelegate);
-        if (mActivityTestRule.getActivity() == null) {
-            mActivityTestRule.startMainActivityWithURL(mEmbeddedTestServer.getURL(url));
-        } else {
-            mActivityTestRule.loadUrl(mEmbeddedTestServer.getURL(url));
-        }
+
+        WebPageStation page = mActivityTestRule.startOnUrl(mEmbeddedTestServer.getURL(url));
+
         setRtlForTesting(isRtl);
         updateWebContentsDependentState();
         cacheCredentials("mpark@gmail.com", "S3cr3t"); // Providing suggestions ensures visibility.
         if (waitForNode) DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
+
+        return page;
     }
 
     public void loadUrl(String url) {

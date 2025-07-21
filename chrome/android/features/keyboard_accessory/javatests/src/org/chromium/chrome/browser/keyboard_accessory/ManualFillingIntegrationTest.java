@@ -53,7 +53,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
@@ -65,8 +66,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
 public class ManualFillingIntegrationTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private final ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mActivityTestRule);
 
@@ -78,7 +79,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     public void testAccessoryIsAvailable() {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         assertNotNull(
                 "Controller for Manual filling should be available.",
@@ -88,7 +89,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     public void testKeyboardAccessoryHiddenUntilKeyboardShows() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         onView(withId(R.id.keyboard_accessory)).check(doesNotExist());
@@ -103,7 +104,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     public void testKeyboardAccessoryDisappearsWithKeyboard() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -118,7 +119,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     public void testAccessorySheetHiddenUntilManuallyTriggered() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -143,7 +144,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     public void testAccessorySheetShown() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
         // Register a sheet data provider so that sheet is available when needed.
         mHelper.registerSheetDataProvider(AccessoryTabType.CREDIT_CARDS);
 
@@ -162,7 +163,7 @@ public class ManualFillingIntegrationTest {
     public void testAccessorySheetHiddenWhenRefocusingField() throws TimeoutException {
         AtomicReference<ViewGroup.MarginLayoutParams> accessoryMargins = new AtomicReference<>();
         AtomicReference<View> accessorySheetView = new AtomicReference<>();
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -205,7 +206,7 @@ public class ManualFillingIntegrationTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1466461")
     public void testAccessoryHiddenAfterTappingAutoGenerationButton() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory and add the generation button.
         mHelper.focusPasswordField();
@@ -228,7 +229,7 @@ public class ManualFillingIntegrationTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1406328,https://crbug.com/1466461")
     public void testHidingSheetBringsBackKeyboard() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -251,7 +252,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     public void testSelectingNonPasswordInputDismissesAccessory() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the password field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -267,7 +268,7 @@ public class ManualFillingIntegrationTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testInvokingTabSwitcherHidesAccessory() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -296,7 +297,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     public void testResumingTheAppDismissesAllInputMethods() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -349,7 +350,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     public void testPressingBackButtonHidesAccessorySheet() throws TimeoutException {
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -377,7 +378,7 @@ public class ManualFillingIntegrationTest {
     public void testMovesUpSnackbar() throws TimeoutException {
         final String kSnackbarText = "snackbar";
 
-        mHelper.loadTestPage(false);
+        mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Create a simple, persistent snackbar and verify it's displayed.
         SnackbarManager manager = mActivityTestRule.getActivity().getSnackbarManager();

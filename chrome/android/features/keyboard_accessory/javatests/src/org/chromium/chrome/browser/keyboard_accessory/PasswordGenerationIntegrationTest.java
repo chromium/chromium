@@ -40,6 +40,8 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -73,7 +75,11 @@ public class PasswordGenerationIntegrationTest {
      */
     public static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
 
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
+
+    @Rule
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.wrapTestRule(mSyncTestRule);
 
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String PASSWORD_NODE_ID_MANUAL = "password_field_manual";
@@ -101,20 +107,21 @@ public class PasswordGenerationIntegrationTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    mPasswordStoreBridge = new PasswordStoreBridge(mSyncTestRule.getProfile(false));
+                    mPasswordStoreBridge =
+                            new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                     mBottomSheetController =
                             BottomSheetControllerProvider.from(
-                                    mSyncTestRule.getActivity().getWindowAndroid());
+                                    mActivityTestRule.getActivity().getWindowAndroid());
                 });
 
         mTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         InstrumentationRegistry.getInstrumentation().getContext(),
                         ServerCertificate.CERT_OK);
-        mSyncTestRule.loadUrl(mTestServer.getURL(FORM_URL));
-        mHelper = new ManualFillingTestHelper(mSyncTestRule);
+        mActivityTestRule.loadUrl(mTestServer.getURL(FORM_URL));
+        mHelper = new ManualFillingTestHelper(mActivityTestRule);
         mHelper.updateWebContentsDependentState();
-        mActivity = mSyncTestRule.getActivity();
+        mActivity = mActivityTestRule.getActivity();
     }
 
     @After
@@ -199,7 +206,7 @@ public class PasswordGenerationIntegrationTest {
         assertPasswordText(PASSWORD_NODE_ID, generatedPassword);
         clickNode(SUBMIT_NODE_ID);
         ChromeTabUtils.waitForTabPageLoaded(
-                mSyncTestRule.getActivity().getActivityTab(), mTestServer.getURL(DONE_URL));
+                mActivityTestRule.getActivity().getActivityTab(), mTestServer.getURL(DONE_URL));
         waitForMessageShown();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -232,7 +239,7 @@ public class PasswordGenerationIntegrationTest {
         assertPasswordText(PASSWORD_NODE_ID_MANUAL, generatedPassword);
         clickNode(SUBMIT_NODE_ID_MANUAL);
         ChromeTabUtils.waitForTabPageLoaded(
-                mSyncTestRule.getActivity().getActivityTab(), mTestServer.getURL(DONE_URL));
+                mActivityTestRule.getActivity().getActivityTab(), mTestServer.getURL(DONE_URL));
         waitForMessageShown();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -333,13 +340,13 @@ public class PasswordGenerationIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
-                            InfoBarContainer.from(mSyncTestRule.getActivity().getActivityTab())
+                            InfoBarContainer.from(mActivityTestRule.getActivity().getActivityTab())
                                     .hasInfoBars());
                 });
     }
 
     private void waitForMessageShown() {
-        WindowAndroid window = mSyncTestRule.getActivity().getWindowAndroid();
+        WindowAndroid window = mActivityTestRule.getActivity().getWindowAndroid();
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
