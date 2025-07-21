@@ -46,6 +46,11 @@ testing::Matcher<const OverlayCandidate&> OverlayHasClip(
 testing::Matcher<const OverlayCandidate&> OverlayHasRoundedCorners(
     gfx::RRectF rounded_corners);
 
+testing::Matcher<const OverlayCandidate&> OverlayIsFullScreen();
+
+testing::Matcher<const OverlayCandidate&> OverlayTargetRectIs(
+    const gfx::RectF& expected);
+
 }  // namespace test
 
 }  // namespace viz

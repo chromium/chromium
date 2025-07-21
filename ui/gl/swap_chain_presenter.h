@@ -25,6 +25,9 @@
 
 namespace gl {
 
+// Get the size of the monitor on which the window handle is displayed.
+gfx::Size GetMonitorSizeForWindow(HWND window);
+
 // SwapChainPresenter holds a swap chain, direct composition visuals, and other
 // associated resources for a single overlay layer.  It is updated by calling
 // PresentToSwapChain(), and can update or recreate resources as necessary.
@@ -48,11 +51,23 @@ class SwapChainPresenter : public base::PowerStateObserver {
                           gfx::Transform* visual_transform,
                           gfx::Rect* visual_clip_rect);
 
+  // Attempt to disable the desktop primary plane by expanding the video swap
+  // chain to fill `monitor_size`, fully occluding any content behind it with
+  // solid black.
+  bool TryDisablePrimaryPlane(const gfx::Size& monitor_size,
+                              const DCLayerOverlayParams& overlay);
+
+  // Finalize the presentation and return the DComp visual content representing
+  // the swap chain.
+  Microsoft::WRL::ComPtr<IUnknown> FinishPresentToSwapChain();
+
   const Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain() const {
     return swap_chain_;
   }
 
-  const Microsoft::WRL::ComPtr<IUnknown>& content() const { return content_; }
+  const Microsoft::WRL::ComPtr<IUnknown>& content_for_testing() const {
+    return content_;
+  }
 
   const gfx::Size& content_size() const { return content_size_; }
 
@@ -277,6 +292,12 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // The Direct Composition surface handle from MediaFoundationRenderer.
   HANDLE dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
+
+  // If set, represents the pending rect meant to be passed to
+  // `DCOMPSurfaceProxy::SetRect` when we finalize the current commit. This is
+  // needed because the full screen optimization can possibly adjust this rect,
+  // but still only want to call `SetRect` once per frame.
+  std::optional<gfx::Rect> pending_dcomp_surface_rect_in_window_;
 
   // Layer tree instance that owns this swap chain presenter.
   raw_ptr<DCLayerTree> layer_tree_ = nullptr;

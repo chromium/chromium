@@ -32,6 +32,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
  public:
   OverlayProcessorWin(
       OutputSurface::DCSupportLevel dc_support_level,
+      bool disable_direct_composition_letterbox_video_optimization,
       const DebugRendererSettings* debug_settings,
       std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor);
 
@@ -181,6 +182,14 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   void RemovePrimaryPlane(const AggregatedRenderPass& root_render_pass,
                           gfx::Rect& root_damage_rect);
 
+  // Searches through `candidates` for a single full screen (or
+  // letter/pillar-boxing) video candidate. If we find a valid candidate,
+  // explicitly mark it as full screen and possibly adjust the on-screen rect to
+  // the "ideal" full screen rect.
+  void TryPromoteFullScreenVideo(const AggregatedRenderPass& root_render_pass,
+                                 OverlayCandidateList& candidates,
+                                 gfx::Rect& root_damage_rect);
+
   // Modifies the properties of |promoted_render_passes| for passes that are
   // referenced by RPDQ overlays. This gives |SkiaRenderer| enough information
   // to decide whether or not a RPDQ overlay can skip the copy in
@@ -217,6 +226,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   // TODO(weiliangc): Eventually fold DCLayerOverlayProcessor into this class.
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
+
+  bool disable_direct_composition_letterbox_video_optimization_ = false;
 
   bool is_page_fullscreen_mode_ = false;
 

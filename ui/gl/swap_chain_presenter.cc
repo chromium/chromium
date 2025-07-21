@@ -447,6 +447,25 @@ bool IsCompatibleHDRMetadata(const gfx::HDRMetadata& hdr_metadata) {
 
 }  // namespace
 
+// static
+gfx::Size GetMonitorSizeForWindow(HWND window) {
+  if (GetDirectCompositionNumMonitors() == 1) {
+    // Only one monitor. Return the size of this monitor.
+    return GetDirectCompositionPrimaryMonitorSize();
+  } else {
+    gfx::Size monitor_size;
+    // Get the monitor on which the overlay is displayed.
+    MONITORINFO monitor_info;
+    monitor_info.cbSize = sizeof(monitor_info);
+    if (GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST),
+                       &monitor_info)) {
+      monitor_size = gfx::Rect(monitor_info.rcMonitor).size();
+    }
+
+    return monitor_size;
+  }
+}
+
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
 SwapChainPresenter::PresentationHistory::~PresentationHistory() = default;
 
@@ -686,22 +705,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
 }
 
 gfx::Size SwapChainPresenter::GetMonitorSize() const {
-  if (GetDirectCompositionNumMonitors() == 1) {
-    // Only one monitor. Return the size of this monitor.
-    return GetDirectCompositionPrimaryMonitorSize();
-  } else {
-    gfx::Size monitor_size;
-    // Get the monitor on which the overlay is displayed.
-    MONITORINFO monitor_info;
-    monitor_info.cbSize = sizeof(monitor_info);
-    if (GetMonitorInfo(
-            MonitorFromWindow(layer_tree_->window(), MONITOR_DEFAULTTONEAREST),
-            &monitor_info)) {
-      monitor_size = gfx::Rect(monitor_info.rcMonitor).size();
-    }
-
-    return monitor_size;
-  }
+  return GetMonitorSizeForWindow(layer_tree_->window());
 }
 
 void SwapChainPresenter::SetTargetToFullScreen(
@@ -749,6 +753,16 @@ void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
     gfx::RectF* visual_clip_rect,
     std::optional<gfx::SizeF>* dest_size,
     std::optional<gfx::RectF>* target_rect) const {
+  if (base::FeatureList::IsEnabled(
+          features::kEarlyFullScreenVideoOptimization)) {
+    CHECK(!dest_size->has_value());
+    CHECK(!target_rect->has_value());
+    return;
+  }
+
+  // `is_full_screen_video` is only used by `EarlyFullScreenVideoOptimization`.
+  CHECK(!params.video_params.is_full_screen_video);
+
   // First try to adjust the full screen overlay that can fit the whole
   // screen. If it cannot fit the whole screen and we know it's in
   // letterboxing mode, try to center the overlay and adjust only x or only y.
@@ -1792,6 +1806,66 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   return true;
 }
 
+bool SwapChainPresenter::TryDisablePrimaryPlane(
+    const gfx::Size& monitor_size,
+    const DCLayerOverlayParams& overlay) {
+  CHECK(overlay.video_params.is_full_screen_video);
+
+  const gfx::RectF target_rect =
+      overlay.transform.MapRect(gfx::RectF(overlay.quad_rect));
+
+  if (swap_chain_) {
+    // Note that QI IDXGIDecodeSwapChain from an RGB swap chain will always
+    // fail.
+    if (Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
+        SUCCEEDED(
+            swap_chain_->QueryInterface(IID_PPV_ARGS(&decode_swap_chain)))) {
+      return TryDisableDesktopPlane(decode_swap_chain.Get(), monitor_size,
+                                    gfx::ToRoundedRect(target_rect));
+    }
+    return false;
+  }
+
+  if (IsMediaFoundationSurfaceProxy() &&
+      base::FeatureList::IsEnabled(
+          features::kDesktopPlaneRemovalForMFFullScreenLetterbox)) {
+    // The ideal rect is video size scaled to fit and centered inside
+    // `monitor_size`.
+    gfx::RectF ideal_full_screen_rect = gfx::RectF(overlay.content_rect);
+    ideal_full_screen_rect.Scale(
+        std::min(monitor_size.width() / ideal_full_screen_rect.width(),
+                 monitor_size.height() / ideal_full_screen_rect.height()));
+    ideal_full_screen_rect.Offset(
+        (monitor_size.width() - ideal_full_screen_rect.width()) / 2.0,
+        (monitor_size.height() - ideal_full_screen_rect.height()) / 2.0);
+
+    // Reject videos with non-uniform scaling since `DCOMPSurfaceProxy::SetRect`
+    // always uniformly scales to fit and centers the video within the rect.
+    constexpr float tolerance = 1.0f;
+    if (target_rect.ApproximatelyEqual(ideal_full_screen_rect, tolerance,
+                                       tolerance)) {
+      pending_dcomp_surface_rect_in_window_ = gfx::Rect(monitor_size);
+      return true;
+    }
+
+    return false;
+  }
+
+  return false;
+}
+
+Microsoft::WRL::ComPtr<IUnknown>
+SwapChainPresenter::FinishPresentToSwapChain() {
+  if (IsMediaFoundationSurfaceProxy()) {
+    CHECK(last_overlay_image_->dcomp_surface_proxy());
+    CHECK(pending_dcomp_surface_rect_in_window_);
+    last_overlay_image_->dcomp_surface_proxy()->SetRect(
+        pending_dcomp_surface_rect_in_window_.value());
+    pending_dcomp_surface_rect_in_window_.reset();
+  }
+
+  return content_;
+}
 // static
 bool SwapChainPresenter::CreateSurfaceHandleHelperForTesting(HANDLE* handle) {
   return CreateSurfaceHandleHelper(handle);
@@ -1939,7 +2013,10 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
   // in Media Foundation scaling the full video to the clipped region,
   // instead of allowing clipping to a portion of the video.
 
-  dcomp_surface_proxy->SetRect(mapped_rect);
+  // This may trigger if we forgot to call `FinishPresentToSwapChain`.
+  CHECK(!pending_dcomp_surface_rect_in_window_);
+  pending_dcomp_surface_rect_in_window_ = mapped_rect;
+  content_size_ = mapped_rect.size();
 
   // If |dcomp_surface_proxy| size is {1, 1}, the texture was initialized
   // without knowledge of output size; reset |content_| so it's not added to the
@@ -1979,7 +2056,6 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     }
 
     content_ = dcomp_surface.Get();
-    content_size_ = content_size;
     // Don't take ownership of handle as the DCOMPSurfaceProxy instance owns it.
     dcomp_surface_handle_ = surface_handle;
   }
@@ -1991,8 +2067,10 @@ void SwapChainPresenter::ReleaseDCOMPSurfaceResourcesIfNeeded() {
   if (dcomp_surface_handle_ != INVALID_HANDLE_VALUE) {
     DVLOG(2) << __func__ << "(" << this << ")";
     dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
+    pending_dcomp_surface_rect_in_window_.reset();
     last_overlay_image_.reset();
     content_.Reset();
+    content_size_ = gfx::Size();
   }
 }
 

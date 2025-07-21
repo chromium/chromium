@@ -89,6 +89,28 @@ testing::Matcher<const OverlayCandidate&> OverlayHasRoundedCorners(
                         testing::Eq(rounded_corners));
 }
 
+// Use a `MATCHER` to improve expectation messages.
+MATCHER(IsFullScreen, "") {
+  return arg == gfx::OverlayType::kFullScreen;
+}
+
+testing::Matcher<const OverlayCandidate&> OverlayIsFullScreen() {
+  return testing::Field("overlay_type", &OverlayCandidate::overlay_type,
+                        IsFullScreen());
+}
+
+MATCHER_P(ApproximatelyEquals, expected, "") {
+  constexpr float threshold = 0.001f;
+  return expected.ApproximatelyEqual(expected, threshold, threshold);
+}
+
+testing::Matcher<const OverlayCandidate&> OverlayTargetRectIs(
+    const gfx::RectF& expected) {
+  return testing::ResultOf("display rect in target space",
+                           &OverlayCandidate::DisplayRectInTargetSpace,
+                           ApproximatelyEquals(expected));
+}
+
 }  // namespace test
 
 }  // namespace viz

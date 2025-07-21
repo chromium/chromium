@@ -133,7 +133,11 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   DCHECK(display_controller);
   DCHECK(display_controller->skia_dependency());
   return std::make_unique<OverlayProcessorWin>(
-      capabilities.dc_support_level, debug_settings,
+      capabilities.dc_support_level,
+      display_controller->skia_dependency()
+          ->GetGpuDriverBugWorkarounds()
+          .disable_direct_composition_letterbox_video_optimization,
+      debug_settings,
       std::make_unique<DCLayerOverlayProcessor>(
           capabilities.allowed_yuv_overlay_count,
           display_controller->skia_dependency()

@@ -507,7 +507,7 @@ DCLayerTree::GetFrontMostVideoVisualSubtreeForTesting() const {
   // SwapChainPresenter::content() in `video_swap_chains`
   for (const auto& video_swap_chain : video_swap_chains_) {
     const auto& swap_chain_presenter = video_swap_chain.second;
-    if (swap_chain_presenter->content().Get() ==
+    if (swap_chain_presenter->content_for_testing().Get() ==  // IN-TEST
         front_sub_tree->dcomp_visual_content()) {
       return front_sub_tree;
     }
@@ -1274,6 +1274,7 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   }
 
   bool did_update_primary_plane_damage = false;
+  bool need_background_layer = false;
 
   // Populate |overlays| with information required to build dcomp visual tree.
   for (auto it = overlays.begin(); it != overlays.end(); it++) {
@@ -1302,17 +1303,44 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
         return base::unexpected(
             CommitError{CommitError::Reason::kPresentToSwapChain});
       }
-      // |SwapChainPresenter| may have changed the size of the overlay's quad
-      // rect, e.g. to present to a swap chain exactly the size of the display
-      // rect when the source video is larger.
-      overlay.transform = transform;
-      overlay.quad_rect.set_size(video_swap_chain->content_size());
-      if (overlay.clip_rect.has_value()) {
-        overlay.clip_rect = clip_rect;
+
+      gfx::Size content_size = video_swap_chain->content_size();
+
+      if (base::FeatureList::IsEnabled(
+              features::kEarlyFullScreenVideoOptimization)) {
+        if (overlay.video_params.is_full_screen_video) {
+          const gfx::Size monitor_size = GetMonitorSizeForWindow(window());
+          if (video_swap_chain->TryDisablePrimaryPlane(monitor_size, overlay)) {
+            // If we successfully disable the primary plane, it means DWM's
+            // internal swap chain is now the size of the monitor. In this case
+            // we want to just treat it as an unscaled image that completely
+            // fills the screen.
+            overlay.transform = gfx::Transform();
+            overlay.quad_rect = gfx::Rect(monitor_size);
+            if (overlay.clip_rect.has_value()) {
+              overlay.clip_rect = gfx::Rect(monitor_size);
+            }
+            content_size = monitor_size;
+          } else {
+            need_background_layer = true;
+          }
+        }
+      } else {
+        CHECK(!overlay.video_params.is_full_screen_video);
+
+        // |SwapChainPresenter| may have changed the size of the overlay's quad
+        // rect, e.g. to present to a swap chain exactly the size of the display
+        // rect when the source video is larger.
+        overlay.transform = transform;
+        overlay.quad_rect.set_size(video_swap_chain->content_size());
+        if (overlay.clip_rect.has_value()) {
+          overlay.clip_rect = clip_rect;
+        }
       }
+
       overlay.overlay_image = DCLayerOverlayImage(
-          video_swap_chain->content_size(), video_swap_chain->content());
-      overlay.content_rect = gfx::RectF(video_swap_chain->content_size());
+          content_size, video_swap_chain->FinishPresentToSwapChain());
+      overlay.content_rect = gfx::RectF(content_size);
 
       if (tint_video_layer_) {
         SkColor4f tint_color;
@@ -1377,6 +1405,18 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     DVLOG(1) << "Reset primary_plane_surface_ damage.";
     primary_plane_surface_->SetTexture(nullptr);
     primary_plane_surface_serial_ = 0;
+  }
+
+  if (need_background_layer) {
+    // If we failed to disable the desktop plane, we need to manually
+    // add a solid color layer to act as the video background mat.
+    DCLayerOverlayParams background_mat;
+    background_mat.quad_rect = gfx::Rect(GetMonitorSizeForWindow(window()));
+    background_mat.z_order = INT_MIN;
+    background_mat.background_color = SkColors::kBlack;
+    background_mat.layer_id = gfx::OverlayLayerId::MakeVizInternal(
+        gfx::OverlayLayerId::VizInternalId::kBackgroundColorLayer);
+    overlays.insert(overlays.begin(), std::move(background_mat));
   }
 
   if (!visual_tree_) {

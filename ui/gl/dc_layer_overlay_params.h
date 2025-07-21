@@ -95,6 +95,10 @@ struct GL_EXPORT DCLayerOverlayParams {
     // Go to viz::OverlayCandidate::possible_video_fullscreen_letterboxing for
     // the details.
     bool possible_video_fullscreen_letterboxing = false;
+
+    // This overlay represents a full screen, letterboxed, or pillarboxed video.
+    // This means all pixels behind the video can be assumed to be solid black.
+    bool is_full_screen_video = false;
   };
 
   VideoParams video_params;

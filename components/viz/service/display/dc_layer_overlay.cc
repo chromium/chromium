@@ -570,6 +570,9 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
         quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
   }
 
+  dc_layer.requires_overlay =
+      OverlayCandidate::RequiresOverlay(quad_to_promote);
+
   dc_layer.color_space = resource_provider->GetColorSpace(quad->resource_id);
   dc_layer.hdr_metadata = resource_provider->GetHDRMetadata(quad->resource_id);
 
@@ -578,6 +581,14 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
       is_possible_full_screen_letterboxing;
   if (quad->is_video_frame) {
     processed_yuv_overlay_count++;
+  }
+
+  if (dc_layer.requires_overlay) {
+    dc_layer.priority_hint = gfx::OverlayPriorityHint::kHardwareProtection;
+  } else if (quad->is_video_frame) {
+    dc_layer.priority_hint = gfx::OverlayPriorityHint::kVideo;
+  } else {
+    dc_layer.priority_hint = gfx::OverlayPriorityHint::kRegular;
   }
 }
 

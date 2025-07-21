@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/test/sk_color_eq.h"
@@ -1916,6 +1917,14 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   EXPECT_EQ(100u, desc.Width);
   EXPECT_EQ(100u, desc.Height);
 
+  if (base::FeatureList::IsEnabled(
+          features::kEarlyFullScreenVideoOptimization)) {
+    // The rest of this test checks that video overlays are adjusted for full
+    // screen. EarlyFullScreenVideoOptimization handles adjustment of overlay
+    // position during overlay processing.
+    return;
+  }
+
   // (3) Test if swap chain is adjusted to fit the monitor when overlay scaling
   // is not supported and video on-screen size is slightly smaller than the
   // monitor. Clipping is on.
@@ -3340,8 +3349,10 @@ enum class SwapChainPresentationMode {
 };
 
 struct LetterboxingTestParams {
-  bool use_letterbox_video_optimization;
-  SwapChainPresentationMode presentation_mode;
+  bool use_letterbox_video_optimization = false;
+  SwapChainPresentationMode presentation_mode =
+      SwapChainPresentationMode::kDecodeSwapChain;
+  bool early_full_screen_video_optimization = false;
 };
 
 void PrintTo(const LetterboxingTestParams& param, std::ostream* os) {
@@ -3360,6 +3371,14 @@ void PrintTo(const LetterboxingTestParams& param, std::ostream* os) {
     case SwapChainPresentationMode::kMFDCompSurface:
       *os << "MFDCompSurface";
       break;
+  }
+
+  *os << "_";
+
+  if (param.early_full_screen_video_optimization) {
+    *os << "EarlyFullScreenOptOn";
+  } else {
+    *os << "EarlyFullScreenOptOff";
   }
 }
 
@@ -3389,6 +3408,14 @@ class DCompPresenterLetterboxingTest
       DCompPresenterTestBase::DisableFeature(
           features::kDesktopPlaneRemovalForMFFullScreenLetterbox);
     }
+
+    if (GetTestParam().early_full_screen_video_optimization) {
+      DCompPresenterTestBase::EnableFeature(
+          features::kEarlyFullScreenVideoOptimization);
+    } else {
+      DCompPresenterTestBase::DisableFeature(
+          features::kEarlyFullScreenVideoOptimization);
+    }
   }
 
   class MockDCOMPSurfaceProxy : public gl::DCOMPSurfaceProxy {
@@ -3405,6 +3432,19 @@ class DCompPresenterLetterboxingTest
    private:
     ~MockDCOMPSurfaceProxy() override = default;
   };
+
+  void ScheduleFullScreenOverlay(DCLayerOverlayParams overlay) {
+    if (GetTestParam().use_letterbox_video_optimization &&
+        base::FeatureList::IsEnabled(
+            features::kEarlyFullScreenVideoOptimization)) {
+      overlay.video_params.is_full_screen_video = true;
+    } else {
+      overlay.video_params.possible_video_fullscreen_letterboxing = true;
+    }
+
+    DCompPresenterTestBase<LetterboxingTestParams>::ScheduleOverlay(
+        std::move(overlay));
+  }
 
   DCLayerOverlayImage CreateOverlayImage(
       const gfx::Size& resource_size,
@@ -3569,7 +3609,19 @@ class DCompPresenterLetterboxingTest
 
       RECT target_rect;
       EXPECT_HRESULT_SUCCEEDED(decode_swap_chain->GetTargetRect(&target_rect));
-      onscreen_rect = visual_transform.MapRect(gfx::Rect(target_rect));
+      // Note: We want the position of the actual video contents (i.e.
+      // `target_rect`) in window space. We're assuming here that, when
+      // full-screened, the swap chain (i.e. `dest_size`) is the size of the
+      // monitor and the overlay layer (i.e. `quad_rect` + `transform`) also
+      // fills the monitor.
+      //
+      // We make this assumption because running with
+      // `!EarlyFullScreenVideoOptimization`, `DCLayerTree` does not correctly
+      // place the `quad_rect` in the full screen case and relies on letting the
+      // content visual overflow its intended bounds.
+      onscreen_rect = gfx::Rect(target_rect);
+      onscreen_rect.Offset(
+          gfx::ToRoundedVector2d(visual_transform.To2dTranslation()));
     } else if (GetTestParam().presentation_mode ==
                SwapChainPresentationMode::kMFDCompSurface) {
       // TODO(crbug.com/414842426): The clip rect is the only rect information
@@ -3627,11 +3679,13 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Combine(
             testing::Bool(),
             testing::Values(SwapChainPresentationMode::kDecodeSwapChain,
-                            SwapChainPresentationMode::kMFDCompSurface)),
-        [](std::tuple<bool, SwapChainPresentationMode> t) {
+                            SwapChainPresentationMode::kMFDCompSurface),
+            testing::Bool()),
+        [](std::tuple<bool, SwapChainPresentationMode, bool> t) {
           return LetterboxingTestParams{
               .use_letterbox_video_optimization = std::get<0>(t),
               .presentation_mode = std::get<1>(t),
+              .early_full_screen_video_optimization = std::get<2>(t),
           };
         })),
     &DCompPresenterLetterboxingTest::GetParamName);
@@ -3669,8 +3723,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3680,6 +3733,14 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   } else {
     EXPECT_FALSE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kEarlyFullScreenVideoOptimization)) {
+    // The rest of this test checks that video overlays are adjusted for full
+    // screen. EarlyFullScreenVideoOptimization handles adjustment of overlay
+    // position during overlay processing.
+    return;
   }
 
   // Second test if swap chain visual info is adjusted to fit the monitor when
@@ -3698,8 +3759,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3727,8 +3787,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3773,8 +3832,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3822,8 +3880,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3871,8 +3928,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
 
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
@@ -3921,8 +3977,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
 
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
@@ -3980,8 +4035,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3991,6 +4045,14 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   } else {
     EXPECT_FALSE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kEarlyFullScreenVideoOptimization)) {
+    // The rest of this test checks that video overlays are adjusted for full
+    // screen. EarlyFullScreenVideoOptimization handles adjustment of overlay
+    // position during overlay processing.
+    return;
   }
 
   // Second test if swap chain visual info is adjusted to fit the monitor when
@@ -4010,8 +4072,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -4040,8 +4101,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -4086,8 +4146,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
@@ -4147,8 +4206,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     dc_layer_params.z_order = 1;
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
-    ScheduleOverlay(std::move(dc_layer_params));
+    ScheduleFullScreenOverlay(std::move(dc_layer_params));
 
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
@@ -4174,6 +4232,14 @@ class DCompPresenterFullscreenRoundingTest : public DCompPresenterTestBase<> {};
 
 TEST_P(DCompPresenterFullscreenRoundingTest,
        FullScreenRoundingWithHalfPixelTranslation) {
+  if (base::FeatureList::IsEnabled(
+          features::kEarlyFullScreenVideoOptimization)) {
+    // This test case is implemented in
+    // `OverlayProcessorWinFullScreenWithAdjustmentTest`.
+    GTEST_SKIP() << "EarlyFullScreenVideoOptimization handles adjustment of "
+                    "overlay position during overlay processing.";
+  }
+
   // Define 1920x1080 monitor size.
   const gfx::Size monitor_size(1920, 1080);
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -4326,7 +4392,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
       gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
       &visual_clip_rect);
   DVLOG(1) << "visual_transform" << visual_transform.ToString();
-  EXPECT_TRUE(visual_transform.IsIdentity());
+  EXPECT_EQ(visual_transform.To2dTranslation(), gfx::Vector2dF());
   EXPECT_EQ(clip_rect, visual_clip_rect);
 }
 

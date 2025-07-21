@@ -233,6 +233,11 @@ BASE_FEATURE(kDirectCompositionSoftwareOverlays,
              "DirectCompositionSoftwareOverlays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Detect and mark a single full screen video during overlay processing.
+BASE_FEATURE(kEarlyFullScreenVideoOptimization,
+             "EarlyFullScreenVideoOptimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Adjust the letterbox video size and position to the center of the screen so
 // that DWM power optimization can be turned on.
 BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
