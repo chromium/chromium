@@ -372,6 +372,10 @@ void TestLensOverlayQueryController::RunSuggestInputsCallback() {
   // Get the current request id from the request id generator.
   std::unique_ptr<lens::LensOverlayRequestId> current_request_id =
       request_id_generator_for_testing()->GetCurrentRequestIdForTesting();
+  // Set the time_usec field to 0 to ignore it in the comparison.
+  latest_request_id.set_time_usec(0);
+  current_request_id->set_time_usec(0);
+
   // Verifies that the last request ids passed in the SuggestInputs callback are
   // the same as current request id in the request id generator.
   // This is to ensure the LensOverlayController is always updated with the

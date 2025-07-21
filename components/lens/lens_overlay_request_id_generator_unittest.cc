@@ -33,6 +33,18 @@ TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_resetsSequence) {
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextIdHasTimeUsec) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInitialRequest);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->image_sequence_id(), 1);
+  ASSERT_EQ(first_id->long_context_id(), 1);
+  ASSERT_GT(first_id->time_usec(), 0ul);
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
        GetNextIdForInitialRequest_FailsOnSecondCall) {
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> first_id =

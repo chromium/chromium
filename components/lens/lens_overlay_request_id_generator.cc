@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "components/base32/base32.h"
 #include "components/lens/lens_features.h"
 #include "lens_overlay_request_id_generator.h"
@@ -94,6 +95,8 @@ LensOverlayRequestIdGenerator::GetCurrentRequestId() {
   request_id->set_analytics_id(analytics_id_);
   request_id->set_long_context_id(long_context_id_);
   request_id->set_image_sequence_id(image_sequence_id_);
+  request_id->set_time_usec(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   if (routing_info_.has_value()) {
     request_id->mutable_routing_info()->CopyFrom(routing_info_.value());
   }
