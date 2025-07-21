@@ -94,9 +94,13 @@ class MetricsServiceAccessorDelegateMock
 class FakeContentFiltersObserverBridge final
     : public ContentFiltersObserverBridge {
  public:
+  // Matching constructor of ContentFiltersObserverBridge. Setting the initial
+  // value to true helps to test scenarios when the browser is started with the
+  // setting already enabled.
   FakeContentFiltersObserverBridge(std::string_view setting_name,
                                    base::RepeatingClosure on_enabled,
-                                   base::RepeatingClosure on_disabled);
+                                   base::RepeatingClosure on_disabled,
+                                   bool initial_value = false);
   FakeContentFiltersObserverBridge(const FakeContentFiltersObserverBridge&) =
       delete;
   FakeContentFiltersObserverBridge& operator=(
@@ -113,6 +117,7 @@ class FakeContentFiltersObserverBridge final
   base::WeakPtr<FakeContentFiltersObserverBridge> GetWeakPtr();
 
  private:
+  bool initial_value_ = false;
   base::WeakPtrFactory<FakeContentFiltersObserverBridge> weak_ptr_factory_{
       this};
 };

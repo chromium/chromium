@@ -1,0 +1,325 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/test/base/android/android_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "components/google/core/common/google_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/safe_search_api/url_checker_client.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
+#include "components/url_matcher/url_util.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/dns/mock_host_resolver.h"
+
+namespace supervised_user {
+namespace {
+
+using ::safe_search_api::ClientClassification;
+using ::safe_search_api::URLCheckerClient;
+using ::testing::_;
+
+class MockUrlCheckerClient : public URLCheckerClient {
+ public:
+  MOCK_METHOD(void, CheckURL, (const GURL& url, ClientCheckCallback callback));
+};
+
+struct BootstrapServiceTestCase {
+  std::string test_name;
+  // If true, the browser will start with values of preferences set to values
+  // indicating the user turned off the browser when both device filters were
+  // on.
+  bool hot_start;
+  // Determines the value of browser device filter on browser startup.
+  bool initial_browser_content_filters_value;
+  // Determines the value of search device filter on browser startup.
+  bool initial_search_content_filters_value;
+
+  // Returns the initial value for the given content filters setting.
+  bool ResolveInitialValueForFilter(std::string_view setting_name) const {
+    if (setting_name == kBrowserContentFiltersSettingName) {
+      return initial_browser_content_filters_value;
+    }
+    if (setting_name == kSearchContentFiltersSettingName) {
+      return initial_search_content_filters_value;
+    }
+    NOTREACHED() << "Unsupported setting name: " << setting_name;
+  }
+
+  // Returns true if incognito should be blocked based on the initial values of
+  // the content filters settings.
+  bool ShouldBlockIncognito() const {
+    return initial_browser_content_filters_value ||
+           initial_search_content_filters_value;
+  }
+};
+
+// Covers extra behaviors available only in Clank (Android) related to
+// bootstrapping the supervised user service with Content Filters Observer (how
+// the browser behaves after init, with no further manipulation of the content
+// filters). The tests are parametrized so that they also try to "hot start" the
+// browser, simulating that the browser thinks that it was previously
+// supervised. To see tests that assert dynamic behaviors (when the filters are
+// altered after the browser starts and urls are loaded), see
+// supervised_user_navigation_observer_android_browsertest.cc
+class SupervisedUserServiceBootstrapAndroidBrowserTest
+    : public AndroidBrowserTest,
+      public testing::WithParamInterface<BootstrapServiceTestCase> {
+ protected:
+  content::WebContents* web_contents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+  MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
+
+ private:
+  void SetUpOnMainThread() override {
+    AndroidBrowserTest::SetUpOnMainThread();
+
+    if (GetParam().hot_start) {
+      Profile* profile =
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+
+      // Before re-creating the service, set all on device prefs to enabled,
+      // to see how the browser behaves after init even if some settings had
+      // values inconsistent with the current device filters state.
+      profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, true);
+      profile->GetPrefs()->SetInteger(
+          prefs::kDefaultSupervisedUserFilteringBehavior,
+          static_cast<int>(FilteringBehavior::kAllow));
+      EnableSearchContentFilters(*profile->GetPrefs());
+      DisableIncognitoMode(*profile->GetPrefs());
+    }
+
+    // Note: this substitutions is fine for *new* navigations, but are not
+    // enough for the *existing* navigation cases (which are typically handled
+    // by a navigation observer). However, this test is not asserting on
+    // existing navigations and creates new ones at all times.
+    SupervisedUserServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        web_contents()->GetBrowserContext(),
+        base::BindRepeating(&SupervisedUserServiceBootstrapAndroidBrowserTest::
+                                BuildSupervisedUserService,
+                            base::Unretained(this)));
+
+    // Will resolve google.com to localhost, so the embedded test server can
+    // serve some valid content for it.
+    host_resolver()->AddRule("google.com", "127.0.0.1");
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.GetURL().path() != "/search") {
+            return nullptr;
+          }
+          // HTTP 200 OK with empty response body.
+          return std::make_unique<net::test_server::BasicHttpResponse>();
+        }));
+    CHECK(embedded_test_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AndroidBrowserTest::SetUpCommandLine(command_line);
+    // The production code only allows known ports (80 for http and 443 for
+    // https), but the embedded test server runs on a random port and adds it to
+    // the url spec.
+    command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
+  }
+
+  // Builds a SupervisedUserService with a fake content filters observer bridge
+  // that bootstraps with initial values from the test case.
+  std::unique_ptr<KeyedService> BuildSupervisedUserService(
+      content::BrowserContext* browser_context) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+
+    std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
+        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
+
+    std::unique_ptr<MockUrlCheckerClient> url_checker_client =
+        std::make_unique<MockUrlCheckerClient>();
+    url_checker_client_ = url_checker_client.get();
+
+    return std::make_unique<SupervisedUserService>(
+        IdentityManagerFactory::GetForProfile(profile),
+        profile->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        *profile->GetPrefs(),
+        *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
+            profile->GetProfileKey()),
+        SyncServiceFactory::GetInstance()->GetForProfile(profile),
+        std::make_unique<SupervisedUserURLFilter>(
+            *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
+            std::move(url_checker_client)),
+        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
+        base::BindRepeating(
+            &SupervisedUserServiceBootstrapAndroidBrowserTest::CreateBridge,
+            base::Unretained(this)));
+  }
+
+  // Creates a fake content filters observer bridge for testing, and binds it to
+  // this test fixture.
+  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled) {
+    return std::make_unique<FakeContentFiltersObserverBridge>(
+        setting_name, on_enabled, on_disabled,
+        GetParam().ResolveInitialValueForFilter(setting_name));
+  }
+
+  raw_ptr<MockUrlCheckerClient> url_checker_client_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kPropagateDeviceContentFiltersToSupervisedUser};
+};
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
+                       IngognitoIsBlockedWhenAnyFilterIsEnabled) {
+  policy::IncognitoModeAvailability expected_incognito_mode_availability =
+      GetParam().ShouldBlockIncognito()
+          ? policy::IncognitoModeAvailability::kDisabled
+          : policy::IncognitoModeAvailability::kEnabled;
+
+  // TODO(http://crbug.com/433234589): this test could actually try to open
+  // incognito (to no avail).
+  EXPECT_EQ(static_cast<policy::IncognitoModeAvailability>(
+                GetProfile()->GetPrefs()->GetInteger(
+                    policy::policy_prefs::kIncognitoModeAvailability)),
+            expected_incognito_mode_availability);
+}
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
+                       SafeSearchIsEnforcedWhenSearchFilterIsEnabled) {
+  GURL request_url =
+      embedded_test_server()->GetURL("google.com", "/search?q=cat");
+  GURL expected_url = GetParam().initial_search_content_filters_value
+                          ? GURL(request_url.spec() + "&safe=active&ssui=on")
+                          : request_url;
+
+  if (GetParam().initial_browser_content_filters_value) {
+    // Google search is not on the exempt list of the URL Filter: search
+    // requests must be explicitly allowed.
+    EXPECT_CALL(*url_checker_client(),
+                CheckURL(url_matcher::util::Normalize(expected_url), _))
+        .WillOnce([](const GURL& url,
+                     URLCheckerClient::ClientCheckCallback callback) {
+          std::move(callback).Run(url, ClientClassification::kAllowed);
+        });
+  }
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), request_url, expected_url));
+}
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
+                       SafeSitesIsEnforcedWhenBrowserFilterIsEnabled) {
+  GURL request_url =
+      embedded_test_server()->GetURL("/supervised_user/simple.html");
+
+  if (GetParam().initial_browser_content_filters_value) {
+    EXPECT_CALL(*url_checker_client(),
+                CheckURL(url_matcher::util::Normalize(request_url), _))
+        .WillOnce([](const GURL& url,
+                     URLCheckerClient::ClientCheckCallback callback) {
+          std::move(callback).Run(url, ClientClassification::kAllowed);
+        });
+  } else {
+    EXPECT_CALL(*url_checker_client(),
+                CheckURL(url_matcher::util::Normalize(request_url), _))
+        .Times(0);
+  }
+
+  // We assert here (rather than expect) because url checker mock declares the
+  // requested url as allowed (or never classified) so they should render at all
+  // times. The core of this test is to count calls to the url checker client.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), request_url));
+  ASSERT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
+}
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
+                       SafeSitesBlocksPagesWhenEnabled) {
+  if (!GetParam().initial_browser_content_filters_value) {
+    GTEST_SKIP() << "This test requires the browser filter to be enabled.";
+  }
+
+  GURL request_url =
+      embedded_test_server()->GetURL("/supervised_user/simple.html");
+
+  EXPECT_CALL(*url_checker_client(),
+              CheckURL(url_matcher::util::Normalize(request_url), _))
+      .WillOnce(
+          [](const GURL& url, URLCheckerClient::ClientCheckCallback callback) {
+            std::move(callback).Run(url, ClientClassification::kRestricted);
+          });
+
+  // We assert here (rather than expect) because url checker mock declares the
+  // requested url as blocked. What we do care about is that the classification
+  // was requested.
+  ASSERT_FALSE(content::NavigateToURL(web_contents(), request_url));
+  ASSERT_EQ(web_contents()->GetTitle(), u"Site blocked");
+}
+
+const BootstrapServiceTestCase kBootstrapServiceTestCases[] = {
+    {.test_name = "AllFiltersDisabledColdStart",
+     .hot_start = false,
+     .initial_browser_content_filters_value = false,
+     .initial_search_content_filters_value = false},
+    {.test_name = "AllFiltersEnabledColdStart",
+     .hot_start = false,
+     .initial_browser_content_filters_value = true,
+     .initial_search_content_filters_value = true},
+    {.test_name = "SearchFilterEnabledColdStart",
+     .hot_start = false,
+     .initial_browser_content_filters_value = false,
+     .initial_search_content_filters_value = true},
+    {.test_name = "BrowserFilterEnabledColdStart",
+     .hot_start = false,
+     .initial_browser_content_filters_value = true,
+     .initial_search_content_filters_value = false},
+    {.test_name = "AllFiltersDisabledHotStart",
+     .hot_start = true,
+     .initial_browser_content_filters_value = false,
+     .initial_search_content_filters_value = false},
+    {.test_name = "AllFiltersEnabledHotStart",
+     .hot_start = true,
+     .initial_browser_content_filters_value = true,
+     .initial_search_content_filters_value = true},
+    {.test_name = "SearchFilterEnabledHotStart",
+     .hot_start = true,
+     .initial_browser_content_filters_value = false,
+     .initial_search_content_filters_value = true},
+    {.test_name = "BrowserFilterEnabledHotStart",
+     .hot_start = true,
+     .initial_browser_content_filters_value = true,
+     .initial_search_content_filters_value = false},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SupervisedUserServiceBootstrapAndroidBrowserTest,
+    testing::ValuesIn(kBootstrapServiceTestCases),
+    [](const testing::TestParamInfo<BootstrapServiceTestCase>& info) {
+      return info.param.test_name;
+    });
+}  // namespace
+}  // namespace supervised_user

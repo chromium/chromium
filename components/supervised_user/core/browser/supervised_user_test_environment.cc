@@ -302,14 +302,18 @@ SupervisedUserTestEnvironment::search_content_filters_observer() {
 FakeContentFiltersObserverBridge::FakeContentFiltersObserverBridge(
     std::string_view setting_name,
     base::RepeatingClosure on_enabled,
-    base::RepeatingClosure on_disabled)
-    : ContentFiltersObserverBridge(setting_name, on_enabled, on_disabled) {}
+    base::RepeatingClosure on_disabled,
+    bool initial_value)
+    : ContentFiltersObserverBridge(setting_name, on_enabled, on_disabled) {
+  initial_value_ = initial_value;
+}
+
 FakeContentFiltersObserverBridge::~FakeContentFiltersObserverBridge() = default;
 
 void FakeContentFiltersObserverBridge::Init() {
-  // Java class would call "onChange" in the constructor with the initial value.
-  OnChange(/*env=*/nullptr, IsEnabled());
+  SetEnabled(initial_value_);
 }
+
 void FakeContentFiltersObserverBridge::Shutdown() {
   // Do nothing, specifically do not destroy the java bridge from super.
 }
