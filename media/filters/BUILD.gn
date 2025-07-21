@@ -5,6 +5,20 @@
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 
+if (media_use_symphonia) {
+  rust_static_library("symphonia_glue") {
+    # Needed because CXX generates unsafe code, for example using export_name
+    # is inherently unsafe.
+    allow_unsafe = true
+
+    crate_root = "symphonia_glue.rs"
+    sources = [ "symphonia_glue.rs" ]
+    cxx_bindings = [ "symphonia_glue.rs" ]
+    visibility = [ ":filters" ]
+    deps = [ "//third_party/rust/symphonia/v0_5:lib" ]
+  }
+}
+
 source_set("filters") {
   # Do not expand the visibility here without double-checking with OWNERS, this
   # is a roll-up target which is part of the //media component. Most other DEPs
@@ -125,6 +139,14 @@ source_set("filters") {
       "media_file_checker.cc",
       "media_file_checker.h",
     ]
+  }
+
+  if (media_use_symphonia) {
+    sources += [
+      "symphonia_audio_decoder.cc",
+      "symphonia_audio_decoder.h",
+    ]
+    deps += [ ":symphonia_glue" ]
   }
 
   if (media_use_libvpx) {

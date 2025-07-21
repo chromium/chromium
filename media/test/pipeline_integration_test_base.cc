@@ -55,6 +55,10 @@
 #include "media/filters/manifest_demuxer.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+#include "media/filters/symphonia_audio_decoder.h"
+#endif
+
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
@@ -129,6 +133,11 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
     audio_decoders = prepend_audio_decoders_cb.Run();
     DCHECK(!audio_decoders.empty());
   }
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+  audio_decoders.push_back(
+      std::make_unique<SymphoniaAudioDecoder>(media_task_runner, media_log));
+#endif
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   audio_decoders.push_back(

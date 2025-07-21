@@ -620,6 +620,12 @@ BASE_FEATURE(kRevokeMediaSourceObjectURLOnAttach,
              "RevokeMediaSourceObjectURLOnAttach",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+BASE_FEATURE(kSymphoniaAudioDecoding,
+             "SymphoniaAudioDecoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kD3D11VideoDecoderUseSharedHandle,
              "D3D11VideoDecoderUseSharedHandle",
              base::FEATURE_DISABLED_BY_DEFAULT);

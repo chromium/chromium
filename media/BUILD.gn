@@ -60,6 +60,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_PLATFORM_IAMF_AUDIO=$enable_platform_iamf_audio",
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
+    "ENABLE_SYMPHONIA=$media_use_symphonia",
     "PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT=$platform_has_optional_hevc_decode_support",
     "PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT=$platform_has_optional_hevc_encode_support",
     "USE_ARC_PROTECTED_MEDIA=$use_arc_protected_media",
