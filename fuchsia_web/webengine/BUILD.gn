@@ -371,6 +371,10 @@ component("web_engine_core") {
       "//components/cast_streaming/renderer",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("context_provider") {
@@ -718,6 +722,10 @@ test("web_engine_integration_tests") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",
     "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("cast_streaming_receiver") {
