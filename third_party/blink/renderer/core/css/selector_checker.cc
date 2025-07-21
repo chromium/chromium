@@ -593,6 +593,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoMultiSelectFocus:
     case CSSSelector::kPseudoOpen:
     case CSSSelector::kPseudoPastCue:
+    case CSSSelector::kPseudoPatching:
     case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:
     case CSSSelector::kPseudoRelativeAnchor:
@@ -2539,6 +2540,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoPastCue: {
       auto* vtt_element = DynamicTo<VTTElement>(element);
       return vtt_element && vtt_element->IsPastNode();
+    }
+    case CSSSelector::kPseudoPatching: {
+      return element.currentPatch();
     }
     case CSSSelector::kPseudoScope:
       return CheckPseudoScope(context, result);

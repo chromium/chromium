@@ -77,6 +77,7 @@ DEFINE_GLOBAL(, AtomicString, g_focus_visible);
 DEFINE_GLOBAL(, AtomicString, g_focus_within);
 DEFINE_GLOBAL(, AtomicString, g_hover);
 DEFINE_GLOBAL(, AtomicString, g_past);
+DEFINE_GLOBAL(, AtomicString, g_patching);
 DEFINE_GLOBAL(, AtomicString, g_unresolved);
 
 void Init() {
@@ -98,6 +99,8 @@ void Init() {
       AtomicString(":focus-within");
   new (base::NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
   new (base::NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
+  new (base::NotNullTag::kNotNull, (void*)&g_patching)
+      AtomicString(":patching");
   new (base::NotNullTag::kNotNull, (void*)&g_unresolved)
       AtomicString(":unresolved");
 }

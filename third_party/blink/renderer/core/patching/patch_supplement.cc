@@ -50,11 +50,17 @@ std::optional<size_t> PatchSupplement::IndexOfPatch(const Node& target) {
 
 void PatchSupplement::DidStart(Node& target, DOMPatchStatus* status) {
   patches_.push_back(status);
+  if (Element* element = DynamicTo<Element>(target)) {
+    element->PatchStateChanged();
+  }
 }
 
 void PatchSupplement::DidComplete(Node& target) {
   if (auto index = IndexOfPatch(target)) {
     patches_.EraseAt(*index);
+  }
+  if (Element* element = DynamicTo<Element>(target)) {
+    element->PatchStateChanged();
   }
 }
 

@@ -7725,6 +7725,14 @@ void Element::ActiveViewTransitionTypeStateChanged() {
   PseudoStateChanged(CSSSelector::kPseudoActiveViewTransitionType);
 }
 
+void Element::PatchStateChanged() {
+  SetNeedsStyleRecalc(kLocalStyleChange,
+                      StyleChangeReasonForTracing::CreateWithExtraData(
+                          style_change_reason::kPseudoClass,
+                          style_change_extra_data::g_patching));
+  PseudoStateChanged(CSSSelector::kPseudoPatching);
+}
+
 void Element::FocusWithinStateChanged() {
   if (GetComputedStyle() && GetComputedStyle()->AffectedByFocusWithin()) {
     StyleChangeType change_type =
