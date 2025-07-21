@@ -27,10 +27,13 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 /**
  * This test rule mocks AccountManagerFacade.
@@ -178,6 +181,32 @@ public class AccountManagerTestRule implements TestRule {
     /** See {@link FakeAccountManagerFacade#blockGetAccounts(boolean)}. */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate(boolean populateCache) {
         return mFakeAccountManagerFacade.blockGetAccounts(populateCache);
+    }
+
+    /**
+     * Sets an error for the given `accountId` when requesting an access token through {@link
+     * AccountManagerFacade}. Future access token requests will return the `authError` provided.
+     * This method will propagate the error to native code as well through {@link
+     * IdentityManagerImpl}.
+     *
+     * <p>If the `authError` has the state {@link GoogleServiceAuthErrorState#NONE} then {@link
+     * AccountManagerFacade} will return valid access tokens instead of returning an error. Errors
+     * must be set through a previous call to {@link #addOrUpdateAccessTokenError} before they can
+     * be cleared this way.
+     *
+     * @param identityManager {@link IdentityManagerImpl} object to pass the error to native.
+     * @param accountId The {@link CoreAccountId} to set the authError to.
+     * @param authError A {@link GoogleServiceAuthError} to return on access token requests.
+     */
+    public void addOrUpdateAccessTokenError(
+            IdentityManagerImpl identityManager,
+            CoreAccountId accountId,
+            GoogleServiceAuthError authError) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFakeAccountManagerFacade.addOrUpdateAccessTokenError(accountId, authError);
+                    identityManager.updateAuthErrorForTesting(accountId, authError);
+                });
     }
 
     /**

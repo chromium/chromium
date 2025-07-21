@@ -24,6 +24,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -34,8 +35,10 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -107,6 +110,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     private final Set<AccountHolder> mAccountHolders =
             Collections.synchronizedSet(new LinkedHashSet<>());
 
+    /** Can be used to cause {@link #getAccessToken} method to fail. */
+    private final Map<CoreAccountId, GoogleServiceAuthError> mGetAccessTokenError = new HashMap<>();
+
     /** Can be used to block {@link #getAccounts()} ()} result. */
     private @Nullable Promise<List<AccountInfo>> mBlockedGetAccountsPromise;
 
@@ -158,8 +164,15 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                                             GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP)));
             return;
         }
-        ThreadUtils.postOnUiThread(
-                () -> callback.onGetTokenSuccess(accountHolder.getAccessTokenOrGenerateNew(scope)));
+        GoogleServiceAuthError authError = mGetAccessTokenError.get(coreAccountInfo.getId());
+        if (authError != null) {
+            ThreadUtils.postOnUiThread(() -> callback.onGetTokenFailure(authError));
+        } else {
+            ThreadUtils.postOnUiThread(
+                    () ->
+                            callback.onGetTokenSuccess(
+                                    accountHolder.getAccessTokenOrGenerateNew(scope)));
+        }
     }
 
     @Override
@@ -372,6 +385,31 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                     mBlockedGetAccountsPromise = null;
                     fireOnAccountsChangedNotification();
                 });
+    }
+
+    /**
+     * Sets an error for the given `accountId` when requesting an access token. After this method is
+     * called, subsequent calls to {@link #getAccessToken} with {@param accountInfo} will return an
+     * {@link AuthException} with the `authError` provided.
+     *
+     * <p>If the `authError` has the state {@link GoogleServiceAuthErrorState#NONE} then {@link
+     * #getAccessToken} will return valid access tokens instead of returning an error. Errors must
+     * be set through a previous call to {@link #addOrUpdateAccessTokenError} before they can be
+     * cleared this way.
+     *
+     * @param accountId The {@link CoreAccountId} to set the authError to.
+     * @param authError A {@link GoogleServiceAuthError} to return from {@link #getAccessToken}.
+     */
+    @MainThread
+    public void addOrUpdateAccessTokenError(
+            CoreAccountId accountId, GoogleServiceAuthError authError) {
+        ThreadUtils.assertOnUiThread();
+        if (authError.getState() == GoogleServiceAuthErrorState.NONE) {
+            assert mGetAccessTokenError.containsKey(accountId);
+            mGetAccessTokenError.remove(accountId);
+            return;
+        }
+        mGetAccessTokenError.put(accountId, authError);
     }
 
     /**

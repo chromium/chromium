@@ -35,6 +35,7 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 final class ProfileOAuth2TokenServiceDelegate {
     private static final String OAUTH2_SCOPE_PREFIX = "oauth2:";
 
+    private final long mNativePtr;
     private final AccountManagerFacade mAccountManagerFacade;
 
     @VisibleForTesting
@@ -42,6 +43,7 @@ final class ProfileOAuth2TokenServiceDelegate {
     ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate) {
         assert nativeProfileOAuth2TokenServiceDelegate != 0
                 : "nativeProfileOAuth2TokenServiceDelegate should not be zero!";
+        mNativePtr = nativeProfileOAuth2TokenServiceDelegate;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
     }
 
@@ -123,6 +125,13 @@ final class ProfileOAuth2TokenServiceDelegate {
                         != null;
     }
 
+    @MainThread
+    void updateAuthErrorForTesting(CoreAccountId accountId, GoogleServiceAuthError authError) {
+        ProfileOAuth2TokenServiceDelegateJni.get()
+                .updateAuthErrorFromJava(
+                        mNativePtr, accountId, authError, /* fireAuthErrorChanged= */ false);
+    }
+
     @NativeMethods
     interface Natives {
         /**
@@ -141,5 +150,18 @@ final class ProfileOAuth2TokenServiceDelegate {
                 long expirationTimeSecs,
                 @JniType("GoogleServiceAuthError") GoogleServiceAuthError authError,
                 long nativeCallback);
+
+        /**
+         * Called to C++ to update auth error.
+         *
+         * @param accountId The account which has the auth error.
+         * @param authError The {@link GoogleServiceAuthError} to set for the account.
+         * @param fireAuthErrorChanged Whether observers should be notified of this update.
+         */
+        void updateAuthErrorFromJava(
+                long nativeProfileOAuth2TokenServiceDelegateAndroid,
+                @JniType("CoreAccountId") CoreAccountId accountId,
+                @JniType("GoogleServiceAuthError") GoogleServiceAuthError authError,
+                boolean fireAuthErrorChanged);
     }
 }

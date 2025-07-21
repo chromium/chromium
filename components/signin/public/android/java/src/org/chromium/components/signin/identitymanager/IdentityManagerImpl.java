@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.List;
 
@@ -153,6 +154,14 @@ public class IdentityManagerImpl implements IdentityManager {
     @CalledByNative
     private long getNativePointer() {
         return mNativeIdentityManager;
+    }
+
+    @MainThread
+    public void updateAuthErrorForTesting(
+            CoreAccountId accountId, GoogleServiceAuthError authError) {
+        assert mProfileOAuth2TokenServiceDelegate != null;
+
+        mProfileOAuth2TokenServiceDelegate.updateAuthErrorForTesting(accountId, authError);
     }
 
     @NativeMethods

@@ -379,6 +379,14 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
   return keep_accounts;
 }
 
+void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAuthErrorFromJava(
+    JNIEnv* env,
+    CoreAccountId& core_account_id,
+    GoogleServiceAuthError& auth_error,
+    jboolean fire_auth_error_changed) {
+  UpdateAuthError(core_account_id, auth_error, fire_auth_error_changed);
+}
+
 void ProfileOAuth2TokenServiceDelegateAndroid::FireRefreshTokensLoaded() {
   DVLOG(1)
       << "ProfileOAuth2TokenServiceDelegateAndroid::FireRefreshTokensLoaded";
