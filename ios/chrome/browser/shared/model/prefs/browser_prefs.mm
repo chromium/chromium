@@ -665,7 +665,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness,
       -1);
 
-  // Deprecated 03/2025 (migrated to profile pref).
   registry->RegisterBooleanPref(prefs::kMigrateWidgetsPrefs, false);
 
   // Deprecated 03/2025 (migrated to profile pref).
