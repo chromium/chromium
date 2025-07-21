@@ -164,6 +164,10 @@ class DiceWebSigninInterceptor : public KeyedService,
     return state_->is_interception_in_progress_;
   }
 
+  bool has_interception_bubble_handle_for_testing() const {
+    return state_->interception_bubble_handle_.get();
+  }
+
   content::WebContents* web_contents() const {
     return state_->web_contents_.get();
   }

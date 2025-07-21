@@ -86,6 +86,13 @@ BASE_FEATURE(kEnableHistorySyncOptinFromTabHelper,
 BASE_FEATURE(kBrowserSigninInSyncHeaderOnGaiaIntegration,
              "BrowserSigninInSyncHeaderOnGaiaIntegration",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Whether we re-try showing the signing in interception bubble if the Dice
+// sync header does not arrive within a time window from the LST token.
+// This flag is meant to be used as a kill switch, as the feature starts enabled
+// by default.
+BASE_FEATURE(kRetryInterceptionBubbleOnDiceSyncHeaderTimeout,
+             "RetryInterceptionBubbleOnDiceSyncHeaderTimeout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the History Sync Opt-in expansion pill on Desktop.
 BASE_FEATURE(kEnableHistorySyncOptinExpansionPill,

@@ -37,6 +37,7 @@ class DiceWebSigninInterceptionBubbleView
                   views::BubbleDialogDelegateView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDiceWebSigninInterceptionBubble);
   DiceWebSigninInterceptionBubbleView(
       const DiceWebSigninInterceptionBubbleView& other) = delete;
   DiceWebSigninInterceptionBubbleView& operator=(

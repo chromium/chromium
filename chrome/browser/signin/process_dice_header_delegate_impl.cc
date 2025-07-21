@@ -35,6 +35,14 @@
 
 namespace {
 
+struct InterceptionBubbleParams {
+  CoreAccountId account_id;
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kWebSignin;
+  bool is_new_account = false;
+  bool is_sync_signin_tab = false;
+};
+
 // Helper function similar to DiceTabHelper::FromWebContents(), but also handles
 // the case where |contents| is nullptr.
 DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
@@ -128,6 +136,31 @@ void AttemptChromeSignin(CoreAccountId account_id,
   }
 }
 
+void RetryInterceptionBubble(base::WeakPtr<content::WebContents> web_contents,
+                             InterceptionBubbleParams bubble_params) {
+  if (!web_contents) {
+    return;
+  }
+  auto* interceptor = DiceWebSigninInterceptorFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  // No need to trigger the bubble if we are not in a sync-signin tab, or if we
+  // are in a WebSignin case (as this is handled by the first interception
+  // attempt).
+  if (!interceptor || !bubble_params.is_sync_signin_tab ||
+      bubble_params.access_point == signin_metrics::AccessPoint::kWebSignin) {
+    return;
+  }
+  // Try to show the interceptions bubble by treating this case as WebSignin
+  // on any regular tab.
+  // TODO(crbug.com/426555085): Remove the access_point argument.
+  if (base::FeatureList::IsEnabled(
+          switches::kRetryInterceptionBubbleOnDiceSyncHeaderTimeout)) {
+    interceptor->MaybeInterceptWebSignin(
+        web_contents.get(), bubble_params.account_id,
+        signin_metrics::AccessPoint::kWebSignin, bubble_params.is_new_account,
+        /*is_sync_signin=*/false);
+  }
+}
 }  // namespace
 
 // static
@@ -262,13 +295,27 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
   // that was opened from a "Enable Sync" Chrome UI. Usually this is indeed a
   // sync signin, but it is not always the case: the user may abandon the sync
   // signin and do a simple web signin in the same tab instead.
-  DiceWebSigninInterceptorFactory::GetForProfile(&profile_.get())
-      ->MaybeInterceptWebSignin(web_contents_.get(), account_id, access_point_,
-                                is_new_account, is_sync_signin_tab_);
+  auto* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(&profile_.get());
+  interceptor->MaybeInterceptWebSignin(web_contents_.get(), account_id,
+                                       access_point_, is_new_account,
+                                       is_sync_signin_tab_);
+  DiceTabHelper* tab_helper =
+      DiceTabHelper::FromWebContents(web_contents_.get());
+  if (tab_helper) {
+    base::OnceClosure retry_interception_bubble_callback = base::BindOnce(
+        &RetryInterceptionBubble, web_contents_->GetWeakPtr(),
+        InterceptionBubbleParams{account_id, access_point_, is_new_account,
+                                 is_sync_signin_tab_});
+    tab_helper->OnTokenExchangeSuccess(
+        std::move(retry_interception_bubble_callback));
+  }
 }
 
 void ProcessDiceHeaderDelegateImpl::EnableSync(
     const CoreAccountInfo& account_info) {
+  // TODO(crbug.com/420635510): Address the case of a flashing Interception
+  // bubble which gets self-dismissed when the browser user is signed in.
   if (base::FeatureList::IsEnabled(
           switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
     signin::IdentityManager* identity_manager =

@@ -48,6 +48,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -196,6 +197,9 @@ void RecordDismissReason(
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceWebSigninInterceptionBubbleView,
+                                      kDiceWebSigninInterceptionBubble);
+
 DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
   // Cancel if the bubble is destroyed without user interaction.
   if (callback_) {
@@ -321,6 +325,8 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   web_view->SetPreferredSize(
       gfx::Size(GetBubbleFixedWidthForInterceptionType(IsChromeSignin()),
                 kInterceptionBubbleBaseHeight));
+  web_view->SetProperty(views::kElementIdentifierKey,
+                        kDiceWebSigninInterceptionBubble);
   DiceWebSigninInterceptUI* web_ui = web_view->GetWebContents()
                                          ->GetWebUI()
                                          ->GetController()

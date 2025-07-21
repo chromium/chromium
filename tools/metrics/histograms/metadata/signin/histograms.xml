@@ -2871,6 +2871,74 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SigninManager.SyncHeaderArrivalTimeWindow" units="ms"
+    expires_after="2025-11-30">
+  <owner>droger@chromium.org</owner>
+  <owner>anthie@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the elapsed time between the handling of the LST token and the
+    handing of the Dice Sync header when the user signs in to Chrome browser.
+
+    If no Dice Sync header is sent from the Gaia server, then this histogram is
+    not recorded. This histogram is not relevant and not recorded for Web
+    sign-ins, as in this case the Dice Sync header is not sent.
+
+    Chrome guarantees that the Sync header processing happens after the LST
+    token processing so this elapsed time will be positive. In the unlikely edge
+    case that GAIA sends the Sync header before Chrome can enforce the proper
+    ordering between the LST and the Sync token, this histogram is not recorded
+    and `Signin.SigninManager.UnexpectedSyncHeaderProcessingBeforeLST` will be
+    recorded instead.
+  </summary>
+</histogram>
+
+<histogram name="Signin.SigninManager.SyncHeaderTimeout" enum="BooleanTimedOut"
+    expires_after="2025-11-30">
+  <owner>droger@chromium.org</owner>
+  <owner>anthie@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded when the user signs in to their Google Account through a Chrome
+    sign-in entry point. This is not recorded for Web sign-in as they do not
+    involve the Dice Sync Header.
+
+    Records a `True` sample when the Dice Sync header arrives after a timeout
+    window since the reception of the LST token or does not arrive at all.
+    Records a `False` sample if the header arrives within a time window from the
+    LST token.
+
+    Also records `False` in the unlikely edge case that the Sync header arrives
+    before the LST is even requested (and before Chrome can enforce their proper
+    ordering to be first the LST and then the Sync header processing). For the
+    latter edge case see also the histogram
+    `Signin.SigninManager.UnexpectedSyncHeaderProcessingBeforeLST`.
+
+    This histogram is not recorded if the user closes the sign-in tab before the
+    timeout window is reached.
+  </summary>
+</histogram>
+
+<!-- TODO(crbug.com/429524688): Remove this histogram after fixing this bug.-->
+
+<histogram name="Signin.SigninManager.UnexpectedSyncHeaderProcessingBeforeLST"
+    enum="BooleanHit" expires_after="2025-11-30">
+  <owner>droger@chromium.org</owner>
+  <owner>anthie@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded when the user signs in to their Google Account through a Chrome
+    sign-in entry point. This is not recorded for Web sign-in as they do not
+    involve the Dice Sync Header.
+
+    A value is recorded when, unexpectedly, the Dice sync header is processed
+    before the LST token: This can only happen if the Sync header is received
+    before the request for the LST happens. If the LST is first requested, then
+    the processing of the LST and the Sync header is coordinated by Chrome so
+    that they happen in the right order (first LST, then Sync header).
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninPending.InconsistentStateInvoked"
     enum="BooleanHit" expires_after="2025-12-14">
   <owner>amelies@google.com</owner>

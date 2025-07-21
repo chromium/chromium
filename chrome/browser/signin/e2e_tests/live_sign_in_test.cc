@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/e2e_tests/account_capabilities_observer.h"
 #include "chrome/browser/signin/e2e_tests/accounts_removed_waiter.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
@@ -21,12 +23,14 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
+#include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -661,8 +665,9 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
             signin::ConsentLevel::kSync);
 }
 
-class LiveSignInGaiaIntegrationTest : public base::test::WithFeatureOverride,
-                                      public LiveSignInTest {
+class LiveSignInGaiaIntegrationTest
+    : public base::test::WithFeatureOverride,
+      public InteractiveBrowserTestT<LiveSignInTest> {
  public:
   LiveSignInGaiaIntegrationTest()
       : base::test::WithFeatureOverride(
@@ -676,6 +681,7 @@ class LiveSignInGaiaIntegrationTest : public base::test::WithFeatureOverride,
 // a browser signin, does not sign in the user in the browser.
 IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
                        MANUAL_WebSignInFromExistingChromeSignInTab) {
+  base::HistogramTester histogram_tester;
   sign_in_functions.StartSignInFromSettings();
   int current_tab_count = browser()->tab_strip_model()->GetTabCount();
 
@@ -698,8 +704,16 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
   // in the browser.
   EXPECT_EQ(IsFixGaiaIntegrationEnabled(),
             !identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  // TODO(crbug.com/420635510): Expect that the Uno bubble is shown on the
-  // updated Gaia flow.
+
+  if (IsFixGaiaIntegrationEnabled()) {
+    RunTestSequence(WaitForShow(
+        DiceWebSigninInterceptionBubbleView::kDiceWebSigninInterceptionBubble));
+  }
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin,
+      IsFixGaiaIntegrationEnabled() ? 1 : 0);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LiveSignInGaiaIntegrationTest);

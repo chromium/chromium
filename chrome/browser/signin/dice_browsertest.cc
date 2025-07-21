@@ -16,11 +16,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -42,7 +44,9 @@
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/dice_response_handler.h"
 #include "chrome/browser/signin/dice_response_handler_factory.h"
+#include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -51,6 +55,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
+#include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -727,6 +732,22 @@ class DiceBrowserTest : public InProcessBrowserTest,
     CloseBrowserSynchronously(browser());
   }
 
+  void UpdateAccountInfoForAccount(AccountInfo account_info) {
+    // Fill the account info.
+    account_info.full_name = "fullname";
+    account_info.given_name = "givenname";
+    account_info.hosted_domain = kNoHostedDomainFound;
+    account_info.locale = "en";
+    account_info.picture_url = "https://example.com";
+    // Fill in the required account capabilities for the sign in intercept.
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_is_subject_to_parental_controls(false);
+    mutator.set_is_subject_to_enterprise_policies(false);
+
+    CHECK(account_info.IsValid());
+    signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
+  }
+
   const std::string main_email_;
   net::EmbeddedTestServer https_server_;
   bool enable_sync_requested_;
@@ -1078,17 +1099,25 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
           switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)
           ? 1
           : 0);
+  // The interception bubble should not have been shown.
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 0);
+  // A Sync header on time event has been recorded.
+  histogram_tester.ExpectUniqueSample("Signin.SigninManager.SyncHeaderTimeout",
+                                      false, 1);
+
+  // Both LST and Sync Header are received so their time difference must be
+  // recorded.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninManager.SyncHeaderArrivalTimeWindow", 1);
 }
 
 // Tests that the account is signed in if the ENABLE_SYNC response is received
 // before the refresh token, and the Sync opt-in is offered.
 // https://crbug.com/1082858
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)
-#define MAYBE_EnableSyncBeforeToken DISABLED_EnableSyncBeforeToken
-#else
-#define MAYBE_EnableSyncBeforeToken EnableSyncBeforeToken
-#endif
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncBeforeToken) {
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
 
   ui_test_utils::UrlLoadObserver enable_sync_url_observer(
@@ -1141,6 +1170,18 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
 
   EXPECT_EQ(signin::ConsentLevel::kSync,
             signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
+
+  // The interception bubble should not have been shown.
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 0);
+  // A Sync header on time event has been recorded.
+  histogram_tester.ExpectUniqueSample("Signin.SigninManager.SyncHeaderTimeout",
+                                      false, 1);
+  // Both LST and Sync Header are received so their time difference must be
+  // recorded.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninManager.SyncHeaderArrivalTimeWindow", 1);
 }
 
 // Verifies that Chrome doesn't crash on browser window close when the sync
@@ -1301,6 +1342,98 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Incognito) {
   // Check that Dice is disabled.
   EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
       incognito_browser->profile()));
+}
+
+class DiceBrowserSiginInInterceptionInteractiveTest
+    : public InteractiveBrowserTestT<DiceBrowserTest> {
+ public:
+  void WaitForHistogramSample(std::string_view histogram_name,
+                              base::HistogramBase::Sample32 sample,
+                              base::HistogramBase::Count32 expected_count,
+                              const base::HistogramTester& histogram_tester) {
+    // Continue if histogram was already recorded.
+    if (histogram_tester.GetBucketCount(histogram_name, sample) ==
+        expected_count) {
+      return;
+    }
+    // Else, wait until the histogram bucket is recorded.
+    base::RunLoop run_loop;
+    auto histogram_observer = std::make_unique<
+        base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+        histogram_name,
+        base::BindLambdaForTesting([&](std::string_view histogram_name,
+                                       uint64_t name_hash,
+                                       base::HistogramBase::Sample32 sample) {
+          if (histogram_tester.GetBucketCount(histogram_name, sample) ==
+              expected_count) {
+            run_loop.Quit();
+          }
+        }));
+    run_loop.Run();
+  }
+};
+
+// Tests that the Uno interception bubble may be shown if the Sync header
+// has not arrived within a timeout window.
+IN_PROC_BROWSER_TEST_F(DiceBrowserSiginInInterceptionInteractiveTest,
+                       ShowsUnoBubbleWhenSyncHeaderArrivalExceedsTimeout) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(0, reconcilor_started_count_);
+  auto uno_bubble_retry_delay = base::Milliseconds(500);
+  auto scoped_interception_bubble_delay =
+      DiceTabHelper::SetScopedInterceptionBubbleTimerForTesting(
+          uno_bubble_retry_delay);
+
+  // Signin using the Chrome Sync endpoint.
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kSettings;
+  browser()->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
+      access_point,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
+
+  // Receive token.
+  EXPECT_FALSE(
+      GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
+  SendRefreshTokenResponse();
+  EXPECT_TRUE(
+      GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
+
+  AccountInfo account_info =
+      signin::MakeAccountAvailable(GetIdentityManager(), main_email_);
+  UpdateAccountInfoForAccount(account_info);
+
+  auto* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(browser()->profile());
+  // Wait for the first interception attempt to be triggered. It should not be
+  // intercepted.
+  WaitForHistogramSample(
+      "Signin.Intercept.HeuristicOutcome",
+      static_cast<base::HistogramBase::Sample32>(
+          SigninInterceptionHeuristicOutcome::kAbortSyncSignin),
+      1, histogram_tester);
+
+  // On timeout, the second interception attempt should succeed and display the
+  // interception bubble.
+  RunTestSequence(WaitForShow(
+      DiceWebSigninInterceptionBubbleView::kDiceWebSigninInterceptionBubble));
+
+  EXPECT_TRUE(interceptor->has_interception_bubble_handle_for_testing());
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 1);
+  histogram_tester.ExpectUniqueSample("Signin.SigninManager.SyncHeaderTimeout",
+                                      true, 1);
+
+  // The sync header was not received so the histogram recording it's time
+  // difference from the LST is not recorded.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninManager.SyncHeaderArrivalTimeWindow", 0);
 }
 
 class DiceAddAccountTabBrowserTest : public DiceBrowserTest,
