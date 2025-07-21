@@ -35,7 +35,7 @@ public class DeviceDelegate {
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
     // Deeplink to the Pix account linking page on Google Wallet.
     private static final String GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK =
-            "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome";
+            "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome&email=%s";
     // Minimum Google Wallet version that supports Pix account linking.
     private static final long PIX_MIN_SUPPORTED_WALLET_VERSION = 931593518;
 
@@ -64,7 +64,7 @@ public class DeviceDelegate {
 
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static void openPixAccountLinkingPageInWallet(WindowAndroid windowAndroid) {
+    static void openPixAccountLinkingPageInWallet(WindowAndroid windowAndroid, String email) {
         if (windowAndroid == null) {
             return;
         }
@@ -73,7 +73,7 @@ public class DeviceDelegate {
             return;
         }
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK));
+        intent.setData(Uri.parse(String.format(GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK, email)));
         intent.setPackage(GOOGLE_WALLET_PACKAGE_NAME);
         try {
             context.startActivity(intent);

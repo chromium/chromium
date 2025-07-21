@@ -136,7 +136,12 @@ void PixAccountLinkingManager::DismissPrompt() {
 void PixAccountLinkingManager::OnAccepted() {
   LogPixAccountLinkingPromptAccepted();
   DismissPrompt();
-  client_->GetDeviceDelegate()->LaunchPixAccountLinkingPage();
+  auto account_info =
+      client_->GetPaymentsDataManager()->GetAccountInfoForPaymentsServer();
+  if (!account_info.IsEmpty() && !account_info.email.empty()) {
+    client_->GetDeviceDelegate()->LaunchPixAccountLinkingPage(
+        account_info.email);
+  }
 }
 
 void PixAccountLinkingManager::OnDeclined() {

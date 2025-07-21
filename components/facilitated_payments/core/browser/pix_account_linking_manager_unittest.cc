@@ -18,6 +18,7 @@
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager_test_api.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -45,6 +46,9 @@ class PixAccountLinkingManagerTest : public testing::Test {
     payments_data_manager_->SetSyncServiceForTest(&sync_service_);
     payments_data_manager_->SetPaymentsCustomerData(
         std::make_unique<autofill::PaymentsCustomerData>("123456"));
+    payments_data_manager_->SetAccountInfoForPayments(
+        identity_test_env_.MakePrimaryAccountAvailable(
+            "somebody@example.test", signin::ConsentLevel::kSignin));
     ON_CALL(client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(payments_data_manager_.get()));
     device_delegate_ = std::make_unique<MockDeviceDelegate>();
@@ -239,7 +243,21 @@ TEST_F(PixAccountLinkingManagerTest, DismissPrompt) {
 
 TEST_F(PixAccountLinkingManagerTest, OnAccepted) {
   EXPECT_CALL(client(), DismissPrompt);
-  EXPECT_CALL(*device_delegate(), LaunchPixAccountLinkingPage);
+  EXPECT_CALL(*device_delegate(),
+              LaunchPixAccountLinkingPage("somebody@example.test"));
+
+  // The show method is called so the internal UI state is correctly set.
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  test_api().OnAccepted();
+}
+
+TEST_F(PixAccountLinkingManagerTest, AccountInfoNotValid_WalletNotLaunched) {
+  // Set account info to empty.
+  payments_data_manager_->SetAccountInfoForPayments(CoreAccountInfo());
+
+  EXPECT_CALL(client(), DismissPrompt);
+  EXPECT_CALL(*device_delegate(), LaunchPixAccountLinkingPage(testing::_))
+      .Times(0);
 
   // The show method is called so the internal UI state is correctly set.
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);

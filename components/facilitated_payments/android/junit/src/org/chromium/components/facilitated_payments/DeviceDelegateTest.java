@@ -49,8 +49,7 @@ import java.util.List;
 @SmallTest
 public class DeviceDelegateTest {
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
-    private static final String GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK =
-            "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome";
+    private static final String EMAIL = "user@example.com";
     private static final GURL PAYMENT_LINK = new GURL("https://www.example.com");
 
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
@@ -69,7 +68,7 @@ public class DeviceDelegateTest {
 
     @Test
     public void testOpenPixAccountLinkingPageInWallet_Success() {
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid);
+        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
 
         // Capture the Intent passed to startActivity
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -78,13 +77,16 @@ public class DeviceDelegateTest {
         // Assert the properties of the captured Intent
         Intent capturedIntent = intentCaptor.getValue();
         assertEquals(Intent.ACTION_VIEW, capturedIntent.getAction());
-        assertEquals(Uri.parse(GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK), capturedIntent.getData());
+        assertEquals(
+                Uri.parse(
+                        "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome&email=user@example.com"),
+                capturedIntent.getData());
         assertEquals(GOOGLE_WALLET_PACKAGE_NAME, capturedIntent.getPackage());
     }
 
     @Test
     public void testOpenPixAccountLinkingPageInWallet_NullWindowAndroid() {
-        DeviceDelegate.openPixAccountLinkingPageInWallet(null);
+        DeviceDelegate.openPixAccountLinkingPageInWallet(null, EMAIL);
 
         // Verify that startActivity() was never called if WindowAndroid is null.
         verify(mMockContext, never()).startActivity(any(Intent.class));
@@ -94,7 +96,7 @@ public class DeviceDelegateTest {
     public void testOpenPixAccountLinkingPageInWallet_NullContext() {
         when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
 
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid);
+        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
 
         verify(mMockContext, never()).startActivity(any(Intent.class));
     }
@@ -107,7 +109,7 @@ public class DeviceDelegateTest {
                 .startActivity(any(Intent.class));
 
         // Call the method, expecting it to catch the exception
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid);
+        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
 
         // Verify startActivity was called (even though it threw).
         verify(mMockContext).startActivity(any(Intent.class));
