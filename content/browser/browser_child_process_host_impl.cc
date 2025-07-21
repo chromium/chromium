@@ -539,11 +539,6 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
   delete delegate_;  // Will delete us
 }
 
-bool BrowserChildProcessHostImpl::Send(IPC::Message* message) {
-  DCHECK(has_legacy_ipc_channel_);
-  return child_process_host_->Send(message);
-}
-
 void BrowserChildProcessHostImpl::CreateMetricsAllocator() {
   // Create a persistent memory segment for subprocess histograms only if
   // they're active in the browser.

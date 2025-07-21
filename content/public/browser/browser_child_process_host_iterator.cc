@@ -57,11 +57,6 @@ const ChildProcessData& BrowserChildProcessHostIterator::GetData() {
   return (*iterator_)->GetData();
 }
 
-bool BrowserChildProcessHostIterator::Send(IPC::Message* message) {
-  CHECK(!Done());
-  return (*iterator_)->Send(message);
-}
-
 BrowserChildProcessHostDelegate*
     BrowserChildProcessHostIterator::GetDelegate() {
   return (*iterator_)->delegate();

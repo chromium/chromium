@@ -37,7 +37,7 @@ struct ChildProcessData;
 
 // This represents child processes of the browser process, i.e. plugins. They
 // will get terminated at browser shutdown.
-class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
+class CONTENT_EXPORT BrowserChildProcessHost {
  public:
   // Used to create a child process host. The delegate must outlive this object.
   // |process_type| needs to be either an enum value from ProcessType or an
@@ -51,7 +51,7 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
   // is the same unique ID as |ChildProcessData::id|.
   static BrowserChildProcessHost* FromID(int child_process_id);
 
-  ~BrowserChildProcessHost() override {}
+  virtual ~BrowserChildProcessHost() = default;
 
   // Derived classes call this to launch the child process asynchronously.
   virtual void Launch(
