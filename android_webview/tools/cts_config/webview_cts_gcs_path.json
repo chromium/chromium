@@ -769,6 +769,14 @@
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
             "mode": "instant",
             "_bug_id": "crbug.com/1326440"
+          },
+          {
+            "match": "com.android.cts.webkit.WebViewDeviceSideURLUtilTest#guessFileName_legacyBehavior",
+            "_bug_id": "crbug.com/424854537"
+          },
+          {
+            "match": "com.android.cts.webkit.WebViewDeviceSideURLUtilTest#guessFileName_usesRfc6266",
+            "_bug_id": "crbug.com/424854537"
           }
         ]
       },
