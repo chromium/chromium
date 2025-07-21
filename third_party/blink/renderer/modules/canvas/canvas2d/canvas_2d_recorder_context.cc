@@ -379,10 +379,6 @@ String LineJoinName(LineJoin join) {
 
 }  // namespace
 
-BASE_FEATURE(kDisableCanvasOverdrawOptimization,
-             "DisableCanvasOverdrawOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Maximum number of colors in the color cache
 // (`Canvas2DRecorderContext::color_cache_`).
 constexpr size_t kColorCacheMaxSize = 8;

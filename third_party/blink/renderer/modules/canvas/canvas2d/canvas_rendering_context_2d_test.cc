@@ -845,25 +845,6 @@ TEST_P(CanvasRenderingContext2DTest, FillRect_FullCoverage) {
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
-TEST_P(CanvasRenderingContext2DTest, DisableOverdrawOptimization) {
-  base::HistogramTester histogram_tester;
-  CreateContext(kNonOpaque);
-  CanvasElement().SetSize(gfx::Size(10, 10));
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDisableCanvasOverdrawOptimization);
-
-  Context2D()->fillRect(3, 3, 1, 1);
-  Context2D()->clearRect(0, 0, 10, 10);
-
-  EXPECT_THAT(
-      Context2D()->FlushCanvas(FlushReason::kTesting),
-      Optional(RecordedOpsAre(
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
-                                ClearRectFlags()))));
-  EXPECT_THAT(histogram_tester, OverdrawOpAre());
-}
-
 TEST_P(CanvasRenderingContext2DTest, ClearRect_ExactCoverage) {
   base::HistogramTester histogram_tester;
   CreateContext(kNonOpaque);

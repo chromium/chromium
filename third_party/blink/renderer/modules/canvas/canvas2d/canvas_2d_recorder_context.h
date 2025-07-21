@@ -72,8 +72,6 @@ class String;
 
 namespace blink {
 
-MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
-
 class BeginLayerOptions;
 class CanvasGradient;
 class CanvasImageSource;
@@ -768,11 +766,6 @@ ALWAYS_INLINE void Canvas2DRecorderContext::CheckOverdraw(
     const cc::PaintFlags* flags,
     CanvasRenderingContext2DState::ImageType image_type,
     Canvas2DRecorderContext::OverdrawOp overdraw_op) {
-  if (base::FeatureList::IsEnabled(kDisableCanvasOverdrawOptimization))
-      [[unlikely]] {
-    return;
-  }
-
   // Note on performance: because this method is inlined, all conditional
   // branches on arguments that are static at the call site can be optimized-out
   // by the compiler.
