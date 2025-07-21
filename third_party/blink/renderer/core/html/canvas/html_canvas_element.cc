@@ -1920,20 +1920,6 @@ void HTMLCanvasElement::EnableAccelerationForCanvas2D() {
   }
 }
 
-std::unique_ptr<CanvasResourceProvider>
-HTMLCanvasElement::ReplaceResourceProviderForCanvas2D(
-    std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
-  CHECK(IsRenderingContext2D());
-  std::unique_ptr<CanvasResourceProvider> old_resource_provider =
-      std::move(resource_provider_for_canvas2d_);
-  resource_provider_for_canvas2d_ = std::move(new_resource_provider);
-  UpdateMemoryUsage();
-  if (old_resource_provider) {
-    old_resource_provider->SetDelegate(nullptr);
-  }
-  return old_resource_provider;
-}
-
 bool HTMLCanvasElement::RecreateCanvasInGPURasterModeForCanvas2D() {
   CHECK(IsRenderingContext2D());
   if (!SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade()) {

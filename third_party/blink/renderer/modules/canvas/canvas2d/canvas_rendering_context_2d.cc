@@ -1338,7 +1338,14 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
 std::unique_ptr<CanvasResourceProvider>
 CanvasRenderingContext2D::ReplaceResourceProviderForCanvas2D(
     std::unique_ptr<CanvasResourceProvider> provider) {
-  return canvas()->ReplaceResourceProviderForCanvas2D(std::move(provider));
+  std::unique_ptr<CanvasResourceProvider> old_resource_provider =
+      canvas()->ReleaseResourceProviderForCanvas2D();
+  canvas()->SetResourceProviderForCanvas2D(std::move(provider));
+  canvas()->UpdateMemoryUsage();
+  if (old_resource_provider) {
+    old_resource_provider->SetDelegate(nullptr);
+  }
+  return old_resource_provider;
 }
 
 void CanvasRenderingContext2D::

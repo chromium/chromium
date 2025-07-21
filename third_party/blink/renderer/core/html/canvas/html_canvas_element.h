@@ -258,9 +258,6 @@ class CORE_EXPORT HTMLCanvasElement final
   UkmParameters GetUkmParameters() override;
   void SetNeedsCompositingUpdate() override;
 
-  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider>);
-
   // This method attempts to ensure that the canvas' resource exists on the GPU.
   // A HTMLCanvasElement can downgrade itself from GPU to CPU when readback
   // occurs too frequently, so a canvas may exist on the CPU even if the browser
@@ -371,6 +368,9 @@ class CORE_EXPORT HTMLCanvasElement final
     CHECK(!resource_provider_for_canvas2d_);
     resource_provider_for_canvas2d_ = std::move(resource_provider);
     UpdateMemoryUsage();
+  }
+  std::unique_ptr<CanvasResourceProvider> ReleaseResourceProviderForCanvas2D() {
+    return std::move(resource_provider_for_canvas2d_);
   }
 
   // Updates the preferred 2D raster mode based on the state of the context and

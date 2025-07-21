@@ -3043,7 +3043,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   UpdateAllLifecyclePhasesForTest();
 
   // The resource provider gets lazily created. Force it to be dropped.
-  canvas_element_->ReplaceResourceProviderForCanvas2D(nullptr);
+  Context2D()->ResetResourceProviderForCanvas2D();
 
   // Hide element to trigger hibernation (if enabled).
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
