@@ -4,7 +4,6 @@
 
 #include "net/quic/quic_session_pool_job.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
@@ -61,12 +60,6 @@ QuicSessionPool::Job::~Job() {
 }
 
 void QuicSessionPool::Job::AddRequest(QuicSessionRequest* request) {
-  // We suspect that requests are being added to jobs that are being deleted
-  // which would leave the requests orphaned.
-  // TODO(crbug.com/404586727): Remove once crash reason is confirmed.
-  if (is_deleting) {
-    base::debug::DumpWithoutCrashing();
-  }
   request->AddedToJob();
   requests_.insert(request);
   SetRequestExpectations(request);
