@@ -2482,6 +2482,10 @@ const char kLensOverlaySidePanelOpenInNewTabName[] =
 const char kLensOverlaySidePanelOpenInNewTabDescription[] =
     "Enables open in new tab in the Lens overlay side panel.";
 
+const char kLensOverlayStraightToSrpName[] = "Lens overlay straight to SRP";
+const char kLensOverlayStraightToSrpDescription[] =
+    "Enables straight to SRP flows for the Lens overlay.";
+
 const char kLensOverlayPermissionBubbleAltName[] =
     "Lens overlay permission bubble alt appearance";
 const char kLensOverlayPermissionBubbleAltDescription[] =

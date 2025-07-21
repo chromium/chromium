@@ -16246,6 +16246,7 @@ from previous Chrome versions.
   <int value="793287900" label="VerifyDidCommitParams:disabled"/>
   <int value="793705368" label="ImeKoreanOnlyModeSwitchOnRightAlt:disabled"/>
   <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
+  <int value="794018820" label="LensOverlayStraightToSrp:disabled"/>
   <int value="794100639" label="CameraAppAutoQRDetection:enabled"/>
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>
   <int value="797924041" label="DeferredShaping:enabled"/>
@@ -18258,6 +18259,7 @@ from previous Chrome versions.
   <int value="1536337926" label="extensions-on-extension-urls"/>
   <int value="1536568742" label="SyncAndroidPromosWithIllustration:enabled"/>
   <int value="1536921097" label="NavigationMojoResponse:disabled"/>
+  <int value="1536946541" label="LensOverlayStraightToSrp:enabled"/>
   <int value="1537685016" label="NtpDriveModuleSegmentation:disabled"/>
   <int value="1537693783" label="KioskEnableAppService:enabled"/>
   <int value="1538685213" label="DownloadHomeV2:enabled"/>
