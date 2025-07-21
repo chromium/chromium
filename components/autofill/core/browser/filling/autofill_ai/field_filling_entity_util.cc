@@ -29,6 +29,48 @@ namespace autofill {
 
 namespace {
 
+// Returns the `AttributeType`, if any, that can be used to fill `field` using
+// `entity`. `section_to_entity_and_field_and_types` is the result of calling
+// `DetermineAttributeTypes()`. It is assumed that there is at most one such
+// type per entity for any given field.
+std::optional<AttributeType> GetAttributeTypeForEntityAndField(
+    base::flat_map<
+        Section,
+        base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>
+        section_to_entity_and_field_and_types,
+    const EntityInstance& entity,
+    const AutofillField& field) {
+  auto it = section_to_entity_and_field_and_types.find(field.section());
+  if (it == section_to_entity_and_field_and_types.end()) {
+    // The whole section of the field does not contain a field fillable
+    // by AutofillAi, hence no appropriate `AttributeType` exists for `field`.
+    return std::nullopt;
+  }
+
+  const base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>&
+      entity_to_fields_and_types = it->second;
+  auto jt = entity_to_fields_and_types.find(entity.type());
+  if (jt == entity_to_fields_and_types.end()) {
+    // The section isn't fillable by the current entity, hence no appropriate
+    // `AttributeType` exists for `field`.
+    return std::nullopt;
+  }
+
+  const std::vector<AutofillFieldWithAttributeType>& field_and_types =
+      jt->second;
+  auto kt = std::ranges::find(field_and_types, field.global_id(),
+                              [](const AutofillFieldWithAttributeType& f) {
+                                return f.field->global_id();
+                              });
+  if (kt == field_and_types.end()) {
+    // The field isn't fillable by the current entity, hence no appropriate
+    // `AttributeType` exists.
+    return std::nullopt;
+  }
+
+  return kt->type;
+}
+
 std::u16string MaybeStripPrefix(const std::u16string& value,
                                 size_t field_max_length) {
   return field_max_length == 0 || field_max_length > value.size()
@@ -145,42 +187,28 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
   if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling) || !edm) {
     return {};
   }
+  base::span<const EntityInstance> entities = edm->GetEntityInstances();
+  if (entities.empty()) {
+    return {};
+  }
 
-  std::optional<base::flat_map<
+  base::flat_map<
       Section,
-      base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>>
-      fields_and_types;
+      base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>
+      section_to_entity_and_field_and_types =
+          DetermineAttributeTypes(form.fields());
 
   // Returns true if there is data present that could fill the `field`.
   auto is_fillable = [&](const AutofillField& field) {
-    return std::ranges::any_of(
-        edm->GetEntityInstances(), [&](const EntityInstance& entity) {
-          if (!fields_and_types) {
-            fields_and_types = DetermineAttributeTypes(form.fields());
-          }
-          auto it = fields_and_types->find(field.section());
-          if (it == fields_and_types->end()) {
-            return false;
-          }
-          auto jt = it->second.find(entity.type());
-          if (jt == it->second.end()) {
-            return false;
-          }
-          auto kt =
-              std::ranges::find(jt->second, field.global_id(),
-                                [](const AutofillFieldWithAttributeType& f) {
-                                  return f.field->global_id();
-                                });
-          if (kt == jt->second.end()) {
-            return false;
-          }
-          AttributeType type = kt->type;
-          return entity.attribute(type).has_value();
-        });
+    return std::ranges::any_of(entities, [&](const EntityInstance& entity) {
+      std::optional<AttributeType> type = GetAttributeTypeForEntityAndField(
+          section_to_entity_and_field_and_types, entity, field);
+      return type && entity.attribute(*type).has_value();
+    });
   };
 
   std::vector<FieldGlobalId> fillable_fields;
-  for (const auto& field : form.fields()) {
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     if (is_fillable(*field)) {
       fillable_fields.push_back(field->global_id());
     }
