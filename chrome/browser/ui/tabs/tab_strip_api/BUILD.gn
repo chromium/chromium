@@ -56,6 +56,19 @@ mojom("mojom") {
       ]
     },
   ]
+
+  ts_typemaps = [
+    {
+      source = "//chrome/browser/ui/tabs/tab_strip_api/node_id_converter.ts"
+      types = [
+        {
+          converter = "NodeIdConverter"
+          mojom = "tabs_api.mojom.NodeId"
+          ts = "string"
+        },
+      ]
+    },
+  ]
 }
 
 source_set("tab_strip_api") {

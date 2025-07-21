@@ -48,7 +48,7 @@ export class TabListPlaygroundElement extends CustomElement {
       element: TabElement, index: number, pinned: boolean,
       groupId: string|null|undefined) {
     console.info(
-        'Placing TabElement. ID:', element.tab?.id.id, 'at index:', index,
+        'Placing TabElement. ID:', element.tab?.id, 'at index:', index,
         'Pinned:', pinned, 'GroupId:', groupId);
 
     // Detach the element from its current parent if it's already in the DOM.
@@ -123,7 +123,7 @@ export class TabListPlaygroundElement extends CustomElement {
   private onTabsClosed_(onTabsClosedEvent: OnTabsClosedEvent) {
     const tabsClosed = onTabsClosedEvent.tabs;
     tabsClosed.forEach((tabId: NodeId) => {
-      const tabElement = this.findTabElement_(tabId.id);
+      const tabElement = this.findTabElement_(tabId);
       if (tabElement) {
         this.addAnimationPromise_(tabElement.slideOut());
       }
@@ -132,7 +132,7 @@ export class TabListPlaygroundElement extends CustomElement {
 
   private onTabDataChanged_(onTabDataChangedEvent: OnTabDataChangedEvent) {
     const tab = onTabDataChangedEvent.tab;
-    const tabElement = this.findTabElement_(tab.id.id);
+    const tabElement = this.findTabElement_(tab.id);
     if (!tabElement) {
       return;
     }
@@ -141,9 +141,9 @@ export class TabListPlaygroundElement extends CustomElement {
 
   private onTabMoved_(event: OnTabMovedEvent) {
     console.info('onTabMoved_', event);
-    const element = this.findTabElement_(event.id.id)!;
+    const element = this.findTabElement_(event.id)!;
     element.remove();
-    this.placeTabElement(element, event.to.index, false, event.to.parentId?.id);
+    this.placeTabElement(element, event.to.index, false, event.to.parentId);
   }
 
   private onTabGroupCreated_(event: OnTabGroupCreatedEvent) {
@@ -155,8 +155,8 @@ export class TabListPlaygroundElement extends CustomElement {
 
   private onTabGroupVisualsChanged_(event: OnTabGroupVisualsChangedEvent) {
     console.info('onTabGroupVisualsChanged_', event);
-    this.findOrCreateTabGroupElement_(event.groupId.id).updateVisuals(
-      this.toTabGroupVisualData_(event.visualData));
+    this.findOrCreateTabGroupElement_(event.groupId)
+        .updateVisuals(this.toTabGroupVisualData_(event.visualData));
   }
 
   private createTabElement_(tab: Tab, isPinned: boolean): TabElement {
@@ -218,7 +218,7 @@ export class TabListPlaygroundElement extends CustomElement {
                          container.collection.collectionType ===
                              TabCollection_CollectionType.kPinned);
 
-                    let tabElement = this.findTabElement_(newTab.id.id);
+                    let tabElement = this.findTabElement_(newTab.id);
                     if (tabElement) {
                       tabElement.tab = newTab;
                       tabElement.isPinned = isPinned;
@@ -227,9 +227,8 @@ export class TabListPlaygroundElement extends CustomElement {
                     }
                     this.placeTabElement(
                         tabElement, index, isPinned,
-                        container.collection.id.id ?
-                            container.collection.id.id :
-                            null);
+                        container.collection.id ? container.collection.id :
+                                                  null);
                   } else if (containerElement.tabCollectionContainer) {
                     const nestedContainer =
                         containerElement.tabCollectionContainer;

@@ -135,7 +135,7 @@ export class TabElement extends CustomElement {
     }
 
     // Expose the ID to an attribute to allow easy querySelector use
-    this.setAttribute('data-tab-id', tab.id.id.toString());
+    this.setAttribute('data-tab-id', tab.id);
 
     this.alertIndicatorsEl_.updateAlertStates(tab.alertStates)
         .then((alertIndicatorsCount) => {
