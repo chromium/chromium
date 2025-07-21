@@ -123,7 +123,8 @@ public class BookmarkManagerCoordinatorTest {
                                             mBookmarkUiPrefs,
                                             mBookmarkOpener,
                                             mBookmarkManagerOpener,
-                                            mPriceDropNotificationManager);
+                                            mPriceDropNotificationManager,
+                                            /* edgeToEdgePadAdjusterGenerator= */ null);
                             mActivity.setContentView(mCoordinator.getView());
                         });
     }

@@ -6,12 +6,17 @@ package org.chromium.chrome.browser.download.home;
 
 import static org.chromium.components.browser_ui.util.ConversionUtils.BYTES_PER_MEGABYTE;
 
+import android.view.View;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.base.DeviceFormFactor;
+
+import java.util.function.Function;
 
 /** Provides the configuration params required by the download home UI. */
 @NullMarked
@@ -61,6 +66,12 @@ public class DownloadManagerUiConfig {
     /** Whether need to focus on search box at first. */
     public final boolean autoFocusSearchBox;
 
+    /**
+     * A generator for the {@link EdgeToEdgePadAdjuster} to be used to adjust the padding for the
+     * download manager.
+     */
+    public final @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator;
+
     /** Constructor. */
     private DownloadManagerUiConfig(Builder builder) {
         otrProfileId = builder.mOtrProfileId;
@@ -74,6 +85,7 @@ public class DownloadManagerUiConfig {
         startWithPrefetchedContent = builder.mStartWithPrefetchedContent;
         showDangerousItems = builder.mShowDangerousItems;
         autoFocusSearchBox = builder.mAutoFocusSearchBox;
+        edgeToEdgePadAdjusterGenerator = builder.mEdgeToEdgePadAdjusterGenerator;
     }
 
     /** Helper class for building a {@link DownloadManagerUiConfig}. */
@@ -93,6 +105,7 @@ public class DownloadManagerUiConfig {
         private boolean mStartWithPrefetchedContent;
         private boolean mShowDangerousItems;
         private boolean mAutoFocusSearchBox;
+        private @Nullable Function<View, EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterGenerator;
 
         public Builder() {
             mSupportFullWidthImages =
@@ -153,6 +166,12 @@ public class DownloadManagerUiConfig {
 
         public Builder setAutoFocusSearchBox(boolean autoFocusSearchBox) {
             mAutoFocusSearchBox = autoFocusSearchBox;
+            return this;
+        }
+
+        public Builder setEdgeToEdgePadAdjusterGenerator(
+                Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
+            mEdgeToEdgePadAdjusterGenerator = edgeToEdgePadAdjusterGenerator;
             return this;
         }
 

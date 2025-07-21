@@ -52,6 +52,7 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
                         .setOtrProfileId(otrProfileId)
                         .setIsSeparateActivity(false)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
+                        .setEdgeToEdgePadAdjusterGenerator(host::createEdgeToEdgePadAdjuster)
                         .build();
 
         mDownloadCoordinator =

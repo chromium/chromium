@@ -110,6 +110,9 @@ class DateOrderedListView {
         mGridLayoutManager = new GridLayoutManagerImpl(context);
         mView.setLayoutManager(mGridLayoutManager);
         mView.addItemDecoration(new ItemDecorationImpl());
+        if (config.edgeToEdgePadAdjusterGenerator != null) {
+            config.edgeToEdgePadAdjusterGenerator.apply(mView);
+        }
         mView.setClipToPadding(false);
 
         PropertyModelChangeProcessor.create(

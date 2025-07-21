@@ -142,7 +142,9 @@ public class BookmarkPane implements Pane {
                             new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
                             mBookmarkOpener,
                             new BookmarkManagerOpenerImpl(),
-                            PriceDropNotificationManagerFactory.create(originalProfile));
+                            PriceDropNotificationManagerFactory.create(originalProfile),
+                            // TODO(crbug.com/427776544): make bookmark pane support edge to edge.
+                            /* edgeToEdgePadAdjusterGenerator= */ null);
             mBookmarkManager.updateForUrl(UrlConstants.BOOKMARKS_URL);
             mRootView.addView(mBookmarkManager.getView());
         } else if (loadHint == LoadHint.COLD) {
