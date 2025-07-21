@@ -365,6 +365,61 @@ void EventReportValidator::ExpectSensitiveDataEvents(
           });
 }
 
+void EventReportValidator::ExpectSensitiveDataEventWarnThenBypass(
+    const std::string& expected_url,
+    const std::string& expected_tab_url,
+    const std::string& expected_source,
+    const std::string& expected_destination,
+    const std::string& expected_filename,
+    const std::string& expected_sha256,
+    const std::string& expected_trigger,
+    const ContentAnalysisResponse::Result& expected_dlp_verdict,
+    const std::set<std::string>* expected_mimetypes,
+    std::optional<int64_t> expected_content_size,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    const std::string& expected_scan_id,
+    const std::optional<std::string>& expected_content_transfer_method,
+    const std::vector<std::optional<std::u16string>>&
+        expected_user_justifications) {
+  event_key_ = enterprise_connectors::kKeySensitiveDataEvent;
+  url_ = expected_url;
+  tab_url_ = expected_tab_url;
+  source_ = expected_source;
+  destination_ = expected_destination;
+  dlp_verdicts_[expected_filename] = expected_dlp_verdict;
+  filenames_and_hashes_[expected_filename] = expected_sha256;
+  mimetypes_ = expected_mimetypes;
+  trigger_ = expected_trigger;
+  content_size_ = expected_content_size;
+  results_[expected_filename] = enterprise_connectors::EventResultToString(
+           enterprise_connectors::EventResult::WARNED);
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
+  scan_ids_[expected_filename] = expected_scan_id;
+  content_transfer_method_ = expected_content_transfer_method;
+  user_justification_ = expected_user_justifications[0];
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce(
+          [this, expected_filename](bool include_device_info, base::Value::Dict report,
+                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                     callback) {
+            ValidateReport(&report);
+          })
+      .WillOnce([this, expected_filename, expected_user_justifications](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        results_[expected_filename] = enterprise_connectors::EventResultToString(
+            enterprise_connectors::EventResult::BYPASSED);
+        user_justification_ = expected_user_justifications[1];
+        ValidateReport(&report);
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
+      });
+}
+
 void EventReportValidator::
     ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
         const std::string& expected_url,

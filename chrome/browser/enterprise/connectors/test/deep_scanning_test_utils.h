@@ -117,6 +117,24 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::optional<std::string>& expected_content_transfer_method,
       const std::optional<std::u16string>& expected_user_justification);
 
+  void ExpectSensitiveDataEventWarnThenBypass(
+      const std::string& expected_url,
+      const std::string& expected_tab_url,
+      const std::string& expected_source,
+      const std::string& expected_destination,
+      const std::string& expected_filename,
+      const std::string& expected_sha256,
+      const std::string& expected_trigger,
+      const ContentAnalysisResponse::Result& expected_dlp_verdict,
+      const std::set<std::string>* expected_mimetypes,
+      std::optional<int64_t> expected_content_size,
+      const std::string& expected_profile_username,
+      const std::string& expected_profile_identifier,
+      const std::string& expected_scan_id,
+      const std::optional<std::string>& expected_content_transfer_method,
+      const std::vector<std::optional<std::u16string>>&
+          expected_user_justifications);
+
   void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       const std::string& expected_url,
       const std::string& expected_tab_url,

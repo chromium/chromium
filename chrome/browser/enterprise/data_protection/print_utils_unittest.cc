@@ -364,6 +364,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
           ContentAnalysisResponse::Result::TriggeredRule::REPORT_ONLY));
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop validator_run_loop;
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -398,6 +400,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
                          std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
   run_loop.Run();
+  validator_run_loop.Run();
 }
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
@@ -408,13 +411,20 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
           &TestPagePrintRequestHandler::Create,
           ContentAnalysisResponse::Result::TriggeredRule::WARN));
 
+  // The cancel callback is called after the verdict is received.
+  enterprise_connectors::ContentAnalysisDelegate::
+      SetOnAckAllRequestsCallbackForTesting(base::BindOnce(
+          [](const std::map<std::string,
+                            enterprise_connectors::
+                                ContentAnalysisAcknowledgement::FinalAction>&
+                 map) {
+            ASSERT_TRUE(test_delegate_);
+            test_delegate_->Cancel(/* warning= */ true);
+          }));
+
   enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.SetDoneClosure(base::BindLambdaForTesting([this, &validator]() {
-    testing::Mock::VerifyAndClearExpectations(client_.get());
-    validator.ExpectNoReport();
-    ASSERT_TRUE(test_delegate_);
-    test_delegate_->Cancel(/*warning=*/true);
-  }));
+  base::RunLoop validator_run_loop;
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -443,12 +453,12 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
     ASSERT_FALSE(allowed);
     run_loop.Quit();
   });
-
   PrintIfAllowedByPolicy(data, contents(), kPrinterName,
                          PrintScanningContext::kNormalPrintAfterPreview,
                          std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
   run_loop.Run();
+  validator_run_loop.Run();
 }
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
@@ -459,43 +469,22 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
           &TestPagePrintRequestHandler::Create,
           ContentAnalysisResponse::Result::TriggeredRule::WARN));
 
-  bool bypassed = false;
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.SetDoneClosure(base::BindLambdaForTesting([this, &validator,
-                                                       &bypassed]() {
-    // Only do this once to avoid infinite recursion since bypassing triggers
-    // the "normal" report which gets caught by this repeated callback.
-    if (!bypassed) {
-      bypassed = true;
-      testing::Mock::VerifyAndClearExpectations(client_.get());
-      validator.ExpectSensitiveDataEvent(
-          /*url*/ "",
-          /*tab_url*/ "",
-          /*source*/ "",
-          /*destination*/ kPrinterName,
-          /*filename*/ "New Tab",
-          /*sha*/ "",
-          /*trigger*/
-          extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
-          /*dlp_verdict*/
-          CreateResult(ContentAnalysisResponse::Result::TriggeredRule::WARN),
-          /*mimetype*/ PrintMimeTypes(),
-          /*size*/ std::nullopt,
-          /*result*/
-          enterprise_connectors::EventResultToString(
-              enterprise_connectors::EventResult::BYPASSED),
-          /*username*/ kUserName,
-          /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-          /*scan_id*/ kScanId,
-          /*content_transfer_method*/ std::nullopt,
-          /*user_justification*/ kUserJustification);
-      ASSERT_TRUE(test_delegate_);
-      test_delegate_->SetPageWarningForTesting();
-      test_delegate_->BypassWarnings(kUserJustification);
-    }
-  }));
+  // The bypass callback is called after the verdict is received.
+  enterprise_connectors::ContentAnalysisDelegate::
+      SetOnAckAllRequestsCallbackForTesting(base::BindOnce(
+          [](const std::map<std::string,
+                            enterprise_connectors::
+                                ContentAnalysisAcknowledgement::FinalAction>&
+                 map) {
+            ASSERT_TRUE(test_delegate_);
+            test_delegate_->SetPageWarningForTesting();
+            test_delegate_->BypassWarnings(kUserJustification);
+          }));
 
-  validator.ExpectSensitiveDataEvent(
+  base::RunLoop validator_warn_run_loop;
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.SetDoneClosure(validator_warn_run_loop.QuitClosure());
+  validator.ExpectSensitiveDataEventWarnThenBypass(
       /*url*/ "",
       /*tab_url*/ "",
       /*source*/ "",
@@ -508,14 +497,11 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::WARN),
       /*mimetype*/ PrintMimeTypes(),
       /*size*/ std::nullopt,
-      /*result*/
-      enterprise_connectors::EventResultToString(
-          enterprise_connectors::EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
       /*content_transfer_method*/ std::nullopt,
-      /*user_justification*/ std::nullopt);
+      /*user_justifications*/ {std::nullopt, kUserJustification});
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -529,6 +515,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
                          std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
   run_loop.Run();
+  validator_warn_run_loop.Run();
 }
 
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
@@ -540,6 +527,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
           ContentAnalysisResponse::Result::TriggeredRule::BLOCK));
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
+  base::RunLoop validator_run_loop;
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -573,6 +562,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
                          PrintScanningContext::kNormalPrintAfterPreview,
                          std::move(on_verdict),
                          /*hide_preview=*/base::DoNothing());
+  validator_run_loop.Run();
   run_loop.Run();
 }
 
