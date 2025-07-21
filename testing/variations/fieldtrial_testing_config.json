@@ -17585,24 +17585,6 @@
             ]
         }
     ],
-    "PermissionsAIv3Geolocation": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PermissionsAIv3Geolocation"
-                    ]
-                }
-            ]
-        }
-    ],
     "PickerUI": [
         {
             "platforms": [
