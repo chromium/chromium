@@ -970,6 +970,19 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.DeclarativeNetRequest.AddRulesetCalledTwiceInSuccession"
+    enum="BooleanSuccess" expires_after="2025-09-15">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    Indicates whether a RulesetManager::AddRuleset() follows another call for
+    the same extension. Recorded for every RulesetManager::AddRuleset() call.
+    The intended behavior is that there are no such redundant calls. See
+    crbug.com/358617943.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime"
     units="ms" expires_after="2026-07-21">
   <owner>kelvinjiang@chromium.org</owner>
@@ -1095,6 +1108,20 @@ This is emitted for two scenarios when a worker may be unregistered:
     function or when it updates the dynamic rules through a call to
     addDynamicRules or removeDynamicRules. Note: this histogram was expired from
     2023-06-01 to 2023-09-01; data may be missing.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.DeclarativeNetRequest.RedundantSetReadyToExecuteApiCalls"
+    enum="BooleanSuccess" expires_after="2025-09-15">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    Indicates whether
+    RulesMonitorService::ApiCallQueue::SetReadyToExecuteApiCalls() has already
+    been called before. Recorded on each call of SetReadyToExecuteApiCalls().
+    The intended behavior is that there are no redundant
+    SetReadyToExecuteApiCalls() calls. See crbug.com/358617943.
   </summary>
 </histogram>
 

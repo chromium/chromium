@@ -255,7 +255,12 @@ class RulesMonitorService::ApiCallQueue {
   // will queue api calls for future execution.
   // Note that this can start running a queued api call synchronously.
   void SetReadyToExecuteApiCalls() {
-    DCHECK(!ready_to_execute_api_calls_);
+    // TODO(crbug.com/358617943): Replace LOG_IF() and histogram with CHECK().
+    LOG_IF(ERROR, ready_to_execute_api_calls_)
+        << "SetReadyToExecuteApiCalls() was already called";
+    base::UmaHistogramBoolean(
+        "Extensions.DeclarativeNetRequest.RedundantSetReadyToExecuteApiCalls",
+        ready_to_execute_api_calls_);
     DCHECK(!executing_api_call_);
     ready_to_execute_api_calls_ = true;
     ExecuteApiCallIfNecessary();
