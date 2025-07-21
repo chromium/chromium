@@ -29,6 +29,11 @@ def GetDefaultBuildDir():
 
 parser=argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--platform-type',
+                    choices=[platform_type.name for platform_type in
+                             constants.IOSPlatformType],
+                    default='IPHONEOS',
+                    help='The iOS-based platform being targeted.')
 parser.add_argument('--port', default='9999',
     help='The port to listen on for WebDriver commands')
 parser.add_argument('--build-dir', default=GetDefaultBuildDir(),
@@ -70,8 +75,9 @@ if args.asan_build:
   inserted_libs = [os.path.join(args.build_dir,
       'libclang_rt.asan_iossim_dynamic.dylib')]
 
+platform_type = constants.IOSPlatformType[args.platform_type]
 egtests_app = test_apps.EgtestsApp(
-    egtests_app=test_app, all_eg_test_names=[],
+    egtests_app=test_app, platform_type=platform_type, all_eg_test_names=[],
     test_args=['--port %s' % args.port],
     host_app_path=host_app, inserted_libs=inserted_libs)
 
