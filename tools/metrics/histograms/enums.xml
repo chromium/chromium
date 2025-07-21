@@ -15901,6 +15901,7 @@ from previous Chrome versions.
   <int value="683826038" label="OmniboxQueryTilesInZPSOnNTP:enabled"/>
   <int value="684112629" label="BluetoothCoredump:disabled"/>
   <int value="684379292" label="PrivacySandboxRelatedWebsiteSetsUi:enabled"/>
+  <int value="684690779" label="VideoEncodeUseMappableSI:disabled"/>
   <int value="684806628" label="TranslateLanguageByULP:disabled"/>
   <int value="685406951" label="UseNotificationCompatBuilder:disabled"/>
   <int value="685571935"
@@ -16734,6 +16735,7 @@ from previous Chrome versions.
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>
   <int value="998799701" label="BypassAppBannerEngagementChecks:disabled"/>
   <int value="998857679" label="DiscardExceptionsImprovements:enabled"/>
+  <int value="999104621" label="VideoEncodeUseMappableSI:enabled"/>
   <int value="1000025209"
       label="ExperimentalWebMachineLearningNeuralNetwork:disabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>

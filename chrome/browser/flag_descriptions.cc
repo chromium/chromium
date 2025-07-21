@@ -6211,6 +6211,11 @@ const char kArcUnthrottleOnActiveAudioV2Name[] =
 const char kArcUnthrottleOnActiveAudioV2Description[] =
     "Do not throttle ARC when there is an active audio stream running.";
 
+const char kArcVideoEncodeUseMappableSIName[] =
+    "ARC video encode use mappable SharedImage";
+const char kArcVideoEncodeUseMappableSIDescription[] =
+    "Controls whether ARC video encoding uses mappable SharedImage.";
+
 const char kAshEnableUnifiedDesktopName[] = "Unified desktop mode";
 const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "

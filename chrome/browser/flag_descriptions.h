@@ -3579,6 +3579,9 @@ extern const char kArcExternalStorageAccessDescription[];
 extern const char kArcUnthrottleOnActiveAudioV2Name[];
 extern const char kArcUnthrottleOnActiveAudioV2Description[];
 
+extern const char kArcVideoEncodeUseMappableSIName[];
+extern const char kArcVideoEncodeUseMappableSIDescription[];
+
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 

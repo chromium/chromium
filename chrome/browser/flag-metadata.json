@@ -540,6 +540,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "arc-video-encode-use-mappable-si",
+    "owners": [ "blundell@chromium.org", "vasilyt@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "arc-vm-memory-size",
     "owners": [ "yuholong@google.com" ],
     "expiry_milestone": 135
