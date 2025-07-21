@@ -50,6 +50,48 @@ std::string StripDigitsIfRequired(std::string_view input) {
   return result;
 }
 
+std::string CalculateAlternativeFormSignatureBase(const FormData& form_data) {
+  std::string_view scheme = form_data.action().scheme_piece();
+  std::string_view host = form_data.action().host_piece();
+
+  // If target host or scheme is empty, set scheme and host of source url.
+  // This is done to match the Toolbar's behavior.
+  if (scheme.empty() || host.empty()) {
+    scheme = form_data.url().scheme_piece();
+    host = form_data.url().host_piece();
+  }
+
+  std::string form_signature_field_types;
+  for (const FormFieldData& field : form_data.fields()) {
+    switch (field.form_control_type()) {
+      case mojom::FormControlType::kInputCheckbox:
+      case mojom::FormControlType::kInputDate:
+      case mojom::FormControlType::kInputRadio:
+        break;
+      case mojom::FormControlType::kContentEditable:
+      case mojom::FormControlType::kInputEmail:
+      case mojom::FormControlType::kInputMonth:
+      case mojom::FormControlType::kInputNumber:
+      case mojom::FormControlType::kInputPassword:
+      case mojom::FormControlType::kInputSearch:
+      case mojom::FormControlType::kInputTelephone:
+      case mojom::FormControlType::kInputText:
+      case mojom::FormControlType::kInputUrl:
+      case mojom::FormControlType::kSelectOne:
+      case mojom::FormControlType::kTextArea:
+        // We use the string representation of the FormControlType because
+        // changing the signature algorithm is non-trivial. If and when the
+        // sectioning algorithm changes, we could use the raw FormControlType
+        // enum instead.
+        base::StrAppend(
+            &form_signature_field_types,
+            {"&", FormControlTypeToString(field.form_control_type())});
+    }
+  }
+
+  return base::StrCat({scheme, "://", host, form_signature_field_types});
+}
+
 template <size_t N>
 uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
   static_assert(N <= 8u,
@@ -120,47 +162,13 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
   return FormSignature(StrToHash64Bit(form_string));
 }
 
+FormSignature CalculateStructuralFormSignature(const FormData& form_data) {
+  return FormSignature(
+      StrToHash64Bit(CalculateAlternativeFormSignatureBase(form_data)));
+}
+
 FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
-  std::string_view scheme = form_data.action().scheme_piece();
-  std::string_view host = form_data.action().host_piece();
-
-  // If target host or scheme is empty, set scheme and host of source url.
-  // This is done to match the Toolbar's behavior.
-  if (scheme.empty() || host.empty()) {
-    scheme = form_data.url().scheme_piece();
-    host = form_data.url().host_piece();
-  }
-
-  std::string form_signature_field_types;
-  for (const FormFieldData& field : form_data.fields()) {
-    switch (field.form_control_type()) {
-      case mojom::FormControlType::kInputCheckbox:
-      case mojom::FormControlType::kInputDate:
-      case mojom::FormControlType::kInputRadio:
-        break;
-      case mojom::FormControlType::kContentEditable:
-      case mojom::FormControlType::kInputEmail:
-      case mojom::FormControlType::kInputMonth:
-      case mojom::FormControlType::kInputNumber:
-      case mojom::FormControlType::kInputPassword:
-      case mojom::FormControlType::kInputSearch:
-      case mojom::FormControlType::kInputTelephone:
-      case mojom::FormControlType::kInputText:
-      case mojom::FormControlType::kInputUrl:
-      case mojom::FormControlType::kSelectOne:
-      case mojom::FormControlType::kTextArea:
-        // We use the string representation of the FormControlType because
-        // changing the signature algorithm is non-trivial. If and when the
-        // sectioning algorithm changes, we could use the raw FormControlType
-        // enum instead.
-        base::StrAppend(
-            &form_signature_field_types,
-            {"&", FormControlTypeToString(field.form_control_type())});
-    }
-  }
-
-  std::string form_string =
-      base::StrCat({scheme, "://", host, form_signature_field_types});
+  std::string form_string = CalculateAlternativeFormSignatureBase(form_data);
 
   // Add more non-empty elements (one of path, reference, or query ordered by
   // preference) for small forms with 1-2 fields in order to prevent signature

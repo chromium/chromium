@@ -124,6 +124,11 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
   return false;
 }
 
+bool IsCreditCardFormForSignaturePurposes(const FormStructure& form_structure) {
+  return form_structure.GetFormTypes() ==
+         DenseSet<FormType>{FormType::kCreditCardForm};
+}
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // Retrieves the ML model handler form the `client` using `get_handler`, and
 // requests ML predictions for `forms` if the handler is available. Passes
@@ -591,11 +596,15 @@ void AutofillManager::ParseFormsAsync(
 
       // Not updating signatures of credit card forms is legacy behaviour. We
       // believe that the signatures are kept stable for voting purposes.
-      DenseSet<FormType> form_types = cached_form_structure->GetFormTypes();
-      if (form_types.size() > form_types.count(FormType::kCreditCardForm)) {
+      // Credit card forms are those which contain only credit card fields.
+      // TODO(crbug.com/431754194): Investigate making the behavior consistent
+      // across all form types.
+      if (!IsCreditCardFormForSignaturePurposes(*cached_form_structure)) {
         form_structure->set_form_signature(CalculateFormSignature(form_data));
         form_structure->set_alternative_form_signature(
             CalculateAlternativeFormSignature(form_data));
+        form_structure->set_structural_form_signature(
+            CalculateStructuralFormSignature(form_data));
       }
     }
 

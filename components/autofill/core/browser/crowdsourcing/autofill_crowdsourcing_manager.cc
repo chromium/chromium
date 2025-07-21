@@ -136,7 +136,7 @@ enum class RequestType {
 enum class UploadType {
   kVote,
   kMetadata,
-  kSecondaryFormSignature,
+  kStructuralFormSignature,
 };
 
 // Returns the base URL for the autofill server.
@@ -382,6 +382,10 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     out << Tr{}
         << "secondary_form_signature:" << upload.secondary_form_signature();
   }
+  if (upload.has_structural_form_signature()) {
+    out << Tr{}
+        << "structural_form_signature:" << upload.structural_form_signature();
+  }
   if (upload.has_last_credit_card_form_submitted()) {
     out << Tr{} << "last_credit_card_form_submitted:"
         << upload.last_credit_card_form_submitted();
@@ -424,7 +428,7 @@ std::string_view GetUploadEventPreferenceName(UploadType upload_type) {
       return prefs::kAutofillVoteUploadEvents;
     case UploadType::kMetadata:
       return prefs::kAutofillMetadataUploadEvents;
-    case UploadType::kSecondaryFormSignature:
+    case UploadType::kStructuralFormSignature:
       return prefs::kAutofillVoteSecondaryFormSignatureUploadEvents;
   }
   NOTREACHED();
@@ -441,8 +445,8 @@ std::string_view GetUploadEventPreferenceName(UploadType upload_type) {
 // metadata part of the upload. Metadata throttling is shared by Autofill and
 // the Password Manager, ensuring that together they don't upload metadata more
 // frequently than desired.
-// If `upload_type` equals `UploadType::kSecondaryFormSignature`,
-// `form_signature` is assumed to be the secondary (alternative) form signature.
+// If `upload_type` equals `UploadType::kStructuralFormSignature`,
+// `form_signature` is assumed to be the structural form signature.
 bool ShouldThrottleUpload(FormSignature form_signature,
                           UploadType upload_type,
                           base::TimeDelta throttle_reset_period,
@@ -480,7 +484,7 @@ bool ShouldThrottleUpload(FormSignature form_signature,
       break;
     }
     // The secondary form signature should be uploaded only once (go/bnxhp).
-    case UploadType::kSecondaryFormSignature:
+    case UploadType::kStructuralFormSignature:
     case UploadType::kMetadata:
       mask = 1;
       break;
@@ -806,6 +810,13 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
   const FormSignature form_signature(upload_contents[0].form_signature());
   const FormSignature secondary_form_signature(
       upload_contents[0].secondary_form_signature());
+  const FormSignature structural_form_signature(
+      upload_contents[0].structural_form_signature());
+  const FormSignature throttled_form_signature =
+      base::FeatureList::IsEnabled(
+          features::kUseStructuralSignatureInsteadOfSecondary)
+          ? structural_form_signature
+          : secondary_form_signature;
   // Autofill vote uploads are limited via throttling so that only one vote is
   // uploaded per form_submission_source and form signature in a given period of
   // time.
@@ -823,11 +834,14 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
 
   // Secondary form signature throttling does not cancel the upload, but only
   // clears the secondary form signature.
-  if (secondary_form_signature &&
+  if (throttled_form_signature &&
       ShouldThrottleUpload(
-          secondary_form_signature, UploadType::kSecondaryFormSignature,
+          throttled_form_signature, UploadType::kStructuralFormSignature,
           throttle_reset_period_, prefs, form_submission_source)) {
     for (AutofillUploadContents& upload : upload_contents) {
+      // Only the throttled signature will be set, but clearing both for
+      // simplicity.
+      upload.clear_structural_form_signature();
       upload.clear_secondary_form_signature();
     }
   }
