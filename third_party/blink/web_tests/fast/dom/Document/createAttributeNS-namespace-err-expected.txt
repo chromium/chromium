@@ -20,15 +20,15 @@ PASS createAttributeNS("http://example.com/", "0div")
 PASS createAttributeNS("http://example.com/", "di<v")
 PASS createAttributeNS("http://example.com/", "-div")
 PASS createAttributeNS("http://example.com/", ".div")
-PASS createAttributeNS(null, ":div")
+PASS createAttributeNS(null, ":div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided (':div') has an empty namespace prefix.
 PASS createAttributeNS(null, "div:"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('div:') has an empty local name.
-PASS createAttributeNS("http://example.com/", ":div")
+PASS createAttributeNS("http://example.com/", ":div"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided (':div') has an empty namespace prefix.
 PASS createAttributeNS("http://example.com/", "div:"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('div:') has an empty local name.
 PASS createAttributeNS(null, "d:iv"); threw NamespaceError: Failed to execute 'createAttributeNS' on 'Document': The namespace URI provided ('') is not valid for the qualified name provided ('d:iv').
 PASS createAttributeNS(null, "a:b:c"); threw NamespaceError: Failed to execute 'createAttributeNS' on 'Document': The namespace URI provided ('') is not valid for the qualified name provided ('a:b:c').
 PASS createAttributeNS("http://example.com/", "a:b:c")
-PASS createAttributeNS(null, "a::c"); threw NamespaceError: Failed to execute 'createAttributeNS' on 'Document': The namespace URI provided ('') is not valid for the qualified name provided ('a::c').
-PASS createAttributeNS("http://example.com/", "a::c")
+PASS createAttributeNS(null, "a::c"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('a::c') has an empty local name.
+PASS createAttributeNS("http://example.com/", "a::c"); threw InvalidCharacterError: Failed to execute 'createAttributeNS' on 'Document': The qualified name provided ('a::c') has an empty local name.
 PASS createAttributeNS("http://example.com/", "a:0")
 PASS createAttributeNS("http://example.com/", "0:a")
 PASS createAttributeNS("http://example.com/", "a:_")

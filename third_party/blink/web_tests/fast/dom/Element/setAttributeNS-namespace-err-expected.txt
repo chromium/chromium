@@ -20,15 +20,15 @@ PASS element.setAttributeNS("http://example.com/", "0div", 'value')
 PASS element.setAttributeNS("http://example.com/", "di<v", 'value')
 PASS element.setAttributeNS("http://example.com/", "-div", 'value')
 PASS element.setAttributeNS("http://example.com/", ".div", 'value')
-PASS element.setAttributeNS(null, ":div", 'value')
+PASS element.setAttributeNS(null, ":div", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS(null, "div:", 'value'); threw INVALID_CHARACTER_ERR
-PASS element.setAttributeNS("http://example.com/", ":div", 'value')
+PASS element.setAttributeNS("http://example.com/", ":div", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS("http://example.com/", "div:", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS(null, "d:iv", 'value'); threw NAMESPACE_ERR
 PASS element.setAttributeNS(null, "a:b:c", 'value'); threw NAMESPACE_ERR
 PASS element.setAttributeNS("http://example.com/", "a:b:c", 'value')
-PASS element.setAttributeNS(null, "a::c", 'value'); threw NAMESPACE_ERR
-PASS element.setAttributeNS("http://example.com/", "a::c", 'value')
+PASS element.setAttributeNS(null, "a::c", 'value'); threw INVALID_CHARACTER_ERR
+PASS element.setAttributeNS("http://example.com/", "a::c", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS("http://example.com/", "a:0", 'value')
 PASS element.setAttributeNS("http://example.com/", "0:a", 'value')
 PASS element.setAttributeNS("http://example.com/", "a:_", 'value')

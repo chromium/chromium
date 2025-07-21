@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Valid and invalid characters in createElementNS and createDocument.
-  assert_throws_dom: document.createElementNS should throw an error for: code points: [], string: "" code points: [100,105,118], string: "div" function "() => document.createElementNS('namespaceuri', `${invalidNamespace}:${localName}`)" did not throw
-[FAIL] Valid and invalid characters in setAttributeNS and createAttributeNS.
-  assert_throws_dom: element.setAttributeNS should have thrown an error for: code points: [], string: "" code points: [97,116,116,114], string: "attr" function "() => element.setAttributeNS('namespaceuri', `${invalidNamespace}:${localName}`, '')" did not throw
-Harness: the test ran to completion.
-
