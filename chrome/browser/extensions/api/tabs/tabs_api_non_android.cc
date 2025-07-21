@@ -194,34 +194,6 @@ BrowserWindowInterface* GetLastActiveBrowserWithProfile(
   return nullptr;
 }
 
-// Gets the WebContents for |tab_id| if it is specified. Otherwise get the
-// WebContents for the active tab in the |function|'s current window.
-// Returns nullptr and fills |error| if failed.
-content::WebContents* GetTabsAPIDefaultWebContents(ExtensionFunction* function,
-                                                   int tab_id,
-                                                   std::string* error) {
-  content::WebContents* web_contents = nullptr;
-  if (tab_id != -1) {
-    // We assume this call leaves web_contents unchanged if it is unsuccessful.
-    tabs_internal::GetTabById(tab_id, function->browser_context(),
-                              function->include_incognito_information(),
-                              /*window_out=*/nullptr, &web_contents,
-                              /*index_out=*/nullptr, error);
-  } else {
-    WindowController* window_controller =
-        ChromeExtensionFunctionDetails(function).GetCurrentWindowController();
-    if (!window_controller) {
-      *error = ExtensionTabUtil::kNoCurrentWindowError;
-    } else {
-      web_contents = window_controller->GetActiveTab();
-      if (!web_contents) {
-        *error = tabs_constants::kNoSelectedTabError;
-      }
-    }
-  }
-  return web_contents;
-}
-
 // Returns true if either |boolean| is disengaged, or if |boolean| and
 // |value| are equal. This function is used to check if a tab's parameters match
 // those of the browser.
@@ -2344,7 +2316,7 @@ ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
   int tab_id = params->tab_id ? *params->tab_id : -1;
   std::string error;
   WebContents* web_contents =
-      GetTabsAPIDefaultWebContents(this, tab_id, &error);
+      tabs_internal::GetTabsAPIDefaultWebContents(this, tab_id, &error);
   if (!web_contents) {
     return RespondNow(Error(std::move(error)));
   }
@@ -2377,7 +2349,7 @@ ExtensionFunction::ResponseAction TabsGetZoomFunction::Run() {
   int tab_id = params->tab_id ? *params->tab_id : -1;
   std::string error;
   WebContents* web_contents =
-      GetTabsAPIDefaultWebContents(this, tab_id, &error);
+      tabs_internal::GetTabsAPIDefaultWebContents(this, tab_id, &error);
   if (!web_contents) {
     return RespondNow(Error(std::move(error)));
   }
@@ -2399,7 +2371,7 @@ ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
   int tab_id = params->tab_id ? *params->tab_id : -1;
   std::string error;
   WebContents* web_contents =
-      GetTabsAPIDefaultWebContents(this, tab_id, &error);
+      tabs_internal::GetTabsAPIDefaultWebContents(this, tab_id, &error);
   if (!web_contents) {
     return RespondNow(Error(std::move(error)));
   }
@@ -2451,7 +2423,7 @@ ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
   int tab_id = params->tab_id ? *params->tab_id : -1;
   std::string error;
   WebContents* web_contents =
-      GetTabsAPIDefaultWebContents(this, tab_id, &error);
+      tabs_internal::GetTabsAPIDefaultWebContents(this, tab_id, &error);
   if (!web_contents) {
     return RespondNow(Error(std::move(error)));
   }
@@ -2512,49 +2484,5 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
 
 TabsDiscardFunction::TabsDiscardFunction() = default;
 TabsDiscardFunction::~TabsDiscardFunction() = default;
-
-ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
-  std::optional<tabs::GoForward::Params> params =
-      tabs::GoForward::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  int tab_id = params->tab_id ? *params->tab_id : -1;
-  std::string error;
-  WebContents* web_contents =
-      GetTabsAPIDefaultWebContents(this, tab_id, &error);
-  if (!web_contents) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  NavigationController& controller = web_contents->GetController();
-  if (!controller.CanGoForward()) {
-    return RespondNow(Error(tabs_constants::kNotFoundNextPageError));
-  }
-
-  controller.GoForward();
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction TabsGoBackFunction::Run() {
-  std::optional<tabs::GoBack::Params> params =
-      tabs::GoBack::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  int tab_id = params->tab_id ? *params->tab_id : -1;
-  std::string error;
-  WebContents* web_contents =
-      GetTabsAPIDefaultWebContents(this, tab_id, &error);
-  if (!web_contents) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  NavigationController& controller = web_contents->GetController();
-  if (!controller.CanGoBack()) {
-    return RespondNow(Error(tabs_constants::kNotFoundNextPageError));
-  }
-
-  controller.GoBack();
-  return RespondNow(NoArguments());
-}
 
 }  // namespace extensions

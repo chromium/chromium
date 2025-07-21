@@ -20,6 +20,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "content/public/browser/navigation_controller.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -106,6 +107,31 @@ void NotifyExtensionTelemetry(Profile* profile,
   extension_telemetry_service->AddSignal(std::move(tabs_api_signal));
 }
 #endif
+
+content::WebContents* GetTabsAPIDefaultWebContents(ExtensionFunction* function,
+                                                   int tab_id,
+                                                   std::string* error) {
+  content::WebContents* web_contents = nullptr;
+  if (tab_id != -1) {
+    // We assume this call leaves web_contents unchanged if it is unsuccessful.
+    tabs_internal::GetTabById(tab_id, function->browser_context(),
+                              function->include_incognito_information(),
+                              /*window_out=*/nullptr, &web_contents,
+                              /*index_out=*/nullptr, error);
+  } else {
+    WindowController* window_controller =
+        ChromeExtensionFunctionDetails(function).GetCurrentWindowController();
+    if (!window_controller) {
+      *error = ExtensionTabUtil::kNoCurrentWindowError;
+    } else {
+      web_contents = window_controller->GetActiveTab();
+      if (!web_contents) {
+        *error = tabs_constants::kNoSelectedTabError;
+      }
+    }
+  }
+  return web_contents;
+}
 
 }  // namespace tabs_internal
 
@@ -566,6 +592,50 @@ void TabsDetectLanguageFunction::RespondWithLanguage(
 
   Respond(WithArguments(language));
   Release();  // Balanced in Run()
+}
+
+ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
+  std::optional<tabs::GoForward::Params> params =
+      tabs::GoForward::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  int tab_id = params->tab_id ? *params->tab_id : -1;
+  std::string error;
+  content::WebContents* web_contents =
+      tabs_internal::GetTabsAPIDefaultWebContents(this, tab_id, &error);
+  if (!web_contents) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  content::NavigationController& controller = web_contents->GetController();
+  if (!controller.CanGoForward()) {
+    return RespondNow(Error(tabs_constants::kNotFoundNextPageError));
+  }
+
+  controller.GoForward();
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction TabsGoBackFunction::Run() {
+  std::optional<tabs::GoBack::Params> params =
+      tabs::GoBack::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  int tab_id = params->tab_id ? *params->tab_id : -1;
+  std::string error;
+  content::WebContents* web_contents =
+      tabs_internal::GetTabsAPIDefaultWebContents(this, tab_id, &error);
+  if (!web_contents) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  content::NavigationController& controller = web_contents->GetController();
+  if (!controller.CanGoBack()) {
+    return RespondNow(Error(tabs_constants::kNotFoundNextPageError));
+  }
+
+  controller.GoBack();
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

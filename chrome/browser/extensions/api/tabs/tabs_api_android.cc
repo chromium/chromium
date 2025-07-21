@@ -329,18 +329,4 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
-  std::optional<tabs::GoForward::Params> params =
-      tabs::GoForward::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
-ExtensionFunction::ResponseAction TabsGoBackFunction::Run() {
-  std::optional<tabs::GoBack::Params> params =
-      tabs::GoBack::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 }  // namespace extensions
