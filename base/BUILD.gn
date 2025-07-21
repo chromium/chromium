@@ -2348,12 +2348,7 @@ component("base") {
 
     # TODO(b/167763382) Find an alternate solution for Chromecast devices, since
     # adding the icui18n and icuuc deps significantly increases the binary size.
-    # This dependency was added to deal with Y2038 problem where time_t is
-    # represented via int32. However, Android builds specifically have time64
-    # headers which allows representing time as int64, which makes this entire
-    # problem moot. Hence, why `!is_cronet_build` flag has been added.
-    # See crbug.com/431972096#comment10 for more information.
-    if (!is_castos && !is_cast_android && !is_cronet_build) {
+    if (!is_castos && !is_cast_android) {
       sources += [ "time/time_exploded_icu.cc" ]
 
       # The ICU dependency is only needed on systems with a 32-bit time_t.

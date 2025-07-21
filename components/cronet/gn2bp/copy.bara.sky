@@ -82,6 +82,7 @@ origin_files = glob([
     "third_party/google_benchmark/**",
     # Note: Only used for tests.
     "third_party/googletest/**",
+    "third_party/icu/**",
     "third_party/jni_zero/**",
     "third_party/libc++abi/**",
     # Note: Only used for tests.

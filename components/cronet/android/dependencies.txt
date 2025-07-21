@@ -56,6 +56,7 @@
 //third_party/brotli
 //third_party/compiler-rt
 //third_party/cpu_features
+//third_party/icu
 //third_party/ijar
 //third_party/jdk
 //third_party/jni_zero
