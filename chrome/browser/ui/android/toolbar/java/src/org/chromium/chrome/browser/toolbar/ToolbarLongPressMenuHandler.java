@@ -70,7 +70,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final BooleanSupplier mSuppressLongPressSupplier;
-    private final Supplier<String> mUrlBarTextSupplier;
+    private final Supplier<GURL> mUrlSupplier;
     private final Supplier<ViewRectProvider> mUrlBarViewRectProviderSupplier;
     private final @Nullable OnLongClickListener mOnLongClickListener;
     private final SharedPreferencesManager mSharedPreferencesManager;
@@ -89,12 +89,12 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
             BooleanSupplier suppressLongPressSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             WindowAndroid windowAndroid,
-            Supplier<String> urlBarTextSupplier,
+            Supplier<GURL> urlSupplier,
             Supplier<ViewRectProvider> urlBarViewRectProviderSupplier) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         mSuppressLongPressSupplier = suppressLongPressSupplier;
-        mUrlBarTextSupplier = urlBarTextSupplier;
+        mUrlSupplier = urlSupplier;
         mUrlBarViewRectProviderSupplier = urlBarViewRectProviderSupplier;
         mWindowAndroid = windowAndroid;
         mLifecycleDispatcher = lifecycleDispatcher;
@@ -244,7 +244,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     }
 
     private void handleCopyLink() {
-        Clipboard.getInstance().copyUrlToClipboard(new GURL(mUrlBarTextSupplier.get()));
+        Clipboard.getInstance().copyUrlToClipboard(mUrlSupplier.get());
     }
 
     @VisibleForTesting
