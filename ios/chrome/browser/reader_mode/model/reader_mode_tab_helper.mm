@@ -271,8 +271,7 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
   }
   reader_mode_eligible_url_ =
       result == ReaderModeHeuristicResult::kReaderModeEligible ? url : GURL();
-  if (last_committed_url_without_ref_.EqualsIgnoringRef(
-          reader_mode_eligible_url_)) {
+  if (last_committed_url_without_ref_.EqualsIgnoringRef(url)) {
     last_committed_url_eligibility_ready_ = true;
     CallLastCommittedUrlEligibilityCallbacks(CurrentPageSupportsReaderMode());
   }
