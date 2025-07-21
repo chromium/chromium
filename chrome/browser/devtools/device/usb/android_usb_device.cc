@@ -25,7 +25,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/devtools/device/usb/android_rsa.h"
 #include "chrome/browser/devtools/device/usb/android_usb_socket.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
@@ -121,7 +120,7 @@ void OnDeviceClosedWithBarrier(const std::string& guid,
 
 void CreateDeviceOnInterfaceClaimed(
     AndroidUsbDevices* devices,
-    crypto::RSAPrivateKey* rsa_key,
+    crypto::keypair::PrivateKey rsa_key,
     AndroidDeviceInfo android_device_info,
     mojo::Remote<device::mojom::UsbDevice> device,
     const base::RepeatingClosure& barrier,
@@ -146,7 +145,7 @@ void OnInterfaceReleased(mojo::Remote<device::mojom::UsbDevice> device,
 }
 
 void OnDeviceOpened(AndroidUsbDevices* devices,
-                    crypto::RSAPrivateKey* rsa_key,
+                    crypto::keypair::PrivateKey rsa_key,
                     AndroidDeviceInfo android_device_info,
                     mojo::Remote<device::mojom::UsbDevice> device,
                     const base::RepeatingClosure& barrier,
@@ -168,7 +167,7 @@ void OnDeviceOpened(AndroidUsbDevices* devices,
   }
 }
 
-void OpenAndroidDevices(crypto::RSAPrivateKey* rsa_key,
+void OpenAndroidDevices(crypto::keypair::PrivateKey rsa_key,
                         AndroidUsbDevicesCallback callback,
                         std::vector<AndroidDeviceInfo> device_info_list) {
   // Add new devices.
@@ -206,17 +205,17 @@ AdbMessage::AdbMessage(uint32_t command,
 AdbMessage::~AdbMessage() = default;
 
 // static
-void AndroidUsbDevice::Enumerate(crypto::RSAPrivateKey* rsa_key,
+void AndroidUsbDevice::Enumerate(crypto::keypair::PrivateKey rsa_key,
                                  AndroidUsbDevicesCallback callback) {
   UsbDeviceManagerHelper::GetInstance()->GetAndroidDevices(
       base::BindOnce(&OpenAndroidDevices, rsa_key, std::move(callback)));
 }
 
 AndroidUsbDevice::AndroidUsbDevice(
-    crypto::RSAPrivateKey* rsa_key,
+    crypto::keypair::PrivateKey rsa_key,
     const AndroidDeviceInfo& android_device_info,
     mojo::Remote<device::mojom::UsbDevice> device)
-    : rsa_key_(rsa_key->Copy()),
+    : rsa_key_(rsa_key),
       device_(std::move(device)),
       android_device_info_(android_device_info),
       is_connected_(false),
@@ -445,7 +444,7 @@ void AndroidUsbDevice::HandleIncoming(std::unique_ptr<AdbMessage> message) {
         return;
       }
       if (signature_sent_) {
-        std::optional<std::string> pub = AndroidRSAPublicKey(rsa_key_.get());
+        std::optional<std::string> pub = AndroidRSAPublicKey(rsa_key_);
         if (!pub) {
           TransferError(UsbTransferStatus::TRANSFER_ERROR);
           return;
@@ -454,7 +453,7 @@ void AndroidUsbDevice::HandleIncoming(std::unique_ptr<AdbMessage> message) {
             AdbMessage::kCommandAUTH, AdbMessage::kAuthRSAPublicKey, 0, *pub));
       } else {
         signature_sent_ = true;
-        std::string signature = AndroidRSASign(rsa_key_.get(), message->body);
+        std::string signature = AndroidRSASign(rsa_key_, message->body);
         if (signature.empty()) {
           // This may fail if the device requests to sign a token that is not
           // the same size as a SHA-1 hash. ADB does not use a standard

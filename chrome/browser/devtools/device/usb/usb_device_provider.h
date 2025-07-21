@@ -12,10 +12,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
-
-namespace crypto {
-class RSAPrivateKey;
-}
+#include "crypto/keypair.h"
 
 class AndroidUsbDevice;
 class Profile;
@@ -44,7 +41,7 @@ class UsbDeviceProvider : public AndroidDeviceManager::DeviceProvider {
 
   typedef std::map<std::string, scoped_refptr<AndroidUsbDevice> > UsbDeviceMap;
 
-  std::unique_ptr<crypto::RSAPrivateKey> rsa_key_;
+  crypto::keypair::PrivateKey rsa_key_;
   UsbDeviceMap device_map_;
 };
 
