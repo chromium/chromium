@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.TabbedMismatchedIndicesHandler.HISTOGR
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Browser;
 
@@ -649,6 +650,108 @@ public class ChromeTabbedActivityTest {
 
                     // Verify histograms.
                     histogramExpectation.assertExpected();
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMultiUrlReparentingIntent() {
+        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Bundle multiTabBundle = new Bundle();
+        ArrayList<Integer> tabIds = new ArrayList<>(List.of(101, 102));
+        ArrayList<String> urls =
+                new ArrayList<>(
+                        List.of(JUnitTestGURLs.URL_1.getSpec(), JUnitTestGURLs.URL_2.getSpec()));
+        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
+        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urls);
+
+        reparentingIntent.putExtra(
+                IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount + 2));
+                    // Tabs are added at the end of the tab model.
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount + 1).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMultiUrlReparentingIntent_EmptyList() {
+        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Bundle multiTabBundle = new Bundle();
+        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, new ArrayList<>());
+        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, new ArrayList<>());
+
+        reparentingIntent.putExtra(
+                IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        // Wait to ensure no new tabs are created.
+        SystemClock.sleep(1000);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMultiUrlReparentingIntent_mismatchedLists() {
+        int initialTabCount = mActivity.getCurrentTabModel().getCount();
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Bundle multiTabBundle = new Bundle();
+        // Mismatch: 2 IDs, 1 URL. This should be handled gracefully without crashing.
+        ArrayList<Integer> tabIds = new ArrayList<>(List.of(101, 102));
+        ArrayList<String> urls = new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec()));
+        multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIds);
+        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urls);
+
+        reparentingIntent.putExtra(
+                IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        // Wait to ensure no new tabs are created.
+        SystemClock.sleep(500);
+
+        // Verify that no new tabs were created due to the malformed intent.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(
+                            "Tab count should not change for mismatched lists",
+                            tabModel.getCount(),
+                            Matchers.is(initialTabCount));
                 });
     }
 

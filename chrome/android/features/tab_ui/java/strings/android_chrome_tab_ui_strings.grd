@@ -1078,6 +1078,16 @@
         Pin tab
       </message>
 
+      <!-- Multi Selected Tabs Context Menu -->
+      <message name="IDS_REMOVE_TABS_FROM_GROUP" desc="Content description for an action which removes a list of selected tabs from their group.">
+        Remove tabs from group
+      </message>
+      <message name="IDS_MOVE_TABS_TO_ANOTHER_WINDOW" desc="Content description for an action which moves a list of selected tabs to another window.">
+        {WINDOW_COUNT, plural,
+          =1 {Move tabs to new window}
+          other {Move tabs to another window}}
+      </message>
+
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">
         Add to
@@ -1105,11 +1115,6 @@
           =1 {Add to group named <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> with <ph name="TAB_COUNT1">%2$d<ex>12</ex></ph> tab}
           other {Add to group named <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> with <ph name="TAB_COUNT1">%2$d<ex>12</ex></ph> tabs}
         }
-      </message>
-
-      <!-- Multi Selected Tabs Context Menu -->
-      <message name="IDS_REMOVE_TABS_FROM_GROUP" desc="Content description for an action which removes a list of selected tabs from their group.">
-        Remove tabs from group
       </message>
     </messages>
   </release>

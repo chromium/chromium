@@ -31,6 +31,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingMultiTabTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -56,6 +57,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.display.DisplayAndroidManager;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -334,7 +336,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (tabModelSelector == null) return true;
 
             Tab currentTab = tabModelSelector.getCurrentTab();
-            if (currentTab != null) moveTabToOtherWindow(currentTab);
+            if (currentTab != null) moveTabsToOtherWindow(Collections.singletonList(currentTab));
             return true;
         } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
             openNewWindow("MobileMenuNewWindow");
@@ -429,9 +431,13 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     @Override
-    public void moveTabToOtherWindow(Tab tab) {
+    public void moveTabsToOtherWindow(List<Tab> tabs) {
         if (MultiWindowUtils.getInstanceCount() == 1) {
-            moveTabToNewWindow(tab);
+            if (tabs.size() == 1) {
+                moveTabToNewWindow(tabs.get(0));
+            } else {
+                moveTabsToNewWindow(tabs);
+            }
             return;
         }
 
@@ -439,13 +445,18 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         if (intent == null) return;
 
         onMultiInstanceModeStarted();
-        ReparentingTask.from(tab)
-                .begin(
-                        mActivity,
-                        intent,
-                        /* startActivityOptions= */ null,
-                        /* finalizeCallback= */ null);
-        RecordUserAction.record("MobileMenuMoveToOtherWindow");
+        if (tabs.size() == 1) {
+            ReparentingTask.from(tabs.get(0))
+                    .begin(
+                            mActivity,
+                            intent,
+                            /* startActivityOptions= */ null,
+                            /* finalizeCallback= */ null);
+            RecordUserAction.record("MobileMenuMoveToOtherWindow");
+        } else {
+            ReparentingMultiTabTask.from(tabs).begin(mActivity, intent);
+            RecordUserAction.record("MobileMenuMoveToOtherWindow");
+        }
     }
 
     protected void openNewWindow(String umaAction) {

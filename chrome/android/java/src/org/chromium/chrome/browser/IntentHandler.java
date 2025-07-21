@@ -275,6 +275,19 @@ public class IntentHandler {
     public static final String EXTRA_TAB_GROUP_METADATA =
             "org.chromium.chrome.browser.tab_group_metadata";
 
+    /**
+     * A Bundle containing a list of tab IDs and URLs to reparent as a multi-tab selection. See
+     * TabGroupMetadata.KEY_TAB_IDS and TabGroupMetadata.KEY_TAB_URLS.
+     */
+    public static final String EXTRA_MULTI_TAB_REPARENTING_METADATA =
+            "org.chromium.chrome.browser.multi_tab_reparenting_metadata";
+
+    /** Used as the key to store the tab ids during multi tab reparenting. */
+    public static final String MULTI_TAB_KEY_TAB_IDS = "MultiTabReparentingIdsKey";
+
+    /** Used as the key to store the tab urls during multi tab reparenting. */
+    public static final String MULTI_TAB_KEY_TAB_URLS = "MultiTabReparentingUrlsKey";
+
     /** Used to measure the duration of the tab group drag drop reparenting process. */
     public static final String EXTRA_REPARENT_START_TIME =
             "org.chromium.chrome.browser.reparent_start_time";
@@ -921,6 +934,33 @@ public class IntentHandler {
         // Throwable and then fail closed (safe). This is ugly, but resolves top crashers in the
         // wild.
         try {
+            // If the intent contains a list of tabs to reparent, it's a valid intent from Chrome.
+            if (intent.hasExtra(EXTRA_MULTI_TAB_REPARENTING_METADATA)) {
+                // Exit early if the incognito intent is not allowed.
+                if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                        && !isAllowedIncognitoIntent(
+                                wasIntentSenderChrome(intent), isCustomTab, intent)) {
+                    return true;
+                }
+                Bundle multiTabBundle = intent.getBundleExtra(EXTRA_MULTI_TAB_REPARENTING_METADATA);
+                ArrayList<Integer> tabIds =
+                        multiTabBundle.getIntegerArrayList("MultiTabReparentingIdsKey");
+                ArrayList<String> urls =
+                        multiTabBundle.getStringArrayList("MultiTabReparentingUrlsKey");
+
+                if (urls == null || tabIds == null || urls.size() != tabIds.size()) {
+                    assert false : "Urls and tabIds size are mismatched or empty.";
+                    return true;
+                }
+
+                for (int i = urls.size() - 1; i >= 0; i--) {
+                    if (shouldIgnoreIntentUrl(intent, context, urls.get(i), isCustomTab)) {
+                        urls.remove(i);
+                        tabIds.remove(i);
+                    }
+                }
+                return urls.isEmpty();
+            }
             // Ignore all invalid URLs, regardless of what the intent was.
             @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
             if (tabGroupMetadata != null) {

@@ -324,6 +324,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -1640,9 +1641,13 @@ public class ChromeTabbedActivity extends ChromeActivity {
      */
     private boolean maybeHandleUrlIntent(Intent intent) {
         @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
-        return tabGroupMetadata != null
-                ? maybeHandleGroupUrlsIntent(intent, tabGroupMetadata)
-                : maybeHandleSingleUrlIntent(intent);
+        if (tabGroupMetadata != null) {
+            return maybeHandleGroupUrlsIntent(intent, tabGroupMetadata);
+        }
+        if (intent.hasExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA)) {
+            return maybeHandleMultipleUrlIntent(intent);
+        }
+        return maybeHandleSingleUrlIntent(intent);
     }
 
     /**
@@ -1685,6 +1690,40 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     /**
+     * Handles an intent that contains data for reparenting multiple tabs from another window. This
+     * method checks for the {@link IntentHandler#EXTRA_MULTI_TAB_REPARENTING_METADATA} extra. If
+     * present, it extracts the lists of tab IDs and URLs and processes each one to create a
+     * corresponding tab in the current activity. The extra is removed from the intent after
+     * processing to prevent it from being handled again.
+     *
+     * @param intent The {@link Intent} to process.
+     * @return {@code true} if the intent contained multi-tab reparenting data and was handled,
+     *     {@code false} otherwise.
+     */
+    private boolean maybeHandleMultipleUrlIntent(Intent intent) {
+        @TabOpenType int tabOpenType = IntentHandler.getTabOpenType(intent);
+        Bundle multiTabBundle =
+                intent.getBundleExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
+        if (multiTabBundle == null) return false;
+        ArrayList<Integer> tabIds =
+                multiTabBundle.getIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS);
+        ArrayList<String> urls =
+                multiTabBundle.getStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS);
+
+        for (int i = 0; i < urls.size(); i++) {
+            int tabId = tabIds.get(i);
+            String url = urls.get(i);
+            assert tabId != Tab.INVALID_TAB_ID : "Invalid tab ID";
+            assert url != null : "URL is null";
+            assert !url.isEmpty() : "URL is empty";
+
+            processTabIntentAndLoadTab(intent, tabId, url, tabOpenType);
+        }
+        IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA);
+        return true;
+    }
+
+    /**
      * @param intent The received intent.
      * @param tabGroupMetadata The metadata of the tab group being processed.
      * @return Whether the Intent was successfully handled.
@@ -1705,24 +1744,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
             assert url != null : "URL is null";
             assert !url.isEmpty() : "URL is empty";
 
-            // 1. Set intent tabId and url for each iteration.
-            IntentHandler.setTabId(intent, tabId);
-            intent.setData(Uri.parse(url));
-            assert !IntentHandler.isIntentForMhtmlFileOrContent(intent)
-                    : "Attempt to drop a tab group with MHTML tab";
+            Tab tab = processTabIntentAndLoadTab(intent, tabId, url, tabOpenType);
 
-            // 2. Create LoadUrlParams for the given URL.
-            LoadUrlParams loadUrlParams =
-                    IntentHandler.createLoadUrlParamsForIntent(url, intent, mIntentHandlingTimeMs);
-
-            // 3. Process the intent and open a new tab for the URL.
-            Tab tab =
-                    processUrlViewIntent(
-                            loadUrlParams,
-                            tabOpenType,
-                            IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
-                            Tab.INVALID_TAB_ID,
-                            intent);
             // Restores the correct tab order by adding the tab to the front. `tabIdsToUrls` were
             // stored in reverse to preserve open positions (see {@link
             // TabGroupMetadataExtractor#extractTabGroupMetadata}).
@@ -1775,6 +1798,38 @@ public class ChromeTabbedActivity extends ChromeActivity {
         IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_REPARENT_START_TIME);
         IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_TAB_GROUP_METADATA);
         return true;
+    }
+
+    /**
+     * Helper method to process and load a single tab from a set of reparenting data. This method
+     * modifies the passed-in intent with the specific tab's data before processing.
+     *
+     * @param intent The master {@link Intent} for the operation, which will be modified with this
+     *     tab's specific data.
+     * @param tabId The ID of the tab to process.
+     * @param url The URL of the tab to load.
+     * @param tabOpenType The {@link TabOpenType} to use for the new tab.
+     * @return The newly created and loaded {@link Tab}, or {@code null} if creation failed.
+     */
+    private Tab processTabIntentAndLoadTab(
+            Intent intent, int tabId, String url, @TabOpenType int tabOpenType) {
+        // 1. Set intent tabId and url for each iteration.
+        IntentHandler.setTabId(intent, tabId);
+        intent.setData(Uri.parse(url));
+        assert !IntentHandler.isIntentForMhtmlFileOrContent(intent)
+                : "Attempt to drop a TabGroup/MultiSelected tabs with a MHTML tab";
+
+        // 2. Create LoadUrlParams for the given URL.
+        LoadUrlParams loadUrlParams =
+                IntentHandler.createLoadUrlParamsForIntent(url, intent, mIntentHandlingTimeMs);
+
+        // 3. Process the intent and open a new tab for the URL.
+        return processUrlViewIntent(
+                loadUrlParams,
+                tabOpenType,
+                IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
+                Tab.INVALID_TAB_ID,
+                intent);
     }
 
     private void handleMhtmlFileOrContentIntent(

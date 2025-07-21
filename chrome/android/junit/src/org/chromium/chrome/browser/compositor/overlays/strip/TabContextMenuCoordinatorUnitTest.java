@@ -67,6 +67,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabContextMenuCoordinator}. */
@@ -526,6 +527,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 TAB_ID,
                 COLLABORATION_ID,
                 /* listViewTouchTracker= */ null);
-        verify(mMultiInstanceManager, times(1)).moveTabToOtherWindow(mTab1);
+        verify(mMultiInstanceManager, times(1))
+                .moveTabsToOtherWindow(Collections.singletonList(mTab1));
     }
 }

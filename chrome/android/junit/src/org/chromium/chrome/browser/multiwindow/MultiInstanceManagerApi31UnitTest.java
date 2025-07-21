@@ -315,6 +315,19 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         @Override
+        void moveAndReparentTabsToNewWindow(
+                List<Tab> tabs,
+                int instanceId,
+                boolean preferNew,
+                boolean openAdjacently,
+                boolean addTrustedIntentExtras) {
+            // Change the last parameter to false to bypass calling
+            // IntentUtils.addTrustedIntentExtras() for testing.
+            super.moveAndReparentTabsToNewWindow(
+                    tabs, instanceId, preferNew, openAdjacently, false);
+        }
+
+        @Override
         void moveAndReparentTabGroupToNewWindow(
                 TabGroupMetadata tabGroupMetadata,
                 int instanceId,
@@ -331,12 +344,19 @@ public class MultiInstanceManagerApi31UnitTest {
         void setupIntentForTabReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {}
 
         @Override
+        void setupIntentForTabsReparenting(
+                List<Tab> tabs, Intent intent, Runnable finalizeCallback) {}
+
+        @Override
         void setupIntentForGroupReparenting(
                 TabGroupMetadata tabGroupMetadata, Intent intent, Runnable finalizeCallback) {}
 
         @Override
         void beginReparentingTab(
                 Tab tab, Intent intent, Bundle startActivityOptions, Runnable finalizeCallback) {}
+
+        @Override
+        void beginReparentingTabs(List<Tab> tabs, Intent intent) {}
 
         @Override
         void beginReparentingTabGroup(TabGroupMetadata tabGroupMetadata, Intent intent) {}
@@ -1187,6 +1207,18 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    public void testMoveTabsToNewWindow_calledWithDesiredParameters() {
+        setupTwoInstances();
+        List<Tab> tabs = List.of(mTab1, mTab2);
+
+        mMultiInstanceManager.moveTabsToNewWindow(tabs);
+
+        verify(mMultiInstanceManager, times(1))
+                .moveAndReparentTabsToNewWindow(
+                        eq(tabs), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
+    }
+
+    @Test
     public void testMoveTabGroupToNewWindow_calledWithDesiredParameters() {
         setupTwoInstances();
 
@@ -1214,6 +1246,21 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabToNewWindow(
                         any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
+        verify(mMultiInstanceManager, times(1)).openNewWindow(any());
+    }
+
+    @Test
+    public void testMoveTabsToNewWindow_BeyondMaxWindows_CallsOnly_OpenNewWindow() {
+        setupMaxInstances();
+        List<Tab> tabs = List.of(mTab1, mTab2);
+
+        // Action
+        mMultiInstanceManager.moveTabsToNewWindow(tabs);
+
+        // Verify only openNewWindow is called and moveAndReparentTabsToNewWindow is not called.
+        verify(mMultiInstanceManager, times(0))
+                .moveAndReparentTabsToNewWindow(
+                        any(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean());
         verify(mMultiInstanceManager, times(1)).openNewWindow(any());
     }
 
@@ -1323,6 +1370,33 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(mTab1), eq(NON_EXISTENT_INSTANCE_ID), eq(false), eq(false), eq(true));
         verify(mMultiInstanceManager, times(0))
                 .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
+    }
+
+    @Test
+    public void testMoveTabsAction_WithNonExistentInstance_success() {
+        setupTwoInstances();
+        List<Tab> tabs = List.of(mTab1, mTab2);
+
+        // Action
+        InstanceInfo info =
+                new InstanceInfo(
+                        NON_EXISTENT_INSTANCE_ID,
+                        NON_EXISTENT_INSTANCE_ID,
+                        InstanceInfo.Type.ADJACENT,
+                        "https://id-4.com",
+                        "",
+                        0,
+                        0,
+                        false,
+                        0);
+        mMultiInstanceManager.moveTabsAction(info, tabs, /* tabAtIndex= */ 0);
+
+        // Verify
+        verify(mMultiInstanceManager, times(1))
+                .moveAndReparentTabsToNewWindow(
+                        eq(tabs), eq(NON_EXISTENT_INSTANCE_ID), eq(false), eq(false), eq(true));
+        verify(mMultiInstanceManager, times(0))
+                .reparentTabsToRunningActivity(any(), eq(tabs), eq(0));
     }
 
     @Test

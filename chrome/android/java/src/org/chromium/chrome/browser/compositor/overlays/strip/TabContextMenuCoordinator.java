@@ -46,6 +46,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -148,7 +149,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 } else {
                     RecordUserAction.record("MobileToolbarTabMenu.MoveTabToOtherWindow");
                 }
-                multiInstanceManager.moveTabToOtherWindow(tab);
+                multiInstanceManager.moveTabsToOtherWindow(Collections.singletonList(tab));
             } else if (menuId == R.id.share_tab) {
                 shareDelegateSupplier
                         .get()

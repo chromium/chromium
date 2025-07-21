@@ -95,6 +95,16 @@ public abstract class MultiInstanceManager {
     }
 
     /**
+     * Open a new instance of the ChromeTabbedActivity window and move the specified tabs from
+     * existing instance to the new one.
+     *
+     * @param tabs Tabs that are to be moved to a new Chrome instance.
+     */
+    public void moveTabsToNewWindow(List<Tab> tabs) {
+        // Not implemented
+    }
+
+    /**
      * Open a new instance of the ChromeTabbedActivity window and move the specified tab group from
      * existing instance to the new one.
      *
@@ -128,12 +138,12 @@ public abstract class MultiInstanceManager {
     }
 
     /**
-     * If there's only one window currently, moves {@param tab} to a new window. Otherwise, opens a
-     * dialog to select which window to move {@param tab} to.
+     * If there's only one window currently, moves {@param tabs} to a new window. Otherwise, opens a
+     * dialog to select which window to move {@param tabs} to.
      *
-     * @param tab The tab to move.
+     * @param tabs The list of tabs to move.
      */
-    public void moveTabToOtherWindow(Tab tab) {
+    public void moveTabsToOtherWindow(List<Tab> tabs) {
         // Not implemented
     }
 
