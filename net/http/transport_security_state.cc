@@ -689,18 +689,10 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
         pkp_result->include_subdomains = iter->second.second;
         const PinSet* pinset = iter->second.first;
         for (const auto& hash : pinset->static_spki_hashes()) {
-          // If the update is malformed, it's preferable to skip the hash than
-          // crash.
-          if (hash.size() == crypto::hash::kSha256Size) {
-            AddHash(hash, pkp_result->spki_hashes);
-          }
+          pkp_result->spki_hashes.insert(hash);
         }
         for (const auto& hash : pinset->bad_static_spki_hashes()) {
-          // If the update is malformed, it's preferable to skip the hash than
-          // crash.
-          if (hash.size() == 32) {
-            AddHash(hash, pkp_result->bad_spki_hashes);
-          }
+          pkp_result->bad_spki_hashes.insert(hash);
         }
         return true;
       }
@@ -881,8 +873,8 @@ TransportSecurityState::PKPState::~PKPState() = default;
 
 TransportSecurityState::PinSet::PinSet(
     std::string name,
-    std::vector<std::vector<uint8_t>> static_spki_hashes,
-    std::vector<std::vector<uint8_t>> bad_static_spki_hashes)
+    std::vector<SHA256HashValue> static_spki_hashes,
+    std::vector<SHA256HashValue> bad_static_spki_hashes)
     : name_(std::move(name)),
       static_spki_hashes_(std::move(static_spki_hashes)),
       bad_static_spki_hashes_(std::move(bad_static_spki_hashes)) {}

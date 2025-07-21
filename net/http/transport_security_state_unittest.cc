@@ -132,15 +132,6 @@ std::vector<SHA256HashValue> DeserializeHashes(
   return result;
 }
 
-std::vector<std::vector<uint8_t>> UnpackRawHashes(
-    const std::vector<SHA256HashValue>& hashes) {
-  std::vector<std::vector<uint8_t>> raws;
-  for (const auto& hash : hashes) {
-    raws.emplace_back(base::ToVector(hash));
-  }
-  return raws;
-}
-
 }  // namespace
 
 class TransportSecurityStateTest : public ::testing::Test,
@@ -1626,7 +1617,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
   // host.
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
-      /*static_spki_hashes=*/UnpackRawHashes(bad_hashes),
+      /*static_spki_hashes=*/bad_hashes,
       /*bad_static_spki_hashes=*/{});
   TransportSecurityState::PinSetInfo test_pinsetinfo(
       /*hostname=*/kHost, /*pinset_name=*/"test",
@@ -1656,7 +1647,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
       /*static_spki_hashes=*/{},
-      /*bad_static_spki_hashes=*/UnpackRawHashes(good_hashes));
+      /*bad_static_spki_hashes=*/good_hashes);
   TransportSecurityState::PinSetInfo test_pinsetinfo(
       /*hostname=*/kHost, /* pinset_name=*/"test",
       /*include_subdomains=*/false);
@@ -1721,7 +1712,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
   // kBadPath is used for convenience.
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
-      /*static_spki_hashes=*/UnpackRawHashes(DeserializeHashes(kBadPath)),
+      /*static_spki_hashes=*/DeserializeHashes(kBadPath),
       /*bad_static_spki_hashes=*/{});
   // The host used in the test is "example.sub.test", so this pinset will only
   // match due to include subdomains.
@@ -1759,7 +1750,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
   // kBadPath is used for convenience.
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
-      /*static_spki_hashes=*/UnpackRawHashes(DeserializeHashes(kBadPath)),
+      /*static_spki_hashes=*/DeserializeHashes(kBadPath),
       /*bad_static_spki_hashes=*/{});
   // The host used in the test is "example.test", so this pinset will only match
   // due to include subdomains.
@@ -1797,7 +1788,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
   // kBadPath is used for convenience.
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
-      /*static_spki_hashes=*/UnpackRawHashes(DeserializeHashes(kBadPath)),
+      /*static_spki_hashes=*/DeserializeHashes(kBadPath),
       /*bad_static_spki_hashes=*/{});
   // The host used in the test is "example.test", so this pinset will not match
   // due to include subdomains not being set.
@@ -1839,7 +1830,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
       /*static_spki_hashes=*/{},
-      /*bad_static_spki_hashes=*/UnpackRawHashes(bad_hashes));
+      /*bad_static_spki_hashes=*/bad_hashes);
   TransportSecurityState::PinSetInfo test_pinsetinfo(
       /*hostname=*/kHost, /* pinset_name=*/"test",
       /*include_subdomains=*/false);

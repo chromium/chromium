@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/net/key_pinning.pb.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/browser/network_service_instance.h"
+#include "net/base/hash_value.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -123,6 +125,34 @@ network::mojom::CTLogInfo::LogType ProtoLogTypeToLogType(
     default:
       NOTREACHED();
   }
+}
+
+// Converts a protobuf repeated bytes array to an array of uint8_t arrays.
+std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytes(
+    const google::protobuf::RepeatedPtrField<std::string>& proto_bytes) {
+  std::vector<std::vector<uint8_t>> bytes;
+  bytes.reserve(proto_bytes.size());
+  std::ranges::transform(
+      proto_bytes, std::back_inserter(bytes), [](const std::string& element) {
+        const auto bytes = base::as_byte_span(element);
+        return std::vector<uint8_t>(bytes.begin(), bytes.end());
+      });
+  return bytes;
+}
+
+// Converts a protobuf repeated bytes array to an array of SHA256HashValues.
+// Elements in `proto_bytes` that are not 32 bytes long are silently ignored.
+std::vector<net::SHA256HashValue> SHA256HashValueArrayFromProtoBytes(
+    const google::protobuf::RepeatedPtrField<std::string>& proto_bytes) {
+  std::vector<net::SHA256HashValue> hashes;
+  hashes.reserve(proto_bytes.size());
+  for (const auto& proto_hash : proto_bytes) {
+    if (proto_hash.size() == crypto::hash::kSha256Size) {
+      base::span(hashes.emplace_back())
+          .copy_from(base::as_byte_span(proto_hash));
+    }
+  }
+  return hashes;
 }
 
 }  // namespace
@@ -413,9 +443,9 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       std::move(log_list_mojo_clone_network_service), done_callback);
 
   // Send the updated popular SCTs list to the network service, if available.
+  // TODO(crbug.com/41286522): should this also be vector<SHA256HashValue>?
   std::vector<std::vector<uint8_t>> popular_scts =
-      component_updater::PKIMetadataComponentInstallerPolicy::
-          BytesArrayFromProtoBytes(proto->popular_scts());
+      BytesArrayFromProtoBytes(proto->popular_scts());
   network_service->UpdateCtKnownPopularSCTs(std::move(popular_scts),
                                             done_callback);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
@@ -451,11 +481,9 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
     network::mojom::PinSetPtr pinset_ptr = network::mojom::PinSet::New();
     pinset_ptr->name = pinset.name();
     pinset_ptr->static_spki_hashes =
-        component_updater::PKIMetadataComponentInstallerPolicy::
-            BytesArrayFromProtoBytes(pinset.static_spki_hashes_sha256());
-    pinset_ptr->bad_static_spki_hashes =
-        component_updater::PKIMetadataComponentInstallerPolicy::
-            BytesArrayFromProtoBytes(pinset.bad_static_spki_hashes_sha256());
+        SHA256HashValueArrayFromProtoBytes(pinset.static_spki_hashes_sha256());
+    pinset_ptr->bad_static_spki_hashes = SHA256HashValueArrayFromProtoBytes(
+        pinset.bad_static_spki_hashes_sha256());
     pinset_ptr->report_uri = pinset.report_uri();
     pinlist_ptr->pinsets.push_back(std::move(pinset_ptr));
   }
@@ -489,16 +517,16 @@ PKIMetadataComponentInstallerPolicy::~PKIMetadataComponentInstallerPolicy() =
 
 // static
 std::vector<std::vector<uint8_t>>
-PKIMetadataComponentInstallerPolicy::BytesArrayFromProtoBytes(
-    google::protobuf::RepeatedPtrField<std::string> proto_bytes) {
-  std::vector<std::vector<uint8_t>> bytes;
-  bytes.reserve(proto_bytes.size());
-  std::ranges::transform(
-      proto_bytes, std::back_inserter(bytes), [](const std::string& element) {
-        const auto bytes = base::as_byte_span(element);
-        return std::vector<uint8_t>(bytes.begin(), bytes.end());
-      });
-  return bytes;
+PKIMetadataComponentInstallerPolicy::BytesArrayFromProtoBytesForTesting(
+    const google::protobuf::RepeatedPtrField<std::string>& proto_bytes) {
+  return BytesArrayFromProtoBytes(proto_bytes);
+}
+
+// static
+std::vector<net::SHA256HashValue> PKIMetadataComponentInstallerPolicy::
+    SHA256HashValueArrayFromProtoBytesForTesting(
+        const google::protobuf::RepeatedPtrField<std::string>& proto_bytes) {
+  return SHA256HashValueArrayFromProtoBytes(proto_bytes);
 }
 
 bool PKIMetadataComponentInstallerPolicy::

@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "net/base/hash_value.h"
 #include "net/net_buildflags.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
@@ -117,10 +118,14 @@ class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
       const PKIMetadataComponentInstallerPolicy&) = delete;
   ~PKIMetadataComponentInstallerPolicy() override;
 
-  // Converts a protobuf repeated bytes array to an array of uint8_t arrays.
-  // Exposed for testing.
-  static std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytes(
-      google::protobuf::RepeatedPtrField<std::string> proto_bytes);
+  // Wraps BytesArrayFromProtoBytes, exposed for testing.
+  static std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytesForTesting(
+      const google::protobuf::RepeatedPtrField<std::string>& proto_bytes);
+
+  // Wraps SHA256HashValueArrayFromProtoBytes, exposed for testing.
+  static std::vector<net::SHA256HashValue>
+  SHA256HashValueArrayFromProtoBytesForTesting(
+      const google::protobuf::RepeatedPtrField<std::string>& proto_bytes);
 
  private:
   // ComponentInstallerPolicy methods:
