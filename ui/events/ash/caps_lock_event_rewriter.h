@@ -17,7 +17,7 @@
 
 namespace ui {
 
-// CapsLockEventRewriter rewrites Fn + RightAlt events into CapsLock.
+// CapsLockEventRewriter rewrites Fn + QuickInsert events into CapsLock.
 class CapsLockEventRewriter : public EventRewriter {
  public:
   struct RemappedKey {
