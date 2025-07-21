@@ -74,34 +74,28 @@ class DomStorageDatabaseLevelDB
   // Use the static factory functions in DomStorageDatabase to construct this
   // class. These constructors are only public for the sake of
   // `base::SequenceBound`.
-  //
-  // TODO(crbug.com/377242771): Combine `callback_task_runner` and `callback` by
-  // passing a BindPostTask(callback_task_runner, callback) for callback.
   DomStorageDatabaseLevelDB(
       PassKey,
       const base::FilePath& directory,
       const std::string& name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       StatusCallback callback);
   DomStorageDatabaseLevelDB(
       PassKey,
       const std::string& tracking_name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       StatusCallback callback);
 
  private:
   friend class DomStorageDatabaseFactory;
   // Initializes a new DomStorageDatabaseLevelDB, creating or opening persistent
-  // on-filesystem database as specified. Asynchronously invokes `callback` on
-  // `callback_task_runner` when done.
+  // on-filesystem database as specified. Asynchronously invokes `callback` when
+  // done.
   //
   // This must be called on a sequence that allows blocking operations.
-  void Init(scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-            StatusCallback callback);
+  void Init(StatusCallback callback);
 
   template <typename... Args>
   static void CreateSequenceBoundDomStorageDatabase(
