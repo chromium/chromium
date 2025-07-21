@@ -2806,6 +2806,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.Selections.Count" units="tabs" expires_after="2026-01-01">
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The number of selected tabs in a tab strip. Recorded each time the tab
+    selection changes.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.ShoppingPersistedTabData.FoundBuyableProductAnnotation"
     enum="FoundBuyableProductAnnotation" expires_after="2026-01-27">
   <owner>yusufo@chromium.org</owner>

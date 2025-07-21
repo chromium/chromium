@@ -139,6 +139,11 @@ void TabStripModelStatsRecorder::OnTabStripModelChanged(
     OnTabReplaced(replace->old_contents, replace->new_contents);
   }
 
+  if (selection.selection_changed()) {
+    UMA_HISTOGRAM_COUNTS_1000("Tabs.Selections.Count",
+                              selection.new_model.selected_indices().size());
+  }
+
   if (!selection.active_tab_changed() || tab_strip_model->empty()) {
     return;
   }
