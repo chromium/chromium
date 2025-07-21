@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,7 +31,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,11 +45,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -60,13 +58,9 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public final class PrivacySandboxDialogV3Test {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -83,13 +77,13 @@ public final class PrivacySandboxDialogV3Test {
 
     private PrivacySandboxDialogV3 mDialog;
     private String mTestPage;
-    private EmbeddedTestServer mTestServer;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
-        Context appContext = getInstrumentation().getTargetContext().getApplicationContext();
-        mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
-        mTestPage = mTestServer.getURL("/chrome/test/data/android/google.html");
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTestPage =
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/google.html");
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
     }
 
@@ -129,9 +123,9 @@ public final class PrivacySandboxDialogV3Test {
                     }
                     mDialog =
                             new PrivacySandboxDialogV3(
-                                    sActivityTestRule.getActivity(),
-                                    sActivityTestRule.getProfile(false),
-                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    mActivityTestRule.getActivity(),
+                                    mActivityTestRule.getProfile(false),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
                                     SurfaceType.BR_APP,
                                     dialogType);
                     mDialog.show();
@@ -228,9 +222,9 @@ public final class PrivacySandboxDialogV3Test {
                     }
                     mDialog =
                             new PrivacySandboxDialogV3(
-                                    sActivityTestRule.getActivity(),
-                                    sActivityTestRule.getProfile(false),
-                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    mActivityTestRule.getActivity(),
+                                    mActivityTestRule.getProfile(false),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
                                     SurfaceType.BR_APP,
                                     PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
                     // Resize the window such that we see the entire notice without scrolling.
@@ -261,9 +255,9 @@ public final class PrivacySandboxDialogV3Test {
                     }
                     mDialog =
                             new PrivacySandboxDialogV3(
-                                    sActivityTestRule.getActivity(),
-                                    sActivityTestRule.getProfile(false),
-                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    mActivityTestRule.getActivity(),
+                                    mActivityTestRule.getProfile(false),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
                                     SurfaceType.BR_APP,
                                     PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_NOTICE);
                     // Resize the window such that we see the entire notice without scrolling.
@@ -292,9 +286,9 @@ public final class PrivacySandboxDialogV3Test {
                     }
                     mDialog =
                             new PrivacySandboxDialogV3(
-                                    sActivityTestRule.getActivity(),
-                                    sActivityTestRule.getProfile(false),
-                                    sActivityTestRule.getActivity().getWindowAndroid(),
+                                    mActivityTestRule.getActivity(),
+                                    mActivityTestRule.getProfile(false),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
                                     SurfaceType.BR_APP,
                                     PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
                     // Resize the window such that we see the entire notice without scrolling.
