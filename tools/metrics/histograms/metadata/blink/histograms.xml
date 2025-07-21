@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.2DLayerBridge.Compression.SnapshotSizeKb"
-    units="KB" expires_after="2025-07-13">
+    units="KB" expires_after="2025-11-16">
   <owner>lizeb@chromium.org</owner>
   <owner>jpgravel@chromium.org</owner>
   <summary>
