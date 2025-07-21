@@ -23,10 +23,13 @@
 #include "components/version_info/channel.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/isolation_info.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
 class PrefService;
+
+namespace network {
+class SimpleURLLoader;
+}
 
 namespace autofill {
 
