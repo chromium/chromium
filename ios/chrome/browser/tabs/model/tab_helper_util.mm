@@ -310,15 +310,14 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       PasswordTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
       AutofillTabHelper::FromWebState(web_state)->GetSuggestionProvider(),
     ]);
-
-    if (base::FeatureList::IsEnabled(kIOSPasskeyShim)) {
-      PasskeyTabHelper::CreateForWebState(
-          web_state, IOSPasskeyModelFactory::GetForProfile(profile));
-    }
   }
 
   if (!for_lens_overlay) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(web_state);
+    if (base::FeatureList::IsEnabled(kIOSPasskeyShim)) {
+      PasskeyTabHelper::CreateForWebState(
+          web_state, IOSPasskeyModelFactory::GetForProfile(profile));
+    }
   }
 
   if (base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
