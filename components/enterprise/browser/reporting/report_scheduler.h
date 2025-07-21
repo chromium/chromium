@@ -14,9 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
-#include "components/enterprise/browser/reporting/real_time_report_controller.h"
-#include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_uploader.h"
 #include "components/enterprise/browser/reporting/user_security_signals_service.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -29,7 +26,9 @@ class DMToken;
 
 namespace enterprise_reporting {
 
+class ChromeProfileRequestGenerator;
 class RealTimeReportController;
+class ReportGenerator;
 
 // Schedules report generation and upload every 24 hours (and upon browser
 // update for desktop Chrome) while cloud reporting is enabled via
