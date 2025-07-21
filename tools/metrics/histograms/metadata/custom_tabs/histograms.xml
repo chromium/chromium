@@ -614,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Omnibox.EnabledState" units="BooleanEnabled"
-    expires_after="2025-09-01">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>sinansahin@google.com</owner>
   <summary>
@@ -624,7 +624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Omnibox.FocusResultedInNavigation" units="Boolean"
-    expires_after="2025-09-01">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>sinansahin@google.com</owner>
   <summary>
@@ -637,7 +637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Omnibox.NumNavigationsPerSession" units="count"
-    expires_after="2025-09-01">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>sinansahin@google.com</owner>
   <summary>

@@ -300,7 +300,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ActionInSuggest.UsageByType.{Type}"
-    enum="BooleanUsage" expires_after="2025-11-02">
+    enum="BooleanUsage" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -323,7 +323,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ActionInSuggest.{ShownOrUsed}"
-    enum="ActionInSuggestType" expires_after="2026-01-04">
+    enum="ActionInSuggestType" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -1156,7 +1156,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.FocusResultedInNavigation" enum="BooleanNavigated"
-    expires_after="2026-01-04">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -2274,7 +2274,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.Search.CtrlEnter.ResolvedAsUrl" enum="Boolean"
-    expires_after="2026-01-04">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2288,7 +2288,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.Search.CtrlEnter.Used" enum="BooleanUsage"
-    expires_after="2026-01-04">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3130,7 +3130,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileIndex" units="position"
-    expires_after="2025-12-12">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -3145,7 +3145,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.DeletedTileType" enum="SuggestTileType"
-    expires_after="2025-09-01">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -3159,7 +3159,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.SelectedTileIndex" units="position"
-    expires_after="2025-12-14">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -3174,7 +3174,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.SelectedTileType" enum="SuggestTileType"
-    expires_after="2025-09-01">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -3190,7 +3190,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.TileTypeCount.{SuggestTileType}"
-    units="count" expires_after="2025-09-01">
+    units="count" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -3240,7 +3240,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.Reconciliation.Type"
-    enum="ReconciliationType" expires_after="2026-01-04">
+    enum="ReconciliationType" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3252,7 +3252,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.Reconciliation.{ByVariant}.Result"
-    enum="BooleanSuccess" expires_after="2026-01-04">
+    enum="BooleanSuccess" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3269,7 +3269,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant"
-    enum="RegulatoryExtensionVariant" expires_after="2025-09-01">
+    enum="RegulatoryExtensionVariant" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3281,7 +3281,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant"
-    enum="RegulatoryExtensionVariant" expires_after="2025-09-01">
+    enum="RegulatoryExtensionVariant" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3294,7 +3294,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.RlzPresent" enum="Boolean"
-    expires_after="2025-09-01">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -3308,7 +3308,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.SearchClientPresent" enum="Boolean"
-    expires_after="2025-09-01">
+    expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -3322,7 +3322,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.UnrecognizedParameter"
-    enum="BooleanPrepopulated" expires_after="2026-01-04">
+    enum="BooleanPrepopulated" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
