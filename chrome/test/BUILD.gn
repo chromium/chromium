@@ -1659,7 +1659,11 @@ source_set("platform_browser_tests") {
       "//chrome/test/data/extensions/",
       "//extensions/test/data/",
     ]
-  }
+    if (enable_service_discovery) {
+      sources += [ "../browser/extensions/api/mdns/mdns_apitest.cc" ]
+      deps += [ "../browser/media/router:test_support" ]
+    }
+  }  # enable_extensions_core
 
   if (enable_pdf) {
     deps += [ "//pdf:features" ]
@@ -5725,9 +5729,6 @@ if (!is_android) {
     if (is_linux || is_mac) {
       sources +=
           [ "../browser/first_run/first_run_internal_posix_browsertest.cc" ]
-    }
-    if (enable_service_discovery) {
-      sources += [ "../browser/extensions/api/mdns/mdns_apitest.cc" ]
     }
 
     if ((is_linux || is_chromeos) && is_asan && is_lsan) {

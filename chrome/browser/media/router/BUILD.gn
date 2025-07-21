@@ -256,11 +256,25 @@ if (!is_android) {
   }
 }
 
-if (!is_android) {
-  static_library("test_support") {
-    testonly = true
-    deps = [
+static_library("test_support") {
+  testonly = true
+  deps = []
+  sources = []
+
+  if (!is_android || is_desktop_android) {
+    deps += [
+      "//base",
       "//chrome/browser/media/router/discovery",
+      "//testing/gmock",
+    ]
+    sources += [
+      "test/mock_dns_sd_registry.cc",
+      "test/mock_dns_sd_registry.h",
+    ]
+  }
+
+  if (!is_android) {
+    deps += [
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
@@ -271,10 +285,9 @@ if (!is_android) {
       "//components/media_router/common/providers/cast/channel",
       "//components/media_router/common/providers/cast/channel:capability",
       "//components/media_router/common/providers/cast/channel:test_support",
-      "//testing/gmock",
     ]
     public_deps = [ ":router" ]
-    sources = [
+    sources += [
       "discovery/access_code/access_code_test_util.cc",
       "discovery/access_code/access_code_test_util.h",
       "discovery/mdns/cast_media_sink_service_test_helpers.cc",
@@ -283,8 +296,6 @@ if (!is_android) {
       "providers/test/test_media_route_provider.h",
       "test/media_router_mojo_test.cc",
       "test/media_router_mojo_test.h",
-      "test/mock_dns_sd_registry.cc",
-      "test/mock_dns_sd_registry.h",
       "test/mock_mojo_media_router.cc",
       "test/mock_mojo_media_router.h",
       "test/provider_test_helpers.cc",

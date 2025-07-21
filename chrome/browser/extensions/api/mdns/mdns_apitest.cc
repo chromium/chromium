@@ -11,8 +11,11 @@
 #include "chrome/browser/media/router/test/mock_dns_sd_registry.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/result_catcher.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using media_router::DnsSdRegistry;
 using ::testing::_;
@@ -34,10 +37,23 @@ class MDnsAPITest : public extensions::ExtensionApiTest {
   }
 
   void SetUpTestDnsSdRegistry() {
-    extensions::MDnsAPI* api = extensions::MDnsAPI::Get(profile());
+    auto* api = extensions::MDnsAPI::Get(profile());
     dns_sd_registry_ = std::make_unique<media_router::MockDnsSdRegistry>(api);
     EXPECT_CALL(*dns_sd_registry_, AddObserver(api)).Times(1);
     api->SetDnsSdRegistryForTesting(dns_sd_registry_.get());
+  }
+
+  void TearDownTestDnsSdRegistry() {
+#if BUILDFLAG(IS_ANDROID)
+    // Android skips profile teardown during test shutdown, so we must manually
+    // shut down the KeyedService. Otherwise we can't EXPECT_CALL for functions
+    // called during cleanup. This can't be done in TearDownOnMainThread() as
+    // that occurs too late.
+    // TODO(crbug.com/431730098): Move this somewhere more centralized.
+    extensions::MDnsAPI::Get(profile())->Shutdown();
+#endif
+    // Don't delete `dns_sd_registry_` yet because the tests expect calls that
+    // happen during the profile destruction phase.
   }
 
  protected:
@@ -74,6 +90,8 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterListener) {
   dns_sd_registry_->DispatchMDnsEvent("_uninteresting._tcp.local", services);
   dns_sd_registry_->DispatchMDnsEvent(service_type, services);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  TearDownTestDnsSdRegistry();
 }
 
 // Test loading extension, registering an MDNS listener and dispatching events.
@@ -102,6 +120,8 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, ForceDiscovery) {
 
   dns_sd_registry_->DispatchMDnsEvent(service_type, services);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  TearDownTestDnsSdRegistry();
 }
 
 // Test loading extension and registering multiple listeners.
@@ -135,6 +155,8 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterMultipleListeners) {
   dns_sd_registry_->DispatchMDnsEvent(service_type, services);
   dns_sd_registry_->DispatchMDnsEvent(test_service_type, services);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  TearDownTestDnsSdRegistry();
 }
 
 // Test loading extension and registering multiple listeners.
@@ -148,6 +170,8 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterTooManyListeners) {
       .Times(1);
 
   EXPECT_TRUE(RunExtensionTest("mdns/too_many_listeners")) << message_;
+
+  TearDownTestDnsSdRegistry();
 }
 
 // Test loading extension and registering multiple listeners.
