@@ -271,7 +271,7 @@ class ControlledFrameContextMenus extends EventTarget {
       case 'show':
         // No mapping needed for the show event as it is speced as a plain
         // event.
-        menuEvent = new Event('show');
+        menuEvent = new ContextMenusShowEvent(details);
         break;
       case 'click':
         menuEvent =
@@ -290,6 +290,15 @@ class ControlledFrameContextMenus extends EventTarget {
 class MenuItemDetails {
   constructor(details) {
     $Object.assign(this, details);
+    $Object.freeze(this);
+  }
+}
+
+class ContextMenusShowEvent extends Event {
+  constructor(details) {
+    super('show');
+    this['preventDefault'] =
+      $Function.bind(details.preventDefault, this);
     $Object.freeze(this);
   }
 }
