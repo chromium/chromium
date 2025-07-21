@@ -325,26 +325,13 @@ void PingManager::ReportSafeBrowsingHit(
 // Sends threat details for users who opt-in.
 PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
-  SanitizeThreatDetailsReport(report.get());
-  if (!get_user_population_callback_.is_null()) {
-    *report->mutable_population() = get_user_population_callback_.Run();
-  }
-  if (!get_page_load_token_callback_.is_null()) {
-    ChromeUserPopulation::PageLoadToken token =
-        get_page_load_token_callback_.Run(GURL(report->page_url()));
-    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
-        &token);
+  std::string serialized_report;
+  ReportThreatDetailsResult result =
+      FinalizeAndSerializeReport(report.get(), &serialized_report);
+  if (result != ReportThreatDetailsResult::SUCCESS) {
+    return result;
   }
 
-  std::string serialized_report;
-  if (!report->SerializeToString(&serialized_report)) {
-    DLOG(ERROR) << "Unable to serialize the threat report.";
-    return ReportThreatDetailsResult::SERIALIZATION_ERROR;
-  }
-  if (serialized_report.empty()) {
-    DLOG(ERROR) << "The threat report is empty.";
-    return ReportThreatDetailsResult::EMPTY_REPORT;
-  }
   if (get_should_fetch_access_token_.Run()) {
     token_fetcher_->Start(
         base::BindOnce(&PingManager::ReportThreatDetailsOnGotAccessToken,
@@ -426,25 +413,13 @@ void PingManager::AttachThreatDetailsAndLaunchSurvey(
            ClientSafeBrowsingReportRequest::URL_UNWANTED,
            ClientSafeBrowsingReportRequest::URL_MALWARE});
   CHECK(base::Contains(valid_report_types, report->type()));
-  SanitizeThreatDetailsReport(report.get());
-  if (!get_user_population_callback_.is_null()) {
-    *report->mutable_population() = get_user_population_callback_.Run();
-  }
-  if (!get_page_load_token_callback_.is_null()) {
-    ChromeUserPopulation::PageLoadToken token =
-        get_page_load_token_callback_.Run(GURL(report->page_url()));
-    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
-        &token);
-  }
+
   std::string serialized_report;
-  if (!report->SerializeToString(&serialized_report)) {
-    DLOG(ERROR) << "Unable to serialize the threat report.";
+  if (FinalizeAndSerializeReport(report.get(), &serialized_report) !=
+      ReportThreatDetailsResult::SUCCESS) {
     return;
   }
-  if (serialized_report.empty()) {
-    DLOG(ERROR) << "The threat report is empty.";
-    return;
-  }
+
   std::string url_encoded_serialized_report;
   base::Base64UrlEncode(serialized_report,
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
@@ -576,6 +551,31 @@ GURL PingManager::SafeBrowsingHitUrl(
           .c_str(),
       hit_report->is_subresource, threat_source.c_str(),
       hit_report->is_metrics_reporting_active));
+}
+
+PingManager::ReportThreatDetailsResult PingManager::FinalizeAndSerializeReport(
+    ClientSafeBrowsingReportRequest* report,
+    std::string* out_serialized_report) {
+  SanitizeThreatDetailsReport(report);
+  if (!get_user_population_callback_.is_null()) {
+    *report->mutable_population() = get_user_population_callback_.Run();
+  }
+  if (!get_page_load_token_callback_.is_null()) {
+    ChromeUserPopulation::PageLoadToken token =
+        get_page_load_token_callback_.Run(GURL(report->page_url()));
+    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+        &token);
+  }
+
+  if (!report->SerializeToString(out_serialized_report)) {
+    DLOG(ERROR) << "Unable to serialize the threat report.";
+    return ReportThreatDetailsResult::SERIALIZATION_ERROR;
+  }
+  if (out_serialized_report->empty()) {
+    DLOG(ERROR) << "The threat report is empty.";
+    return ReportThreatDetailsResult::EMPTY_REPORT;
+  }
+  return ReportThreatDetailsResult::SUCCESS;
 }
 
 GURL PingManager::ThreatDetailsUrl() const {

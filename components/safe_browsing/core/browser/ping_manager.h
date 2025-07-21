@@ -210,6 +210,13 @@ class PingManager : public KeyedService {
   // Sanitizes the URLs in the hit report.
   void SanitizeHitReport(HitReport* hit_report);
 
+  // Finalizes the report with additional data, and then serializes it to
+  // |out_serialized_report|. On success, this returns SUCCESS. On failure, it
+  // returns an error code detailing the cause.
+  ReportThreatDetailsResult FinalizeAndSerializeReport(
+      ClientSafeBrowsingReportRequest* report,
+      std::string* out_serialized_report);
+
   // Once the user's access_token has been fetched by ReportThreatDetails (or
   // intentionally not fetched), attaches the token and sends the report.
   void ReportThreatDetailsOnGotAccessToken(const std::string& serialized_report,
