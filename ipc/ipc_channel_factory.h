@@ -16,6 +16,8 @@
 
 namespace IPC {
 
+class Listener;
+
 // Encapsulates how a Channel is created. A ChannelFactory can be
 // passed to the constructor of ChannelProxy or SyncChannel to tell them
 // how to create underlying channel.

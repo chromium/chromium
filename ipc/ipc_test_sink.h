@@ -17,6 +17,7 @@
 
 namespace IPC {
 
+class Listener;
 class Message;
 
 // This test sink provides a "sink" for IPC messages that are sent. It allows

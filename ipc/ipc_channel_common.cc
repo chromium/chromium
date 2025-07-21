@@ -28,30 +28,6 @@ int Channel::GetGlobalPid() {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-// static
-std::unique_ptr<Channel> Channel::CreateClient(
-    const IPC::ChannelHandle& channel_handle,
-    Listener* listener,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner) {
-  DCHECK(channel_handle.is_mojo_channel_handle());
-  return ChannelMojo::Create(
-      mojo::ScopedMessagePipeHandle(channel_handle.mojo_handle),
-      Channel::MODE_CLIENT, listener, ipc_task_runner,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-}
-
-// static
-std::unique_ptr<Channel> Channel::CreateServer(
-    const IPC::ChannelHandle& channel_handle,
-    Listener* listener,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner) {
-  DCHECK(channel_handle.is_mojo_channel_handle());
-  return ChannelMojo::Create(
-      mojo::ScopedMessagePipeHandle(channel_handle.mojo_handle),
-      Channel::MODE_SERVER, listener, ipc_task_runner,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-}
-
 Channel::~Channel() = default;
 
 Channel::AssociatedInterfaceSupport* Channel::GetAssociatedInterfaceSupport() {

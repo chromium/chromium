@@ -33,7 +33,6 @@
 
 namespace IPC {
 
-class Listener;
 class UrgentMessageObserver;
 
 //------------------------------------------------------------------------------
@@ -137,21 +136,6 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
   // - Client and named client: In these mode, the Channel merely
   //   connects to the already established IPC object.
   //
-  // Each mode has its own Create*() API to create the Channel object.
-  static std::unique_ptr<Channel> Create(
-      const IPC::ChannelHandle& channel_handle,
-      Mode mode,
-      Listener* listener);
-
-  static std::unique_ptr<Channel> CreateClient(
-      const IPC::ChannelHandle& channel_handle,
-      Listener* listener,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner);
-
-  static std::unique_ptr<Channel> CreateServer(
-      const IPC::ChannelHandle& channel_handle,
-      Listener* listener,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner);
 
   ~Channel() override;
 
