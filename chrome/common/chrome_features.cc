@@ -1935,4 +1935,10 @@ BASE_FEATURE(kDisableShortcutsEnableDiy,
              "DisableShortcutsEnableDiy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// A feature to enabled updating policy and default management installed PWAs to
+// happen silently without prompting an updating dialog.
+BASE_FEATURE(kSilentPolicyAndDefaultAppUpdating,
+             "SilentPolicyAndDefaultAppUpdating",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

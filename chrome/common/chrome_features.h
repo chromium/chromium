@@ -1199,6 +1199,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kClassManagementEnabledMetricsProvider);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kSilentPolicyAndDefaultAppUpdating);
+
 bool PrefServiceEnabled();
 
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in
