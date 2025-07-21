@@ -4298,6 +4298,11 @@
       status: "stable",
     },
     {
+      // See https://crbug.com/40664519
+      name: "SelectionAndFocusedVisiblePositionMatch",
+      status: "stable",
+    },
+    {
       // See https://crbug.com/417823377
       name: "SelectionDeleteFromDocumentUaShadowFix",
       status: "stable",
