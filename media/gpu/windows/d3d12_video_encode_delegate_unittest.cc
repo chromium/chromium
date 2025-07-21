@@ -141,12 +141,16 @@ D3D12VideoEncodeDelegateTestBase::GetEncoderOutputMetadataResourceMap(
         *data = metadata;
         return S_OK;
       }));
-  ON_CALL(*resource.Get(), Unmap(0, _))
-      .WillByDefault(Invoke([&](UINT, const D3D12_RANGE*) {
-        mapped_metadata->erase(resource.Get());
-      }));
   ScopedD3D12ResourceMap metadata_buffer;
   EXPECT_TRUE(metadata_buffer.Map(resource.Get(), 0, nullptr));
+  ON_CALL(*resource.Get(), Unmap(0, _))
+      .WillByDefault(Invoke(
+          [resource = std::move(resource)](UINT, const D3D12_RANGE*) mutable {
+            mapped_metadata->erase(resource.Get());
+            // gtest complains that the mock isn't freed if we don't drop the
+            // reference to it here.
+            resource.Reset();
+          }));
   return metadata_buffer;
 }
 
