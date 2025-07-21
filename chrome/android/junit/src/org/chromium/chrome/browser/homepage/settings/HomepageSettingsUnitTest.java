@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -40,12 +39,15 @@ import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomeButtonStatus;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -125,6 +127,7 @@ public class HomepageSettingsUnitTest {
                 });
         mActionTester = new UserActionTester();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        HomepagePolicyManager.setPrefServiceForTesting(Mockito.mock(PrefService.class));
     }
 
     @After
@@ -179,7 +182,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_ChromeNtp() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
@@ -211,7 +213,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_ChromeNtp_WithPartner() {
         setPartnerHomepage(TEST_URL_FOO);
@@ -244,7 +245,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Customized() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
@@ -276,7 +276,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Policies_Customized() {
         setHomepageLocationPolicy(new GURL(TEST_URL_BAR));
@@ -316,7 +315,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Policies_NTP() {
         setHomepageLocationPolicy(new GURL(CHROME_NTP));
@@ -350,7 +348,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testShowHomeButton_Policy_On() {
         setShowHomeButtonPolicy(true);
@@ -370,7 +367,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testShowHomeButton_Policy_Off() {
         setShowHomeButtonPolicy(false);
@@ -390,7 +386,40 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
+    @Feature({"Homepage"})
+    public void testShowHomeButton_Recommended_Following() {
+        // Mock that the policy is recommended and user's setting matches the recommendation.
+        setShowHomeButtonRecommendation(true);
+        // Pre-set user's preference to be ON, following the recommendation.
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+
+        launchHomepageSettings();
+        // Switch should be enabled and checked.
+        Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
+        Assert.assertTrue(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
+    }
+
+    @Test
+    @Feature({"Homepage"})
+    public void testShowHomeButton_Recommended_NotFollowing() {
+        // Mock that the policy is recommended and user's setting does not match the
+        // recommendation.
+        setShowHomeButtonRecommendation(false);
+        // Pre-set user's preference to be OFF, not following the recommendation to be ON.
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, false);
+
+        launchHomepageSettings();
+        // Switch should be enabled and unchecked.
+        Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
+        Assert.assertFalse(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
+        // Toggling the switch should work as normal
+        mSwitch.performClick();
+        Assert.assertTrue(mSwitch.isChecked());
+    }
+
+    @Test
     @Feature({"Homepage"})
     public void testHomepageIsNtp_Policy_On() {
         setHomepageIsNtpPolicy(true);
@@ -418,7 +447,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testHomepageIsNtp_Policy_On_Customized() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
@@ -447,7 +475,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testHomepageIsNtp_Policy_Off() {
         setHomepageIsNtpPolicy(false);
@@ -472,7 +499,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testHomepageIsNtp_Policy_Off_Customized() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
@@ -503,7 +529,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testPolicies_ShowHomeButtonOFF_HomepageLocationON() {
         setShowHomeButtonPolicy(false);
@@ -542,7 +567,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testPolicies_ShowHomeButtonON_HomepageLocationON() {
         setShowHomeButtonPolicy(true);
@@ -581,7 +605,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testPolicies_ShowHomeButtonOFF_HomepageIsNtpOFF() {
         setShowHomeButtonPolicy(false);
@@ -607,7 +630,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testPolicies_ShowHomeButtonON_HomepageIsNtpOFF() {
         setShowHomeButtonPolicy(true);
@@ -633,7 +655,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testPolicies_HomepageIsNtpOFF_HomepageLocationON() {
         setHomepageIsNtpPolicy(false);
@@ -663,7 +684,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testPolicies_HomepageIsNtpON_HomepageLocationON() {
         setHomepageIsNtpPolicy(true);
@@ -693,7 +713,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_DefaultToPartner() {
         setPartnerHomepage(TEST_URL_FOO);
@@ -727,7 +746,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_DefaultToNtp() {
         mHomepageTestRule.useDefaultHomepageForTest();
@@ -759,7 +777,6 @@ public class HomepageSettingsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_HomepageDisabled() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
@@ -793,7 +810,6 @@ public class HomepageSettingsUnitTest {
 
     /** Test toggle switch to enable/disable homepage. */
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testToggleSwitch() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_FOO);
@@ -874,7 +890,6 @@ public class HomepageSettingsUnitTest {
 
     /** Test checking different radio button to change the homepage. */
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testCheckRadioButtons() throws Exception {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_FOO);
@@ -932,7 +947,6 @@ public class HomepageSettingsUnitTest {
 
     /** Test if changing uris in EditText will change homepage accordingly. */
     @Test
-    @SmallTest
     @Feature({"Homepage"})
     public void testChangeCustomized() throws Exception {
         mHomepageTestRule.useChromeNtpForTest();
@@ -1006,6 +1020,13 @@ public class HomepageSettingsUnitTest {
         Mockito.doReturn(Boolean.TRUE.equals(val))
                 .when(mMockHomepagePolicyManager)
                 .getShowHomeButtonPolicyValue();
+    }
+
+    private void setShowHomeButtonRecommendation(boolean isFollowing) {
+        Mockito.doReturn(true).when(mMockHomepagePolicyManager).isShowHomeButtonPolicyRecommended();
+        Mockito.doReturn(isFollowing)
+                .when(mMockHomepagePolicyManager)
+                .isFollowingHomepageButtonPolicyRecommendation();
     }
 
     private void setHomepageIsNtpPolicy(Boolean val) {

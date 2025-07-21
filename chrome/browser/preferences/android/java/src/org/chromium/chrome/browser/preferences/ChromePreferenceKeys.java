@@ -339,9 +339,12 @@ public final class ChromePreferenceKeys {
     public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_VALUE =
             "Chrome.Policy.HomepageIsNewTabPageValue";
 
-    public static final String SHOW_HOME_BUTTON_POLICY_MANAGED =
-            "Chrome.Policy.ShowHomeButtonManaged";
-    public static final String SHOW_HOME_BUTTON_POLICY_VALUE = "Chrome.Policy.ShowHomeButtonValue";
+    /**
+     * Stores the state of the ShowHomeButton policy.
+     *
+     * @see org.chromium.chrome.browser.homepage.HomepagePolicyManager.HomepageButtonPolicyState
+     */
+    public static final String SHOW_HOME_BUTTON_POLICY_STATE = "Chrome.Policy.ShowHomeButtonState";
 
     /** Used for get image descriptions feature, track "Just once"/"Don't ask again" choice. */
     public static final String IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT =
@@ -1135,8 +1138,7 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
                 SHARING_TABS_WITH_OS,
-                SHOW_HOME_BUTTON_POLICY_MANAGED,
-                SHOW_HOME_BUTTON_POLICY_VALUE,
+                SHOW_HOME_BUTTON_POLICY_STATE,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_NEXT_SHOW_TIME,
                 SIGNIN_PROMO_HISTORY_PAGE_DECLINED,

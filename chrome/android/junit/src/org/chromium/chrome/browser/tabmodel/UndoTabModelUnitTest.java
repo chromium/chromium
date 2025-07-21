@@ -90,7 +90,7 @@ public class UndoTabModelUnitTest {
     @Before
     public void setUp() {
         // Disable HomepageManager#shouldCloseAppWithZeroTabs() for TabModelImpl#closeAllTabs().
-        HomepageManager.getInstance().setPrefHomepageEnabled(false);
+        HomepageManager.getInstance().setJavaPrefHomepageEnabled(false);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 

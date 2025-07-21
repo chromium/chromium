@@ -89,7 +89,7 @@ public class TabModelImplUnitTest {
     @Before
     public void setUp() {
         // Disable HomepageManager#shouldCloseAppWithZeroTabs() for TabModelImpl#closeTabs().
-        HomepageManager.getInstance().setPrefHomepageEnabled(false);
+        HomepageManager.getInstance().setJavaPrefHomepageEnabled(false);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(mIncognitoProfile.isIncognitoBranded()).thenReturn(true);

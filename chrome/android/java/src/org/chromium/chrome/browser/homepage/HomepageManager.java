@@ -243,6 +243,16 @@ public class HomepageManager
 
     /** Sets the user preference for whether the homepage is enabled. */
     public void setPrefHomepageEnabled(boolean enabled) {
+        HomepagePolicyManager.setNativeShowHomeButtonState(enabled);
+        setJavaPrefHomepageEnabled(enabled);
+    }
+
+    /**
+     * Sets only the Java user preference for whether the homepage is enabled. Used for testing when
+     * native is not initialized.
+     */
+    @VisibleForTesting
+    public void setJavaPrefHomepageEnabled(boolean enabled) {
         mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, enabled);
         notifyHomepageUpdated();
     }

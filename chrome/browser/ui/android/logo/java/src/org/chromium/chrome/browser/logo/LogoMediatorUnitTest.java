@@ -84,7 +84,7 @@ public class LogoMediatorUnitTest {
         LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> HomepageManager.getInstance().setPrefHomepageEnabled(true));
+                () -> HomepageManager.getInstance().setJavaPrefHomepageEnabled(true));
 
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
     }

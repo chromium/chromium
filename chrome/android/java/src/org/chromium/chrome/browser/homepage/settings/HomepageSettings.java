@@ -55,6 +55,12 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
                                 || HomepagePolicyManager.isShowHomeButtonManaged()
                                 || HomepagePolicyManager.isHomepageNewTabPageManaged();
                     }
+
+                    @Override
+                    public Boolean isPreferenceRecommendation(Preference preference) {
+                        if (!HomepagePolicyManager.isShowHomeButtonRecommended()) return null;
+                        return HomepagePolicyManager.isFollowingHomepageButtonRecommendation();
+                    }
                 });
 
         mRadioButtons =
@@ -96,7 +102,8 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
     }
 
     /**
-     * Handle the preference changes when we toggled the homepage switch.
+     * Handle the preference changes when the homepage switch is toggled.
+     *
      * @param isChecked Whether switch is turned on.
      */
     private void onSwitchPreferenceChange(boolean isChecked) {
