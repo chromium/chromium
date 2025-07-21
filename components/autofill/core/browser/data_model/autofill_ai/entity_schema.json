@@ -7,9 +7,7 @@
       [ "Number" ]
     ],
     "merge constraints": "import constraints",
-    "strike keys": [
-      [ "Number" ]
-    ],
+    "strike keys": "import constraints",
     "disambiguation order": [ "Name", "Country" ],
     "syncable": false
   },
@@ -20,6 +18,7 @@
       [ "Number" ]
     ],
     "merge constraints": "import constraints",
+    "strike keys": "import constraints",
     "disambiguation order": [ "Name", "State" ],
     "syncable": false
   },
@@ -32,6 +31,7 @@
       [ "VIN" ]
     ],
     "merge constraints": "import constraints",
+    "strike keys": "import constraints",
     "disambiguation order": [ "Make", "Model", "Year", "Owner" ],
     "syncable": false
   },
@@ -43,10 +43,8 @@
       [ "Number" ]
     ],
     "merge constraints": "import constraints",
+    "strike keys": "import constraints",
     "disambiguation order": [ "Name", "Country" ],
-    "strike keys": [
-      [ "Number "]
-    ],
     "syncable": false,
     "experiment feature": "AutofillAiNationalIdCard"
   }

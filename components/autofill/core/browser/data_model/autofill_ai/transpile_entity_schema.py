@@ -283,7 +283,7 @@ namespace autofill {{
 #   { "import constraints":  [ ["foo"], ["bar"], ["qux"] ],
 #     "merge constraints":   [ ["foo", "bar", "qux"] ] }
 def resolve_shorthands(schema):
-  constraints = ['import constraints', 'merge constraints']
+  constraints = ['import constraints', 'merge constraints', 'strike keys']
   for entity in schema:
     # Constraints can be the shorthands 'all' (= all attributes) or 'any' (= at
     # least one attribute):
