@@ -58,7 +58,7 @@ public class AdaptiveButtonActionMenuRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_TOOLBAR)
                     .build();
 

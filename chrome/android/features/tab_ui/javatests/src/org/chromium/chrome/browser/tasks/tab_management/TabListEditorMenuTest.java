@@ -107,7 +107,7 @@ public class TabListEditorMenuTest {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(6)
+                    .setRevision(7)
                     .setDescription("Toolbar string update")
                     .build();
 

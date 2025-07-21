@@ -403,7 +403,7 @@ found in the LICENSE file.
         <item name="android:paddingEnd">@dimen/list_menu_item_horizontal_padding</item>
     </style>
     <style name="ListMenuItemIconStyle">
-        <item name="android:layout_width">@dimen/list_menu_item_icon_size</item>
+        <item name="android:layout_width">@dimen/list_menu_item_icon_width</item>
         <item name="android:layout_height">@dimen/list_menu_item_icon_size</item>
     </style>
     <style name="ListMenuItemIconStyle.Start">
