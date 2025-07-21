@@ -169,7 +169,7 @@ public class CompositorViewHolder extends FrameLayout
 
     private TabModelSelector mTabModelSelector;
     private @Nullable BrowserControlsManager mBrowserControlsManager;
-    private View mAccessibilityView;
+    @VisibleForTesting View mAccessibilityView;
     private CompositorAccessibilityProvider mNodeProvider;
 
     /** The toolbar control container. */
@@ -1910,11 +1910,14 @@ public class CompositorViewHolder extends FrameLayout
         }
 
         private Rect rectToPx(RectF rect) {
-            rect.roundOut(mPixelRect);
-            mPixelRect.left = (int) (mPixelRect.left * mDpToPx);
-            mPixelRect.top = (int) (mPixelRect.top * mDpToPx);
-            mPixelRect.right = (int) (mPixelRect.right * mDpToPx);
-            mPixelRect.bottom = (int) (mPixelRect.bottom * mDpToPx);
+            RectF rectInPx =
+                    new RectF(
+                            rect.left * mDpToPx,
+                            rect.top * mDpToPx,
+                            rect.right * mDpToPx,
+                            rect.bottom * mDpToPx);
+
+            rectInPx.roundOut(mPixelRect);
 
             // Don't let any zero sized rects through, they'll cause parent
             // size errors in L.

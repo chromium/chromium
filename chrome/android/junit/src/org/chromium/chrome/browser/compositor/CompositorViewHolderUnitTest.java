@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.compositor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -22,6 +24,8 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.IBinder;
 import android.view.ContextThemeWrapper;
 import android.view.InputDevice;
@@ -1072,5 +1076,47 @@ public class CompositorViewHolderUnitTest {
     private void verifyBackgroundRemoved() {
         runCurrentTasks();
         verify(mCompositorView, times(1)).setBackgroundResource(anyInt());
+    }
+
+    @Test
+    public void testAccessibilityNode_boundsAreCorrect() {
+        mContext.getResources().getDisplayMetrics().density = 1.375f;
+
+        var virtualView = mock(org.chromium.chrome.browser.layouts.components.VirtualView.class);
+        // Values in this test case are real numbers captured from clank running
+        // in a maximized window.
+        RectF dpRect = new RectF(100.36364f, 2.18182f, 337.36365f, 42.18182f);
+        doAnswer(
+                        invocation -> {
+                            ((RectF) invocation.getArgument(0)).set(dpRect);
+                            return null;
+                        })
+                .when(virtualView)
+                .getTouchTarget(any(RectF.class));
+        when(virtualView.getAccessibilityDescription()).thenReturn("test-node");
+        doAnswer(
+                        invocation -> {
+                            ((List<org.chromium.chrome.browser.layouts.components.VirtualView>)
+                                            invocation.getArgument(0))
+                                    .add(virtualView);
+                            return null;
+                        })
+                .when(mLayoutManager)
+                .getVirtualViews(any(List.class));
+
+        mCompositorViewHolder.onAccessibilityModeChanged(true);
+        assertNotNull(mCompositorViewHolder.mAccessibilityView);
+
+        mCompositorViewHolder.mAccessibilityView.createAccessibilityNodeInfo();
+        var accessibilityProvider =
+                mCompositorViewHolder.mAccessibilityView.getAccessibilityNodeProvider();
+        assertNotNull(accessibilityProvider);
+        var nodeInfo = accessibilityProvider.createAccessibilityNodeInfo(0);
+        Rect actualRect = new Rect();
+        nodeInfo.getBoundsInScreen(actualRect);
+        // Top coordinate: 2.18182 * 1.375 = 3.0000025. Should be floored or
+        // rounded to 3.
+        Rect expectedRect = new Rect(138, 3, 464, 59);
+        assertEquals(expectedRect, actualRect);
     }
 }
