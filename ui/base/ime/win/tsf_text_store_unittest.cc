@@ -20,6 +20,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
@@ -240,6 +241,9 @@ class TSFTextStoreTestCallback {
   ImeTextSpans* text_spans() { return &text_store_->text_spans_; }
   gfx::Range* composition_range() { return &text_store_->composition_range_; }
   bool* has_composition_range() { return &text_store_->has_composition_range_; }
+  bool* on_update_composition_called() {
+    return &text_store_->on_update_composition_called_;
+  }
 
   void SetInternalState(const std::u16string& new_string_buffer,
                         LONG new_composition_start,
@@ -3282,7 +3286,6 @@ TEST_F(TSFTextStoreTest, RegressionTest4) {
   EXPECT_EQ(S_OK, result);
 }
 
-// regression tests for crbug.com/1006067.
 // We should call |TextInputClient::SetCompositionText()| if ImeTextSpans are
 // changed from previous edit session during same composition even though
 // composition string and composition selection remain unchanged.
@@ -3315,6 +3318,7 @@ class RegressionTest5Callback : public TSFTextStoreTestCallback {
     text_span_2.background_color = SK_ColorTRANSPARENT;
     text_spans()->push_back(text_span_2);
     *edit_flag() = true;
+    *on_update_composition_called() = true;
     *composition_start() = 0;
     composition_range()->set_start(0);
     composition_range()->set_end(2);
@@ -3336,8 +3340,8 @@ class RegressionTest5Callback : public TSFTextStoreTestCallback {
     SetHasCompositionText(true);
   }
 
-  // Only change underline thickness in IME spans. Other states (composition
-  // string, selection) remain unchanged.
+  // Only change underline thickness in IME spans and `OnUpdateComposition` is
+  // called. Other states (composition string, selection) remain unchanged.
   HRESULT LockGranted2(DWORD flags) {
     GetTextTest(0, -1, L"aa", 2);
 
@@ -3358,6 +3362,7 @@ class RegressionTest5Callback : public TSFTextStoreTestCallback {
     text_spans()->push_back(text_span_2);
 
     *edit_flag() = true;
+    *on_update_composition_called() = true;
     *composition_start() = 0;
     composition_range()->set_start(0);
     composition_range()->set_end(2);
@@ -3399,8 +3404,48 @@ class RegressionTest5Callback : public TSFTextStoreTestCallback {
     EXPECT_EQ(u"aa", text);
     SetHasCompositionText(false);
   }
+
+  // Only change underline thickness in IME spans but `OnUpdateComposition` is
+  // not called. Other states (composition string, selection) remain unchanged.
+  HRESULT LockGranted4(DWORD flags) {
+    GetTextTest(0, -1, L"aa", 2);
+
+    text_spans()->clear();
+    ImeTextSpan text_span_1;
+    text_span_1.start_offset = 0;
+    text_span_1.end_offset = 1;
+    text_span_1.underline_color = SK_ColorBLACK;
+    text_span_1.thickness = ImeTextSpan::Thickness::kThin;
+    text_span_1.underline_style = ImeTextSpan::UnderlineStyle::kDot;
+    text_span_1.background_color = SK_ColorTRANSPARENT;
+    text_spans()->push_back(text_span_1);
+    ImeTextSpan text_span_2;
+    text_span_2.start_offset = 1;
+    text_span_2.end_offset = 2;
+    text_span_2.underline_color = SK_ColorBLACK;
+    text_span_2.thickness = ImeTextSpan::Thickness::kThick;
+    text_span_2.underline_style = ImeTextSpan::UnderlineStyle::kDot;
+    text_span_2.background_color = SK_ColorTRANSPARENT;
+    text_spans()->push_back(text_span_2);
+
+    // When only `OnEndEdit` was called and `OnUpdateComposition` was not called
+    // during `ITextStoreACPSink::OnLockGranted`.
+    *edit_flag() = true;
+    *composition_start() = 0;
+    composition_range()->set_start(0);
+    composition_range()->set_end(2);
+
+    text_store_->OnKeyTraceUp(65u, 1966081u);
+    text_store_->OnKeyTraceDown(65u, 1966081u);
+    return S_OK;
+  }
+
+  void SetCompositionText4(const ui::CompositionText& composition) {
+    NOTREACHED() << "SetCompositionText4 should not be called.";
+  }
 };
 
+// regression test for crbug.com/1006067.
 TEST_F(TSFTextStoreTest, RegressionTest5) {
   EXPECT_CALL(text_input_client_, GetTextInputType())
       .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
@@ -3429,6 +3474,33 @@ TEST_F(TSFTextStoreTest, RegressionTest5) {
   result = kInvalidResult;
   EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
   EXPECT_EQ(S_OK, result);
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+}
+
+// regression test for crbug.com/426433182.
+// Test that we do not call `TextInputClient::SetCompositionText` if only
+// ImeTextSpans are changed from previous edit session during same composition
+// but `TSFTextStore::OnUpdateComposition` was not called during
+// `ITextStoreACPSink::OnLockGranted`.
+TEST_F(TSFTextStoreTest, RegressionTest5WithoutOnUpdateComposition) {
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+  RegressionTest5Callback callback(text_store_.get());
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(&callback, &RegressionTest5Callback::LockGranted1))
+      .WillOnce(Invoke(&callback, &RegressionTest5Callback::LockGranted4));
+
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  ON_CALL(text_input_client_, SetCompositionText(_))
+      .WillByDefault(
+          Invoke(&callback, &RegressionTest5Callback::SetCompositionText4));
+
   result = kInvalidResult;
   EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
   EXPECT_EQ(S_OK, result);

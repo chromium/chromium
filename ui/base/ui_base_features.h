@@ -237,6 +237,12 @@ BASE_DECLARE_FEATURE(kEnablePixelCanvasRecording);
 
 bool COMPONENT_EXPORT(UI_BASE_FEATURES) IsPixelCanvasRecordingEnabled();
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kHandleIMESpanChangesOnUpdateComposition);
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsHandleIMESpanChangesOnUpdateCompositionEnabled();
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

@@ -27,6 +27,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/win/tsf_input_scope.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/gfx/geometry/rect.h"
@@ -652,6 +653,9 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   current_lock_type_ = (lock_flags & TS_LF_READWRITE);
 
   edit_flag_ = false;
+  if (features::IsHandleIMESpanChangesOnUpdateCompositionEnabled()) {
+    on_update_composition_called_ = false;
+  }
   // if there is not already some composition text, they we are about to start
   // composition. we need to set last_composition_start to the selection start.
   // Otherwise we are updating an existing composition, we should use the cached
@@ -783,7 +787,9 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
         previous_composition_string_ != composition_string ||
         !previous_composition_selection_range_.EqualsIgnoringDirection(
             selection_) ||
-        previous_text_spans_ != text_spans_)) ||
+        ((!features::IsHandleIMESpanChangesOnUpdateCompositionEnabled() ||
+          on_update_composition_called_) &&
+         previous_text_spans_ != text_spans_))) ||
       ((wparam_keydown_fired_ != 0) &&
        text_input_client_->HasCompositionText() &&
        composition_string.empty())) {
@@ -959,6 +965,9 @@ HRESULT TSFTextStore::OnStartComposition(ITfCompositionView* composition_view,
 
 HRESULT TSFTextStore::OnUpdateComposition(ITfCompositionView* composition_view,
                                           ITfRange* range) {
+  if (features::IsHandleIMESpanChangesOnUpdateCompositionEnabled()) {
+    on_update_composition_called_ = true;
+  }
   return S_OK;
 }
 

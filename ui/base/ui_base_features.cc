@@ -482,4 +482,13 @@ bool IsPixelCanvasRecordingEnabled() {
   return base::FeatureList::IsEnabled(features::kEnablePixelCanvasRecording);
 }
 
+BASE_FEATURE(kHandleIMESpanChangesOnUpdateComposition,
+             "HandleIMESpanChangesOnUpdateComposition",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsHandleIMESpanChangesOnUpdateCompositionEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kHandleIMESpanChangesOnUpdateComposition);
+}
+
 }  // namespace features
