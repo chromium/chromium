@@ -48,6 +48,7 @@ void HistoryTool::Validate(ValidateCallback callback) {
   NavigationController& controller = web_contents()->GetController();
   mojom::ActionResultPtr result;
 
+  // TODO(crbug.com/411462297): Move these checks to TimeOfUseValidation.
   if (direction_ == HistoryToolRequest::Direction::kBack &&
       !controller.CanGoBack()) {
     result = MakeResult(mojom::ActionResultCode::kHistoryNoBackEntries);

@@ -118,7 +118,10 @@ void ExecutionEngine::SetState(State state) {
   static const base::NoDestructor<base::StateTransitions<State>> transitions(
       base::StateTransitions<State>({
           {State::kInit, {State::kStartAction, State::kComplete}},
-          {State::kStartAction, {State::kUiPreInvoke, State::kComplete}},
+          {State::kStartAction,
+           {State::kToolCreateAndVerify, State::kComplete}},
+          {State::kToolCreateAndVerify,
+           {State::kUiPreInvoke, State::kComplete}},
           {State::kUiPreInvoke, {State::kToolInvoke, State::kComplete}},
           {State::kToolInvoke, {State::kUiPostInvoke, State::kComplete}},
           {State::kUiPostInvoke, {State::kComplete, State::kStartAction}},
@@ -135,6 +138,8 @@ std::string ExecutionEngine::StateToString(State state) {
       return "INIT";
     case State::kStartAction:
       return "START_ACTION";
+    case State::kToolCreateAndVerify:
+      return "CREATE_AND_VERIFY";
     case State::kUiPreInvoke:
       return "UI_PRE_INVOKE";
     case State::kToolInvoke:
@@ -320,6 +325,17 @@ void ExecutionEngine::ExecuteNextAction() {
 
   ++next_action_index_;
 
+  SetState(State::kToolCreateAndVerify);
+  tool_controller_->CreateToolAndValidate(
+      GetInProgressAction(), last_observed_page_content_.get(),
+      base::BindOnce(&ExecutionEngine::PostToolCreate, GetWeakPtr()));
+}
+
+void ExecutionEngine::PostToolCreate(mojom::ActionResultPtr result) {
+  if (!IsOk(*result)) {
+    CompleteActions(std::move(result), InProgressActionIndex());
+    return;
+  }
   SetState(State::kUiPreInvoke);
   ui_event_dispatcher_->OnPreTool(
       GetInProgressAction(),
@@ -335,7 +351,6 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
 
   SetState(State::kToolInvoke);
   tool_controller_->Invoke(
-      GetInProgressAction(), last_observed_page_content_.get(),
       base::BindOnce(&ExecutionEngine::FinishedToolInvoke, GetWeakPtr()));
 }
 
@@ -424,7 +439,7 @@ const ToolRequest& ExecutionEngine::GetNextAction() const {
 
 size_t ExecutionEngine::InProgressActionIndex() const {
   CHECK(state_ == State::kUiPreInvoke || state_ == State::kToolInvoke ||
-        state_ == State::kUiPostInvoke)
+        state_ == State::kUiPostInvoke || state_ == State::kToolCreateAndVerify)
       << "Current state is " << StateToString(state_);
   CHECK_GT(next_action_index_, 0ul);
   return next_action_index_ - 1;

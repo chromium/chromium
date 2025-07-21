@@ -77,9 +77,6 @@ class Tool {
   virtual std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const = 0;
 
-  // TODO(crbug.com/411462297): These need to be reshaped and made callable from
-  // ExecutionEngine to enable better integration with UI. This will require
-  // some plumbing through ToolController to make this possible.
   // Gives the tool an opportunity to update the task's state before being
   // invoked.
   virtual void UpdateTaskBeforeInvoke(ActorTask& task,

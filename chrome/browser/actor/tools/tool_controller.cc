@@ -55,9 +55,12 @@ void ToolController::SetState(State state) {
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>> transitions(
       base::StateTransitions<State>({
-          {State::kInit, {State::kValidating}},
-          {State::kReady, {State::kValidating}},
-          {State::kValidating, {State::kPreInvoke, State::kReady}},
+          {State::kInit, {State::kCreating}},
+          {State::kReady, {State::kCreating}},
+          {State::kCreating, {State::kValidating}},
+          {State::kValidating, {State::kPostValidate, State::kReady}},
+          {State::kPostValidate, {State::kInvokable, State::kReady}},
+          {State::kInvokable, {State::kPreInvoke, State::kReady}},
           {State::kPreInvoke, {State::kInvoking, State::kReady}},
           {State::kInvoking, {State::kPostInvoke, State::kReady}},
           {State::kPostInvoke, {State::kReady}},
@@ -73,8 +76,14 @@ std::string ToolController::StateToString(State state) {
       return "INIT";
     case State::kReady:
       return "READY";
+    case State::kCreating:
+      return "CREATING";
     case State::kValidating:
       return "VALIDATING";
+    case State::kPostValidate:
+      return "POST_VALIDATE";
+    case State::kInvokable:
+      return "INVOKABLE";
     case State::kPreInvoke:
       return "PREINVOKE";
     case State::kInvoking:
@@ -88,19 +97,20 @@ std::ostream& operator<<(std::ostream& o, const ToolController::State& s) {
   return o << ToolController::StateToString(s);
 }
 
-void ToolController::Invoke(const ToolRequest& request,
-                            const AnnotatedPageContent* last_observation,
-                            ResultCallback result_callback) {
-  DCHECK(state_ == State::kReady || state_ == State::kInit);
+void ToolController::CreateToolAndValidate(
+    const ToolRequest& request,
+    const AnnotatedPageContent* last_observation,
+    ResultCallback result_callback) {
+  SetState(State::kCreating);
   ToolRequest::CreateToolResult create_result =
       request.CreateTool(task_->id(), *journal_);
-  VLOG(4) << "ToolController::Invoke " << request.JournalEvent() << " "
+  VLOG(4) << "Creating Tool for " << request.JournalEvent() << " "
           << request.GetURLForJournal();
 
   if (!IsOk(*create_result.result)) {
     CHECK(!create_result.tool);
     journal_->Log(request.GetURLForJournal(), task_->id(),
-                  "ToolController Invoke Failed",
+                  "ToolController CreateToolAndValidate Failed",
                   create_result.result->message);
     PostResponseTask(std::move(result_callback),
                      std::move(create_result.result));
@@ -117,19 +127,36 @@ void ToolController::Invoke(const ToolRequest& request,
                         std::move(journal_event), last_observation);
 
   SetState(State::kValidating);
-  active_state_->tool->Validate(base::BindOnce(
-      &ToolController::ValidationComplete, weak_ptr_factory_.GetWeakPtr()));
+  active_state_->tool->Validate(base::BindOnce(&ToolController::PostValidate,
+                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
-  DCHECK(state_ == State::kValidating);
+void ToolController::PostValidate(mojom::ActionResultPtr result) {
+  if (!IsOk(*result)) {
+    CompleteToolRequest(std::move(result));
+    return;
+  }
+  SetState(State::kPostValidate);
+  active_state_->tool->UpdateTaskBeforeInvoke(
+      *task_, base::BindOnce(&ToolController::PostUpdateTask,
+                             weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ToolController::PostUpdateTask(mojom::ActionResultPtr result) {
   CHECK(active_state_);
 
   if (!IsOk(*result)) {
     CompleteToolRequest(std::move(result));
     return;
   }
+  SetState(State::kInvokable);
+  PostResponseTask(std::move(active_state_->completion_callback),
+                   MakeOkResult());
+}
 
+void ToolController::Invoke(ResultCallback result_callback) {
+  SetState(State::kPreInvoke);
+  active_state_->completion_callback = std::move(result_callback);
   mojom::ActionResultPtr toctou_result =
       active_state_->tool->TimeOfUseValidation(active_state_->last_observation);
   if (!IsOk(*toctou_result)) {
@@ -139,20 +166,8 @@ void ToolController::ValidationComplete(mojom::ActionResultPtr result) {
     return;
   }
 
-  // TODO(crbug.com/389739308): Ensure the acting tab remains valid (i.e. alive
-  // and focused), return error otherwise.
-
-  SetState(State::kPreInvoke);
-  active_state_->tool->UpdateTaskBeforeInvoke(
-      *task_, base::BindOnce(&ToolController::InvokeTool,
-                             weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ToolController::InvokeTool(mojom::ActionResultPtr result) {
-  if (!IsOk(*result)) {
-    CompleteToolRequest(std::move(result));
-    return;
-  }
+  // TODO(crbug.com/389739308): Ensure the acting tab remains valid (i.e.
+  // alive and focused), return error otherwise.
 
   SetState(State::kInvoking);
   observation_delayer_ = active_state_->tool->GetObservationDelayer();
