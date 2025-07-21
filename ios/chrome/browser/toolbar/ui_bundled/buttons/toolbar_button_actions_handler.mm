@@ -13,9 +13,11 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "url/gurl.h"
 
@@ -81,7 +83,12 @@
 }
 
 - (void)diamondPrototypeAction:(id)sender {
-  // TODO(crbug.com/429955447): implement the action.
+  CHECK(IsDiamondPrototypeEnabled());
+  id<LensOverlayCommands> overlayHandler =
+      (id<LensOverlayCommands>)self.applicationHandler;
+  [overlayHandler createAndShowLensUI:YES
+                           entrypoint:LensOverlayEntrypoint::kLocationBar
+                           completion:nil];
 }
 
 - (void)cancelOmniboxFocusAction {
