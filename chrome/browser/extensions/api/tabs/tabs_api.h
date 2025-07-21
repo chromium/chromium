@@ -294,7 +294,6 @@ class TabsDetectLanguageFunction
   ~TabsDetectLanguageFunction() override = default;
   ResponseAction Run() override;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // content::WebContentsObserver:
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
@@ -311,7 +310,6 @@ class TabsDetectLanguageFunction
   // Indicates if this instance is observing the tabs' WebContents and the
   // ContentTranslateDriver, in which case the observers must be unregistered.
   bool is_observing_ = false;
-#endif
 
   DECLARE_EXTENSION_FUNCTION("tabs.detectLanguage", TABS_DETECTLANGUAGE)
 };

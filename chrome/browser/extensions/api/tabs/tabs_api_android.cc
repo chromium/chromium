@@ -242,13 +242,6 @@ ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
-  std::optional<tabs::DetectLanguage::Params> params =
-      tabs::DetectLanguage::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExecuteCodeInTabFunction::ExecuteCodeInTabFunction() = default;
 ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
 

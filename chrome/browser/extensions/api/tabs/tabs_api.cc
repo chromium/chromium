@@ -13,10 +13,13 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -34,6 +37,9 @@ namespace extensions {
 
 namespace tabs = api::tabs;
 namespace windows = api::windows;
+
+constexpr char kCannotDetermineLanguageOfUnloadedTab[] =
+    "Cannot determine language: tab not loaded";
 
 namespace tabs_internal {
 
@@ -451,5 +457,115 @@ class TabsRemoveFunction::WebContentsDestroyedObserver
   // Guaranteed to outlive this object.
   raw_ptr<TabsRemoveFunction> owner_;
 };
+
+ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
+  std::optional<tabs::DetectLanguage::Params> params =
+      tabs::DetectLanguage::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  content::WebContents* contents = nullptr;
+
+  // If |tab_id| is specified, look for it. Otherwise default to selected tab
+  // in the current window.
+  if (params->tab_id) {
+    WindowController* window = nullptr;
+    std::string error;
+    if (!tabs_internal::GetTabById(*params->tab_id, browser_context(),
+                                   include_incognito_information(), &window,
+                                   &contents, nullptr, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+    // The window will be null for prerender tabs.
+    if (!window) {
+      return RespondNow(Error(kUnknownErrorDoNotUse));
+    }
+  } else {
+    WindowController* window_controller =
+        ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+    if (!window_controller) {
+      return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+    }
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
+      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+    }
+    contents = window_controller->GetActiveTab();
+    if (!contents) {
+      return RespondNow(Error(tabs_constants::kNoSelectedTabError));
+    }
+  }
+
+  if (contents->GetController().NeedsReload()) {
+    // If the tab hasn't been loaded, don't wait for the tab to load.
+    return RespondNow(Error(kCannotDetermineLanguageOfUnloadedTab));
+  }
+
+  AddRef();  // Balanced in RespondWithLanguage().
+
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(contents);
+  if (!chrome_translate_client->GetLanguageState().source_language().empty()) {
+    // Delay the callback invocation until after the current JS call has
+    // returned.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &TabsDetectLanguageFunction::RespondWithLanguage, this,
+            chrome_translate_client->GetLanguageState().source_language()));
+    return RespondLater();
+  }
+
+  // The tab contents does not know its language yet. Let's wait until it
+  // receives it, or until the tab is closed/navigates to some other page.
+
+  // Observe the WebContents' lifetime and navigations.
+  Observe(contents);
+  // Wait until the language is determined.
+  chrome_translate_client->GetTranslateDriver()->AddLanguageDetectionObserver(
+      this);
+  is_observing_ = true;
+
+  return RespondLater();
+}
+
+void TabsDetectLanguageFunction::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  // Call RespondWithLanguage() with an empty string as we want to guarantee the
+  // callback is called for every API call the extension made.
+  RespondWithLanguage(std::string());
+}
+
+void TabsDetectLanguageFunction::WebContentsDestroyed() {
+  // Call RespondWithLanguage() with an empty string as we want to guarantee the
+  // callback is called for every API call the extension made.
+  RespondWithLanguage(std::string());
+}
+
+void TabsDetectLanguageFunction::OnTranslateDriverDestroyed(
+    translate::TranslateDriver* driver) {
+  // Typically, we'd return an error in these cases, since we weren't able to
+  // detect a valid language. However, this matches the behavior in other cases
+  // (like the tab going away), so we aim for consistency.
+  RespondWithLanguage(std::string());
+}
+
+void TabsDetectLanguageFunction::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  RespondWithLanguage(details.adopted_language);
+}
+
+void TabsDetectLanguageFunction::RespondWithLanguage(
+    const std::string& language) {
+  // Stop observing.
+  if (is_observing_) {
+    ChromeTranslateClient::FromWebContents(web_contents())
+        ->GetTranslateDriver()
+        ->RemoveLanguageDetectionObserver(this);
+    Observe(nullptr);
+    is_observing_ = false;
+  }
+
+  Respond(WithArguments(language));
+  Release();  // Balanced in Run()
+}
 
 }  // namespace extensions
