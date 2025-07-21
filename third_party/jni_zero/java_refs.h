@@ -162,8 +162,6 @@ class JavaParamRef : public JavaRef<T> {
   JavaParamRef& operator=(const JavaParamRef&) = delete;
 
   ~JavaParamRef() {}
-
-  operator T() const { return JavaRef<T>::obj(); }
 };
 
 // Holds a local reference to a Java object. The local reference is scoped
@@ -293,13 +291,6 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
   JNIEnv* env_ = nullptr;
-
-  // Prevent ScopedJavaLocalRef(JNIEnv*, T obj) from being used to take
-  // ownership of a JavaParamRef's underlying object - parameters are not
-  // allowed to be deleted and so should not be owned by ScopedJavaLocalRef.
-  // TODO(torne): this can be removed once JavaParamRef no longer has an
-  // implicit conversion back to T.
-  ScopedJavaLocalRef(JNIEnv* env, const JavaParamRef<T>& other);
 
   // Friend required to get env_ from conversions.
   template <typename U>
