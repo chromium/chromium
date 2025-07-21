@@ -500,12 +500,21 @@ void CookieControlsController::UpdatePageReloadStatus(
   }
 }
 
+void CookieControlsController::OnBubbleCloseTriggered() {
+  for (auto& observer : observers_) {
+    observer.OnBubbleCloseTriggered();
+  }
+}
+
 void CookieControlsController::OnPageFinishedLoading() {
   if (!waiting_for_page_load_finish_) {
     return;
   }
   waiting_for_page_load_finish_ = false;
 
+  // Ensure the bubble is closed before subsequent calls are made to update the
+  // UI.
+  OnBubbleCloseTriggered();
   for (auto& observer : observers_) {
     observer.OnFinishedPageReloadWithChangedSettings();
   }
@@ -759,6 +768,10 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
 
 void CookieControlsController::TabObserver::DidStopLoading() {
   cookie_controls_->OnPageFinishedLoading();
+}
+
+void CookieControlsController::TabObserver::BeforeFormRepostWarningShow() {
+  cookie_controls_->OnBubbleCloseTriggered();
 }
 
 void CookieControlsController::TabObserver::ResetReloadCounter() {

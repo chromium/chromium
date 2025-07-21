@@ -66,6 +66,9 @@ class CookieControlsController final
   // Called when the UI is closing.
   void OnUiClosing();
 
+  // Called when the bubble should be closed.
+  void OnBubbleCloseTriggered();
+
   // Called when the user clicks on the toggle to enable/disable cookie
   // blocking.
   void OnCookieBlockingEnabledForSite(bool block_third_party_cookies);
@@ -136,6 +139,7 @@ class CookieControlsController final
     // content::WebContentsObserver:
     void PrimaryPageChanged(content::Page& page) override;
     void DidStopLoading() override;
+    void BeforeFormRepostWarningShow() override;
 
     // fingerprinting_protection_filter::FingerprintingProtectionObserver:
     void OnSubresourceBlocked() override;

@@ -274,11 +274,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
   }
 }
 
-void CookieControlsBubbleViewController::
-    OnFinishedPageReloadWithChangedSettings() {
-  // TODO: Log a UserMetricsAction here to count completed page reloads once we
-  // have confidence that this callback is properly scoped.  See
-  // https://crrev.com/c/4925330 for context.
+void CookieControlsBubbleViewController::OnBubbleCloseTriggered() {
   CloseBubble();
 }
 
