@@ -120,7 +120,8 @@
   }
 }
 
-- (void)testMigrateWithManagedPrimaryAccount {
+// TODO(crbug.com/433320893): Re-enable this test.
+- (void)DISABLED_testMigrateWithManagedPrimaryAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;

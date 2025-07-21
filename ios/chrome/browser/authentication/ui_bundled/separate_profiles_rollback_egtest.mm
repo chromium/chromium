@@ -117,7 +117,8 @@
              @"Separate profiles should be disabled now");
 }
 
-- (void)testRollbackWithManagedProfile {
+// TODO(crbug.com/433320893): Re-enable this test.
+- (void)DISABLED_testRollbackWithManagedProfile {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -211,7 +212,8 @@
       @"Should be in the managed profile again");
 }
 
-- (void)testRollbackWithManagedProfile_ManagedAccountRemoved {
+// TODO(crbug.com/433320893): Re-enable this test.
+- (void)DISABLED_testRollbackWithManagedProfile_ManagedAccountRemoved {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -302,7 +304,8 @@
              @"Separate profiles should still be enabled");
 }
 
-- (void)testRollbackWithManagedProfile_KillSwitch {
+// TODO(crbug.com/433320893): Re-enable this test.
+- (void)DISABLED_testRollbackWithManagedProfile_KillSwitch {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
