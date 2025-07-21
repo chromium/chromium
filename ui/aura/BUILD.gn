@@ -335,6 +335,7 @@ test("aura_unittests") {
     "//ui/gl:test_support",
     "//ui/platform_window",
     "//ui/platform_window/stub",
+    "//ui/resources:ui_test_pak",
     "//ui/wm",
   ]
 
@@ -349,5 +350,8 @@ test("aura_unittests") {
     ]
   }
 
-  data_deps = [ "//third_party/angle:includes" ]
+  data_deps = [
+    "//third_party/angle:includes",
+    "//ui/resources:ui_test_pak_data",
+  ]
 }

@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
+#include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_suite.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_paths.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
@@ -38,9 +40,10 @@ class AuraTestSuite : public base::TestSuite {
     gl::GLSurfaceTestSupport::InitializeOneOff();
     env_ = aura::Env::CreateInstance();
 
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", /*delegate=*/nullptr,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+    ui::RegisterPathProvider();
+    base::FilePath ui_test_pak_path;
+    ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
+    ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
   }
 
   void Shutdown() override {
