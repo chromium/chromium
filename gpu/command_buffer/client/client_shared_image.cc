@@ -65,7 +65,7 @@ class ScopedMappingForTests : public ClientSharedImage::ScopedMapping {
     for (int plane_index = 0; plane_index < num_planes; plane_index++) {
       size_t height_in_pixels;
       CHECK(gfx::PlaneHeightForBufferFormatChecked(
-          Size().height(), Format(), plane_index, &height_in_pixels));
+          Size().height(), format_, plane_index, &height_in_pixels));
       allocation_size += Stride(plane_index) * height_in_pixels;
     }
 
@@ -80,26 +80,25 @@ class ScopedMappingForTests : public ClientSharedImage::ScopedMapping {
     size_t row_size_in_bytes;
 
     CHECK(gfx::PlaneHeightForBufferFormatChecked(
-        Size().height(), Format(), plane_index, &height_in_pixels));
-    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), Format(),
+        Size().height(), format_, plane_index, &height_in_pixels));
+    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), format_,
                                              plane_index, &row_size_in_bytes));
     size_t span_length =
         Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
 
     DCHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(format_));
     auto* data_ptr = data_.data();
-    data_ptr += gfx::BufferOffsetForBufferFormat(Size(), Format(), plane_index);
+    data_ptr += gfx::BufferOffsetForBufferFormat(Size(), format_, plane_index);
 
     // SAFETY: `data_` has been allocated to have the necessary size.
     return UNSAFE_BUFFERS(
         base::span<uint8_t>(reinterpret_cast<uint8_t*>(data_ptr), span_length));
   }
   size_t Stride(const uint32_t plane_index) override {
-    DCHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
-    return gfx::RowSizeForBufferFormat(Size().width(), Format(), plane_index);
+    DCHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+    return gfx::RowSizeForBufferFormat(Size().width(), format_, plane_index);
   }
   gfx::Size Size() override { return size_; }
-  gfx::BufferFormat Format() override { return format_; }
   bool IsSharedMemory() override { return true; }
 
  private:
@@ -119,32 +118,37 @@ class ScopedMappingSharedMemoryMapping
   // ClientSharedImage::ScopedMapping:
   base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
     CHECK(mapping_->IsValid());
-    CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
+    CHECK_LT(plane_index,
+             gfx::NumberOfPlanesForLinearBufferFormat(BufferFormat()));
 
     size_t height_in_pixels;
     CHECK(gfx::PlaneHeightForBufferFormatChecked(
-        Size().height(), Format(), plane_index, &height_in_pixels));
+        Size().height(), BufferFormat(), plane_index, &height_in_pixels));
     size_t span_length = Stride(plane_index) * height_in_pixels;
 
     // SAFETY: The validity of the mapping combined with the construction of
     // that mapping guarantee that it contains at least `span_length` bytes
     // beyond the start of the plane.
-    return UNSAFE_BUFFERS(base::span<uint8_t>(
-        static_cast<uint8_t*>(mapping_->memory()) +
-            gfx::BufferOffsetForBufferFormat(Size(), Format(), plane_index),
-        span_length));
+    return UNSAFE_BUFFERS(
+        base::span<uint8_t>(static_cast<uint8_t*>(mapping_->memory()) +
+                                gfx::BufferOffsetForBufferFormat(
+                                    Size(), BufferFormat(), plane_index),
+                            span_length));
   }
   size_t Stride(const uint32_t plane_index) override {
-    CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
-    return gfx::RowSizeForBufferFormat(Size().width(), Format(), plane_index);
+    CHECK_LT(plane_index,
+             gfx::NumberOfPlanesForLinearBufferFormat(BufferFormat()));
+    return gfx::RowSizeForBufferFormat(Size().width(), BufferFormat(),
+                                       plane_index);
   }
   gfx::Size Size() override { return metadata_.size; }
-  gfx::BufferFormat Format() override {
-    return viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format);
-  }
   bool IsSharedMemory() override { return true; }
 
  private:
+  gfx::BufferFormat BufferFormat() {
+    return viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format);
+  }
+
   SharedImageMetadata metadata_;
   raw_ptr<base::WritableSharedMemoryMapping> mapping_;
 };
@@ -167,8 +171,8 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
     size_t row_size_in_bytes;
 
     CHECK(gfx::PlaneHeightForBufferFormatChecked(
-        Size().height(), Format(), plane_index, &height_in_pixels));
-    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), Format(),
+        Size().height(), format_, plane_index, &height_in_pixels));
+    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), format_,
                                              plane_index, &row_size_in_bytes));
 
     // Note that the stride might be larger than the row size due to padding.
@@ -192,7 +196,6 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
     return buffer_->stride(plane_index);
   }
   gfx::Size Size() override { return size_; }
-  gfx::BufferFormat Format() override { return format_; }
   bool IsSharedMemory() override {
     CHECK(buffer_);
     return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;

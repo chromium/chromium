@@ -105,9 +105,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
     // Returns the size of the buffer.
     virtual gfx::Size Size() = 0;
 
-    // Returns BufferFormat.
-    virtual gfx::BufferFormat Format() = 0;
-
     // Returns whether the underlying resource is shared memory.
     virtual bool IsSharedMemory() = 0;
 
