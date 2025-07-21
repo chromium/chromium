@@ -14,3 +14,8 @@ feature kZeroStateSuggestionsV2 {
   const string name = "ZeroStateSuggestionsV2";
   const bool default_state = false;
 };
+
+feature kGlicAppendModelQualityClientId {
+  const string name = "GlicAppendModelQualityClientId";
+  const bool default_state = false;
+};

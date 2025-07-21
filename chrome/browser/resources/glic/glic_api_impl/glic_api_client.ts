@@ -394,6 +394,12 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.sender.requestNoResponse('glicBrowserShowProfilePicker', undefined);
   }
 
+  async getModelQualityClientId(): Promise<string> {
+    const result = await this.sender.requestWithResponse(
+        'glicBrowserGetModelQualityClientId', undefined);
+    return result.modelQualityClientId;
+  }
+
   async getContextFromFocusedTab(options: TabContextOptions):
       Promise<TabContextResult> {
     const context = await this.sender.requestWithResponse(

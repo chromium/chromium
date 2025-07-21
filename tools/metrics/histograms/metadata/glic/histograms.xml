@@ -76,6 +76,7 @@ chromium-metrics-reviews@google.com.
     <variant name="EnableDragResize"/>
     <variant name="GetContextFromFocusedTab"/>
     <variant name="GetContextFromTab"/>
+    <variant name="GetModelQualityClientId"/>
     <variant name="GetOsMicrophonePermissionStatus"/>
     <variant name="GetUserProfileInfo"/>
     <variant name="GetZeroStateSuggestions"/>

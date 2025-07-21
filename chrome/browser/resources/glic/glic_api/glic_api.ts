@@ -151,6 +151,11 @@ export declare interface GlicBrowserHost {
   setMinimumWidgetSize?(width: number, height: number): Promise<void>;
 
   /**
+   * Returns the model quality client ID.
+   */
+  getModelQualityClientId?(): Promise<string>;
+
+  /**
    * Fetches page context for the currently focused tab, optionally including
    * more expensive-to-generate data. Requesting only the base data is cheap,
    * but the returned information should be identical to the latest push-update

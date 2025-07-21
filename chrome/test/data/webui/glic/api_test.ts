@@ -1069,6 +1069,12 @@ class ApiTests extends ApiTestFixtureBase {
             this.capabilitiesToString(Array.from(capabilities))}`);
   }
 
+  async testGetModelQualityClientId() {
+    assertTrue(!!this.host.getModelQualityClientId);
+    const clientId = await this.host.getModelQualityClientId();
+    assertTrue(!!clientId);
+  }
+
   private async closePanelAndWaitUntilInactive() {
     assertTrue(!!this.host.closePanel);
     await this.host.closePanel();

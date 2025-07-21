@@ -372,6 +372,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.showProfilePicker();
   }
 
+  glicBrowserGetModelQualityClientId(): Promise<{modelQualityClientId: string}> {
+    return this.handler.getModelQualityClientId();
+  }
+
   async glicBrowserGetContextFromFocusedTab(
       request: {options: TabContextOptions}, extras: ResponseExtras):
       Promise<{tabContextResult: TabContextResultPrivate}> {

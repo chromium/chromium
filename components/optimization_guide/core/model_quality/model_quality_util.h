@@ -25,6 +25,10 @@ int64_t GetOrCreateModelQualityClientId(
     proto::LogAiDataRequest::FeatureCase feature,
     PrefService* pref_service);
 
+// Creates and returns a new client id for glic API, or returns the previously
+// created one.
+std::string GetOrCreateGlicModelQualityClientId(PrefService* pref_service);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_QUALITY_MODEL_QUALITY_UTIL_H_

@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -44,6 +45,18 @@ TEST_F(ModelQualityUtilTest, GetModelQualityClientId) {
   int64_t new_compose_client_id = GetOrCreateModelQualityClientId(
       proto::LogAiDataRequest::FeatureCase::kCompose, &pref_service_);
   EXPECT_NE(compose_client_id, new_compose_client_id);
+}
+
+TEST_F(ModelQualityUtilTest, GetGlicModelQualityClientId) {
+  int64_t compose_client_id = GetOrCreateModelQualityClientId(
+    proto::LogAiDataRequest::FeatureCase::kCompose, &pref_service_);
+  std::string glic_client_id = GetOrCreateGlicModelQualityClientId(
+      &pref_service_);
+
+  EXPECT_NE("", glic_client_id);
+  // Just checking against compose but the glic id should be different from ids
+  // of all other features.
+  EXPECT_NE(base::NumberToString(compose_client_id), glic_client_id);
 }
 
 }  // namespace optimization_guide

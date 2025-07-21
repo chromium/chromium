@@ -36,6 +36,11 @@ option java_outer_classname = "ModelQualityServiceProto";
 message LogAiDataRequest {
   reserved 10, 11;
 
+  // For the use of MQLS client ID in glic API.
+  // LINT.IfChange(MQLSClientIdReservation)
+  reserved 1002;
+  // LINT.ThenChange(//components/optimization_guide/core/model_quality/model_quality_util.cc:MQLSClientIdReservation)
+
   // Information about a feature's AiLoggingData, such as training opt-outs.
   LoggingMetadata logging_metadata = 1;
 

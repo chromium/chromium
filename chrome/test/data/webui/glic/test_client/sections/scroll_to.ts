@@ -157,3 +157,8 @@ $.scrollToBn.addEventListener('click', async () => {
 $.dropScrollToHighlightBtn.addEventListener('click', () => {
   getBrowser()!.dropScrollToHighlight!();
 });
+
+$.mqlsClientIdBtn.addEventListener('click', () => {
+  const clientId = getBrowser()!.getModelQualityClientId!();
+  logMessage(`MQLS Client ID: ${clientId}`);
+});

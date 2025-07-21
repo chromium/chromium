@@ -63,6 +63,7 @@
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/metrics/metrics_service.h"
+#include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -696,6 +697,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                     base::TimeDelta duration,
                     ResizeWidgetCallback callback) override {
     glic_service_->ResizePanel(size, duration, std::move(callback));
+  }
+
+  void GetModelQualityClientId(
+      GetModelQualityClientIdCallback callback) override {
+    auto* local_state = g_browser_process->local_state();
+    std::string client_id = optimization_guide::
+        GetOrCreateGlicModelQualityClientId(local_state);
+    std::move(callback).Run(std::move(client_id));
   }
 
   void GetContextFromFocusedTab(

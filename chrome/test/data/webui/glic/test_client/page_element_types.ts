@@ -132,6 +132,7 @@ export interface PageElementTypes {
   shareCandidateQuery: HTMLInputElement;
   shareCandidates: HTMLElement;
   unpin: HTMLButtonElement;
+  mqlsClientIdBtn: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

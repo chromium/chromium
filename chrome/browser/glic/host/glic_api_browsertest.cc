@@ -343,8 +343,14 @@ class GlicApiTest : public NonInteractiveGlicTest {
 class GlicApiTestWithOneTab : public GlicApiTest {
  public:
   GlicApiTestWithOneTab() {
-    scoped_feature_list_.InitWithFeatures({features::kGlicClosedCaptioning},
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            features::kGlicClosedCaptioning,
+            mojom::features::kGlicAppendModelQualityClientId,
+        },
+        /*disabled_features=*/
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -918,6 +924,10 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitiallyNotResizable) {
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
   RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetModelQualityClientId) {
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,

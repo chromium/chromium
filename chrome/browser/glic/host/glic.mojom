@@ -472,6 +472,10 @@ interface WebClientHandler {
   // favor of a new one.
   ShowProfilePicker();
 
+  // Returns the current model quality client id.
+  [RuntimeFeature=glic.mojom.features.kGlicAppendModelQualityClientId]
+  GetModelQualityClientId() => (string model_quality_client_id);
+
   // Returns the context from the currently active tab.
   // `tab_context_result` is null if tab content could not be captured.
   // This may fail if the tab is navigated while collecting data, or closed
