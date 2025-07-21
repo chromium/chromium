@@ -162,6 +162,12 @@ typedef NS_ENUM(NSInteger, AccountsItemType) {
   return self;
 }
 
+- (void)dealloc {
+  DUMP_WILL_BE_CHECK(_isBeingDismissed);
+}
+
+#pragma mark - UIViewController
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kSettingsLegacyAccountsTableViewId;

@@ -153,6 +153,7 @@ using signin_metrics::PromoAction;
   [self stopAddAccountCoordinator];
   ManageAccountsTableViewController* accountsTableViewController =
       base::apple::ObjCCast<ManageAccountsTableViewController>(_viewController);
+  _viewController.modelIdentityDataSource = nil;
   if (accountsTableViewController) {
     accountsTableViewController.mutator = nil;
   } else {
