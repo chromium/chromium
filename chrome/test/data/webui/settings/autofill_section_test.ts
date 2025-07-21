@@ -164,9 +164,16 @@ suite('AutofillSectionUiTest', function() {
     const accountAddress = createAddressEntry();
     accountAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT;
+    const homeAddress = createAddressEntry();
+    homeAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
+    const workAddress = createAddressEntry();
+    workAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
 
     const autofillManager = new TestAutofillManager();
-    autofillManager.data.addresses = [address, accountAddress];
+    autofillManager.data.addresses =
+        [address, accountAddress, homeAddress, workAddress];
     autofillManager.data.accountInfo = {
       ...STUB_USER_ACCOUNT_INFO,
       isSyncEnabledForAutofillProfiles: true,
@@ -252,20 +259,51 @@ suite('AutofillSectionUiTest', function() {
       await eventToPromise('close', dialog.$.dialog);
     }
 
+    await flushTasks();
+
+    {
+      const dialog = await initiateRemoving(section, 2);
+      const homeUrl = loadTimeData.getString('googleAccountHomeAddressUrl')
+                          .replace(/&/g, '&amp;');
+      const expectedMessage = loadTimeData.getStringF(
+          'deleteHomeAddressNotice', homeUrl, STUB_USER_ACCOUNT_INFO.email);
+      assertEquals(
+          dialog.$.description.innerHTML, expectedMessage,
+          `Home address delete confirmation view description is incorrect.`);
+      dialog.$.dialog.close();
+      // Make sure closing clean-ups are finished.
+      await eventToPromise('close', dialog.$.dialog);
+    }
+
+    await flushTasks();
+
+    {
+      const dialog = await initiateRemoving(section, 3);
+      const workUrl = loadTimeData.getString('googleAccountWorkAddressUrl')
+                          .replace(/&/g, '&amp;');
+      const expectedMessage = loadTimeData.getStringF(
+          'deleteWorkAddressNotice', workUrl, STUB_USER_ACCOUNT_INFO.email);
+      assertEquals(
+          dialog.$.description.innerHTML, expectedMessage,
+          `Work address delete confirmation view description is incorrect.`);
+      dialog.$.dialog.close();
+      // Make sure closing clean-ups are finished.
+      await eventToPromise('close', dialog.$.dialog);
+    }
+
     document.body.removeChild(section);
   });
 
   test('verifyAddressEditRecordTypeNotice', async () => {
     const email = 'stub-user@example.com';
     const address = createAddressEntry();
-    const accouontAddress = createAddressEntry();
-    accouontAddress.metadata!.recordType =
+    const accountAddress = createAddressEntry();
+    accountAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT;
-    const section =
-        await createAutofillSection([address, accouontAddress], {}, {
-          ...STUB_USER_ACCOUNT_INFO,
-          email,
-        });
+    const section = await createAutofillSection([address, accountAddress], {}, {
+      ...STUB_USER_ACCOUNT_INFO,
+      email,
+    });
 
     {
       const dialog = await initiateEditing(section, 0);
