@@ -38,10 +38,6 @@
 #include "extensions/common/extension_set.h"        // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif
-
 namespace task_manager {
 
 namespace {

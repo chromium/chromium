@@ -121,10 +121,6 @@
 #include "components/user_education/views/help_bubble_factory_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

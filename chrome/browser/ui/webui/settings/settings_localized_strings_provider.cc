@@ -170,10 +170,6 @@
 #include "device/vr/public/cpp/features.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif
-
 namespace settings {
 namespace {
 

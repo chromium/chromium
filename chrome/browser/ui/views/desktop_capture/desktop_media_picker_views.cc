@@ -71,10 +71,6 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif
-
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
 using ::content::RenderFrameHost;
