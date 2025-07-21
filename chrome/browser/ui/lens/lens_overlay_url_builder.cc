@@ -130,10 +130,10 @@ inline constexpr char kClientIdQueryParameterValue[] = "lens-overlay";
 // time when the query leaves the client and is sent to the server.
 inline constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 
-// Query parameter for the perceived query submission time. This should
-// be set to the time when the user performed the action that triggered
-// the query.
-inline constexpr char kUserPerceivedStateTimeQueryParameter[] = "pqsubts";
+// Query parameter for the client upload processing duration. This is the time
+// between the user-perceived query submission time and the time when the
+// search request is made (i.e. qsubts).
+inline constexpr char kClientUploadDurationQueryParameter[] = "cud";
 
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
@@ -267,10 +267,20 @@ GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
                     : kDarkModeParameterLightValue);
 }
 
-GURL AppendQuerySubmissionTimeParamToURL(const GURL& url_to_modify) {
-  return net::AppendOrReplaceQueryParameter(
-      url_to_modify, kQuerySubmissionTimeQueryParameter,
-      base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()));
+GURL AppendQuerySubmissionTimeAndClientUploadDurationParamToURL(
+    const GURL& url_to_modify,
+    base::Time query_start_time) {
+  GURL new_url = url_to_modify;
+  base::Time query_submission_time = base::Time::Now();
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, kClientUploadDurationQueryParameter,
+      base::NumberToString(
+          (query_submission_time - query_start_time).InMilliseconds()));
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, kQuerySubmissionTimeQueryParameter,
+      base::NumberToString(
+          query_submission_time.InMillisecondsSinceUnixEpoch()));
+  return new_url;
 }
 
 GURL BuildTextOnlySearchURL(
@@ -303,11 +313,9 @@ GURL BuildTextOnlySearchURL(
   }
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
-  url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kUserPerceivedStateTimeQueryParameter,
-      base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
   url_with_query_params =
-      AppendQuerySubmissionTimeParamToURL(url_with_query_params);
+      AppendQuerySubmissionTimeAndClientUploadDurationParamToURL(
+          url_with_query_params, query_start_time);
   return url_with_query_params;
 }
 
@@ -361,11 +369,9 @@ GURL BuildLensSearchURL(
                         &encoded_request_id);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kRequestIdParameterKey, encoded_request_id);
-  url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kUserPerceivedStateTimeQueryParameter,
-      base::NumberToString(query_start_time.InMillisecondsSinceUnixEpoch()));
   url_with_query_params =
-      AppendQuerySubmissionTimeParamToURL(url_with_query_params);
+      AppendQuerySubmissionTimeAndClientUploadDurationParamToURL(
+          url_with_query_params, query_start_time);
   return url_with_query_params;
 }
 

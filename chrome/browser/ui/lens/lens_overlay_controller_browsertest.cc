@@ -262,7 +262,7 @@ constexpr char kPaintWorkaroundFunction[] =
 constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
-constexpr char kUserPerceivedStateTimeQueryParameter[] = "pqsubts";
+constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kViewportWidthQueryParamKey[] = "biw";
 constexpr char kViewportHeightQueryParamKey[] = "bih";
 constexpr char kTextQueryParamKey[] = "q";
@@ -872,17 +872,17 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     WaitForPaintImpl(browser(), url, disposition, browser_test_flags);
   }
 
-  // Helper to remove the start time and viewport size query params from the
-  // url.
+  // Helper to remove the start time, client upload duration, and viewport size
+  // query params from the url.
   GURL RemoveStartTimeAndSizeParams(const GURL& url_to_process) {
     GURL processed_url = url_to_process;
-    std::string actual_start_time;
-    bool has_start_time = net::GetValueForKeyInQuery(
-        GURL(url_to_process), kUserPerceivedStateTimeQueryParameter,
-        &actual_start_time);
-    EXPECT_TRUE(has_start_time);
+    std::string actual_client_upload_duration;
+    bool has_client_upload_duration = net::GetValueForKeyInQuery(
+        GURL(url_to_process), kClientUploadDurationQueryParameter,
+        &actual_client_upload_duration);
+    EXPECT_TRUE(has_client_upload_duration);
     processed_url = net::AppendOrReplaceQueryParameter(
-        processed_url, kUserPerceivedStateTimeQueryParameter, std::nullopt);
+        processed_url, kClientUploadDurationQueryParameter, std::nullopt);
     std::string actual_submission_time;
     bool has_submission_time = net::GetValueForKeyInQuery(
         GURL(url_to_process), kQuerySubmissionTimeQueryParameter,
