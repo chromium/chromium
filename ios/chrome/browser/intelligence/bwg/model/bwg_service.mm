@@ -9,16 +9,24 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/util/content_type_util.h"
 
-BwgService::BwgService(signin::IdentityManager* identity_manager,
+BwgService::BwgService(ProfileIOS* profile,
+                       AuthenticationService* auth_service,
+                       signin::IdentityManager* identity_manager,
                        PrefService* pref_service) {
+  profile_ = profile;
+  auth_service_ = auth_service;
   identity_manager_ = identity_manager;
   pref_service_ = pref_service;
 }
 
 BwgService::~BwgService() = default;
 
-bool BwgService::IsEligibleForBwg() {
+bool BwgService::IsProfileEligibleForBwg() {
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
@@ -41,4 +49,18 @@ bool BwgService::IsEligibleForBwg() {
   base::UmaHistogramBoolean(kEligibilityHistogram, is_eligible);
 
   return is_eligible;
+}
+
+bool BwgService::IsBwgAvailableForWebState(web::WebState* web_state) {
+  const bool is_profile_eligible =
+      !profile_->IsOffTheRecord() && IsProfileEligibleForBwg();
+
+  // The web state is eligible for HTML and images that use http/https schemes.
+  const GURL& url = web_state->GetVisibleURL();
+  const std::string mime_type = web_state->GetContentsMimeType();
+  const BOOL is_web_state_eligible =
+      url.SchemeIsHTTPOrHTTPS() &&
+      (web::IsContentTypeHtml(mime_type) || web::IsContentTypeImage(mime_type));
+
+  return is_profile_eligible && is_web_state_eligible;
 }

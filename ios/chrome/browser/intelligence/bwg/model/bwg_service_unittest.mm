@@ -37,13 +37,15 @@ class BwgServiceTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
 
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
+
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_->registry()->RegisterIntegerPref(
         prefs::kGeminiEnabledByPolicy, 0);
 
     identity_manager_ = identity_test_env_.identity_manager();
-    bwg_service_ =
-        std::make_unique<BwgService>(identity_manager_, pref_service_.get());
+    bwg_service_ = std::make_unique<BwgService>(
+        profile_.get(), auth_service_, identity_manager_, pref_service_.get());
   }
 
   // Signs in a user and sets their model execution capability.
@@ -69,17 +71,18 @@ class BwgServiceTest : public PlatformTest {
   std::unique_ptr<BwgService> bwg_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<AuthenticationService> auth_service_;
 
   base::HistogramTester histogram_tester_;
 };
 
 // Tests that a user is considered eligible if they are signed in and their
 // account has the `can_use_model_execution_features` capability.
-TEST_F(BwgServiceTest, IsEligibleForBWG_WhenUserIsEligible) {
+TEST_F(BwgServiceTest, IsProfileEligibleForBWG_WhenUserIsEligible) {
   SignInAndSetCapability(true);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
 
-  EXPECT_TRUE(bwg_service_->IsEligibleForBwg());
+  EXPECT_TRUE(bwg_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
@@ -87,22 +90,22 @@ TEST_F(BwgServiceTest, IsEligibleForBWG_WhenUserIsEligible) {
 
 // Tests that a user is ineligible if they are signed in but their account
 // capability is explicitly false.
-TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleByCapability) {
+TEST_F(BwgServiceTest, IsProfileEligibleForBWG_IneligibleByCapability) {
   SignInAndSetCapability(false);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
 
-  EXPECT_FALSE(bwg_service_->IsEligibleForBwg());
+  EXPECT_FALSE(bwg_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);
 }
 
 // Tests that a user is ineligible if the Gemini policy is disabled.
-TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleByPolicy) {
+TEST_F(BwgServiceTest, IsProfileEligibleForBWG_IneligibleByPolicy) {
   SignInAndSetCapability(true);
   pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 1);
 
-  EXPECT_FALSE(bwg_service_->IsEligibleForBwg());
+  EXPECT_FALSE(bwg_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);
@@ -110,12 +113,12 @@ TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleByPolicy) {
 
 // Tests that a user is ineligible if they are not signed in to a primary
 // account.
-TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleWhenSignedOut) {
+TEST_F(BwgServiceTest, IsProfileEligibleForBWG_IneligibleWhenSignedOut) {
   // The default state is signed out.
   EXPECT_FALSE(
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  EXPECT_FALSE(bwg_service_->IsEligibleForBwg());
+  EXPECT_FALSE(bwg_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        /*sample=*/false,
                                        /*expected_count=*/1);

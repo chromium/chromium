@@ -55,19 +55,15 @@ source_set("tab_helper") {
     "bwg_tab_helper.mm",
   ]
   deps = [
-    ":bwg_service",
-    ":bwg_service_factory",
     ":snapshot_utils",
     "//components/google/core/common",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/snapshots/model",
     "//ios/web/public",
-    "//ios/web/util",
   ]
 }
 
@@ -82,6 +78,10 @@ source_set("bwg_service") {
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/web/public",
+    "//ios/web/util",
   ]
 }
 
@@ -97,6 +97,7 @@ source_set("bwg_service_factory") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
   ]
 }
 

@@ -8,23 +8,38 @@
 #import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 
+class AuthenticationService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
-
 class PrefService;
+class ProfileIOS;
+namespace web {
+class WebState;
+}
 
 // A browser-context keyed service for BWG.
 class BwgService : public KeyedService {
  public:
-  BwgService(signin::IdentityManager* identity_manager,
+  BwgService(ProfileIOS* profile,
+             AuthenticationService* auth_service,
+             signin::IdentityManager* identity_manager,
              PrefService* pref_service);
   ~BwgService() override;
 
   // Returns whether the current profile is eligible for BWG.
-  bool IsEligibleForBwg();
+  bool IsProfileEligibleForBwg();
+
+  // Whether BWG is available for a given web state.
+  bool IsBwgAvailableForWebState(web::WebState* web_state);
 
  private:
+  // The associated profile.
+  raw_ptr<ProfileIOS> profile_;
+
+  // AuthenticationService used to check the user's account status.
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
+
   // Identity manager used to check account capabilities.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 

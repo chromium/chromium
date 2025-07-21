@@ -15,6 +15,8 @@
 @class BWGConfiguration;
 @protocol BWGGatewayProtocol;
 
+using BWGEligibilityCallback = void (^)(BOOL eligible);
+
 namespace ios::provider {
 
 // Enum representing the PageContext state of the BWG experience. This needs to

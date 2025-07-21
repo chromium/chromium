@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 class BwgService;
@@ -20,6 +21,7 @@ std::unique_ptr<KeyedService> BuildBwgService(web::BrowserState* context) {
   }
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<BwgService>(
+      profile, AuthenticationServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }
 
@@ -39,6 +41,7 @@ BwgServiceFactory* BwgServiceFactory::GetInstance() {
 
 BwgServiceFactory::BwgServiceFactory()
     : ProfileKeyedServiceFactoryIOS("BwgService") {
+  DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
