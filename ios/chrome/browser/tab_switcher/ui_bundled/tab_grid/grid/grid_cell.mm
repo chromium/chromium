@@ -405,7 +405,7 @@ void PositionView(UIView* view, CGPoint point) {
   } else {
     accessibilityLabel = self.title;
   }
-  if (self.priceCardView.accessibilityLabel) {
+  if (accessibilityLabel && self.priceCardView.accessibilityLabel) {
     accessibilityLabel =
         [@[ accessibilityLabel, self.priceCardView.accessibilityLabel ]
             componentsJoinedByString:@". "];
