@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/aggregated_journal_serializer.h"
 
 #include "base/containers/span.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_heap_buffer.h"
 #include "third_party/perfetto/protos/perfetto/common/builtin_clock.pbzero.h"
@@ -15,7 +16,9 @@
 #include "third_party/perfetto/protos/perfetto/trace/perfetto/tracing_service_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/debug_annotation.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/screenshot.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 
 namespace actor {
@@ -25,6 +28,8 @@ namespace {
 uint64_t NowInNanoseconds() {
   return (base::Time::Now() - base::Time::UnixEpoch()).InNanoseconds();
 }
+
+const uint64_t kFrontEndId = 0x100000000;
 
 }  // namespace
 
@@ -38,6 +43,7 @@ void AggregatedJournalSerializer::InitImpl() {
 }
 
 void AggregatedJournalSerializer::WriteTracePreamble() {
+  observed_task_ids_.clear();
   // Write initial message in protobuf.
   {
     protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> init_msg;
@@ -90,6 +96,8 @@ AggregatedJournalSerializer::~AggregatedJournalSerializer() {
 
 void AggregatedJournalSerializer::WillAddJournalEntry(
     const AggregatedJournal::Entry& entry) {
+  ObservedTaskId(entry.data->task_id);
+
   protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
   msg->set_trusted_packet_sequence_id(sequence_id_++);
   msg->set_timestamp(
@@ -111,8 +119,7 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
   }
   track_event->set_type(pb_type);
   track_event->set_name(entry.data->event);
-  // TODO(dtapuska): We likely want to set the track UUID to be the task.
-  // track_event->set_track_uuid(entry.data->task_id);
+  track_event->set_track_uuid(entry.data->task_id);
 
   // For Perfetto to read screenshots we need to have the category as
   // "android_screenshot". See
@@ -145,6 +152,38 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
   }
 
   WriteTracePacket(msg.SerializeAsArray());
+}
+
+void AggregatedJournalSerializer::ObservedTaskId(int32_t task_id) {
+  if (task_id == 0 || observed_task_ids_.contains(task_id)) {
+    return;
+  }
+
+  {
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
+    msg->set_trusted_packet_sequence_id(sequence_id_++);
+    msg->set_timestamp(NowInNanoseconds());
+    msg->set_timestamp_clock_id(
+        perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
+    auto* track_descriptor = msg->set_track_descriptor();
+    track_descriptor->set_uuid(kFrontEndId + task_id);
+    track_descriptor->set_name("Front End");
+    auto* process_descriptor = track_descriptor->set_process();
+    process_descriptor->set_pid(task_id);
+    WriteTracePacket(msg.SerializeAsArray());
+  }
+  {
+    protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> msg;
+    msg->set_trusted_packet_sequence_id(sequence_id_++);
+    msg->set_timestamp(NowInNanoseconds());
+    msg->set_timestamp_clock_id(
+        perfetto::protos::pbzero::BUILTIN_CLOCK_REALTIME);
+    auto* track_descriptor = msg->set_track_descriptor();
+    track_descriptor->set_uuid(task_id);
+    track_descriptor->set_parent_uuid(kFrontEndId + task_id);
+    track_descriptor->set_name("Chrome (actor)");
+    WriteTracePacket(msg.SerializeAsArray());
+  }
 }
 
 }  // namespace actor

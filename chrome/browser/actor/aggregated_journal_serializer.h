@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_SERIALIZER_H_
 #define CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_SERIALIZER_H_
 
+#include <set>
+
 #include "chrome/browser/actor/aggregated_journal.h"
 
 namespace actor {
@@ -23,11 +25,13 @@ class AggregatedJournalSerializer : public AggregatedJournal::Observer {
   // The subclass should call this when they are ready to accept data.
   void InitImpl();
   void WriteTracePreamble();
+  void ObservedTaskId(int32_t task_id);
 
   // Subclasses should implement this to receive generated data.
   virtual void WriteTracePacket(std::vector<uint8_t> message) = 0;
 
  private:
+  std::set<int32_t> observed_task_ids_;
   base::SafeRef<AggregatedJournal> journal_;
   size_t sequence_id_ = 1;
 };
