@@ -37,7 +37,6 @@
 #include "media/video/mock_video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/blink/renderer/platform/webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
@@ -941,14 +940,8 @@ class RTCVideoEncoderEncodeTest : public RTCVideoEncoderTest,
   }
 
   ~RTCVideoEncoderEncodeTest() override = default;
-  void SetUp() override {
-    blink::Platform::SetMainThreadTaskRunnerForTesting();
-    RTCVideoEncoderTest::SetUp();
-  }
-  void TearDown() override {
-    RTCVideoEncoderTest::TearDown();
-    blink::Platform::SetMainThreadTaskRunnerForTesting();
-  }
+  void SetUp() override { RTCVideoEncoderTest::SetUp(); }
+  void TearDown() override { RTCVideoEncoderTest::TearDown(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;

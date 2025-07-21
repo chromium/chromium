@@ -47,6 +47,17 @@ bool IsApproxEquals(const gfx::Rect& a, const gfx::Rect& b) {
          IsApproxEquals(a.height(), b.height());
 }
 
+static void CreateContextProviderOnMainThread(
+    scoped_refptr<viz::RasterContextProvider>* result,
+    base::WaitableEvent* waitable_event) {
+  scoped_refptr<cc::RasterContextProviderWrapper> worker_context_provider =
+      blink::Platform::Current()->SharedCompositorWorkerContextProvider(
+          nullptr);
+  if (worker_context_provider)
+    *result = worker_context_provider->GetContext();
+  waitable_event->Signal();
+}
+
 class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
   Context(media::GpuVideoAcceleratorFactories* gpu_factories,
@@ -126,12 +137,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 
 }  // namespace
 
-void WebRtcVideoFrameAdapter::SharedResources::SetRasterContextProvider(
-    scoped_refptr<viz::RasterContextProvider> provider) {
-  base::AutoLock auto_lock(raster_context_provider_lock_);
-  raster_context_provider_ = provider;
-}
-
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
     media::VideoPixelFormat format,
@@ -153,60 +158,34 @@ media::EncoderStatus WebRtcVideoFrameAdapter::SharedResources::ConvertAndScale(
 
 scoped_refptr<viz::RasterContextProvider>
 WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
-  scoped_refptr<viz::RasterContextProvider> context;
-  {
-    base::AutoLock auto_lock(raster_context_provider_lock_);
-    context = raster_context_provider_;
-  }
-  if (context) {
+  base::AutoLock auto_lock(context_provider_lock_);
+  if (raster_context_provider_) {
     // Reuse created context provider if it's alive.
-    viz::RasterContextProvider::ScopedRasterContextLock lock(context.get());
-    if (lock.RasterInterface()->GetGraphicsResetStatusKHR() == GL_NO_ERROR) {
-      return context;
-    } else {
-      // Provider exists but is not alive. Try to fetch a new one.
-      SetRasterContextProvider(nullptr);
-
-      // Since the accelerated frame pool is attached to the old provider, we
-      // need to release it here.
-      accelerated_frame_pool_.reset();
-    }
+    viz::RasterContextProvider::ScopedRasterContextLock lock(
+        raster_context_provider_.get());
+    if (lock.RasterInterface()->GetGraphicsResetStatusKHR() == GL_NO_ERROR)
+      return raster_context_provider_;
   }
 
-  // Request a raster context provider, but don't synchronously wait for the
-  // response as waiting for the main thread may lead to deadlocks. Returning
-  // nullptr here will only rarely result in an unmapped black frame.
-  RequestRasterContextProvider();
-  return nullptr;
-}
+  // Since the accelerated frame pool is attached to the old provider, we need
+  // to release it here.
+  accelerated_frame_pool_.reset();
 
-void WebRtcVideoFrameAdapter::SharedResources::RequestRasterContextProvider() {
   // Recreate the context provider.
-  if (Thread::MainThread()->IsCurrentThread()) {
-    // Single threaded, maybe test. No need to post cross threads.
-    SetRasterContextProvider(
-        blink::Platform::Current()->SharedCompositorWorkerContextProvider(
-            nullptr));
-  } else {
-    // Post a task to the main thread to fetch the raster context provider, and
-    // then asynchronously report back with the value.
-    Thread::MainThread()
-        ->GetTaskRunner(MainThreadTaskRunnerRestricted())
-        ->PostTaskAndReplyWithResult(
-            FROM_HERE,
-            base::BindOnce([]() -> scoped_refptr<viz::RasterContextProvider> {
-              return blink::Platform::Current()
-                  ->SharedCompositorWorkerContextProvider(nullptr);
-            }),
-            base::BindOnce(
-                [](base::WeakPtr<SharedResources> weak_ptr,
-                   scoped_refptr<viz::RasterContextProvider> provider) {
-                  if (weak_ptr) {
-                    weak_ptr->SetRasterContextProvider(provider);
-                  }
-                },
-                weak_factory_.GetWeakPtr()));
-  }
+  base::WaitableEvent waitable_event;
+  PostCrossThreadTask(
+      *Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
+      FROM_HERE,
+      CrossThreadBindOnce(&CreateContextProviderOnMainThread,
+                          CrossThreadUnretained(&raster_context_provider_),
+                          CrossThreadUnretained(&waitable_event)));
+
+  // This wait is necessary because this task is completed via main thread
+  // asynchronously but WebRTC API is synchronous.
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+  waitable_event.Wait();
+
+  return raster_context_provider_;
 }
 
 bool CanUseGpuMemoryBufferReadback(
@@ -247,9 +226,6 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 
   auto raster_context_provider = GetRasterContextProvider();
   if (!raster_context_provider) {
-    DLOG(WARNING) << "Unable to construct video frame from texture: raster "
-                     "context provider not available.";
-
     return nullptr;
   }
 
@@ -380,10 +356,7 @@ WebRtcVideoFrameAdapter::SharedResources::GetFeedback() {
 
 WebRtcVideoFrameAdapter::SharedResources::SharedResources(
     media::GpuVideoAcceleratorFactories* gpu_factories)
-    : gpu_factories_(gpu_factories) {
-  // Preemptively request a raster context provider from the main thread.
-  RequestRasterContextProvider();
-}
+    : gpu_factories_(gpu_factories) {}
 
 WebRtcVideoFrameAdapter::SharedResources::~SharedResources() = default;
 
