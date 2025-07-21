@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+assert(!is_android)
+
+source_set("delegate") {
+  sources = [ "actor_login_delegate.h" ]
+
+  visibility = [
+    "//chrome/browser/password_manager/actor_login:*",
+    "//chrome/browser/password_manager/actor_login/internal:*",
+  ]
+
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser/actor_login:common",
+  ]
+}

@@ -8,8 +8,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate_impl.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"

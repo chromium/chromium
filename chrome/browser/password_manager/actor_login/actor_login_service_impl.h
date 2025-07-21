@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_ACTOR_LOGIN_SERVICE_IMPL_H_
 
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 
 namespace actor_login {
 

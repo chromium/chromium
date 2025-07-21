@@ -8,7 +8,6 @@ assert(!is_android)
 
 source_set("delegate") {
   sources = [
-    "actor_login_delegate.h",
     "actor_login_delegate_impl.cc",
     "actor_login_delegate_impl.h",
   ]
@@ -20,7 +19,8 @@ source_set("delegate") {
 
   deps = [
     "//base",
-    "//chrome/browser/password_manager/actor_login:common_types",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/actor_login/internal:delegate",
     "//content/public/browser",
   ]
 }
@@ -32,8 +32,8 @@ source_set("unit_tests") {
   deps = [
     ":delegate",
     "//base/test:test_support",
-    "//chrome/browser/password_manager/actor_login:common_types",
     "//chrome/test:test_support",
+    "//components/password_manager/core/browser/actor_login:common",
     "//components/tabs:test_support",
     "//content/public/browser",
     "//content/test:test_support",

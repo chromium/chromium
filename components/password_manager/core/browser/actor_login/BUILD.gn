@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+assert(!is_android)
+
+# All actor_login code should be able to depend on this.
+source_set("common") {
+  sources = [ "actor_login_types.h" ]
+
+  deps = [ "//base" ]
+}

@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
