@@ -23,13 +23,11 @@ DnsLookupResult::DnsLookupResult(
     int32_t error,
     net::ResolveErrorInfo resolve_error_info,
     std::optional<net::AddressList> resolved_addresses,
-    std::optional<net::HostResolverEndpointResults>
-        endpoint_results_with_metadata)
+    std::optional<net::HostResolverEndpointResults> alternative_endpoints)
     : error(error),
       resolve_error_info(std::move(resolve_error_info)),
       resolved_addresses(std::move(resolved_addresses)),
-      endpoint_results_with_metadata(
-          std::move(endpoint_results_with_metadata)) {}
+      alternative_endpoints(std::move(alternative_endpoints)) {}
 
 DnsLookupResult::DnsLookupResult(const DnsLookupResult& dns_lookup_result) =
     default;
@@ -50,11 +48,11 @@ DnsLookupResult BlockingDnsLookup(
   resolver->ResolveHost(
       mojom::HostResolverHost::NewHostPortPair(host_port_pair),
       network_anonymization_key, std::move(params), future.GetCallback());
-  auto [error, resolve_error_info, resolved_addresses,
-        endpoint_results_with_metadata] = future.Take();
+  auto [error, resolve_error_info, resolved_addresses, alternative_endpoints] =
+      future.Take();
   return DnsLookupResult(error, std::move(resolve_error_info),
                          std::move(resolved_addresses),
-                         std::move(endpoint_results_with_metadata));
+                         std::move(alternative_endpoints));
 }
 
 }  // namespace network

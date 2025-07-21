@@ -57,7 +57,7 @@ void ResolveHostClientImpl::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+        alternative_endpoints) {
   UMA_HISTOGRAM_TIMES("Navigation.Preconnect.ResolveHostLatency",
                       base::TimeTicks::Now() - resolve_host_start_time_);
 

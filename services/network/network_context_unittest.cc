@@ -4206,7 +4206,7 @@ class TestResolveHostClient : public ResolveHostClientBase {
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+                      alternative_endpoints) override {
     DCHECK(!complete_);
 
     complete_ = true;

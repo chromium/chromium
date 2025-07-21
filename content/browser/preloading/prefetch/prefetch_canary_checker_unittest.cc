@@ -64,7 +64,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
     it->second->OnComplete(net::OK, resolved_addresses,
-                           /*endpoint_results_with_metadata=*/std::nullopt);
+                           /*alternative_endpoints=*/std::nullopt);
     pending_requests_.erase(it);
   }
 
@@ -78,7 +78,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
     EXPECT_TRUE(it != pending_requests_.end());
 
     it->second->OnComplete(err, /*resolved_addresses=*/std::nullopt,
-                           /*endpoint_results_with_metadata=*/std::nullopt);
+                           /*alternative_endpoints=*/std::nullopt);
     pending_requests_.erase(it);
   }
 
@@ -105,13 +105,12 @@ class FakeNetworkContext : public network::TestNetworkContext {
                                             static_cast<net::Error>(error));
     }
 
-    void OnComplete(net::Error err,
-                    std::optional<net::AddressList> resolved_addresses,
-                    std::optional<net::HostResolverEndpointResults>
-                        endpoint_results_with_metadata) {
+    void OnComplete(
+        net::Error err,
+        std::optional<net::AddressList> resolved_addresses,
+        std::optional<net::HostResolverEndpointResults> alternative_endpoints) {
       response_client_->OnComplete(err, net::ResolveErrorInfo(),
-                                   resolved_addresses,
-                                   endpoint_results_with_metadata);
+                                   resolved_addresses, alternative_endpoints);
     }
 
    private:

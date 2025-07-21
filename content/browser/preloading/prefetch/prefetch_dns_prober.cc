@@ -29,7 +29,7 @@ void PrefetchDNSProber::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+        alternative_endpoints) {
   if (callback_) {
     std::move(callback_).Run(error, resolved_addresses);
   }

@@ -47,7 +47,7 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
       &DnsResolveFunction::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
       /*resolved_addresses=*/std::nullopt,
-      /*endpoint_results_with_metadata=*/std::nullopt));
+      /*alternative_endpoints=*/std::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -59,7 +59,7 @@ void DnsResolveFunction::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+        alternative_endpoints) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 

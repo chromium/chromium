@@ -67,7 +67,7 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
         &ResolveHostAndOpenSocket::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
         /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        /*alternative_endpoints=*/std::nullopt));
   }
 
  private:
@@ -76,7 +76,7 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& resolved_addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+                      alternative_endpoints) override {
     if (result != net::OK) {
       RunSocketCallback(std::move(callback_), nullptr,
                         resolve_error_info.error);

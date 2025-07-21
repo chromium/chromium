@@ -156,7 +156,7 @@ TEST_F(SimpleHostResolverTest, ResolveFourAddresses) {
 
   for (const auto& [future, resolver_result] : futures) {
     const auto& [result, resolve_error_info, resolved_addresses,
-                 endpoint_results_with_metadata] = future->Get();
+                 alternative_endpoints] = future->Get();
     EXPECT_EQ(result, resolver_result.result);
     if (!resolver_result.resolved_address) {
       EXPECT_FALSE(resolved_addresses);

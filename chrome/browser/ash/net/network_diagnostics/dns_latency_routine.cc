@@ -166,7 +166,7 @@ void DnsLatencyRoutine::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+        alternative_endpoints) {
   resolution_complete_time_ = tick_clock_->NowTicks();
   const base::TimeDelta latency =
       resolution_complete_time_ - start_resolution_time_;

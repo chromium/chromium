@@ -80,14 +80,14 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+                      alternative_endpoints) override {
     DCHECK(!complete_);
 
     complete_ = true;
     top_level_result_error_ = error;
     result_error_ = resolve_error_info.error;
     result_addresses_ = addresses;
-    endpoint_results_with_metadata_ = endpoint_results_with_metadata;
+    alternative_endpoints_ = alternative_endpoints;
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -129,10 +129,10 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
     return result_hosts_;
   }
 
-  const std::optional<net::HostResolverEndpointResults>&
-  endpoint_results_with_metadata() const {
+  const std::optional<net::HostResolverEndpointResults>& alternative_endpoints()
+      const {
     DCHECK(complete_);
-    return endpoint_results_with_metadata_;
+    return alternative_endpoints_;
   }
 
  private:
@@ -144,8 +144,7 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
   std::optional<net::AddressList> result_addresses_;
   std::optional<std::vector<std::string>> result_text_;
   std::optional<std::vector<net::HostPortPair>> result_hosts_;
-  std::optional<net::HostResolverEndpointResults>
-      endpoint_results_with_metadata_;
+  std::optional<net::HostResolverEndpointResults> alternative_endpoints_;
   const raw_ptr<base::RunLoop> run_loop_;
 };
 
@@ -520,11 +519,11 @@ TEST_F(HostResolverTest, GetAlternativeEndpoints) {
 
   EXPECT_EQ(net::OK, without_https_client.result_error());
   EXPECT_THAT(
-      without_https_client.endpoint_results_with_metadata(),
+      without_https_client.alternative_endpoints(),
       testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
 
   EXPECT_EQ(net::OK, with_https_client.result_error());
-  EXPECT_THAT(with_https_client.endpoint_results_with_metadata(),
+  EXPECT_THAT(with_https_client.alternative_endpoints(),
               expected_endpoint_results);
 }
 

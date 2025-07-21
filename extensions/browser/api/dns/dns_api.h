@@ -36,7 +36,7 @@ class DnsResolveFunction : public ExtensionFunction,
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& resolved_addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override;
+                      alternative_endpoints) override;
 
   // A reference to `this` must be taken while the request is being made on this
   // receiver so the object is alive when the request completes.

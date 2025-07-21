@@ -98,7 +98,7 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
         &DnsLookupClient::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
         /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        /*alternative_endpoints=*/std::nullopt));
   }
   ~DnsLookupClient() override = default;
 
@@ -107,7 +107,7 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& resolved_addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+                      alternative_endpoints) override {
     std::string result;
     if (error == net::OK) {
       CHECK(resolved_addresses->size() == 1);
@@ -135,8 +135,8 @@ class NetworkContextForTesting : public network::TestNetworkContext {
 
   // This is a mock network context for testing.
   // Only "*.com" is registered to this resolver. And especially for
-  // http2/http3/multihost.com, results include endpoint_results_with_metadata
-  // as well as resolved_addresses.
+  // http2/http3/multihost.com, results include alternative_endpoints as well as
+  // resolved_addresses.
   void ResolveHost(
       network::mojom::HostResolverHostPtr host,
       const net::NetworkAnonymizationKey& network_anonymization_key,
@@ -153,7 +153,7 @@ class NetworkContextForTesting : public network::TestNetworkContext {
           net::ERR_NAME_NOT_RESOLVED,
           net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
           /*resolved_addresses=*/std::nullopt,
-          /*endpoint_results_with_metadata=*/std::nullopt);
+          /*alternative_endpoints=*/std::nullopt);
     }
 
     const net::IPAddress first_localhost{127, 0, 0, 1};
@@ -178,10 +178,9 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       first_endpoint_metadata.supported_protocol_alpns = {"http/1.1", "h2"};
       first_endpoint_metadata.ech_config_list = {0x01, 0x02, 0x03, 0x04};
     } else {
-      response_client->OnComplete(
-          0, net::ResolveErrorInfo(net::OK),
-          net::AddressList(first_ip_endpoint),
-          /*endpoint_results_with_metadata=*/std::nullopt);
+      response_client->OnComplete(0, net::ResolveErrorInfo(net::OK),
+                                  net::AddressList(first_ip_endpoint),
+                                  /*alternative_endpoints=*/std::nullopt);
     }
 
     if (hostname == "multihost.com") {

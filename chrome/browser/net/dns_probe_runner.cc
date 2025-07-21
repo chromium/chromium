@@ -123,7 +123,7 @@ void DnsProbeRunner::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+        alternative_endpoints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
@@ -147,7 +147,7 @@ void DnsProbeRunner::OnMojoConnectionError() {
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
              /*resolved_addresses=*/std::nullopt,
-             /*endpoint_results_with_metadata=*/std::nullopt);
+             /*alternative_endpoints=*/std::nullopt);
 }
 
 }  // namespace chrome_browser_net

@@ -69,10 +69,10 @@ ResolveHostRequest::~ResolveHostRequest() {
   control_handle_receiver_.reset();
 
   if (response_client_.is_bound()) {
-    response_client_->OnComplete(
-        net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt);
+    response_client_->OnComplete(net::ERR_NAME_NOT_RESOLVED,
+                                 net::ResolveErrorInfo(net::ERR_FAILED),
+                                 /*resolved_addresses=*/std::nullopt,
+                                 /*alternative_endpoints=*/std::nullopt);
     response_client_.reset();
   }
 }
@@ -180,10 +180,6 @@ ResolveHostRequest::GetAlternativeEndpoints() const {
   // TODO(crbug.com/40203587): This is the opposite of the design taken
   // everywhere else in the DNS logic, where we aimed to migrate `AddressList`
   // to `HostResolverEndpointResult`.
-  //
-  // TODO(crbug.com/40256843): The rest of the Mojo interface uses the
-  // non-standard `endpoint_results_with_metadata` naming. Rename everything to
-  // match the specification.
   net::HostResolverEndpointResults alternative_endpoints;
   std::ranges::copy_if(
       *endpoints, std::back_inserter(alternative_endpoints),

@@ -133,7 +133,7 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
         &NetInternalsResolveHostClient::OnComplete, base::Unretained(this),
         net::ERR_FAILED, net::ResolveErrorInfo(net::ERR_FAILED),
         /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        /*alternative_endpoints=*/std::nullopt));
   }
   ~NetInternalsResolveHostClient() override = default;
 
@@ -147,9 +147,9 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& resolved_addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+                      alternative_endpoints) override {
     std::move(callback_).Run(resolve_error_info, resolved_addresses,
-                             endpoint_results_with_metadata, this);
+                             alternative_endpoints, this);
   }
   void OnTextResults(const std::vector<std::string>& text_results) override {
     NOTREACHED();
@@ -457,7 +457,7 @@ void NetInternalsMessageHandler::OnResolveHostDone(
     const net::ResolveErrorInfo& resolve_error_info,
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata,
+        alternative_endpoints,
     NetInternalsResolveHostClient* dns_lookup_client) {
   DCHECK_EQ(dns_lookup_clients_.count(dns_lookup_client), 1u);
   auto it = dns_lookup_clients_.find(dns_lookup_client);
@@ -476,11 +476,8 @@ void NetInternalsMessageHandler::OnResolveHostDone(
       IPEndpointsToBaseList(resolved_addresses->endpoints());
   result.Set("resolved_addresses", std::move(resolved_addresses_list));
 
-  // TODO(crbug.com/40256843): Rename `endpoint_results_with_metadata` in the
-  // Mojo API to `alternative_endpoints`, to match the terminology used in the
-  // specification.
   base::Value::List alternative_endpoints_list =
-      HostResolverEndpointResultsToBaseList(endpoint_results_with_metadata);
+      HostResolverEndpointResultsToBaseList(alternative_endpoints);
   result.Set("alternative_endpoints", std::move(alternative_endpoints_list));
 
   ResolveJavascriptCallback(base::Value(callback_id), std::move(result));

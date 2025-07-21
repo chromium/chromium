@@ -111,7 +111,7 @@ void DnsResolutionRoutine::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+        alternative_endpoints) {
   if (result == net::OK) {
     CHECK(resolved_addresses);
     resolved_address_received_ = true;

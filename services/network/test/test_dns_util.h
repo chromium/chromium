@@ -23,19 +23,18 @@ class NetworkContext;
 // Struct containing the results passed to a network::mojom::ResolveHostClient's
 // OnComplete() method.
 struct DnsLookupResult {
-  DnsLookupResult(int32_t error,
-                  net::ResolveErrorInfo resolve_error_info,
-                  std::optional<net::AddressList> resolved_addresses,
-                  std::optional<net::HostResolverEndpointResults>
-                      endpoint_results_with_metadata);
+  DnsLookupResult(
+      int32_t error,
+      net::ResolveErrorInfo resolve_error_info,
+      std::optional<net::AddressList> resolved_addresses,
+      std::optional<net::HostResolverEndpointResults> alternative_endpoints);
   DnsLookupResult(const DnsLookupResult& dns_lookup_result);
   ~DnsLookupResult();
 
   int32_t error;
   net::ResolveErrorInfo resolve_error_info;
   std::optional<net::AddressList> resolved_addresses;
-  std::optional<net::HostResolverEndpointResults>
-      endpoint_results_with_metadata;
+  std::optional<net::HostResolverEndpointResults> alternative_endpoints;
 };
 
 // Test utility function to perform the indicated DNS resolution, and block

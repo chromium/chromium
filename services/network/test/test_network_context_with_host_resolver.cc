@@ -73,7 +73,7 @@ void TestNetworkContextWithHostResolver::OnResolveHostComplete(
   response_client->OnComplete(
       error, internal_request->GetResolveErrorInfo(),
       base::OptionalFromPtr(internal_request->GetAddressResults()),
-      /*endpoint_results_with_metadata=*/std::nullopt);
+      /*alternative_endpoints=*/std::nullopt);
   response_client.reset();
 }
 

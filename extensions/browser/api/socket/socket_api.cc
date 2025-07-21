@@ -255,7 +255,7 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
       &SocketExtensionWithDnsLookupFunction::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
       /*resolved_addresses=*/std::nullopt,
-      /*endpoint_results_with_metadata=*/std::nullopt));
+      /*alternative_endpoints=*/std::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -266,7 +266,7 @@ void SocketExtensionWithDnsLookupFunction::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const std::optional<net::AddressList>& resolved_addresses,
     const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+        alternative_endpoints) {
   host_resolver_.reset();
   receiver_.reset();
   if (result == net::OK) {

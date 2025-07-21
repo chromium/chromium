@@ -1990,7 +1990,7 @@ void NetworkContext::ResolveHost(
         net::ERR_NETWORK_ACCESS_REVOKED,
         net::ResolveErrorInfo(net::ERR_NETWORK_ACCESS_REVOKED),
         /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt);
+        /*alternative_endpoints=*/std::nullopt);
     return;
   }
 

@@ -207,7 +207,7 @@ class SocketExtensionWithDnsLookupFunction
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& resolved_addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override;
+                      alternative_endpoints) override;
 
   mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver_;
   mojo::Remote<network::mojom::HostResolver> host_resolver_;

@@ -78,7 +78,7 @@ void FakeHostResolver::ResolveHost(
       std::move(pending_response_client));
   response_client->OnComplete(cur_result.result, cur_result.resolve_error_info,
                               AddressListForResponse(cur_result.response),
-                              /*endpoint_results_with_metadata=*/std::nullopt);
+                              /*alternative_endpoints=*/std::nullopt);
 }
 
 void FakeHostResolver::MdnsListen(

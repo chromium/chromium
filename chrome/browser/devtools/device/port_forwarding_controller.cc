@@ -175,7 +175,7 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
         &PortForwardingHostResolver::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
         /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        /*alternative_endpoints=*/std::nullopt));
   }
 
   PortForwardingHostResolver(const PortForwardingHostResolver&) = delete;
@@ -192,7 +192,7 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& resolved_addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+                      alternative_endpoints) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     if (result < 0) {

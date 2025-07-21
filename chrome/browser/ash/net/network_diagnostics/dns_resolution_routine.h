@@ -53,7 +53,7 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine {
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& resolved_addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata);
+                      alternative_endpoints);
   void CreateHostResolver();
   void AttemptResolution();
 

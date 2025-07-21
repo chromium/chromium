@@ -69,7 +69,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
       OnComplete(net::ERR_NAME_NOT_RESOLVED,
                  net::ResolveErrorInfo(net::ERR_FAILED),
                  /*resolved_addresses=*/std::nullopt,
-                 /*endpoint_results_with_metadata=*/std::nullopt);
+                 /*alternative_endpoints=*/std::nullopt);
       return;
     }
 
@@ -94,7 +94,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
         &DnsLookupRequest::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
         /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        /*alternative_endpoints=*/std::nullopt));
   }
 
  private:
@@ -103,7 +103,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
                   const net::ResolveErrorInfo& resolve_error_info,
                   const std::optional<net::AddressList>& resolved_addresses,
                   const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+                      alternative_endpoints) override {
     VLOG(2) << __FUNCTION__ << ": " << url_.Serialize()
             << ", result=" << resolve_error_info.error;
     request_.reset();
