@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -89,6 +90,7 @@ void HTMLTemplateElement::BeginPatch(ContainerNode& target) {
   // A patch replaces the existing children of the target.
   target.RemoveChildren();
   patch_status_ = MakeGarbageCollected<DOMPatchStatus>(this, &target);
+  MutationObserver::EnqueuePatch(*patch_status_);
   PatchSupplement::From(target.GetDocument())->DidStart(target, patch_status_);
 }
 

@@ -6,10 +6,15 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/patching/patch_event.h"
 #include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 DOMPatchStatus::DOMPatchStatus(HTMLTemplateElement* source,
@@ -23,6 +28,13 @@ DOMPatchStatus::DOMPatchStatus(HTMLTemplateElement* source,
 ScriptPromise<IDLUndefined> DOMPatchStatus::finished(
     ScriptState* script_state) {
   return finished_->Promise(script_state->World());
+}
+
+void DOMPatchStatus::DispatchPatchEvent() {
+  Event* event =
+      MakeGarbageCollected<PatchEvent>(event_type_names::kPatch, this);
+  event->SetTarget(target_);
+  target_->DispatchEvent(*event);
 }
 
 void DOMPatchStatus::OnComplete() {

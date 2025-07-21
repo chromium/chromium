@@ -7,4 +7,5 @@ blink_core_sources_patching = [
   "dom_patch_status.h",
   "patch_supplement.cc",
   "patch_supplement.h",
+  "patch_event.h",
 ]

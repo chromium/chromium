@@ -222,6 +222,7 @@
     "pageshow",
     "pageswap",
     "paste",
+    "patch",
     "pause",
     "payerdetailchange",
     "paymentmethodchange",

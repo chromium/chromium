@@ -31,9 +31,10 @@ class DOMPatchStatus : public ScriptWrappable {
   void Trace(Visitor*) const override;
   void OnComplete();
   Node& GetTarget() { return *target_; }
+  Document& GetDocument();
+  void DispatchPatchEvent();
 
  private:
-  Document& GetDocument();
   Member<HTMLTemplateElement> source_;
   Member<ContainerNode> target_;
   Member<ScriptPromiseProperty<IDLUndefined, IDLAny>> finished_;
