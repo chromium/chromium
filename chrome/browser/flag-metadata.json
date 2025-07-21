@@ -8237,12 +8237,12 @@
   },
   {
     "name": "read-anything-docs-integration",
-    "owners": [ "abigailbklein@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
+    "owners": [ "abigailbklein@google.com", "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145
   },
   {
     "name": "read-anything-docs-load-more-button",
-    "owners": [ "sophiatran@google.com", "xiangxiao@google.com", "//ui/accessibility/OWNERS" ],
+    "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145
   },
   {
@@ -8258,7 +8258,6 @@
   {
     "name": "read-anything-read-aloud-phrase-highlighting",
     "owners": [
-      "xiangxiao@google.com",
       "lwinston@google.com",
       "ajitnarayanan@google.com",
       "//ui/accessibility/OWNERS"
