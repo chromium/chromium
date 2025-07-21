@@ -105,11 +105,8 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
     // Feature overrides and origin trial information should only be
     // sent to the browser process if the corresponding base::Feature
     // is enabled.
-    if (base::FeatureList::IsEnabled(
-            blink::features::kOriginTrialStateHostApplyFeatureDiff)) {
-      GetOrBindOriginTrialStateHost()->ApplyFeatureDiffForOriginTrial(
-          std::move(blink_overrides));
-    }
+    GetOrBindOriginTrialStateHost()->ApplyFeatureDiffForOriginTrial(
+        std::move(blink_overrides));
     // TODO(https://crbug.com/1377000): when we convert to WTF:: types,
     // we use std::move, so we have to do some cleanup.
     origin_trial_overrides_.clear();
