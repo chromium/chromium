@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] font-weight(valid): Simple range with equal upper and lower bounds: 500 500
   assert_equals: Unexpected resulting value. expected "500" but got "500 500"
 [FAIL] font-stretch(valid): Simple range with equal upper and lower bounds: 100% 100%
@@ -8,8 +8,6 @@ Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected resulting value. expected "oblique calc(91deg)" but got "oblique 90deg"
 [FAIL] font-style(valid): 'oblique' followed by calc with out of range value (should be clamped): oblique calc(-91deg)
   assert_equals: Unexpected resulting value. expected "oblique calc(-91deg)" but got "oblique -90deg"
-[FAIL] font-style(valid): 'oblique' followed by angle in radians: oblique 0rad
-  assert_equals: Unexpected resulting value. expected "oblique 0deg" but got "oblique 0rad"
 [FAIL] font-style(valid): Simple range with equal upper and lower bounds: oblique 10deg 10deg
   assert_equals: Unexpected resulting value. expected "oblique 10deg" but got "oblique 10deg 10deg"
 Harness: the test ran to completion.

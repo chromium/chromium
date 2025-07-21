@@ -5948,6 +5948,16 @@ bool IsAngleWithinLimits(CSSPrimitiveValue* angle) {
          numeric_angle->DoubleValue() <= kMaxAngle;
 }
 
+bool IsAngleZero(CSSPrimitiveValue* angle) {
+  DCHECK(RuntimeEnabledFeatures::FontStyleObliqueZeroDegreeAsNormalEnabled());
+  auto* numeric_angle = DynamicTo<CSSNumericLiteralValue>(angle);
+  if (!numeric_angle) {
+    return false;
+  }
+
+  return numeric_angle->DoubleValue() == 0.0;
+}
+
 CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
                            const CSSParserContext& context) {
   if (stream.Peek().Id() == CSSValueID::kNormal ||
@@ -5977,6 +5987,10 @@ CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
   }
 
   if (context.Mode() != kCSSFontFaceRuleMode || stream.AtEnd()) {
+    if (RuntimeEnabledFeatures::FontStyleObliqueZeroDegreeAsNormalEnabled() &&
+        IsAngleZero(start_angle)) {
+      return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNormal);
+    }
     CSSValueList* value_list = CSSValueList::CreateSpaceSeparated();
     value_list->Append(*start_angle);
     return MakeGarbageCollected<cssvalue::CSSFontStyleRangeValue>(
@@ -5987,6 +6001,11 @@ CSSValue* ConsumeFontStyle(CSSParserTokenStream& stream,
       stream, context, std::nullopt, kMinObliqueValue, kMaxObliqueValue);
   if (!end_angle || !IsAngleWithinLimits(end_angle)) {
     return nullptr;
+  }
+
+  if (RuntimeEnabledFeatures::FontStyleObliqueZeroDegreeAsNormalEnabled() &&
+      IsAngleZero(start_angle) && IsAngleZero(end_angle)) {
+    return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNormal);
   }
 
   CSSValueList* range_list = CombineToRangeList(start_angle, end_angle);

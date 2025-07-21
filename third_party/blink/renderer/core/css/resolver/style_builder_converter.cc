@@ -1043,8 +1043,13 @@ FontSelectionValue StyleBuilderConverterBase::ConvertFontStyle(
     const CSSValueList* values = style_range_value->GetObliqueValues();
     CHECK_LT(values->length(), 2u);
     if (values->length()) {
-      return FontSelectionValue(To<CSSPrimitiveValue>(values->Item(0))
-                                    .ComputeDegrees(length_resolver));
+      const double angle_degrees = To<CSSPrimitiveValue>(values->Item(0))
+                                       .ComputeDegrees(length_resolver);
+      if (RuntimeEnabledFeatures::FontStyleObliqueZeroDegreeAsNormalEnabled() &&
+          angle_degrees == 0.0) {
+        return kNormalSlopeValue;
+      }
+      return FontSelectionValue(angle_degrees);
     } else {
       identifier_value = style_range_value->GetFontStyleValue();
       if (identifier_value->GetValueID() == CSSValueID::kNormal) {

@@ -2393,6 +2393,11 @@
       // a Chromium level feature.
     },
     {
+      // crbug.com/393391746
+      name: "FontStyleObliqueZeroDegreeAsNormal",
+      status: "stable",
+    },
+    {
       name: "FontSystemFallbackNotoCjk",
       status: "stable",
     },
