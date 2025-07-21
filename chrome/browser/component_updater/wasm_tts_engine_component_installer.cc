@@ -187,12 +187,16 @@ void WasmTtsEngineComponentInstallerPolicy::MaybeReinstallTtsEngine(
     return;
   }
 
+  const base::FilePath::CharType* manifest_file =
+      features::IsWasmTtsComponentUpdaterV3Enabled() ? kManifestV3FileName
+                                                     : kManifestFileName;
+
   // If it's been more than 14 days since reading mode was last opened,
   // re-install the engine so that unused voices can be removed.
   EmbeddedA11yExtensionLoader::GetInstance()->Init();
   EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
       extension_misc::kComponentUpdaterTTSEngineExtensionId, install_dir,
-      kManifestFileName,
+      manifest_file,
       /*should_localize=*/false);
 
   // If reading mode hasn't been opened in longer than 14 days but less than
