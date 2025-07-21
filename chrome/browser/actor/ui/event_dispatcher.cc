@@ -95,6 +95,9 @@ constexpr Visitor ActorTaskSyncChangeFn{
       seq.push_back(TaskStateChanged(c.task_id, c.new_state));
       return seq;
     },
+    [](const UiEventDispatcher::RemoveTab& c) {
+      return EventSequence<SyncUiEvent>{StoppedActingOnTab(c.handle)};
+    },
 };
 
 template <Visitor V>
@@ -181,6 +184,11 @@ struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
                   "ChangeTaskState task_id=%d old_state=%s new_state=%s",
                   c.task_id.GetUnsafeValue(), ToString(c.old_state),
                   ToString(c.new_state));
+            },
+            [](const UiEventDispatcher::RemoveTab& c) {
+              return absl::StrFormat("RemoveTab task_id=%d tab=%d",
+                                     c.task_id.GetUnsafeValue(),
+                                     c.handle.raw_value());
             }};
         return std::visit(DebugFn, change);
       };

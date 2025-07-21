@@ -38,8 +38,12 @@ class UiEventDispatcher {
     ActorTask::State old_state;
     ActorTask::State new_state;
   };
+  struct RemoveTab {
+    TaskId task_id;
+    tabs::TabInterface::Handle handle;
+  };
   // TODO(crbug.com/425784083): Add tab changes from ActorTask.
-  using ActorTaskSyncChange = std::variant<ChangeTaskState>;
+  using ActorTaskSyncChange = std::variant<ChangeTaskState, RemoveTab>;
 
   virtual ~UiEventDispatcher() = default;
 
