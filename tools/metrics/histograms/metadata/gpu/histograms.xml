@@ -1238,6 +1238,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.Presentation.FrameHandlesAnimationOrInteraction"
+    enum="FrameHandlingType" expires_after="2026-01-11">
+  <owner>magchen@chromium.org</owner>
+  <owner>vmiura@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Recorded when a display frame is swapped in Viz. It records whether the
+    current frame is handling interaction, animation, both, or none.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Presentation.VSyncCallbackDelay" units="microseconds"
     expires_after="2025-12-14">
   <owner>magchen@chromium.org</owner>

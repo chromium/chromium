@@ -204,6 +204,36 @@ void PopBackExpectedDisplayTraceId(std::deque<int64_t>& deque,
   deque.pop_back();
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AnimationOrInteractionType)
+enum class AnimationOrInteractionType {
+  kNone = 0,
+  kInteractionOnly = 1,
+  kAnimationOnly = 2,
+  kAnimationAndInteraction = 3,
+  kMaxValue = kAnimationAndInteraction,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FrameHandlingType)
+
+void RecordFrameTypes(bool is_handling_interaction,
+                      bool is_handling_animation) {
+  AnimationOrInteractionType type;
+  if (is_handling_interaction && is_handling_animation) {
+    type = AnimationOrInteractionType::kAnimationAndInteraction;
+  } else if (is_handling_interaction) {
+    type = AnimationOrInteractionType::kInteractionOnly;
+  } else if (is_handling_animation) {
+    type = AnimationOrInteractionType::kAnimationOnly;
+  } else {
+    type = AnimationOrInteractionType::kNone;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "GPU.Presentation.FrameHandlesAnimationOrInteraction", type);
+}
+
 }  // namespace
 
 constexpr base::TimeDelta Display::kDrawToSwapMin;
@@ -1209,6 +1239,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
     UMA_HISTOGRAM_COUNTS_100("Compositing.Display.PendingSwaps",
                              pending_swaps_);
+
+    RecordFrameTypes(has_interactive_frame, has_animated_frame);
 
     renderer_->SwapBuffers(std::move(swap_frame_data));
   } else {
