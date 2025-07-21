@@ -958,6 +958,14 @@ Response EmulationHandler::SetUserAgentOverride(
     new_ua_metadata.wow64 = default_ua_metadata.wow64;
   }
 
+  for (const auto& form_factor :
+       *ua_metadata.GetFormFactors(&default_ua_metadata.form_factors)) {
+    if (!ValidateClientHintString(form_factor)) {
+      return Response::InvalidParams("Invalid form factor string");
+    }
+    new_ua_metadata.form_factors.push_back(form_factor);
+  }
+
   // All checks OK, can update user_agent_metadata_.
   user_agent_metadata_.emplace(std::move(new_ua_metadata));
   return Response::FallThrough();
