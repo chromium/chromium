@@ -137,7 +137,6 @@ bool ShouldKeepTaskForTabsAndExtensions(Task::Type type,
       return subtype == Task::SubType::kNoSubType;
     case Task::EXTENSION:
     case Task::GUEST:
-    case Task::PLUGIN:
       return true;
     default:
       return false;
@@ -152,7 +151,6 @@ bool ShouldKeepTaskForSystem(Task::Type type, Task::SubType subtype) {
     case Task::GPU:
     case Task::ARC:
     case Task::CROSTINI:
-    case Task::PLUGIN_VM:
     case Task::ZYGOTE:
     case Task::UTILITY:
     case Task::SANDBOX_HELPER:

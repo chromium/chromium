@@ -77,9 +77,6 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::GUEST:
       return api::processes::ProcessType::kExtension;
 
-    case task_manager::Task::PLUGIN:
-      return api::processes::ProcessType::kPlugin;
-
     // TODO(crbug.com/40117341): Assign a different process type for each
     //                                  worker type.
     case task_manager::Task::DEDICATED_WORKER:
