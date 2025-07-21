@@ -10,7 +10,9 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_coordinator_transitioning_delegate.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_import_mediator.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
+#import "ios/chrome/browser/safari_data_import/ui/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_view_controller.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_password_conflict_resolution_view_controller.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
@@ -66,6 +68,8 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  /// TODO(crbug.com/420703283): Use real data from mediator.
+  BOOL hasConflicts = YES;
   switch (_containerViewController.importStage) {
     case SafariDataImportStage::kNotStarted:
       [_containerViewController
@@ -75,6 +79,12 @@
     case SafariDataImportStage::kFileLoading:
       NOTREACHED() << "button should be disabled";
     case SafariDataImportStage::kReadyForImport:
+      if (hasConflicts) {
+        [self showPasswordConflictResolutionModal];
+      } else {
+        /// TODO(crbug.com/420703283): call the mediator's import method.
+      }
+      break;
     case SafariDataImportStage::kImporting:
     case SafariDataImportStage::kImported:
     default:
@@ -109,6 +119,29 @@
   _documentProvider.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
   [_containerViewController presentViewController:_documentProvider
+                                         animated:YES
+                                       completion:nil];
+}
+
+/// Presents the modal for the user to handle password conflicts.
+- (void)showPasswordConflictResolutionModal {
+  /// TODO(crbug.com/420703283): Use real data from mediator.
+  NSArray<PasswordImportItem*>* passwordConflicts = @[
+    [[PasswordImportItem alloc] initWithURL:@"test.org"
+                                   username:@"tester"
+                                   password:@"te$t"],
+    [[PasswordImportItem alloc] initWithURL:@"ryanputn.am"
+                                   username:@"ryanputnam"
+                                   password:@"ry@npUtn@m"]
+  ];
+  /// Wraps the password conflict view in a navigation controller to display
+  /// navigation bar and toolbar.
+  UINavigationController* wrapper = [[UINavigationController alloc]
+      initWithRootViewController:
+          [[SafariDataImportPasswordConflictResolutionViewController alloc]
+              initWithPasswordConflicts:passwordConflicts]];
+  wrapper.toolbarHidden = NO;
+  [_containerViewController presentViewController:wrapper
                                          animated:YES
                                        completion:nil];
 }

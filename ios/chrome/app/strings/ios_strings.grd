@@ -5379,10 +5379,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_ONE" desc="Instructions view to teach users how to import data from Safari - step 1. [iOS only]">
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Select your file<ph name="END_BOLD">END_BOLD</ph>
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_THREE" desc="Instructions view to teach users how to import data from Safari - step 2. [iOS only]">
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_THREE" desc="Instructions view to teach users how to import data from Safari - step 3. [iOS only]">
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Done<ph name="END_BOLD">END_BOLD</ph>
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_TWO" desc="Instructions view to teach users how to import data from Safari - step 3. [iOS only]">
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_TWO" desc="Instructions view to teach users how to import data from Safari - step 2. [iOS only]">
         Select your Safari export <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>.zip<ph name="END_BOLD">END_BOLD</ph> file
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_BOOKMARKS" desc="The detailed text of the 'Bookmarks' row displayed on Safari import screen displaying the number of bookmarks imported. [iOS only]">
@@ -5451,6 +5451,21 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_TITLE" desc="Safari import screen that handles the import process - Title. [iOS only]">
         Import your data
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_CONTINUE" desc="Bar button to import selected passwords from Safari to override those on Google Password Manager. It shows up on the top-right (or top-left in RTL) of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
+        Continue
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_DESELECT_ALL" desc="Bar button to automatically deselect all passwords displayed on the screen . It shows up at the bottom of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
+        Deselect all
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_SELECT_ALL" desc="Bar button to automatically mark all passwords displayed on the screen as selected. It shows up at the bottom of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
+        Select all
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_DISCLAIMER" desc="Disclaimer showing on the top of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
+        You already have passwords for these accounts in your Google Password Manager. If you choose to import one of the passwords below, it will replace the existing one.
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_TITLE" desc="Title modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
+        Replace Passwords
       </message>
       <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_COMPROMISED_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a compromised password issue. [iOS only]">
         You have compromised passwords.
