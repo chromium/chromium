@@ -535,11 +535,6 @@ TEST_P(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
 // chrome as expected.
 TEST_P(IOSReportingEventRouterTest,
        TestOnUrlFilteringInterstitial_WatermarkAudit) {
-  // TODO(crbug.com/430603698): Add test path for url_filering_interstitial
-  // event in proto format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
