@@ -85,7 +85,8 @@ void TabGroupProvider::Start(const AutocompleteInput& input,
                              bool minimal_changes) {
   Stop(AutocompleteStopReason::kClobbered);
   if (input.current_page_classification() !=
-      ::metrics::OmniboxEventProto::ANDROID_HUB) {
+          ::metrics::OmniboxEventProto::ANDROID_HUB ||
+      client_->IsOffTheRecord()) {
     return;
   }
 

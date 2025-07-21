@@ -77,3 +77,20 @@ TEST_F(TabGroupProviderTest, TestOneTitleMatch) {
   ASSERT_TRUE(
       tab_group_provider().matches()[0].matching_tab_group_uuid.has_value());
 }
+
+TEST_F(TabGroupProviderTest, TestSkipProviderResultsOnIncognito) {
+  tab_groups::FakeTabGroupSyncService* service =
+      static_cast<tab_groups::FakeTabGroupSyncService*>(
+          client().GetTabGroupSyncService());
+  service->AddGroup(CreateSavedTabGroup());
+
+  // Mock that the browser is in incognito mode.
+  EXPECT_CALL(client(), IsOffTheRecord()).WillRepeatedly(testing::Return(true));
+
+  AutocompleteInput input(u"test",
+                          metrics::OmniboxEventProto::PageClassification::
+                              OmniboxEventProto_PageClassification_ANDROID_HUB,
+                          TestSchemeClassifier());
+  tab_group_provider().Start(input, /* minimal_changes= */ false);
+  ASSERT_EQ(0UL, tab_group_provider().matches().size());
+}
