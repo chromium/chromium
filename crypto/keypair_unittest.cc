@@ -30,11 +30,24 @@ TEST(Keypair, GenerateAndRoundtripPrivateKey) {
     EXPECT_EQ(key.ToPrivateKeyInfo(), k->ToPrivateKeyInfo());
     EXPECT_EQ(key.IsRsa(), k->IsRsa());
     EXPECT_EQ(key.IsEc(), k->IsEc());
+    EXPECT_EQ(key.IsEd25519(), k->IsEd25519());
   };
 
   expect_roundtrip(PrivateKey::GenerateRsa2048());
   expect_roundtrip(PrivateKey::GenerateRsa4096());
   expect_roundtrip(PrivateKey::GenerateEcP256());
+  expect_roundtrip(PrivateKey::GenerateEd25519());
+}
+
+TEST(Keypair, RoundtripEd25519Key) {
+  auto k = PrivateKey::GenerateEd25519();
+  auto priv = k.ToEd25519PrivateKey();
+  auto nk = PrivateKey::FromEd25519PrivateKey(priv);
+  EXPECT_EQ(k.ToPrivateKeyInfo(), nk.ToPrivateKeyInfo());
+
+  auto pub = k.ToEd25519PublicKey();
+  auto npk = PublicKey::FromEd25519PublicKey(pub);
+  EXPECT_EQ(k.ToSubjectPublicKeyInfo(), npk.ToSubjectPublicKeyInfo());
 }
 
 // Export a public key from each private key and ensure it matches the expected

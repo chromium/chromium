@@ -4,6 +4,7 @@
 
 #include "crypto/sign.h"
 
+#include "base/test/gtest_util.h"
 #include "crypto/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,6 +38,21 @@ TEST(Sign, RoundTripSignVerify) {
   auto ec_pub = PublicKey::FromPrivateKey(ec_priv);
 
   expect_roundtrip(ec_priv, ec_pub, SignatureKind::ECDSA_SHA256);
+
+  auto ed25519_priv = PrivateKey::GenerateEd25519();
+  auto ed25519_pub = PublicKey::FromPrivateKey(ed25519_priv);
+
+  expect_roundtrip(ed25519_priv, ed25519_pub, SignatureKind::ED25519);
+}
+
+TEST(Sign, CantUseEd25519ForStreaming) {
+  auto priv = PrivateKey::GenerateEd25519();
+  auto pub = PublicKey::FromPrivateKey(priv);
+
+  std::array<uint8_t, 64> sig = {};
+
+  EXPECT_CHECK_DEATH(crypto::sign::Signer(SignatureKind::ED25519, priv));
+  EXPECT_CHECK_DEATH(crypto::sign::Verifier(SignatureKind::ED25519, pub, sig));
 }
 
 }  // namespace
