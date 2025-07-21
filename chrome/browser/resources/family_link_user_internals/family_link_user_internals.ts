@@ -27,12 +27,6 @@ interface BasicInfo {
   sections: Section[];
 }
 
-interface WebContentsInfo {
-  enabled: boolean;
-  search_content_filtering: 'on'|'off';
-  browser_content_filtering: 'on'|'off';
-}
-
 type UserSettings = Record<string, any>;
 
 function getBasicInfoHtml(sections: Section[]) {
@@ -103,28 +97,11 @@ function initialize() {
     event.preventDefault();
   }
 
-  function changeSearchContentFilters(newState: 'on'|'off') {
-    chrome.send('changeSearchContentFilters', [newState]);
-  }
-  function changeBrowserContentFilters(newState: 'on'|'off') {
-    chrome.send('changeBrowserContentFilters', [newState]);
-  }
-
   getRequiredElement('try-url').addEventListener('submit', submitURL);
-  getRequiredElement('search-content-filters-enabled-on')
-      .addEventListener('click', () => changeSearchContentFilters('on'));
-  getRequiredElement('search-content-filters-enabled-off')
-      .addEventListener('click', () => changeSearchContentFilters('off'));
-  getRequiredElement('browser-content-filters-enabled-on')
-      .addEventListener('click', () => changeBrowserContentFilters('on'));
-  getRequiredElement('browser-content-filters-enabled-off')
-      .addEventListener('click', () => changeBrowserContentFilters('off'));
 
   addWebUiListener('basic-info-received', receiveBasicInfo);
   addWebUiListener('user-settings-received', receiveUserSettings);
   addWebUiListener('filtering-result-received', receiveFilteringResult);
-  addWebUiListener(
-      'web-content-filters-info-received', receiveWebContentsFilterInfo);
 
   chrome.send('registerForEvents');
   chrome.send('getBasicInfo');
@@ -202,44 +179,6 @@ function receiveFilteringResult(result: Result) {
   if (shouldScrollDown) {
     scrollToBottom(container);
   }
-}
-
-function receiveWebContentsFilterInfo(result: WebContentsInfo) {
-  /**
-   * Synchronizes the UI with WebContentsInfo result coming from the handler.
-   *
-   * @param toggleIdPrefix the HTML layout should contain two radio toggles
-   *     grouped under this `name` attribute, one each for `-on` and `-off`
-   *     options.
-   * @param value determines whether on or off radio should be checked.
-   */
-  function updateToggles(toggleIdPrefix: string, value: 'on'|'off') {
-    const onToggleId = `${toggleIdPrefix}-on`;
-    const offToggleId = `${toggleIdPrefix}-off`;
-
-    getRequiredElement<HTMLInputElement>(onToggleId).readOnly = !result.enabled;
-    getRequiredElement<HTMLInputElement>(offToggleId).readOnly =
-        !result.enabled;
-    getRequiredElement<HTMLInputElement>(onToggleId).disabled = !result.enabled;
-    getRequiredElement<HTMLInputElement>(offToggleId).disabled =
-        !result.enabled;
-
-    switch (value) {
-      case 'on':
-        getRequiredElement<HTMLInputElement>(onToggleId).checked = true;
-        getRequiredElement<HTMLInputElement>(offToggleId).checked = false;
-        break;
-      case 'off':
-        getRequiredElement<HTMLInputElement>(onToggleId).checked = false;
-        getRequiredElement<HTMLInputElement>(offToggleId).checked = true;
-        break;
-    }
-  }
-
-  updateToggles(
-      'search-content-filters-enabled', result.search_content_filtering);
-  updateToggles(
-      'browser-content-filters-enabled', result.browser_content_filtering);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

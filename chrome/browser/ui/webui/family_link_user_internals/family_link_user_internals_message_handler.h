@@ -69,13 +69,6 @@ class FamilyLinkUserInternalsMessageHandler
   void HandleRegisterForEvents(const base::Value::List& args);
   void HandleGetBasicInfo(const base::Value::List& args);
   void HandleTryURL(const base::Value::List& args);
-  void HandleChangeSearchContentFilters(const base::Value::List& args);
-  void HandleChangeBrowserContentFilters(const base::Value::List& args);
-
-  // Sets the browser's state of search and browser content filtering as
-  // indicated in this UI.
-  void ConfigureSearchContentFilters();
-  void ConfigureBrowserContentFilters();
 
   void SendBasicInfo();
   void SendFamilyLinkUserSettings(const base::Value::Dict& settings);
