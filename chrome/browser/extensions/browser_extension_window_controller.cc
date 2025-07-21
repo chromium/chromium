@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 namespace extensions {
@@ -88,7 +87,7 @@ BrowserExtensionWindowController::BrowserExtensionWindowController(
       browser_(CHECK_DEREF(browser)),
 #if !BUILDFLAG(IS_ANDROID)
       window_(CHECK_DEREF(browser->GetBrowserForMigrationOnly()->window())),
-      tab_strip_model_(CHECK_DEREF(browser->GetTabStripModel())),
+      tab_list_(CHECK_DEREF(TabListInterface::From(browser))),
 #endif  // !BUILDFLAG(IS_ANDROID)
       session_id_(browser->GetSessionID()),
       window_type_(GetTabsWindowType(browser)),
@@ -165,7 +164,9 @@ content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
   NOTIMPLEMENTED();
   return nullptr;
 #else
-  return tab_strip_model_->GetActiveWebContents();
+  // In some situations, especially tests, there may not be an active tab.
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  return active_tab ? active_tab->GetContents() : nullptr;
 #endif
 }
 
@@ -183,7 +184,7 @@ int BrowserExtensionWindowController::GetTabCount() const {
   NOTIMPLEMENTED();
   return 0;
 #else
-  return tab_strip_model_->count();
+  return tab_list_->GetTabCount();
 #endif
 }
 
@@ -193,7 +194,7 @@ content::WebContents* BrowserExtensionWindowController::GetWebContentsAt(
   NOTIMPLEMENTED();
   return nullptr;
 #else
-  return tab_strip_model_->GetWebContentsAt(i);
+  return tab_list_->GetTab(i)->GetContents();
 #endif
 }
 
@@ -266,15 +267,16 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
-  TabListInterface* tab_list_interface =
-      TabListInterface::From(&browser_.get());
-  for (int i = 0; i < tab_strip_model_->count(); ++i) {
-    content::WebContents* web_contents = tab_strip_model_->GetWebContentsAt(i);
+  const int tab_count = tab_list_->GetTabCount();
+
+  for (int i = 0; i < tab_count; ++i) {
+    content::WebContents* web_contents = tab_list_->GetTab(i)->GetContents();
+    CHECK(web_contents);
     const ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context, web_contents);
     tab_list.Append(
         ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
-                                          extension, tab_list_interface, i)
+                                          extension, &tab_list_.get(), i)
             .ToValue());
   }
 #endif

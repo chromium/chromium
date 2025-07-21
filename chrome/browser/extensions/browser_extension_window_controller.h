@@ -12,10 +12,10 @@
 
 class BrowserWindowInterface;
 class GURL;
+class TabListInterface;
 
 #if !BUILDFLAG(IS_ANDROID)
 class BrowserWindow;
-class TabStripModel;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
@@ -78,7 +78,7 @@ class BrowserExtensionWindowController : public WindowController {
   // concepts.
 #if !BUILDFLAG(IS_ANDROID)
   const raw_ref<BrowserWindow> window_;
-  const raw_ref<TabStripModel> tab_strip_model_;
+  const raw_ref<TabListInterface> tab_list_;
 #endif
   const SessionID session_id_;
   const api::tabs::WindowType window_type_;

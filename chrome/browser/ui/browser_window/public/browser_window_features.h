@@ -522,9 +522,6 @@ class BrowserWindowFeatures {
   std::unique_ptr<ReadingListSidePanelCoordinator>
       reading_list_side_panel_coordinator_;
 
-  std::unique_ptr<extensions::BrowserExtensionWindowController>
-      extension_window_controller_;
-
   std::unique_ptr<ProfileMenuCoordinator> profile_menu_coordinator_;
 
   std::unique_ptr<IncognitoClearBrowsingDataDialogCoordinator>
@@ -546,6 +543,10 @@ class BrowserWindowFeatures {
   std::unique_ptr<DataSharingBubbleController> data_sharing_bubble_controller_;
 
   std::unique_ptr<TabListBridge> tab_list_bridge_;
+
+  // Note: Depends on TabListBridge, so should come after it in the member list.
+  std::unique_ptr<extensions::BrowserExtensionWindowController>
+      extension_window_controller_;
 
   std::unique_ptr<HistoryClustersSidePanelCoordinator>
       history_clusters_side_panel_coordinator_;
