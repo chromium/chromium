@@ -220,7 +220,8 @@ suite('Highlighter', () => {
   test('phrase highlight across multiple nodes', () => {
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.autoHighlighting);
-    wordBoundaries.updateBoundary(0);
+    // speechUtteranceLength should extend across multiple nodes.
+    wordBoundaries.updateBoundary(0, 4);
     const id1 = 10;
     const id2 = 12;
     const sentence = document.createElement('p');

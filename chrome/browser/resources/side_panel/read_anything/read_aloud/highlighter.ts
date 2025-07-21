@@ -238,7 +238,11 @@ export class ReadAloudHighlighter {
       const nodeId = highlightNode.nodeId;
       const remainingSpeechUtteranceLength = Math.max(
           speechUtteranceLength - alreadyHighlightedSpeechUtteranceLength, 0);
-      const highlightLength: number = speechUtteranceLength ?
+      // For phrase highlighting, always use the length received from
+      // getHighlightForCurrentSegmentIndex. For word highlighting, use the word
+      // boundary received from the TTS engine if there is one.
+      const highlightLength: number =
+          (!highlightPhrases && speechUtteranceLength) ?
           (remainingSpeechUtteranceLength) :
           highlightNode.length;
       const highlightStartIndex = highlightNode.start;
