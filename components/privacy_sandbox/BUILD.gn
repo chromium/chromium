@@ -109,8 +109,9 @@ source_set("tpcd") {
 }
 
 # These sources depend on targets from "//content/browser", which means they can't be
-# loaded on ios.
-# TOOD(b/301947962): Delete this check after CookieSettings is removed from iOS.
+# loaded on iOS.
+# NOTE: If/when targets used on iOS are refactored into a separate BUILD file, this
+# check can be removed.
 if (use_blink) {
   source_set("privacy_sandbox_settings_headers") {
     sources = [
