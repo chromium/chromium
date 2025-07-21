@@ -215,9 +215,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void EndWriteAccess();
   GrBackendTexture CreateGrTexture() const;
 
-  GLuint GetTextureIdForReadAccess() const {
-    return owning_thread_data().texture_id_for_read_access;
-  }
   GLuint GetTextureIdForWriteAccess() const {
     return owning_thread_data().texture_id_for_write_access;
   }
