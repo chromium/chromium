@@ -306,8 +306,10 @@ FakeContentFiltersObserverBridge::FakeContentFiltersObserverBridge(
     : ContentFiltersObserverBridge(setting_name, on_enabled, on_disabled) {}
 FakeContentFiltersObserverBridge::~FakeContentFiltersObserverBridge() = default;
 
-void FakeContentFiltersObserverBridge::Init() {}
-
+void FakeContentFiltersObserverBridge::Init() {
+  // Java class would call "onChange" in the constructor with the initial value.
+  OnChange(/*env=*/nullptr, IsEnabled());
+}
 void FakeContentFiltersObserverBridge::Shutdown() {
   // Do nothing, specifically do not destroy the java bridge from super.
 }
