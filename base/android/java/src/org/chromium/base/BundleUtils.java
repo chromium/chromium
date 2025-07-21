@@ -350,6 +350,11 @@ public class BundleUtils {
             return;
         }
         sSplitsToRestore = savedInstanceState.getStringArrayList(LOADED_SPLITS_KEY);
+        // TODO(crbug.com/430099860): Delete after M141.
+        if (sSplitsToRestore != null && sSplitsToRestore.contains("google3")) {
+            sSplitsToRestore.add("on_demand");
+            sSplitsToRestore.remove("google3");
+        }
     }
 
     private static class SplitCompatClassLoader extends ClassLoader {

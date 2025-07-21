@@ -23,6 +23,7 @@ android_library("dependency_provider_impl_java") {
     "//base:base_java",
     "//base:service_loader_java",
     "//base/version_info/android:version_constants_java",
+    "//chrome/android/modules/on_demand:provider_java",
     "//chrome/browser/feed/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/privacy:java",

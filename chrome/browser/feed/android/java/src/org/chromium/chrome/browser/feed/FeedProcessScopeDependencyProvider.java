@@ -16,6 +16,7 @@ import org.chromium.base.BundleUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
+import org.chromium.chrome.modules.on_demand.OnDemandModule;
 
 /** Provides logging and context for all surfaces. */
 // TODO(b/286003870): Delete the class when all the methods are migrated to
@@ -23,8 +24,6 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 @JNINamespace("feed::android")
 @NullMarked
 public class FeedProcessScopeDependencyProvider implements ProcessScopeDependencyProvider {
-    private static final String FEED_SPLIT_NAME = "google3";
-
     private final ImageFetchClient mImageFetchClient;
 
     public FeedProcessScopeDependencyProvider() {
@@ -52,7 +51,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     }
 
     public static Context createFeedContext(Context context) {
-        return BundleUtils.createContextForInflation(context, FEED_SPLIT_NAME);
+        return BundleUtils.createContextForInflation(context, OnDemandModule.SPLIT_NAME);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
