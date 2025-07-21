@@ -3108,9 +3108,6 @@ crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-r
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error.tentative.html [ Crash ]
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_fetch_error-downgraded.tentative.html [ Timeout ]
 crbug.com/428754684 external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html [ Crash ]
-crbug.com/428754684 [ Mac14 ] external/wpt/trusted-types/trusted-types-navigation.html?06-10 [ Pass Timeout ]
-crbug.com/428754684 [ Win11 ] external/wpt/trusted-types/trusted-types-navigation.html?31-35 [ Pass Timeout ]
-crbug.com/428754684 [ Win11-arm64 ] external/wpt/trusted-types/trusted-types-navigation.html?31-35 [ Pass Timeout ]
 crbug.com/428744357 external/wpt/webdriver/tests/bidi/emulation/set_locale_override/contexts.py [ Failure ]
 crbug.com/428744357 external/wpt/webdriver/tests/bidi/emulation/set_locale_override/invalid.py [ Failure ]
 crbug.com/428744357 external/wpt/webdriver/tests/bidi/emulation/set_locale_override/locale.py [ Failure ]
@@ -3893,7 +3890,6 @@ crbug.com/356436572 [ Win11-arm64 ] external/wpt/css/css-box/margin-trim/compute
 crbug.com/356436618 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/border-image-slice-005.htm [ Failure ]
 crbug.com/355683658 external/wpt/css/css-align/self-alignment/block-justify-self.html [ Failure ]
 crbug.com/353583104 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
-crbug.com/353583078 external/wpt/trusted-types/block-text-node-insertion-into-svg-script-element.html [ Timeout ]
 crbug.com/353583105 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/config-cross-origin-apis.https.html [ Timeout ]
 crbug.com/353228155 [ Mac ] external/wpt/svg/text/reftests/textpath-letter-spacing-01.svg [ Failure ]
 crbug.com/352407781 external/wpt/svg/painting/reftests/non-scaling-stroke-003.html [ Failure ]
@@ -9575,5 +9571,15 @@ crbug.com/431938385 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bou
 crbug.com/431938385 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure ]
 crbug.com/431938385 [ Win11-arm64 ] external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Failure ]
 
+crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?01-05 [ Skip Timeout ]
+crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?06-10 [ Skip Timeout ]
+crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?11-15 [ Skip Timeout ]
+crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?16-20 [ Skip Timeout ]
+crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?21-25 [ Skip Timeout ]
+crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?26-30 [ Skip Timeout ]
+crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?31-35 [ Skip Timeout ]
+crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?36-last [ Skip Timeout ]
+
 # Gardener 2025-07-16
 crbug.com/431938385 [ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/characteristic-is-removed.https.window.html [ Failure Pass ]
+
