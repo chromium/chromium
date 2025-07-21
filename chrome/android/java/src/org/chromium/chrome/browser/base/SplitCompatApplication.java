@@ -56,12 +56,13 @@ import org.chromium.ui.base.ResourceBundle;
  * which extend this class should also extend {@link Impl}, and call {@link #setImpl(Impl)} before
  * calling {@link attachBaseContext(Context)}.
  *
- * This is the base class of all Chrome applications. Logic specific to isolated splits should go in
- * {@link SplitChromeApplication}.
+ * <p>This is the base class of all Chrome applications. Logic specific to isolated splits should go
+ * in {@link SplitChromeApplication}.
  */
 @NullMarked
 public class SplitCompatApplication extends Application {
     public static final String CHROME_SPLIT_NAME = "chrome";
+    public static final String ON_DEMAND_SPLIT_NAME = "on_demand";
     private static final String TAG = "SplitCompatApp";
     private static final String COMMAND_LINE_FILE = "chrome-command-line";
     private static final String ATTACH_BASE_CONTEXT_EVENT = "ChromeApplication.attachBaseContext";
