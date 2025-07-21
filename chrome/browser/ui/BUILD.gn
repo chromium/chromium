@@ -3477,7 +3477,6 @@ static_library("ui") {
       "views/device_signals_consent/consent_dialog_coordinator.cc",
       "views/device_signals_consent/consent_dialog_coordinator.h",
     ]
-    deps += [ "//chrome/browser/ui/device_signals_consent" ]
   }
 
   if (enable_webui_certificate_viewer) {

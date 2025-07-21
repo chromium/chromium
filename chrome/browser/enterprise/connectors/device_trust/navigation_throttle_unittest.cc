@@ -20,7 +20,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_device_trust_service.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
-#include "chrome/browser/ui/device_signals_consent/mock_consent_requester.h"
+#include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/device_signals/core/browser/mock_user_permission_service.h"
 #include "components/device_signals/core/browser/pref_names.h"
@@ -115,6 +115,18 @@ scoped_refptr<net::HttpResponseHeaders> GetRedirectedHeader() {
 }
 
 }  // namespace
+
+// Simple mock for ConsentRequester used in tests.
+class MockConsentRequester : public ConsentRequester {
+ public:
+  MockConsentRequester() = default;
+  ~MockConsentRequester() override = default;
+
+  MockConsentRequester(const MockConsentRequester&) = delete;
+  MockConsentRequester& operator=(const MockConsentRequester&) = delete;
+
+  MOCK_METHOD(void, RequestConsent, (RequestConsentCallback), (override));
+};
 
 class DeviceTrustNavigationThrottleTest : public testing::Test {
  protected:
