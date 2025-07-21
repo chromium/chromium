@@ -195,13 +195,7 @@ void HTMLDialogElement::close(const String& return_value,
 
     ScheduleCloseEvent();
 
-    if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled()) {
-      if (isConnected()) {
-        DCHECK(close_watcher_);
-        close_watcher_->destroy();
-        close_watcher_ = nullptr;
-      }
-    } else if (close_watcher_) {
+    if (close_watcher_) {
       close_watcher_->destroy();
       close_watcher_ = nullptr;
     }
@@ -614,13 +608,10 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
 
   SetIsModal(false);
   document.RemoveFromTopLayerImmediately(this);
-  if (FastHasAttribute(html_names::kOpenAttr)) {
-    GetDocument().AllOpenDialogs().erase(this);
-    DCHECK(close_watcher_);
+  GetDocument().AllOpenDialogs().erase(this);
+  if (close_watcher_) {
     close_watcher_->destroy();
     close_watcher_ = nullptr;
-  } else {
-    DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
   }
 }
 
@@ -764,9 +755,10 @@ void HTMLDialogElement::ParseAttribute(
       } else {
         DCHECK(GetDocument().AllOpenDialogs().Contains(this));
         GetDocument().AllOpenDialogs().erase(this);
-        DCHECK(close_watcher_);
-        close_watcher_->destroy();
-        close_watcher_ = nullptr;
+        if (close_watcher_) {
+          close_watcher_->destroy();
+          close_watcher_ = nullptr;
+        }
       }
     } else if (params.old_value.IsNull() && isConnected()) {
       // The `open` attribute is being added, and the element is already
