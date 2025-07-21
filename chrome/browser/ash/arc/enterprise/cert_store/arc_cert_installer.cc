@@ -19,7 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chromeos/ash/services/keymanagement/public/mojom/cert_store_types.mojom.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
 #include "net/cert/x509_util_nss.h"
 
 // Enable VLOG level 1.
@@ -28,7 +28,7 @@
 
 namespace arc {
 
-CertDescription::CertDescription(crypto::RSAPrivateKey* placeholder_key,
+CertDescription::CertDescription(crypto::keypair::PrivateKey placeholder_key,
                                  CERTCertificate* nss_cert,
                                  keymanagement::mojom::ChapsSlot slot,
                                  std::string label,
@@ -137,8 +137,8 @@ std::string ArcCertInstaller::InstallArcCert(
 
   std::string der_cert64 = base::Base64Encode(der_cert);
 
-  crypto::RSAPrivateKey* rsa = certificate.placeholder_key.get();
-  std::string pkcs12 = CreatePkcs12ForKey(name, rsa->key());
+  crypto::keypair::PrivateKey rsa = certificate.placeholder_key;
+  std::string pkcs12 = CreatePkcs12ForKey(name, rsa.key());
   // NOTE: command_proto contains crypto key value. Avoid logging its value out
   // on release build, by using LOG instead of SYSLOG.
   command_proto.set_payload(
@@ -160,7 +160,7 @@ std::string ArcCertInstaller::InstallArcCert(
     pending_commands_[next_id_++] = name;
     queue_->AddJob(std::move(job));
 
-    return ExportSpki(rsa);
+    return base::Base64Encode(rsa.ToSubjectPublicKeyInfo());
   }
 }
 

@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -271,10 +272,9 @@ std::optional<CertDescription> BuildCertDescritionOnWorkerThread(
 
   // TODO(b/193784305) Try to avoid (some) key generation if possible.
   // Generate the placeholder RSA key that will be installed in ARC.
-  auto placeholder_key = crypto::RSAPrivateKey::Create(2048);
-  DCHECK(placeholder_key);
+  auto placeholder_key = crypto::keypair::PrivateKey::GenerateRsa2048();
 
-  return CertDescription(placeholder_key.release(), nss_cert.release(), slot,
+  return CertDescription(placeholder_key, nss_cert.release(), slot,
                          pkcs11_label, pkcs11_id);
 }
 
@@ -310,7 +310,8 @@ std::vector<keymaster::mojom::ChromeOsKeyPtr> PrepareChromeOsKeysForKeymaster(
         keymaster::mojom::ChapsKeyData::New(certificate.label, certificate.id,
                                             certificate.slot);
     keymaster::mojom::ChromeOsKeyPtr key = keymaster::mojom::ChromeOsKey::New(
-        ExportSpki(certificate.placeholder_key.get()),
+        base::Base64Encode(
+            certificate.placeholder_key.ToSubjectPublicKeyInfo()),
         keymaster::mojom::KeyData::NewChapsKeyData(std::move(key_data)));
 
     chrome_os_keys.push_back(std::move(key));
@@ -334,7 +335,8 @@ std::vector<keymint::mojom::ChromeOsKeyPtr> PrepareChromeOsKeysForKeyMint(
         keymint::mojom::ChapsKeyData::New(certificate.label, certificate.id,
                                           certificate.slot);
     keymint::mojom::ChromeOsKeyPtr key = keymint::mojom::ChromeOsKey::New(
-        ExportSpki(certificate.placeholder_key.get()),
+        base::Base64Encode(
+            certificate.placeholder_key.ToSubjectPublicKeyInfo()),
         keymint::mojom::KeyData::NewChapsKeyData(std::move(key_data)));
 
     chrome_os_keys.push_back(std::move(key));

@@ -60,6 +60,7 @@ source_set("unit_tests") {
     "//components/policy/core/common",
     "//content/test:test_support",
     "//crypto",
+    "//crypto:test_support",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
