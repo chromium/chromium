@@ -100,7 +100,10 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Child account can leak to other tests in the suite.")
-@EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+@EnableFeatures({
+    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+})
 // Disable TrackingProtection3pcd as we use prefs instead of the feature in these tests.
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class PrivacySettingsFragmentTest {
@@ -421,7 +424,6 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
     public void clickingFingerprintingProtectionToggleEnablesPref() throws ExecutionException {
         setFpProtection(false);
         setShowTrackingProtection(false);
