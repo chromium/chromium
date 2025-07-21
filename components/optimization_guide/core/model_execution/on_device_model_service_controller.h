@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
@@ -155,8 +156,10 @@ class OnDeviceModelServiceController
   // `complete` runs.
   void EnsurePerformanceClassAvailable(base::OnceClosure complete);
 
-  virtual void RegisterPerformanceClassSyntheticTrial(
-      OnDeviceModelPerformanceClass perf_class) {}
+  // Registers a callback to be called once performance class is available,
+  // but does not trigger the computation. Returns true if it was already
+  // available.
+  bool ListenForPerformanceClassAvailable(base::OnceClosure available);
 
  protected:
   ~OnDeviceModelServiceController() override;

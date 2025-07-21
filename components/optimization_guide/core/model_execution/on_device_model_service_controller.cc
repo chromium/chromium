@@ -773,19 +773,9 @@ void OnDeviceModelServiceController::Solution::ReportHealthyCompletion() {
 
 void OnDeviceModelServiceController::EnsurePerformanceClassAvailable(
     base::OnceClosure complete) {
-  if (!on_device_component_state_manager_ ||
-      !on_device_component_state_manager_->NeedsPerformanceClassUpdate()) {
-    std::move(complete).Run();
+  if (ListenForPerformanceClassAvailable(std::move(complete))) {
     return;
   }
-
-  if (performance_class_state_ == PerformanceClassState::kComplete) {
-    std::move(complete).Run();
-    return;
-  }
-
-  // Use unsafe because cancellation isn't needed.
-  performance_class_callbacks_.AddUnsafe(std::move(complete));
 
   if (performance_class_state_ == PerformanceClassState::kComputing) {
     return;
@@ -804,12 +794,29 @@ void OnDeviceModelServiceController::EnsurePerformanceClassAvailable(
                         OnDeviceModelPerformanceClass::kServiceCrash))));
 }
 
+bool OnDeviceModelServiceController::ListenForPerformanceClassAvailable(
+    base::OnceClosure available) {
+  if (!on_device_component_state_manager_ ||
+      !on_device_component_state_manager_->NeedsPerformanceClassUpdate()) {
+    std::move(available).Run();
+    return true;
+  }
+
+  if (performance_class_state_ == PerformanceClassState::kComplete) {
+    std::move(available).Run();
+    return true;
+  }
+
+  // Use unsafe because cancellation isn't needed.
+  performance_class_callbacks_.AddUnsafe(std::move(available));
+  return false;
+}
+
 void OnDeviceModelServiceController::PerformanceClassUpdated(
     OnDeviceModelPerformanceClass perf_class) {
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
       perf_class);
-  RegisterPerformanceClassSyntheticTrial(perf_class);
 
   auto complete = base::BindOnce(
       [](scoped_refptr<OnDeviceModelServiceController> controller) {

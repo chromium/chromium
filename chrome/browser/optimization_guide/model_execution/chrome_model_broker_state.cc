@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/optimization_guide/model_execution/chrome_on_device_model_service_controller.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
@@ -81,7 +80,33 @@ base::WeakPtr<ChromeModelBrokerState>& GetInstance() {
   return *instance.get();
 }
 
+void LaunchService(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+        pending_receiver) {
+  CHECK(features::CanLaunchOnDeviceModelService());
+  content::ServiceProcessHost::Launch<
+      on_device_model::mojom::OnDeviceModelService>(
+      std::move(pending_receiver),
+      content::ServiceProcessHost::Options()
+          .WithDisplayName("On-Device Model Service")
+          .Pass());
+}
+
 }  // namespace
+
+class ChromeOnDeviceModelServiceController final {
+ public:
+  static void RegisterPerformanceClassSyntheticTrial() {
+    auto perf_class = optimization_guide::PerformanceClassFromPref(
+        *g_browser_process->local_state());
+    if (perf_class != OnDeviceModelPerformanceClass::kUnknown) {
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+          "SyntheticOnDeviceModelPerformanceClass",
+          SyntheticTrialGroupForPerformanceClass(perf_class),
+          variations::SyntheticTrialAnnotationMode::kCurrentLog);
+    }
+  }
+};
 
 ChromeModelBrokerState::ChromeModelBrokerState() {
   component_state_manager_ =
@@ -90,11 +115,15 @@ ChromeModelBrokerState::ChromeModelBrokerState() {
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
   component_state_manager_->OnStartup();
 
-  service_controller_ =
-      base::MakeRefCounted<ChromeOnDeviceModelServiceController>(
-          component_state_manager_->GetWeakPtr());
+  service_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+      std::make_unique<OnDeviceModelAccessController>(
+          *g_browser_process->local_state()),
+      component_state_manager_->GetWeakPtr(),
+      base::BindRepeating(&LaunchService));
   service_controller_->Init();
-
+  service_controller_->ListenForPerformanceClassAvailable(
+      base::BindOnce(&ChromeOnDeviceModelServiceController::
+                         RegisterPerformanceClassSyntheticTrial));
   if ((base::FeatureList::IsEnabled(
            optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
        optimization_guide::features::IsOnDeviceExecutionEnabled()) &&
@@ -106,10 +135,6 @@ ChromeModelBrokerState::ChromeModelBrokerState() {
             service_controller_->GetWeakPtr(), base::DoNothing()),
         optimization_guide::features::GetOnDeviceStartupMetricDelay());
   }
-  // If the perf class was previously determined, register that.
-  service_controller_->RegisterPerformanceClassSyntheticTrial(
-      optimization_guide::PerformanceClassFromPref(
-          *g_browser_process->local_state()));
 }
 ChromeModelBrokerState::~ChromeModelBrokerState() = default;
 
