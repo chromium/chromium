@@ -100,7 +100,7 @@
       tests.forEach(entry => {
         promise_test(async (t) => {
           const context = new OfflineAudioContext(1, renderFrames, sampleRate);
-          await testTailTimeModern(context, entry.parameters);
+          await testTailTime_W3CTH(context, entry.parameters);
         }, `${entry.descripton.label}: ${entry.descripton.description}`);
       });
 
