@@ -70,7 +70,7 @@ public class PdfCoordinator {
     /** Uri of the pdf document. Generated when the pdf is ready to load. */
     private @Nullable Uri mUri;
 
-    @VisibleForTesting ChromePdfViewerFragment mChromePdfViewerFragment;
+    @VisibleForTesting public ChromePdfViewerFragment mChromePdfViewerFragment;
 
     private int mFindInPageCount;
 
@@ -124,7 +124,7 @@ public class PdfCoordinator {
     /** The class responsible for rendering pdf document. */
     public static class ChromePdfViewerFragment extends PdfViewerFragment {
         /** Whether the pdf has been loaded successfully. */
-        boolean mIsLoadDocumentSuccess;
+        @VisibleForTesting public boolean mIsLoadDocumentSuccess;
 
         /** Whether the pdf has emitted any load error. */
         boolean mIsLoadDocumentError;
@@ -161,7 +161,8 @@ public class PdfCoordinator {
     }
 
     /** Returns the intended view for PdfPage tab. */
-    View getView() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public View getView() {
         return mView;
     }
 
