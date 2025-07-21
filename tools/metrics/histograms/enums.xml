@@ -17064,6 +17064,7 @@ from previous Chrome versions.
   <int value="1111871757" label="ForceUnifiedConsentBump:enabled"/>
   <int value="1112051724" label="DetectingHeavyPages:enabled"/>
   <int value="1112243997" label="EnableFastInkForSoftwareCursor:disabled"/>
+  <int value="1112775677" label="LensSearchAimM3:disabled"/>
   <int value="1112817963" label="WebViewConnectionlessSafeBrowsing:enabled"/>
   <int value="1112890211" label="SwapAndroidShareHubRows:enabled"/>
   <int value="1113196543" label="ShowManagedUi:disabled"/>
@@ -19720,6 +19721,7 @@ from previous Chrome versions.
   <int value="2066304836" label="OmniboxSteadyStateTextStyle:enabled"/>
   <int value="2066508701" label="WebViewOriginTrials:disabled"/>
   <int value="2066848656" label="CrOSLateBootAudioHFPSwb:disabled"/>
+  <int value="2066957093" label="LensSearchAimM3:enabled"/>
   <int value="2067136444" label="AudioPeripheralVolumeGranularity:disabled"/>
   <int value="2067243161" label="AutofillEnableVcn3dsAuthentication:disabled"/>
   <int value="2067634730" label="LsdPermissionPrompt:disabled"/>

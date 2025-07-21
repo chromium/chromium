@@ -54,7 +54,7 @@ inline constexpr char kToolbeltModeParameterKey[] = "tbm";
 inline constexpr char kShoppingModeParameterValue[] = "28";
 inline constexpr char kUnimodalModeParameterValue[] = "26";
 inline constexpr char kMultimodalModeParameterValue[] = "24";
-inline constexpr char kMGTModeParameterValue[] = "50";
+inline constexpr char kAimModeParameterValue[] = "50";
 
 // Query parameter for the language code.
 inline constexpr char kLanguageCodeParameterKey[] = "hl";
@@ -431,10 +431,10 @@ bool ShouldOpenSearchURLInNewTab(const GURL& url) {
   std::string param_value;
   net::GetValueForKeyInQuery(url, kModeParameterKey, &param_value);
   const bool is_shopping_mode = param_value == kShoppingModeParameterValue;
-  const bool is_mgt_mode = param_value == kMGTModeParameterValue;
+  const bool is_aim_mode = param_value == kAimModeParameterValue;
   return IsValidSearchResultsUrl(url) &&
          (is_shopping_mode ||
-          (is_mgt_mode && !lens::features::ShouldShowMGTInSidePanel()));
+          (is_aim_mode && !lens::features::ShouldShowAimInSidePanel()));
 }
 
 GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {

@@ -88,10 +88,6 @@ BASE_DECLARE_FEATURE(kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayUpdatedClientContext);
 
-// Enables opening the Lens overlay MGT feature in the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayMGTInSidePanel);
-
 // Enables the Lens Overlay omnibox entry point.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayOmniboxEntryPoint);
@@ -148,6 +144,10 @@ BASE_DECLARE_FEATURE(kLensSearchNotFoundOnPageToast);
 // Enables straight to SRP flows are enabled in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayStraightToSrp);
+
+// Enables AIM follow ups with the Lens overlay results side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchAimM3);
 
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -708,7 +708,6 @@ extern bool IsLensOverlayRoutingInfoEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool HandleSidePanelTextDirectivesEnabled();
 
-
 // The compression level to use when compressing the PDF bytes using zstd.
 // Higher values mean better compression but also take longer to compress.
 // See the introduction section in third_party/zstd/src/lib/zstd.h for more
@@ -822,9 +821,9 @@ extern bool ShowContextualSearchboxZeroPrefixSuggest();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsUpdatedClientContextEnabled();
 
-// Whether to show open MGT search pages in the side panel.
+// Whether to show open AIM search pages in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool ShouldShowMGTInSidePanel();
+extern bool ShouldShowAimInSidePanel();
 
 // Whether to use the alt loading hint when overlay is opened on web pages.
 COMPONENT_EXPORT(LENS_FEATURES)

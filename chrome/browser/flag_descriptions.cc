@@ -2519,6 +2519,10 @@ const char kLensSearchSidePanelDefaultWidthChangeName[] =
 const char kLensSearchSidePanelDefaultWidthChangeDescription[] =
     "Enables changing the default width of the Lens search side panel.";
 
+const char kLensSearchAimM3Name[] = "Enables AIM in Lens side panel.";
+const char kLensSearchAimM3Description[] =
+    "Enables AIM follow ups with the Lens overlay results side panel.";
+
 const char kLensSearchSidePanelNewFeedbackName[] =
     "Lens side panel new feedback";
 const char kLensSearchSidePanelNewFeedbackDescription[] =
