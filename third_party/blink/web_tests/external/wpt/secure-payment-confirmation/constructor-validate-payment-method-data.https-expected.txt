@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Empty instrument.details field throws exception.
+  assert_throws_js: function "() => {\n    new PaymentRequest([{\n      supportedMethods: 'secure-payment-confirmation',\n      data: {\n        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],\n        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),\n        payeeOrigin: window.location.origin,\n        timeout: 60000,\n        instrument: {\n          displayName: 'X',\n          icon: 'https://example.test/icon.png',\n          // Details can be omitted, but if present cannot be empty.\n          details: '',\n        },\n        rpId: 'relying-party.example',\n      },\n    }], details);\n  }" did not throw
+Harness: the test ran to completion.
+
