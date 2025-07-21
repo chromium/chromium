@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 
 #include <algorithm>
+#include <cmath>
 #include <utility>
 
 #include "base/i18n/rtl.h"
@@ -294,17 +295,17 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       // If there is a tab before this one, then expand into its overlap.
       const Tab* const previous_tab = GetLeftTab(tab());
       if (expand_into_previous_separator && previous_tab) {
-        left -= (tab_style()->GetSeparatorMargins().right() +
-                 left_separator_overlap) *
-                scale;
+        left -= std::round((tab_style()->GetSeparatorMargins().right() +
+                            left_separator_overlap) *
+                           scale);
       }
 
       // If there is a tab after this one, then expand into its overlap.
       const Tab* const next_tab = GetRightTab(tab());
       if (expand_into_next_separator && next_tab) {
-        right += (tab_style()->GetSeparatorMargins().left() +
-                  right_separator_overlap) *
-                 scale;
+        right += std::round((tab_style()->GetSeparatorMargins().left() +
+                             right_separator_overlap) *
+                            scale);
       }
     }
 
