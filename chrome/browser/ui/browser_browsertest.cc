@@ -42,6 +42,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/command_updater.h"
@@ -80,6 +81,7 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -99,6 +101,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/embedder_support/switches.h"
@@ -157,6 +161,7 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -1974,6 +1979,83 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, FullscreenBookmarkBar) {
   EXPECT_EQ(BookmarkBar::HIDDEN,
             BookmarkBarController::From(browser())->bookmark_bar_state());
 #endif
+}
+#endif
+
+// TODO(crbug.com/424490718): Fullscreen tests work differently on Mac and
+// require some additional flags to work.
+// See chrome/browser/ui/views/fullscreen_mac_browsertest.cc
+#if !BUILDFLAG(IS_MAC)
+class SideBySideBrowserTest : public BrowserTest {
+ public:
+  SideBySideBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
+  }
+
+  SideBySideBrowserTest(const SideBySideBrowserTest&) = delete;
+  SideBySideBrowserTest& operator=(const SideBySideBrowserTest&) = delete;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SideBySideBrowserTest,
+                       BrowserFullscreenShowBookmarkBarSplitView) {
+  chrome::AddTabAt(browser(), GURL("chrome://new-tab-page"), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Create a bookmark so we have something to show when bookmark bar is enabled
+  bookmarks::BookmarkModel* const model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  bookmarks::AddIfNotBookmarked(model, GURL("https://www.foo.goog"), u"Foo");
+
+  chrome::ToggleBookmarkBar(browser());
+  EXPECT_EQ(BookmarkBar::SHOW,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
+  chrome::ToggleFullscreenMode(browser());
+  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_EQ(BookmarkBar::SHOW,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
+}
+
+IN_PROC_BROWSER_TEST_F(SideBySideBrowserTest,
+                       TabFullscreenHiddenBookmarkBarSplitView) {
+  chrome::AddTabAt(browser(), GURL("chrome://new-tab-page"), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Create a bookmark so we have something to show when bookmark bar is enabled
+  bookmarks::BookmarkModel* const model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  bookmarks::AddIfNotBookmarked(model, GURL("https://www.foo.goog"), u"Foo");
+
+  chrome::ToggleBookmarkBar(browser());
+  EXPECT_EQ(BookmarkBar::SHOW,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  browser()
+      ->GetFeatures()
+      .exclusive_access_manager()
+      ->fullscreen_controller()
+      ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
+
+  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_EQ(BookmarkBar::HIDDEN,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
 }
 #endif
 

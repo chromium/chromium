@@ -176,6 +176,14 @@ bool BookmarkBarController::ShouldShowBookmarkBar() const {
     return false;
   }
 
+  // Prevent the bookmark bar from showing itself when entering fullscreen if
+  // fullscreen is entered through webview (TAB). This creates a consistent
+  // experience for split view fullscreen and the rest of the UI.
+  const tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
+  if (active_tab->GetContents()->IsFullscreen()) {
+    return false;
+  }
+
   return std::any_of(
       tabs.begin(), tabs.end(), [](const tabs::TabInterface* tab) {
         return tab->GetContents() && IsShowingNTP(tab->GetContents());
