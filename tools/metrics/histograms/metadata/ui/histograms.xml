@@ -289,6 +289,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DefaultBrowser.PinInfoBar.UserInteraction"
+    enum="PinInfoBarUserInteraction" expires_after="2026-07-17">
+  <owner>jessemckenna@google.com</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    User interaction with the pin-to-taskbar infobar (e.g., accepted, ignored,
+    dismissed).
+  </summary>
+</histogram>
+
 <histogram name="DefaultBrowser.State" enum="DefaultBrowserState"
     expires_after="never">
 <!-- expires-never: Used to keep track of desktop browser ecosystem. -->

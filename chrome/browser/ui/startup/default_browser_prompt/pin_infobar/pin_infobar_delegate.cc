@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/win/taskbar_manager.h"
 #include "chrome/grit/branded_strings.h"
@@ -20,12 +21,27 @@
 
 namespace default_browser {
 
+namespace {
+
+void RecordUserInteractionHistogram(PinInfoBarUserInteraction interaction) {
+  base::UmaHistogramEnumeration("DefaultBrowser.PinInfoBar.UserInteraction",
+                                interaction);
+}
+
+}  // namespace
+
 // static
 infobars::InfoBar* PinInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
   CHECK(infobar_manager);
   return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::make_unique<PinInfoBarDelegate>()));
+}
+
+PinInfoBarDelegate::~PinInfoBarDelegate() {
+  if (!action_taken_) {
+    RecordUserInteractionHistogram(PinInfoBarUserInteraction::kIgnored);
+  }
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier PinInfoBarDelegate::GetIdentifier()
@@ -51,6 +67,9 @@ int PinInfoBarDelegate::GetButtons() const {
 }
 
 bool PinInfoBarDelegate::Accept() {
+  action_taken_ = true;
+  RecordUserInteractionHistogram(PinInfoBarUserInteraction::kAccepted);
+
   // Pin Chrome to taskbar.
   // TODO(crbug.com/420960161): record a metric for the taskbar pin result.
   browser_util::PinAppToTaskbar(
@@ -60,6 +79,12 @@ bool PinInfoBarDelegate::Accept() {
   // TODO(crbug.com/420960161): record a metric for whether the user accepted,
   // dismissed, or ignored the infobar.
   return ConfirmInfoBarDelegate::Accept();
+}
+
+void PinInfoBarDelegate::InfoBarDismissed() {
+  action_taken_ = true;
+  RecordUserInteractionHistogram(PinInfoBarUserInteraction::kDismissed);
+  ConfirmInfoBarDelegate::InfoBarDismissed();
 }
 
 }  // namespace default_browser

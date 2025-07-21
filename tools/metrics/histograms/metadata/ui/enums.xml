@@ -105,6 +105,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Open Link in Incognito Window clicked."/>
 </enum>
 
+<!-- LINT.IfChange(PinInfoBarUserInteraction) -->
+
+<enum name="PinInfoBarUserInteraction">
+  <int value="0" label="Accepted">
+    The user clicked the &quot;Pin Chrome&quot; button.
+  </int>
+  <int value="1" label="Dismissed">The user explicitly closed the infobar.</int>
+  <int value="2" label="Ignored">
+    The user did not interact with the infobar; logged at object destruction.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h:PinInfoBarUserInteraction) -->
+
 <enum name="RenderViewContextMenuItem">
   <int value="0" label="IDC_CONTENT_CONTEXT_CUSTOM_FIRST"/>
   <int value="1" label="IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST"/>
