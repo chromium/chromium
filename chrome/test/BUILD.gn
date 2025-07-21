@@ -3501,6 +3501,7 @@ if (!is_android) {
       "../browser/support_tool/policy_data_collector_browsertest.cc",
       "../browser/support_tool/screenshot_data_collector_browsertest.cc",
       "../browser/support_tool/support_tool_util_browsertest.cc",
+      "../browser/sync/sessions/browser_list_router_helper_browsertest.cc",
       "../browser/sync/sessions/sync_sessions_router_tab_helper_browsertest.cc",
       "../browser/tab_contents/navigation_metrics_recorder_browsertest.cc",
       "../browser/tab_contents/view_source_browsertest.cc",
@@ -8053,7 +8054,6 @@ test("unit_tests") {
       "../browser/support_tool/support_tool_handler_unittest.cc",
       "../browser/support_tool/system_log_source_data_collector_adaptor_unittest.cc",
       "../browser/sync/prefs/chrome_syncable_prefs_database_unittest.cc",
-      "../browser/sync/sessions/browser_list_router_helper_unittest.cc",
       "../browser/sync/sessions/sync_sessions_router_tab_helper_unittest.cc",
       "../browser/sync/sync_ui_util_unittest.cc",  # Sync setup uses native ui.
       "../browser/tab_contents/form_interaction_tab_helper_unittest.cc",
