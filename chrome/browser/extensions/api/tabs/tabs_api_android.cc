@@ -192,10 +192,6 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   std::optional<tabs::Highlight::Params> params =
       tabs::Highlight::Params::Create(args());

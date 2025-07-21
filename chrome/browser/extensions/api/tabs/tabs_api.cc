@@ -230,6 +230,22 @@ ExtensionFunction::ResponseAction TabsGetFunction::Run() {
           window ? window->GetBrowserWindowInterface() : nullptr, tab_index))));
 }
 
+ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
+  DCHECK(dispatcher());
+
+  // If called from a tab, return the details from that tab. If not called from
+  // a tab, return nothing (making the returned value undefined to the
+  // extension), rather than an error.
+  content::WebContents* caller_contents = GetSenderWebContents();
+  if (caller_contents && ExtensionTabUtil::GetTabId(caller_contents) >= 0) {
+    return RespondNow(ArgumentList(
+        tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
+            caller_contents, extension(), source_context_type(), nullptr,
+            -1))));
+  }
+  return RespondNow(NoArguments());
+}
+
 ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
   // windowId defaults to "current" window.
   int window_id = extension_misc::kCurrentWindowId;

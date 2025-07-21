@@ -1345,21 +1345,6 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
           new_tab_index))));
 }
 
-ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
-  DCHECK(dispatcher());
-
-  // Return the caller, if it's a tab. If not the result isn't an error but an
-  // empty tab (hence returning true).
-  WebContents* caller_contents = GetSenderWebContents();
-  if (caller_contents && ExtensionTabUtil::GetTabId(caller_contents) >= 0) {
-    return RespondNow(ArgumentList(
-        tabs::Get::Results::Create(tabs_internal::CreateTabObjectHelper(
-            caller_contents, extension(), source_context_type(), nullptr,
-            -1))));
-  }
-  return RespondNow(NoArguments());
-}
-
 ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   std::optional<tabs::Highlight::Params> params =
       tabs::Highlight::Params::Create(args());
