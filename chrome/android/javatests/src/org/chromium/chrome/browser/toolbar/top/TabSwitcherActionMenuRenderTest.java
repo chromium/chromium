@@ -8,6 +8,8 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.util.Batch.UNIT_TESTS;
+
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,6 +53,7 @@ import java.util.List;
 /** Render tests for tab switcher long-press menu popup. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@Batch(UNIT_TESTS)
 public class TabSwitcherActionMenuRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
