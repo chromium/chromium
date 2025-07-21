@@ -484,6 +484,9 @@
         parseSetScreenOrientationOverrideParams(params) {
             return params;
         }
+        parseSetTimezoneOverrideParams(params) {
+            return params;
+        }
         parseAddPreloadScriptParams(params) {
             return params;
         }
@@ -1109,6 +1112,22 @@
             }
             return [...new Set(result).values()];
         }
+        async setTimezoneOverride(params) {
+            let timezone = params.timezone ?? null;
+            if (timezone !== null && !isValidTimezone(timezone)) {
+                throw new InvalidArgumentException(`Invalid timezone "${timezone}"`);
+            }
+            if (timezone !== null && isTimeZoneOffsetString(timezone)) {
+                timezone = `GMT${timezone}`;
+            }
+            const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
+            for (const userContextId of params.userContexts ?? []) {
+                const userContextConfig = this.#userContextStorage.getConfig(userContextId);
+                userContextConfig.timezone = timezone;
+            }
+            await Promise.all(browsingContexts.map(async (context) => await context.cdpTarget.setTimezoneOverride(timezone)));
+            return {};
+        }
     }
     function isValidLocale(locale) {
         try {
@@ -1121,6 +1140,21 @@
             }
             throw e;
         }
+    }
+    function isValidTimezone(timezone) {
+        try {
+            Intl.DateTimeFormat(undefined, { timeZone: timezone });
+            return true;
+        }
+        catch (e) {
+            if (e instanceof RangeError) {
+                return false;
+            }
+            throw e;
+        }
+    }
+    function isTimeZoneOffsetString(timezone) {
+        return /^[+-](?:2[0-3]|[01]\d)(?::[0-5]\d)?$/.test(timezone);
     }
 
     /**
@@ -4678,6 +4712,8 @@
                     return await this.#emulationProcessor.setLocaleOverride(this.#parser.parseSetLocaleOverrideParams(command.params));
                 case 'emulation.setScreenOrientationOverride':
                     return await this.#emulationProcessor.setScreenOrientationOverride(this.#parser.parseSetScreenOrientationOverrideParams(command.params));
+                case 'emulation.setTimezoneOverride':
+                    return await this.#emulationProcessor.setTimezoneOverride(this.#parser.parseSetTimezoneOverrideParams(command.params));
                 case 'input.performActions':
                     return await this.#inputProcessor.performActions(this.#parser.parsePerformActionsParams(command.params));
                 case 'input.releaseActions':
@@ -5217,6 +5253,7 @@
         geolocation;
         locale;
         screenOrientation;
+        timezone;
         userPromptHandler;
         constructor(userContextId) {
             this.userContextId = userContextId;
@@ -8286,6 +8323,9 @@
             if (this.#userContextConfig.locale !== undefined) {
                 promises.push(this.setLocaleOverride(this.#userContextConfig.locale));
             }
+            if (this.#userContextConfig.timezone !== undefined) {
+                promises.push(this.setTimezoneOverride(this.#userContextConfig.timezone));
+            }
             if (this.#userContextConfig.acceptInsecureCerts !== undefined) {
                 promises.push(this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
                     ignore: this.#userContextConfig.acceptInsecureCerts,
@@ -8404,6 +8444,18 @@
             else {
                 await this.cdpClient.sendCommand('Emulation.setLocaleOverride', {
                     locale,
+                });
+            }
+        }
+        async setTimezoneOverride(timezone) {
+            if (timezone === null) {
+                await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
+                    timezoneId: '',
+                });
+            }
+            else {
+                await this.cdpClient.sendCommand('Emulation.setTimezoneOverride', {
+                    timezoneId: timezone,
                 });
             }
         }
@@ -16141,6 +16193,7 @@
         Emulation$1.SetGeolocationOverrideSchema,
         Emulation$1.SetLocaleOverrideSchema,
         Emulation$1.SetScreenOrientationOverrideSchema,
+        Emulation$1.SetTimezoneOverrideSchema,
     ]));
     var Emulation$1;
     (function (Emulation) {
@@ -16239,6 +16292,22 @@
             userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
         }));
     })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetTimezoneOverrideSchema = z.lazy(() => z.object({
+            method: z.literal('emulation.setTimezoneOverride'),
+            params: Emulation.SetTimezoneOverrideParametersSchema,
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
+    (function (Emulation) {
+        Emulation.SetTimezoneOverrideParametersSchema = z.lazy(() => z.object({
+            timezone: z.union([z.string(), z.null()]),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Emulation$1 || (Emulation$1 = {}));
     const NetworkCommandSchema = z.lazy(() => z.union([
         Network$1.AddDataCollectorSchema,
         Network$1.AddInterceptSchema,
@@ -16287,9 +16356,6 @@
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
-        Network.DataTypeSchema = z.literal('response');
-    })(Network$1 || (Network$1 = {}));
-    (function (Network) {
         Network.BytesValueSchema = z.lazy(() => z.union([Network.StringValueSchema, Network.Base64ValueSchema]));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
@@ -16333,6 +16399,9 @@
             name: z.string(),
             value: Network.BytesValueSchema,
         }));
+    })(Network$1 || (Network$1 = {}));
+    (function (Network) {
+        Network.DataTypeSchema = z.literal('response');
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.FetchTimingInfoSchema = z.lazy(() => z.object({
@@ -17996,6 +18065,10 @@
             return parseObject(params, Emulation$1.SetScreenOrientationOverrideParametersSchema);
         }
         Emulation.parseSetScreenOrientationOverrideParams = parseSetScreenOrientationOverrideParams;
+        function parseSetTimezoneOverrideParams(params) {
+            return parseObject(params, Emulation$1.SetTimezoneOverrideParametersSchema);
+        }
+        Emulation.parseSetTimezoneOverrideParams = parseSetTimezoneOverrideParams;
     })(Emulation || (Emulation = {}));
     var Input;
     (function (Input) {
@@ -18232,6 +18305,9 @@
         }
         parseSetScreenOrientationOverrideParams(params) {
             return Emulation.parseSetScreenOrientationOverrideParams(params);
+        }
+        parseSetTimezoneOverrideParams(params) {
+            return Emulation.parseSetTimezoneOverrideParams(params);
         }
         parsePerformActionsParams(params) {
             return Input.parsePerformActionsParams(params);
