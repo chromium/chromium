@@ -301,7 +301,13 @@ void ScreenAIServiceHandlerBase::CreateResourceMonitor(
     const std::string& process_name) {
   CHECK(!resource_monitor_);
   resource_monitor_ = ResourceMonitor::CreateForProcess(process_name);
-  CHECK(resource_monitor_);
+  // Resource monitor creation may fail if the process name is not found in
+  // process registry. Since it is only used for metrics and does not affect
+  // user experience, do not crash if it fails.
+  // TODO(crbug.com/433201897): Based on how often this happens, consider
+  // finding a different solution.
+  base::UmaHistogramBoolean(GetMetricFullName("ResourceMonitorCreated"),
+                            !!resource_monitor_);
 }
 
 void ScreenAIServiceHandlerBase::InitializeServiceIfNeeded() {

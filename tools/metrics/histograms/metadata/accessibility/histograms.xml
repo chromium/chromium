@@ -3863,6 +3863,17 @@ even if they fit the naming pattern. -->
   <token key="ServiceName" variants="ScreenAIServices"/>
 </histogram>
 
+<histogram name="Accessibility.{ServiceName}.Service.ResourceMonitorCreated"
+    enum="Boolean" expires_after="2025-12-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if resource monitor could be created when {ServiceName} service was
+    initialized.
+  </summary>
+  <token key="ServiceName" variants="ScreenAIServices"/>
+</histogram>
+
 <histogram name="DomDistiller.AdaBoostModel.NegativeScore" units="count"
     expires_after="2026-06-01">
   <owner>wylieb@google.com</owner>
