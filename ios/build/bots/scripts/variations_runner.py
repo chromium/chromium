@@ -180,9 +180,9 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     success, log = self._launch_variations_smoke_test()
 
     test_status = TestStatus.PASS if success else TestStatus.FAIL
-    # Report a single test named |VariationsSmokeTest| as part of runner output.
+    # Report a single test named |Variations.SmokeTest| as part of runner output.
     overall_result = ResultCollection(test_results=[
-        TestResult('VariationsSmokeTest', test_status, test_log=log)
+        TestResult('Variations.SmokeTest', test_status, test_log=log)
     ])
     overall_result.report_to_result_sink()
     self.test_results = overall_result.standard_json_output(path_delimiter='/')
