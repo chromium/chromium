@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_TEST_API_H_
 #define UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_TEST_API_H_
 
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/views/accessibility/tree/widget_ax_manager.h"
 #include "ui/views/accessibility/tree/widget_view_ax_cache.h"
 
@@ -28,6 +29,9 @@ class WidgetAXManagerTestApi {
     return manager_->parent_ax_tree_id_;
   }
   WidgetViewAXCache* cache() const { return manager_->cache_.get(); }
+  ui::BrowserAccessibilityManager* ax_tree_manager() const {
+    return manager_->ax_tree_manager_.get();
+  }
 
   void TearDown() { manager_ = nullptr; }
 

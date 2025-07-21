@@ -144,10 +144,10 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
     AXPlatformTreeManagerDelegate* delegate)
     : AXPlatformTreeManager(std::make_unique<AXSerializableTree>()),
       delegate_(delegate),
+      node_id_delegate_(node_id_delegate),
       user_is_navigating_away_(false),
       device_scale_factor_(1.0f),
-      use_custom_device_scale_factor_for_testing_(false),
-      node_id_delegate_(node_id_delegate) {}
+      use_custom_device_scale_factor_for_testing_(false) {}
 
 BrowserAccessibilityManager::~BrowserAccessibilityManager() = default;
 

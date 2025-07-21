@@ -545,6 +545,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // based on which layer this code is running on, Web vs. Views.
   raw_ptr<AXPlatformTreeManagerDelegate> delegate_;
 
+  // A delegate responsible for assigning window-unique identifiers for nodes.
+  // The ordering here is important, as this member must be destroyed after
+  // the `id_wrapper_map_` below.
+  const raw_ref<AXNodeIdDelegate> node_id_delegate_;
+
   // A mapping from a node id to its wrapper of type BrowserAccessibility.
   // This is different from the map in AXTree, which does not contain extra mac
   // nodes from AXTableInfo.
@@ -636,9 +641,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // the new focus.
   void UpdateAccessibilityFocus(BrowserAccessibilityManager* manager,
                                 const BrowserAccessibility& node);
-
-  // A delegate responsible for assigning window-unique identifiers for nodes.
-  const raw_ref<AXNodeIdDelegate> node_id_delegate_;
 
   // Only used on the root node for AXTree hit testing as an alternative to
   // ApproximateHitTest when used without a renderer.

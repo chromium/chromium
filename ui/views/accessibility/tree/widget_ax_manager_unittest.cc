@@ -60,6 +60,14 @@ TEST_F(WidgetAXManagerTest, IsEnabledAfterAXModeAdded) {
   EXPECT_TRUE(manager()->is_enabled());
 }
 
+TEST_F(WidgetAXManagerTest, EnableInitializesBrowserAccessibilityManager) {
+  WidgetAXManagerTestApi test_api(manager());
+
+  EXPECT_EQ(test_api.ax_tree_manager(), nullptr);
+  manager()->Enable();
+  EXPECT_NE(test_api.ax_tree_manager(), nullptr);
+}
+
 TEST_F(WidgetAXManagerTest, InitParamsCreatesParentRelationship) {
   WidgetAXManagerTestApi parent_api(manager());
 

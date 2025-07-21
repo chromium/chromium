@@ -21,6 +21,10 @@
 #include "ui/views/accessibility/tree/view_accessibility_ax_tree_source.h"
 #include "ui/views/views_export.h"
 
+namespace ui {
+class BrowserAccessibilityManager;
+}  // namespace ui
+
 namespace views {
 
 class ViewAccessibility;
@@ -43,6 +47,8 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   explicit WidgetAXManager(Widget* widget);
   WidgetAXManager(const WidgetAXManager&) = delete;
   WidgetAXManager& operator=(const WidgetAXManager&) = delete;
+  WidgetAXManager(WidgetAXManager&&) = delete;
+  WidgetAXManager& operator=(WidgetAXManager&&) = delete;
   ~WidgetAXManager() override;
 
   void Enable();
@@ -111,6 +117,9 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
   // Serializes incremental updates on the currently active `tree_source_`.
   std::unique_ptr<ViewAccessibilityAXTreeSerializer> tree_serializer_;
+
+  // Holds the generated AXTree of AXNodes for the views-based tree.
+  std::unique_ptr<ui::BrowserAccessibilityManager> ax_tree_manager_;
 
   // Indicates whether we're actively serializing widget accessibility data.
   bool is_enabled_ = false;
