@@ -276,11 +276,6 @@ BASE_FEATURE(kNvidiaVpTrueHDR,
              "NvidiaVpTrueHDR",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Default to using ANGLE's OpenGL backend
-BASE_FEATURE(kDefaultANGLEOpenGL,
-             "DefaultANGLEOpenGL",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Default to using ANGLE's Metal backend.
 BASE_FEATURE(kDefaultANGLEMetal,
              "DefaultANGLEMetal",
