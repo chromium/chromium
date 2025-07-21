@@ -4,9 +4,9 @@
 
 #include "services/device/usb/usb_context.h"
 
+#include <atomic>
 #include <memory>
 
-#include "base/atomicops.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/simple_thread.h"
@@ -35,13 +35,12 @@ class UsbContext::UsbEventHandler : public base::SimpleThread {
   void Stop();
 
  private:
-  base::subtle::Atomic32 running_;
+  std::atomic<bool> running_{true};
   raw_ptr<libusb_context, DanglingUntriaged> context_;
 };
 
 UsbContext::UsbEventHandler::UsbEventHandler(libusb_context* context)
     : base::SimpleThread("UsbEventHandler"), context_(context) {
-  base::subtle::Release_Store(&running_, 1);
 }
 
 UsbContext::UsbEventHandler::~UsbEventHandler() {
@@ -51,7 +50,7 @@ UsbContext::UsbEventHandler::~UsbEventHandler() {
 void UsbContext::UsbEventHandler::Run() {
   VLOG(1) << "UsbEventHandler started.";
 
-  while (base::subtle::Acquire_Load(&running_)) {
+  while (running_.load(std::memory_order_acquire)) {
     const int rv = libusb_handle_events(context_);
     if (rv != LIBUSB_SUCCESS) {
       VLOG(1) << "Failed to handle events: "
@@ -63,7 +62,7 @@ void UsbContext::UsbEventHandler::Run() {
 }
 
 void UsbContext::UsbEventHandler::Stop() {
-  base::subtle::Release_Store(&running_, 0);
+  running_.store(false, std::memory_order_release);
   libusb_interrupt_handle_event(context_);
 }
 
