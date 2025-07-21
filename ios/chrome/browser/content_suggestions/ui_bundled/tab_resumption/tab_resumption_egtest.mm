@@ -98,7 +98,6 @@ NSString* HostnameFromGURL(GURL URL) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-
   config.additional_args.push_back(std::string("--") +
                                    kTabResumptionShowItemImmediately);
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
@@ -194,15 +193,12 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
 - (void)testTabResumptionTileDisplayedForLocalTab {
-  // TODO(crbug.com/333500324): Test failing on iPad device and simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
-  }
-
   // Check that the tile is not displayed when there is no local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationUrl];
+  [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:destinationUrl];
 
   // Relaunch the app.
@@ -230,6 +226,9 @@ NSString* HostnameFromGURL(GURL URL) {
                             destinationUrl.host())];
   [ChromeEarlGrey
       waitForWebStateContainingText:"Anyone know any good pony jokes?"];
+  // The most recent tab is the second one.
+  GREYAssertEqual(1u, [ChromeEarlGrey indexOfActiveNormalTab],
+                  @"Incorrect active tab.");
 }
 
 // Tests that interacting with the Magic Stack edit button works when the tab

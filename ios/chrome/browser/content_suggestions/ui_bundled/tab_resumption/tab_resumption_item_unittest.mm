@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -31,6 +32,7 @@ using TabResumptionItemTest = PlatformTest;
 
 // Tests that item is correctly reconfigured.
 TEST_F(TabResumptionItemTest, ReconfigureItem) {
+  web::FakeWebState fake_web_state;
   FakeCommandHandler* command_handler = [[FakeCommandHandler alloc] init];
   TabResumptionItem* item = [[TabResumptionItem alloc]
       initWithItemType:TabResumptionItemType::kLastSyncedTab];
@@ -48,6 +50,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   TabResumptionItem* item2 = [[TabResumptionItem alloc]
       initWithItemType:TabResumptionItemType::kMostRecentTab];
   item2.sessionName = @"session b";
+  item2.localWebState = fake_web_state.GetWeakPtr();
   item2.tabTitle = @"title b";
   item2.tabURL = GURL("https://b");
   item2.reason = @"You may also like this web site";
@@ -66,6 +69,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
 
   [item reconfigureWithItem:item2];
   EXPECT_EQ(item.itemType, TabResumptionItemType::kMostRecentTab);
+  EXPECT_EQ(item.localWebState.get(), &fake_web_state);
   EXPECT_NSEQ(item.sessionName, @"session b");
   EXPECT_NSEQ(item.tabTitle, @"title b");
   EXPECT_NSEQ(item.reason, @"You may also like this web site");
