@@ -110,8 +110,7 @@ class ConnectorsServiceBase {
 
   void PopulateBrowserMetadata(bool include_device_info,
                                ClientMetadata::Browser* browser_proto);
-  void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
-                              const std::string& client_id,
+  void PopulateDeviceMetadata(const std::string& client_id,
                               ClientMetadata::Device* device_proto);
 };
 

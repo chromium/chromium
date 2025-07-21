@@ -136,11 +136,11 @@ void ConnectorsServiceBase::PopulateBrowserMetadata(
 }
 
 void ConnectorsServiceBase::PopulateDeviceMetadata(
-    const ReportingSettings& reporting_settings,
     const std::string& client_id,
     ClientMetadata::Device* device_proto) {
-  if (!reporting_settings.per_profile && !device_proto->has_dm_token()) {
-    device_proto->set_dm_token(reporting_settings.dm_token);
+  std::optional<std::string> browser_dm_token = GetBrowserDmToken();
+  if (browser_dm_token.has_value() && !device_proto->has_dm_token()) {
+    device_proto->set_dm_token(*browser_dm_token);
   }
   device_proto->set_client_id(client_id);
   device_proto->set_os_version(policy::GetOSVersion());
