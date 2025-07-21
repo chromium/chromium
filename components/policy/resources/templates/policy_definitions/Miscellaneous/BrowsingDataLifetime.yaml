@@ -10,6 +10,8 @@ desc: |-
 
   The deletion of expired data will happen 15 seconds after the browser starts then every 30 minutes while the browser is running.
 
+  The user will stay signed into their Google account when deleting cookies.
+
   Until Chrome 114, this policy required the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy to be set to true. Starting Chrome 115, setting this policy will disable sync for the respective data types if neither `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>` is disabled by setting the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy nor <ph name="BROWSER_SIGNIN_POLICY_NAME">BrowserSignin</ph> is disabled.
 example_value:
 - data_types:
