@@ -285,10 +285,10 @@ Widget::~Widget() {
       native_widget_->ClientDestroyedWidget();
     }
 
+    HandleWidgetDestroying();
     if (native_widget_) {
       native_widget_->Close();
     }
-    HandleWidgetDestroying();
 
     HandleWidgetDestroyed();
     if (widget_delegate_) {
