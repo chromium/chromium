@@ -30,8 +30,11 @@ BASE_DECLARE_FEATURE(kTabSearchPositionSetting);
 
 BASE_DECLARE_FEATURE(kTabGroupShortcuts);
 
+BASE_DECLARE_FEATURE(kVerticalTabs);
+
 extern bool CanShowTabSearchPositionSetting();
 extern bool AreTabGroupShortcutsEnabled();
+extern bool AreVerticalTabsEnabled();
 
 }  // namespace tabs
 
