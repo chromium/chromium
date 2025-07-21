@@ -16,6 +16,8 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
 
 #[derive(Clone, Debug, Serialize)]
 pub enum UpdateMechanism {
@@ -210,7 +212,7 @@ fn readme_file_from_package<'a>(
 /// REVIEW REQUIREMENT: When adding a new `LicenseKind`, please consult
 /// `readme.rs-third-party-license-review.md`.
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy, EnumIter)]
 enum LicenseKind {
     /// https://spdx.org/licenses/Apache-2.0.html
     Apache2,
@@ -220,6 +222,9 @@ enum LicenseKind {
 
     /// https://spdx.org/licenses/MIT.html
     MIT,
+
+    /// https://spdx.org/licenses/MPL-2.0.html
+    MPL2,
 
     /// https://spdx.org/licenses/ISC.html
     ISC,
@@ -240,6 +245,7 @@ impl Display for LicenseKind {
             LicenseKind::Apache2 => write!(f, "Apache-2.0"),
             LicenseKind::BSD3 => write!(f, "BSD-3-Clause"),
             LicenseKind::MIT => write!(f, "MIT"),
+            LicenseKind::MPL2 => write!(f, "MPL-2.0"),
             LicenseKind::ISC => write!(f, "ISC"),
             LicenseKind::Zlib => write!(f, "Zlib"),
             LicenseKind::Unicode3 => write!(f, "Unicode-3.0"),
@@ -257,66 +263,67 @@ impl Display for LicenseKind {
 /// );
 static LICENSE_STRING_TO_LICENSE_KIND: LazyLock<HashMap<&'static str, Vec<LicenseKind>>> =
     LazyLock::new(|| {
-        let mut h = HashMap::new();
-        h.insert("Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("MIT OR Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("MIT/Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("MIT / Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("Apache-2.0 / MIT", vec![LicenseKind::Apache2]);
-        h.insert("Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
-        h.insert("Apache-2.0/MIT", vec![LicenseKind::Apache2]);
-        h.insert(
-            "(Apache-2.0 OR MIT) AND BSD-3-Clause",
-            vec![LicenseKind::Apache2, LicenseKind::BSD3],
-        );
-        h.insert("MIT OR Apache-2.0 OR Zlib", vec![LicenseKind::Apache2]);
-        h.insert("MIT", vec![LicenseKind::MIT]);
-        h.insert("Unlicense OR MIT", vec![LicenseKind::MIT]);
-        h.insert("Unlicense/MIT", vec![LicenseKind::MIT]);
-        h.insert("Apache-2.0 OR BSL-1.0", vec![LicenseKind::Apache2]);
-        h.insert("BSD-3-Clause", vec![LicenseKind::BSD3]);
-        h.insert("ISC", vec![LicenseKind::ISC]);
-        h.insert("MIT OR Zlib OR Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert("Zlib OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
-        h.insert("0BSD OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]);
-        h.insert(
-            "(MIT OR Apache-2.0) AND Unicode-3.0",
-            vec![LicenseKind::Apache2, LicenseKind::Unicode3],
-        );
-        h.insert("MIT AND (MIT OR Apache-2.0)", vec![LicenseKind::Apache2]);
-        h.insert("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
-        h.insert("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
-        h.insert("Unicode-3.0", vec![LicenseKind::Unicode3]);
-        h.insert("Zlib", vec![LicenseKind::Zlib]);
-        h
+        HashMap::from([
+            ("Apache-2.0", vec![LicenseKind::Apache2]),
+            ("MIT OR Apache-2.0", vec![LicenseKind::Apache2]),
+            ("MIT/Apache-2.0", vec![LicenseKind::Apache2]),
+            ("MIT / Apache-2.0", vec![LicenseKind::Apache2]),
+            ("Apache-2.0 / MIT", vec![LicenseKind::Apache2]),
+            ("Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
+            ("Apache-2.0/MIT", vec![LicenseKind::Apache2]),
+            ("(Apache-2.0 OR MIT) AND BSD-3-Clause", vec![LicenseKind::Apache2, LicenseKind::BSD3]),
+            ("MIT OR Apache-2.0 OR Zlib", vec![LicenseKind::Apache2]),
+            ("MIT", vec![LicenseKind::MIT]),
+            ("MPL-2.0", vec![LicenseKind::MPL2]),
+            ("Unlicense OR MIT", vec![LicenseKind::MIT]),
+            ("Unlicense/MIT", vec![LicenseKind::MIT]),
+            ("Apache-2.0 OR BSL-1.0", vec![LicenseKind::Apache2]),
+            ("BSD-3-Clause", vec![LicenseKind::BSD3]),
+            ("ISC", vec![LicenseKind::ISC]),
+            ("MIT OR Zlib OR Apache-2.0", vec![LicenseKind::Apache2]),
+            ("Zlib OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
+            ("0BSD OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]),
+            (
+                "(MIT OR Apache-2.0) AND Unicode-3.0",
+                vec![LicenseKind::Apache2, LicenseKind::Unicode3],
+            ),
+            ("MIT AND (MIT OR Apache-2.0)", vec![LicenseKind::Apache2]),
+            ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
+            ("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]),
+            ("Unicode-3.0", vec![LicenseKind::Unicode3]),
+            ("Zlib", vec![LicenseKind::Zlib]),
+        ])
     });
 
-static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<&'static str>>> =
+static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>> =
     LazyLock::new(|| {
-        let mut h = HashMap::new();
-        h.insert(
-            LicenseKind::Apache2,
-            vec![
-                "LICENSE-APACHE",
-                "LICENSE-APACHE.md",
-                "LICENSE-APACHE.txt",
-                "license-apache-2.0",
-                "LICENSE.md",
-                "LICENSE",
-            ],
-        );
-        h.insert(
-            LicenseKind::MIT,
-            vec!["LICENSE-MIT", "LICENSE-MIT.txt", "LICENSE-MIT.md", "LICENSE.md", "LICENSE"],
-        );
-        h.insert(
-            LicenseKind::BSD3,
-            vec!["LICENSE-BSD", "LICENSE-BSD.txt", "LICENSE-BSD.md", "LICENSE.md", "LICENSE"],
-        );
-        h.insert(LicenseKind::ISC, vec!["LICENSE-ISC", "LICENSE.md", "LICENSE"]);
-        h.insert(LicenseKind::Zlib, vec!["LICENSE-ZLIB", "LICENSE.md", "LICENSE"]);
-        h.insert(LicenseKind::Unicode3, vec!["LICENSE-UNICODE", "LICENSE.md", "LICENSE"]);
-        h
+        const PREFIX: &'static str = "LICENSE";
+        const EXTENSIONS: [&'static str; 3] = ["", ".md", ".txt"];
+
+        // This block generates a map with the most common license file types, in order
+        // of priority.
+        let mut map = HashMap::new();
+        for kind in LicenseKind::iter() {
+            // The suffix for the license file name is taken from the Display
+            // implementation. E.g. "Apache-2.0" becomes "APACHE"
+            let license_suffix = kind.to_string().split("-").next().unwrap().to_uppercase();
+
+            let mut license_files = vec![];
+            // License types with the license-specific suffix are higher priority.
+            for ext in EXTENSIONS {
+                license_files.push(format!("{}-{}{}", PREFIX, license_suffix, ext));
+            }
+            // License types that are common to all licenses are lower priority.
+            for ext in EXTENSIONS {
+                license_files.push(format!("{}{}", PREFIX, ext));
+            }
+            map.insert(kind, license_files);
+        }
+
+        // Special cases for specific license types. If your license has a case
+        // that is not covered already in the map generated above, add it here.
+        map.get_mut(&LicenseKind::Apache2).unwrap().insert(0, "license-apache-2.0".to_string());
+        map
     });
 
 /// Converts a license string from Cargo.toml into a Vec of LicenseKinds.
