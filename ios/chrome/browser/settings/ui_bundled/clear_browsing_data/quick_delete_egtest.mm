@@ -731,7 +731,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // row when browsing history is selected as a data type to be deleted and when
 // the user syncs history. It also tests that the history entries get deleted
 // when the deletion of browsing data is selected.
-- (void)testBrowsingHistoryForDeletionWithHistorySync {
+// TODO(crbug.com/433322022): Re-enable this test once flakiness is fixed.
+- (void)DISABLED_testBrowsingHistoryForDeletionWithHistorySync {
   // Sign in and enable history sync.
   [self signInAndEnableHistorySync];
 
