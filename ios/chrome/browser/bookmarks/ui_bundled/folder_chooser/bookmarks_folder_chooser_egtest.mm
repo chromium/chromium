@@ -1303,13 +1303,10 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGreyUI createNewBookmarkFolderWithFolderTitle:newFolderTitle
                                                  pressReturn:NO];
 
-  // Interrupt the folder name editing by entering Folder 1
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeTableViewIdentifier)]
-      performAction:ScrollToTop()];
-
+  // Interrupt the folder name editing by entering Folder 1.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1")]
       performAction:grey_tap()];
+
   // Come back to Mobile Bookmarks.
   [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
