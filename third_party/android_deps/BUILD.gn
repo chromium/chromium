@@ -175,6 +175,7 @@ if (!limit_android_deps) {
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
     ]
+    include_java_resources = true
     proguard_configs =
         [ "local_modifications/accessibility_test_framework.pcfg" ]
   }

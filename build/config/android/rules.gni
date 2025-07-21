@@ -4522,7 +4522,7 @@ if (!is_robolectric && enable_java_templates) {
         if (!defined(requires_android)) {
           requires_android = true
         }
-        include_java_resources = !defined(invoker.include_java_resources) ||
+        include_java_resources = defined(invoker.include_java_resources) &&
                                  invoker.include_java_resources
         supports_android = true
         jar_path = "$_output_path/classes.jar"
