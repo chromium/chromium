@@ -321,8 +321,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          CookieControlsUiTest,
                          testing::Bool(),
                          [](testing::TestParamInfo<bool> param) {
-                           return param.param ? "BlockThirdPartyCookies"
-                                              : "AllowThirdPartyCookies";
+                           return param.param ? "ModeB" : "NoModeB";
                          });
 
 class CookieControlsInteractiveUiNoFeedbackTest : public CookieControlsUiTest {
@@ -729,10 +728,13 @@ class CookieControlsInteractiveUi3pcdTest
       public testing::WithParamInterface<testing::tuple<bool, bool>> {
  protected:
   std::vector<base::test::FeatureRef> DisabledFeatures() override {
+    std::vector<base::test::FeatureRef> disabled_features = {
+        privacy_sandbox::kActUserBypassUx};
     if (!testing::get<1>(GetParam())) {
-      return {content_settings::features::kUserBypassFeedback};
+      disabled_features.push_back(
+          content_settings::features::kUserBypassFeedback);
     }
-    return {};
+    return disabled_features;
   }
 };
 
@@ -784,7 +786,8 @@ INSTANTIATE_TEST_SUITE_P(
                      /*show_feedback_button*/ testing::Bool()));
 
 class CookieControlsInteractiveUiTrackingProtectionTest
-    : public CookieControlsInteractiveTestBase {
+    : public CookieControlsInteractiveTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   CookieControlsInteractiveUiTrackingProtectionTest() = default;
   ~CookieControlsInteractiveUiTrackingProtectionTest() override = default;
@@ -887,9 +890,9 @@ class CookieControlsInteractiveUiTrackingProtectionTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
                        CreateExceptionIncognitoAct) {
-  BlockThirdPartyCookies();
+  BlockThirdPartyCookies(GetParam());
   EnableFpProtection();
   auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
   RunTestSequence(InContext(
@@ -914,9 +917,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
+IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
                        RemoveExceptionIncognitoAct) {
-  BlockThirdPartyCookies();
+  BlockThirdPartyCookies(GetParam());
   EnableFpProtection();
   incognito_cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
@@ -945,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
       user_actions_.GetActionCount(kUMABubbleReenabledTrackingProtections), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     CookieControlsInteractiveUiTrackingProtectionTest,
     BubbleViewTimesOutWithoutShowingReloadingViewWhenStatusChanged) {
   // Test that opening the bubble and making a change results in the
@@ -953,7 +956,7 @@ IN_PROC_BROWSER_TEST_F(
   //
   // The page loaded in this test will never finish loading, so the timeout
   // must be configured shorter than the test timeout.
-  BlockThirdPartyCookies();
+  BlockThirdPartyCookies(GetParam());
   EnableFpProtection();
   auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
   RunTestSequence(InContext(
@@ -978,3 +981,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubblePausedTrackingProtections),
             1);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CookieControlsInteractiveUiTrackingProtectionTest,
+                         testing::Bool(),
+                         [](testing::TestParamInfo<bool> param) {
+                           return param.param ? "ModeB" : "NoModeB";
+                         });
