@@ -40,7 +40,6 @@ constexpr char kPublicKeyCredentialType[] = "public-key";
 
 // This is the subset of client capabilities computed by the renderer. See also
 // //content/browser/webauth/authenticator_common_impl.h
-constexpr char kConditionalCreateCapability[] = "conditionalCreate";
 constexpr char kSignalAllAcceptedCredentials[] = "signalAllAcceptedCredentials";
 constexpr char kSignalCurrentUserDetails[] = "signalCurrentUserDetails";
 constexpr char kSignalUnknownCredential[] = "signalUnknownCredential";
@@ -69,9 +68,6 @@ void OnGetClientCapabilitiesComplete(
   for (const auto& capability : capabilities) {
     results.emplace_back(std::move(capability->name), capability->supported);
   }
-  results.emplace_back(
-      kConditionalCreateCapability,
-      RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled());
 
   const bool report_enabled =
       RuntimeEnabledFeatures::CredentialManagerReportEnabled();
