@@ -13,6 +13,14 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 
+namespace {
+
+// The identifier for the custom content detent.
+NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
+    @"kReaderModeOptionsViewControllerCustomDetentIdentifier";
+
+}  // namespace
+
 @interface ReaderModeOptionsCoordinator () <
     UIAdaptivePresentationControllerDelegate>
 
@@ -21,13 +29,13 @@
 @implementation ReaderModeOptionsCoordinator {
   ReaderModeOptionsMediator* _mediator;
   ReaderModeOptionsViewController* _viewController;
+  UINavigationController* _navigationController;
 }
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
   _viewController = [[ReaderModeOptionsViewController alloc] init];
-  _viewController.presentationController.delegate = self;
   _viewController.readerModeOptionsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ReaderModeOptionsCommands);
   DistillerService* distillerService =
@@ -37,18 +45,32 @@
                     webStateList:self.browser->GetWebStateList()];
   _viewController.mutator = _mediator;
   _viewController.controlsView.mutator = _mediator;
-  [self.baseViewController presentViewController:_viewController
+  _mediator.consumer = _viewController.controlsView;
+
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  _navigationController.presentationController.delegate = self;
+  // Initialize custom content detent.
+  UISheetPresentationControllerDetent* contentDetent =
+      [self createCustomContentDetent];
+  _navigationController.sheetPresentationController
+      .prefersEdgeAttachedInCompactHeight = YES;
+  _navigationController.sheetPresentationController.detents =
+      @[ contentDetent ];
+  _navigationController.sheetPresentationController
+      .largestUndimmedDetentIdentifier = contentDetent.identifier;
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
-  _mediator.consumer = _viewController.controlsView;
 }
 
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
-  _viewController = nil;
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  _navigationController = nil;
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -61,6 +83,28 @@
   id<ReaderModeOptionsCommands> readerModeOptionsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ReaderModeOptionsCommands);
   [readerModeOptionsHandler hideReaderModeOptions];
+}
+
+#pragma mark - Private
+
+// Returns the custom content detent.
+- (UISheetPresentationControllerDetent*)createCustomContentDetent {
+  __weak __typeof(self) weakSelf = self;
+  return [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:
+          kReaderModeOptionsViewControllerCustomDetentIdentifier
+                        resolver:^CGFloat(
+                            id<UISheetPresentationControllerDetentResolutionContext>
+                                context) {
+                          return [weakSelf
+                              resolveDetentValueForSheetPresentation:context];
+                        }];
+}
+
+// Returns the appropriate detent value for a sheet presentation in `context`.
+- (CGFloat)resolveDetentValueForSheetPresentation:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context {
+  return [_viewController resolveDetentValueForSheetPresentation:context];
 }
 
 @end

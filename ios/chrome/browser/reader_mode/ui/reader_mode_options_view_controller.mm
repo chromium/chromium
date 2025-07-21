@@ -27,16 +27,10 @@ constexpr CGFloat kHideReaderModeButtonCornerRadius = 12.0;
 // The minimum height for the "Hide Reader Mode" button.
 constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
 
-// The identifier for the custom content detent.
-NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
-    @"kReaderModeOptionsViewControllerCustomDetentIdentifier";
-
 }  // namespace
 
 @interface ReaderModeOptionsViewController ()
 
-// Root view controller. Lazily created.
-@property(nonatomic, readonly) UIViewController* contentViewController;
 // Main stack view. Lazily created.
 @property(nonatomic, readonly) UIStackView* mainStackView;
 
@@ -45,35 +39,50 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
 @implementation ReaderModeOptionsViewController
 
 @synthesize controlsView = _controlsView;
-@synthesize contentViewController = _contentViewController;
 @synthesize mainStackView = _mainStackView;
-
-- (instancetype)init {
-  return [super initWithRootViewController:self.contentViewController];
-}
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  [super viewDidLoad];
+  self.title = l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_TITLE);
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(hideReaderModeOptions)];
+  self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
+      kReaderModeOptionsCloseButtonAccessibilityIdentifier;
+  self.view.accessibilityIdentifier =
+      kReaderModeOptionsViewAccessibilityIdentifier;
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
-  // Initialize custom content detent.
-  UISheetPresentationControllerDetent* contentDetent =
-      [self createCustomContentDetent];
-  self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-  self.sheetPresentationController.detents = @[ contentDetent ];
-  self.sheetPresentationController.largestUndimmedDetentIdentifier =
-      contentDetent.identifier;
+  UIView* mainStackView = self.mainStackView;
+  [self.view addSubview:mainStackView];
+
+  UILayoutGuide* safeAreaLayoutGuide = self.view.safeAreaLayoutGuide;
+  [NSLayoutConstraint activateConstraints:@[
+    [safeAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor:mainStackView.topAnchor],
+    [safeAreaLayoutGuide.centerXAnchor
+        constraintEqualToAnchor:mainStackView.centerXAnchor],
+    [safeAreaLayoutGuide.widthAnchor
+        constraintEqualToAnchor:mainStackView.widthAnchor
+                       constant:2 * kMainStackViewInset]
+  ]];
+
+  [super viewDidLoad];
 }
 
 - (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
   __weak __typeof(self) weakSelf = self;
-  [self.sheetPresentationController animateChanges:^{
-    [weakSelf.sheetPresentationController invalidateDetents];
+  [self.navigationController.sheetPresentationController animateChanges:^{
+    [weakSelf.navigationController
+            .sheetPresentationController invalidateDetents];
   }];
 }
 
-#pragma mark - Private
+#pragma mark - Public
 
 - (CGFloat)resolveDetentValueForSheetPresentation:
     (id<UISheetPresentationControllerDetentResolutionContext>)context {
@@ -81,7 +90,7 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
       [self.mainStackView
           systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height +
-      self.navigationBar.frame.size.height;
+      self.navigationController.navigationBar.frame.size.height;
   // If there is no safe area inset preventing the bottom of the main stack
   // from touching the bottom of `self.view`, then add an inset manually.
   if (self.view.safeAreaInsets.bottom == 0) {
@@ -101,47 +110,6 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
 }
 
 #pragma mark - UI creation helpers
-
-// Lazily creates and returns the root view controller.
-- (UIViewController*)contentViewController {
-  if (_contentViewController) {
-    return _contentViewController;
-  }
-
-  UIViewController* contentViewController = [[UIViewController alloc] init];
-  contentViewController.title =
-      l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_TITLE);
-  contentViewController.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc]
-          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                               target:self
-                               action:@selector(hideReaderModeOptions)];
-  contentViewController.navigationItem.rightBarButtonItem
-      .accessibilityIdentifier =
-      kReaderModeOptionsCloseButtonAccessibilityIdentifier;
-  contentViewController.view.accessibilityIdentifier =
-      kReaderModeOptionsViewAccessibilityIdentifier;
-  contentViewController.view.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-
-  UIView* mainStackView = self.mainStackView;
-  [contentViewController.view addSubview:mainStackView];
-
-  UILayoutGuide* safeAreaLayoutGuide =
-      contentViewController.view.safeAreaLayoutGuide;
-  [NSLayoutConstraint activateConstraints:@[
-    [safeAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor:mainStackView.topAnchor],
-    [safeAreaLayoutGuide.centerXAnchor
-        constraintEqualToAnchor:mainStackView.centerXAnchor],
-    [safeAreaLayoutGuide.widthAnchor
-        constraintEqualToAnchor:mainStackView.widthAnchor
-                       constant:2 * kMainStackViewInset]
-  ]];
-
-  _contentViewController = contentViewController;
-  return _contentViewController;
-}
 
 // Lazily creates and returns the main stack view.
 - (UIStackView*)mainStackView {
@@ -216,20 +184,6 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
       .active = YES;
 
   return button;
-}
-
-// Returns the custom content detent.
-- (UISheetPresentationControllerDetent*)createCustomContentDetent {
-  __weak __typeof(self) weakSelf = self;
-  return [UISheetPresentationControllerDetent
-      customDetentWithIdentifier:
-          kReaderModeOptionsViewControllerCustomDetentIdentifier
-                        resolver:^CGFloat(
-                            id<UISheetPresentationControllerDetentResolutionContext>
-                                context) {
-                          return [weakSelf
-                              resolveDetentValueForSheetPresentation:context];
-                        }];
 }
 
 @end
