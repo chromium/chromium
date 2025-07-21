@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -167,33 +168,9 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
   SaveCardBubbleViews::AddedToWidget();
   // Set the header image.
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  int light_mode_banner_id;
-  int dark_mode_banner_id;
-
-  switch (controller()->GetBubbleType()) {
-    case BubbleType::UPLOAD_SAVE:
-    case BubbleType::UPLOAD_IN_PROGRESS:
-    case BubbleType::UPLOAD_COMPLETED:
-      // Updated banner/text pairs are for upload save only.
-      light_mode_banner_id = IDR_SAVE_CARD_SECURITY;
-      dark_mode_banner_id = IDR_SAVE_CARD_SECURITY_DARK;
-      break;
-    case BubbleType::LOCAL_CVC_SAVE:
-    case BubbleType::UPLOAD_CVC_SAVE:
-      // CVC bubbles show their own CVC-based banner image.
-      light_mode_banner_id = IDR_SAVE_CVC;
-      dark_mode_banner_id = IDR_SAVE_CVC_DARK;
-      break;
-    default:
-      light_mode_banner_id = IDR_SAVE_CARD;
-      dark_mode_banner_id = IDR_SAVE_CARD_DARK;
-  }
-
-  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(light_mode_banner_id),
-      *bundle.GetImageSkiaNamed(dark_mode_banner_id),
-      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
-                          base::Unretained(this)));
+  auto image_view = std::make_unique<views::ImageView>(
+      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_CARD_LOTTIE));
+  image_view->GetViewAccessibility().SetIsInvisible(true);
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 

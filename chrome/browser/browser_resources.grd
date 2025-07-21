@@ -39,6 +39,7 @@
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE" file="resources/autofill/autofill_save_drivers_license.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE" file="resources/autofill/autofill_save_passport.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE" file="resources/autofill/autofill_save_vehicle.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_AUTOFILL_SAVE_CARD_LOTTIE" file="resources/autofill/autofill_save_card.json" compress="brotli"/>
       </if>
     </structures>
     <includes>
