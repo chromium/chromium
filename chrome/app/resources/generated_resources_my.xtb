@@ -2725,6 +2725,7 @@
 <translation id="2855243985454069333">စင့်ခ်လုပ်ထားသော စက်အားလုံးမှ မှတ်တမ်းကို ဖျက်သည်</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ဖြင့် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2856776373509145513">ကွန်တိန်နာအသစ် ပြုလုပ်ခြင်း</translation>
+<translation id="2857047802954430547">သင့်စက်အားလုံးတွင် စကားဝှက်၊ ဝဘ်လိပ်စာ စသည်တို့ကို ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> သို့ စကားဝှက်များ ထည့်သွင်းရန်</translation>
 <translation id="2860710618359053450">မေးရိုးကို ညာဘက်သို့ ရွဲ့ပါ</translation>
 <translation id="2861301611394761800">စနစ် မွမ်းမံမှု ပြီးဆုံးသွားပြီ။ ကျေးဇူးပြုပြီး စနစ်ကို ပြန်ဖွင့်ပါ။</translation>
@@ -11390,6 +11391,7 @@
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> တွင် ‘စက်စီမံစနစ်ဆာဗာ’ သို့ ချိတ်ဆက်၍မရဘဲ အခြေအနေမှာ ‘<ph name="STATUS_TEXT" />’ ဖြစ်သည်</translation>
 <translation id="90033698482696970">ရနိုင်သော eSIM ပရိုဖိုင်များကို အလိုအလျောက် စကင်ဖတ်မလား။</translation>
 <translation id="9003647077635673607">ဝဘ်ဆိုက် အားလုံးမှာ ခွင့်ပြုရန်</translation>
+<translation id="9005774573776346118">သင့်စက်အားလုံးတွင် စကားဝှက်၊ ဝဘ်လိပ်စာ စသည်တို့ကို ရယူရန် <ph name="EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="9007688236643268728">ထပ်မံ &amp;လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="9008201768610948239">လျစ်လျူရှုရန်</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> အသေးစိတ် စာမျက်နှာသို့ နောက်ပြန်သွားသည့်ခလုတ်</translation>

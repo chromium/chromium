@@ -2716,6 +2716,7 @@
 <translation id="2855243985454069333">ისტორიის წაშლა ყველა სინქრონიზებული მოწყობილობიდან</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />-ით შესვლა</translation>
 <translation id="2856776373509145513">შექმენით ახალი კონტეინერი</translation>
+<translation id="2857047802954430547">შედით სისტემაში, რომ მიიღოთ თქვენი პაროლები, სანიშნეები და სხვა მონაცემები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="2859741939921354763">შეასრულეთ პაროლების იმპორტირება <ph name="BRAND" />-ში</translation>
 <translation id="2860710618359053450">ყბა მოაქციეთ მარჯვნივ</translation>
 <translation id="2861301611394761800">სისტემის განახლება დასრულებულია. გთხოვთ გადატვირთეთ სისტემა.</translation>
@@ -11395,6 +11396,7 @@
 <translation id="9003185744423389627">მოწყობილობათა მართვის სერვერთან კავშირი ვერ შედგა სტატუსით „<ph name="STATUS_TEXT" />“, <ph name="FAILURE_TIME" />-ზე</translation>
 <translation id="90033698482696970">გსურთ, ხელმისაწვდომი eSIM პროფილები ავტომატურად დასკანირდეს?</translation>
 <translation id="9003647077635673607">ყველა ვებსაიტზე დაშვება</translation>
+<translation id="9005774573776346118">პაროლების, სანიშნეებისა და მეტის მისაღებად თქვენს ყველა მოწყობილობაზე, შედით როგორც <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">ხელახლა შ&amp;ესვლა</translation>
 <translation id="9008201768610948239">იგნორირება</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> დეტალების გვერდის უკან დაბრუნების ღილაკი</translation>

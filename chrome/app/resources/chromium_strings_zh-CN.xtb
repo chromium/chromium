@@ -132,6 +132,7 @@
 <translation id="2711502716910134313">Chromium 标签页</translation>
 <translation id="2718390899429598676">为了提高安全性，Chromium 将对您的数据进行加密。</translation>
 <translation id="2721354645805494590">若要从 Chromium 中移除您的 Google 账号，请退出账号</translation>
+<translation id="2722636413143664436">如需在所有设备上获取密码、书签等信息，请登录 Chromium</translation>
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2768103863314748511">将 Chromium 设为默认 PDF 查看器</translation>
@@ -402,6 +403,7 @@
 <translation id="6366160072964553914">Chromium 阻止了此项下载操作，因为这不是常下载的文件，可能具有危险性</translation>
 <translation id="6373523479360886564">确定要卸载 Chromium 吗？</translation>
 <translation id="6375219077595103062">添加密码管理工具快捷方式</translation>
+<translation id="6388799252195623474">帮我解决这个问题</translation>
 <translation id="6390800440335263989">如需继续操作，请以 <ph name="EMAIL" /> 的身份登录 Chromium。这样可以确保应用所属组织的政策。</translation>
 <translation id="6400112897226594999">计算机屏幕中的 Chromium 徽标。</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>

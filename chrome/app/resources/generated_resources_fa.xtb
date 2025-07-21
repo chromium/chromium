@@ -672,6 +672,7 @@
 <translation id="1462850958694534228">مرور به‌روزرسانی نماد</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> توسط «محافظت پیشرفته» مسدود شده است.</translation>
 <translation id="1464044141348608623">به سایت‌ها اجازه داده نشود وقتی شما به‌طور فعال از دستگاه استفاده می‌کنید مطلع شوند</translation>
+<translation id="1464047267926346987">گذرواژه‌ها، نشانک‌ها، و موارد دیگر را ذخیره کنید</translation>
 <translation id="1464258312790801189">حساب‌های شما</translation>
 <translation id="1464597059227482327">‏اگر دستگاه Chromebook که درحال هم‌رسانی با آن هستید در مخاطبین شما قرار ندارد، مطمئن شوید «نمایان برای اطراف» در دستگاه Chromebook روشن باشد. برای روشن کردن «نمایان برای اطراف»، گوشه پایین را انتخاب کنید و «نمایان برای اطراف» را روشن کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">برای اولویت‌های دستگاه، به «تنظیمات» بروید</translation>
@@ -813,6 +814,7 @@
 <translation id="1558671750917454373">ازسر گرفتن پخش محتوا در <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">این اقدام دسترسی مکان را برای برنامه‌ها، وب‌سایت‌های دارای اجازه مکان، و خدمات سیستم مجاز می‌کند</translation>
 <translation id="1562119309884184621">افزودن این مخاطب باعث می‌شود برای هم‌رسانی بعدی‌اش در حافظه ذخیره شود</translation>
+<translation id="1562585387501039294">سازمانتان، <ph name="ACCOUNT_MANAGER" />، به نمایه مدیریت‌شده نیاز دارد و می‌تواند برخی‌از اطلاعات را مشاهده کند، ازجمله</translation>
 <translation id="1566049601598938765">وب‌سایت</translation>
 <translation id="15662109988763471">چاپگر انتخابی موجود نیست یا به‌درستی نصب نشده است. چاپگر خود را بررسی کنید یا چاپگر دیگری را انتخاب کنید.</translation>
 <translation id="1566329594234563241">وقتی غیرفعال و به برق متصل است</translation>
@@ -909,6 +911,7 @@
 <translation id="1616298854599875024">نمی‌توان افزونه «<ph name="IMPORT_NAME" />» را وارد کرد زیرا مدول هم‌رسانی‌شده‌ای نیست.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{درحال بررسی این داده‌ها با خط‌مشی‌های امنیتی سازمانتان…}=1{درحال بررسی این فایل با خط‌مشی‌های امنیتی سازمانتان…}one{درحال بررسی این فایل‌ها با خط‌مشی‌های امنیتی سازمانتان…}other{درحال بررسی این فایل‌ها با خط‌مشی‌های امنیتی سازمانتان…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
+<translation id="1618142905422922351">درحال‌حاضر <ph name="NUMBERED_ITEM" /> و چند مورد دیگر دارید. سازمانتان، <ph name="ACCOUNT_MANAGER" />، می‌تواند این داده‌ها را ببیند و مدیریت کند.</translation>
 <translation id="1618268899808219593">مرکز را&amp;هنمایی</translation>
 <translation id="1619829618836636922">گواهینامه‌های کارخواه واردشده از پلاتفرم</translation>
 <translation id="1619879934359211038">‏نمی‌توان به Google Play متصل شد. اتصال شبکه‌تان را بررسی و دوباره امتحان کنید. کد خطا: <ph name="ERROR_CODE" />.</translation>
@@ -4136,6 +4139,7 @@
 <translation id="3844888638014364087">اموجی درج شد</translation>
 <translation id="3846116211488856547">‏دریافت ابزارهایی برای برنامه‌نویسی وب‌سایت، برنامه‌های Android و سایر موارد. با نصب Linux، <ph name="DOWNLOAD_SIZE" /> داده بارگیری خواهد شد.</translation>
 <translation id="3847319713229060696">کمک به بهبود امنیت برای همه کاربران وب</translation>
+<translation id="3847734730889093333">‫<ph name="RATE" /> برابر</translation>
 <translation id="3848547754896969219">باز کردن در «پنجره ناشناس»</translation>
 <translation id="3850172593216628215">‏به‌روزرسانی‌های امنیتی به‌اتمام رسیده است. هنگام خرید Chromebook جدید ۵۰ دلار یا بیشتر تخفیف بگیرید.</translation>
 <translation id="385051799172605136">برگشتن</translation>
@@ -6115,6 +6119,7 @@
 <translation id="5267572070504076962">برای محافظت دربرابر سایت‌های خطرناک، «مرور ایمن» را روشن کنید</translation>
 <translation id="5269977353971873915">چاپ نشد</translation>
 <translation id="5271578170655641944">‏دسترسی به Google Drive برداشته شود؟</translation>
+<translation id="527335345740023523">درحال‌حاضر <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" />، <ph name="NUMBERED_ITEM_3" />، و چند مورد دیگر دارید. سازمانتان، <ph name="ACCOUNT_MANAGER" />، می‌تواند این داده‌ها را ببیند و مدیریت کند.</translation>
 <translation id="5273806377963980154">ویرایش نشانی وب سایت</translation>
 <translation id="5275084684151588738">فرهنگ‌های لغت کاربر</translation>
 <translation id="5275338516105640560">دکمه گروه برگه ذخیره‌شده</translation>
@@ -6314,6 +6319,7 @@
 <translation id="542073632571549028">‫<ph name="MEMBER_FULL_NAME" />‏ (<ph name="EMAIL" />) دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهد</translation>
 <translation id="5420935737933866496">کپی کردن پیوند</translation>
 <translation id="5421048291985386320">ورود مجدد به سیستم</translation>
+<translation id="542237158771780634">‏وقتی روشن باشد، داده‌ها در «حساب Google» شما ذخیره می‌شود و می‌توان از آن‌ها در همه دستگاه‌هایتان استفاده کرد. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
 <translation id="5422781158178868512">متأسفیم، دستگاه ذخیره‌سازی خارجی شما شناسایی نشد.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">دفعه بعدی که به وب‌سایت سر می‌زنید، <ph name="SITE" /> از اجازه‌های پیش‌فرض استفاده خواهد کرد</translation>
@@ -6568,6 +6574,7 @@
 <translation id="5600706100022181951">به‌روزرسانی با مصرف <ph name="UPDATE_SIZE_MB" /> مگابایت داده تلفن همراه بارگیری می‌شود. ادامه می‌دهید؟</translation>
 <translation id="5601503069213153581">پین</translation>
 <translation id="5601833336918638013">به سایت‌ها اجازه داده نشود دستگاه‌های بلوتوث را جستجو کنند</translation>
+<translation id="560213628963806709">‏این برنامه <ph name="OPENINGS_COUNT" /> زبانه جدید Chrome باز کرده است. می‌توانید این رفتار را در بخش اجازه «بالاپرها و هدایت‌ها» مدیریت کنید.</translation>
 <translation id="5602586420788540146">باز کردن در گروه برگه جدید</translation>
 <translation id="5605758115928394442">برای تأیید اینکه خودتان هستید، اعلانی به تلفنتان ارسال شد.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{این افزونه مسدود شده است}one{این افزونه‌ها مسدود شده‌اند}other{این افزونه‌ها مسدود شده‌اند}}</translation>
@@ -7047,6 +7054,7 @@
 <translation id="5952020381407136867">صفحه لمسی</translation>
 <translation id="5953211687820750364">‏این فهرست از <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           و <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> تأثیر می‌گیرد</translation>
+<translation id="5955192144223994637">با این نمایه به کار کردن ادامه می‌دهم</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">وب‌سایتی می‌خواهد این برنامه را باز کند.</translation>
 <translation id="5955809630138889698">این دستگاه ممکن است فقط برای حالت نمایشی آنلاین واجد شرایط باشد. برای جزئیات بیشتر، لطفاً با نماینده پشتیبانی‌تان تماس بگیرید.</translation>
@@ -7777,6 +7785,7 @@
 <translation id="6493991254603208962">کم کردن روشنایی</translation>
 <translation id="6494327278868541139">نمایش جزئیات محافظت بهبودیافته</translation>
 <translation id="6494483173119160146">دستگاه با خطای غیرقابل‌بازیابی مواجه شده است. لطفاً دستگاهتان را بازنشانی و سپس دوباره امتحان کنید (با این کار همه داده‌های کاربر پاک‌سازی می‌شود).</translation>
+<translation id="6495261233408033662">بستن زبانه‌های باز</translation>
 <translation id="6495266441917713704">‏Wi-Fi منتقل نشد</translation>
 <translation id="6495453178162183932">‏زمینه به پیش‌فرض Chrome تغییر کرد</translation>
 <translation id="6497784818439587832">تغییر اندازه نمایش برای کوچک‌تر کردن یا بزرگ‌تر کردن موارد روی صفحه‌نمایش</translation>
@@ -8036,6 +8045,7 @@
 <translation id="6673898378497337661">افزایش روشنایی صفحه‌کلید</translation>
 <translation id="6674571176963658787">برای شروع همگام‌سازی، گذرعبارت را وارد کنید</translation>
 <translation id="6675665718701918026">دستگاه نشانگر متصل شد</translation>
+<translation id="6675717447295898330">نمایه جدیدی برای کار کردن، بدون داده‌های موجود من، ایجاد شود</translation>
 <translation id="6676212663108450937">لطفاً درحین آموزش صدایتان، از هدفون استفاده کنید</translation>
 <translation id="6676291960742508499">‏برگه‌ها، عنوان صفحه‌ها، و نشانی‌های وب شما برای Google ارسال می‌شود</translation>
 <translation id="667752334740867460">‏درحال دریافت اطلاعات Wi-Fi…</translation>
@@ -9095,6 +9105,7 @@
 <translation id="7427348830195639090">صفحه پس‌زمینه: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427729970025360383">این نمایه تحت‌مدیریت است</translation>
 <translation id="7427798576651127129">تماس از <ph name="DEVICE_NAME" /></translation>
+<translation id="7429004613638800673">‫<ph name="APP_NAME" /> چند زبانه باز کرده است.</translation>
 <translation id="7429415133937917139">‏خروجی نمایشگر بریل قابل‌بازخوانی را در
     پانل ChromeVox در بالای صفحه شبیه‌سازی می‌کند</translation>
 <translation id="7429568074268678162">‏‫<ph name="FILENAME" /> ممکن است خطرناک باشد. اگر می‌خواهید Chrome آن را درستی‌سنجی کند، گذرواژه اضافه کنید یا می‌توانید مستقیماً آن را بارگیری کنید.</translation>
@@ -9634,6 +9645,7 @@
 <translation id="7796453472368605346">آوانماها</translation>
 <translation id="7797571222998226653">خاموش</translation>
 <translation id="7798504574384119986">مشاهده اجازه‌های وب</translation>
+<translation id="7798559336183476274">کنش‌های بیشتر برای <ph name="BUTTON_TITLE" /></translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> به‌طور خودکار مسدود‌ شده است</translation>
 <translation id="7799650166313181433">فقط دستگاه‌هایی که به سیستم <ph name="USER_EMAIL" /> وارد شده‌اند می‌توانند با این دستگاه هم‌رسانی کنند. برای هم‌رسانی بین دستگاه‌های خودتان نیازی به تأیید ندارید.</translation>
 <translation id="7800485561443537737">از داده همراه <ph name="DEVICE_TYPE" /> استفاده می‌کند و ممکن است شرکت مخابراتی شما هزینه اضافی از شما دریافت کند. ممکن است مصرف باتری را افزایش دهد. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9935,6 +9947,7 @@
 <translation id="8000020256436988724">نوارابزار</translation>
 <translation id="800117767980299235">نکات برجسته صوتی</translation>
 <translation id="8002274832045662704">پیکربندی پیشرفته چاپگر</translation>
+<translation id="8002531372108263935">سازمانتان، <ph name="ACCOUNT_MANAGER" />، نمی‌تواند این داده‌ها را ببیند یا مدیریت کند. این داده‌ها در نمایه فعلی باقی خواهد ماند.</translation>
 <translation id="8002597610026749658">‏‫Chrome می‌تواند برای زبان‌هایی که در اینجا نشان داده شده است زیرنویس ناشنوایان ایجاد کند</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> دیگر دردسترس نیست.</translation>
 <translation id="8004092996156083991">اگر گذرواژه‌هایتان لو برود، به شما اطلاع خواهیم داد.</translation>
@@ -10820,6 +10833,7 @@
 <translation id="862542460444371744">&amp;برنامه های افزودنی</translation>
 <translation id="8625663000550647058">اجازه ندارد از میکروفون استفاده کند</translation>
 <translation id="8625916342247441948">‏به سایت‌ها اجازه داده نشود به دستگاه‌های HID متصل شوند</translation>
+<translation id="8626569226218260115">این نمایه مدیریت خواهد شد</translation>
 <translation id="862727964348362408">معلق شد</translation>
 <translation id="862750493060684461">‏حافظه نهان CSS</translation>
 <translation id="8627795981664801467">فقط اتصالات ایمن</translation>
@@ -11235,6 +11249,7 @@
 <translation id="8890529496706615641">نام نمایه تغییر نکرد. لطفاً دوباره امتحان کنید یا برای دریافت پشتیبانی فنی، با شرکت مخابراتی خود تماس بگیرید.</translation>
 <translation id="8892168913673237979">همه چیز آماده است!</translation>
 <translation id="8892246501904593980">همه نشانک‌هایتان را در «نشانک‌ها و فهرست‌ها» ببینید</translation>
+<translation id="8893779047492837414">درحال‌حاضر <ph name="NUMBERED_ITEM_1" />، <ph name="NUMBERED_ITEM_2" />، و چند مورد دیگر دارید. سازمانتان، <ph name="ACCOUNT_MANAGER" />، می‌تواند این داده‌ها را ببیند و مدیریت کند.</translation>
 <translation id="8893801527741465188">حذف نصب تکمیل شد</translation>
 <translation id="8893928184421379330">متأسفیم، دستگاه <ph name="DEVICE_LABEL" /> شناسایی نشد.</translation>
 <translation id="8894761918470382415">محافظت از دسترسی به داده‌ها برای لوازم جانبی</translation>

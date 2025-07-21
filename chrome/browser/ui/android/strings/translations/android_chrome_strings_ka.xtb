@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">ავტომატური შევსების დაყენების დასასრულებლად გადატვირთეთ Chrome ახლავე. თქვენი ჩანართები ავტომატურად ისევ გაიხსნება.</translation>
 <translation id="2091863218454846791">ნაჩვენებია კომპაქტური ხედი</translation>
 <translation id="2093731487903423814">ბოლო 15 წუთში</translation>
+<translation id="2096577711562668473">გსურთ ავტომატური შევსების სერვისის შეცვლა?</translation>
 <translation id="2100273922101894616">ავტომატური შესვლა</translation>
 <translation id="2109384632594340939">პროფილის სურათი</translation>
 <translation id="2111511281910874386">გვერდზე გადასვლა</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">ნახვის ისტორია</translation>
 <translation id="2497852260688568942">სინქრონიზაცია გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="250020030759455918">Chrome-ში იხილავთ როგორც <ph name="SITE_NAME" />-ში შესვლის სტატუსს, ისე დათვალიერების/საიტის მონაცემებს</translation>
+<translation id="2502798195266898572">ქვედა ფურცელი წაკითხვის რეჟიმში გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="2510106555128151389">მიმდინარეობს <ph name="WEBAPK_NAME" />-ის ინსტალაცია...</translation>
 <translation id="2512234228327349533">შეძენის ვარიანტების ძიება</translation>
 <translation id="2513403576141822879">კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემთა შეგროვებასთან დაკავშირებული სხვა პარამეტრებისთვის იხილეთ <ph name="BEGIN_LINK" />სინქრონიზაცია და Google-ის სერვისები<ph name="END_LINK" /></translation>
@@ -934,6 +936,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{მიმდინარეობს ფაილის ჩამოტვირთვა…}other{მიმდინარეობს # ფაილის ჩამოტვირთვა…}}</translation>
 <translation id="5210286577605176222">წინა ჩანართზე გადასვლა</translation>
 <translation id="5210365745912300556">ჩანართის დახურვა</translation>
+<translation id="5212800876504289412">გადატვირთეთ Chrome, რომ დაასრულოთ ეს ცვლილება. გადატვირთვისას ჩანართები ავტომატურად იხსნება.</translation>
 <translation id="5215957675041756913">თქვენი მონაცემებისა და ანგარიშის მართვა</translation>
 <translation id="5218324087477576825">ბარათის ნომერი (სავალდებულოა)</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და კიდევ <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან თქვენ ბოლო დროს ეს საიტი არ მოგინახულებიათ</translation>
@@ -1062,6 +1065,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{შეტყობინების ჩვენება}other{შეტყობინებების ჩვენება}}</translation>
 <translation id="5814749351757353073">თვალყური ადევნეთ თქვენს რჩეულ საიტებს</translation>
 <translation id="5823093032261493462">მაინც გსურთ, ჩამოტვირთოთ „<ph name="FILE_NAME" />“ <ph name="DOWNLOAD_DOMAIN" />-დან?</translation>
+<translation id="5825135637446025843">Chrome-ის გადატვირთვის შემდეგ ახალი მომწოდებლის მიერ შენახული ინფორმაცია გამოყენებული იქნება პაროლების, წვდომის გასაღებების, მისამართების, გადახდის მეთოდებისა და სხვა ინფორმაციის ავტომატური შევსებისთვის.</translation>
 <translation id="5828921839638612740">მონაცემების წაშლა შეგიძლიათ Chrome-ის პარამეტრებიდან</translation>
 <translation id="5829586821381540080">შენახულია <ph name="FOLDER_NAME" />-ში</translation>
 <translation id="583281660410589416">უცნობი</translation>
@@ -1178,6 +1182,7 @@
 <translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="6296366034485697675">ექსპორტი და წაშლა</translation>
 <translation id="629730747756840877">ანგარიში</translation>
+<translation id="6300697579369314762">ქვედა ფურცელი წაკითხვის რეჟიმში გახსნილია ნახევარ სიმაღლეზე</translation>
 <translation id="6301526076346731664">დეველოპერთა ხელსაწყოების გახსნა</translation>
 <translation id="6303969859164067831">გამოსვლა და სინქრონიზაციის გამორთვა</translation>
 <translation id="6307241780749477694">დაადასტურეთ ვინაობა თქვენს ყველა პაროლზე წვდომის მისაღებად</translation>
@@ -1398,6 +1403,7 @@
 <translation id="71503698506017927">საიდუმლო ფრაზით დაშიფვრა არ მოიცავს გადახდის მეთოდებსა და მისამართებს Google Pay-დან.
 
 ამ პარამეტრის შესაცვლელად, <ph name="BEGIN_LINK" />წაშალეთ Chrome მონაცემები თქვენს ანგარიშში<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">ქვედა ფურცელი წაკითხვის რეჟიმში დახურულია</translation>
 <translation id="7165972437814027679">შეიტყვეთ, თუ რატომ ბლოკავს Chrome ზოგიერთ ფაილს</translation>
 <translation id="7168323970702333693">შესული ხართ, როგორც <ph name="USER_NAME" />. გახსნის პარამეტრებს.</translation>
 <translation id="7173114856073700355">პარამეტრების გახსნა</translation>
