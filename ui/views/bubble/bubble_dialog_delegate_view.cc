@@ -910,6 +910,9 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
     void (*uma_func)(std::string_view, Value),
     std::string_view histogram_name,
     Value value) const {
+  if (!base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
+    return;
+  }
   // Record histogram for all BDDV subclasses under a generic name
   uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
   // Record histograms for specific BDDV subclasses

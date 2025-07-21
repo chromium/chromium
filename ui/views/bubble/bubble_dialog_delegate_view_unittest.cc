@@ -175,7 +175,10 @@ class WidgetWithNonNullThemeProvider : public Widget {
 
 class BubbleDialogDelegateViewTest : public ViewsTestBase {
  public:
-  BubbleDialogDelegateViewTest() = default;
+  BubbleDialogDelegateViewTest() {
+    feature_list_.InitAndEnableFeature(features::kBubbleMetricsApi);
+  }
+
   BubbleDialogDelegateViewTest(const BubbleDialogDelegateViewTest&) = delete;
   BubbleDialogDelegateViewTest& operator=(const BubbleDialogDelegateViewTest&) =
       delete;
@@ -198,7 +201,10 @@ class BubbleDialogDelegateViewTest : public ViewsTestBase {
 
 class BubbleUmaLoggerTest : public ViewsTestBase {
  public:
-  BubbleUmaLoggerTest() = default;
+  BubbleUmaLoggerTest() {
+    feature_list_.InitAndEnableFeature(features::kBubbleMetricsApi);
+  }
+
   BubbleUmaLoggerTest(const BubbleUmaLoggerTest&) = delete;
   BubbleUmaLoggerTest& operator=(const BubbleUmaLoggerTest&) = delete;
 
