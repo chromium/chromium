@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,11 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator.h"
-#include "components/invalidation/impl/fake_invalidation_service.h"
-#include "components/invalidation/impl/invalidator_registrar_with_memory.h"
-#include "components/invalidation/public/invalidation_util.h"
+#include "components/gcm_driver/fake_gcm_driver.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/invalidation_listener_impl.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -45,35 +47,142 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
+using ::testing::WithArg;
+
 namespace em = enterprise_management;
 
 namespace policy {
 
 namespace {
-// Invalidation topics which can be used in tests.
-constexpr auto kNoTopic = std::nullopt;
-const invalidation::Topic kTopicA = "topic_a";
-const invalidation::Topic kTopicB = "topic_b";
+
+// Fake policy values which are alternated to cause the store to report a
+// changed policy.
+constexpr char kPolicyValueA[] = "policyValueA";
+constexpr char kPolicyValueB[] = "policyValueB";
+
+constexpr int64_t kFakeProjectNumber = 1234567890;
+constexpr char kFakeProjectNumberStr[] = "1234567890";
+constexpr char kTestLogPrefix[] = "test";
+constexpr char kFakeRegistrationToken[] = "fake_registration_token";
+
+std::string GetGcmAppId(auto project_number) {
+  return base::StrCat(
+      {invalidation::InvalidationListener::kFmAppId, "-", project_number});
+}
 }  // namespace
+
+class FakeRegistrationTokenHandler
+    : public invalidation::RegistrationTokenHandler {
+ public:
+  ~FakeRegistrationTokenHandler() override = default;
+
+  void OnRegistrationTokenReceived(const std::string& registration_token,
+                                   base::Time token_end_of_live) override {
+    registration_token_ = registration_token;
+    token_end_of_live_ = token_end_of_live;
+  }
+
+  std::string get_registration_token() { return registration_token_; }
+
+ private:
+  std::string registration_token_;
+  base::Time token_end_of_live_;
+};
+
+class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
+ public:
+  MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
+  ~MockInstanceIDDriver() override = default;
+
+  MOCK_METHOD(instance_id::InstanceID*,
+              GetInstanceID,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(void, RemoveInstanceID, (const std::string& app_id), (override));
+  MOCK_METHOD(bool,
+              ExistsInstanceID,
+              (const std::string& app_id),
+              (const override));
+};
+
+class MockInstanceID : public instance_id::InstanceID {
+ public:
+  MockInstanceID() : InstanceID("app_id", /*gcm_driver=*/nullptr) {}
+  ~MockInstanceID() override = default;
+  MOCK_METHOD(void, GetID, (GetIDCallback callback), (override));
+  MOCK_METHOD(void,
+              GetCreationTime,
+              (GetCreationTimeCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              GetToken,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               base::TimeDelta time_to_live,
+               std::set<Flags> flags,
+               GetTokenCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ValidateToken,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               const std::string& token,
+               ValidateTokenCallback callback),
+              (override));
+
+ protected:
+  MOCK_METHOD(void,
+              DeleteTokenImpl,
+              (const std::string& authorized_entity,
+               const std::string& scope,
+               DeleteTokenCallback callback),
+              (override));
+  MOCK_METHOD(void, DeleteIDImpl, (DeleteIDCallback callback), (override));
+};
 
 class CloudPolicyInvalidatorTestBase : public testing::Test {
  protected:
   CloudPolicyInvalidatorTestBase();
 
+  void SetUp() override {
+    ON_CALL(mock_instance_id_driver_,
+            GetInstanceID(GetGcmAppId(kFakeProjectNumberStr)))
+        .WillByDefault(Return(&mock_instance_id_));
+  }
+
   void TearDown() override;
 
   // Starts the invalidator which will be tested.
-  // |initialize| determines if the invalidator should be initialized.
-  // |start_refresh_scheduler| determines if the refresh scheduler should start.
-  // |highest_handled_invalidation_version| is the highest invalidation version
+  // `initialize` determines if the invalidator should be initialized.
+  // `start_refresh_scheduler` determines if the refresh scheduler should start.
+  // `highest_handled_invalidation_version` is the highest invalidation version
   // that was handled already before this invalidator was created.
   void StartInvalidator(bool initialize,
                         bool start_refresh_scheduler,
                         int64_t highest_handled_invalidation_version);
   void StartInvalidator() {
-    StartInvalidator(true, /* initialize */
-                     true, /* start_refresh_scheduler */
-                     0     /* highest_handled_invalidation_version */);
+    StartInvalidator(/*initialize=*/true,
+                     /*start_refresh_scheduler=*/true,
+                     /*highest_handled_invalidation_version=*/0);
+  }
+
+  void SetRegistrationTokenFetchState(const std::string& registration_token,
+                                      instance_id::InstanceID::Result result) {
+    ON_CALL(mock_instance_id_,
+            GetToken(/*authorized_entity=*/kFakeProjectNumberStr,
+                     /*scope=*/instance_id::kGCMScope,
+                     /*time_to_live=*/
+                     invalidation::InvalidationListenerImpl::
+                         kRegistrationTokenTimeToLive,
+                     /*flags=*/_, /*callback=*/_))
+        .WillByDefault(
+            // Call the callback with `registration_token` and `result` as
+            // arguments.
+            WithArg<4>([registration_token,
+                        result](MockInstanceID::GetTokenCallback callback) {
+              std::move(callback).Run(registration_token, result);
+            }));
   }
 
   const CloudPolicyInvalidator* invalidator() const {
@@ -100,45 +209,37 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   void DisconnectCore();
 
   // Simulates storing a new policy to the policy store.
-  // |topic| determines which policy topic the store will report the
-  // invalidator should register for. May be kNoTopic for no topic.
-  // |invalidation_version| determines what invalidation the store will report.
-  // |policy_changed| determines whether a policy value different from the
+  // `policy_changed` determines whether a policy value different from the
   // current value will be stored.
-  // |time| determines the timestamp the store will report.
-  void StorePolicy(const std::optional<invalidation::Topic>& topic,
-                   int64_t invalidation_version,
+  // `time` determines the timestamp the store will report.
+  void StorePolicy(int64_t invalidation_version,
                    bool policy_changed,
                    const base::Time& time);
-  void StorePolicy(const std::optional<invalidation::Topic>& topic,
-                   int64_t invalidation_version,
-                   bool policy_changed) {
-    StorePolicy(topic, invalidation_version, policy_changed,
-                Now() - base::Minutes(5));
+  void StorePolicy(int64_t invalidation_version, bool policy_changed) {
+    StorePolicy(invalidation_version, policy_changed, Now() - base::Minutes(5));
   }
-  void StorePolicy(const std::optional<invalidation::Topic>& topic,
-                   int64_t invalidation_version) {
-    StorePolicy(topic, invalidation_version, false);
+  void StorePolicy(int64_t invalidation_version) {
+    StorePolicy(invalidation_version, false);
   }
-  void StorePolicy(const std::optional<invalidation::Topic>& topic) {
-    StorePolicy(topic, 0);
-  }
+  void StorePolicy() { StorePolicy(0); }
 
   // Disables the invalidation service. It is enabled by default.
-  void DisableInvalidationService();
+  void DisableInvalidationListener();
 
   // Enables the invalidation service. It is enabled by default.
-  void EnableInvalidationService();
+  void EnableInvalidationListener();
+
+  // Start the listener instance.
+  void StartInvalidationListener();
 
   // Causes the invalidation service to fire an invalidation.
-  invalidation::Invalidation FireInvalidation(const invalidation::Topic& topic,
-                                              int64_t version,
-                                              const std::string& payload);
+  invalidation::DirectInvalidation FireInvalidation(int64_t version,
+                                                    const std::string& payload);
 
   // Returns true if the invalidation info of the `core_`'s client matches the
   // passed invalidation's version and payload.
   bool ClientInvalidationInfoMatches(
-      const invalidation::Invalidation& invalidation);
+      const invalidation::DirectInvalidation& invalidation);
 
   // Returns true if the invalidation info of the `core_`'s client is unset.
   bool ClientInvalidationInfoIsUnset();
@@ -158,14 +259,8 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   // invalidation service.
   bool IsInvalidatorRegistered();
 
-  // Determines if the invalidator has registered for a topic with the
-  // invalidation service.
-  // This implicitly also checks that that invalidator is registered as an
-  // observer (otherwise, it could not have registered topics).
-  bool IsInvalidatorRegistered(const invalidation::Topic& topic);
-
   // Returns the highest invalidation version that was handled already according
-  // to the |invalidator_|.
+  // to the `invalidator_`.
   int64_t GetHighestHandledInvalidationVersion() const;
 
   // Advance the test clock.
@@ -181,7 +276,7 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   // Get an invalidation version for the given time.
   int64_t GetVersion(base::Time time);
 
-  // Get the invalidation scope that the |invalidator_| is responsible for.
+  // Get the invalidation scope that the `invalidator_` is responsible for.
   virtual PolicyInvalidationScope GetPolicyInvalidationScope() const;
 
  private:
@@ -191,29 +286,24 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Objects the invalidator depends on.
-  invalidation::FakeInvalidationService invalidation_service_;
   MockCloudPolicyStore store_;
   CloudPolicyCore core_;
-  raw_ptr<MockCloudPolicyClient, DanglingUntriaged> client_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SimpleTestClock clock_;
 
   // The invalidator which will be tested.
   std::unique_ptr<CloudPolicyInvalidator> invalidator_;
 
-  // Topics for the test policy objects.
-  invalidation::Topic topic_a_;
-  invalidation::Topic topic_b_;
-
-  // Fake policy values which are alternated to cause the store to report a
-  // changed policy.
-  const std::string policy_value_a_;
-  const std::string policy_value_b_;
-
   // The currently used policy value.
   std::string policy_value_cur_;
 
   const char* account_id_ = "test_account";
+
+  std::unique_ptr<invalidation::InvalidationListener> invalidation_listener_;
+  testing::NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;
+  testing::NiceMock<MockInstanceID> mock_instance_id_;
+  gcm::FakeGCMDriver gcmDriver;
+  FakeRegistrationTokenHandler fake_token_handler_;
 };
 
 CloudPolicyInvalidatorTestBase::CloudPolicyInvalidatorTestBase()
@@ -222,17 +312,15 @@ CloudPolicyInvalidatorTestBase::CloudPolicyInvalidatorTestBase()
             &store_,
             task_environment_.GetMainThreadTaskRunner(),
             network::TestNetworkConnectionTracker::CreateGetter()),
-      client_(nullptr),
       task_runner_(new base::TestSimpleTaskRunner()),
-      policy_value_a_(kTopicA),
-      policy_value_b_(kTopicB),
-      policy_value_cur_(policy_value_a_) {
+      policy_value_cur_(kPolicyValueA) {
   clock_.SetNow(base::Time::UnixEpoch() + base::Seconds(987654321));
 }
 
 void CloudPolicyInvalidatorTestBase::TearDown() {
-  if (invalidator_)
+  if (invalidator_) {
     invalidator_->Shutdown();
+  }
   core_.Disconnect();
 }
 
@@ -247,12 +335,20 @@ void CloudPolicyInvalidatorTestBase::StartInvalidator(
     ConnectCore();
     StartRefreshScheduler();
   }
-  if (initialize)
+  if (initialize) {
     InitializeInvalidator();
+    if (start_refresh_scheduler) {
+      invalidator_->OnExpectationChanged(
+          invalidation::InvalidationsExpected::kYes);
+    }
+  }
 }
 
 void CloudPolicyInvalidatorTestBase::InitializeInvalidator() {
-  invalidator_->Initialize(&invalidation_service_);
+  invalidation_listener_ = invalidation::InvalidationListener::Create(
+      &gcmDriver, &mock_instance_id_driver_, kFakeProjectNumber,
+      kTestLogPrefix);
+  invalidator_->Initialize(invalidation_listener_.get());
 }
 
 void CloudPolicyInvalidatorTestBase::ShutdownInvalidator() {
@@ -264,9 +360,10 @@ void CloudPolicyInvalidatorTestBase::DestroyInvalidator() {
 }
 
 void CloudPolicyInvalidatorTestBase::ConnectCore() {
-  client_ = new MockCloudPolicyClient();
-  client_->SetDMToken("dm");
-  core_.Connect(std::unique_ptr<CloudPolicyClient>(client_));
+  std::unique_ptr<MockCloudPolicyClient> client =
+      std::make_unique<MockCloudPolicyClient>();
+  client->SetDMToken("dm");
+  core_.Connect(std::move(client));
 }
 
 void CloudPolicyInvalidatorTestBase::StartRefreshScheduler() {
@@ -274,25 +371,19 @@ void CloudPolicyInvalidatorTestBase::StartRefreshScheduler() {
 }
 
 void CloudPolicyInvalidatorTestBase::DisconnectCore() {
-  client_ = nullptr;
   core_.Disconnect();
 }
 
-void CloudPolicyInvalidatorTestBase::StorePolicy(
-    const std::optional<invalidation::Topic>& topic,
-    int64_t invalidation_version,
-    bool policy_changed,
-    const base::Time& time) {
+void CloudPolicyInvalidatorTestBase::StorePolicy(int64_t invalidation_version,
+                                                 bool policy_changed,
+                                                 const base::Time& time) {
   auto data = std::make_unique<em::PolicyData>();
-  if (topic.has_value()) {
-    // CloudPolicyInvalidator expects the topic to subscribe in this field.
-    data->set_policy_invalidation_topic(topic.value());
-  }
   data->set_timestamp(time.InMillisecondsSinceUnixEpoch());
   // Swap the policy value if a policy change is desired.
-  if (policy_changed)
-    policy_value_cur_ = policy_value_cur_ == policy_value_a_ ?
-        policy_value_b_ : policy_value_a_;
+  if (policy_changed) {
+    policy_value_cur_ =
+        policy_value_cur_ == kPolicyValueA ? kPolicyValueB : kPolicyValueA;
+  }
   data->set_policy_value(policy_value_cur_);
   store_.invalidation_version_ = invalidation_version;
   store_.set_policy_data_for_testing(std::move(data));
@@ -304,23 +395,30 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(
   store_.NotifyStoreLoaded();
 }
 
-void CloudPolicyInvalidatorTestBase::DisableInvalidationService() {
-  invalidation_service_.SetInvalidatorState(
-      invalidation::InvalidatorState::kDisabled);
+void CloudPolicyInvalidatorTestBase::DisableInvalidationListener() {
+  invalidation_listener_->SetRegistrationUploadStatus(
+      invalidation::InvalidationListener::RegistrationTokenUploadStatus::
+          kFailed);
 }
 
-void CloudPolicyInvalidatorTestBase::EnableInvalidationService() {
-  invalidation_service_.SetInvalidatorState(
-      invalidation::InvalidatorState::kEnabled);
+void CloudPolicyInvalidatorTestBase::EnableInvalidationListener() {
+  invalidation_listener_->SetRegistrationUploadStatus(
+      invalidation::InvalidationListener::RegistrationTokenUploadStatus::
+          kSucceeded);
 }
 
-invalidation::Invalidation CloudPolicyInvalidatorTestBase::FireInvalidation(
-    const invalidation::Topic& topic,
-    int64_t version,
-    const std::string& payload) {
-  invalidation::Invalidation invalidation =
-      invalidation::Invalidation(topic, version, payload);
-  invalidation_service_.EmitInvalidationForTest(invalidation);
+void CloudPolicyInvalidatorTestBase::StartInvalidationListener() {
+  SetRegistrationTokenFetchState(kFakeRegistrationToken,
+                                 instance_id::InstanceID::SUCCESS);
+  invalidation_listener_->Start(&fake_token_handler_);
+}
+
+invalidation::DirectInvalidation
+CloudPolicyInvalidatorTestBase::FireInvalidation(int64_t version,
+                                                 const std::string& payload) {
+  const invalidation::DirectInvalidation invalidation("USER_POLICY_FETCH",
+                                                      version, payload);
+  invalidator_->OnInvalidationReceived(invalidation);
   return invalidation;
 }
 
@@ -332,7 +430,7 @@ bool CloudPolicyInvalidatorTestBase::ClientInvalidationInfoIsUnset() {
 }
 
 bool CloudPolicyInvalidatorTestBase::ClientInvalidationInfoMatches(
-    const invalidation::Invalidation& invalidation) {
+    const invalidation::DirectInvalidation& invalidation) {
   MockCloudPolicyClient* client =
       static_cast<MockCloudPolicyClient*>(core_.client());
   return invalidation.version() == client->invalidation_version_ &&
@@ -348,15 +446,8 @@ bool CloudPolicyInvalidatorTestBase::InvalidationsEnabled() {
 }
 
 bool CloudPolicyInvalidatorTestBase::IsInvalidatorRegistered() {
-  return invalidation_service_.invalidator_registrar().HasObserver(
-      invalidator_.get());
-}
-
-bool CloudPolicyInvalidatorTestBase::IsInvalidatorRegistered(
-    const invalidation::Topic& topic) {
-  return invalidation_service_.invalidator_registrar()
-      .GetRegisteredTopics(invalidator_.get())
-      .contains(topic);
+  return invalidation_listener_ &&
+         invalidation_listener_->HasObserver(invalidator_.get());
 }
 
 int64_t CloudPolicyInvalidatorTestBase::GetHighestHandledInvalidationVersion()
@@ -387,11 +478,17 @@ CloudPolicyInvalidatorTestBase::GetPolicyInvalidationScope() const {
 
 bool CloudPolicyInvalidatorTestBase::CheckPolicyRefreshed(
     base::TimeDelta delay) {
-  base::TimeDelta max_delay =
-      delay + base::Milliseconds(CloudPolicyInvalidator::kMaxFetchDelayMin);
+  const auto* delay_policy_value = store_.policy_map().GetValue(
+      key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);
+  const base::TimeDelta max_delay =
+      delay +
+      (delay_policy_value
+           ? base::Milliseconds(delay_policy_value->GetInt())
+           : base::Milliseconds(CloudPolicyInvalidator::kMaxFetchDelayMax));
 
-  if (!task_runner_->HasPendingTask())
+  if (!task_runner_->HasPendingTask()) {
     return false;
+  }
   base::TimeDelta actual_delay = task_runner_->FinalPendingTaskDelay();
   EXPECT_GE(actual_delay, delay);
   EXPECT_LE(actual_delay, max_delay);
@@ -400,32 +497,34 @@ bool CloudPolicyInvalidatorTestBase::CheckPolicyRefreshed(
 }
 
 bool CloudPolicyInvalidatorTestBase::CheckPolicyRefreshCount(int count) {
-  if (!client_) {
+  MockCloudPolicyClient* client =
+      static_cast<MockCloudPolicyClient*>(core_.client());
+  if (!client) {
     task_runner_->RunUntilIdle();
     return count == 0;
   }
 
   // Clear any non-invalidation refreshes which may be pending.
-  EXPECT_CALL(*client_, FetchPolicy(testing::_)).Times(testing::AnyNumber());
+  EXPECT_CALL(*client, FetchPolicy(testing::_)).Times(testing::AnyNumber());
   base::RunLoop().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(client_);
+  testing::Mock::VerifyAndClearExpectations(client);
 
   // Run the invalidator tasks then check for invalidation refreshes.
-  EXPECT_CALL(*client_, FetchPolicy(PolicyFetchReason::kInvalidation))
+  EXPECT_CALL(*client, FetchPolicy(PolicyFetchReason::kInvalidation))
       .Times(count);
   task_runner_->RunUntilIdle();
   base::RunLoop().RunUntilIdle();
-  return testing::Mock::VerifyAndClearExpectations(client_);
+  return testing::Mock::VerifyAndClearExpectations(client);
 }
 
 class CloudPolicyInvalidatorTest : public CloudPolicyInvalidatorTestBase {};
 
 TEST_F(CloudPolicyInvalidatorTest, Uninitialized) {
   // No invalidations should be processed if the invalidator is not initialized.
-  StartInvalidator(false, /* initialize */
-                   true,  /* start_refresh_scheduler */
-                   0      /* highest_handled_invalidation_version*/);
-  StorePolicy(kTopicA);
+  StartInvalidator(/*initialize=*/false,
+                   /*start_refresh_scheduler=*/true,
+                   /*highest_handled_invalidation_version=*/0);
+  StorePolicy();
   EXPECT_FALSE(IsInvalidatorRegistered());
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
@@ -434,10 +533,11 @@ TEST_F(CloudPolicyInvalidatorTest, Uninitialized) {
 TEST_F(CloudPolicyInvalidatorTest, RefreshSchedulerNotStarted) {
   // No invalidations should be processed if the refresh scheduler is not
   // started.
-  StartInvalidator(true,  /* initialize */
-                   false, /* start_refresh_scheduler */
-                   0      /* highest_handled_invalidation_version*/);
-  StorePolicy(kTopicA);
+  StartInvalidator(/*initialize=*/true,
+                   /*start_refresh_scheduler=*/false,
+                   /*highest_handled_invalidation_version=*/0);
+  StartInvalidationListener();
+  StorePolicy();
   EXPECT_FALSE(IsInvalidatorRegistered());
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
@@ -446,13 +546,29 @@ TEST_F(CloudPolicyInvalidatorTest, RefreshSchedulerNotStarted) {
 TEST_F(CloudPolicyInvalidatorTest, DisconnectCoreThenInitialize) {
   // No invalidations should be processed if the core is disconnected before
   // initialization.
-  StartInvalidator(false, /* initialize */
-                   true,  /* start_refresh_scheduler */
-                   0      /* highest_handled_invalidation_version*/);
+  StartInvalidator(/*initialize=*/false,
+                   /*start_refresh_scheduler=*/true,
+                   /*highest_handled_invalidation_version=*/0);
   DisconnectCore();
   InitializeInvalidator();
-  StorePolicy(kTopicA);
+  StorePolicy();
   EXPECT_FALSE(IsInvalidatorRegistered());
+  EXPECT_TRUE(CheckPolicyNotRefreshed());
+  EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
+}
+
+TEST_F(CloudPolicyInvalidatorTest, DisconnectCoreThenIgnoreInvalidations) {
+  StartInvalidator();
+  StorePolicy();
+
+  // Disconnect core, change invalidations state and fire invalidation. The
+  // invalidations should be enabled but ignored.
+  DisconnectCore();
+  DisableInvalidationListener();
+  EnableInvalidationListener();
+  FireInvalidation(V(1), "test");
+
+  EXPECT_TRUE(IsInvalidatorRegistered());
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
@@ -463,14 +579,13 @@ TEST_F(CloudPolicyInvalidatorTest, InitializeThenStartRefreshScheduler) {
   // Note that the reverse case (start refresh scheduler then initialize) is
   // the default behavior for the test fixture, so will be tested in most other
   // tests.
-  StartInvalidator(true,  /* initialize */
-                   false, /* start_refresh_scheduler */
-                   0      /* highest_handled_invalidation_version*/);
+  StartInvalidator(/*initialize=*/true,
+                   /*start_refresh_scheduler=*/false,
+                   /*highest_handled_invalidation_version=*/0);
   ConnectCore();
   StartRefreshScheduler();
-  StorePolicy(kTopicA);
-  EXPECT_TRUE(IsInvalidatorRegistered(kTopicA));
-  FireInvalidation(kTopicA, V(1), "test");
+  StorePolicy();
+  FireInvalidation(V(1), "test");
   EXPECT_TRUE(CheckPolicyRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
@@ -478,88 +593,45 @@ TEST_F(CloudPolicyInvalidatorTest, InitializeThenStartRefreshScheduler) {
 TEST_F(CloudPolicyInvalidatorTest, RegisterOnStoreLoaded) {
   // No registration when store is not loaded.
   StartInvalidator();
-  EXPECT_FALSE(IsInvalidatorRegistered());
-  EXPECT_FALSE(InvalidationsEnabled());
+  EXPECT_TRUE(IsInvalidatorRegistered());
   EXPECT_TRUE(CheckPolicyNotRefreshed());
 
-  // No registration when store is loaded with no invalidation topic id.
-  StorePolicy(kNoTopic);
-  EXPECT_FALSE(IsInvalidatorRegistered());
-  EXPECT_FALSE(InvalidationsEnabled());
+  StorePolicy();
+  EXPECT_TRUE(IsInvalidatorRegistered());
   EXPECT_TRUE(CheckPolicyNotRefreshed());
 
-  // Check registration when store is loaded for topic A.
-  StorePolicy(kTopicA);
-  EXPECT_TRUE(IsInvalidatorRegistered(kTopicA));
-  EXPECT_TRUE(InvalidationsEnabled());
-  FireInvalidation(kTopicA, V(5), "test");
+  // Check registration when store is loaded.
+  StartInvalidationListener();
+  StorePolicy();
+  FireInvalidation(V(5), "test");
   EXPECT_TRUE(CheckPolicyRefreshed());
   EXPECT_TRUE(CheckPolicyNotRefreshed());
-  EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
-}
-
-TEST_F(CloudPolicyInvalidatorTest, ChangeRegistration) {
-  // Register for topic A.
-  StartInvalidator();
-  StorePolicy(kTopicA);
-  EXPECT_TRUE(IsInvalidatorRegistered(kTopicA));
-  EXPECT_TRUE(InvalidationsEnabled());
-  FireInvalidation(kTopicA, V(1), "test");
-  EXPECT_TRUE(CheckPolicyRefreshed());
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-  invalidation::Invalidation inv = FireInvalidation(kTopicA, V(3), "test");
-
-  // Check re-registration for topic B. Make sure the pending refresh from
-  // topic A gets cancelled.
-  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
-  StorePolicy(kTopicB);
-  EXPECT_TRUE(IsInvalidatorRegistered(kTopicB));
-  EXPECT_TRUE(InvalidationsEnabled());
-  EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-
-  // Make sure future invalidations for topic B are processed.
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-  inv = FireInvalidation(kTopicB, V(5), "test");
-  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
-  EXPECT_TRUE(CheckPolicyRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
 
 TEST_F(CloudPolicyInvalidatorTest, UnregisterOnStoreLoaded) {
-  // Register for topic A.
   StartInvalidator();
-  StorePolicy(kTopicA);
-  EXPECT_TRUE(IsInvalidatorRegistered(kTopicA));
+  StorePolicy();
   EXPECT_TRUE(InvalidationsEnabled());
-  FireInvalidation(kTopicA, V(1), "test");
+  FireInvalidation(V(1), "test");
   EXPECT_TRUE(CheckPolicyRefreshed());
 
-  // Check unregistration when store is loaded with no invalidation topic id.
-  invalidation::Invalidation inv = FireInvalidation(kTopicA, V(2), "test");
+  const invalidation::DirectInvalidation inv = FireInvalidation(V(2), "test");
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
-  StorePolicy(kNoTopic);
-  EXPECT_FALSE(IsInvalidatorRegistered());
-  EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_FALSE(InvalidationsEnabled());
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-
-  // Check re-registration for topic B.
-  StorePolicy(kTopicB);
-  EXPECT_TRUE(IsInvalidatorRegistered(kTopicB));
-  EXPECT_TRUE(InvalidationsEnabled());
-  FireInvalidation(kTopicB, V(5), "test");
+  StorePolicy();
+  EXPECT_TRUE(IsInvalidatorRegistered());
+  FireInvalidation(V(5), "test");
   EXPECT_TRUE(CheckPolicyRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
 
 TEST_F(CloudPolicyInvalidatorTest, HandleInvalidation) {
   // Register and fire invalidation
-  StorePolicy(kTopicA);
+  StorePolicy();
   StartInvalidator();
   EXPECT_TRUE(InvalidationsEnabled());
-  const invalidation::Invalidation inv =
-      FireInvalidation(kTopicA, V(12), "test_payload");
+  const invalidation::DirectInvalidation inv =
+      FireInvalidation(V(12), "test_payload");
 
   // Make sure client info is set as soon as the invalidation is received.
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
@@ -570,23 +642,41 @@ TEST_F(CloudPolicyInvalidatorTest, HandleInvalidation) {
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
-  StorePolicy(kTopicA, V(12));
+  StorePolicy(V(12));
+  EXPECT_TRUE(ClientInvalidationInfoIsUnset());
+  EXPECT_EQ(V(12), GetHighestHandledInvalidationVersion());
+}
+
+TEST_F(CloudPolicyInvalidatorTest, HandleInvalidationBeforePolicyLoaded) {
+  // Register and fire invalidation
+  StartInvalidator();
+  EXPECT_TRUE(InvalidationsEnabled());
+  const invalidation::DirectInvalidation inv =
+      FireInvalidation(V(12), "test_payload");
+
+  // Make sure client info is set as soon as the invalidation is received.
+  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
+  EXPECT_TRUE(CheckPolicyRefreshed());
+
+  // Make sure invalidation data is not removed from the client until the store
+  // is loaded.
+  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
+  EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
+  EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
+  StorePolicy(V(12));
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   EXPECT_EQ(V(12), GetHighestHandledInvalidationVersion());
 }
 
 TEST_F(CloudPolicyInvalidatorTest, HandleMultipleInvalidations) {
   // Generate multiple invalidations.
-  StorePolicy(kTopicA);
+  StorePolicy();
   StartInvalidator();
-  const invalidation::Invalidation inv1 =
-      FireInvalidation(kTopicA, V(1), "test1");
+  const invalidation::DirectInvalidation inv1 = FireInvalidation(V(1), "test1");
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv1));
-  const invalidation::Invalidation inv2 =
-      FireInvalidation(kTopicA, V(2), "test2");
+  const invalidation::DirectInvalidation inv2 = FireInvalidation(V(2), "test2");
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv2));
-  const invalidation::Invalidation inv3 =
-      FireInvalidation(kTopicA, V(3), "test3");
+  const invalidation::DirectInvalidation inv3 = FireInvalidation(V(3), "test3");
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
 
   // Make sure the policy is refreshed once.
@@ -595,63 +685,59 @@ TEST_F(CloudPolicyInvalidatorTest, HandleMultipleInvalidations) {
   // Make sure that the invalidation data is only removed from the client after
   // the store is loaded with the latest version.
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
-  StorePolicy(kTopicA, V(1));
+  StorePolicy(V(1));
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
   EXPECT_EQ(V(1), GetHighestHandledInvalidationVersion());
-  StorePolicy(kTopicA, V(2));
+  StorePolicy(V(2));
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
   EXPECT_EQ(V(2), GetHighestHandledInvalidationVersion());
-  StorePolicy(kTopicA, V(3));
+  StorePolicy(V(3));
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   EXPECT_EQ(V(3), GetHighestHandledInvalidationVersion());
 }
 
 TEST_F(CloudPolicyInvalidatorTest,
        InitialHighestHandledInvalidationVersionNonZero) {
-  StorePolicy(kTopicA);
-  StartInvalidator(true, /* initialize */
-                   true, /* start_refresh_scheduler */
-                   V(2)  /* highest_handled_invalidation_version*/);
+  StorePolicy();
+  StartInvalidator(/*initialize=*/true,
+                   /*start_refresh_scheduler=*/true,
+                   /*highest_handled_invalidation_version=*/V(2));
 
   // Check that an invalidation whose version is lower than the highest handled
   // so far is acknowledged but ignored otherwise.
-  const invalidation::Invalidation inv1 =
-      FireInvalidation(kTopicA, V(1), "test1");
+  const invalidation::DirectInvalidation inv1 = FireInvalidation(V(1), "test1");
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   EXPECT_EQ(V(2), GetHighestHandledInvalidationVersion());
 
   // Check that an invalidation whose version matches the highest handled so far
   // is acknowledged but ignored otherwise.
-  const invalidation::Invalidation inv2 =
-      FireInvalidation(kTopicA, V(2), "test2");
+  const invalidation::DirectInvalidation inv2 = FireInvalidation(V(2), "test2");
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   EXPECT_EQ(V(2), GetHighestHandledInvalidationVersion());
 
   // Check that an invalidation whose version is higher than the highest handled
   // so far is handled, causing a policy refresh.
-  const invalidation::Invalidation inv3 =
-      FireInvalidation(kTopicA, V(3), "test3");
+  const invalidation::DirectInvalidation inv3 = FireInvalidation(V(3), "test3");
   EXPECT_TRUE(CheckPolicyRefreshed());
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
-  StorePolicy(kTopicA, V(3));
+  StorePolicy(V(3));
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   EXPECT_EQ(V(3), GetHighestHandledInvalidationVersion());
 }
 
 TEST_F(CloudPolicyInvalidatorTest, StoreLoadedBeforeRefresh) {
   // Generate an invalidation.
-  StorePolicy(kTopicA);
+  StorePolicy();
   StartInvalidator();
-  const invalidation::Invalidation inv =
-      FireInvalidation(kTopicA, V(3), "test");
+  const invalidation::DirectInvalidation inv = FireInvalidation(V(3), "test");
 
   // Ensure that the policy is not refreshed and the invalidation is
   // data is removed from the client if the store is loaded with the latest
   // version before the refresh can occur.
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
-  StorePolicy(kTopicA, V(3));
+  StorePolicy(V(3));
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(V(3), GetHighestHandledInvalidationVersion());
@@ -659,9 +745,9 @@ TEST_F(CloudPolicyInvalidatorTest, StoreLoadedBeforeRefresh) {
 
 TEST_F(CloudPolicyInvalidatorTest, NoCallbackAfterShutdown) {
   // Generate an invalidation.
-  StorePolicy(kTopicA);
+  StorePolicy();
   StartInvalidator();
-  invalidation::Invalidation inv = FireInvalidation(kTopicA, V(3), "test");
+  const invalidation::DirectInvalidation inv = FireInvalidation(V(3), "test");
 
   // Ensure that the policy refresh is not made after the invalidator is shut
   // down.
@@ -674,77 +760,23 @@ TEST_F(CloudPolicyInvalidatorTest, NoCallbackAfterShutdown) {
 TEST_F(CloudPolicyInvalidatorTest, StateChanged) {
   // Test invalidation service state changes while not registered.
   StartInvalidator();
-  DisableInvalidationService();
-  EnableInvalidationService();
+  DisableInvalidationListener();
+  EnableInvalidationListener();
   EXPECT_FALSE(InvalidationsEnabled());
-
   // Test invalidation service state changes while registered.
-  StorePolicy(kTopicA);
-  EXPECT_TRUE(InvalidationsEnabled());
-  DisableInvalidationService();
-  EXPECT_FALSE(InvalidationsEnabled());
-  DisableInvalidationService();
-  EXPECT_FALSE(InvalidationsEnabled());
-  EnableInvalidationService();
-  EXPECT_TRUE(InvalidationsEnabled());
-  EnableInvalidationService();
+  StartInvalidationListener();
+  StorePolicy();
   EXPECT_TRUE(InvalidationsEnabled());
 
-  // Test registration changes with invalidation service enabled.
-  StorePolicy(kNoTopic);
+  DisableInvalidationListener();
   EXPECT_FALSE(InvalidationsEnabled());
-  StorePolicy(kNoTopic);
+
+  DisableInvalidationListener();
   EXPECT_FALSE(InvalidationsEnabled());
-  StorePolicy(kTopicA);
+  EnableInvalidationListener();
   EXPECT_TRUE(InvalidationsEnabled());
-  StorePolicy(kTopicA);
+  EnableInvalidationListener();
   EXPECT_TRUE(InvalidationsEnabled());
-
-  // Test registration changes with invalidation service disabled.
-  DisableInvalidationService();
-  EXPECT_FALSE(InvalidationsEnabled());
-  StorePolicy(kNoTopic);
-  StorePolicy(kTopicA);
-  EXPECT_FALSE(InvalidationsEnabled());
-  EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
-}
-
-TEST_F(CloudPolicyInvalidatorTest, Disconnect) {
-  // Generate an invalidation.
-  StorePolicy(kTopicA);
-  StartInvalidator();
-  const invalidation::Invalidation inv =
-      FireInvalidation(kTopicA, V(1), "test");
-  EXPECT_TRUE(InvalidationsEnabled());
-
-  // Ensure that the policy is not refreshed after disconnecting the core, but
-  // a call to indicate that invalidations are disabled is made.
-  DisconnectCore();
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-
-  // Ensure that invalidation service events do not cause refreshes while the
-  // invalidator is stopped.
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-  DisableInvalidationService();
-  EnableInvalidationService();
-
-  // Connect and disconnect without starting the refresh scheduler.
-  ConnectCore();
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-  DisconnectCore();
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-
-  // Ensure that the invalidator returns to normal after reconnecting.
-  ConnectCore();
-  StartRefreshScheduler();
-  EXPECT_TRUE(CheckPolicyNotRefreshed());
-  EXPECT_TRUE(InvalidationsEnabled());
-  const invalidation::Invalidation inv5 =
-      FireInvalidation(kTopicA, V(5), "test");
-  EXPECT_TRUE(ClientInvalidationInfoMatches(inv5));
-  EXPECT_TRUE(CheckPolicyRefreshed());
-  DisableInvalidationService();
-  EXPECT_FALSE(InvalidationsEnabled());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
 
@@ -758,33 +790,41 @@ class CloudPolicyInvalidatorOwnerNameTest
   PolicyInvalidationScope scope_;
 };
 
-TEST_F(CloudPolicyInvalidatorOwnerNameTest, GetOwnerNameForUserScope) {
+TEST_F(CloudPolicyInvalidatorOwnerNameTest, GetTypeForUserScope) {
   scope_ = PolicyInvalidationScope::kUser;
-  StartInvalidator(false, /* initialize */
-                   false, /* start_refresh_scheduler */
-                   0 /* highest_handled_invalidation_version*/);
+  StartInvalidator(/*initialize=*/false,
+                   /*start_refresh_scheduler=*/false,
+                   /*highest_handled_invalidation_version=*/0);
   ASSERT_TRUE(invalidator());
-  EXPECT_EQ("CloudPolicy.User", invalidator()->GetOwnerName());
+  EXPECT_EQ("USER_POLICY_FETCH", invalidator()->GetType());
 }
 
-TEST_F(CloudPolicyInvalidatorOwnerNameTest, GetOwnerNameForDeviceScope) {
+TEST_F(CloudPolicyInvalidatorOwnerNameTest, GetTypeForDeviceScope) {
   scope_ = PolicyInvalidationScope::kDevice;
-  StartInvalidator(false, /* initialize */
-                   false, /* start_refresh_scheduler */
-                   0 /* highest_handled_invalidation_version*/);
+  StartInvalidator(/*initialize=*/false,
+                   /*start_refresh_scheduler=*/false,
+                   /*highest_handled_invalidation_version=*/0);
   ASSERT_TRUE(invalidator());
-  EXPECT_EQ("CloudPolicy.Device", invalidator()->GetOwnerName());
+  EXPECT_EQ("DEVICE_POLICY_FETCH", invalidator()->GetType());
 }
 
-TEST_F(CloudPolicyInvalidatorOwnerNameTest,
-       GetOwnerNameForDeviceLocalAccountScope) {
+TEST_F(CloudPolicyInvalidatorOwnerNameTest, GetTypeForDeviceLocalAccountScope) {
   scope_ = PolicyInvalidationScope::kDeviceLocalAccount;
-  StartInvalidator(false, /* initialize */
-                   false, /* start_refresh_scheduler */
-                   0 /* highest_handled_invalidation_version*/);
+  StartInvalidator(/*initialize=*/false,
+                   /*start_refresh_scheduler=*/false,
+                   /*highest_handled_invalidation_version=*/0);
   ASSERT_TRUE(invalidator());
-  EXPECT_EQ("CloudPolicy.DeviceLocalAccount.test_account",
-            invalidator()->GetOwnerName());
+  EXPECT_EQ("PUBLIC_ACCOUNT_POLICY_FETCH-test_account",
+            invalidator()->GetType());
+}
+
+TEST_F(CloudPolicyInvalidatorOwnerNameTest, GetTypeForCbcmScope) {
+  scope_ = PolicyInvalidationScope::kCBCM;
+  StartInvalidator(/*initialize=*/false,
+                   /*start_refresh_scheduler=*/false,
+                   /*highest_handled_invalidation_version=*/0);
+  ASSERT_TRUE(invalidator());
+  EXPECT_EQ("BROWSER_POLICY_FETCH", invalidator()->GetType());
 }
 
 class CloudPolicyInvalidatorUserTypedTest
@@ -800,7 +840,8 @@ class CloudPolicyInvalidatorUserTypedTest
   CloudPolicyInvalidatorUserTypedTest() = default;
 
   base::HistogramBase::Count32 GetCount(MetricPolicyRefresh metric);
-  base::HistogramBase::Count32 GetInvalidationCount(PolicyInvalidationType type);
+  base::HistogramBase::Count32 GetInvalidationCount(
+      PolicyInvalidationType type);
 
  private:
   // CloudPolicyInvalidatorTest:
@@ -835,10 +876,10 @@ CloudPolicyInvalidatorUserTypedTest::GetPolicyInvalidationScope() const {
 TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsUnregistered) {
   // Store loads occurring before invalidation registration are not counted.
   StartInvalidator();
-  StorePolicy(kNoTopic, 0, false /* policy_changed */);
-  StorePolicy(kNoTopic, 0, true /* policy_changed */);
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_CHANGED));
-  EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
+  EXPECT_EQ(2, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_UNCHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
@@ -849,47 +890,47 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsUnregistered) {
 TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsNoInvalidations) {
   // Store loads occurring while registered should be differentiated depending
   // on whether the invalidation service was enabled or not.
-  StorePolicy(kTopicA);
+  StorePolicy();
   StartInvalidator();
 
   // Initially, invalidations have not been enabled past the grace period, so
   // invalidations are OFF.
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
   EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // If the clock advances less than the grace period, invalidations are OFF.
   AdvanceClock(base::Seconds(1));
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
   EXPECT_EQ(2, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // After the grace period elapses, invalidations are ON.
   AdvanceClock(base::Seconds(CloudPolicyInvalidator::kInvalidationGracePeriod));
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
   EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_CHANGED));
 
   // After the invalidation service is disabled, invalidations are OFF.
-  DisableInvalidationService();
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
+  DisableInvalidationListener();
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
   EXPECT_EQ(3, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // Enabling the invalidation service results in a new grace period, so
   // invalidations are OFF.
-  EnableInvalidationService();
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
+  EnableInvalidationListener();
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
   EXPECT_EQ(4, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
 
   // After the grace period elapses, invalidations are ON.
   AdvanceClock(base::Seconds(CloudPolicyInvalidator::kInvalidationGracePeriod));
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
 
-  EXPECT_EQ(2, GetCount(METRIC_POLICY_REFRESH_CHANGED));
-  EXPECT_EQ(4, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
+  EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_CHANGED));
+  EXPECT_EQ(5, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
   EXPECT_EQ(6, GetCount(METRIC_POLICY_REFRESH_UNCHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
@@ -900,27 +941,27 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsNoInvalidations) {
 TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsInvalidation) {
   // Store loads after an invalidation are not counted as invalidated.
   StartInvalidator();
-  StorePolicy(kTopicA);
+  StorePolicy();
   AdvanceClock(base::Seconds(CloudPolicyInvalidator::kInvalidationGracePeriod));
-  FireInvalidation(kTopicA, V(5), "test");
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
+  FireInvalidation(V(5), "test");
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
-  StorePolicy(kTopicA, V(5), true /* policy_changed */);
+  StorePolicy(V(5), true /* policy_changed */);
   EXPECT_EQ(V(5), GetHighestHandledInvalidationVersion());
 
   // Store loads after the invalidation is complete are not counted as
   // invalidated.
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
-  StorePolicy(kTopicA, 0, true /* policy_changed */);
-  StorePolicy(kTopicA, 0, false /* policy_changed */);
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
+  StorePolicy(0, /*policy_changed=*/false);
+  StorePolicy(0, /*policy_changed=*/true);
+  StorePolicy(0, /*policy_changed=*/false);
 
   EXPECT_EQ(4, GetCount(METRIC_POLICY_REFRESH_CHANGED));
-  EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
+  EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS));
   EXPECT_EQ(5, GetCount(METRIC_POLICY_REFRESH_UNCHANGED));
   EXPECT_EQ(1, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_CHANGED));
   EXPECT_EQ(0, GetCount(METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED));
@@ -929,45 +970,45 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, RefreshMetricsInvalidation) {
 }
 
 TEST_P(CloudPolicyInvalidatorUserTypedTest, ExpiredInvalidations) {
-  StorePolicy(kTopicA, 0, false, Now());
+  StorePolicy(0, false, Now());
   StartInvalidator();
 
   // Invalidations fired before the last fetch time (adjusted by max time delta)
   // should be ignored (and count as expired).
   base::Time time = Now() - (invalidation_timeouts::kMaxInvalidationTimeDelta +
                              base::Seconds(300));
-  invalidation::Invalidation inv =
-      FireInvalidation(kTopicA, GetVersion(time), "test");
+  invalidation::DirectInvalidation inv =
+      FireInvalidation(GetVersion(time), "test");
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   ASSERT_TRUE(CheckPolicyNotRefreshed());
 
-  inv = FireInvalidation(kTopicA, GetVersion(time), "");  // no payload
+  inv = FireInvalidation(GetVersion(time), "");  // no payload
   ASSERT_TRUE(CheckPolicyNotRefreshed());
 
   time += base::Minutes(5) - base::Seconds(1);
-  inv = FireInvalidation(kTopicA, GetVersion(time), "test");
+  inv = FireInvalidation(GetVersion(time), "test");
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   ASSERT_TRUE(CheckPolicyNotRefreshed());
 
   // Invalidations fired after the last fetch should not be ignored.
   time += base::Seconds(1);
-  inv = FireInvalidation(kTopicA, GetVersion(time), "");  // no payload
+  inv = FireInvalidation(GetVersion(time), "");  // no payload
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   ASSERT_TRUE(CheckPolicyRefreshed(
       base::Minutes(CloudPolicyInvalidator::kMissingPayloadDelay)));
 
   time += base::Minutes(10);
-  inv = FireInvalidation(kTopicA, GetVersion(time), "test");
+  inv = FireInvalidation(GetVersion(time), "test");
   ASSERT_TRUE(ClientInvalidationInfoMatches(inv));
   ASSERT_TRUE(CheckPolicyRefreshed());
 
   time += base::Minutes(10);
-  inv = FireInvalidation(kTopicA, GetVersion(time), "test");
+  inv = FireInvalidation(GetVersion(time), "test");
   ASSERT_TRUE(ClientInvalidationInfoMatches(inv));
   ASSERT_TRUE(CheckPolicyRefreshed());
 
   time += base::Minutes(10);
-  inv = FireInvalidation(kTopicA, GetVersion(time), "test");
+  inv = FireInvalidation(GetVersion(time), "test");
   ASSERT_TRUE(ClientInvalidationInfoMatches(inv));
   ASSERT_TRUE(CheckPolicyRefreshed());
 

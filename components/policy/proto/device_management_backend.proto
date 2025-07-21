@@ -828,6 +828,8 @@ message PolicyData {
 
   // Invalidation topic for devices. Clients register for FCM messages using
   // this topic in order to receive notifications for device policy changes.
+  // TODO(crbug.com/341377023): Deprecate once no clients use topic
+  // invalidations.
   optional string policy_invalidation_topic = 26;
 
   // Invalidation topic for commands. Clients register for FCM messages using
