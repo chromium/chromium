@@ -312,6 +312,10 @@ test("google_apis_unittests") {
       "//google_apis/youtube_music:youtube_music_unittests",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 bundle_data("google_apis_unittest_bundle_data") {
