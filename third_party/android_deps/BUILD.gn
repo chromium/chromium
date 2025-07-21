@@ -18,7 +18,7 @@ if (!limit_android_deps) {
     proguard_configs = [ "//third_party/androidx/espresso_proguard.flags" ]
 
     deps = [
-      "//third_party/accessibility_test_framework:accessibility_core_java",
+      ":com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java",
       "//third_party/androidx:androidx_test_espresso_espresso_contrib_java",
       "//third_party/androidx:androidx_test_espresso_espresso_core_java",
       "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java",

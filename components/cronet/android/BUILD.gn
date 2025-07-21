@@ -1530,7 +1530,7 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
 
            # This is used by base_test utility classes, proguard complains about missing classes
            # but in reality, we don't even use those classes at all.
-           "//third_party/accessibility_test_framework:accessibility_core_java",
+           "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java",
 
            # This is used by base_test utility classes, proguard complains about missing classes
            # but in reality, we don't even use those classes at all.

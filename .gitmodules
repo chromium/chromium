@@ -117,9 +117,6 @@
 [submodule "testing/libfuzzer/fuzzers/wasm_corpus"]
 	path = testing/libfuzzer/fuzzers/wasm_corpus
 	url = https://chromium.googlesource.com/v8/fuzzer_wasm_corpus
-[submodule "third_party/accessibility_test_framework/src"]
-	path = third_party/accessibility_test_framework/src
-	url = https://chromium.googlesource.com/external/github.com/google/Accessibility-Test-Framework-for-Android
 [submodule "third_party/androidx_javascriptengine/src"]
 	path = third_party/androidx_javascriptengine/src
 	url = https://chromium.googlesource.com/aosp/platform/frameworks/support/javascriptengine/javascriptengine/src

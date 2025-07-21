@@ -550,9 +550,7 @@ _builtin_deps = {
     add_androidx_test_runner_java_deps,
     '//third_party/android_sdk:android_test_base_java':
     add_android_test_base_java_deps,
-    '//third_party/accessibility_test_framework:accessibility_test_framework_java':
-    add_accessibility_test_framework_java_deps,
-    '//third_party/accessibility_test_framework:accessibility_core_java':
+    '//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java':
     add_accessibility_test_framework_java_deps,
     '//third_party/android_deps:espresso_java':
     add_espresso_java_deps,
