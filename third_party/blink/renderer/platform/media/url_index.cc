@@ -67,7 +67,6 @@ UrlData::UrlData(const KURL& url,
                  CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : url_(url),
-      have_data_origin_(false),
       cors_mode_(cors_mode),
       has_access_control_(false),
       url_index_(url_index),
@@ -93,7 +92,7 @@ void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   // We're merging from another UrlData that refers to the *same*
   // resource, so when we merge the metadata, we can use the most
   // optimistic values.
-  if (ValidateDataOrigin(other->data_origin_)) {
+  if (ValidateDataOrigin(other->data_origin_.value_or(KURL()))) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     valid_until_ = std::max(valid_until_, other->valid_until_);
     // set_length() will not override the length if already known.
@@ -176,19 +175,21 @@ void UrlData::Use() {
 }
 
 bool UrlData::ValidateDataOrigin(const KURL& origin) {
-  if (!have_data_origin_) {
+  if (!data_origin_) {
     data_origin_ = origin;
-    have_data_origin_ = true;
     return true;
   }
+
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
     // If both origins are null return true, otherwise
     // SecurityOrigin::AreSameOrigin will create a unique nonce for each.
-    if (data_origin_.IsNull() && origin.IsNull()) {
+    if (data_origin_->IsNull() && origin.IsNull()) {
       return true;
     }
-    return SecurityOrigin::SecurityOrigin::AreSameOrigin(data_origin_, origin);
+    return SecurityOrigin::SecurityOrigin::AreSameOrigin(data_origin_.value(),
+                                                         origin);
   }
+
   // The actual cors checks is done in the net layer.
   return true;
 }

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -212,8 +213,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
 
   // Origin of the data, should only be different from the
   // url_.DeprecatedGetOriginAsURL() when service workers are involved.
-  KURL data_origin_;
-  bool have_data_origin_;
+  std::optional<KURL> data_origin_;
 
   // Cross-origin access mode.
   const CorsMode cors_mode_;
