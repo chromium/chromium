@@ -381,7 +381,7 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
 const base::FeatureParam<base::TimeDelta>
     kGlicActorPageStabilityInvokeCallbackDelay{
         &kGlicActor, "glic-actor-page-stability-invoke-callback-delay",
-        base::Milliseconds(200)};
+        base::Milliseconds(0)};
 
 // Controls whether typing happens incrementally.
 BASE_FEATURE(kGlicActorIncrementalTyping,
