@@ -22,9 +22,39 @@
 
 namespace {
 
+// Utility macro to implicitly sign in the user in a PRE test.
+// NOTE: `test_suite` must be a subclass of `DiceMigrationServiceBrowserTest`.
+#define DICE_MIGRATION_TEST_F(test_suite, test_name)    \
+  IN_PROC_BROWSER_TEST_F(test_suite, PRE_##test_name) { \
+    ASSERT_TRUE(SetupClients());                        \
+    ImplicitlySignIn();                                 \
+  }                                                     \
+  IN_PROC_BROWSER_TEST_F(test_suite, test_name)
+
+bool ContainsViewWithId(const views::View* view, ui::ElementIdentifier id) {
+  for (const views::View* child : view->children()) {
+    if (child->GetVisible() &&
+        (child->GetProperty(views::kElementIdentifierKey) == id ||
+         // Recurse into the child.
+         ContainsViewWithId(child, id))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 class DiceMigrationServiceBrowserTest : public SyncTest {
  public:
   DiceMigrationServiceBrowserTest() : SyncTest(SINGLE_CLIENT) {}
+
+  void ImplicitlySignIn() {
+    signin::MakeAccountAvailable(
+        GetIdentityManager(),
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+            .Build(GetAccountEmail()));
+  }
 
   DiceMigrationService* GetDiceMigrationService() {
     DiceMigrationService* service =
@@ -53,26 +83,38 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, NotSignedIn) {
   ASSERT_FALSE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-  EXPECT_FALSE(GetDiceMigrationService()->IsDialogShowing());
+  // The timer to trigger the dialog is not started.
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, PRE_Syncing) {
+  ASSERT_TRUE(SetupSync());
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, Syncing) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupClients());
 
   // The user is syncing.
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-  EXPECT_FALSE(GetDiceMigrationService()->IsDialogShowing());
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ExplicitlySignedIn) {
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       PRE_ExplicitlySignedIn) {
   ASSERT_TRUE(SetupClients());
 
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), GetAccountEmail(),
                                       signin::ConsentLevel::kSignin);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ExplicitlySignedIn) {
+  ASSERT_TRUE(SetupClients());
 
   // The user is explicitly signed in.
   ASSERT_TRUE(
@@ -80,11 +122,13 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ExplicitlySignedIn) {
   ASSERT_FALSE(signin::IsImplicitBrowserSigninOrExplicitDisabled(
       GetIdentityManager(), preferences_helper::GetPrefs(0)));
 
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-  EXPECT_FALSE(GetDiceMigrationService()->IsDialogShowing());
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ImplicitlySignedIn) {
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       PRE_ImplicitlySignedIn) {
   ASSERT_TRUE(SetupClients());
 
   signin::MakeAccountAvailable(
@@ -94,6 +138,10 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ImplicitlySignedIn) {
           // `kWebSignin` is not explicit signin.
           .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(GetAccountEmail()));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ImplicitlySignedIn) {
+  ASSERT_TRUE(SetupClients());
 
   // The user is implicitly signed in.
   ASSERT_TRUE(
@@ -101,11 +149,16 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ImplicitlySignedIn) {
   ASSERT_TRUE(signin::IsImplicitBrowserSigninOrExplicitDisabled(
       GetIdentityManager(), preferences_helper::GetPrefs(0)));
 
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-  EXPECT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+  EXPECT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  // Trigger the timer.
+  GetDiceMigrationService()->GetDialogTriggerTimerForTesting().FireNow();
+  EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
   constexpr syncer::UserSelectableTypeSet new_selected_types = {
       syncer::UserSelectableType::kPreferences,
       syncer::UserSelectableType::kThemes,
@@ -115,19 +168,12 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
 
   ASSERT_TRUE(SetupClients());
 
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          // `kWebSignin` is not explicit signin.
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(GetAccountEmail()));
-
   // The user is implicitly signed in.
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
       prefs::kExplicitBrowserSignin));
+
   // These types are only enabled upon explicitly signing in.
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().HasAny(
       new_selected_types));
@@ -139,7 +185,10 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
   }));
 
   // Show migration bubble.
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+  base::OneShotTimer& timer =
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
+  ASSERT_TRUE(timer.IsRunning());
+  timer.FireNow();
 
   views::Widget* dialog_widget =
       GetDiceMigrationService()->GetDialogWidgetForTesting();
@@ -164,17 +213,9 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
       << GetSyncService(0)->GetActiveDataTypes();
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
-                       ShouldNotMigrateUserIfIneligible) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      ShouldNotMigrateUserIfIneligible) {
   ASSERT_TRUE(SetupClients());
-
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          // `kWebSignin` is not explicit signin.
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(GetAccountEmail()));
 
   // The user is implicitly signed in.
   ASSERT_TRUE(
@@ -183,14 +224,18 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
       prefs::kExplicitBrowserSignin));
 
   // Show the migration bubble.
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-
-  // Turn sync on.
-  ASSERT_TRUE(SetupSync());
+  base::OneShotTimer& timer =
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
+  ASSERT_TRUE(timer.IsRunning());
+  timer.FireNow();
 
   views::Widget* dialog_widget =
       GetDiceMigrationService()->GetDialogWidgetForTesting();
   ASSERT_TRUE(dialog_widget);
+
+  // Turn sync on.
+  ASSERT_TRUE(SetupSync());
+
   views::test::WidgetDestroyedWaiter waiter(dialog_widget);
   // Simulate clicking on the accept button.
   dialog_widget->CloseWithReason(
@@ -204,17 +249,9 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
             false);
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
-                       PRE_IncrementDialogShownCount) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      IncrementDialogShownCount) {
   ASSERT_TRUE(SetupClients());
-
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          // `kWebSignin` is not explicit signin.
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(GetAccountEmail()));
 
   // The user is implicitly signed in.
   ASSERT_TRUE(
@@ -222,31 +259,16 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
   ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
       prefs::kExplicitBrowserSignin));
 
-  // Show the migration bubble.
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-
-  // The dialog shown count is incremented.
-  EXPECT_EQ(preferences_helper::GetPrefs(0)->GetInteger(
-                kDiceMigrationDialogShownCount),
-            1);
-}
-
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
-                       IncrementDialogShownCount) {
-  ASSERT_TRUE(SetupClients());
-
-  ASSERT_EQ(preferences_helper::GetPrefs(0)->GetInteger(
-                kDiceMigrationDialogShownCount),
-            1);
-
-  // The user is implicitly signed in.
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
-      prefs::kExplicitBrowserSignin));
+  // Set the current dialog shown count to 1.
+  preferences_helper::GetPrefs(0)->SetInteger(kDiceMigrationDialogShownCount,
+                                              1);
 
   // Show the migration bubble.
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+  base::OneShotTimer& timer =
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
+  ASSERT_TRUE(timer.IsRunning());
+  timer.FireNow();
+  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
   // The dialog shown count is incremented.
   EXPECT_EQ(preferences_helper::GetPrefs(0)->GetInteger(
@@ -254,7 +276,18 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
             2);
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, LimitDialogShownCount) {
+class DiceMigrationServiceBrowserTestWithParameterizedDialogShownCount
+    : public DiceMigrationServiceBrowserTest,
+      public testing::WithParamInterface<int> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DiceMigrationServiceBrowserTestWithParameterizedDialogShownCount,
+    testing::Range(0, DiceMigrationService::kMaxDialogShownCount + 1));
+
+IN_PROC_BROWSER_TEST_P(
+    DiceMigrationServiceBrowserTestWithParameterizedDialogShownCount,
+    PRE_LimitDialogShownCount) {
   ASSERT_TRUE(SetupClients());
 
   signin::MakeAccountAvailable(
@@ -264,6 +297,14 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, LimitDialogShownCount) {
           // `kWebSignin` is not explicit signin.
           .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(GetAccountEmail()));
+  preferences_helper::GetPrefs(0)->SetInteger(kDiceMigrationDialogShownCount,
+                                              GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DiceMigrationServiceBrowserTestWithParameterizedDialogShownCount,
+    LimitDialogShownCount) {
+  ASSERT_TRUE(SetupClients());
 
   // The user is implicitly signed in.
   ASSERT_TRUE(
@@ -271,29 +312,21 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, LimitDialogShownCount) {
   ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
       prefs::kExplicitBrowserSignin));
 
-  // Migration dialog is shown `DiceMigrationService::kMaxDialogShownCount`
-  // times.
-  for (int i = 0; i < DiceMigrationService::kMaxDialogShownCount; ++i) {
-    // Show the migration bubble.
-    GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-    ASSERT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+  ASSERT_EQ(preferences_helper::GetPrefs(0)->GetInteger(
+                kDiceMigrationDialogShownCount),
+            GetParam());
 
-    // Dismiss the dialog.
-    views::Widget* dialog_widget =
-        GetDiceMigrationService()->GetDialogWidgetForTesting();
-    ASSERT_TRUE(dialog_widget);
-    views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-    dialog_widget->CloseWithReason(
-        views::Widget::ClosedReason::kCloseButtonClicked);
-    waiter.Wait();
-  }
-
-  // Migration dialog is not shown anymore.
-  GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-  EXPECT_FALSE(GetDiceMigrationService()->IsDialogShowing());
+  // The timer is started only if the preconditions are met, i.e. the dialog
+  // shown count is below the limit.
+  EXPECT_EQ(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning(),
+      GetParam() < DiceMigrationService::kMaxDialogShownCount);
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, FinalDialogVariant) {
+IN_PROC_BROWSER_TEST_P(
+    DiceMigrationServiceBrowserTestWithParameterizedDialogShownCount,
+    PRE_DialogVariants) {
   ASSERT_TRUE(SetupClients());
 
   signin::MakeAccountAvailable(
@@ -303,64 +336,13 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, FinalDialogVariant) {
           // `kWebSignin` is not explicit signin.
           .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(GetAccountEmail()));
-
-  // The user is implicitly signed in.
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
-      prefs::kExplicitBrowserSignin));
-
-  // Returns true if the widget or any of its children has the close button.
-  auto contains_close_button = [&](views::Widget* widget) {
-    auto search = [&](const auto& self, const views::View* view) -> bool {
-      for (const views::View* child : view->children()) {
-        if (child->GetProperty(views::kElementIdentifierKey) ==
-                DiceMigrationService::kCancelButtonElementId ||
-            // Recurse into the child.
-            self(self, child)) {
-          return true;
-        }
-      }
-      return false;
-    };
-    return search(search, widget->GetRootView());
-  };
-
-  for (int i = 0; i < DiceMigrationService::kMaxDialogShownCount; ++i) {
-    // Show the migration bubble.
-    GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
-    ASSERT_TRUE(GetDiceMigrationService()->IsDialogShowing());
-
-    views::Widget* dialog_widget =
-        GetDiceMigrationService()->GetDialogWidgetForTesting();
-    ASSERT_TRUE(dialog_widget);
-    EXPECT_EQ(contains_close_button(dialog_widget),
-              i != DiceMigrationService::kMaxDialogShownCount - 1);
-
-    // Dismiss the dialog.
-    views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-    dialog_widget->CloseWithReason(
-        views::Widget::ClosedReason::kCloseButtonClicked);
-    waiter.Wait();
-  }
+  preferences_helper::GetPrefs(0)->SetInteger(kDiceMigrationDialogShownCount,
+                                              GetParam());
 }
 
-// Account setup is done in the PRE test because the timer is started right upon
-// profile creation when the service is created.
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, PRE_StartTimer) {
-  ASSERT_TRUE(SetupClients());
-
-  // Implicitly sign in.
-  signin::MakeAccountAvailable(
-      GetIdentityManager(),
-      signin::AccountAvailabilityOptionsBuilder()
-          .AsPrimary(signin::ConsentLevel::kSignin)
-          // `kWebSignin` is not explicit signin.
-          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-          .Build(GetAccountEmail()));
-}
-
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, StartTimer) {
+IN_PROC_BROWSER_TEST_P(
+    DiceMigrationServiceBrowserTestWithParameterizedDialogShownCount,
+    DialogVariants) {
   ASSERT_TRUE(SetupClients());
 
   // The user is implicitly signed in.
@@ -369,35 +351,49 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, StartTimer) {
   ASSERT_FALSE(preferences_helper::GetPrefs(0)->GetBoolean(
       prefs::kExplicitBrowserSignin));
 
+  ASSERT_EQ(preferences_helper::GetPrefs(0)->GetInteger(
+                kDiceMigrationDialogShownCount),
+            GetParam());
+
+  // Show the migration bubble.
   base::OneShotTimer& timer =
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
-  ASSERT_FALSE(GetDiceMigrationService()->IsDialogShowing());
-  EXPECT_TRUE(timer.IsRunning());
 
-  // Simulate the timer firing.
+  // Skip this test for `kMaxDialogShownCount` since no dialog is shown in this
+  // case.
+  if (GetParam() == DiceMigrationService::kMaxDialogShownCount) {
+    ASSERT_FALSE(timer.IsRunning());
+    return;
+  }
+
+  ASSERT_TRUE(timer.IsRunning());
   timer.FireNow();
-  EXPECT_TRUE(GetDiceMigrationService()->IsDialogShowing());
-}
 
-// Account setup is done in the PRE test because the timer is started right upon
-// profile creation when the service is created.
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
-                       PRE_ShouldNotStartTimerIfIneligible) {
-  // Turn sync on.
-  ASSERT_TRUE(SetupSync());
-}
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
-                       ShouldNotStartTimerIfIneligible) {
-  ASSERT_TRUE(SetupClients());
-  // The user is syncing.
-  ASSERT_TRUE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  // Both the variants have the accept button.
+  ASSERT_TRUE(ContainsViewWithId(dialog_widget->GetContentsView(),
+                                 DiceMigrationService::kAcceptButtonElementId));
 
-  // Syncing user is not eligible, thus the timer was not started.
-  EXPECT_FALSE(
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
-  ASSERT_FALSE(GetDiceMigrationService()->IsDialogShowing());
+  if (GetParam() < DiceMigrationService::kMaxDialogShownCount - 1) {
+    // Non-"final" variant has the cancel button but not the close-x button.
+    EXPECT_TRUE(
+        ContainsViewWithId(dialog_widget->GetRootView(),
+                           DiceMigrationService::kCancelButtonElementId));
+    EXPECT_FALSE(
+        ContainsViewWithId(dialog_widget->GetRootView(),
+                           views::BubbleFrameView::kCloseButtonElementId));
+  } else {
+    // "Final" variant has the close-x button but not the cancel button.
+    EXPECT_FALSE(
+        ContainsViewWithId(dialog_widget->GetRootView(),
+                           DiceMigrationService::kCancelButtonElementId));
+    EXPECT_TRUE(
+        ContainsViewWithId(dialog_widget->GetRootView(),
+                           views::BubbleFrameView::kCloseButtonElementId));
+  }
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "content/public/test/browser_test.h"
@@ -21,28 +22,37 @@ constexpr char kScreenshotBaselineCL[] = "6727956";
 const gfx::Image kAccountImage = gfx::test::CreateImage(20, 20, SK_ColorYELLOW);
 const char kAccountImageUrl[] = "ACCOUNT_IMAGE_URL";
 
-class DiceMigrationServicePixelBrowserTest
-    : public SigninBrowserTestBaseT<InteractiveBrowserTest> {
- public:
-  void SetUpOnMainThread() override {
-    SigninBrowserTestBaseT<InteractiveBrowserTest>::SetUpOnMainThread();
-    // Implicitly sign in.
-    AccountInfo account_info = signin::MakeAccountAvailable(
-        identity_manager(),
-        signin::AccountAvailabilityOptionsBuilder()
-            .AsPrimary(signin::ConsentLevel::kSignin)
-            // `kWebSignin` is not explicit signin.
-            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-            .Build(kTestEmail));
-  }
+// Utility macro to implicitly sign in the user in a PRE test.
+// NOTE: `test_suite` must be a subclass of
+// `DiceMigrationServicePixelBrowserTest`.
+#define DICE_MIGRATION_TEST_F(test_suite, test_name)    \
+  IN_PROC_BROWSER_TEST_F(test_suite, PRE_##test_name) { \
+    ImplicitlySignIn();                                 \
+  }                                                     \
+  IN_PROC_BROWSER_TEST_F(test_suite, test_name)
 
+class DiceMigrationServicePixelBrowserTest : public InteractiveBrowserTest {
+ public:
   DiceMigrationService* GetDiceMigrationService() {
     return DiceMigrationServiceFactory::GetForProfile(GetProfile());
   }
 
+  signin::IdentityManager* GetIdentityManager() {
+    return IdentityManagerFactory::GetForProfile(GetProfile());
+  }
+
+  void ImplicitlySignIn() {
+    signin::MakeAccountAvailable(
+        GetIdentityManager(),
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+            .Build(kTestEmail));
+  }
+
   auto TriggerDialog() {
     return Do([&]() {
-      GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().FireNow();
     });
   }
 
@@ -52,7 +62,13 @@ class DiceMigrationServicePixelBrowserTest
 };
 
 // This dialog is shown during all but the final time the migration is offered.
-IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, DialogView) {
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, DialogView) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(
       TriggerDialog(),
 
@@ -68,12 +84,18 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, DialogView) {
                         /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
-                       DialogViewWithAccountImage) {
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest,
+                      DialogViewWithAccountImage) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   // Set a custom account image.
   signin::SimulateAccountImageFetch(
-      identity_manager(),
-      identity_manager()
+      GetIdentityManager(),
+      GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .account_id,
       kAccountImageUrl, kAccountImage);
@@ -95,8 +117,14 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
 }
 
 // This dialog is shown only during the final time the migration is offered.
-IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
-                       DialogViewFinalVariant) {
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest,
+                      DialogViewFinalVariant) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   // Set the dialog shown count to the max - 1 to show the final variant.
   GetProfile()->GetPrefs()->SetInteger(
       kDiceMigrationDialogShownCount,
@@ -117,7 +145,13 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest,
                       /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {
+DICE_MIGRATION_TEST_F(DiceMigrationServicePixelBrowserTest, Toast) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(TriggerDialog(),
 
                   SetOnIncompatibleAction(

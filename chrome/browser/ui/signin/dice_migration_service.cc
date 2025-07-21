@@ -123,7 +123,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
 
 DiceMigrationService::DiceMigrationService(Profile* profile)
     : profile_(profile) {
-  if (IsUserEligibleForDiceMigration(profile_)) {
+  if (IsUserEligibleForDiceMigration(profile_) &&
+      GetDialogShownCount() < kMaxDialogShownCount) {
     dialog_trigger_timer_.Start(
         FROM_HERE, user_education::features::GetSessionStartGracePeriod(),
         base::BindOnce(
@@ -146,8 +147,11 @@ void DiceMigrationService::RegisterProfilePrefs(
 }
 
 void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
-  if (!IsUserEligibleForDiceMigration(profile_) || IsDialogShowing() ||
-      GetDialogShownCount() >= kMaxDialogShownCount) {
+  CHECK(!dialog_trigger_timer_.IsRunning());
+  CHECK(!dialog_widget_);
+  CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount);
+
+  if (!IsUserEligibleForDiceMigration(profile_)) {
     return;
   }
 
@@ -218,10 +222,6 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   // clicked.
 }
 
-bool DiceMigrationService::IsDialogShowing() {
-  return dialog_widget_ && !dialog_widget_->IsClosed();
-}
-
 views::Widget* DiceMigrationService::GetDialogWidgetForTesting() {
   return dialog_widget_.get();
 }
@@ -238,17 +238,22 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
   switch (widget->closed_reason()) {
     // Losing focus should not close the dialog.
     case views::Widget::ClosedReason::kLostFocus:
-    // No close button in the dialog.
-    case views::Widget::ClosedReason::kCancelButtonClicked:
       NOTREACHED();
     case views::Widget::ClosedReason::kAcceptButtonClicked:
       if (MaybeMigrateUser(profile_) && browser_) {
         MaybeShowToast(browser_.get());
       }
       break;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      // Cancel button is only available in the non-"final" variant.
+      CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount);
+      break;
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      // Close button is only available in the "final" variant.
+      CHECK_EQ(GetDialogShownCount(), kMaxDialogShownCount);
+      break;
     case views::Widget::ClosedReason::kUnspecified:
     case views::Widget::ClosedReason::kEscKeyPressed:
-    case views::Widget::ClosedReason::kCloseButtonClicked:
       break;
   }
   browser_.reset();

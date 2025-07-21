@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "content/public/test/browser_test.h"
@@ -26,28 +27,39 @@
 namespace {
 constexpr char kTestEmail[] = "test@gmail.com";
 
-class DiceMigrationServiceInteractiveUiTest
-    : public SigninBrowserTestBaseT<InteractiveBrowserTest> {
+// Utility macro to implicitly sign in the user in a PRE test.
+// NOTE: `test_suite` must be a subclass of
+// `DiceMigrationServiceInteractiveUiTest`.
+#define DICE_MIGRATION_TEST_F(test_suite, test_name)    \
+  IN_PROC_BROWSER_TEST_F(test_suite, PRE_##test_name) { \
+    ImplicitlySignIn();                                 \
+  }                                                     \
+  IN_PROC_BROWSER_TEST_F(test_suite, test_name)
+
+class DiceMigrationServiceInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    SigninBrowserTestBaseT<InteractiveBrowserTest>::SetUpOnMainThread();
-    // Implicitly sign in.
-    AccountInfo account_info = signin::MakeAccountAvailable(
-        identity_manager(),
-        signin::AccountAvailabilityOptionsBuilder()
-            .AsPrimary(signin::ConsentLevel::kSignin)
-            // `kWebSignin` is not explicit signin.
-            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
-            .Build(kTestEmail));
-  }
+  Profile* GetProfile() { return browser()->profile(); }
 
   DiceMigrationService* GetDiceMigrationService() {
     return DiceMigrationServiceFactory::GetForProfile(GetProfile());
   }
 
+  signin::IdentityManager* GetIdentityManager() {
+    return IdentityManagerFactory::GetForProfile(GetProfile());
+  }
+
+  void ImplicitlySignIn() {
+    signin::MakeAccountAvailable(
+        GetIdentityManager(),
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+            .Build(kTestEmail));
+  }
+
   auto TriggerDialog() {
     return Do([&]() {
-      GetDiceMigrationService()->ShowDiceMigrationOfferDialogIfUserEligible();
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().FireNow();
     });
   }
 
@@ -58,11 +70,12 @@ class DiceMigrationServiceInteractiveUiTest
     });
   }
 
-  auto PressCloseButton() {
-    return Do([&]() {
-      GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
-          views::Widget::ClosedReason::kCloseButtonClicked);
-    });
+  auto PressCloseXButton() {
+    return PressButton(views::BubbleFrameView::kCloseButtonElementId);
+  }
+
+  auto PressCancelButton() {
+    return PressButton(DiceMigrationService::kCancelButtonElementId);
   }
 
   auto FireToastCloseTimer() {
@@ -80,23 +93,58 @@ class DiceMigrationServiceInteractiveUiTest
       switches::kOfferMigrationToDiceUsers};
 };
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       CloseXButtonClosesDialog) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      CancelButtonClosesDialog) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(TriggerDialog(),
 
                   WaitForShow(DiceMigrationService::kAcceptButtonElementId),
 
-                  // Simulate clicking the close-x button.
-                  PressCloseButton(),
+                  PressCancelButton(),
 
                   WaitForHide(DiceMigrationService::kAcceptButtonElementId));
 
-  ASSERT_FALSE(GetDiceMigrationService()->IsDialogShowing());
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       AcceptButtonClosesDialog) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      CloseXButtonClosesDialog) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Set the dialog shown count to the max - 1 to show the
+  // final variant which has the close-x button.
+  GetProfile()->GetPrefs()->SetInteger(
+      kDiceMigrationDialogShownCount,
+      DiceMigrationService::kMaxDialogShownCount - 1);
+
+  RunTestSequence(TriggerDialog(),
+
+                  WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+                  PressCloseXButton(),
+
+                  WaitForHide(DiceMigrationService::kAcceptButtonElementId));
+
+  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      AcceptButtonClosesDialog) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(TriggerDialog(),
 
                   WaitForShow(DiceMigrationService::kAcceptButtonElementId),
@@ -106,11 +154,16 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
 
                   WaitForHide(DiceMigrationService::kAcceptButtonElementId));
 
-  ASSERT_FALSE(GetDiceMigrationService()->IsDialogShowing());
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest, EscClosesDialog) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest, EscClosesDialog) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(
       TriggerDialog(),
 
@@ -122,14 +175,19 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest, EscClosesDialog) {
 
       EnsureNotPresent(DiceMigrationService::kAcceptButtonElementId));
 
-  ASSERT_FALSE(GetDiceMigrationService()->IsDialogShowing());
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       NavigationDoesNotCloseDialog) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      NavigationDoesNotCloseDialog) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   constexpr char16_t kNewUrl[] = u"chrome://version";
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   RunTestSequence(TriggerDialog(),
 
@@ -144,11 +202,17 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   // Ensure the dialog is still open.
                   EnsurePresent(DiceMigrationService::kAcceptButtonElementId));
 
-  ASSERT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       ClickingElsewhereDoesNotCloseDialog) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      ClickingElsewhereDoesNotCloseDialog) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(TriggerDialog(),
 
                   WaitForShow(DiceMigrationService::kAcceptButtonElementId),
@@ -161,33 +225,67 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   // Ensure the dialog is still open.
                   EnsurePresent(DiceMigrationService::kAcceptButtonElementId));
 
-  ASSERT_TRUE(GetDiceMigrationService()->IsDialogShowing());
+  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       FinalDialogVariant) {
-  for (int i = 0; i < DiceMigrationService::kMaxDialogShownCount; ++i) {
-    RunTestSequence(
-        TriggerDialog(),
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      NonFinalDialogVariant) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
-        WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+  RunTestSequence(
+      TriggerDialog(),
 
-        If(
-            [&i]() {
-              return i == DiceMigrationService::kMaxDialogShownCount - 1;
-            },
-            Then(
-                EnsureNotPresent(DiceMigrationService::kCancelButtonElementId)),
-            Else(EnsurePresent(DiceMigrationService::kCancelButtonElementId))),
+      WaitForShow(DiceMigrationService::kAcceptButtonElementId),
 
-        // Ensure the surface containing the dialog is active.
-        PressCloseButton(),
+      // The non-final dialog variant has a cancel button.
+      EnsurePresent(DiceMigrationService::kCancelButtonElementId),
+      // ... but not the close-x button.
+      EnsureNotPresent(views::BubbleFrameView::kCloseButtonElementId),
 
-        EnsureNotPresent(DiceMigrationService::kAcceptButtonElementId));
-  }
+      PressCancelButton(),
+
+      EnsureNotPresent(DiceMigrationService::kAcceptButtonElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest, ShowToast) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      FinalDialogVariant) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Set the dialog shown count to the max - 1 to show the final variant.
+  GetProfile()->GetPrefs()->SetInteger(
+      kDiceMigrationDialogShownCount,
+      DiceMigrationService::kMaxDialogShownCount - 1);
+
+  RunTestSequence(
+      TriggerDialog(),
+
+      WaitForShow(DiceMigrationService::kAcceptButtonElementId),
+
+      // The final dialog variant does not have a cancel button.
+      EnsureNotPresent(DiceMigrationService::kCancelButtonElementId),
+      // ... but has the close-x button.
+      EnsurePresent(views::BubbleFrameView::kCloseButtonElementId),
+
+      PressCloseXButton(),
+
+      EnsureNotPresent(DiceMigrationService::kAcceptButtonElementId));
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest, ShowToast) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(TriggerDialog(),
 
                   WaitForShow(DiceMigrationService::kAcceptButtonElementId),
@@ -204,9 +302,15 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest, ShowToast) {
                   WaitForHide(toasts::ToastView::kToastViewId));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       ToastActionButton) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      ToastActionButton) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   RunTestSequence(
       TriggerDialog(),
@@ -230,8 +334,13 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
       WaitForHide(toasts::ToastView::kToastViewId));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       ToastCloseButton) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest, ToastCloseButton) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
   RunTestSequence(TriggerDialog(),
 
                   WaitForShow(DiceMigrationService::kAcceptButtonElementId),
@@ -248,10 +357,16 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   WaitForHide(toasts::ToastView::kToastViewId));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       ToastDoesNotCloseOnNavigation) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      ToastDoesNotCloseOnNavigation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   constexpr char16_t kNewUrl[] = u"chrome://version";
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   RunTestSequence(TriggerDialog(),
 
@@ -274,11 +389,17 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
                   EnsurePresent(toasts::ToastView::kToastViewId));
 }
 
-IN_PROC_BROWSER_TEST_F(DiceMigrationServiceInteractiveUiTest,
-                       ToastDoesNotCloseOnTabSwitch) {
+DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
+                      ToastDoesNotCloseOnTabSwitch) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
   constexpr char16_t kNewUrl[] = u"chrome://version";
+
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   RunTestSequence(InstrumentTab(kActiveTab),
 

@@ -40,16 +40,6 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Shows the Dice migration offer dialog if the user is eligible for it.
-  // TODO(crbug.com/399838468): Mark this method as private and instead expose a
-  // test-only method instead.
-  void ShowDiceMigrationOfferDialogIfUserEligible();
-
-  // Returns true if the Dice migration offer dialog is currently showing.
-  // TODO(crbug.com/399838468): Remove this method since this is mostly
-  // test-only and can be replaced with `GetDialogWidgetForTesting()`.
-  bool IsDialogShowing();
-
   views::Widget* GetDialogWidgetForTesting();
 
   base::OneShotTimer& GetDialogTriggerTimerForTesting();
@@ -57,6 +47,9 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
  private:
   // `views::WidgetObserver`:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  // Shows the Dice migration offer dialog if the user is eligible for it.
+  void ShowDiceMigrationOfferDialogIfUserEligible();
 
   int GetDialogShownCount() const;
   void IncrementDialogShownCount();
