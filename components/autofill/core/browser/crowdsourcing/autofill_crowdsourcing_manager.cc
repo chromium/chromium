@@ -800,7 +800,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
       upload_contents[0].structural_form_signature());
   const FormSignature throttled_form_signature =
       base::FeatureList::IsEnabled(
-          features::kUseStructuralSignatureInsteadOfSecondary)
+          features::kAutofillUseStructuralSignatureInsteadOfSecondary)
           ? structural_form_signature
           : secondary_form_signature;
   // Autofill vote uploads are limited via throttling so that only one vote is

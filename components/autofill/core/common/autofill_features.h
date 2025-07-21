@@ -285,7 +285,7 @@ BASE_DECLARE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kUseStructuralSignatureInsteadOfSecondary);
+BASE_DECLARE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary);
 
 // Identifies different strings that can be used in the CTA button for the
 // Autofill Iph.

@@ -827,7 +827,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
       std::string(version_info::GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form.form_signature().value());
   if (base::FeatureList::IsEnabled(
-          features::kUseStructuralSignatureInsteadOfSecondary)) {
+          features::kAutofillUseStructuralSignatureInsteadOfSecondary)) {
     upload.set_structural_form_signature(
         form.structural_form_signature().value());
   } else {

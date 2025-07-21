@@ -732,7 +732,7 @@ BASE_FEATURE(kAutofillServerUploadMoreData,
 // For Queries still only the secondary (alternative) signature is used.
 // TODO(crbug.com/431737839): Clean up when roll out finishes successfully.
 COMPONENT_EXPORT(AUTOFILL)
-BASE_FEATURE(kUseStructuralSignatureInsteadOfSecondary,
+BASE_FEATURE(kAutofillUseStructuralSignatureInsteadOfSecondary,
              "AutofillUseStructuralSignatureInsteadOfSecondary",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
