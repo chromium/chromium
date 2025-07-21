@@ -77,10 +77,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
-namespace FeedbackConstants {
-const char kThumbsDownFeedbackPrefix[] = "Response feedback thumbs down - ";
-}
-
 namespace mojo {
 
 // Specializes a Mojo EqualsTraits to allow equality checks of SkBitmaps, so
@@ -1013,12 +1009,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void OnResponseRated(bool positive) override {
     glic_service_->metrics()->OnResponseRated(positive);
-    // TODO(b/430055759): Remove this block once RecordFeedback API is wired to
-    // be called from the client.
-    if (base::FeatureList::IsEnabled(features::kGlicRecordActorJournal) &&
-        !positive) {
-      SendResponseFeedback();
-    }
   }
 
   void OnClosedCaptionsShown() override {
@@ -1339,31 +1329,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void NotifyWebClientFocusedTabChanged(glic::mojom::FocusedTabDataPtr data) {
     web_client_->NotifyFocusedTabChanged(std::move(data));
-  }
-
-  // TODO(b/430055759): Delete this function once RecordFeedback API is wired to
-  // be called from the client.
-  void SendResponseFeedback() {
-    base::WeakPtr<feedback::FeedbackUploader> uploader =
-        feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(profile_)
-            ->AsWeakPtr();
-    scoped_refptr<::feedback::FeedbackData> feedback_data =
-        base::MakeRefCounted<feedback::FeedbackData>(
-            std::move(uploader), ContentTracingManager::Get());
-    auto journal = journal_handler_.GetSnapshot(false);
-
-    // TODO(b/430054430): Fetch and include system data to the feedback.
-    feedback_data->set_description(
-        FeedbackConstants::kThumbsDownFeedbackPrefix +
-        base::Uuid::GenerateRandomV4().AsLowercaseString());
-    feedback_data->set_product_id(feedback::kGeminiWebProductId);
-    feedback_data->set_category_tag(
-        std::string(feedback::kGeminiWebJournalCategoryTag));
-    feedback_data->set_is_offensive_or_unsafe(false);
-    feedback_data->AddFile("actor-journal", journal);
-
-    feedback_data->CompressSystemInfo();
-    feedback_data->OnFeedbackPageDataComplete();
   }
 
   glic::mojom::FocusedTabDataPtr cached_focused_tab_data_ = nullptr;
