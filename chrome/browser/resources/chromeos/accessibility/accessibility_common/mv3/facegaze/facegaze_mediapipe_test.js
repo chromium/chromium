@@ -28,6 +28,5 @@ FaceGazeMediaPipeTest = class extends FaceGazeTestBase {
 AX_TEST_F('FaceGazeMediaPipeTest', 'CreateFaceLandmarker', async function() {
   const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
   await this.mockAccessibilityPrivate.initializeFaceGazeAssets();
-  await webCamFaceLandmarker.createFaceLandmarker_();
-  assertTrue(!!webCamFaceLandmarker.faceLandmarker_);
+  await webCamFaceLandmarker.initWebCam_();
 });

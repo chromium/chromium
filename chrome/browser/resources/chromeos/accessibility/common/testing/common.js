@@ -24,6 +24,12 @@ function AX_TEST_F(testFixture, testName, testFunction, preamble) {
 // while all tests are migrated to the new fixture.
 var SYNC_TEST_F = AX_TEST_F;
 
+/** Whether the current running context is a service worker. */
+function isRunningInServiceWorker() {
+  return typeof ServiceWorkerGlobalScope !== 'undefined' &&
+      self instanceof ServiceWorkerGlobalScope;
+}
+
 /**
  * Helper to import a module, and expose it onto window.
  * @param {string|!Array<string>} toImport Names of the module exports to

@@ -57,7 +57,7 @@ export class WebCamFaceLandmarker {
     });
 
     Messenger.registerHandler(
-        OffscreenCommandType.FACEGAZE_SW_UPDATE_BUBLE_REMAINING_RETRIES,
+        OffscreenCommandType.FACEGAZE_SW_UPDATE_BUBBLE_REMAINING_RETRIES,
         (message: {remaining: number}) => {
           const text = chrome.i18n.getMessage(
               'facegaze_connect_to_camera', [message.remaining]);

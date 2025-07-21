@@ -54,6 +54,12 @@ AX_TEST_F(
     'FaceGazeTest',
     'GestureDetectorUpdatesStateAfterToggleGestureInfoForSettingsEvent',
     async function() {
+      // There is a race of when gesture handler starts and when
+      // mockAccessibilityPrivate is set. Restart gesture handler to ensure
+      // that `start()` is called with mockAccessibilityPrivate.
+      this.getGestureHandler().stop();
+      this.getGestureHandler().start();
+
       await this.configureFaceGaze(new Config());
 
       // Tests that GestureDetector updates its state after a
@@ -70,6 +76,12 @@ AX_TEST_F(
     'FaceGazeTest',
     'GestureDetectorSendsGestureInfoAfterToggleGestureInfoForSettingsEvent',
     async function() {
+      // There is a race of when gesture handler starts and when
+      // mockAccessibilityPrivate is set. Restart gesture handler to ensure
+      // that `start()` is called with mockAccessibilityPrivate.
+      this.getGestureHandler().stop();
+      this.getGestureHandler().start();
+
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_RIGHT)
@@ -3016,48 +3028,74 @@ AX_TEST_F('FaceGazeTest', 'InvalidResult', async function() {
 // happens when the screen has been locked for a short amount of time, and then
 // unmuted, which happens when the user signs back in.
 AX_TEST_F('FaceGazeTest', 'CameraMutedAndUnmuted', async function() {
+  // The test only works for MV3 service worker.
+  assertTrue(isRunningInServiceWorker());
+
   const config = new Config();
   await this.configureFaceGaze(config);
 
-  // Mute the camera.
-  this.getFaceGaze().webCamFaceLandmarker_.onTrackMutedHandler_();
+  // Simulate a "muted" message from offscreen doc when the camera is muted.
+  Messenger.instance.handleMessage_(
+      {command: OffscreenCommandType.FACEGAZE_SW_ON_TRACK_MUTED});
   assertEquals(
       `Camera unavailable. Make sure you are signed in and camera is on.`,
       this.getBubbleText());
 
-  // Unmute the camera.
-  this.getFaceGaze().webCamFaceLandmarker_.onTrackUnmutedHandler_();
+  // Simulate "unmuted" message from offscreen doc when the camera is unmuted.
+  Messenger.instance.handleMessage_(
+      {command: OffscreenCommandType.FACEGAZE_SW_ON_TRACK_UNMUTED});
   assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
 // Verifies that FaceGaze can handle cases where no camera is available.
 AX_TEST_F('FaceGazeTest', 'NoCamera', async function() {
+  // The test only works for MV3 service worker.
+  assertTrue(isRunningInServiceWorker());
+
+  // Use mocked setTimeout.
+  await Messenger.send(OffscreenCommandType.FACEGAZE_MOCK_TIMEOUT_FOR_TEST);
+
   // Pretend that there is no available camera.
-  globalThis.navigator = {};
-  navigator.mediaDevices = {};
-  navigator.mediaDevices.getUserMedia = () => {
-    throw new Error('Requested device not found');
-  };
+  await Messenger.send(OffscreenCommandType.FACEGAZE_MOCK_NO_CAMERA_FOR_TEST);
 
   // Verify initial state.
-  const webCamFaceLandmarker = this.getFaceGaze().webCamFaceLandmarker_;
-  assertEquals(10, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+  assertEquals(
+      10,
+      await Messenger.send(
+          OffscreenCommandType.FACEGAZE_GET_CAMERA_RETRIES_FOR_TEST));
+
+  let bubbleUpdatePromise = Messenger.waitForHandled(
+      OffscreenCommandType.FACEGAZE_SW_UPDATE_BUBBLE_REMAINING_RETRIES);
 
   // Attempt to connect to the webcam. This should cause a message to appear
   // in the UI and queue up another attempt.
-  webCamFaceLandmarker.connectToWebCam_();
+  await Messenger.send(
+      OffscreenCommandType.FACEGAZE_CONNECT_TO_WEB_CAM_FOR_TEST);
+
+  await bubbleUpdatePromise;
   assertEquals(
       'Trying to connect to camera. Face control will turn off in 10 seconds.',
       this.getBubbleText());
-  assertEquals(9, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+  assertEquals(
+      9,
+      await Messenger.send(
+          OffscreenCommandType.FACEGAZE_GET_CAMERA_RETRIES_FOR_TEST));
 
+  bubbleUpdatePromise = Messenger.waitForHandled(
+      OffscreenCommandType.FACEGAZE_SW_UPDATE_BUBBLE_REMAINING_RETRIES);
   // Pretend that the timeout has elapsed so that we try to reconnect to the
   // webcam.
-  this.runLatestTimeout();
+  await Messenger.send(
+      OffscreenCommandType.FACEGAZE_MOCK_RUN_LATEST_TIMEOUT_FOR_TEST);
+
+  await bubbleUpdatePromise;
   assertEquals(
       'Trying to connect to camera. Face control will turn off in 9 seconds.',
       this.getBubbleText());
-  assertEquals(8, webCamFaceLandmarker.connectToWebCamRetriesRemaining_);
+  assertEquals(
+      8,
+      await Messenger.send(
+          OffscreenCommandType.FACEGAZE_GET_CAMERA_RETRIES_FOR_TEST));
 
   // Mock out the setPref API.
   let latestPref;
@@ -3068,10 +3106,17 @@ AX_TEST_F('FaceGazeTest', 'NoCamera', async function() {
     latestValue = value;
   };
 
+  const setPrefPromise =
+      Messenger.waitForHandled(OffscreenCommandType.FACEGAZE_SW_SET_PREF);
+
   // Pretend that we've exhausted our retry limit. The next failed attempt
   // will cause FaceGaze to be turned off.
-  webCamFaceLandmarker.connectToWebCamRetriesRemaining_ = 0;
-  this.runLatestTimeout();
+  await Messenger.send(
+      OffscreenCommandType.FACEGAZE_SET_CAMERA_RETRIES_FOR_TEST, {retries: 0});
+  await Messenger.send(
+      OffscreenCommandType.FACEGAZE_MOCK_RUN_LATEST_TIMEOUT_FOR_TEST);
+
+  await setPrefPromise;
   assertEquals('settings.a11y.face_gaze.enabled', latestPref);
   assertFalse(latestValue);
 });
