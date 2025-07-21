@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/strings/stringprintf.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -611,6 +612,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
+  base::HistogramTester histogram_tester;
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
@@ -644,15 +646,17 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   // User is signed in, but Sync is off.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
-  EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
-            signin::ConsentLevel::kSignin);
+  base::test::RunUntil([&identity_manager]() {
+    return GetPrimaryAccountConsentLevel(identity_manager) ==
+           signin::ConsentLevel::kSignin;
+  });
 
   // Confirm Sync.
   ui_test_utils::BrowserChangeObserver browser_added_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  GURL sync_confirmation_url = AppendSyncConfirmationQueryParams(
-      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
-      /*is_sync_promo=*/true);
+  GURL sync_confirmation_url =
+      AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
+                                        SyncConfirmationStyle::kWindow, true);
   profiles::testing::WaitForPickerLoadStop(sync_confirmation_url);
   LoginUIServiceFactory::GetForProfile(new_profile)
       ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -663,6 +667,11 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   EXPECT_EQ(new_browser->profile(), new_profile);
   EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
             signin::ConsentLevel::kSync);
+
+  // Both LST and Sync Header are received so their time difference must be
+  // recorded.
+  histogram_tester.ExpectTotalCount(
+      "Signin.SigninManager.SyncHeaderArrivalTimeWindow", 1);
 }
 
 class LiveSignInGaiaIntegrationTest

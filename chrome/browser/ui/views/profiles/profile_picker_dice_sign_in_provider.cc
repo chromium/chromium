@@ -223,7 +223,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     // after a successful sign-in.
     DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents_.get());
     CHECK(tab_helper);
-    InitializeDiceTabHelper(*tab_helper, DiceTabHelperMode::kInBrowser);
+    InitializeOrUpdateDiceTabHelper(*tab_helper, DiceTabHelperMode::kInBrowser);
     // The rest of the SAML flow logic is handled by the signed-in flow
     // controller.
     FinishFlow(CoreAccountInfo());
@@ -300,7 +300,7 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   DiceTabHelper::CreateForWebContents(contents());
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents());
   CHECK(tab_helper);
-  InitializeDiceTabHelper(*tab_helper, DiceTabHelperMode::kInPicker);
+  InitializeOrUpdateDiceTabHelper(*tab_helper, DiceTabHelperMode::kInPicker);
 }
 
 bool ProfilePickerDiceSignInProvider::IsInitialized() const {
@@ -344,7 +344,7 @@ GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
   });
 }
 
-void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
+void ProfilePickerDiceSignInProvider::InitializeOrUpdateDiceTabHelper(
     DiceTabHelper& helper,
     DiceTabHelperMode mode) {
   DiceTabHelper::EnableSyncCallback enable_sync_callback;
@@ -365,28 +365,33 @@ void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
       // TODO(crbug.com/40276801): Handle signin errors in the profile
       // picker.
       show_signin_error_callback = base::DoNothing();
-      break;
+
+      helper.InitializeSigninFlow(
+          BuildSigninURL(), signin_access_point_,
+          signin_metrics::Reason::kSigninPrimaryAccount,
+          signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+          std::move(redirect_url), record_signin_started_metrics,
+          std::move(enable_sync_callback),
+          /* TODO(crbug.com/418139693): Update the callback once this entry
+             point is supported for history sync. */
+          /*history_sync_optin_callback=*/base::NullCallback(),
+          DiceTabHelper::OnSigninHeaderReceived(),
+          std::move(show_signin_error_callback));
+      tab_helper_is_initialized_ = true;
+      return;
     case DiceTabHelperMode::kInBrowser:
+      CHECK(tab_helper_is_initialized_);
       // This is used when a SAML flow is detected (through a navigation outside
       // of Gaia).
-      enable_sync_callback = DiceTabHelper::GetEnableSyncCallbackForBrowser();
-      show_signin_error_callback =
-          DiceTabHelper::GetShowSigninErrorCallbackForBrowser();
-      redirect_url = GURL(chrome::kChromeUINewTabURL);
-      // The metrics were already recorded once when starting the flow in the
-      // profile picker.
-      record_signin_started_metrics = false;
-      break;
+      // Also triggered when a navigation outside of Gaia occurs (e.g. account
+      // recovery in crbug.com/29524688).
+      helper.UpdateSyncCallback(
+          DiceTabHelper::GetEnableSyncCallbackForBrowser());
+      helper.UpdateSigninErrorCallback(
+          DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
+      helper.UpdateRedirectUrl(GURL(chrome::kChromeUINewTabURL));
+      /* TODO(crbug.com/418139693): Update the history_sync_optin_callback once
+         this entry point is supported for history sync. */
+      return;
   }
-  helper.InitializeSigninFlow(
-      BuildSigninURL(), signin_access_point_,
-      signin_metrics::Reason::kSigninPrimaryAccount,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      std::move(redirect_url), record_signin_started_metrics,
-      std::move(enable_sync_callback),
-      /* TODO(crbug.com/418139693): Update the callback once this entry point is
-         supported for history sync. */
-      /*history_sync_optin_callback=*/base::NullCallback(),
-      DiceTabHelper::OnSigninHeaderReceived(),
-      std::move(show_signin_error_callback));
 }

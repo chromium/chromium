@@ -133,10 +133,13 @@ class ProfilePickerDiceSignInProvider
     kInBrowser,  // The sync confirmation screen opens in the browser.
   };
 
-  // Initializes the `DiceTabHelper`. It is initialized once at the beginning,
-  // with the `kInPicker` mode, and in case of SAML it is initialized again
-  // with the `kInBrowser` mode as the web contents is extracted to a tab.
-  void InitializeDiceTabHelper(DiceTabHelper& helper, DiceTabHelperMode mode);
+  // Initializes or updates the `DiceTabHelper`.
+  // It is initialized once at the beginning, with the `kInPicker` mode, and in
+  // case of SAML (or navigations outside Gaia that open in a browser) it is
+  // updated with the `kInBrowser` mode as the web contents is extracted to a
+  // tab.
+  void InitializeOrUpdateDiceTabHelper(DiceTabHelper& helper,
+                                       DiceTabHelperMode mode);
 
   // The host must outlive this object.
   const raw_ptr<ProfilePickerWebContentsHost> host_;
@@ -166,6 +169,8 @@ class ProfilePickerDiceSignInProvider
   // finish before both the notification gets called.
   // TODO(crbug.com/40791271): Remove this if the bug gets resolved.
   bool refresh_token_updated_ = false;
+
+  bool tab_helper_is_initialized_ = false;
 
   base::WeakPtrFactory<ProfilePickerDiceSignInProvider> weak_ptr_factory_{this};
 };

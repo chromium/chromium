@@ -133,6 +133,14 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   void OnTokenExchangeSuccess(
       base::OnceClosure retry_interception_bubble_callback);
 
+  // Updates the callbacks used by the tab helper.
+  void UpdateSyncCallback(EnableSyncCallback enable_sync_callback);
+  void UpdateSigninErrorCallback(
+      ShowSigninErrorCallback show_signin_error_callback);
+  // Updates the redirection url, that is used used after enabling Sync or
+  // in case of errors.
+  void UpdateRedirectUrl(const GURL& redirect_url);
+
   // Can be used in tests to reduce the delay before showing the interception
   // bubble, after the auth token is received.
   [[nodiscard]] static base::AutoReset<base::TimeDelta>

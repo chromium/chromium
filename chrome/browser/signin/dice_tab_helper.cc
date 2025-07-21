@@ -215,6 +215,20 @@ void DiceTabHelper::OnTokenExchangeSuccess(
   StartInterceptionBubbleTimer(std::move(retry_interception_bubble_callback));
 }
 
+void DiceTabHelper::UpdateSyncCallback(
+    EnableSyncCallback enable_sync_callback) {
+  state_->enable_sync_callback = std::move(enable_sync_callback);
+}
+
+void DiceTabHelper::UpdateSigninErrorCallback(
+    ShowSigninErrorCallback show_signin_error_callback) {
+  state_->show_signin_error_callback = std::move(show_signin_error_callback);
+}
+
+void DiceTabHelper::UpdateRedirectUrl(const GURL& redirect_url) {
+  state_->redirect_url = redirect_url;
+}
+
 // static
 base::AutoReset<base::TimeDelta>
 DiceTabHelper::SetScopedInterceptionBubbleTimerForTesting(
