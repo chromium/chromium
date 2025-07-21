@@ -11,6 +11,7 @@ source_set("proto_wrappers") {
   ]
 
   deps = [
+    ":page_context_metrics",
     "//base",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core:page_content",
@@ -22,5 +23,23 @@ source_set("proto_wrappers") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//url",
+  ]
+}
+
+source_set("page_context_metrics") {
+  sources = [
+    "page_context_wrapper_metrics.h",
+    "page_context_wrapper_metrics.mm",
+  ]
+  deps = [
+    ":metrics_constants",
+    "//base",
+  ]
+}
+
+source_set("metrics_constants") {
+  sources = [
+    "metrics_constants.h",
+    "metrics_constants.mm",
   ]
 }

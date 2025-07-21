@@ -3765,6 +3765,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PageContext.{Task}.{Status}.Latency" units="ms"
+    expires_after="2026-07-21">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The latency of extracting PageContext data in milliseconds, broken down per
+    task (or overall execution), and per completion status. Logged when overall
+    execution is complete. Each task has its own completion status.
+  </summary>
+  <token key="Task">
+    <variant name="AnnotatedPageContent"/>
+    <variant name="Overall"/>
+    <variant name="PDF"/>
+    <variant name="Screenshot"/>
+  </token>
+  <token key="Status">
+    <variant name="Failure"/>
+    <variant name="PageProtected"/>
+    <variant name="Success"/>
+    <variant name="Timeout"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"
     expires_after="2026-01-28">
   <owner>gambard@chromium.org</owner>
