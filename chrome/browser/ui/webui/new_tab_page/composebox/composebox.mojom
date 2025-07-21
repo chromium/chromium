@@ -69,5 +69,6 @@ interface Page {
   // Updates the status of a file upload operation. Used to update the user on
   // the status of a file upload operation.
   OnFileUploadStatusChanged(mojo_base.mojom.UnguessableToken token,
-                           composebox_query.mojom.FileUploadStatus status);
+                           composebox_query.mojom.FileUploadStatus status,
+                           composebox_query.mojom.FileUploadErrorType? error_type);
 };

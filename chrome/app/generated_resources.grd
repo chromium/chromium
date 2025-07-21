@@ -7686,6 +7686,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_WALLPAPER_SEARCH_LABEL" desc="Accessibility label for the wallpaper search gear icon. (On the New Tab Page)">
         Customize this page with AI
       </message>
+       <message name="IDS_NTP_DISMISS" desc="Used for Dismiss buttons" translateable="false">
+        Dismiss
+      </message>
       <message name="IDS_NTP_DISMISS_PROMO" desc="The tooltip title and accessibility label for the (X) button to dismiss promotional messages on the middle / bottom of the New Tab page.">
         Dismiss this message
       </message>
@@ -8475,6 +8478,24 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL" desc="The accessibility label for the delete button shown on hover for uploaded files." translateable="false">
         <ph name="FILE_NAME">$1<ex>recipe.pdf</ex></ph> press enter to delete file
+      </message>
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_EMPTY_SIZE" desc="The text to display when a file upload is empty." translateable="false">
+        Can't upload. File appears to be empty.
+      </message>
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_TOO_LARGE" desc="The text to display when a file upload exceeds the allowed size" translateable="false">
+        Can't upload. File exceeds maximum supported size.
+      </message>
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_IMAGE_PROCESSING_ERROR" desc="The text to display when an file upload image can't be processed." translateable="false">
+        Can't upload. Failed to process image file.
+      </message>
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED" desc="The generic text to display when a file upload fails a validation step." translateable="false">
+        Can't upload. File upload failed validation checks.
+      </message>
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED"  translateable="false">
+        Unexpected error, file upload failed.
+      </message>
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED" translateable="false">
+        File upload has expired and been removed.
       </message>
 
       <!-- NTP Modules -->

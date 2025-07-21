@@ -517,7 +517,7 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   if (bitmap.isNull() || bitmap.empty()) {
     std::move(callback).Run(lens::LensOverlayServerRequest(),
-                            FileUploadErrorType::kBrowserProcessingError);
+                            FileUploadErrorType::kImageProcessingError);
     return;
   }
 

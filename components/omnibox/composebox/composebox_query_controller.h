@@ -51,22 +51,6 @@ enum class QueryControllerState {
   kClusterInfoInvalid = 3,
 };
 
-// For upload error metrics.
-enum class FileUploadErrorType {
-  // Unknown.
-  kUnknown = 0,
-  // Browser error before/during request, not covered by validation.
-  kBrowserProcessingError = 1,
-  // Network-level issue (e.g., no connectivity, DNS failure).
-  kNetworkError = 2,
-  // Server returned an error (e.g., 5xx, specific API error).
-  kServerError = 3,
-  // Server rejected due to size after upload attempt - Considered terminal.
-  kServerSizeLimitExceeded = 4,
-  // Upload aborted by user deletion or session end.
-  kAborted = 5,
-};
-
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
@@ -90,6 +74,7 @@ struct ImageEncodingOptions {
 using OAuthHeadersCreatedCallback =
     base::OnceCallback<void(std::vector<std::string>)>;
 // Callback type alias for the request body proto created.
+using FileUploadErrorType = composebox_query::mojom::FileUploadErrorType;
 using RequestBodyProtoCreatedCallback =
     base::OnceCallback<void(lens::LensOverlayServerRequest,
                             std::optional<FileUploadErrorType>)>;

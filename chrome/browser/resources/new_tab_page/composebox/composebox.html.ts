@@ -14,6 +14,14 @@ export function getHtml(this: ComposeboxElement) {
   <div class="gradient gradient-outer-glow"></div>
   <div class="gradient"></div>
   <div class="background"></div>
+  ${this.showErrorScrim_ ? html`
+    <div id="errorScrim">
+      <p>${this.errorMessage_}</p>
+      <cr-button id="dismissErrorButton"
+        @click="${this.onDismissErrorButtonClick_}">$i18n{dismissButton}
+      </cr-button>
+    </div>
+  `: ''}
   <div id="composebox" tabindex="-1" @keydown="${this.onKeydown_}">
     <div id="inputContainer">
       <ntp-composebox-file-carousel

@@ -108,5 +108,5 @@ void ComposeboxHandler::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     composebox_query::mojom::FileUploadStatus file_upload_status,
     const std::optional<FileUploadErrorType>& error_type) {
-  page_->OnFileUploadStatusChanged(file_token, file_upload_status);
+  page_->OnFileUploadStatusChanged(file_token, file_upload_status, error_type);
 }

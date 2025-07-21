@@ -232,6 +232,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"doneButton", IDS_DONE},
+      {"dismissButton", IDS_NTP_DISMISS},
       {"title", IDS_NEW_TAB_TITLE},
       {"undo", IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE},
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
@@ -481,6 +482,16 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"composeboxPlaceholderText", IDS_NTP_COMPOSE_PLACEHOLDER_TEXT},
       {"composeboxSubmitButtonTitle", IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL},
       {"composeboxDeleteFileTitle", IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL},
+      {"composeboxFileUploadInvalidEmptySize",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_EMPTY_SIZE},
+      {"composeboxFileUploadInvalidTooLarge",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_TOO_LARGE},
+      {"composeboxFileUploadImageProcessingError",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_IMAGE_PROCESSING_ERROR},
+      {"composeboxFileUploadValidationFailed",
+       IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED},
+      {"composeboxFileUploadFailed", IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED},
+      {"composeboxFileUploadExpired", IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED},
   };
 
   source->AddLocalizedStrings(kStrings);

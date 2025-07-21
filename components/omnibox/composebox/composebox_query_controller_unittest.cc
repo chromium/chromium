@@ -443,7 +443,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
 
   // Assert: Validate file upload request and status changes.
   WaitForFileUpload(file_token, FileUploadStatus::kValidationFailed,
-                    FileUploadErrorType::kBrowserProcessingError);
+                    FileUploadErrorType::kImageProcessingError);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

@@ -62,7 +62,8 @@ class MockPage : public composebox::mojom::Page {
   MOCK_METHOD(void,
               OnFileUploadStatusChanged,
               (const base::UnguessableToken&,
-               composebox_query::mojom::FileUploadStatus));
+               composebox_query::mojom::FileUploadStatus,
+               std::optional<composebox_query::mojom::FileUploadErrorType>));
 
   mojo::Receiver<composebox::mojom::Page> receiver_{this};
 };
@@ -368,9 +369,9 @@ TEST_P(ComposeboxHandlerFileUploadStatusTest, FileUploadStatusChanged) {
       .WillOnce(testing::Invoke(
           [&status](
               const base::UnguessableToken& file_token,
-              composebox_query::mojom::FileUploadStatus file_upload_status) {
-            status = file_upload_status;
-          }));
+              composebox_query::mojom::FileUploadStatus file_upload_status,
+              std::optional<composebox_query::mojom::FileUploadErrorType>
+                  file_upload_error_type) { status = file_upload_status; }));
 
   const auto expected_status = GetParam();
   base::UnguessableToken token = base::UnguessableToken::Create();
