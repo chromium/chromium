@@ -27,9 +27,9 @@ void RecordComponentUpdated() {
 }
 
 void RecordCRXDownloadTime(base::TimeDelta time, const std::string& app_id) {
-  base::UmaHistogramMediumTimes(
-      base::StrCat({"UpdateClient.DownloadTime.", app_id}), time);
-  base::UmaHistogramMediumTimes("UpdateClient.DownloadTime", time);
+  base::UmaHistogramLongTimes(
+      base::StrCat({"UpdateClient.DownloadTime2.", app_id}), time);
+  base::UmaHistogramLongTimes("UpdateClient.DownloadTime2", time);
 }
 
 void RecordCRXUnzipTime(base::TimeDelta time, const std::string& app_id) {
