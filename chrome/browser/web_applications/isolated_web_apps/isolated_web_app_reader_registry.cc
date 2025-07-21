@@ -21,11 +21,10 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/web_package/signed_web_bundles/identity_validator.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
@@ -333,46 +332,46 @@ void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
     return;
   }
 
-  auto* provider = WebAppProvider::GetForWebApps(&profile_.get());
-  base::flat_map<web_package::SignedWebBundleId,
-                 std::reference_wrapper<const WebApp>>
-      installed_iwas = GetInstalledIwas(provider->registrar_unsafe());
+  std::vector<std::pair<base::FilePath, web_package::SignedWebBundleId>>
+      affected_ready_readers;
+  for (auto& [path, entry] : *cache_) {
+    std::visit(
+        absl::Overload{
+            [&](Cache::PendingState& pending) {
+              // If this reader is affected too, it will be closed in
+              // OnResponseReaderCreated() during the identity check.
+            },
+            [&](Cache::ReadyState& ready) {
+              if (!web_package::IdentityValidator::GetInstance()
+                       ->ValidateWebBundleIdentity(
+                           ready.GetReader().GetIntegrityBlock())
+                       .has_value()) {
+                affected_ready_readers.emplace_back(
+                    path,
+                    ready.GetReader().GetIntegrityBlock().web_bundle_id());
+              }
+            }},
+        entry);
+  }
 
-  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
-    const auto& isolation_data = *iwa.get().isolation_data();
-    auto result = LookupRotatedKey(web_bundle_id);
-    switch (result) {
-      case KeyRotationLookupResult::kNoKeyRotation:
-        continue;
-      case KeyRotationLookupResult::kKeyBlocked:
-        break;
-      case KeyRotationLookupResult::kKeyFound: {
-        if (GetKeyRotationData(web_bundle_id, isolation_data)
-                .current_installation_has_rk) {
-          continue;
-        }
-      } break;
+  if (affected_ready_readers.empty()) {
+    return;
+  }
+
+  WebAppUiManager& ui_manager =
+      WebAppProvider::GetForWebApps(&profile_.get())->ui_manager();
+  for (const auto& [path, web_bundle_id] : affected_ready_readers) {
+    auto app_id =
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id)
+            .app_id();
+    if (ui_manager.GetNumWindowsForApp(app_id) == 0) {
+      ClearCacheForPath(path, base::DoNothing());
+      return;
     }
-
-    auto iwa_source = IwaSourceWithMode::FromStorageLocation(
-        profile_->GetPath(), isolation_data.location());
-    WebAppUiManager& ui_manager = provider->ui_manager();
-    std::visit(absl::Overload{
-                   [&](const IwaSourceBundle& bundle) {
-                     const auto& app_id = iwa.get().app_id();
-                     if (ui_manager.GetNumWindowsForApp(app_id) == 0) {
-                       ClearCacheForPath(bundle.path(), base::DoNothing());
-                       return;
-                     }
-                     ui_manager.NotifyOnAllAppWindowsClosed(
-                         app_id,
-                         base::BindOnce(
-                             &IsolatedWebAppReaderRegistry::ClearCacheForPath,
-                             weak_ptr_factory_.GetWeakPtr(), bundle.path(),
-                             base::DoNothing()));
-                   },
-                   [](const IwaSourceProxy&) {}},
-               iwa_source.variant());
+    ui_manager.NotifyOnAllAppWindowsClosed(
+        app_id, base::BindOnce(&IsolatedWebAppReaderRegistry::ClearCacheForPath,
+                               weak_ptr_factory_.GetWeakPtr(), path,
+                               base::DoNothing()));
   }
 }
 
@@ -428,6 +427,14 @@ void IsolatedWebAppReaderRegistry::OnResponseReaderCreated(
     if (pending_state.IsCloseRequested()) {
       return base::unexpected("The bundle is waiting to close");
     }
+    // This check is realistically somewhat excessive (given that the same
+    // identity check is performed during .swbn file parsing). However, given
+    // that the state of the key dist component might have changed in the
+    // meantime, it's better to double-check this.
+    RETURN_IF_ERROR(
+        web_package::IdentityValidator::GetInstance()
+            ->ValidateWebBundleIdentity(reader->GetIntegrityBlock()));
+
     return base::ok();
   }();
 

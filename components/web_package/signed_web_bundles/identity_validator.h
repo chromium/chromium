@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/types/expected.h"
 #include "base/version.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/types.h"
 
 namespace web_package {
@@ -31,6 +32,10 @@ class IdentityValidator {
   virtual base::expected<void, std::string> ValidateWebBundleIdentity(
       const std::string& web_bundle_id,
       const std::vector<PublicKey>& public_keys) const;
+
+  // Shorthand for calling the above when the caller has an `integrity_block`.
+  base::expected<void, std::string> ValidateWebBundleIdentity(
+      const SignedWebBundleIntegrityBlock& integrity_block) const;
 
  protected:
   IdentityValidator();
