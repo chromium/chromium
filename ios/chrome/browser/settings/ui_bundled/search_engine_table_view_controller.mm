@@ -474,6 +474,11 @@ const char kUmaSelectDefaultSearchEngine[] =
   _secondList.reserve(urls.size());
   // Classify TemplateURLs.
   for (TemplateURL* url : urls) {
+    // Starter pack is not supported on iOS.
+    if (url->starter_pack_id() != 0) {
+      continue;
+    }
+
     if ([self isPrepopulatedOrDefaultSearchEngine:url]) {
       _firstList.push_back(url);
     } else {
