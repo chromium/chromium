@@ -356,14 +356,6 @@ void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
   record_job_finished("Extensions.ContentVerification.VerifyJobResultMV2",
                       "Extensions.ContentVerification.VerifyJobResultMV3");
 
-  // TODO(crbug.com/325613709): Remove docs offline specific logging after a few
-  // milestones.
-  if (extension_id_ == extension_misc::kDocsOfflineExtensionId) {
-    record_job_finished(
-        nullptr,  // No MV2 Google Docs Offline version.
-        "Extensions.ContentVerification.VerifyJobResultMV3.GoogleDocsOffline");
-  }
-
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer) {
     test_observer->JobFinished(extension_id_, relative_path_, reason);

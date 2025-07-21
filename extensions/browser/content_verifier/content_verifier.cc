@@ -725,21 +725,6 @@ void ContentVerifier::VerifyFailed(
           "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3",
           file_type);
     }
-
-    // TODO(crbug.com/325613709): Remove docs offline specific logging after a
-    // few milestones.
-    if (extension_id == extension_misc::kDocsOfflineExtensionId &&
-        manifest_version == 3) {
-      base::UmaHistogramEnumeration(
-          base::StringPrintf("Extensions.ContentVerification."
-                             "VerifyFailedOnFileMV3.GoogleDocsOffline.%s",
-                             histogram_suffix),
-          reason, ContentVerifyJob::FAILURE_REASON_MAX);
-      base::UmaHistogramEnumeration(
-          "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3."
-          "GoogleDocsOffline",
-          file_type);
-    }
   }
 
   delegate_->VerifyFailed(extension_id, reason);
@@ -894,29 +879,6 @@ void ContentVerifier::OnFetchComplete(
   if (g_content_verifier_test_observer) {
     g_content_verifier_test_observer->OnFetchComplete(content_hash,
                                                       did_hash_mismatch);
-  }
-
-  auto record_hash_mismatch = [&data, &did_hash_mismatch](
-                                  const char* mv2_histogram,
-                                  const char* mv3_histogram) {
-    if (mv2_histogram && data->manifest_version == 2) {
-      base::UmaHistogramBoolean(mv2_histogram, did_hash_mismatch);
-    } else if (data->manifest_version == 3) {
-      base::UmaHistogramBoolean(mv3_histogram, did_hash_mismatch);
-    }
-  };
-
-  record_hash_mismatch(
-      "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2",
-      "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3");
-
-  // TODO(crbug.com/325613709): Remove docs offline specific logging after a few
-  // milestones.
-  if (extension_id == extension_misc::kDocsOfflineExtensionId) {
-    record_hash_mismatch(
-        nullptr,  // No MV2 Google Docs Offline version.
-        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3."
-        "GoogleDocsOffline");
   }
 
   if (!did_hash_mismatch)
