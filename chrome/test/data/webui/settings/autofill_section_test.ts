@@ -452,6 +452,56 @@ suite('AutofillSectionAddressTests', function() {
     assertTrue(!!section.shadowRoot!.querySelector('#menuEditAddress'));
   });
 
+  test('verifyAccountHomeAddressEdit', async function() {
+    const openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    const homeAddress = createAddressEntry();
+    homeAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
+    const section = await createAutofillSection([homeAddress], {});
+
+    const addressList = section.$.addressList;
+    const row = addressList.children[0];
+    assertTrue(!!row);
+    const menuButton = row.querySelector<HTMLElement>('.address-menu');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    const editButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+    assertTrue(!!editButton);
+    editButton.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('googleAccountHomeAddressUrl'));
+  });
+
+  test('verifyAccountWorkAddressEdit', async function() {
+    const openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    const workAddress = createAddressEntry();
+    workAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
+    const section = await createAutofillSection([workAddress], {});
+
+    const addressList = section.$.addressList;
+    const row = addressList.children[0];
+    assertTrue(!!row);
+    const menuButton = row.querySelector<HTMLElement>('.address-menu');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    const editButton =
+        section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+    assertTrue(!!editButton);
+    editButton.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('googleAccountWorkAddressUrl'));
+  });
+
   test('verifyAddAddressDialog', function() {
     const address = createEmptyAddressEntry();
     return createAddressDialog(address).then(function(dialog) {

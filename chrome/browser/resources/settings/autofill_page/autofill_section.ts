@@ -162,6 +162,29 @@ export class SettingsAutofillSectionElement extends
   }
 
   /**
+   * Returns the text for the edit button in the action menu.
+   */
+  private getMenuEditAddressLabel_(
+      address: chrome.autofillPrivate.AddressEntry): string {
+    const isHomeOrWorkAddress = this.isAccountHomeAddress_(address) ||
+        this.isAccountWorkAddress_(address);
+
+    return this.i18n(isHomeOrWorkAddress ? 'editAddressInAccount' : 'edit');
+  }
+
+  /**
+   * Returns the text for the remove button in the action menu.
+   */
+  private getMenuRemoveAddressLabel_(
+      address: chrome.autofillPrivate.AddressEntry): string {
+    const isHomeOrWorkAddress = this.isAccountHomeAddress_(address) ||
+        this.isAccountWorkAddress_(address);
+
+    return this.i18n(
+        isHomeOrWorkAddress ? 'removeFromChrome' : 'removeAddress');
+  }
+
+  /**
    * Open the address action menu.
    */
   private onAddressMenuClick_(
@@ -193,7 +216,13 @@ export class SettingsAutofillSectionElement extends
    */
   private onMenuEditAddressClick_(e: Event) {
     e.preventDefault();
-    this.showAddressDialog_ = true;
+    if (this.isAccountHomeAddress_(this.activeAddress!)) {
+      this.onAccountHomeAddressClick_();
+    } else if (this.isAccountWorkAddress_(this.activeAddress!)) {
+      this.onAccountWorkAddressClick_();
+    } else {
+      this.showAddressDialog_ = true;
+    }
     this.$.addressSharedMenu.close();
   }
 

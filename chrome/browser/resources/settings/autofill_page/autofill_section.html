@@ -114,9 +114,13 @@
     </div>
     <cr-action-menu id="addressSharedMenu" role-description="$i18n{menu}">
       <button id="menuEditAddress" class="dropdown-item"
-          on-click="onMenuEditAddressClick_">$i18n{edit}</button>
+          on-click="onMenuEditAddressClick_">
+        [[getMenuEditAddressLabel_(activeAddress)]]
+      </button>
       <button id="menuRemoveAddress" class="dropdown-item"
-          on-click="onMenuRemoveAddressClick_">$i18n{removeAddress}</button>
+          on-click="onMenuRemoveAddressClick_">
+        [[getMenuRemoveAddressLabel_(activeAddress)]]
+      </button>
     </cr-action-menu>
     <template is="dom-if" if="[[showAddressDialog_]]" restamp>
       <settings-address-edit-dialog address="[[activeAddress]]"
