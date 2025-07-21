@@ -325,6 +325,9 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageComposeboxHover] = {
       dark_mode ? SkColorSetRGB(0x25, 0x26, 0x2E)
                 : SkColorSetRGB(0xE9, 0xEB, 0xF0)};
+  mixer[kColorNewTabPageComposeboxOutlineHcm] = {
+      dark_mode ? SkColorSetRGB(0xFF, 0xFF, 0xFF)
+                : SkColorSetRGB(0x00, 0x00, 0x00)};
   mixer[kColorNewTabPageComposeboxScrimBackground] = {
       dark_mode ? SkColorSetRGB(0x10, 0x12, 0x18)
                 : SkColorSetRGB(0xFF, 0xFF, 0xFF)};

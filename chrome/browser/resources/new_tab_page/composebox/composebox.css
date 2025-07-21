@@ -177,6 +177,15 @@
   right: 16px;
 }
 
+@keyframes icon-fade-in {
+  0% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 0;
+  }
+}
+
 #cancelIcon {
   --cr-icon-button-fill-color:
       var(--color-new-tab-page-composebox-cancel-button);
@@ -205,12 +214,10 @@
   opacity: 100%;
 }
 
-@keyframes icon-fade-in {
-  0% {
-    opacity: 0;
-  }
-  70% {
-    opacity: 0;
+@media (forced-colors: active) {
+  :host,
+  .action-icon {
+    border: solid var(--color-new-tab-page-composebox-outline-hcm);
   }
 }
 
