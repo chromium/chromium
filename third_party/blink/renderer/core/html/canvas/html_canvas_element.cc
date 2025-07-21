@@ -1785,14 +1785,6 @@ void HTMLCanvasElement::SetNeedsPushProperties() {
 }
 
 void HTMLCanvasElement::DiscardResources() {
-  if (RenderingContext() && RenderingContext()->IsHibernating()) {
-    // Ensure consistency of metrics reporting across the change from the
-    // previous code flow.
-    CanvasHibernationHandler::ReportHibernationEvent(
-        CanvasHibernationHandler::HibernationEvent::
-            kHibernationEndedWithTeardown);
-    GetHibernationHandler()->Clear();
-  }
   ResetLayer();
   resource_provider_for_canvas2d_ = nullptr;
   UpdateMemoryUsage();

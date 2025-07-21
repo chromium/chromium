@@ -233,6 +233,14 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   ResetInternal();
   HTMLCanvasElement* const element = canvas();
   if (element != nullptr) [[likely]] {
+    if (IsHibernating()) {
+      // Ensure consistency of metrics reporting across the change from the
+      // previous code flow.
+      CanvasHibernationHandler::ReportHibernationEvent(
+          CanvasHibernationHandler::HibernationEvent::
+              kHibernationEndedWithTeardown);
+      element->GetHibernationHandler()->Clear();
+    }
     element->DiscardResources();
     element->DiscardResourceDispatcher();
 
@@ -1145,6 +1153,14 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 }
 
 void CanvasRenderingContext2D::SizeChanged() {
+  if (IsHibernating()) {
+    // Ensure consistency of metrics reporting across the change from the
+    // previous code flow.
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationEndedWithTeardown);
+    canvas()->GetHibernationHandler()->Clear();
+  }
   did_fail_to_create_resource_provider_ = false;
 }
 
