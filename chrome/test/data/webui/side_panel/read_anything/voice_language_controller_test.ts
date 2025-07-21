@@ -668,24 +668,24 @@ suite('VoiceLanguageController', () => {
   });
 
   test('onPageLanguageChanged installs lang if not installed', () => {
-    const lang = 'ja';
+    const lang = 'es-ES';
     chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
 
 
     voiceLanguageController.onPageLanguageChanged();
-    assertArrayEquals([lang], requestInfoLangs);
+    assertArrayEquals([lang.toLowerCase()], requestInfoLangs);
 
     voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
     assertEquals(
         VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
         voiceLanguageController.getLocalStatus(lang));
-    assertArrayEquals([lang], installedLangs);
+    assertArrayEquals([lang.toLowerCase()], installedLangs);
   });
 
   test('onPageLanguageChanged when previously failed does not install', () => {
-    const lang = 'ja';
+    const lang = 'es-ES';
     chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kOther'));
@@ -698,7 +698,7 @@ suite('VoiceLanguageController', () => {
   });
 
   test('onPageLanguageChanged and already installing does not install', () => {
-    const lang = 'ja';
+    const lang = 'es-ES';
     chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalling'));
@@ -711,7 +711,7 @@ suite('VoiceLanguageController', () => {
   });
 
   test('onPageLanguageChanged and already installed does not install', () => {
-    const lang = 'ja';
+    const lang = 'es-ES';
     chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.setServerStatus(
         lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));

@@ -136,6 +136,7 @@ export class VoiceLanguageController {
   private installLanguageIfPossible_(
       langOrLocale: string, onlyInstallExactGoogleLocaleMatch: boolean,
       retryIfPreviousInstallFailed: boolean) {
+    const lang = langOrLocale.toLowerCase();
     // Don't attempt to install a language if it's not a Google TTS language
     // available for downloading. It's possible for other non-Google TTS
     // voices to have a valid language code from
@@ -144,15 +145,15 @@ export class VoiceLanguageController {
     // If we shouldn't check for Google locales (such as when installing a new
     // page language), this check can be skipped.
     if (onlyInstallExactGoogleLocaleMatch &&
-        !AVAILABLE_GOOGLE_TTS_LOCALES.has(langOrLocale)) {
-      this.autoSwitchVoice_(langOrLocale);
+        !AVAILABLE_GOOGLE_TTS_LOCALES.has(lang)) {
+      this.autoSwitchVoice_(lang);
       return;
     }
 
     const langCodeForVoicePackManager = convertLangOrLocaleForVoicePackManager(
-        langOrLocale, this.getEnabledLangs(), this.getAvailableLangs());
+        lang, this.getEnabledLangs(), this.getAvailableLangs());
     if (!langCodeForVoicePackManager) {
-      this.autoSwitchVoice_(langOrLocale);
+      this.autoSwitchVoice_(lang);
       return;
     }
 
@@ -502,12 +503,13 @@ export class VoiceLanguageController {
       return;
     }
 
+    const lowerLang = lang.toLowerCase();
     const newStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    this.setServerStatus(lang, newStatus);
-    this.updateApplicationState_(lang, newStatus);
+    this.setServerStatus(lowerLang, newStatus);
+    this.updateApplicationState_(lowerLang, newStatus);
 
     if (isVoicePackStatusError(newStatus)) {
-      this.disableLangIfNoVoices_(lang);
+      this.disableLangIfNoVoices_(lowerLang);
     }
   }
 
