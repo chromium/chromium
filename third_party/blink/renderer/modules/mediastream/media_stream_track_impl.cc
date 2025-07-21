@@ -782,6 +782,19 @@ CaptureHandle* MediaStreamTrackImpl::getCaptureHandle() const {
   return capture_handle;
 }
 
+void MediaStreamTrackImpl::Dispose() {
+  // `MediaStreamTrackImpl` and the `SpeechRecognitionMediaStreamAudioSink`
+  // which it owns may be destroyed before the `MediaStreamAudioTrack`. Remove
+  // the sinks before destroying them to prevent `MediaStreamAudioTrack` from
+  // using them after destruction.
+  if (MediaStreamAudioTrack* audio_track =
+          MediaStreamAudioTrack::From(Component())) {
+    for (SpeechRecognitionMediaStreamAudioSink* sink : registered_sinks_) {
+      audio_track->RemoveSink(sink);
+    }
+  }
+}
+
 ScriptPromise<IDLUndefined> MediaStreamTrackImpl::applyConstraints(
     ScriptState* script_state,
     const MediaTrackConstraints* constraints) {

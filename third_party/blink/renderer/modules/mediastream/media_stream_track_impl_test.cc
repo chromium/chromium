@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_long_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -28,14 +29,15 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/modules/mediastream/apply_constraints_processor.h"
-#include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_content.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/speech_recognition_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
@@ -90,19 +92,6 @@ class MockWebMediaStreamObserver : public WebMediaStreamObserver {
   MOCK_METHOD(void, EnabledStateChangedForWebRtcAudio, (bool));
 };
 
-std::unique_ptr<blink::LocalMediaStreamAudioSource>
-MakeLocalMediaStreamAudioSource() {
-  blink::MediaStreamDevice device;
-  device.type = blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;
-  return std::make_unique<blink::LocalMediaStreamAudioSource>(
-      /*blink::WebLocalFrame=*/nullptr, device,
-      /*requested_buffer_size=*/nullptr,
-      /*disable_local_echo=*/false,
-      /*enable_system_echo_cancellation=*/false,
-      blink::WebPlatformMediaStreamSource::ConstraintsRepeatingCallback(),
-      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
-}
-
 MediaStreamComponent* MakeMockVideoComponent() {
   std::unique_ptr<MockMediaStreamVideoSource> platform_source =
       MakeMockMediaStreamVideoSource();
@@ -120,7 +109,10 @@ MediaStreamComponent* MakeMockVideoComponent() {
 MediaStreamComponent* MakeMockAudioComponent() {
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeAudio, "name",
-      /*remote=*/false, MakeLocalMediaStreamAudioSource());
+      /*remote=*/false,
+      std::make_unique<MediaStreamAudioSource>(
+          scheduler::GetSingleThreadTaskRunnerForTesting(),
+          true /* is_local_source */));
   auto platform_track =
       std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
   return MakeGarbageCollected<MediaStreamComponentImpl>(
@@ -283,7 +275,10 @@ class HtmlMediaElementForWebRtcAudioTest : public testing::Test {
   MediaStreamComponent* MakeMockWebRtcAudioComponent() {
     auto* source = MakeGarbageCollected<MediaStreamSource>(
         "id", MediaStreamSource::StreamType::kTypeAudio, "name",
-        /*remote=*/true, MakeLocalMediaStreamAudioSource());
+        /*remote=*/true,
+        std::make_unique<MediaStreamAudioSource>(
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            false /* is_local_source */));
 
     scoped_refptr<webrtc::AudioTrackInterface> remote_track(
         blink::MockWebRtcAudioTrack::Create("track_id").get());
@@ -297,7 +292,10 @@ class HtmlMediaElementForWebRtcAudioTest : public testing::Test {
   MediaStreamComponent* MakeMockAudioComponent() {
     MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
         "id", MediaStreamSource::StreamType::kTypeAudio, "name",
-        /*remote=*/false, MakeLocalMediaStreamAudioSource());
+        /*remote=*/false,
+        std::make_unique<MediaStreamAudioSource>(
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            true /* is_local_source */));
     auto platform_track =
         std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
     return MakeGarbageCollected<MediaStreamComponentImpl>(
@@ -858,6 +856,53 @@ TEST_F(MediaStreamTrackImplTest, ApplyConstraintsUpdatesMinFps) {
   EXPECT_EQ(platform_source_ptr->max_requested_height(), initialHeight);
   EXPECT_EQ(platform_source_ptr->max_requested_frame_rate(), initialFrameRate);
   EXPECT_EQ(video_track->min_frame_rate(), kMinFrameRate);
+}
+
+TEST_F(MediaStreamTrackImplTest, StopAudioTrackAfterSinkDestroyed) {
+  V8TestingScope v8_scope;
+
+  // 1. Create the underlying platform track and its component.
+  // Keep this component alive with a Persistent handle to control its
+  // lifetime, ensuring it outlives the temporary track and sink created below.
+  Persistent<MediaStreamComponent> component = MakeMockAudioComponent();
+  MediaStreamAudioSource* source =
+      MediaStreamAudioSource::From(component->Source());
+
+  MediaStreamAudioTrack* platform_track =
+      MediaStreamAudioTrack::From(component.Get());
+  ASSERT_TRUE(source);
+  ASSERT_TRUE(platform_track);
+
+  // 2. Start the platform track by connecting it to the source. After this, the
+  // track is "live" and can accept sinks.
+  source->ConnectToInitializedTrack(component.Get());
+
+  // 3. Create a temporary MediaStreamTrackImpl wrapper and a sink in a
+  // separate scope. This wrapper will "own" the sink via a strong GC ref.
+  {
+    MediaStreamTrack* track1 = MakeGarbageCollected<MediaStreamTrackImpl>(
+        v8_scope.GetExecutionContext(), component.Get());
+    auto* sink = MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
+        v8_scope.GetExecutionContext(), base::DoNothing());
+
+    // 4. Register the sink with the wrapper and add its raw pointer to the
+    // platform track's sink list.
+    track1->RegisterSink(sink);
+    platform_track->AddSink(sink);
+  }
+
+  // 5. Force garbage collection. This destroys `track_with_sink` and `sink`.
+  // If the fix is present, `track_with_sink->Dispose()` is called, removing
+  // the sink from `platform_track`.
+  WebHeap::CollectAllGarbageForTesting();
+
+  // 5. Now, destroy the component that owns the platform track by clearing the
+  // persistent handle and running GC again. The component's pre-finalizer,
+  // Dispose(), will call `platform_track->StopAndNotify()`.
+  component.Clear();
+  WebHeap::CollectAllGarbageForTesting();
+
+  // The test passes if it doesn't crash.
 }
 
 }  // namespace blink
