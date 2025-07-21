@@ -4,10 +4,14 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -36,6 +40,21 @@ NSString* const kFakeboxMatchingBackgroundColor =
 @implementation NewTabPageQuickActionsViewController {
   // The stack view containing the quick actions buttons.
   UIStackView* _buttonStackView;
+}
+
+- (instancetype)init {
+  self = [super init];
+
+  if (self) {
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      NSArray<UITrait>* colorTraits =
+          TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
+      [self registerForTraitChanges:colorTraits
+                         withAction:@selector(applyBackgroundColors)];
+    }
+  }
+
+  return self;
 }
 
 - (void)viewDidLoad {
@@ -75,6 +94,10 @@ NSString* const kFakeboxMatchingBackgroundColor =
   [_incognitoButton addTarget:self
                        action:@selector(openIncognitoSearch)
              forControlEvents:UIControlEventTouchUpInside];
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [self applyBackgroundColors];
+  }
 }
 
 - (CGSize)preferredContentSize {
@@ -143,13 +166,41 @@ NSString* const kFakeboxMatchingBackgroundColor =
 
 // Returns the color needed for the background of the button.
 - (UIColor*)buttonBackgroundColor {
+  NewTabPageColorPalette* colorPalette =
+      IsNTPBackgroundCustomizationEnabled()
+          ? [self.traitCollection objectForTrait:NewTabPageTrait.class]
+          : nil;
+
   if (GetNTPMIAEntrypointVariation() ==
       NTPMIAEntrypointVariation::kOmniboxContainedSingleButton) {
-    return [UIColor colorNamed:kBackgroundColor];
+    return colorPalette ? colorPalette.secondaryCellColor
+                        : [UIColor colorNamed:kBackgroundColor];
   }
 
   // All other treatments use the same color as the fakebox.
-  return [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
+  return colorPalette ? colorPalette.omniboxColor
+                      : [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
+}
+
+// Sets the background using the current color palette, or defaults if none is
+// set.
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+
+  _incognitoButton.backgroundColor = [self buttonBackgroundColor];
+  _voiceSearchButton.backgroundColor = [self buttonBackgroundColor];
+  _lensButton.backgroundColor = [self buttonBackgroundColor];
+
+  if (colorPalette) {
+    _incognitoButton.tintColor = colorPalette.tintColor;
+    _voiceSearchButton.tintColor = colorPalette.tintColor;
+    _lensButton.tintColor = colorPalette.tintColor;
+  } else {
+    _incognitoButton.tintColor = [UIColor colorNamed:kGrey700Color];
+    _voiceSearchButton.tintColor = [UIColor colorNamed:kGrey700Color];
+    _lensButton.tintColor = [UIColor colorNamed:kGrey700Color];
+  }
 }
 
 @end
