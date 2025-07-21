@@ -214,11 +214,6 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
     return Sandbox::kGpu;
   }
 
-  // NaCl tests on all platforms use the loader process.
-  if (process_type == switches::kNaClLoaderProcess) {
-    return Sandbox::kUtility;
-  }
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Intermediate process gains a sandbox later.
   if (process_type == switches::kZygoteProcessType)
