@@ -22,7 +22,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
-#include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
@@ -389,9 +388,8 @@ bool RemoteCommandsService::CanFetchRemoteCommands() {
         return false;
       }
     } else {
-      invalidation::Topic topic;
-      if (!GetRemoteCommandTopicFromPolicy(*policy, &topic)) {
-        LOG_POLICY(WARNING, REMOTE_COMMANDS) << "CEC is not enabled.";
+      if (!policy->has_command_invalidation_topic() ||
+          policy->command_invalidation_topic().empty()) {
         return false;
       }
     }
