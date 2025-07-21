@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/android/jni_string.h"
+#include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/prefs_export.h"
 
@@ -142,6 +143,23 @@ jboolean PrefServiceAndroid::IsManagedPreference(
     const JavaParamRef<jstring>& j_preference) {
   return pref_service_->IsManagedPreference(
       base::android::ConvertJavaStringToUTF8(env, j_preference));
+}
+
+jboolean PrefServiceAndroid::HasRecommendation(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& j_preference) {
+  const PrefService::Preference* pref = pref_service_->FindPreference(
+      base::android::ConvertJavaStringToUTF8(env, j_preference));
+  return pref && pref->GetRecommendedValue() != nullptr;
+}
+
+jboolean PrefServiceAndroid::IsFollowingRecommendation(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_preference) {
+  const PrefService::Preference* pref = pref_service_->FindPreference(
+      base::android::ConvertJavaStringToUTF8(env, j_preference));
+  return pref && pref->GetRecommendedValue() &&
+         *pref->GetRecommendedValue() == *pref->GetValue();
 }
 
 jboolean PrefServiceAndroid::IsRecommendedPreference(
