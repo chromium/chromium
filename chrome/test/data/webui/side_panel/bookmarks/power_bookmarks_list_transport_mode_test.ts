@@ -66,6 +66,7 @@ suite('TransportMode', () => {
       emptyBodyGuest: 'guest body',
       bookmarksTreeViewEnabled: false,
       isBookmarksInTransportModeEnabled: true,
+      splitViewEnabled: false,
     });
 
     powerBookmarksList = await initializeUi(bookmarksApi);

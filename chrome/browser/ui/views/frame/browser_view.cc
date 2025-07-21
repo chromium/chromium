@@ -986,14 +986,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
         this, std::make_unique<MultiContentsViewDelegateImpl>(*browser_));
     multi_contents_view_ =
         contents_container->AddChildView(std::move(multi_contents_view));
-    multi_contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
     contents_view = multi_contents_view_;
   } else {
     contents_container_view_ = contents_container->AddChildView(
         std::make_unique<ContentsContainerView>(this));
-    contents_web_view_ = contents_container_view_->GetContentsView();
-    contents_web_view_->SetID(VIEW_ID_TAB_CONTAINER);
-    contents_web_view_->set_is_primary_web_contents_for_window(true);
+    auto* contents_web_view = contents_container_view_->GetContentsView();
+    contents_web_view->set_is_primary_web_contents_for_window(true);
     contents_view = contents_container_view_;
   }
 
@@ -1172,7 +1170,6 @@ BrowserView::~BrowserView() {
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
   contents_container_view_ = nullptr;
-  contents_web_view_ = nullptr;
   lens_overlay_view_ = nullptr;
   devtools_web_view_ = nullptr;
   devtools_scrim_view_ = nullptr;
@@ -1942,7 +1939,9 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
             contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
           }));
     } else {
-      contents_web_view_->GetWebContentsCloseHandler()->ActiveTabChanged();
+      contents_container_view_->GetContentsView()
+          ->GetWebContentsCloseHandler()
+          ->ActiveTabChanged();
     }
 
     if (loading_bar_) {
@@ -2029,7 +2028,9 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
           contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
         }));
   } else {
-    contents_web_view_->GetWebContentsCloseHandler()->ActiveTabChanged();
+    contents_container_view_->GetContentsView()
+        ->GetWebContentsCloseHandler()
+        ->ActiveTabChanged();
   }
   if (loading_bar_) {
     loading_bar_->SetWebContents(nullptr);
@@ -2071,7 +2072,7 @@ gfx::Size BrowserView::GetContentsSize() const {
   if (multi_contents_view_) {
     return multi_contents_view_->size();
   } else {
-    return contents_web_view_->size();
+    return contents_container_view_->size();
   }
 }
 
@@ -2313,7 +2314,7 @@ void BrowserView::FullscreenStateChanged() {
 
     // Reshow the split view after completing the toolbar sizing.
     if (!IsFullscreen() && browser_->tab_strip_model()->IsActiveTabSplit()) {
-      ShowSplitView(GetContentsView()->HasFocus());
+      ShowSplitView(GetContentsWebView()->HasFocus());
     }
   }
 }
@@ -2453,10 +2454,12 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
     return;
   }
 
+  std::vector<ContentsWebView*> contents_web_views =
+      GetAllVisibleContentsWebViews();
+
   if (is_animating) {
-    GetContentsWebView()->SetFastResize(true);
-    if (multi_contents_view_) {
-      multi_contents_view_->GetInactiveContentsView()->SetFastResize(true);
+    for (auto* contents_web_view : contents_web_views) {
+      contents_web_view->SetFastResize(true);
     }
   }
   UpdateUIForContents(GetActiveWebContents());
@@ -2469,9 +2472,8 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   }
 
   if (is_animating) {
-    GetContentsWebView()->SetFastResize(false);
-    if (multi_contents_view_) {
-      multi_contents_view_->GetInactiveContentsView()->SetFastResize(false);
+    for (auto* contents_web_view : contents_web_views) {
+      contents_web_view->SetFastResize(false);
     }
   }
 
@@ -2480,10 +2482,8 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   // haven't changed contents_container_ won't get a Layout and we'll end up
   // with a gray rect because the clip wasn't updated.
   if (!is_animating) {
-    if (multi_contents_view_) {
-      multi_contents_view_->InvalidateLayout();
-    } else {
-      contents_web_view_->InvalidateLayout();
+    for (auto* contents_web_view : contents_web_views) {
+      contents_web_view->InvalidateLayout();
     }
     contents_container_->DeprecatedLayoutImmediately();
   }
@@ -2503,18 +2503,19 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
 
 void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
 #if !BUILDFLAG(IS_LINUX)
-  GetContentsWebView()->SetFastResize(is_dragging);
-  if (multi_contents_view_) {
-    multi_contents_view_->GetInactiveContentsView()->SetFastResize(is_dragging);
+  std::vector<ContentsWebView*> contents_web_views =
+      GetAllVisibleContentsWebViews();
+
+  for (auto* contents_web_view : contents_web_views) {
+    contents_web_view->SetFastResize(is_dragging);
   }
+
   if (!is_dragging) {
     // When tab dragging is ended, we need to make sure the web contents get
     // re-layed out. Otherwise we may see web contents get clipped to the window
     // size that was used during dragging.
-    if (multi_contents_view_) {
-      multi_contents_view_->InvalidateLayout();
-    } else {
-      contents_web_view_->InvalidateLayout();
+    for (ContentsWebView* contents_web_view : contents_web_views) {
+      contents_web_view->InvalidateLayout();
     }
     contents_container_->DeprecatedLayoutImmediately();
   }
@@ -2780,7 +2781,7 @@ views::WebView* BrowserView::GetContentsWebView() {
   if (multi_contents_view_) {
     return multi_contents_view_->GetActiveContentsView();
   } else {
-    return contents_web_view_;
+    return contents_container_view_->GetContentsView();
   }
 }
 
@@ -2865,7 +2866,7 @@ void BrowserView::RotatePaneFocus(bool forwards) {
 }
 
 void BrowserView::FocusWebContentsPane() {
-  GetContentsView()->RequestFocus();
+  GetContentsWebView()->RequestFocus();
 }
 
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
@@ -3340,7 +3341,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
-  views::View* contents_view = GetContentsView();
+  views::View* contents_view = GetContentsWebView();
 
   if (contents_view->HasFocus() && !GetLocationBarView()->IsMouseHovered() &&
       web_contents->IsFocusedElementEditable()) {
@@ -3691,7 +3692,7 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
       const tabs::TabInterface* active_tab =
           browser_->tab_strip_model()->GetActiveTab();
       if (active_tab->IsSplit()) {
-        ShowSplitView(GetContentsView()->HasFocus());
+        ShowSplitView(GetContentsWebView()->HasFocus());
       }
       break;
     }
@@ -3792,7 +3793,9 @@ void BrowserView::OnTabStripModelChanged(
             contents_view->GetWebContentsCloseHandler()->TabInserted();
           }));
     } else {
-      contents_web_view_->GetWebContentsCloseHandler()->TabInserted();
+      contents_container_view_->GetContentsView()
+          ->GetWebContentsCloseHandler()
+          ->TabInserted();
     }
   }
 
@@ -3813,7 +3816,9 @@ void BrowserView::WillCloseAllTabs(TabStripModel* tab_strip_model) {
           contents_view->GetWebContentsCloseHandler()->WillCloseAllTabs();
         }));
   } else {
-    contents_web_view_->GetWebContentsCloseHandler()->WillCloseAllTabs();
+    contents_container_view_->GetContentsView()
+        ->GetWebContentsCloseHandler()
+        ->WillCloseAllTabs();
   }
 }
 
@@ -3828,7 +3833,9 @@ void BrowserView::CloseAllTabsStopped(TabStripModel* tab_strip_model,
           contents_view->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
         }));
   } else {
-    contents_web_view_->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
+    contents_container_view_->GetContentsView()
+        ->GetWebContentsCloseHandler()
+        ->CloseAllTabsCanceled();
   }
 }
 
@@ -4150,14 +4157,11 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
 }
 
 std::vector<views::NativeViewHost*>
-BrowserView::GetNativeViewHostsForTopControlsSlide() const {
+BrowserView::GetNativeViewHostsForTopControlsSlide() {
   std::vector<views::NativeViewHost*> results;
-  if (multi_contents_view_) {
-    results.push_back(multi_contents_view_->GetActiveContentsView()->holder());
-    results.push_back(
-        multi_contents_view_->GetInactiveContentsView()->holder());
-  } else {
-    results.push_back(contents_web_view_->holder());
+
+  for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
+    results.push_back(contents_web_view->holder());
   }
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -4377,7 +4381,7 @@ views::View* BrowserView::GetContentsView() {
   if (multi_contents_view_) {
     return multi_contents_view_->GetActiveContentsView();
   } else {
-    return contents_web_view_;
+    return contents_container_view_->GetContentsView();
   }
 }
 
@@ -4734,7 +4738,7 @@ void BrowserView::MaybeUpdateStoredFocusForWebContents(
   ContentsWebView* focused_view =
       views::AsViewClass<ContentsWebView>(focus_helper->GetStoredFocus());
   if (focused_view && focused_view->web_contents() != web_contents) {
-    focus_helper->SetStoredFocusView(GetContentsView());
+    focus_helper->SetStoredFocusView(GetContentsWebView());
   }
 }
 
@@ -4744,11 +4748,11 @@ std::vector<ContentsWebView*> BrowserView::GetAllVisibleContentsWebViews() {
     contents_views.push_back(multi_contents_view_->GetActiveContentsView());
     ContentsWebView* inactive_contents_view =
         multi_contents_view_->GetInactiveContentsView();
-    if (inactive_contents_view->GetVisible()) {
+    if (multi_contents_view_->IsInSplitView()) {
       contents_views.push_back(inactive_contents_view);
     }
   } else {
-    contents_views.push_back(contents_web_view_);
+    contents_views.push_back(contents_container_view_->GetContentsView());
   }
   return contents_views;
 }
@@ -4818,11 +4822,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (unified_side_panel_) {
     panes->push_back(unified_side_panel_);
   }
-  // TODO(crbug.com/40119836): Implement for mac.
-  if (multi_contents_view_) {
-    panes->push_back(multi_contents_view_);
-  } else {
-    panes->push_back(contents_web_view_);
+  for (auto* contents_web_view : GetAllVisibleContentsWebViews()) {
+    panes->push_back(contents_web_view);
   }
   if (devtools_web_view_->GetVisible()) {
     panes->push_back(devtools_web_view_);
@@ -4843,7 +4844,7 @@ bool BrowserView::ShouldDescendIntoChildForEventHandling(
     // Draggable regions are defined relative to the web contents.
     gfx::Point point_in_contents_web_view_coords(location);
     views::View::ConvertPointToTarget(GetWidget()->GetRootView(),
-                                      contents_web_view_,
+                                      GetContentsWebView(),
                                       &point_in_contents_web_view_coords);
 
     // Draggable regions should be ignored for clicks into any browser view's
@@ -5689,7 +5690,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
 
   // Reshow the split view after completing the toolbar sizing.
   if (!fullscreen && browser_->tab_strip_model()->IsActiveTabSplit()) {
-    ShowSplitView(GetContentsView()->HasFocus());
+    ShowSplitView(GetContentsWebView()->HasFocus());
   }
 }
 

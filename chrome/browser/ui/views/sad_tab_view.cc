@@ -255,7 +255,7 @@ void SadTabView::AttachToWebView() {
   std::vector<ContentsWebView*> visible_contents_views =
       browser_view->GetAllVisibleContentsWebViews();
   for (ContentsWebView* contents_view : visible_contents_views) {
-    if (contents_view->GetWebContents() == web_contents()) {
+    if (contents_view->web_contents() == web_contents()) {
       owner_ = contents_view;
       owner_->SetCrashedOverlayView(this);
       break;

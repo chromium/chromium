@@ -617,10 +617,13 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
       return bookmarks::HasBookmarkURLs(selection_);
-    case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW:
+    case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW: {
+      tabs::TabInterface* active_tab =
+          browser_ ? browser_->GetActiveTabInterface() : nullptr;
       return bookmarks::HasBookmarkURLs(selection_) &&
-             base::FeatureList::IsEnabled(features::kSideBySide) && browser_ &&
-             !browser_->GetActiveTabInterface()->IsSplit();
+             base::FeatureList::IsEnabled(features::kSideBySide) &&
+             active_tab && active_tab->IsSplit();
+    }
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
       return bookmarks::HasBookmarkURLs(selection_) &&
              incognito_avail != policy::IncognitoModeAvailability::kForced;

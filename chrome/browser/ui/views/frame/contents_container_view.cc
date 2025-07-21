@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -42,6 +43,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
 
   contents_view_ = AddChildView(
       std::make_unique<ContentsWebView>(browser_view->GetProfile()));
+  contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
 
   contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
   contents_scrim_view_->layer()->SetName("ContentsScrimView");
