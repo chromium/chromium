@@ -72,6 +72,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
 #pragma mark - Public
 
+- (ToolbarButton*)tabGridButton {
+  return self.view.tabGridButton;
+}
+
 - (ToolbarButton*)toolsMenuButton {
   return self.view.toolsMenuButton;
 }

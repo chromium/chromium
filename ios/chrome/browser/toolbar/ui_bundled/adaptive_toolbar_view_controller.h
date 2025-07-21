@@ -52,6 +52,9 @@
 @property(nonatomic, weak) id<AdaptiveToolbarViewControllerDelegate>
     adaptiveDelegate;
 
+// Returns the tab grid button.
+- (ToolbarButton*)tabGridButton;
+
 // Returns the tools menu button.
 - (ToolbarButton*)toolsMenuButton;
 

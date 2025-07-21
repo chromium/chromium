@@ -23,6 +23,10 @@ class WebState;
 // returns NO. Subclasses can override this value.
 - (BOOL)hasTabGridButton;
 
+// Whether an IPH shown from the tab grid button should point up or down.
+// Base class implementation returns YES. Subclasses can override this value.
+- (BOOL)shouldPointArrowDownForTabGridIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_ADAPTIVE_TOOLBAR_COORDINATOR_SUBCLASSING_H_

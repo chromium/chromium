@@ -1,6 +1,8 @@
 include_rules = [
   "+components/collaboration/public",
+  "+components/saved_tab_groups/public",
   "+ios/chrome/browser/banner_promo/model",
+  "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/collaboration/model/messaging",
   "+ios/chrome/browser/contextual_panel/model",
   "+ios/chrome/browser/default_browser/model",
