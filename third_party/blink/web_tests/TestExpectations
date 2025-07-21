@@ -9583,3 +9583,6 @@ crbug.com/432201711 external/wpt/trusted-types/trusted-types-navigation.html?36-
 # Gardener 2025-07-16
 crbug.com/431938385 [ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/readValue/characteristic-is-removed.https.window.html [ Failure Pass ]
 
+# Gardener 2025-07-21
+crbug.com/419705502 [ Mac ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
+
