@@ -574,16 +574,9 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [[EarlGrey selectElementWithMatcher:GetMatcherForCloseAllInactiveButton()]
       performAction:grey_tap()];
 
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap outside of the context menu to cancel it.
-    [[EarlGrey selectElementWithMatcher:InactiveTabGrid()]
-        performAction:grey_tap()];
-  } else {
-    // Tap Cancel.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::AlertItemWithAccessibilityLabelId(
-                       IDS_CANCEL)] performAction:grey_tap()];
-  }
+  // Tap outside of the context menu to cancel it.
+  [[EarlGrey selectElementWithMatcher:InactiveTabGrid()]
+      performAction:grey_tap()];
 
   // There should still be three inactive tabs.
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
