@@ -35,6 +35,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -1162,10 +1163,12 @@ void CanvasRenderingContext2D::SizeChanged() {
 
 CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
     const {
-  if (!canvas()) {
-    return nullptr;
-  }
-  return canvas()->GetHibernationHandler();
+  return hibernation_handler_.get();
+}
+
+void CanvasRenderingContext2D::Dispose() {
+  hibernation_handler_ = nullptr;
+  CanvasRenderingContext::Dispose();
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -1320,7 +1323,7 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   canvas()->UpdatePreferred2DRasterMode();
 
   if (!GetHibernationHandler()) {
-    canvas()->RecreateHibernationHandler();
+    hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   }
 
   resource_provider = RecreateCanvasResourceProviderForCanvas2D();
@@ -1440,7 +1443,7 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
     const gfx::Size& size) {
   canvas()->DiscardResources();
   canvas()->SetSize(size);
-  canvas()->RecreateHibernationHandler();
+  hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   ReplaceResourceProviderForCanvas2D(std::move(provider));
 }
 

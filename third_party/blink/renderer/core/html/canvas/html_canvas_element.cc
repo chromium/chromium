@@ -107,7 +107,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
@@ -442,8 +441,6 @@ void HTMLCanvasElement::Dispose() {
       context_->DetachHost();
     context_ = nullptr;
   }
-
-  hibernation_handler_ = nullptr;
 
   if (surface_layer_bridge_) {
     // Observer has to be cleared out at this point. Otherwise the
@@ -1706,10 +1703,6 @@ void HTMLCanvasElement::Trace(Visitor* visitor) const {
   CanvasRenderingContextHost::Trace(visitor);
   HTMLElement::Trace(visitor);
   CanvasRenderingContextHost::Trace(visitor);
-}
-
-CanvasHibernationHandler* HTMLCanvasElement::GetHibernationHandler() const {
-  return hibernation_handler_.get();
 }
 
 void HTMLCanvasElement::UpdatePreferred2DRasterMode() {

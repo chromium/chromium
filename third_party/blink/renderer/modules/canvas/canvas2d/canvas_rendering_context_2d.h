@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
@@ -96,7 +97,8 @@ enum class PredefinedColorSpace;
 class MODULES_EXPORT CanvasRenderingContext2D final
     : public ScriptWrappable,
       public BaseRenderingContext2D,
-      public SVGResourceClient {
+      public SVGResourceClient,
+      public CanvasHibernationHandler::Delegate {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -157,6 +159,25 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void SetOriginTainted() final;
   void DisableAcceleration() override;
   bool ShouldDisableAccelerationBecauseOfReadback() const override;
+
+  // CanvasHibernationHandler::Delegate implementation
+  bool IsContextLost() const override { return isContextLost(); }
+  bool IsPageVisible() const override {
+    return canvas() && canvas()->IsPageVisible();
+  }
+  void ResetResourceProviderForCanvas2D() override {
+    ReplaceResourceProviderForCanvas2D(nullptr);
+  }
+  void SetNeedsCompositingUpdate() override {
+    if (canvas()) {
+      canvas()->SetNeedsCompositingUpdate();
+    }
+  }
+  void ClearCanvas2DLayerTexture() override {
+    if (canvas()) {
+      canvas()->ClearCanvas2DLayerTexture();
+    }
+  }
 
   // CanvasRenderingContext implementation
   bool IsCanvas2DResourceValid() override;
@@ -296,6 +317,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTestAccelerated,
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
 
+  void Dispose() override;
+
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
 
   void EnableAccelerationIfPossible() override;
@@ -343,6 +366,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;
   bool should_prune_local_font_cache_;
   LinkedHashSet<String> font_lru_list_;
+
+  std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
 
   // `did_fail_to_create_resource_provider_` prevents repeated attempts in
   // allocating resources after the first attempt failed.
