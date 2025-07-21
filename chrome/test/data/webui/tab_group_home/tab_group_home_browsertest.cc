@@ -29,3 +29,16 @@ class TabUrlItemGridTest : public TabGroupHomeBrowserTest {
 IN_PROC_BROWSER_TEST_F(TabUrlItemGridTest, GridRendering) {
   RunTestSuite("GridRendering");
 }
+
+class UrlItemTest : public TabGroupHomeBrowserTest {
+ protected:
+  void RunTestSuite(const std::string& suiteName) {
+    TabGroupHomeBrowserTest::RunTest(
+        "tab_group_home/url_item_test.js",
+        base::StringPrintf("runMochaSuite('%s');", suiteName.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(UrlItemTest, All) {
+  RunTestSuite("UrlItemElementTest");
+}

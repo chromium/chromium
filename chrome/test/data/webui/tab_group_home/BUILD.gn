@@ -7,7 +7,10 @@ import("../build_webui_tests.gni")
 assert(!is_android)
 
 build_webui_tests("build") {
-  files = [ "tab_url_item_grid_test.ts" ]
+  files = [
+    "tab_url_item_grid_test.ts",
+    "url_item_test.ts",
+  ]
 
   ts_path_mappings =
       [ "chrome://tab-group-home/*|" +
