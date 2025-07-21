@@ -33,6 +33,8 @@ struct TokenResult {
   TokenResult();
   TokenResult(const TokenResult& other);
   TokenResult& operator=(const TokenResult& other);
+  TokenResult(TokenResult&& other) noexcept;
+  TokenResult& operator=(TokenResult&& other) noexcept;
   ~TokenResult();
 
   TokenServiceTable::Result db_result =
@@ -41,8 +43,7 @@ struct TokenResult {
   bool should_reencrypt = false;
 };
 
-// TokenWebData is a data repository for storage of authentication tokens.
-
+// `TokenWebData` is a data repository for storage of authentication tokens.
 class TokenWebData : public WebDataServiceBase {
  public:
   TokenWebData(scoped_refptr<WebDatabaseService> wdbs,
@@ -59,16 +60,13 @@ class TokenWebData : public WebDataServiceBase {
   // Remove all tokens stored in the web database.
   void RemoveAllTokens();
 
-  // Removes a token related to |service| from the web database.
+  // Removes a token related to `service` from the web database.
   void RemoveTokenForService(const std::string& service);
 
-  // Null on failure. Success is WDResult<std::vector<std::string> >
+  // Null on failure. Success is `WDResult<std::vector<std::string>>`.
   virtual Handle GetAllTokens(WebDataServiceConsumer* consumer);
 
  protected:
-  // For unit tests, passes a null callback.
-  TokenWebData();
-
   ~TokenWebData() override;
 
  private:

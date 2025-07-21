@@ -13,14 +13,14 @@
 #include "components/webdata/common/web_database_service.h"
 
 using base::BindOnce;
-using base::Time;
 
 class TokenWebDataBackend
     : public base::RefCountedDeleteOnSequence<TokenWebDataBackend> {
  public:
   explicit TokenWebDataBackend(
       scoped_refptr<base::SequencedTaskRunner> db_task_runner)
-      : base::RefCountedDeleteOnSequence<TokenWebDataBackend>(db_task_runner) {}
+      : base::RefCountedDeleteOnSequence<TokenWebDataBackend>(
+            std::move(db_task_runner)) {}
 
   WebDatabase::State RemoveAllTokens(WebDatabase* db) {
     if (TokenServiceTable::FromWebDatabase(db)->RemoveAllTokens()) {
@@ -54,7 +54,8 @@ class TokenWebDataBackend
     TokenResult result;
     result.db_result = TokenServiceTable::FromWebDatabase(db)->GetAllTokens(
         &result.tokens, result.should_reencrypt);
-    return std::make_unique<WDResult<TokenResult>>(TOKEN_RESULT, result);
+    return std::make_unique<WDResult<TokenResult>>(TOKEN_RESULT,
+                                                   std::move(result));
   }
 
  protected:
@@ -68,13 +69,16 @@ class TokenWebDataBackend
 TokenResult::TokenResult() = default;
 TokenResult::TokenResult(const TokenResult& other) = default;
 TokenResult& TokenResult::operator=(const TokenResult& other) = default;
+TokenResult::TokenResult(TokenResult&& other) noexcept = default;
+TokenResult& TokenResult::operator=(TokenResult&& other) noexcept = default;
 TokenResult::~TokenResult() = default;
 
 TokenWebData::TokenWebData(
     scoped_refptr<WebDatabaseService> wdbs,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(wdbs, std::move(ui_task_runner)),
-      token_backend_(new TokenWebDataBackend(wdbs->GetDbSequence())) {}
+      token_backend_(
+          base::MakeRefCounted<TokenWebDataBackend>(wdbs->GetDbSequence())) {}
 
 void TokenWebData::SetTokenForService(
     const std::string& service,
