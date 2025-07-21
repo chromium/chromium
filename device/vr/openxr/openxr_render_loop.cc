@@ -711,6 +711,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
       openxr_->GetSceneUnderstandingManager();
 
   if (scene_understanding_manager &&
+      frame_data->render_info->mojo_from_viewer &&
       frame_data->render_info->mojo_from_viewer->position &&
       frame_data->render_info->mojo_from_viewer->orientation) {
     scene_understanding_manager->OnFrameUpdate(frame_time);
