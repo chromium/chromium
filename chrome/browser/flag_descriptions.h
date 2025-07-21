@@ -2207,6 +2207,9 @@ extern const char kTabletTabStripAnimationDescription[];
 extern const char kToolbarPhoneAnimationRefactorName[];
 extern const char kToolbarPhoneAnimationRefactorDescription[];
 
+extern const char kToolbarTabletResizeRefactorName[];
+extern const char kToolbarTabletResizeRefactorDescription[];
+
 extern const char kDataSharingDebugLogsName[];
 extern const char kDataSharingDebugLogsDescription[];
 

@@ -414,6 +414,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTestDefaultEnabled,
     &kThirdPartyDisableChromeAutofillSettingsScreen,
     &kToolbarPhoneAnimationRefactor,
+    &kToolbarTabletResizeRefactor,
     &kTopControlsRefactor,
     &kTouchToSearchCallout,
     &kTraceBinderIpc,
@@ -1380,6 +1381,10 @@ BASE_FEATURE(kThirdPartyDisableChromeAutofillSettingsScreen,
 
 BASE_FEATURE(kToolbarPhoneAnimationRefactor,
              "ToolbarPhoneAnimationRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kToolbarTabletResizeRefactor,
+             "ToolbarTabletResizeRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of the refactored Top Controls approach on Android.

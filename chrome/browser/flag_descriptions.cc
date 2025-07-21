@@ -4002,6 +4002,12 @@ const char kToolbarPhoneAnimationRefactorName[] =
 const char kToolbarPhoneAnimationRefactorDescription[] =
     "Enables the refactored animation code path in Android for the toolbar "
     "phone class.";
+
+const char kToolbarTabletResizeRefactorName[] =
+    "Toolbar Tablet Resize Refactor";
+const char kToolbarTabletResizeRefactorDescription[] =
+    "Enables the refactored logic in Android for the toolbar tablet class for "
+    "new animations and what buttons to show on window resizing.";
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

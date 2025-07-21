@@ -9553,6 +9553,11 @@
     "expiry_milestone" : 145
   },
   {
+    "name" : "toolbar-tablet-resize-refactor",
+    "owners": [ "clhager@google.com", "skavuluru@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone" : 145
+  },
+  {
     "name": "top-chrome-toast-refinements",
     "owners": [
       "agale@google.com",

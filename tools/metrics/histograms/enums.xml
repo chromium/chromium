@@ -12353,6 +12353,7 @@ from previous Chrome versions.
   <int value="-633425040" label="ClipboardHistoryReorder:disabled"/>
   <int value="-632030508" label="NativeWindowNavButtons:disabled"/>
   <int value="-631740127" label="inert-visual-viewport"/>
+  <int value="-631730924" label="ToolbarTabletResizeRefactor:enabled"/>
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>
   <int value="-631136107"
       label="PageContentAnnotationsPersistSalientImageMetadata:disabled"/>
@@ -17792,6 +17793,7 @@ from previous Chrome versions.
   <int value="1377802847" label="ViewTransition:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
   <int value="1378638083" label="UniversalInstallRootScopeNoManifest:enabled"/>
+  <int value="1378792823" label="ToolbarTabletResizeRefactor:disabled"/>
   <int value="1379182781" label="MessagesForAndroidNearOomReduction:disabled"/>
   <int value="1379287559" label="FilesArchivemount2:enabled"/>
   <int value="1379571437" label="ExoPointerLock:disabled"/>
