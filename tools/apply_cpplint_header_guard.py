@@ -17,10 +17,10 @@ find foo -name '*.h' | \
 
 import sys
 
-IFNDEF_MSG = '  #ifndef header guard has wrong style, please use'
-ENDIF_MSG_START = '  #endif line should be "'
+IFNDEF_MSG = '  (cpplint) #ifndef header guard has wrong style, please use'
+ENDIF_MSG_START = '  (cpplint) #endif line should be "'
 ENDIF_MSG_END = '"  [build/header_guard] [5]'
-NO_GUARD_MSG = '  No #ifndef header guard found, suggested CPP variable is'
+NO_GUARD_MSG = '  (cpplint) No #ifndef header guard found, suggested CPP variable is'
 
 
 def process_cpplint_recommendations(cpplint_data):
