@@ -10,7 +10,6 @@ import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFoc
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -674,11 +673,7 @@ public class ToolbarTablet extends ToolbarLayout {
     private AnimatorSet buildHideToolbarButtonsAnimation() {
         Collection<Animator> animators = new ArrayList<>();
 
-        ObjectAnimator hideButtonAnimator =
-                mLocationBar.createHideButtonAnimatorForTablet(mForwardButton);
-        if (hideButtonAnimator != null) {
-            animators.add(hideButtonAnimator);
-        }
+        animators.add(mLocationBar.createHideButtonAnimatorForTablet(mForwardButton));
 
         final var reloadButtonAnimator = mReloadButtonCoordinator.getFadeAnimator(false);
         reloadButtonAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);

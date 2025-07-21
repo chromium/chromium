@@ -796,14 +796,9 @@ public class LocationBarCoordinator
      *
      * @param button The {@link View} of the button to hide.
      */
-    public @Nullable ObjectAnimator createHideButtonAnimatorForTablet(View button) {
+    public ObjectAnimator createHideButtonAnimatorForTablet(View button) {
         assert isTabletWindow();
-
-        if (mLocationBarMediator != null) {
-            return mLocationBarMediator.createHideButtonAnimatorForTablet(button);
-        } else {
-            return null;
-        }
+        return mLocationBarMediator.createHideButtonAnimatorForTablet(button);
     }
 
     /**
