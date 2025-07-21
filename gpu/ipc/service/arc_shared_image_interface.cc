@@ -7,10 +7,31 @@
 #include "base/notimplemented.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/ipc/service/gpu_channel_manager.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
+
+// static
+scoped_refptr<ArcSharedImageInterface> ArcSharedImageInterface::Create(
+    GpuChannelManager* gpu_channel_manager) {
+  gpu::ContextResult result;
+  auto context_state = gpu_channel_manager->GetSharedContextState(&result);
+
+  if (!context_state) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<gpu::ArcSharedImageInterface>(
+      std::make_unique<gpu::SharedImageFactory>(
+          gpu_channel_manager->gpu_preferences(),
+          gpu_channel_manager->gpu_driver_bug_workarounds(),
+          gpu_channel_manager->gpu_feature_info(), context_state.get(),
+          gpu_channel_manager->shared_image_manager(),
+          context_state->memory_tracker(),
+          /*is_for_display_compositor=*/false));
+}
 
 ArcSharedImageInterface::ArcSharedImageInterface(
     std::unique_ptr<SharedImageFactory> shared_image_factory)

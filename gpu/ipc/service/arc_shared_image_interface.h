@@ -11,11 +11,16 @@
 
 namespace gpu {
 
+class GpuChannelManager;
+
 // Used by ArcVideoEncodeAccelerator to create mappable SharedImages from
 // GpuMemoryBufferHandles passed over from ARC.
 class GPU_IPC_SERVICE_EXPORT ArcSharedImageInterface
     : public SharedImageInterface {
  public:
+  static scoped_refptr<ArcSharedImageInterface> Create(
+      GpuChannelManager* gpu_channel_manager);
+
   explicit ArcSharedImageInterface(
       std::unique_ptr<SharedImageFactory> shared_image_factory);
 
