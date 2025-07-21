@@ -62,9 +62,6 @@ ContextResult WebGPUInProcessContext::Initialize(
     return result;
   }
 
-  // Check for consistency.
-  DCHECK(!attribs.bind_generates_resource);
-
   // Create the WebGPUCmdHelper, which writes the command buffer protocol.
   auto webgpu_helper =
       std::make_unique<webgpu::WebGPUCmdHelper>(command_buffer_.get());

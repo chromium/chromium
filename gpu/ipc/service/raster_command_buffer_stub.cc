@@ -70,8 +70,7 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   }
 
   if (init_params.attribs.gpu_preference != gl::GpuPreference::kLowPower ||
-      init_params.attribs.context_type != CONTEXT_TYPE_OPENGLES2 ||
-      init_params.attribs.bind_generates_resource) {
+      init_params.attribs.context_type != CONTEXT_TYPE_OPENGLES2) {
     LOG(ERROR) << "ContextResult::kFatalFailure: Incompatible creation attribs "
                   "used with RasterDecoder";
     return ContextResult::kFatalFailure;

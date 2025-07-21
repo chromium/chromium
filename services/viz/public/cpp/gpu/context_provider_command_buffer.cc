@@ -198,8 +198,6 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   } else if (attributes_.enable_raster_interface &&
              !attributes_.enable_gles2_interface &&
              !attributes_.enable_grcontext) {
-    CHECK(!attributes_.bind_generates_resource);
-
     // The raster helper writes the command buffer protocol.
     auto raster_helper =
         std::make_unique<gpu::raster::RasterCmdHelper>(command_buffer_.get());
@@ -242,9 +240,6 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     transfer_buffer_ = std::move(transfer_buffer);
     helper_ = std::move(raster_helper);
   } else {
-    // Temporary check to ensure nothing is using bind_generates_resource.
-    CHECK(!attributes_.bind_generates_resource);
-
     // The GLES2 helper writes the command buffer protocol.
     auto gles2_helper =
         std::make_unique<gpu::gles2::GLES2CmdHelper>(command_buffer_.get());
@@ -271,13 +266,13 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
       gles2_impl = std::make_unique<
           skia_bindings::GLES2ImplementationWithGrContextSupport>(
           gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
-          attributes_.bind_generates_resource,
+          /*bind_generates_resource=*/false,
           attributes_.lose_context_when_out_of_memory,
           support_client_side_arrays, command_buffer_.get());
     } else {
       gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
           gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
-          attributes_.bind_generates_resource,
+          /*bind_generates_resource=*/false,
           attributes_.lose_context_when_out_of_memory,
           support_client_side_arrays, command_buffer_.get());
     }

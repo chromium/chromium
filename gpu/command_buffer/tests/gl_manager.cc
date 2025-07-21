@@ -172,7 +172,6 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   ContextCreationAttribs attribs;
   attribs.context_type = options.context_type;
-  attribs.bind_generates_resource = bind_generates_resource;
 
   translator_cache_ =
       std::make_unique<gles2::ShaderTranslatorCache>(gpu_preferences_);

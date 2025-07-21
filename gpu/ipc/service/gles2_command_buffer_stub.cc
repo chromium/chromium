@@ -85,9 +85,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   DCHECK(manager);
   memory_tracker_ = CreateMemoryTracker();
 
-  // Temporary check to ensure nothing is using bind_generates_resource.
-  CHECK(!init_params.attribs.bind_generates_resource);
-
   if (share_command_buffer_stub) {
     context_group_ =
         share_command_buffer_stub->decoder_context()->GetContextGroup();
@@ -96,20 +93,13 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
                     "context sharing with a non-GLES2 context";
       return gpu::ContextResult::kFatalFailure;
     }
-    if (context_group_->bind_generates_resource() !=
-        init_params.attribs.bind_generates_resource) {
-      LOG(ERROR) << "ContextResult::kFatalFailure: attempt to create a shared "
-                    "GLES2 context with inconsistent bind_generates_resource";
-      return gpu::ContextResult::kFatalFailure;
-    }
   } else {
     scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo(
         manager->gpu_driver_bug_workarounds(), manager->gpu_feature_info());
     context_group_ = new gles2::ContextGroup(
         manager->gpu_preferences(), CreateMemoryTracker(),
         manager->shader_translator_cache(),
-        manager->framebuffer_completeness_cache(), feature_info,
-        init_params.attribs.bind_generates_resource,
+        manager->framebuffer_completeness_cache(), feature_info, false,
         manager->watchdog() /* progress_reporter */,
         manager->gpu_feature_info(), manager->discardable_manager(),
         manager->passthrough_discardable_manager(),

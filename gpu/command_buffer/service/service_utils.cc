@@ -135,7 +135,6 @@ gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
   gl::GLContextAttribs attribs;
   attribs.gpu_preference = attribs_helper.gpu_preference;
   if (context_group->use_passthrough_cmd_decoder()) {
-    attribs.bind_generates_resource = attribs_helper.bind_generates_resource;
     attribs.webgl_compatibility_context =
         IsWebGLContextType(attribs_helper.context_type);
 

@@ -52,7 +52,6 @@ MirroringGpuFactoriesFactory::GetInstance() {
   // TODO(crbug.com/282984511): experiment with creation attributes.
   gpu::ContextCreationAttribs creation_attribs;
   creation_attribs.gpu_preference = gl::GpuPreference::kHighPerformance,
-  creation_attribs.bind_generates_resource = false,
   creation_attribs.enable_gles2_interface = true,
   creation_attribs.context_type = gpu::CONTEXT_TYPE_OPENGLES3;
 

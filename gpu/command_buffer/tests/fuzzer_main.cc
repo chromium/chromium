@@ -278,8 +278,6 @@ struct Config {
 
 #if defined(GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER) && \
     !defined(GPU_FUZZER_USE_RASTER_DECODER)
-    gl_context_attribs.bind_generates_resource =
-        attrib_helper.bind_generates_resource;
     gl_context_attribs.webgl_compatibility_context =
         IsWebGLContextType(attrib_helper.context_type);
     gl_context_attribs.global_texture_share_group = true;
@@ -455,7 +453,7 @@ class CommandBufferSetup {
     scoped_refptr<gles2::ContextGroup> context_group = new gles2::ContextGroup(
         gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
         &completeness_cache_, decoder_feature_info,
-        config_.attrib_helper.bind_generates_resource,
+        /*bind_generates_resource=*/false,
         /*progress_reporter=*/nullptr, gpu_feature_info,
         discardable_manager_.get(), passthrough_discardable_manager_.get(),
         shared_image_manager_.get());

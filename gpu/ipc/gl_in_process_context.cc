@@ -83,8 +83,6 @@ ContextResult GLInProcessContext::Initialize(
   // Create a transfer buffer.
   transfer_buffer_ = std::make_unique<TransferBuffer>(gles2_helper_.get());
 
-  // Check for consistency.
-  DCHECK(!attribs.bind_generates_resource);
   const bool bind_generates_resource = false;
   const bool support_client_side_arrays = false;
 

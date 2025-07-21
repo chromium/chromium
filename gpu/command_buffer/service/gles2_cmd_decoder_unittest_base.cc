@@ -2360,7 +2360,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   group_ = new gles2::ContextGroup(
       gpu_preferences_, /*memory_tracker=*/nullptr, &shader_translator_cache_,
       &framebuffer_completeness_cache_, feature_info,
-      context_creation_attribs_.bind_generates_resource,
+      /*bind_generates_resource=*/false,
       /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_);
 

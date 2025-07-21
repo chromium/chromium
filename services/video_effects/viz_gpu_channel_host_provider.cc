@@ -46,8 +46,6 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateAndBindContextProvider(
   context_creation_attribs.enable_gles2_interface = false;
   context_creation_attribs.enable_raster_interface =
       context_type == gpu::CONTEXT_TYPE_OPENGLES2;
-  context_creation_attribs.bind_generates_resource =
-      context_type == gpu::CONTEXT_TYPE_WEBGPU;
 
   // TODO(bialpio): replace `gpu::SharedMemoryLimits::ForOOPRasterContext()`
   // with something better suited or explain why it's appropriate the way it is

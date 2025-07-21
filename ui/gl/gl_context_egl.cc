@@ -193,12 +193,11 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
   }
 
   if (gl_display_->ext->b_EGL_CHROMIUM_create_context_bind_generates_resource) {
+    // Chrome always disables bind generates resource behavior in ANGLE as the
+    // command buffer doesn't support it. There is no way to disable the
+    // behavior for a non-ANGLE context but Chrome can't rely on it.
     context_attributes.push_back(EGL_CONTEXT_BIND_GENERATES_RESOURCE_CHROMIUM);
-    context_attributes.push_back(attribs.bind_generates_resource ? EGL_TRUE
-                                                                 : EGL_FALSE);
-  } else {
-    // For a non-ANGLE EGL context we can't disable bind generates resource
-    // behavior but Chrome shouldn't rely on it.
+    context_attributes.push_back(EGL_FALSE);
   }
 
   if (gl_display_->ext->b_EGL_ANGLE_create_context_webgl_compatibility) {

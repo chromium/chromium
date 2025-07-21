@@ -176,7 +176,6 @@ class RecordReplayContext : public GpuControl {
     } else {
       gl::GLContextAttribs attribs;
       if (gpu_preferences_.use_passthrough_cmd_decoder) {
-        attribs.bind_generates_resource = bind_generates_resource;
         attribs.allow_client_arrays = false;
       }
       surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
