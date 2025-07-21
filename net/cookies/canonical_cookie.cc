@@ -416,8 +416,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (!status->IsInclude())
     return nullptr;
 
-  CookieSameSiteString samesite_string = CookieSameSiteString::kUnspecified;
-  CookieSameSite samesite = parsed_cookie.SameSite(&samesite_string);
+  auto [samesite, samesite_string] = parsed_cookie.SameSite();
 
   // The next two sections set the source_scheme_ and source_port_. Normally
   // these are taken directly from the url's scheme and port but if the url

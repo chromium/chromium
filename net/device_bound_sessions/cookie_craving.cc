@@ -160,7 +160,7 @@ std::optional<CookieCraving> CookieCraving::Create(
                                creation_time,
                                parsed_cookie.IsSecure(),
                                parsed_cookie.IsHttpOnly(),
-                               parsed_cookie.SameSite(),
+                               parsed_cookie.SameSite().first,
                                source_scheme,
                                source_port};
 

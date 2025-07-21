@@ -4,6 +4,10 @@
 
 #include "net/cookies/cookie_constants.h"
 
+#include <string>
+#include <string_view>
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -69,33 +73,21 @@ std::string CookieSameSiteToString(CookieSameSite same_site) {
   }
 }
 
-CookieSameSite StringToCookieSameSite(const std::string& same_site,
-                                      CookieSameSiteString* samesite_string) {
-  // Put a value on the stack so that we can assign to |*samesite_string|
-  // instead of having to null-check it all the time.
-  CookieSameSiteString ignored = CookieSameSiteString::kUnspecified;
-  if (!samesite_string)
-    samesite_string = &ignored;
-
-  *samesite_string = CookieSameSiteString::kUnrecognized;
-  CookieSameSite samesite = CookieSameSite::UNSPECIFIED;
-
+std::pair<CookieSameSite, CookieSameSiteString> StringToCookieSameSite(
+    std::string_view same_site) {
   if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteNone)) {
-    samesite = CookieSameSite::NO_RESTRICTION;
-    *samesite_string = CookieSameSiteString::kNone;
+    return {CookieSameSite::NO_RESTRICTION, CookieSameSiteString::kNone};
   } else if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteLax)) {
-    samesite = CookieSameSite::LAX_MODE;
-    *samesite_string = CookieSameSiteString::kLax;
+    return {CookieSameSite::LAX_MODE, CookieSameSiteString::kLax};
   } else if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteStrict)) {
-    samesite = CookieSameSite::STRICT_MODE;
-    *samesite_string = CookieSameSiteString::kStrict;
+    return {CookieSameSite::STRICT_MODE, CookieSameSiteString::kStrict};
   } else if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteExtended)) {
     // Extended isn't supported anymore -- we just parse it for UMA stats.
-    *samesite_string = CookieSameSiteString::kExtended;
+    return {CookieSameSite::UNSPECIFIED, CookieSameSiteString::kExtended};
   } else if (same_site == "") {
-    *samesite_string = CookieSameSiteString::kEmptyString;
+    return {CookieSameSite::UNSPECIFIED, CookieSameSiteString::kEmptyString};
   }
-  return samesite;
+  return {CookieSameSite::UNSPECIFIED, CookieSameSiteString::kUnrecognized};
 }
 
 void RecordCookieSameSiteAttributeValueHistogram(CookieSameSiteString value) {

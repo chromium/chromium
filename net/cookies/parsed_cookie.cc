@@ -44,7 +44,8 @@
 
 #include "net/cookies/parsed_cookie.h"
 
-#include "base/logging.h"
+#include <utility>
+
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
@@ -157,16 +158,11 @@ bool ParsedCookie::IsValid() const {
   return !pairs_.empty();
 }
 
-CookieSameSite ParsedCookie::SameSite(
-    CookieSameSiteString* samesite_string) const {
-  CookieSameSite samesite = CookieSameSite::UNSPECIFIED;
+std::pair<CookieSameSite, CookieSameSiteString> ParsedCookie::SameSite() const {
   if (same_site_index_ != 0) {
-    samesite = StringToCookieSameSite(pairs_[same_site_index_].second,
-                                      samesite_string);
-  } else if (samesite_string) {
-    *samesite_string = CookieSameSiteString::kUnspecified;
+    return StringToCookieSameSite(pairs_[same_site_index_].second);
   }
-  return samesite;
+  return {CookieSameSite::UNSPECIFIED, CookieSameSiteString::kUnspecified};
 }
 
 CookiePriority ParsedCookie::Priority() const {

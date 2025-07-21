@@ -81,9 +81,8 @@ class NET_EXPORT ParsedCookie {
   bool IsSecure() const { return secure_index_ != 0; }
   bool IsHttpOnly() const { return httponly_index_ != 0; }
   // Also spits out an enum value representing the string given as the SameSite
-  // attribute value, if |samesite_string| is non-null.
-  CookieSameSite SameSite(
-      CookieSameSiteString* samesite_string = nullptr) const;
+  // attribute value.
+  std::pair<CookieSameSite, CookieSameSiteString> SameSite() const;
   CookiePriority Priority() const;
   bool IsPartitioned() const { return partitioned_index_ != 0; }
   bool HasInternalHtab() const { return internal_htab_; }

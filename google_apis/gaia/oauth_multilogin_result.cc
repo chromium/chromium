@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string_view>
+#include <tuple>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -183,7 +184,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
     net::CookieSameSiteString samesite_string =
         net::CookieSameSiteString::kUnspecified;
     if (same_site) {
-      samesite_mode = net::StringToCookieSameSite(*same_site, &samesite_string);
+      std::tie(samesite_mode, samesite_string) =
+          net::StringToCookieSameSite(*same_site);
     }
     net::RecordCookieSameSiteAttributeValueHistogram(samesite_string);
     // TODO(crbug.com/40160040) Consider using CreateSanitizedCookie instead.
