@@ -58,7 +58,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
@@ -68,9 +67,6 @@ import java.util.Collection;
 @SuppressLint("Instantiatable")
 @NullMarked
 public class ToolbarTablet extends ToolbarLayout {
-    private static final int ICON_FADE_IN_ANIMATION_DELAY_MS = 75;
-    private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
-
     private ImageButton mHomeButton;
     private ImageButton mBackButton;
     private ChromeImageButton mForwardButton;
@@ -624,18 +620,8 @@ public class ToolbarTablet extends ToolbarLayout {
         Collection<Animator> animators = new ArrayList<>();
 
         animators.add(mLocationBar.createShowButtonAnimatorForTablet(mForwardButton));
-
-        final var reloadButtonAnimator = mReloadButtonCoordinator.getFadeAnimator(true);
-        reloadButtonAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
-        reloadButtonAnimator.setStartDelay(ICON_FADE_IN_ANIMATION_DELAY_MS);
-        reloadButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
-        animators.add(reloadButtonAnimator);
-
-        final var backButtonAnimator = mBackButtonCoordinator.getFadeAnimator(true);
-        backButtonAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
-        backButtonAnimator.setStartDelay(ICON_FADE_IN_ANIMATION_DELAY_MS);
-        backButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
-        animators.add(backButtonAnimator);
+        animators.add(mReloadButtonCoordinator.getFadeAnimator(/* shouldShow= */ true));
+        animators.add(mBackButtonCoordinator.getFadeAnimator(/* shouldShow= */ true));
 
         // Add animators for location bar.
         animators.addAll(
@@ -675,15 +661,8 @@ public class ToolbarTablet extends ToolbarLayout {
 
         animators.add(mLocationBar.createHideButtonAnimatorForTablet(mForwardButton));
 
-        final var reloadButtonAnimator = mReloadButtonCoordinator.getFadeAnimator(false);
-        reloadButtonAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
-        reloadButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
-        animators.add(reloadButtonAnimator);
-
-        final var backButtonAnimator = mBackButtonCoordinator.getFadeAnimator(false);
-        backButtonAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
-        backButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
-        animators.add(backButtonAnimator);
+        animators.add(mReloadButtonCoordinator.getFadeAnimator(/* shouldShow= */ false));
+        animators.add(mBackButtonCoordinator.getFadeAnimator(/* shouldShow= */ false));
 
         // Add animators for location bar.
         animators.addAll(

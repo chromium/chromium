@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.Toast;
@@ -122,7 +123,10 @@ public class ReloadButtonCoordinator {
      * @return {@link ObjectAnimator} that animates view's alpha.
      */
     public ObjectAnimator getFadeAnimator(boolean shouldShow) {
-        return mMediator.getFadeAnimator(shouldShow);
+        ObjectAnimator fadeAnimator = mMediator.getFadeAnimator(shouldShow);
+        return shouldShow
+                ? ToolbarUtils.asFadeInAnimation(fadeAnimator)
+                : ToolbarUtils.asFadeOutAnimation(fadeAnimator);
     }
 
     /**
