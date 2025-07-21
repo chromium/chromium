@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_enums.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -47,12 +48,6 @@ constexpr base::TimeDelta kTimeout = base::Minutes(30);
 constexpr auto kSupportedFormTypes = autofill::DenseSet<autofill::FormType>(
     {autofill::FormType::kAddressForm, autofill::FormType::kCreditCardForm});
 
-constexpr auto kAddressFieldTypes =
-    autofill::DenseSet<autofill::FieldTypeGroup>(
-        {autofill::FieldTypeGroup::kName, autofill::FieldTypeGroup::kEmail,
-         autofill::FieldTypeGroup::kPhone, autofill::FieldTypeGroup::kAddress,
-         autofill::FieldTypeGroup::kCompany});
-
 bool IsVisibleTextField(const autofill::AutofillField& field) {
   return field.IsFocusable() && field.IsTextInputElement();
 }
@@ -63,7 +58,7 @@ const autofill::AutofillField* GetFieldToFill(
   for (const std::unique_ptr<autofill::AutofillField>& field : fields) {
     if (IsVisibleTextField(*field) && field->value().empty() &&
         ((!is_credit_card_form &&
-          kAddressFieldTypes.contains(field->Type().group())) ||
+          autofill::IsAddressType(field->Type().GetStorableType())) ||
          (is_credit_card_form &&
           field->Type().GetStorableType() == autofill::CREDIT_CARD_NUMBER))) {
       return field.get();
