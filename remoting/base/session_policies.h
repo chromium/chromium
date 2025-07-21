@@ -76,6 +76,11 @@ struct SessionPolicies {
   // Allow the client to remotely control the host. When disabled the host will
   // be in a view-only session. Defaults to true.
   std::optional<bool> allow_remote_input;
+
+  // Allow the client to service WebAuthn request generated on the host machine.
+  // Defaults to true. No Corresponding Chrome Policy as the admin can block
+  // installation of the WebAuthn forwarding extension if needed.
+  std::optional<bool> allow_webauthn_forwarding;
 };
 
 std::ostream& operator<<(std::ostream& os,

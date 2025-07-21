@@ -561,7 +561,7 @@ TEST_F(ClientSessionTest, DisableInputs) {
   // Disable input.
   client_session_->SetDisableInputs(true);
 
-  // These event shouldn't get though to the input injector.
+  // These events shouldn't get though to the input injector.
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("b"));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 2));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(false, 2));

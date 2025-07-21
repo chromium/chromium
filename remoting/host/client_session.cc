@@ -605,6 +605,13 @@ void ClientSession::OnConnectionAuthenticated(
   if (effective_policies_.curtain_required.has_value()) {
     options.set_enable_curtaining(*effective_policies_.curtain_required);
   }
+  // `allow_webauthn_forwarding` should not override the existing value for
+  // `enable_remote_webauthn` if it was not enabled for this connection mode.
+  if (options.enable_remote_webauthn() &&
+      effective_policies_.allow_webauthn_forwarding.has_value()) {
+    options.set_enable_remote_webauthn(
+        *effective_policies_.allow_webauthn_forwarding);
+  }
   // Create the desktop environment.
   // Note: The handlers for various other events use the created desktop
   // environment. Since those events may occur before the desktop environment
