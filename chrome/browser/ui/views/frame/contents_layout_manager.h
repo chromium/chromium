@@ -10,7 +10,12 @@
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
 
-// ContentsLayoutManager positions the WebContents and devtools WebContents.
+// WARNING: DO NOT ADD NEW FEATURES HERE. New views in the content area
+// should be added to ContentsContainerView. This is so that we can
+// support Split View where there will be multiple instances of Contents
+// WebView and associated overlay views. The layout for the remaining
+// views in this file are being moved and this class will be deleted soon.
+// Please consult estalin@ and corising@ for any additional guidance.
 class ContentsLayoutManager : public views::LayoutManagerBase {
  public:
   ContentsLayoutManager(views::View* devtools_view,
