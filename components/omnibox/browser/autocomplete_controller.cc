@@ -1486,7 +1486,7 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
       autocomplete_provider_client()->IsPagePaywalled());
   const bool mia_enabled =
       omnibox_feature_configs::MiaZPS::Get().enabled &&
-      omnibox::IsMiaAllowedByPolicy(provider_client_->GetPrefs());
+      omnibox::IsAimAllowedByPolicy(provider_client_->GetPrefs());
 
   if (update_type == UpdateType::kSyncPass ||
       update_type == UpdateType::kAsyncPass ||

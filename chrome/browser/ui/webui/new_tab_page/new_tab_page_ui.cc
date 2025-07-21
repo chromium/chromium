@@ -501,10 +501,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "searchboxShowComposeEntrypoint",
       ntp_composebox_fieldtrial::IsNtpSearchboxComposeEntrypointEnabled() &&
-          omnibox::IsMiaAllowedByPolicy(profile->GetPrefs()));
+          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
   source->AddBoolean("searchboxShowComposebox",
                      ntp_composebox_fieldtrial::FeatureConfig::Get().enabled &&
-                         omnibox::IsMiaAllowedByPolicy(profile->GetPrefs()));
+                         omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,

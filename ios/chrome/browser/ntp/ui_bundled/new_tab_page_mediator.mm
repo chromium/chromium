@@ -245,7 +245,7 @@ const CGFloat kIconPointSize = 18.0;
     [self updateBackground];
   }
 
-  BOOL miaPolicyAllowed = omnibox::IsMiaAllowedByPolicy(_prefService);
+  BOOL miaPolicyAllowed = omnibox::IsAimAllowedByPolicy(_prefService);
   [self.consumer setMIAAllowedByPolicy:miaPolicyAllowed];
   [self.headerConsumer setMIAAllowedByPolicy:miaPolicyAllowed];
 }
