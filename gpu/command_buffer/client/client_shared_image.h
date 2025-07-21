@@ -244,7 +244,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       const Mailbox& mailbox,
       const SharedImageMetadata& metadata,
       const SyncToken& sync_token,
-      std::unique_ptr<GpuMemoryBufferImpl> gpu_memory_buffer,
       gfx::BufferUsage buffer_usage,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 

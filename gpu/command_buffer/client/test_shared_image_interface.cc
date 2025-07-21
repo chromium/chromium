@@ -25,7 +25,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
@@ -221,32 +220,21 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
 
-  auto buffer_format =
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          si_info.meta.format);
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   if (use_test_gmb_) {
-    auto gpu_memory_buffer = GpuMemoryBufferImplSharedMemory::CreateForTesting(
-        si_info.meta.size, buffer_format, buffer_usage);
-
-    // Since the |gpu_memory_buffer| here is always a shared memory, clear the
-    // external sampler prefs if it is already set by client.
-    // https://issues.chromium.org/339546249.
-    if (si_info_copy.meta.format.PrefersExternalSampler()) {
-      si_info_copy.meta.format.ClearPrefersExternalSampler();
-    }
     auto client_si = ClientSharedImage::CreateForTesting(
-        mailbox, si_info_copy.meta, sync_token, std::move(gpu_memory_buffer),
-        buffer_usage, holder_);
+        mailbox, si_info_copy.meta, sync_token, buffer_usage, holder_);
     most_recent_mappable_shared_image_ = client_si.get();
     return client_si;
   }
 
-  auto gmb_handle =
-      CreateGMBHandle(buffer_format, si_info_copy.meta.size, buffer_usage);
+  auto gmb_handle = CreateGMBHandle(
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          si_info.meta.format),
+      si_info_copy.meta.size, buffer_usage);
 
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info_copy, sync_token,
@@ -267,26 +255,13 @@ TestSharedImageInterface::CreateSharedImage(
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
 
-  auto buffer_format =
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          si_info.meta.format);
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
   si_info_copy.meta.usage |= GetCpuSIUsage(buffer_usage);
   if (use_test_gmb_) {
-    auto gpu_memory_buffer = GpuMemoryBufferImplSharedMemory::CreateForTesting(
-        si_info.meta.size, buffer_format, buffer_usage);
-
-    // Since the |gpu_memory_buffer| here is always a shared memory, clear the
-    // external sampler prefs if it is already set by client.
-    // https://issues.chromium.org/339546249.
-    if (si_info_copy.meta.format.PrefersExternalSampler()) {
-      si_info_copy.meta.format.ClearPrefersExternalSampler();
-    }
     return ClientSharedImage::CreateForTesting(
-        mailbox, si_info_copy.meta, sync_token, std::move(gpu_memory_buffer),
-        buffer_usage, holder_);
+        mailbox, si_info_copy.meta, sync_token, buffer_usage, holder_);
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
