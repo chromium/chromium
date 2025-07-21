@@ -92,13 +92,10 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
 
   if (!LoadFunction(init_ocr_, "InitOCRUsingCallback") ||
       !LoadFunction(get_max_image_dimension_, "GetMaxImageDimension") ||
+      !LoadFunction(set_ocr_light_mode_, "SetOCRLightMode") ||
       !LoadFunction(perform_ocr_, "PerformOCR")) {
     return false;
   }
-
-  // TODO(crbug.com/412553116): Move to the the above block and make it
-  // mandatory after updating library min version.
-  LoadFunction(set_ocr_light_mode_, "SetOCRLightMode");
 
   // Main Content Extraction functions.
   if (!LoadFunction(init_main_content_extraction_,
@@ -157,11 +154,7 @@ bool ScreenAILibraryWrapperImpl::InitOCR() {
 
 NO_SANITIZE("cfi-icall")
 void ScreenAILibraryWrapperImpl::SetOCRLightMode(bool enabled) {
-  // TODO(crbug.com/412553116): Change to CHECK after updating library min
-  // version.
-  if (!set_ocr_light_mode_) {
-    return;
-  }
+  CHECK(set_ocr_light_mode_);
   set_ocr_light_mode_(enabled);
 }
 

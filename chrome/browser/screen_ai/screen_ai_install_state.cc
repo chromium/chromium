@@ -20,8 +20,7 @@
 
 namespace {
 // From 140.0, the library has the new `SetOCRLightMode` API function.
-// TODO(crbug.com/412553116): Change to 140.0 after 140.0 is distributed.
-const char kMinExpectedVersion[] = "138.0";
+const char kMinExpectedVersion[] = "140.0";
 const int kScreenAICleanUpDelayInDays = 30;
 
 bool IsDeviceCompatible() {

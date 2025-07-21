@@ -132,8 +132,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // This value is received via `GetMaxImageDimension` after OCR is initialized,
   // and since it does not change after that, it is stored to be reused for
   // subsequent calls.
-  // TODO(crbug.com/412553116): Update here and all callers in case the above
-  // assumption changes.
+  // NOTE: Update here and all callers in case the above assumption changes.
   uint32_t max_ocr_dimension_ = 0;
 
   // Last time the feature is used. A null value means never, it is set when the
