@@ -74,14 +74,9 @@ ReaderModeMetricsHelper::~ReaderModeMetricsHelper() {
   Flush();
 }
 
-void ReaderModeMetricsHelper::CancelReaderHeuristicRecording() {
-  // Reset `last_reader_mode_state_` before calling flush to ensure that
-  // any existing state is not recorded since this is replaced by cancelation.
-  last_reader_mode_state_.reset();
+void ReaderModeMetricsHelper::RecordReaderHeuristicCanceled() {
+  last_reader_mode_state_ = ReaderModeState::kHeuristicCanceled;
   Flush();
-
-  base::UmaHistogramEnumeration(kReaderModeStateHistogram,
-                                ReaderModeState::kHeuristicCanceled);
 }
 
 void ReaderModeMetricsHelper::RecordReaderHeuristicTriggered() {
@@ -125,24 +120,18 @@ void ReaderModeMetricsHelper::RecordReaderDistillerTriggered() {
   last_reader_mode_state_ = ReaderModeState::kDistillationStarted;
 }
 
+void ReaderModeMetricsHelper::RecordReaderDistillerTimedOut() {
+  last_reader_mode_state_ = ReaderModeState::kDistillationTimedOut;
+  RecordDistillationTime(std::nullopt);
+  Flush();
+}
+
 void ReaderModeMetricsHelper::RecordReaderDistillerCompleted(
     ReaderModeDistillerResult result) {
   last_reader_mode_state_ = ReaderModeState::kDistillationCompleted;
 
   CHECK(distiller_timer_);
-  base::TimeDelta elapsed = distiller_timer_->Elapsed();
-  base::UmaHistogramTimes(kReaderModeDistillerLatencyHistogram, elapsed);
-
-  const ukm::SourceId source_id =
-      ukm::GetSourceIdForWebStateDocument(web_state_);
-  if (source_id != ukm::kInvalidSourceId) {
-    ukm::builders::IOS_ReaderMode_Distiller_Latency(source_id)
-        .SetLatency(elapsed.InMilliseconds())
-        .Record(ukm::UkmRecorder::Get());
-    ukm::builders::IOS_ReaderMode_Distiller_Result(source_id)
-        .SetResult(static_cast<int64_t>(result))
-        .Record(ukm::UkmRecorder::Get());
-  }
+  RecordDistillationTime(result);
 }
 
 void ReaderModeMetricsHelper::RecordReaderShown() {
@@ -167,7 +156,6 @@ void ReaderModeMetricsHelper::Flush() {
     base::UmaHistogramLongTimes100(kReaderModeTimeSpentHistogram, elapsed);
     reading_timer_.reset();
   }
-  distiller_timer_.reset();
   heuristic_timer_.reset();
 }
 
@@ -191,4 +179,28 @@ void ReaderModeMetricsHelper::OnChangeFontScaling(float scaling) {
                                 ReaderModeCustomizationType::kFontScale);
   base::UmaHistogramSparse(kReaderModeFontScaleCustomizationHistogram,
                            std::floor(scaling * 100));
+}
+
+void ReaderModeMetricsHelper::RecordDistillationTime(
+    std::optional<ReaderModeDistillerResult> result) {
+  if (!distiller_timer_) {
+    return;
+  }
+  base::TimeDelta elapsed = distiller_timer_->Elapsed();
+  base::UmaHistogramTimes(kReaderModeDistillerLatencyHistogram, elapsed);
+
+  const ukm::SourceId source_id =
+      ukm::GetSourceIdForWebStateDocument(web_state_);
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_ReaderMode_Distiller_Latency(source_id)
+        .SetLatency(elapsed.InMilliseconds())
+        .Record(ukm::UkmRecorder::Get());
+    if (result.has_value()) {
+      ukm::builders::IOS_ReaderMode_Distiller_Result(source_id)
+          .SetResult(static_cast<int64_t>(result.value()))
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
+
+  distiller_timer_.reset();
 }

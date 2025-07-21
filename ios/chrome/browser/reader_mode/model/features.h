@@ -25,12 +25,19 @@ BASE_DECLARE_FEATURE(kEnableReadabilityHeuristic);
 // criteria.
 BASE_DECLARE_FEATURE(kEnableReaderModeDefaultBrowserPromo);
 
-// Name to configure the duration string for page load delay. See
+// Name to configure the duration string for heuristic page load delay. See
 // `base::TimeDeltaFromString` for valid duration string configurations.
-extern const char kReaderModeDistillerPageLoadDelayDurationStringName[];
+extern const char kReaderModeHeuristicPageLoadDelayDurationStringName[];
 
-// Returns the delay time before triggering Reader Mode on page load.
-const base::TimeDelta ReaderModeDistillerPageLoadDelay();
+// Name to configure the duration string for distillation timeout. See
+// `base::TimeDeltaFromString` for valid duration string configurations.
+extern const char kReaderModeDistillationTimeoutDurationStringName[];
+
+// Returns the timeout for distilling Reader Mode.
+const base::TimeDelta ReaderModeDistillationTimeout();
+
+// Returns the delay time before triggering Reader Mode heuristic on page load.
+const base::TimeDelta ReaderModeHeuristicPageLoadDelay();
 
 // Returns whether the Reader Mode feature is available.
 bool IsReaderModeAvailable();

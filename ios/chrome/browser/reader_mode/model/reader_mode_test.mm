@@ -27,7 +27,13 @@ ReaderModeTest::ReaderModeTest() = default;
 ReaderModeTest::~ReaderModeTest() = default;
 
 void ReaderModeTest::SetUp() {
-  scoped_feature_list_.InitAndEnableFeature(kEnableReaderMode);
+  base::FieldTrialParams custom_time_params = {
+      {kReaderModeHeuristicPageLoadDelayDurationStringName, "1s"},
+      {kReaderModeDistillationTimeoutDurationStringName, "5s"}};
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kEnableReaderMode, custom_time_params}},
+      /*disabled_features=*/{});
   profile_ = TestProfileIOS::Builder().Build();
 
   web::JavaScriptFeatureManager::FromBrowserState(profile_.get())
@@ -114,7 +120,7 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
 
 void ReaderModeTest::WaitForReaderModeContentReady() {
   // Waits for asynchronous trigger heuristic delay
-  // `kReaderModeDistillerPageLoadDelay` after the page is loaded.
+  // `kReaderModeHeuristicPageLoadDelay` after the page is loaded.
   task_environment_.AdvanceClock(base::Seconds(1));
   task_environment_.RunUntilIdle();
 }

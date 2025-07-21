@@ -52,14 +52,24 @@ BASE_FEATURE(kEnableReaderModeDefaultBrowserPromo,
              "EnableReaderModeDefaultBrowserPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kReaderModeDistillerPageLoadDelayDurationStringName[] =
-    "reader-mode-distiller-page-load-delay-duration-string";
+const char kReaderModeHeuristicPageLoadDelayDurationStringName[] =
+    "reader-mode-heuristic-page-load-delay-duration-string";
 
-const base::TimeDelta ReaderModeDistillerPageLoadDelay() {
+const char kReaderModeDistillationTimeoutDurationStringName[] =
+    "reader-mode-distillation-timeout-duration-string";
+
+const base::TimeDelta ReaderModeDistillationTimeout() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
       kEnableReaderMode,
-      /*name=*/kReaderModeDistillerPageLoadDelayDurationStringName,
-      /*default_value=*/kReaderModeDistillerPageLoadDelay);
+      /*name=*/kReaderModeDistillationTimeoutDurationStringName,
+      /*default_value=*/kReaderModeDistillationTimeout);
+}
+
+const base::TimeDelta ReaderModeHeuristicPageLoadDelay() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kEnableReaderMode,
+      /*name=*/kReaderModeHeuristicPageLoadDelayDurationStringName,
+      /*default_value=*/kReaderModeHeuristicPageLoadDelay);
 }
 
 bool IsReaderModeAvailable() {

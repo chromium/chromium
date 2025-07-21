@@ -31,8 +31,8 @@ class ReaderModeMetricsHelper
   void RecordReaderHeuristicTriggered();
   void RecordReaderHeuristicCompleted(ReaderModeHeuristicResult result);
 
-  // Stops recording heuristic and resets state for the next event.
-  void CancelReaderHeuristicRecording();
+  // Records the heuristic cancelation and resets state for the next event.
+  void RecordReaderHeuristicCanceled();
 
   // Returns true if the Reading Mode feature usage meets the configurable
   // criteria for number of times used across a time span.
@@ -41,6 +41,9 @@ class ReaderModeMetricsHelper
   // Records histograms for the Reading Mode distillation event.
   void RecordReaderDistillerTriggered();
   void RecordReaderDistillerCompleted(ReaderModeDistillerResult result);
+
+  // Records the distillation timeout and resets state for the next event.
+  void RecordReaderDistillerTimedOut();
 
   // Records that the last event, showing the Reading Mode UI, has completed.
   void RecordReaderShown();
@@ -54,6 +57,10 @@ class ReaderModeMetricsHelper
   void OnChangeFontScaling(float scaling) override;
 
  private:
+  // Records the distillation time for the web page and its result if the
+  // distillation completed successfully.
+  void RecordDistillationTime(std::optional<ReaderModeDistillerResult> result);
+
   std::unique_ptr<base::ElapsedTimer> heuristic_timer_;
   std::unique_ptr<base::ElapsedTimer> distiller_timer_;
   std::unique_ptr<base::ElapsedTimer> reading_timer_;

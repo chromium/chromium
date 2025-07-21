@@ -11,8 +11,6 @@
 
 // Recorded for IOS.ReaderMode.State. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/429174292): Add states to capture distillation and display
-// of the Reading Mode UI.
 // LINT.IfChange(ReaderModeState)
 enum class ReaderModeState {
   kHeuristicCanceled = 0,
@@ -21,7 +19,8 @@ enum class ReaderModeState {
   kDistillationStarted = 3,
   kDistillationCompleted = 4,
   kReaderShown = 5,
-  kMaxValue = kReaderShown,
+  kDistillationTimedOut = 6,
+  kMaxValue = kDistillationTimedOut,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeState)
 
@@ -96,8 +95,12 @@ enum class ReaderModeFontFamily {
 // Default delay in seconds for triggering Reader Mode distiller heuristic.
 // This allows the page to react to the DOM loading and ensures minimal
 // interference with the JavaScript execution.
-inline constexpr base::TimeDelta kReaderModeDistillerPageLoadDelay =
+inline constexpr base::TimeDelta kReaderModeHeuristicPageLoadDelay =
     base::Seconds(1);
+
+// Default timeout for distilling a page with Reader Mode enabled.
+inline constexpr base::TimeDelta kReaderModeDistillationTimeout =
+    base::Seconds(2);
 
 // Histogram name for Reader Mode state.
 extern const char kReaderModeStateHistogram[];
