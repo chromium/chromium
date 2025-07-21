@@ -10913,6 +10913,7 @@ from previous Chrome versions.
   <int value="-1166745977"
       label="BluetoothAggressiveAppearanceFilter:disabled"/>
   <int value="-1166715563" label="ChromeOSAssistant:disabled"/>
+  <int value="-1166067121" label="PermissionsAIv4:enabled"/>
   <int value="-1165284756" label="WindowsSystemTracing:disabled"/>
   <int value="-1165271479"
       label="UnifiedPasswordManagerErrorMessages:disabled"/>
@@ -15186,6 +15187,7 @@ from previous Chrome versions.
   <int value="410400234" label="WebAppEnableProtocolHandlers:disabled"/>
   <int value="411250226" label="AutoplayMutedVideos:disabled"/>
   <int value="411536809" label="AutofillAcrossIframes:enabled"/>
+  <int value="411673190" label="PermissionsAIv4:disabled"/>
   <int value="411920294"
       label="FullscreenInsetsApiMigrationOnAutomotive:enabled"/>
   <int value="412185345"

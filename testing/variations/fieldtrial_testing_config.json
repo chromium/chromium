@@ -17601,6 +17601,24 @@
             ]
         }
     ],
+    "PermissionsAIv4": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PermissionsAIv4"
+                    ]
+                }
+            ]
+        }
+    ],
     "PickerUI": [
         {
             "platforms": [

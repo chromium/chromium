@@ -3234,6 +3234,13 @@ const char kPermissionsAIv3Description[] =
     "of the user granting the permission is predicted to be low. Requires "
     "`Make Searches and Browsing Better` to be enabled.";
 
+const char kPermissionsAIv4Name[] = "PermissionsAIv4";
+const char kPermissionsAIv4Description[] =
+    "Use the Permission Predictions Service and the AIv4 model to surface "
+    "permission notification requests using a quieter UI when the likelihood "
+    "of the user granting the permission is predicted to be low. Requires "
+    "`Make Searches and Browsing Better` to be enabled.";
+
 const char kPermissionSiteSettingsRadioButtonName[] =
     "Permission radio buttons in Site Settings";
 const char kPermissionSiteSettingsRadioButtonDescription[] =
