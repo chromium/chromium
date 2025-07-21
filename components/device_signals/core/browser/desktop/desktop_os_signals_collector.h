@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_OS_SIGNALS_COLLECTOR_H_
-#define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_OS_SIGNALS_COLLECTOR_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_DESKTOP_DESKTOP_OS_SIGNALS_COLLECTOR_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_DESKTOP_DESKTOP_OS_SIGNALS_COLLECTOR_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
@@ -17,15 +17,16 @@ namespace device_signals {
 
 struct OsSignalsResponse;
 
-class OsSignalsCollector : public BaseSignalsCollector {
+class DesktopOsSignalsCollector : public BaseSignalsCollector {
  public:
-  explicit OsSignalsCollector(
+  explicit DesktopOsSignalsCollector(
       policy::CloudPolicyManager* device_cloud_policy_manager);
 
-  ~OsSignalsCollector() override;
+  ~DesktopOsSignalsCollector() override;
 
-  OsSignalsCollector(const OsSignalsCollector&) = delete;
-  OsSignalsCollector& operator=(const OsSignalsCollector&) = delete;
+  DesktopOsSignalsCollector(const DesktopOsSignalsCollector&) = delete;
+  DesktopOsSignalsCollector& operator=(const DesktopOsSignalsCollector&) =
+      delete;
 
  private:
   void GetOsSignals(UserPermission permission,
@@ -42,9 +43,9 @@ class OsSignalsCollector : public BaseSignalsCollector {
       base::SysInfo::HardwareInfo hardware_info);
 
   const raw_ptr<policy::CloudPolicyManager> device_cloud_policy_manager_;
-  base::WeakPtrFactory<OsSignalsCollector> weak_factory_{this};
+  base::WeakPtrFactory<DesktopOsSignalsCollector> weak_factory_{this};
 };
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_OS_SIGNALS_COLLECTOR_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_DESKTOP_DESKTOP_OS_SIGNALS_COLLECTOR_H_

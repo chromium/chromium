@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/browser/os_signals_collector.h"
+#include "components/device_signals/core/browser/desktop/desktop_os_signals_collector.h"
 
 #include <array>
 #include <utility>
@@ -36,7 +36,7 @@ constexpr char kFakeBrowserEnrollmentDomain[] = "fake.domain.google.com";
 
 namespace device_signals {
 
-class OsSignalsCollectorTest : public testing::Test {
+class DesktopOsSignalsCollectorTest : public testing::Test {
  protected:
   void SetUp() override {
     auto mock_browser_cloud_policy_store =
@@ -46,7 +46,7 @@ class OsSignalsCollectorTest : public testing::Test {
         std::make_unique<policy::MockCloudPolicyManager>(
             std::move(mock_browser_cloud_policy_store),
             task_environment_.GetMainThreadTaskRunner());
-    signal_collector_ = std::make_unique<OsSignalsCollector>(
+    signal_collector_ = std::make_unique<DesktopOsSignalsCollector>(
         mock_browser_cloud_policy_manager_.get());
   }
 
@@ -79,12 +79,12 @@ class OsSignalsCollectorTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyManager>
       mock_browser_cloud_policy_manager_;
   raw_ptr<policy::MockCloudPolicyStore> mock_browser_cloud_policy_store_;
-  std::unique_ptr<OsSignalsCollector> signal_collector_;
+  std::unique_ptr<DesktopOsSignalsCollector> signal_collector_;
 };
 
 // Test that runs a sanity check on the set of signals supported by this
 // collector. Will need to be updated if new signals become supported.
-TEST_F(OsSignalsCollectorTest, SupportedOsSignalNames) {
+TEST_F(DesktopOsSignalsCollectorTest, SupportedOsSignalNames) {
   const std::array<SignalName, 1> supported_signals{{SignalName::kOsSignals}};
 
   const auto names_set = signal_collector_->GetSupportedSignalNames();
@@ -96,7 +96,7 @@ TEST_F(OsSignalsCollectorTest, SupportedOsSignalNames) {
 }
 
 // Happy path test case for OS signals collection with full permission.
-TEST_F(OsSignalsCollectorTest, GetSignal_Success) {
+TEST_F(DesktopOsSignalsCollectorTest, GetSignal_Success) {
   SetFakeBrowserPolicyData();
 
   SignalName signal_name = SignalName::kOsSignals;
@@ -115,7 +115,7 @@ TEST_F(OsSignalsCollectorTest, GetSignal_Success) {
 }
 
 // Tests that an unsupported signal is marked as unsupported.
-TEST_F(OsSignalsCollectorTest, GetOsSignal_Unsupported) {
+TEST_F(DesktopOsSignalsCollectorTest, GetOsSignal_Unsupported) {
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
@@ -131,7 +131,7 @@ TEST_F(OsSignalsCollectorTest, GetOsSignal_Unsupported) {
 }
 
 // Tests that signal collection is still complete even when consent is missing.
-TEST_F(OsSignalsCollectorTest, GetSignal_MissingConsent) {
+TEST_F(DesktopOsSignalsCollectorTest, GetSignal_MissingConsent) {
   SetFakeBrowserPolicyData();
 
   SignalName signal_name = SignalName::kOsSignals;
@@ -150,7 +150,7 @@ TEST_F(OsSignalsCollectorTest, GetSignal_MissingConsent) {
 }
 
 // Tests that signal collection is halted if permission is not sufficient.
-TEST_F(OsSignalsCollectorTest, GetSignal_MissingUser) {
+TEST_F(DesktopOsSignalsCollectorTest, GetSignal_MissingUser) {
   SignalName signal_name = SignalName::kOsSignals;
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;

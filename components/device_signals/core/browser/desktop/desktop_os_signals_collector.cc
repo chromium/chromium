@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/browser/os_signals_collector.h"
+#include "components/device_signals/core/browser/desktop/desktop_os_signals_collector.h"
 
 #include <utility>
 
@@ -60,21 +60,22 @@ void OnSignalsCollected(
 
 }  // namespace
 
-OsSignalsCollector::OsSignalsCollector(
+DesktopOsSignalsCollector::DesktopOsSignalsCollector(
     policy::CloudPolicyManager* device_cloud_policy_manager)
     : BaseSignalsCollector({
           {SignalName::kOsSignals,
-           base::BindRepeating(&OsSignalsCollector::GetOsSignals,
+           base::BindRepeating(&DesktopOsSignalsCollector::GetOsSignals,
                                base::Unretained(this))},
       }),
       device_cloud_policy_manager_(device_cloud_policy_manager) {}
 
-OsSignalsCollector::~OsSignalsCollector() = default;
+DesktopOsSignalsCollector::~DesktopOsSignalsCollector() = default;
 
-void OsSignalsCollector::GetOsSignals(UserPermission permission,
-                                      const SignalsAggregationRequest& request,
-                                      SignalsAggregationResponse& response,
-                                      base::OnceClosure done_closure) {
+void DesktopOsSignalsCollector::GetOsSignals(
+    UserPermission permission,
+    const SignalsAggregationRequest& request,
+    SignalsAggregationResponse& response,
+    base::OnceClosure done_closure) {
   if (permission != UserPermission::kGranted &&
       permission != UserPermission::kMissingConsent) {
     std::move(done_closure).Run();
@@ -106,12 +107,12 @@ void OsSignalsCollector::GetOsSignals(UserPermission permission,
       device_signals::TryGetEnrollmentDomain(device_cloud_policy_manager_);
 
   base::SysInfo::GetHardwareInfo(base::BindOnce(
-      &OsSignalsCollector::OnHardwareInfoRetrieved, weak_factory_.GetWeakPtr(),
-      permission, request, std::ref(response), std::move(signal_response),
-      std::move(done_closure)));
+      &DesktopOsSignalsCollector::OnHardwareInfoRetrieved,
+      weak_factory_.GetWeakPtr(), permission, request, std::ref(response),
+      std::move(signal_response), std::move(done_closure)));
 }
 
-void OsSignalsCollector::OnHardwareInfoRetrieved(
+void DesktopOsSignalsCollector::OnHardwareInfoRetrieved(
     UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,

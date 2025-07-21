@@ -22,10 +22,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#endif
 
 namespace device_signals {
 
@@ -53,9 +50,7 @@ ProfileSignalsCollector::ProfileSignalsCollector(Profile* profile)
               profile)),
       profile_id_service_(
           enterprise::ProfileIdServiceFactory::GetForProfile(profile)) {
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   CHECK(connectors_service_);
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   CHECK(policy_blocklist_service_);
   CHECK(profile_id_service_);
 }
@@ -82,10 +77,11 @@ void ProfileSignalsCollector::GetProfileSignals(
   signal_response.site_isolation_enabled =
       device_signals::GetSiteIsolationEnabled();
   signal_response.profile_id = profile_id_service_->GetProfileId();
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   signal_response.realtime_url_check_mode =
       connectors_service_->GetAppliedRealTimeUrlCheck();
+  signal_response.security_event_providers =
+      connectors_service_->GetReportingServiceProviderNames();
+#if !BUILDFLAG(IS_ANDROID)
   signal_response.file_downloaded_providers =
       connectors_service_->GetAnalysisServiceProviderNames(
           enterprise_connectors::FILE_DOWNLOADED);
@@ -98,9 +94,7 @@ void ProfileSignalsCollector::GetProfileSignals(
   signal_response.print_providers =
       connectors_service_->GetAnalysisServiceProviderNames(
           enterprise_connectors::PRINT);
-  signal_response.security_event_providers =
-      connectors_service_->GetReportingServiceProviderNames();
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   response.profile_signals_response = std::move(signal_response);
 

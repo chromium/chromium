@@ -52,7 +52,7 @@ static_library("browser") {
     "//net",
   ]
 
-  if (!is_android && !is_ios) {
+  if (!is_ios) {
     public += [ "browser_utils.h" ]
     sources += [ "browser_utils.cc" ]
 
@@ -62,14 +62,20 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || is_linux) {
+  if (is_win || is_mac || is_linux || is_android) {
+  }
+
+  if (is_android) {
+    public += [ "android/android_os_signals_collector.h" ]
+    sources += [ "android/android_os_signals_collector.cc" ]
+  } else if (is_win || is_mac || is_linux) {
     public += [
+      "desktop/desktop_os_signals_collector.h",
       "detected_agent_client.h",
-      "os_signals_collector.h",
     ]
     sources += [
+      "desktop/desktop_os_signals_collector.cc",
       "detected_agent_client.cc",
-      "os_signals_collector.cc",
     ]
   }
 
@@ -157,8 +163,8 @@ source_set("unit_tests") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
+      "desktop/desktop_os_signals_collector_unittest.cc",
       "detected_agent_client_unittest.cc",
-      "os_signals_collector_unittest.cc",
     ]
   }
 
