@@ -178,12 +178,10 @@ bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
 }
 
 bool CanvasRenderingContextHost::IsAccelerated() const {
-  if (IsHibernating()) {
-    return false;
-  }
-
   if (RenderingContext()) {
-    return RenderingContext()->IsAccelerated();
+    return RenderingContext()->IsHibernating()
+               ? false
+               : RenderingContext()->IsAccelerated();
   }
 
   // Whether or not to accelerate is not yet resolved, the canvas cannot be

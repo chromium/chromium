@@ -268,7 +268,6 @@ class CORE_EXPORT HTMLCanvasElement final
   size_t GetMemoryUsage() const override;
   bool ShouldAccelerate2dContext() const override;
   bool LowLatencyEnabled() const override;
-  bool IsHibernating() const override;
   void SetTransferToGPUTextureWasInvoked() override;
   UkmParameters GetUkmParameters() override;
 

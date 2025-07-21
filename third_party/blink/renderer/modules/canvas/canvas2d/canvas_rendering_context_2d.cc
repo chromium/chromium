@@ -639,7 +639,7 @@ int CanvasRenderingContext2D::Height() const {
 }
 
 bool CanvasRenderingContext2D::IsCanvas2DResourceValid() {
-  if (Host()->IsHibernating()) {
+  if (IsHibernating()) {
     return true;
   }
 
@@ -664,12 +664,11 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
   // We can get an image if either (a) there is a ResourceProvider or (b) the
   // canvas is hibernating (in which case there will be no resource provider
   // but we can get a snapshot from the hibernation handler).
-  bool is_hibernating = canvas() && canvas()->IsHibernating();
-  if (!IsPaintable() && !is_hibernating) {
+  if (!IsPaintable() && !IsHibernating()) {
     return nullptr;
   }
 
-  if (canvas()->IsHibernating()) {
+  if (IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
         canvas()->GetHibernationHandler()->GetImage());
   }
@@ -925,6 +924,15 @@ bool CanvasRenderingContext2D::IsPaintable() const {
   return GetResourceProviderForCanvas2D();
 }
 
+bool CanvasRenderingContext2D::IsHibernating() const {
+  if (!canvas()) {
+    return false;
+  }
+
+  auto* hibernation_handler = canvas()->GetHibernationHandler();
+  return hibernation_handler && hibernation_handler->IsHibernating();
+}
+
 Color CanvasRenderingContext2D::GetCurrentColor() const {
   const HTMLCanvasElement* const element = canvas();
   if (!element || !element->isConnected() || !element->InlineStyle()) {
@@ -949,7 +957,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
 
   if (features::IsCanvas2DHibernationEnabled() && !page_is_visible &&
-      !element->IsHibernating() && resource_provider &&
+      !IsHibernating() && resource_provider &&
       resource_provider->IsAccelerated()) {
     element->GetHibernationHandler()->InitiateHibernationIfNecessary();
   }
@@ -978,7 +986,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
     element->SetNeedsPushProperties();
   }
 
-  if (page_is_visible && element->IsHibernating()) {
+  if (page_is_visible && IsHibernating()) {
     GetOrCreateCanvas2DResourceProvider();  // Rude awakening
   }
 

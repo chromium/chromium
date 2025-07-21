@@ -370,7 +370,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   }
 
   // If hibernating but not hidden, we want to wake up from hibernation.
-  if (IsHibernating() && !IsPageVisible()) {
+  if (RenderingContext()->IsHibernating() && !IsPageVisible()) {
     return false;
   }
 
@@ -1553,7 +1553,7 @@ void HTMLCanvasElement::CollectStyleForPresentationAttribute(
 bool HTMLCanvasElement::IsCompositedForCanvas2D() const {
   CHECK(IsRenderingContext2D());
 
-  if (IsHibernating()) {
+  if (RenderingContext()->IsHibernating()) {
     return false;
   }
 
@@ -1785,7 +1785,7 @@ void HTMLCanvasElement::SetNeedsPushProperties() {
 }
 
 void HTMLCanvasElement::DiscardResources() {
-  if (IsHibernating()) {
+  if (RenderingContext() && RenderingContext()->IsHibernating()) {
     // Ensure consistency of metrics reporting across the change from the
     // previous code flow.
     CanvasHibernationHandler::ReportHibernationEvent(
@@ -2239,12 +2239,6 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
     const_cast<HTMLCanvasElement*>(this)->EnsureComputedStyle();
   }
   return LayoutObject::GetImageOrientation(GetLayoutObject());
-}
-
-// Temporary plumbing
-bool HTMLCanvasElement::IsHibernating() const {
-  CanvasHibernationHandler* hibernation_handler = GetHibernationHandler();
-  return hibernation_handler && hibernation_handler->IsHibernating();
 }
 
 void HTMLCanvasElement::SetTransferToGPUTextureWasInvoked() {

@@ -2508,7 +2508,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->GetOrCreateCanvas2DResourceProvider();
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
-  ASSERT_FALSE(CanvasElement().IsHibernating());
+  ASSERT_FALSE(Context2D()->IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
@@ -2518,7 +2518,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
-    ASSERT_FALSE(CanvasElement().IsHibernating());
+    ASSERT_FALSE(Context2D()->IsHibernating());
   }
 
   CanvasElement().DisableAccelerationForCanvas2D();
@@ -2537,7 +2537,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedDueToSwitchToUnacceleratedRendering,
         1);
-    EXPECT_FALSE(CanvasElement().IsHibernating());
+    EXPECT_FALSE(Context2D()->IsHibernating());
   }
 }
 
@@ -2550,7 +2550,7 @@ TEST_P(
   CreateContext(kNonOpaque);
   Context2D()->GetOrCreateCanvas2DResourceProvider();
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  ASSERT_FALSE(CanvasElement().IsHibernating());
+  ASSERT_FALSE(Context2D()->IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
@@ -2560,7 +2560,7 @@ TEST_P(
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
-    ASSERT_FALSE(CanvasElement().IsHibernating());
+    ASSERT_FALSE(Context2D()->IsHibernating());
   }
 
   CanvasElement().DisableAccelerationForCanvas2D();
@@ -2570,7 +2570,7 @@ TEST_P(
 
   // Run hibernation task.
   RunIdleTasks();
-  EXPECT_TRUE(CanvasElement().IsHibernating());
+  EXPECT_TRUE(Context2D()->IsHibernating());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,

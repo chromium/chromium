@@ -200,6 +200,7 @@ class CORE_EXPORT CanvasRenderingContext
     NOTREACHED();
   }
   virtual bool IsPaintable() const = 0;
+  virtual bool IsHibernating() const { return false; }
   void DidDraw(CanvasPerformanceMonitor::DrawType draw_type) {
     const CanvasRenderingContextHost* const host = Host();
     return DidDraw(host ? SkIRect::MakeWH(host->width(), host->height())
