@@ -43,6 +43,10 @@ source_set("common") {
     "//chrome/credential_provider/gaiacp:string_resources",
     "//chrome/installer/util:with_no_strings",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 grit("setup_resources") {
