@@ -57,6 +57,8 @@ constexpr char kTimeZone[] = "America/Los_Angeles";
 constexpr char kRequestIdParameterKey[] = "vsrid";
 constexpr char kVisualInputTypeParameterKey[] = "vit";
 constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
+constexpr char kTestCellAddress[] = "test_cell_address";
+constexpr char kTestServerAddress[] = "test_server_address";
 base::Time kTestQueryStartTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1000);
 
@@ -81,6 +83,10 @@ class ComposeboxQueryControllerTest
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
     cluster_info_response.set_search_session_id(kTestSearchSessionId);
     cluster_info_response.set_server_session_id(kTestServerSessionId);
+    cluster_info_response.mutable_routing_info()->set_cell_address(
+        kTestCellAddress);
+    cluster_info_response.mutable_routing_info()->set_server_address(
+        kTestServerAddress);
     controller_->set_fake_cluster_info_response(cluster_info_response);
 
     controller().set_on_query_controller_state_changed_callback(
@@ -420,6 +426,19 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
             0);
+  // Check that the routing info is in the vsrid.
+  EXPECT_EQ(controller()
+                .GetFileInfo(file_token)
+                ->GetRequestIdForTesting()
+                ->routing_info()
+                .cell_address(),
+            kTestCellAddress);
+  EXPECT_EQ(controller()
+                .GetFileInfo(file_token)
+                ->GetRequestIdForTesting()
+                ->routing_info()
+                .server_address(),
+            kTestServerAddress);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
@@ -516,6 +535,19 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
                 .request_id()
                 .long_context_id(),
             1);
+  // Check that the routing info is in the vsrid.
+  EXPECT_EQ(controller()
+                .GetFileInfo(file_token)
+                ->GetRequestIdForTesting()
+                ->routing_info()
+                .cell_address(),
+            kTestCellAddress);
+  EXPECT_EQ(controller()
+                .GetFileInfo(file_token)
+                ->GetRequestIdForTesting()
+                ->routing_info()
+                .server_address(),
+            kTestServerAddress);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadInvalidMimeTypeFileRequestFailure) {

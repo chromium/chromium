@@ -466,6 +466,11 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->set_server_session_id(server_response.server_session_id());
   cluster_info_->set_search_session_id(server_response.search_session_id());
+  if (server_response.has_routing_info() &&
+      !request_id_generator_.HasRoutingInfo()) {
+    std::unique_ptr<lens::LensOverlayRequestId> request_id =
+        request_id_generator_.SetRoutingInfo(server_response.routing_info());
+  }
   SetQueryControllerState(QueryControllerState::kClusterInfoReceived);
 
   // Iterate through any existing files and send the upload requests if ready.
