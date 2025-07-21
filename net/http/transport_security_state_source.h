@@ -13,16 +13,12 @@
 
 namespace net {
 
-// kNoReportURI is a placeholder for when a pinset does not have a report URI.
-NET_EXPORT_PRIVATE extern const char kNoReportURI[];
-
 struct TransportSecurityStateSource {
   struct Pinset {
     // RAW_PTR_EXCLUSION: accepted_pins always points to static data.
     RAW_PTR_EXCLUSION const char* const* const accepted_pins;
     // RAW_PTR_EXCLUSION: rejected_pins always points to static data.
     RAW_PTR_EXCLUSION const char* const* const rejected_pins;
-    const char* const report_uri;
   };
 
   // RAW_PTR_EXCLUSION: huffman_tree always points to static data.

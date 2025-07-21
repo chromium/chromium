@@ -507,11 +507,7 @@ bool ParseJSON(std::string_view hsts_json,
     }
     std::string name = *maybe_name;
 
-    const std::string* maybe_report_uri = parsed->FindString("report_uri");
-    std::string report_uri =
-        maybe_report_uri ? *maybe_report_uri : std::string();
-
-    auto pinset = std::make_unique<Pinset>(name, report_uri);
+    auto pinset = std::make_unique<Pinset>(name);
 
     const base::Value::List* pinset_static_hashes_list =
         parsed->FindList("static_spki_hashes");

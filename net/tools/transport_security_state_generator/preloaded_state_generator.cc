@@ -32,10 +32,6 @@ std::string FormatRejectedKeyName(const std::string& name) {
   return "k" + name + "RejectedCerts";
 }
 
-std::string FormatReportURIName(const std::string& name) {
-  return "k" + name + "ReportURI";
-}
-
 // Replaces the first occurrence of "[[" + name + "]]" in |*tpl| with
 // |value|.
 bool ReplaceTag(const std::string& name,
@@ -246,21 +242,10 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
       certs_output.append(kNewLine);
     }
 
-    std::string report_uri = "kNoReportURI";
-    if (pinset_ptr->report_uri().size()) {
-      report_uri = FormatReportURIName(uppercased_name);
-      certs_output.append("static const char " + report_uri + "[] = ");
-      certs_output.append("\"");
-      certs_output.append(pinset_ptr->report_uri());
-      certs_output.append("\";");
-      certs_output.append(kNewLine);
-    }
-    certs_output.append(kNewLine);
-
     pinsets_output.append(kIndent);
     pinsets_output.append(kIndent);
     pinsets_output.append("{" + accepted_pins_names + ", " +
-                          rejected_pins_names + ", " + report_uri + "},");
+                          rejected_pins_names + "},");
     pinsets_output.append(kNewLine);
 
     pinset_map->insert(NameIDPair(pinset_ptr->name(),
