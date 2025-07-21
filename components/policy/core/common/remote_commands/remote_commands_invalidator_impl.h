@@ -40,7 +40,7 @@ class POLICY_EXPORT RemoteCommandsInvalidatorImpl
   void OnStart() override;
   void OnStop() override;
   void DoRemoteCommandsFetch(
-      const invalidation::Invalidation& invalidation) override;
+      const invalidation::DirectInvalidation& invalidation) override;
   void DoInitialRemoteCommandsFetch() override;
 
   // CloudPolicyCore::Observer:
@@ -55,7 +55,7 @@ class POLICY_EXPORT RemoteCommandsInvalidatorImpl
 
  private:
   void RecordInvalidationMetric(
-      const invalidation::Invalidation& invalidation) const;
+      const invalidation::DirectInvalidation& invalidation) const;
 
   const raw_ptr<CloudPolicyCore> core_;
 

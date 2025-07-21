@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/clock.h"
-#include "components/invalidation/public/invalidation.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
@@ -32,27 +32,13 @@ const char* GetInvalidationMetricName(PolicyInvalidationScope scope) {
   }
 }
 
-std::string ComposeOwnerName(PolicyInvalidationScope scope) {
-  switch (scope) {
-    case PolicyInvalidationScope::kUser:
-      return "RemoteCommands.User";
-    case PolicyInvalidationScope::kDevice:
-      return "RemoteCommands.Device";
-    case PolicyInvalidationScope::kCBCM:
-      return "RemoteCommands.CBCM";
-    case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED() << "Unexpected instance of remote commands invalidator with "
-                      "device local account scope.";
-  }
-}
-
 }  // namespace
 
 RemoteCommandsInvalidatorImpl::RemoteCommandsInvalidatorImpl(
     CloudPolicyCore* core,
     const base::Clock* clock,
     PolicyInvalidationScope scope)
-    : RemoteCommandsInvalidator(ComposeOwnerName(scope), scope),
+    : RemoteCommandsInvalidator(scope),
       core_(core),
       clock_(clock),
       scope_(scope) {
@@ -80,7 +66,7 @@ void RemoteCommandsInvalidatorImpl::OnStop() {
 }
 
 void RemoteCommandsInvalidatorImpl::DoRemoteCommandsFetch(
-    const invalidation::Invalidation& invalidation) {
+    const invalidation::DirectInvalidation& invalidation) {
   DCHECK(core_->remote_commands_service());
 
   RecordInvalidationMetric(invalidation);
@@ -110,14 +96,12 @@ void RemoteCommandsInvalidatorImpl::OnRemoteCommandsServiceStarted(
   Start();
 }
 
-void RemoteCommandsInvalidatorImpl::OnStoreLoaded(CloudPolicyStore* core) {
-  ReloadPolicyData(core_->store()->policy());
-}
+void RemoteCommandsInvalidatorImpl::OnStoreLoaded(CloudPolicyStore* core) {}
 
 void RemoteCommandsInvalidatorImpl::OnStoreError(CloudPolicyStore* core) {}
 
 void RemoteCommandsInvalidatorImpl::RecordInvalidationMetric(
-    const invalidation::Invalidation& invalidation) const {
+    const invalidation::DirectInvalidation& invalidation) const {
   const auto last_fetch_time = base::Time::FromMillisecondsSinceUnixEpoch(
       core_->store()->policy()->timestamp());
   const auto current_time = clock_->Now();
