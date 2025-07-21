@@ -188,7 +188,7 @@ class TestSandboxedProcessLauncherDelegate
 };
 
 // A test-specific type of process host. Self-owned.
-class TestProcessHost : public BrowserChildProcessHostDelegate {
+class TestProcessHost final : public BrowserChildProcessHostDelegate {
  public:
   static base::WeakPtr<TestProcessHost> Create() {
     auto* instance = new TestProcessHost();

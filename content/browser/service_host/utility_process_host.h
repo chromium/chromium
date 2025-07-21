@@ -54,7 +54,7 @@ typedef base::Thread* (*UtilityMainThreadFactoryFunction)(
 // mojo service. This class lives solely on the UI thread. If you need to bind
 // a Mojo interface, specify it via `WithBoundServiceInterfaceOnChildProcess` on
 // the `Options` passed in.
-class CONTENT_EXPORT UtilityProcessHost
+class CONTENT_EXPORT UtilityProcessHost final
     : public BrowserChildProcessHostDelegate {
  public:
   static void RegisterUtilityMainThreadFactory(

@@ -398,19 +398,11 @@ ChildProcessTerminationInfo BrowserChildProcessHostImpl::GetTerminationInfo(
   return child_process_launcher_->GetChildTerminationInfo(known_dead);
 }
 
-bool BrowserChildProcessHostImpl::OnMessageReceived(
-    const IPC::Message& message) {
-  return delegate_->OnMessageReceived(message);
-}
-
 void BrowserChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DCHECK(has_legacy_ipc_channel_);
   is_channel_connected_ = true;
-
-  delegate_->OnChannelConnected(peer_pid);
-
   OnProcessConnected();
 }
 
@@ -426,10 +418,6 @@ void BrowserChildProcessHostImpl::OnProcessConnected() {
     launched_and_connected_ = true;
     NotifyProcessLaunchedAndConnected(data_);
   }
-}
-
-void BrowserChildProcessHostImpl::OnChannelError() {
-  delegate_->OnChannelError();
 }
 
 void BrowserChildProcessHostImpl::OnBadMessageReceived(

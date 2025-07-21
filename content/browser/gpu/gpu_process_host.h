@@ -54,8 +54,8 @@ class BrowserChildProcessBackgroundedBridge;
 class CATransactionGPUCoordinator;
 #endif
 
-class GpuProcessHost : public BrowserChildProcessHostDelegate,
-                       public viz::GpuHostImpl::Delegate {
+class GpuProcessHost final : public BrowserChildProcessHostDelegate,
+                             public viz::GpuHostImpl::Delegate {
  public:
   static int GetGpuCrashCount();
 
