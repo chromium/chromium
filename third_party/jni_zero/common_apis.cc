@@ -61,7 +61,7 @@ ScopedJavaLocalRef<jobject> MapGet(JNIEnv* env,
   return JNI_Map::Java_Map_get(env, map, key);
 }
 
-ScopedJavaLocalRef<jobject> MapSet(JNIEnv* env,
+ScopedJavaLocalRef<jobject> MapPut(JNIEnv* env,
                                    const JavaRef<jobject>& map,
                                    const JavaRef<jobject>& key,
                                    const JavaRef<jobject>& value) {

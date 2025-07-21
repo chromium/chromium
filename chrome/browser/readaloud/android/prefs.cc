@@ -17,16 +17,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/readaloud/android/jni_headers/ReadAloudPrefs_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::GetClass;
 using base::android::JavaParamRef;
-using base::android::MethodID;
-using base::android::ScopedJavaLocalRef;
 
 namespace readaloud {
 namespace {
@@ -59,21 +56,10 @@ void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,
   PrefService* prefs =
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
 
-  ScopedJavaLocalRef<jclass> output_map_class =
-      GetClass(env, "java/util/HashMap");
-  // jmethodID is a pointer to an internal struct. We don't own it and should
-  // not delete it.
-  jmethodID map_put_id = MethodID::Get<MethodID::Type::TYPE_INSTANCE>(
-      env, output_map_class.obj(), "put",
-      "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-
   const base::Value::Dict& dict =
       prefs->GetDict(prefs::kReadAloudVoiceSettings);
   for (auto [language, value] : dict) {
-    env->CallObjectMethod(
-        j_output_map.obj(), map_put_id,
-        ConvertUTF8ToJavaString(env, language).obj(),
-        ConvertUTF8ToJavaString(env, value.GetString()).obj());
+    jni_zero::MapPut(env, j_output_map, language, value.GetString());
   }
 }
 
