@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
-#include <unordered_map>
+#include <string_view>
 
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
 
@@ -13,6 +13,8 @@
 #include "{{include}}"
 {% endfor %}
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace {{cpp_ns}}::internal {
@@ -54,7 +56,7 @@ template <typename From, typename To>
 }
 
 auto escape(const std::string& str) {
-    static std::unordered_map<char, std::string> const escapes = {
+    static constexpr auto kEscapes = base::MakeFixedFlatMap<char, std::string_view>({
         { '\a', "\\a" },
         { '\b', "\\b" },
         { '\t', "\\t" },
@@ -65,16 +67,16 @@ auto escape(const std::string& str) {
         {   27, "\\e" },
         { '\\', "\\\\" },
         { '"', "\\\"" },
-    };
+    });
 
     std::string res;
     res.reserve(str.length());
     for (const char c : str) {
-        auto it = escapes.find(c);
-        if (it == std::end(escapes)) {
+        const auto* escape = base::FindOrNull(kEscapes, c);
+        if (!escape) {
             res += c;
         } else {
-            res += it->second;
+            res += *escape;
         }
     }
     return res;
