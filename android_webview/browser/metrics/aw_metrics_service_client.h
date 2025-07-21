@@ -20,17 +20,6 @@
 
 namespace android_webview {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// TODO(crbug.com/40651974): remove this when the kInstallDate pref has
-// been persisted for one or two milestones. Visible for testing.
-enum class BackfillInstallDate {
-  kValidInstallDatePref = 0,
-  kCouldNotGetPackageManagerInstallDate = 1,
-  kPersistedPackageManagerInstallDate = 2,
-  kMaxValue = kPersistedPackageManagerInstallDate,
-};
-
 // The amount of delay before calculating and recording the app data directory
 // size, intended for avoiding IO contention when an app is initializing.
 //
@@ -130,22 +119,14 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
 
   ~AwMetricsServiceClient() override;
 
-  // metrics::MetricsServiceClient
-  int32_t GetProduct() override;
-
   // WebViewAppStateObserver
   void OnAppStateChanged(WebViewAppStateObserver::State state) override;
 
   // metrics::AndroidMetricsServiceClient:
   void OnMetricsStart() override;
-  void OnMetricsNotStarted() override;
   int GetSampleRatePerMille() const override;
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
-
-  // Gets the embedding app's package name if it's OK to log. Otherwise, this
-  // returns the empty string.
-  std::string GetAppPackageNameIfLoggable() override;
 
   // - return `true` if client used to be sampled out.
   // - return `false` if client used to be in-sampled.

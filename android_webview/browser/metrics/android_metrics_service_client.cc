@@ -292,7 +292,6 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
     // called. This ensures on disk state is removed.
     metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
         pref_service_, /* metrics_reporting_enabled */ false));
-    OnMetricsNotStarted();
     pref_service_->ClearPref(prefs::kMetricsClientID);
     pref_service_->ClearPref(prefs::kMetricsProvisionalClientID);
     pref_service_->ClearPref(prefs::kMetricsLogRecordId);
@@ -398,6 +397,10 @@ MetricsService* AndroidMetricsServiceClient::GetMetricsService() {
 // UMA and Crashpad are independent, so this is a no-op.
 void AndroidMetricsServiceClient::SetMetricsClientId(
     const std::string& client_id) {}
+
+int32_t AndroidMetricsServiceClient::GetProduct() {
+  return metrics::ChromeUserMetricsExtension::ANDROID_WEBVIEW;
+}
 
 std::string AndroidMetricsServiceClient::GetApplicationLocale() {
   return base::i18n::GetConfiguredLocale();
@@ -563,7 +566,11 @@ InstallerPackageType AndroidMetricsServiceClient::GetInstallerPackageType() {
 }
 
 bool AndroidMetricsServiceClient::CanRecordPackageNameForAppType() {
-  return GetInstallerPackageType() != InstallerPackageType::OTHER;
+  InstallerPackageType installer_type = GetInstallerPackageType();
+  // Allow recording the app package name of system apps and apps
+  // from the play store.
+  return (installer_type == InstallerPackageType::SYSTEM_APP ||
+          installer_type == InstallerPackageType::GOOGLE_PLAY_STORE);
 }
 
 void AndroidMetricsServiceClient::RegisterAdditionalMetricsProviders(

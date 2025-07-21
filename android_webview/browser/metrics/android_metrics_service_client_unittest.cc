@@ -75,8 +75,6 @@ class TestClient : public AndroidMetricsServiceClient {
  protected:
   void OnMetricsStart() override {}
 
-  void OnMetricsNotStarted() override {}
-
   int GetSampleBucketValue() const override { return sample_bucket_value_; }
 
   int GetSampleRatePerMille() const override {
@@ -88,10 +86,6 @@ class TestClient : public AndroidMetricsServiceClient {
   }
 
   // AndroidMetricsServiceClient:
-  int32_t GetProduct() override {
-    return metrics::ChromeUserMetricsExtension::CHROME;
-  }
-
   void RegisterAdditionalMetricsProviders(MetricsService* service) override {}
 
  private:
@@ -115,12 +109,8 @@ class SampleBucketValueTestClient : public AndroidMetricsServiceClient {
  protected:
   // AndroidMetricsServiceClient:
   void OnMetricsStart() override {}
-  void OnMetricsNotStarted() override {}
   int GetSampleRatePerMille() const override { return 0; }
   bool CanRecordPackageNameForAppType() override { return false; }
-  int32_t GetProduct() override {
-    return metrics::ChromeUserMetricsExtension::ANDROID_WEBVIEW;
-  }
   void RegisterAdditionalMetricsProviders(MetricsService* service) override {}
 };
 

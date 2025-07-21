@@ -89,10 +89,6 @@ AwMetricsServiceClient::AwMetricsServiceClient(
 
 AwMetricsServiceClient::~AwMetricsServiceClient() = default;
 
-int32_t AwMetricsServiceClient::GetProduct() {
-  return metrics::ChromeUserMetricsExtension::ANDROID_WEBVIEW;
-}
-
 int AwMetricsServiceClient::GetSampleRatePerMille() const {
   return 1000;
 }
@@ -100,18 +96,6 @@ int AwMetricsServiceClient::GetSampleRatePerMille() const {
 bool AwMetricsServiceClient::ShouldApplyMetricsFiltering() const {
   bool used_to_sample_in = GetSampleBucketValue() < GetBaseSampleRatePerMille();
   return !used_to_sample_in;
-}
-
-std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
-  AndroidMetricsServiceClient::InstallerPackageType installer_type =
-      GetInstallerPackageType();
-  // Always record the app package name of system apps and apps
-  // from the play store
-  if (installer_type == InstallerPackageType::SYSTEM_APP ||
-      installer_type == InstallerPackageType::GOOGLE_PLAY_STORE) {
-    return GetAppPackageName();
-  }
-  return std::string();
 }
 
 // Used below in AwMetricsServiceClient::OnMetricsStart.
@@ -145,8 +129,6 @@ void AwMetricsServiceClient::OnMetricsStart() {
         kRecordAppDataDirectorySizeDelay);
   }
 }
-
-void AwMetricsServiceClient::OnMetricsNotStarted() {}
 
 void AwMetricsServiceClient::OnAppStateChanged(
     WebViewAppStateObserver::State state) {

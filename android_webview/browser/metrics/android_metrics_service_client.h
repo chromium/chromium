@@ -135,6 +135,7 @@ class AndroidMetricsServiceClient
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   MetricsService* GetMetricsService() override;
   void SetMetricsClientId(const std::string& client_id) override;
+  int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
   const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool GetBrand(std::string* brand_code) override;
@@ -197,15 +198,12 @@ class AndroidMetricsServiceClient
   // should use `GetAppPackageNameIfLoggable`.
   std::string GetAppPackageName();
 
-  // Returns the installer type of the app.
+  // Returns the installer type of the app. Virtual for testing.
   virtual InstallerPackageType GetInstallerPackageType();
 
  protected:
   // Called by MaybeStartMetrics() to allow embedder specific initialization.
   virtual void OnMetricsStart() = 0;
-
-  // Called by MaybeStartMetrics() when metrics collection failed to start.
-  virtual void OnMetricsNotStarted() = 0;
 
   // Returns the metrics sampling rate, to be used by IsInSample(). This is a
   // per mille value, so this integer must always be in the inclusive range [0,
