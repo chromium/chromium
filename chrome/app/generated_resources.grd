@@ -9555,6 +9555,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           desc="The tooltip for download toolbar button icon">
           Downloads
       </message>
+      <message name="IDS_TOOLTIP_DOWNLOAD_ICON_NEW_DOWNLOAD" desc="The tooltip for download toolbar button icon when at least one newly completed download is available">
+        New download available
+      </message>
       <message name="IDS_TOOLTIP_HOME" desc="The tooltip for the home button">
         Open the home page
       </message>
