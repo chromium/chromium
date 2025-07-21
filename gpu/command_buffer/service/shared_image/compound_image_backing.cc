@@ -455,8 +455,11 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   DCHECK(IsValidSharedMemoryBufferFormat(size, format));
 
   auto buffer_format = ToBufferFormat(format);
-  auto handle = GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-      size, buffer_format, buffer_usage);
+  gfx::GpuMemoryBufferHandle handle;
+  if (GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage)) {
+    handle = GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+        size, buffer_format, buffer_usage);
+  }
 
   SharedMemoryRegionWrapper shm_wrapper;
   if (!shm_wrapper.Initialize(handle, size, buffer_format)) {

@@ -59,8 +59,11 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     bool is_thread_safe,
     gfx::BufferUsage buffer_usage) {
   auto buffer_format = ToBufferFormat(format);
-  auto handle = GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-      size, buffer_format, buffer_usage);
+  gfx::GpuMemoryBufferHandle handle;
+  if (GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage)) {
+    handle = GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+        size, buffer_format, buffer_usage);
+  }
   SharedMemoryRegionWrapper shm_wrapper;
   if (!shm_wrapper.Initialize(handle, size, buffer_format)) {
     return nullptr;

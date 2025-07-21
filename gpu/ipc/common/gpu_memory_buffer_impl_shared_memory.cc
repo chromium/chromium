@@ -67,8 +67,6 @@ GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  if (!IsUsageSupported(usage))
-    return gfx::GpuMemoryBufferHandle();
   size_t buffer_size = 0u;
   if (!gfx::BufferSizeForBufferFormatChecked(size, format, &buffer_size))
     return gfx::GpuMemoryBufferHandle();
