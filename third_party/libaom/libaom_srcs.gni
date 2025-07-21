@@ -47,6 +47,7 @@ aom_av1_common_intrin_neon_i8mm = [
 aom_av1_common_intrin_rvv = [
   "//third_party/libaom/source/libaom/av1/common/riscv/cdef_block_rvv.c",
   "//third_party/libaom/source/libaom/av1/common/riscv/convolve_rvv.c",
+  "//third_party/libaom/source/libaom/av1/common/riscv/highbd_convolve_rvv.c",
 ]
 
 aom_av1_common_intrin_sse2 = [
@@ -146,7 +147,6 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/av1/common/scan.h",
   "//third_party/libaom/source/libaom/av1/common/seg_common.c",
   "//third_party/libaom/source/libaom/av1/common/seg_common.h",
-  "//third_party/libaom/source/libaom/av1/common/selfguided_hwy.h",
   "//third_party/libaom/source/libaom/av1/common/thread_common.c",
   "//third_party/libaom/source/libaom/av1/common/thread_common.h",
   "//third_party/libaom/source/libaom/av1/common/tile_common.c",
