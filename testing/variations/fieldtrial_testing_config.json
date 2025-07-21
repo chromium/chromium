@@ -20456,21 +20456,6 @@
             ]
         }
     ],
-    "ResetMetricsUploadBackoffOnForeground": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ResetMetricsUploadBackoffOnForeground"
-                    ]
-                }
-            ]
-        }
-    ],
     "ResolutionBasedDecoderPriority": [
         {
             "platforms": [
