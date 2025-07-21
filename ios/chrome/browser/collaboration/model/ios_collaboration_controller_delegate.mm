@@ -831,6 +831,9 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
   config.tabGroup = tab_group;
   config.groupImage = faviconsGridImage;
   config.collabID = base::SysUTF8ToNSString(collaboration_id.value());
+  config.enterpriseSharingDisabled =
+      collaboration_service_->GetServiceStatus().collaboration_status ==
+      CollaborationStatus::kDisabledForPolicy;
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));

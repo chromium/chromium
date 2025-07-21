@@ -31,6 +31,9 @@ typedef void (^ShareKitShouldUnshareGroupBlock)(BOOL shouldDelete);
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
+// Whether enterprise sharing is disabled.
+@property(nonatomic, assign) BOOL enterpriseSharingDisabled;
+
 // Executed when the manage flow ended.
 @property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);
 
