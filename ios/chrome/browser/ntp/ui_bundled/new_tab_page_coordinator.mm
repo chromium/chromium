@@ -289,7 +289,7 @@
   BOOL _fakeboxTapped;
   // The account menu coordinator.
   AccountMenuCoordinator* _accountMenuCoordinator;
-  // The sign in and history sync coordinator displayed on top of the NTP.
+  // The sign in coordinator displayed on top of the NTP.
   SigninCoordinator* _signinCoordinator;
 }
 
@@ -963,6 +963,23 @@
                                HomeCustomizationEntrypoint::kMain];
 
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
+}
+
+#pragma mark - SigninPromoViewMediatorDelegate
+
+- (void)showSigninWithCommand:(ShowSigninCommand*)command {
+  if (_signinCoordinator) {
+    SigninCoordinatorCompletionCallback completion = command.completion;
+    if (completion) {
+      completion(SigninCoordinatorResultInterrupted, nil);
+    }
+    return;
+  }
+  _signinCoordinator =
+      [SigninCoordinator signinCoordinatorWithCommand:command
+                                              browser:self.browser
+                                   baseViewController:self.baseViewController];
+  [_signinCoordinator start];
 }
 
 #pragma mark - DiscoverFeedVisibilityObserver
