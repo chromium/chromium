@@ -83,7 +83,8 @@ class MockPreconnectManager : public PreconnectManager {
   MOCK_METHOD1(SetObserverForTesting, void(Observer* observer));
 
   void Start(const GURL& url,
-             std::vector<PreconnectRequest> requests) override {
+             std::vector<PreconnectRequest> requests,
+             net::NetworkTrafficAnnotationTag traffic_annotation) override {
     StartProxy(url, requests);
   }
 };

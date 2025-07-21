@@ -13,7 +13,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
-#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,13 +76,15 @@ PreresolveJob::PreresolveJob(
   DCHECK(!this->network_anonymization_key.IsEmpty());
 }
 
-PreresolveJob::PreresolveJob(content::PreconnectRequest preconnect_request,
-                             PreresolveInfo* info)
+PreresolveJob::PreresolveJob(
+    content::PreconnectRequest preconnect_request,
+    PreresolveInfo* info,
+    net::NetworkTrafficAnnotationTag traffic_annotation_tag)
     : PreresolveJob(preconnect_request.origin.GetURL(),
                     preconnect_request.num_sockets,
                     preconnect_request.allow_credentials,
                     std::move(preconnect_request.network_anonymization_key),
-                    kLoadingPredictorPreconnectTrafficAnnotation,
+                    traffic_annotation_tag,
                     /*storage_partition_config=*/std::nullopt,
                     std::nullopt,
                     mojo::NullRemote(),
@@ -128,7 +129,8 @@ void PreconnectManagerImpl::SetObserverForTesting(Observer* observer) {
 
 void PreconnectManagerImpl::Start(
     const GURL& url,
-    std::vector<content::PreconnectRequest> requests) {
+    std::vector<content::PreconnectRequest> requests,
+    net::NetworkTrafficAnnotationTag traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsEnabled()) {
     return;
@@ -147,8 +149,9 @@ void PreconnectManagerImpl::Start(
   }
 
   for (auto& request : requests) {
-    PreresolveJobId job_id = preresolve_jobs_.Add(
-        std::make_unique<PreresolveJob>(std::move(request), info));
+    PreresolveJobId job_id =
+        preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
+            std::move(request), info, traffic_annotation));
     queued_jobs_.push_back(job_id);
   }
 

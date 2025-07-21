@@ -18,7 +18,6 @@
 #include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
 #include "chrome/browser/predictors/resolve_host_client_impl.h"
-#include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/base/network_anonymization_key.h"
@@ -74,7 +73,8 @@ struct PreresolveJob {
   PreresolveJob& operator=(const PreresolveJob&) = delete;
 
   PreresolveJob(content::PreconnectRequest preconnect_request,
-                PreresolveInfo* info);
+                PreresolveInfo* info,
+                net::NetworkTrafficAnnotationTag traffic_annotation_tag);
   PreresolveJob(PreresolveJob&& other);
 
   ~PreresolveJob();
@@ -117,7 +117,8 @@ class PreconnectManagerImpl : public PreconnectManager {
   ~PreconnectManagerImpl() override;
 
   void Start(const GURL& url,
-             std::vector<content::PreconnectRequest> requests) override;
+             std::vector<content::PreconnectRequest> requests,
+             net::NetworkTrafficAnnotationTag traffic_annotation) override;
 
   void StartPreresolveHost(
       const GURL& url,

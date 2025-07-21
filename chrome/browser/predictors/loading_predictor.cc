@@ -376,7 +376,8 @@ void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
   }
 
   if (!prediction.requests.empty())
-    preconnect_manager()->Start(url, std::move(prediction.requests));
+    preconnect_manager()->Start(url, std::move(prediction.requests),
+                                kLoadingPredictorPreconnectTrafficAnnotation);
 }
 
 void LoadingPredictor::MaybeRemovePreconnect(const GURL& url) {

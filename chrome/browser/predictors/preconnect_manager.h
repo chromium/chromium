@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -94,7 +93,8 @@ class PreconnectManager {
 
   // Starts preconnect and preresolve jobs associated with |url|.
   virtual void Start(const GURL& url,
-                     std::vector<content::PreconnectRequest> requests) = 0;
+                     std::vector<content::PreconnectRequest> requests,
+                     net::NetworkTrafficAnnotationTag traffic_annotation) = 0;
 
   // Starts special preconnect and preresolve jobs that are not cancellable and
   // don't report about their completion. They are considered more important
