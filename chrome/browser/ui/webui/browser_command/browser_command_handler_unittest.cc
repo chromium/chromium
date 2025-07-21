@@ -53,6 +53,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenPaymentsSettings,
     Command::kOpenGlic,
     Command::kOpenGlicSettings,
+    Command::kPrewarmGlicFre,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -222,6 +223,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenGlic, ());
 
   MOCK_METHOD(void, OpenGlicSettings, ());
+
+  MOCK_METHOD(void, PrewarmGlicFre, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -693,4 +696,14 @@ TEST_F(BrowserCommandHandlerTest, OpenGlicSettingsCommand) {
   info->meta_key = true;
   EXPECT_CALL(*command_handler_, OpenGlicSettings());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenGlicSettings, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, PrewarmGlicFreCommand) {
+  // The PrewarmGlicFre command prewarms the Glic FRE.
+  EXPECT_TRUE(CanExecuteCommand(Command::kPrewarmGlicFre));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  EXPECT_CALL(*command_handler_, PrewarmGlicFre());
+  EXPECT_TRUE(ExecuteCommand(Command::kPrewarmGlicFre, std::move(info)));
 }

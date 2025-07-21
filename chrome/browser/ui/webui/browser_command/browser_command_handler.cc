@@ -148,6 +148,9 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kOpenGlicSettings:
       can_execute = true;
       break;
+    case Command::kPrewarmGlicFre:
+      can_execute = true;
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -236,6 +239,9 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
     }
     case Command::kOpenGlicSettings:
       OpenGlicSettings();
+      break;
+    case Command::kPrewarmGlicFre:
+      PrewarmGlicFre();
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
@@ -383,6 +389,15 @@ void BrowserCommandHandler::OpenGlicSettings() {
                   WindowOpenDisposition::SINGLETON_TAB);
   }
 #endif
+}
+
+void BrowserCommandHandler::PrewarmGlicFre() {
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile_);
+  if (glic_service) {
+    glic_service->TryPreloadFre();
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

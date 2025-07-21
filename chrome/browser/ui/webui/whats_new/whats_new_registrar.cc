@@ -43,7 +43,8 @@ void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterEdition(WhatsNewEdition(
       ::features::kGlicRollout, "tommasin@chromium.org",
       std::vector<BrowserCommand>{BrowserCommand::kOpenGlic,
-                                  BrowserCommand::kOpenGlicSettings}));
+                                  BrowserCommand::kOpenGlicSettings,
+                                  BrowserCommand::kPrewarmGlicFre}));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
