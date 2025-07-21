@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from './testing/test_import_manager.js';
+
 type AutomationNode = chrome.automation.AutomationNode;
 type AutomationEvent = chrome.automation.AutomationEvent;
 import EventType = chrome.automation.EventType;
@@ -109,3 +111,5 @@ export class RepeatedEventHandler {
     this.callback_(event);
   }
 }
+
+TestImportManager.exportForTesting(RepeatedEventHandler);

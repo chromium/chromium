@@ -3,16 +3,46 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['testing/common_e2e_test_base.js']);
+GEN_INCLUDE(['testing/e2e_test_base.js']);
 
-/** Test fixture for array_util.js. */
+/**
+ * Test fixture for repeated_tree_change_handler.js.
+ * Note it uses SwitchAccess extension because `repeated_tree_change_handler.js`
+ * is only loaded there.
+ */
 AccessibilityExtensionRepeatedTreeChangeHandlerTest =
-    class extends CommonE2ETestBase {
+    class extends E2ETestBase {
+  /** @override */
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
+    GEN(`
+#include "ash/accessibility/accessibility_controller.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+    `);
+  }
+
+  /** @override */
+  testGenPreamble() {
+    super.testGenPreamble();
+    GEN(`
+    auto* controller = ash::AccessibilityController::Get();
+    controller->DisableSwitchAccessDisableConfirmationDialogTesting();
+    // Don't show the dialog saying Switch Access was enabled.
+    controller->DisableSwitchAccessEnableNotificationTesting();
+    base::OnceClosure load_cb =
+        base::BindOnce(&ash::AccessibilityManager::SetSwitchAccessEnabled,
+            base::Unretained(ash::AccessibilityManager::Get()),
+            true);
+    `);
+    super.testGenPreambleCommon('kSwitchAccessExtensionId');
+  }
+
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'RepeatedTreeChangeHandler', '/common/repeated_tree_change_handler.js');
+
+    const imports = TestImportManager.getImports();
+    globalThis.RepeatedTreeChangeHandler = imports.RepeatedTreeChangeHandler;
   }
 };
 
