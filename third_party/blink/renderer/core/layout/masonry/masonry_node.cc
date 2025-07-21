@@ -87,7 +87,8 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
 }
 
 GridItems MasonryNode::ConstructMasonryItems(
-    const GridLineResolver& line_resolver) const {
+    const GridLineResolver& line_resolver,
+    HeapVector<Member<LayoutBox>>* opt_oof_children) const {
   const ComputedStyle& style = Style();
   const GridTrackSizingDirection grid_axis_direction =
       style.MasonryTrackSizingDirection();
@@ -99,6 +100,13 @@ GridItems MasonryNode::ConstructMasonryItems(
 
     // This collects all our children, and orders them by their order property.
     for (auto child = FirstChild(); child; child = child.NextSibling()) {
+      if (child.IsOutOfFlowPositioned()) {
+        if (opt_oof_children) {
+          opt_oof_children->emplace_back(child.GetLayoutBox());
+        }
+        continue;
+      }
+
       Member<GridItemData> masonry_item = MakeGarbageCollected<GridItemData>(
           To<BlockNode>(child), /*parent_style=*/style);
 

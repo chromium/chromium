@@ -34,7 +34,9 @@ class CORE_EXPORT MasonryNode final : public BlockNode {
 
   // Collects the children of this node, sorts by order property if needed, and
   // resolves the grid line positions of the items based on style.
-  GridItems ConstructMasonryItems(const GridLineResolver& line_resolver) const;
+  GridItems ConstructMasonryItems(
+      const GridLineResolver& line_resolver,
+      HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr) const;
 
   // Update the grid line positions of the items based on style and provided
   // `line_resolver`.

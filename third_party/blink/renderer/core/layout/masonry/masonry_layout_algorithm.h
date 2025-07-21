@@ -43,6 +43,11 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       MasonryRunningPositions& running_positions,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt);
 
+  // Places all out-of-flow (OOF) masonry items via
+  // `AddOutOfFlowChildCandidate`. `oof_children` is a required input vector
+  // containing the layout boxes of OOF masonry items.
+  void PlaceOutOfFlowItems(HeapVector<Member<LayoutBox>>& oof_children);
+
   // Returns the track collection given the provided `sizing_constraint`.
   // If `auto_repeat_track_size` is non-null, this contains the track size to
   // use for an auto sized track inside a repeat() track definition. The
@@ -51,13 +56,16 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   // auto sized track within a repeat() definition and don't provide
   // `auto_repeat_track_size`, then `needs_auto_track_size` will be set to true,
   // indicating that another track sizing pass will be required once we've
-  // computed the auto track size.
+  // computed the auto track size. `opt_oof_children` is an optional vector of
+  // out-of-flow direct children of the masonry container that this method will
+  // populate.
   GridSizingTrackCollection ComputeGridAxisTracks(
       const SizingConstraint sizing_constraint,
       std::optional<LayoutUnit> auto_repeat_track_size,
       GridItems& masonry_items,
       wtf_size_t& start_offset,
-      bool& needs_auto_track_size) const;
+      bool& needs_auto_track_size,
+      HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr) const;
 
   GridSizingTrackCollection BuildGridAxisTracks(
       const GridLineResolver& line_resolver,

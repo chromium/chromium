@@ -118,10 +118,11 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   std::optional<LayoutUnit> auto_repeat_track_size = std::nullopt;
   wtf_size_t start_offset;
   GridItems masonry_items;
+  HeapVector<Member<LayoutBox>> oof_children;
 
-  GridSizingTrackCollection track_collection =
-      ComputeGridAxisTracks(SizingConstraint::kLayout, auto_repeat_track_size,
-                            masonry_items, start_offset, needs_auto_track_size);
+  GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
+      SizingConstraint::kLayout, auto_repeat_track_size, masonry_items,
+      start_offset, needs_auto_track_size, &oof_children);
 
   // We have a repeat() track definition with an auto sized track(s). The
   // previous track sizing pass was used to find the track size to apply
@@ -154,6 +155,11 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
     PlaceMasonryItems(track_collection, masonry_items, start_offset,
                       running_positions, SizingConstraint::kLayout);
   }
+
+  if (!oof_children.empty()) {
+    PlaceOutOfFlowItems(oof_children);
+  }
+
   // Account for border, scrollbar, and padding in the intrinsic block size.
   intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
 
@@ -161,6 +167,7 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
       GetConstraintSpace(), Node(), BorderPadding(), intrinsic_block_size_,
       container_builder_.InlineSize()));
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
+  container_builder_.HandleOofsAndSpecialDescendants();
   return container_builder_.ToBoxFragment();
 }
 
@@ -323,6 +330,34 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     // If the stacking axis is the inline axis, add the size of the tracks to
     // `intrinsic_block_size_`.
     intrinsic_block_size_ = track_collection.CalculateSetSpanSize();
+  }
+}
+
+void MasonryLayoutAlgorithm::PlaceOutOfFlowItems(
+    HeapVector<Member<LayoutBox>>& oof_children) {
+  const auto& container_style = Style();
+
+  // TODO(kschmi): This doesn't match grid, which passes in the block size.
+  const LogicalSize total_fragment_size = {container_builder_.InlineSize(),
+                                           LayoutUnit()};
+
+  for (LayoutBox* oof_child : oof_children) {
+    GridItemData* out_of_flow_item = MakeGarbageCollected<GridItemData>(
+        BlockNode(oof_child), container_style);
+    DCHECK(out_of_flow_item->IsOutOfFlow());
+
+    // TODO(kschmi): Apply grid-area containing rect.
+    auto child_offset = BorderScrollbarPadding().StartOffset();
+
+    // TODO(kschmi): Apply actual alignment.
+    LogicalStaticPosition::InlineEdge inline_edge =
+        LogicalStaticPosition::kInlineStart;
+    LogicalStaticPosition::BlockEdge block_edge =
+        LogicalStaticPosition::kBlockStart;
+
+    // TODO(kschmi): Handle fragmentation.
+    container_builder_.AddOutOfFlowChildCandidate(
+        out_of_flow_item->node, child_offset, inline_edge, block_edge);
   }
 }
 
@@ -539,15 +574,17 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::ComputeGridAxisTracks(
     std::optional<LayoutUnit> auto_repeat_track_size,
     GridItems& masonry_items,
     wtf_size_t& start_offset,
-    bool& needs_auto_track_size) const {
+    bool& needs_auto_track_size,
+    HeapVector<Member<LayoutBox>>* opt_oof_children) const {
   start_offset = 0;
   needs_auto_track_size = false;
+
   const GridLineResolver line_resolver(
       Style(), ComputeAutomaticRepetitions(auto_repeat_track_size,
                                            needs_auto_track_size));
   const auto& node = Node();
   if (masonry_items.IsEmpty()) {
-    masonry_items = node.ConstructMasonryItems(line_resolver);
+    masonry_items = node.ConstructMasonryItems(line_resolver, opt_oof_children);
   } else {
     // If `masonry_items` is not empty, that means that we are in
     // a second track sizing pass required for intrinsic tracks within
