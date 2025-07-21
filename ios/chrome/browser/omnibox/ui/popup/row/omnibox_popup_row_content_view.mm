@@ -455,6 +455,11 @@ const double kContentSizeMultiplierAccesibility = 2.0;
 
 /// Handles tap on trailing button.
 - (void)trailingButtonTapped {
+  if (_configuration.trailingIconType == TrailingIconType::kSearchWithAim ||
+      _configuration.trailingIconType == TrailingIconType::kOpenExistingTab) {
+    TriggerHapticFeedbackForSelectionChange();
+  }
+
   [self.configuration.delegate
       omniboxPopupRowWithConfiguration:self.configuration
        didTapTrailingButtonAtIndexPath:self.configuration.indexPath];
