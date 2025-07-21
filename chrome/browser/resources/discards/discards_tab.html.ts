@@ -20,12 +20,14 @@ export function getHtml(this: DiscardsTabElement) {
   <div is="action-link" @click="${this.toggleBatterySaverMode_}">
     [Toggle battery saver mode]
   </div>
-  ${this.isPerformanceInterventionDemoModeEnabled_ ? html`
+  ${
+      this.isPerformanceInterventionDemoModeEnabled_ ? html`
     <div is="action-link"
         @click="${this.refreshPerformanceTabCpuMeasurements_}">
       [Trigger Performance CPU intervention]
     </div>
-  ` : ''}
+  ` :
+                                                       ''}
   <table id="tab-discard-info-table">
     <thead >
       <tr id="tab-discards-info-table-header">
@@ -141,7 +143,7 @@ export function getHtml(this: DiscardsTabElement) {
             <div is="action-link" class="tooltip-container"
               ?disabled="${!this.shouldShowCannotDiscardReason_(item)}">
               [View Reason]
-              <div class="tooltip">${item.cannotDiscardReasons}<div>
+              <div class="tooltip">${item.cannotDiscardReasons.join(',')}<div>
             </div>
           </td>
           <td class="boolean-cell">
@@ -149,7 +151,7 @@ export function getHtml(this: DiscardsTabElement) {
             <div is="action-link" class="tooltip-container"
               ?disabled="${!this.shouldShowCannotFreezeReason_(item)}">
               [View Reason]
-              <div class="tooltip">${item.cannotFreezeReasons}<div>
+              <div class="tooltip">${item.cannotFreezeReasons.join(',')}<div>
             </div>
           </td>
           <td>${item.discardCount}</td>
