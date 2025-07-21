@@ -29,7 +29,7 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      isFingerprintingProtectionUxEnabled: true,
+      isIpProtectionUxEnabled: true,
       isIpProtectionDisabledForEnterprise: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
@@ -50,12 +50,10 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
   });
 
   test('ElementVisibility', function() {
-    // Block 3PCs toggle should always be available.
+    // Verify all ACT toggles are shown.
     assertTrue(isChildVisible(page, '#block3pcsToggle'));
-    // Fingerprinting protection will be available by default.
     assertTrue(isChildVisible(page, '#fingerprintingProtectionToggle'));
-    // IP protection will not be available by default.
-    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
+    assertTrue(isChildVisible(page, '#ipProtectionToggle'));
   });
 
   test('block3pcsToggleIsDisabledAndChecked', function() {
@@ -100,19 +98,20 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
 
     assertTrue(isChildVisible(page, '#block3pcsToggle'));
     assertFalse(isChildVisible(page, '#fingerprintingProtectionToggle'));
-    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
+    assertTrue(isChildVisible(page, '#ipProtectionToggle'));
   });
 
-  test('ElementVisibility_isIpProtectionUx_enabled', async function() {
+  test('ElementVisibility_isIpProtectionUx_disabled', async function() {
     loadTimeData.overrideValues({
-      isIpProtectionUxEnabled: true,
+      isIpProtectionUxEnabled: false,
+      isFingerprintingProtectionUxEnabled: true,
     });
     resetRouterForTesting();
     await createPage();
 
     assertTrue(isChildVisible(page, '#block3pcsToggle'));
-    assertFalse(isChildVisible(page, '#fingerprintingProtectionToggle'));
-    assertTrue(isChildVisible(page, '#ipProtectionToggle'));
+    assertTrue(isChildVisible(page, '#fingerprintingProtectionToggle'));
+    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
   });
 
   test('ippToggleEnablesPrefAndRecordsHistogram', async function() {
@@ -143,7 +142,6 @@ suite('IncognitoTrackingProtectionsPageTest', function() {
       'ippToggleDisabledAndUncheckedWhenIppDisabledForEnterprise',
       async function() {
         loadTimeData.overrideValues({
-          isIpProtectionUxEnabled: true,
           isIpProtectionDisabledForEnterprise: true,
         });
         resetRouterForTesting();
