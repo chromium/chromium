@@ -1134,11 +1134,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  // We cannot early-return here because GetCachedFormAndField() yields nullptr
-  // even if there it finds a FormStructure but its `autofill_count()` is 0. In
-  // such cases, we still need to offer Autocomplete. Therefore, the code below,
-  // including called functions, must handle `form_structure == nullptr` and
-  // `autofill_field == nullptr`.
+  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
+  // still need to offer Autocomplete.
+  // TODO(crbug.com/433224307): Consider early returning here when the cache
+  // starts storing all forms and fields.
   std::ignore = GetCachedFormAndField(form.global_id(), field_id,
                                       &form_structure, &autofill_field);
 
@@ -1253,15 +1252,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   AutofillField* autofill_field = nullptr;
   const AutofillPlusAddressDelegate* plus_address_delegate =
       client().GetPlusAddressDelegate();
-  // Note that this function cannot exit early in case GetCachedFormAndField()
-  // yields nullptrs for form_structure and autofill_field. This happens in case
-  // autofill_count() returns 0 (i.e. the number of autofillable fields is 0).
-  // Even if autofill cannot fill the form, Autocomplete gets a chance to fill
-  // the form. Therefore:
-  // * the following code needs to be executed (autocomplete is handled further
-  //   down in the code path)
-  // * the following code needs to gracefully deal with the situation that
-  //   form_structure and autofill_field are null.
+  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
+  // still need to offer Autocomplete.
+  // TODO(crbug.com/433224307): Consider early returning here when the cache
+  // starts storing all forms and fields.
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
 
@@ -1301,9 +1295,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     std::vector<std::string> plus_addresses) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  // This function cannot exit early in case GetCachedFormAndField() yields
-  // `nullptrs` for `form_structure` and `autofill_field`. See the comment in
-  // `GenerateSuggestionsAndMaybeShowUIPhase1` for context.
+  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
+  // still need to offer Autocomplete.
+  // TODO(crbug.com/433224307): Consider early returning here when the cache
+  // starts storing all forms and fields.
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
 
@@ -1344,9 +1339,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  // This function cannot exit early in case GetCachedFormAndField() yields
-  // `nullptrs` for `form_structure` and `autofill_field`. See the comment in
-  // `GenerateSuggestionsAndMaybeShowUIPhase1` for context.
+  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
+  // still need to offer Autocomplete.
+  // TODO(crbug.com/433224307): Consider early returning here when the cache
+  // starts storing all forms and fields.
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
   autofill_metrics::SuggestionRankingContext ranking_context;
@@ -1778,13 +1774,12 @@ void BrowserAutofillManager::FillOrPreviewField(
     std::optional<FieldType> field_type_used) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  // We cannot early-return here because GetCachedFormAndField() yields nullptr
-  // even if there it finds a FormStructure but its `autofill_count()` is 0. In
-  // such cases, we still need to offer Autocomplete. Therefore, the code below,
-  // including called functions, must handle `form_structure == nullptr` and
+  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
+  // still need to offer Autocomplete. Therefore, the code below, including
+  // called functions, must handle `form_structure == nullptr` and
   // `autofill_field == nullptr`.
-  // TODO: crbug.com/40232021 - Look into removing the `autofill_count() > 0`
-  // condition from.
+  // TODO(crbug.com/433224307): Consider early returning here when the cache
+  // starts storing all forms and fields.
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
   const FillingProduct filling_product =
@@ -2697,9 +2692,8 @@ void BrowserAutofillManager::LogAndRecordLoyaltyCardFill(
     const FieldGlobalId& field_id) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  std::ignore = GetCachedFormAndField(form_id, field_id, &form_structure,
-                                      &autofill_field);
-  if (!autofill_field) {
+  if (!GetCachedFormAndField(form_id, field_id, &form_structure,
+                             &autofill_field)) {
     return;
   }
   // TODO(crbug.com/422366498): Move the Onfill event to `FillOrPreviewField`.
