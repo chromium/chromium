@@ -22,10 +22,6 @@ enum class ContentSuggestionsModuleType;
 // Module Container based on `isHidden`.
 - (void)updateSeparatorVisibility:(BOOL)isHidden;
 
-// Notifies the delegate that the context menu interaction will end display.
-- (void)notifyContextMenuInteractionEndWithAnimator:
-    (id<UIContextMenuInteractionAnimating>)animator;
-
 // Returns the context menu elements for the current module.
 - (NSArray<UIMenuElement*>*)contextMenuElementsForCurrentModule;
 

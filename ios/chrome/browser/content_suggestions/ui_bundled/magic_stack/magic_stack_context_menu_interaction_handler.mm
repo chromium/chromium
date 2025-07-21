@@ -195,14 +195,6 @@ NSString* GetContextMenuHideDescriptionForType(
 
 @implementation MagicStackContextMenuInteractionHandler
 
-- (instancetype)initWithType:(ContentSuggestionsModuleType)type {
-  self = [super init];
-  if (self) {
-    _shouldHide = NO;
-  }
-  return self;
-}
-
 - (void)configureWithType:(ContentSuggestionsModuleType)type
                    config:(MagicStackModule*)config {
   self.type = type;
@@ -235,16 +227,6 @@ NSString* GetContextMenuHideDescriptionForType(
   return actions;
 }
 
-- (void)notifyContextMenuInteractionEndWithAnimator:
-    (id<UIContextMenuInteractionAnimating>)animator {
-  if (self.shouldHide) {
-    __weak __typeof(self) weakSelf = self;
-    [animator addCompletion:^{
-      [weakSelf.delegate neverShowModuleType:weakSelf.type];
-    }];
-  }
-}
-
 #pragma mark - UIContextMenuInteractionDelegate
 
 - (UIContextMenuConfiguration*)contextMenuInteraction:
@@ -269,8 +251,11 @@ NSString* GetContextMenuHideDescriptionForType(
 - (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
        willEndForConfiguration:(UIContextMenuConfiguration*)configuration
                       animator:(id<UIContextMenuInteractionAnimating>)animator {
-  if (configuration) {
-    [self notifyContextMenuInteractionEndWithAnimator:animator];
+  if (configuration && self.shouldHide) {
+    __weak __typeof(self) weakSelf = self;
+    [animator addCompletion:^{
+      [weakSelf.delegate neverShowModuleType:weakSelf.type];
+    }];
   }
 }
 
@@ -280,11 +265,12 @@ NSString* GetContextMenuHideDescriptionForType(
 - (UIAction*)hideAction {
   __weak __typeof(self) weakSelf = self;
 
+  NSString* title =
+      GetContextMenuHideDescriptionForType(self.type, self.config);
   UIAction* hideAction = [UIAction
-      actionWithTitle:GetContextMenuHideDescriptionForType(self.type,
-                                                           self.config)
+      actionWithTitle:title
                 image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
-           identifier:nil
+           identifier:title
               handler:^(UIAction* action) {
                 weakSelf.shouldHide = YES;
               }];

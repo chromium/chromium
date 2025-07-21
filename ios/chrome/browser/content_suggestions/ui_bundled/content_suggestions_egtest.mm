@@ -414,6 +414,27 @@ void TapMagicStackEditButton() {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests that the long-press hide action for the Set Up List card removes the
+// card from the Magic Stack.
+- (void)testMagicStackLongPressHide {
+  [self prepareToTestSetUpListInMagicStack];
+  NSString* setupListTitle =
+      l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TIPS_TITLE);
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(setupListTitle)]
+      performAction:grey_longPress()];
+
+  NSString* setupListHideTitle = l10n_util::GetNSStringF(
+      IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION,
+      l10n_util::GetStringUTF16(IDS_IOS_SET_UP_LIST_TIPS_TITLE));
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     setupListHideTitle)] performAction:grey_tap()];
+
+  // Assert Set Up List card is not there.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(setupListTitle)]
+      assertWithMatcher:grey_notVisible()];
+}
+
 #pragma mark - Test utils
 
 - (void)prepareToTestSetUpListInMagicStack {

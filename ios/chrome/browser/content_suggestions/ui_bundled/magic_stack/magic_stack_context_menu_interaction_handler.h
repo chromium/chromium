@@ -22,11 +22,6 @@ enum class ContentSuggestionsModuleType;
 /// Menu elements being shown on interaction.
 - (NSArray<UIMenuElement*>*)menuElements;
 
-/// Notifies the interaction handler that some context menu interaction on the
-/// magic stack module will end using `animator`.
-- (void)notifyContextMenuInteractionEndWithAnimator:
-    (id<UIContextMenuInteractionAnimating>)animator;
-
 /// Resets the handler to original state.
 - (void)reset;
 

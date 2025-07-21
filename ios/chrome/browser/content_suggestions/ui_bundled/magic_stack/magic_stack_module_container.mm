@@ -539,12 +539,6 @@ const CGFloat kSeparatorHeight = 0.5;
   return [self.contextMenuInteractionHandler menuElements];
 }
 
-- (void)notifyContextMenuInteractionEndWithAnimator:
-    (id<UIContextMenuInteractionAnimating>)animator {
-  [self.contextMenuInteractionHandler
-      notifyContextMenuInteractionEndWithAnimator:animator];
-}
-
 #pragma mark - Helpers
 
 // Handles taps on the "See More" button.
