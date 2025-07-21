@@ -591,7 +591,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   __weak TabGridCoordinator* weakSelf = self;
 
   completion = ^{
-    [weakSelf hideTabGroupsViews];
+    if (self.tabGridEnterTime.is_null()) {
+      // Only hide the TabGroup if the TabGrid hasn't been reopened since the
+      // beginning of the animation. See crbug.com/432227955 for more details.
+      [weakSelf hideTabGroupsViews];
+    }
     if (completion) {
       completion();
     }
@@ -673,7 +677,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       completion();
     }
     self.firstPresentation = NO;
-    [weakSelf hideTabGroupsViews];
   };
 
   self.baseViewController.childViewControllerForStatusBarStyle =
