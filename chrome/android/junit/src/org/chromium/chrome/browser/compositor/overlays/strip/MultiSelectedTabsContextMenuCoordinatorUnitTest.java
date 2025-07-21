@@ -10,6 +10,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.listmenu.ListItemType.DIVIDER;
+import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
+
 import android.app.Activity;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -34,6 +37,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -257,7 +262,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         var modelList = new ModelList();
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
                 modelList, List.of(TAB_1_ID, TAB_2_ID));
-        assertEquals("Number of items in the list menu is incorrect", 3, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
         assertMenuItemTitle(
@@ -276,6 +281,16 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 2,
                 getQuantityString(R.plurals.move_tabs_to_another_window, 1),
                 R.id.move_to_other_window_menu_id);
+
+        // List item 4
+        assertEquals(DIVIDER, modelList.get(3).type);
+        assertEquals(
+                "Expected divider to have have COLOR_ID unset when not in incognito mode",
+                0,
+                modelList.get(3).model.get(COLOR_ID));
+
+        // List item 5
+        assertMenuItemTitleId(modelList, 4, R.string.close, R.id.close_tab);
     }
 
     @Test
@@ -283,7 +298,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         var modelList = new ModelList();
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
                 modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID_1, TAB_OUTSIDE_OF_GROUP_ID_2));
-        assertEquals("Number of items in the list menu is incorrect", 2, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
         // List item 1
         assertMenuItemTitle(
@@ -298,6 +313,16 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 1,
                 getQuantityString(R.plurals.move_tabs_to_another_window, 1),
                 R.id.move_to_other_window_menu_id);
+
+        // List item 3
+        assertEquals(DIVIDER, modelList.get(2).type);
+        assertEquals(
+                "Expected divider to have have COLOR_ID unset when not in incognito mode",
+                0,
+                modelList.get(2).model.get(COLOR_ID));
+
+        // List item 4
+        assertMenuItemTitleId(modelList, 3, R.string.close, R.id.close_tab);
     }
 
     @Test
@@ -305,7 +330,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         var modelList = new ModelList();
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
                 modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
-        assertEquals("Number of items in the list menu is incorrect", 3, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
         assertMenuItemTitle(
@@ -324,6 +349,16 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 2,
                 getQuantityString(R.plurals.move_tabs_to_another_window, 1),
                 R.id.move_to_other_window_menu_id);
+
+        // List item 4
+        assertEquals(DIVIDER, modelList.get(3).type);
+        assertEquals(
+                "Expected divider to have have COLOR_ID unset when not in incognito mode",
+                0,
+                modelList.get(3).model.get(COLOR_ID));
+
+        // List item 5
+        assertMenuItemTitleId(modelList, 4, R.string.close, R.id.close_tab);
     }
 
     @Test
@@ -334,7 +369,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
                 modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
 
-        assertEquals("Number of items in the list menu is incorrect", 3, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
         assertMenuItemTitle(
@@ -356,6 +391,18 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 getQuantityString(R.plurals.move_tabs_to_another_window, 1),
                 R.id.move_to_other_window_menu_id);
         assertStringStyleForIncognito(modelList, 2);
+
+        // List item 4
+        assertEquals(DIVIDER, modelList.get(3).type);
+        assertEquals(
+                "Expected divider to have COLOR_ID set to R.color.divider_line_bg_color_light in"
+                        + " incognito mode",
+                R.color.divider_line_bg_color_light,
+                modelList.get(3).model.get(COLOR_ID));
+
+        // List item 5
+        assertMenuItemTitleId(modelList, 4, R.string.close, R.id.close_tab);
+        assertStringStyleForIncognito(modelList, 4);
     }
 
     @Test
@@ -365,7 +412,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
                 modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
 
-        assertEquals("Number of items in the list menu is incorrect", 2, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
         // List item 1
         assertMenuItemTitle(
@@ -377,6 +424,16 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         // List item 2
         assertMenuItemTitleId(
                 modelList, 1, R.string.remove_tabs_from_group, R.id.remove_from_tab_group);
+
+        // List item 3
+        assertEquals(DIVIDER, modelList.get(2).type);
+        assertEquals(
+                "Expected divider to have have COLOR_ID unset when not in incognito mode",
+                0,
+                modelList.get(2).model.get(COLOR_ID));
+
+        // List item 4
+        assertMenuItemTitleId(modelList, 3, R.string.close, R.id.close_tab);
     }
 
     @Test
@@ -387,7 +444,7 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
         mMultiSelectedTabsContextMenuCoordinator.buildMenuActionItems(
                 modelList, List.of(TAB_1_ID, TAB_OUTSIDE_OF_GROUP_ID_1));
 
-        assertEquals("Number of items in the list menu is incorrect", 3, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
         assertMenuItemTitle(
@@ -406,6 +463,16 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
                 2,
                 getQuantityString(R.plurals.move_tabs_to_another_window, 2),
                 R.id.move_to_other_window_menu_id);
+
+        // List item 4
+        assertEquals(DIVIDER, modelList.get(3).type);
+        assertEquals(
+                "Expected divider to have have COLOR_ID unset when not in incognito mode",
+                0,
+                modelList.get(3).model.get(COLOR_ID));
+
+        // List item 5
+        assertMenuItemTitleId(modelList, 4, R.string.close, R.id.close_tab);
     }
 
     @Test
@@ -496,5 +563,21 @@ public class MultiSelectedTabsContextMenuCoordinatorUnitTest {
 
         verify(mTabUngrouper, times(1)).ungroupTabs(Collections.singletonList(mTab1), true, false);
         verify(mMultiInstanceManager, times(1)).moveTabsToOtherWindow(tabsToMove);
+    }
+
+    @Test
+    public void testCloseMultipleTabs() {
+        mOnItemClickedCallback.onClick(
+                R.id.close_tab,
+                List.of(TAB_1_ID, TAB_2_ID),
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
+        verify(mTabRemover, times(1))
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(mTab1, mTab2))
+                                .allowUndo(true)
+                                .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                .build(),
+                        /* allowDialog= */ true);
     }
 }

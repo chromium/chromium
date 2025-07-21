@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.content.res.Resources;
 
@@ -23,6 +24,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -140,6 +144,15 @@ public class MultiSelectedTabsContextMenuCoordinator
                                     groupedTabs, /* trailing= */ true, /* allowDialog= */ false);
                 }
                 multiInstanceManager.moveTabsToOtherWindow(tabs);
+            } else if (menuId == R.id.close_tab) {
+                boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
+                tabModel.getTabRemover()
+                        .closeTabs(
+                                TabClosureParams.closeTabs(tabs)
+                                        .allowUndo(allowUndo)
+                                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                        .build(),
+                                /* allowDialog= */ true);
             }
         };
     }
@@ -178,7 +191,6 @@ public class MultiSelectedTabsContextMenuCoordinator
                         .withMenuId(R.id.add_to_tab_group)
                         .withIsIncognito(isIncognito)
                         .build());
-
         // Remove tabs from group.
         if (isAnyTabGrouped(TabModelUtils.getTabsById(ids, mTabModel, false))) {
             // Show the option if any selected tab is part of a group.
@@ -201,6 +213,10 @@ public class MultiSelectedTabsContextMenuCoordinator
                             .withIsIncognito(isIncognito)
                             .build());
         }
+        // Divider
+        itemList.add(buildMenuDivider(isIncognito));
+        // Close tabs
+        itemList.add(buildListItem(R.string.close, R.id.close_tab, isIncognito));
     }
 
     private static ListItem buildListItem(
