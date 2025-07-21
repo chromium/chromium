@@ -391,6 +391,9 @@
       <message name="IDS_MANAGED_SETTINGS_CANNOT_BE_RESET" desc="Popup message when the user clicks a UI element that resets a list of settings that include managed settings.">
         Managed settings cannot be reset
       </message>
+      <message name="IDS_RECOMMENDED_BY_YOUR_ORGANIZATION" desc="Text displayed when a value is recommended for a setting through policy and the user is following this recommendation. The setting is still user-editable.">
+        Recommended by your organization
+      </message>
       <message name="IDS_ACCESSIBILITY_EXPANDED_GROUP" desc="The accessibility text to read when the selected widget is expanded.">
         Expanded - click to collapse.
       </message>

@@ -102,4 +102,144 @@ public class ManagedPreferenceTestDelegates {
                     return R.layout.chrome_managed_preference;
                 }
             };
+
+    public static final ManagedPreferenceDelegate RECOMMENDED_DELEGATE_FOLLOWING =
+            new ManagedPreferenceDelegate() {
+                @Override
+                public boolean isPreferenceControlledByPolicy(Preference preference) {
+                    return false;
+                }
+
+                @Override
+                public boolean isPreferenceControlledByCustodian(Preference preference) {
+                    return false;
+                }
+
+                @Override
+                public Boolean isPreferenceRecommendation(Preference preference) {
+                    return true;
+                }
+
+                @Override
+                public boolean doesProfileHaveMultipleCustodians() {
+                    return false;
+                }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return R.layout.chrome_managed_preference;
+                }
+            };
+
+    public static final ManagedPreferenceDelegate RECOMMENDED_DELEGATE_OVERRIDDEN =
+            new ManagedPreferenceDelegate() {
+                @Override
+                public boolean isPreferenceControlledByPolicy(Preference preference) {
+                    return false;
+                }
+
+                @Override
+                public boolean isPreferenceControlledByCustodian(Preference preference) {
+                    return false;
+                }
+
+                @Override
+                public Boolean isPreferenceRecommendation(Preference preference) {
+                    return false;
+                }
+
+                @Override
+                public boolean doesProfileHaveMultipleCustodians() {
+                    return false;
+                }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return R.layout.chrome_managed_preference;
+                }
+            };
+
+    public static final ManagedPreferenceDelegate POLICY_AND_RECOMMENDED_DELEGATE =
+            new ManagedPreferenceDelegate() {
+                @Override
+                public boolean isPreferenceControlledByPolicy(Preference preference) {
+                    return true;
+                }
+
+                @Override
+                public boolean isPreferenceControlledByCustodian(Preference preference) {
+                    return false;
+                }
+
+                @Override
+                public Boolean isPreferenceRecommendation(Preference preference) {
+                    return true;
+                }
+
+                @Override
+                public boolean doesProfileHaveMultipleCustodians() {
+                    return false;
+                }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return R.layout.chrome_managed_preference;
+                }
+            };
+
+    public static final ManagedPreferenceDelegate CUSTODIAN_AND_RECOMMENDED_DELEGATE =
+            new ManagedPreferenceDelegate() {
+                @Override
+                public boolean isPreferenceControlledByPolicy(Preference preference) {
+                    return false;
+                }
+
+                @Override
+                public boolean isPreferenceControlledByCustodian(Preference preference) {
+                    return true;
+                }
+
+                @Override
+                public Boolean isPreferenceRecommendation(Preference preference) {
+                    return true;
+                }
+
+                @Override
+                public boolean doesProfileHaveMultipleCustodians() {
+                    return false;
+                }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return R.layout.chrome_managed_preference;
+                }
+            };
+
+    public static final ManagedPreferenceDelegate ALL_MANAGED_DELEGATE =
+            new ManagedPreferenceDelegate() {
+                @Override
+                public boolean isPreferenceControlledByPolicy(Preference preference) {
+                    return true;
+                }
+
+                @Override
+                public boolean isPreferenceControlledByCustodian(Preference preference) {
+                    return true;
+                }
+
+                @Override
+                public Boolean isPreferenceRecommendation(Preference preference) {
+                    return true;
+                }
+
+                @Override
+                public boolean doesProfileHaveMultipleCustodians() {
+                    return false;
+                }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return R.layout.chrome_managed_preference;
+                }
+            };
 }

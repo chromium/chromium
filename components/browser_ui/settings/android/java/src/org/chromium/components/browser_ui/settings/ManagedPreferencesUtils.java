@@ -60,6 +60,16 @@ public class ManagedPreferencesUtils {
     }
 
     /**
+     * Shows a toast indicating that a setting is recommended by the administrator.
+     *
+     * @param context The context where the Toast will be shown.
+     * @param isFollowing Whether the user is currently following the recommendation.
+     */
+    public static Toast showRecommendationToast(Context context) {
+        return showToastWithResourceId(context, R.string.recommended_by_your_organization);
+    }
+
+    /**
      * Shows a toast indicating that some of the preferences in the list of preferences to reset are
      * managed by the system administrator.
      *
@@ -102,10 +112,13 @@ public class ManagedPreferencesUtils {
 
         if (delegate.isPreferenceControlledByPolicy(preference)) {
             return getManagedByEnterpriseIconId();
-        } else if (delegate.isPreferenceControlledByCustodian(preference)) {
+        }
+        if (delegate.isPreferenceControlledByCustodian(preference)) {
             return getManagedByCustodianIconId();
         }
-
+        if (preferenceFollowsRecommendation(delegate, preference)) {
+            return getManagedByEnterpriseIconId();
+        }
         return 0;
     }
 
@@ -132,17 +145,22 @@ public class ManagedPreferencesUtils {
             boolean hasCustomLayout) {
         if (delegate == null) return;
 
-        // Embedders may define its own default layout for preferences, which can only be applied
-        // if the preference doesn't use a custom layout and if the preference is controlled by
-        // policy.
-        if (!hasCustomLayout && delegate.isPreferenceControlledByPolicy(preference)) {
+        if (!hasCustomLayout) {
             @LayoutRes int layoutResource = delegate.defaultPreferenceLayoutResource();
             if (layoutResource != 0) {
                 preference.setLayoutResource(layoutResource);
             }
         }
 
-        if (allowManagedIcon) {
+        // This should also be cleaned with {@link onBindViewToPreference()}.
+        boolean mightUseLegacyUI =
+                hasCustomLayout
+                        || (delegate.isPreferenceControlledByCustodian(preference)
+                                && !delegate.isPreferenceControlledByPolicy(preference));
+
+        // The default layout includes an icon. Icons should only be set this way with legacy UI
+        // (currently only used for custodian control) or with a custom layout.
+        if (allowManagedIcon && mightUseLegacyUI) {
             preference.setIcon(getManagedIconDrawable(delegate, preference));
         }
 
@@ -181,6 +199,7 @@ public class ManagedPreferencesUtils {
         TextView summaryView = view.findViewById(android.R.id.summary);
         CharSequence descriptionText =
                 summaryView.getVisibility() == View.VISIBLE ? summaryView.getText() : null;
+        CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
         // Fallback to the old UI if the managed disclaimer view doesn't exist, which may happen if
         // a {@link ChromeBasePreference} defines its own layout.
         // Highlighted managed disclaimers only apply to preferences managed by policy. For
@@ -190,12 +209,13 @@ public class ManagedPreferencesUtils {
         // TODO(crbug.com/40243868): Apply highlighted managed disclaimer for preferences managed
         //                          by a custodian.
         if (view.findViewById(R.id.managed_disclaimer_text) != null
-                && delegate.isPreferenceControlledByPolicy(preference)) {
+                && (delegate.isPreferenceControlledByPolicy(preference)
+                        || (!delegate.isPreferenceControlledByCustodian(preference)
+                                && preferenceFollowsRecommendation(delegate, preference)))) {
             // Hide the icon since it will be shown on the highlighted managed disclaimer.
             hideManagedIcon(view);
-            setSummaryWithHighlightedManagedInfo(descriptionText, view);
+            setSummaryWithHighlightedManagedInfo(descriptionText, managedDisclaimerText, view);
         } else {
-            CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
             setSummaryWithManagedInfo(descriptionText, managedDisclaimerText, view);
         }
     }
@@ -221,22 +241,27 @@ public class ManagedPreferencesUtils {
         onBindViewToPreference(delegate, preference, view);
 
         if (!delegate.isPreferenceControlledByPolicy(preference)
-                && !delegate.isPreferenceControlledByCustodian(preference)) {
+                && !delegate.isPreferenceControlledByCustodian(preference)
+                && !preferenceFollowsRecommendation(delegate, preference)) {
             return;
         }
 
         ImageView button = view.findViewById(R.id.image_view_widget);
         button.setImageDrawable(getManagedIconDrawable(delegate, preference));
-        if (delegate.isPreferenceControlledByPolicy(preference)) {
-            button.setContentDescription(
-                    preference.getContext().getString(R.string.managed_by_your_organization));
+
+        CharSequence contentDescription = getManagedDisclaimerText(delegate, preference);
+        if (contentDescription != null) {
+            button.setContentDescription(contentDescription);
         }
+
         button.setOnClickListener(
                 (View v) -> {
                     if (delegate.isPreferenceControlledByPolicy(preference)) {
                         showManagedByAdministratorToast(preference.getContext());
                     } else if (delegate.isPreferenceControlledByCustodian(preference)) {
                         showManagedByParentToast(preference.getContext(), delegate);
+                    } else if (preferenceFollowsRecommendation(delegate, preference)) {
+                        showRecommendationToast(preference.getContext());
                     }
                 });
     }
@@ -320,17 +345,20 @@ public class ManagedPreferencesUtils {
 
     /**
      * @param descriptionText A description or a state for a given preference.
+     * @param managedDisclaimerText Message displayed to indicate that preference is managed.
      * @param view The view corresponding to a given preference.
      */
     private static void setSummaryWithHighlightedManagedInfo(
-            @Nullable CharSequence descriptionText, View view) {
+            @Nullable CharSequence descriptionText,
+            @Nullable CharSequence managedDisclaimerText,
+            View view) {
         if (TextUtils.isEmpty(descriptionText)) {
             hideSummaryView(view);
         } else {
             showSummaryViewWithText(descriptionText, view);
         }
 
-        showManagedDisclaimerView(view);
+        showManagedDisclaimerView(managedDisclaimerText, view);
     }
 
     /**
@@ -351,20 +379,24 @@ public class ManagedPreferencesUtils {
     }
 
     /**
-     * @param delegate The delegate that controls whether the preference is managed. If null,
-     *         then the preference is not managed.
+     * @param delegate The delegate that controls whether the preference is managed. If null, then
+     *     the preference is not managed.
      * @param preference The {@link Preference} that is being shown to the user.
      * @return Text indicating that a preference is managed by an administrator or custodian, or
-     *         null if the preference is not managed.
+     *     null if the preference is not managed.
      */
     private static @Nullable CharSequence getManagedDisclaimerText(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         if (delegate == null) return null;
+
         if (delegate.isPreferenceControlledByPolicy(preference)) {
             return preference.getContext().getString(R.string.managed_by_your_organization);
         }
         if (delegate.isPreferenceControlledByCustodian(preference)) {
             return preference.getContext().getString(getManagedByParentStringRes(delegate));
+        }
+        if (preferenceFollowsRecommendation(delegate, preference)) {
+            return preference.getContext().getString(R.string.recommended_by_your_organization);
         }
         return null;
     }
@@ -418,14 +450,23 @@ public class ManagedPreferencesUtils {
 
     /**
      * Sets the text to be shown in the managed disclaimer view for a preference.
+     *
+     * @param managedDisclaimerText Message displayed to indicate that preference is managed.
      * @param view The view corresponding to the preference.
      */
-    private static void showManagedDisclaimerView(View view) {
+    private static void showManagedDisclaimerView(
+            @Nullable CharSequence managedDisclaimerText, View view) {
         TextViewWithCompoundDrawables managedDisclaimerView =
                 view.findViewById(R.id.managed_disclaimer_text);
         assert managedDisclaimerView != null
                 : "Missing managed disclaimer view; custom layout for a new preference?";
         managedDisclaimerView.setVisibility(View.VISIBLE);
         managedDisclaimerView.setEnabled(true);
+        managedDisclaimerView.setText(managedDisclaimerText);
+    }
+
+    private static boolean preferenceFollowsRecommendation(
+            ManagedPreferenceDelegate delegate, Preference preference) {
+        return Boolean.TRUE.equals(delegate.isPreferenceRecommendation(preference));
     }
 }
