@@ -60,9 +60,11 @@ static constexpr int kUniformRowHeightIconSize = 28;
 // since the text will have to be further right to accommodate the icons.
 static constexpr int kIphTextIndent = 14;
 
-// The gap between the left|right edge of the toolbelt background to the
-// left|right edge of the text bounds.
-static constexpr int kToolbeltTextIndent = 14;
+// The extra space added to the left-side inset of the toolbelt suggestion.
+static constexpr int kToolbeltTextInsetLeft = 14;
+
+// The right-side inset of the toolbelt suggestion.
+static constexpr int kToolbeltTextInsetRight = 8;
 
 // The radius of the rounded square backgrounds of icons, answers, and entities.
 static constexpr int kIconAndImageCornerRadius = 4;
@@ -436,11 +438,12 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
 
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
   const int vertical_margin = 0;
-  // IPH text bounds should be centered within the IPH background when there's
-  // no IPH icon. So make their `right_margin` equal to their text's x position.
+  // Toolbelt text bounds are set to match the UX spec. IPH text bounds should
+  // be centered within the IPH background when there's no IPH icon. So make
+  // their `right_margin` equal to their text's x position.
   const int right_margin =
       layout_style_ == LayoutStyle::TOOLBELT
-          ? OmniboxMatchCellView::kMarginLeft + kToolbeltTextIndent
+          ? kToolbeltTextInsetRight
       : layout_style_ == LayoutStyle::IPH_SUGGESTION
           ? OmniboxMatchCellView::kMarginLeft + kIphTextIndent
           : 7;
@@ -620,7 +623,7 @@ int OmniboxMatchCellView::GetTextIndent() const {
 
   // Toolbelt layout is similar to IPH and has a custom indent.
   if (layout_style_ == LayoutStyle::TOOLBELT) {
-    return kToolbeltTextIndent;
+    return kToolbeltTextInsetLeft;
   }
 
   // Some IPH matches have no icons. They should be moved further left so the

@@ -319,13 +319,6 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   button_row_ = suggestion_and_button_row->AddChildView(
       std::make_unique<OmniboxSuggestionButtonRowView>(popup_view_,
                                                        model_index));
-  // If there's insufficient space for rendering both the suggestion text
-  // and the action chip row together, then allow the inline action chip row
-  // to disappear entirely.
-  button_row_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
 
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
 
@@ -369,6 +362,20 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
 
   suggestion_view_->SetProperty(views::kMarginsKey,
                                 gfx::Insets::TLBR(0, 0, 0, 0));
+  // Allocate space for the suggestion text only after accounting for the space
+  // needed to render the inline action chip row, by setting the order to 2.
+  //
+  // In the toolbelt case, we want to snap the suggestion text to zero, since
+  // that looks better when there's not room for both. But in the normal case,
+  // we want to scale the suggestion text to zero since an elided suggestion
+  // still provides useful information.
+  suggestion_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          match_.IsToolbelt() ? views::MinimumFlexSizeRule::kPreferredSnapToZero
+                              : views::MinimumFlexSizeRule::kScaleToZero,
+          views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(2));
 
   suggestion_view_->OnMatchUpdate(this, match_);
   UpdateDividerLineVisibility();
