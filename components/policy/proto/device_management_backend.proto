@@ -3595,6 +3595,7 @@ message TpmVersionInfo {
     GSC_VERSION_NOT_GSC = 1;
     GSC_VERSION_CR50 = 2;
     GSC_VERSION_TI50 = 3;
+    GSC_VERSION_NT = 4;
   }
   optional uint32 family = 1;
   optional uint64 spec_level = 2;

@@ -692,6 +692,8 @@ em::TpmVersionInfo_GscVersion ConvertTpmGscDevice(
       return em::TpmVersionInfo::GSC_VERSION_CR50;
     case tpm_manager::GscDevice::GSC_DEVICE_DT:
       return em::TpmVersionInfo::GSC_VERSION_TI50;
+    case tpm_manager::GscDevice::GSC_DEVICE_NT:
+      return em::TpmVersionInfo::GSC_VERSION_NT;
   }
 
   NOTREACHED();
