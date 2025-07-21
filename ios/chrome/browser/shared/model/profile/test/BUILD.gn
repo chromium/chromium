@@ -33,6 +33,7 @@ source_set("test") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/thread",
     "//net:test_support",
+    "//services/network/public/cpp",
   ]
 }
 

@@ -92,6 +92,7 @@ static_library("enterprise") {
     "//components/strings",
     "//components/version_info",
     "//crypto",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
   ]

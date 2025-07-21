@@ -17,13 +17,12 @@ static_library("invalidation") {
     "profile_invalidation_provider.h",
   ]
 
-  public_deps = [ "//components/invalidation/public" ]
-
   deps = [
     "//base",
     "//base:i18n",
     "//components/gcm_driver",
     "//components/invalidation/impl",
+    "//components/invalidation/public",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",

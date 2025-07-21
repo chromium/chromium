@@ -17,7 +17,7 @@ source_set("dm_server_client") {
     "//components/policy/proto",
   ]
 
-  deps = [ "//services/network/public/cpp:cpp_base" ]
+  deps = [ "//services/network/public/cpp" ]
 }
 
 source_set("cloud_management_delegate") {
@@ -131,6 +131,7 @@ source_set("core") {
     "//components/policy/proto",
     "//components/prefs",
     "//net",
+    "//services/network/public/cpp",
     "//third_party/boringssl",
   ]
 
