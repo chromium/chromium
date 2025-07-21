@@ -158,16 +158,6 @@ void ChromeSecurityStateTabHelper::DidStartNavigation(
 
 void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   net::CertStatus cert_status = GetVisibleSecurityState()->cert_status;
-  if (net::IsCertStatusError(cert_status) &&
-      !page.GetMainDocument().IsErrorDocument()) {
-    // Record each time a user visits a site after having clicked through a
-    // certificate warning interstitial. This is used as a baseline for
-    // interstitial.ssl.did_user_revoke_decision2 in order to determine how
-    // many times the re-enable warnings button is clicked, as a fraction of
-    // the number of times it was available.
-    UMA_HISTOGRAM_BOOLEAN("interstitial.ssl.visited_site_after_warning", true);
-  }
-
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 

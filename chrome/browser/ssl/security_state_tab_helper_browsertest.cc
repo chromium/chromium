@@ -444,44 +444,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, DevToolsPage) {
   EXPECT_TRUE(visible_security_state->is_devtools);
 }
 
-// Tests that interstitial.ssl.visited_site_after_warning is being logged to
-// correctly.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, UMALogsVisitsAfterWarning) {
-  const char kHistogramName[] = "interstitial.ssl.visited_site_after_warning";
-  base::HistogramTester histograms;
-  SetUpMockCertVerifierForHttpsServer(net::CERT_STATUS_DATE_INVALID,
-                                      net::ERR_CERT_DATE_INVALID);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/ssl/google.html")));
-  // Histogram shouldn't log before clicking through interstitial.
-  histograms.ExpectTotalCount(kHistogramName, 0);
-  ProceedThroughInterstitial(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  // Histogram should log after clicking through.
-  histograms.ExpectTotalCount(kHistogramName, 1);
-  histograms.ExpectBucketCount(kHistogramName, true, 1);
-}
-
-// Tests that interstitial.ssl.visited_site_after_warning is being logged
-// on ERR_CERT_UNABLE_TO_CHECK_REVOCATION (which previously did not show an
-// interstitial.)
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
-                       UMALogsVisitsAfterRevocationCheckFailureWarning) {
-  const char kHistogramName[] = "interstitial.ssl.visited_site_after_warning";
-  base::HistogramTester histograms;
-  SetUpMockCertVerifierForHttpsServer(
-      net::CERT_STATUS_UNABLE_TO_CHECK_REVOCATION,
-      net::ERR_CERT_UNABLE_TO_CHECK_REVOCATION);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/ssl/google.html")));
-  // Histogram shouldn't log before clicking through interstitial.
-  histograms.ExpectTotalCount(kHistogramName, 0);
-  ProceedThroughInterstitial(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  // Histogram should log after clicking through.
-  histograms.ExpectUniqueSample(kHistogramName, true, 1);
-}
-
 // Test security state after clickthrough for a SHA-1 certificate that is
 // blocked by default.
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, SHA1CertificateBlocked) {
