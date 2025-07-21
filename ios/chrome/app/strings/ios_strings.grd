@@ -1095,6 +1095,12 @@
       <message name="IDS_IOS_BWG_IPH_TEXT" desc="Text for the BWG In-Product Help bubble.">
           You can open Gemini here
       </message>
+      <message name="IDS_IOS_BWG_LOCATION_BACK_BUTTON_TITLE" desc="The back button text of BWG location settings page.">
+        Gemini
+      </message>
+      <message name="IDS_IOS_BWG_LOCATION_TITLE" desc="The title text of the BWG location settings page.">
+        Precise Location
+      </message>
       <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_BODY" desc="First box body text for the Gemini Promo page.">
           Get relevant answers based on the content of the page you're on
       </message>

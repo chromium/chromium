@@ -23266,6 +23266,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileBWGSettingsBack">
+  <obsolete>Deprecated as of 7/2025</obsolete>
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when user goes back from BWG Settings UI to root Settings screen.
@@ -23274,6 +23275,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileBWGSettingsClose">
+  <obsolete>Deprecated as of 7/2025</obsolete>
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when BWG Settings UI was dismissed. iOS only.
@@ -23916,6 +23918,36 @@ should be able to be added at any place in this file.
   <description>
     Reported when user taps on the collapsed toolbars to deploy it and exit
     fullscreen mode. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiLocationSettingsBack">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    Reported when user goes back from Gemini Location Settings UI to Gemini
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiLocationSettingsClose">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    Reported when Gemini Location Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiSettingsBack">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    Reported when user goes back from Gemini Settings UI to root Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiSettingsClose">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    Reported when Gemini Settings UI was dismissed. iOS only.
   </description>
 </action>
 

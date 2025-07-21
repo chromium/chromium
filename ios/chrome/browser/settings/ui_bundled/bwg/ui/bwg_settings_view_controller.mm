@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -140,11 +141,11 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  base::RecordAction(base::UserMetricsAction("MobileBWGSettingsClose"));
+  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsClose"));
 }
 
 - (void)reportBackUserAction {
-  base::RecordAction(base::UserMetricsAction("MobileBWGSettingsBack"));
+  base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsBack"));
 }
 
 #pragma mark - Private
@@ -227,11 +228,23 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeLocation) {
+    BWGLocationViewController* locationViewController =
+        [[BWGLocationViewController alloc]
+            initWithStyle:ChromeTableViewStyle()];
+    locationViewController.navigationItem.backButtonTitle =
+        l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_BACK_BUTTON_TITLE);
+    [self.navigationController pushViewController:locationViewController
+                                         animated:YES];
+  }
+
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeAppActivity) {
     base::RecordAction(
         base::UserMetricsAction("Settings.BWGSettings.BWGAppActivity"));
     [self.mutator openNewTabWithURL:GURL(kBWGAppActivityURL)];
   }
+
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
