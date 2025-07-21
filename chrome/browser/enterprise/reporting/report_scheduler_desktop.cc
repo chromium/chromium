@@ -79,12 +79,6 @@ PrefService* ReportSchedulerDesktop::GetPrefService() {
   return prefs_;
 }
 
-void ReportSchedulerDesktop::OnInitializationCompleted() {
-  if (user_security_signals_service_) {
-    user_security_signals_service_->Start();
-  }
-}
-
 void ReportSchedulerDesktop::StartWatchingUpdatesIfNeeded(
     base::Time last_upload,
     base::TimeDelta upload_interval) {
@@ -131,22 +125,6 @@ policy::DMToken ReportSchedulerDesktop::GetProfileDMToken() {
 
 std::string ReportSchedulerDesktop::GetProfileClientId() {
   return reporting::GetUserClientId(profile_).value_or(std::string());
-}
-
-bool ReportSchedulerDesktop::AreSecurityReportsEnabled() {
-  return user_security_signals_service_ &&
-         user_security_signals_service_->IsSecuritySignalsReportingEnabled();
-}
-
-bool ReportSchedulerDesktop::UseCookiesInUploads() {
-  return user_security_signals_service_ &&
-         user_security_signals_service_->ShouldUseCookies();
-}
-
-void ReportSchedulerDesktop::OnSecuritySignalsUploaded() {
-  if (user_security_signals_service_) {
-    user_security_signals_service_->OnReportUploaded();
-  }
 }
 
 void ReportSchedulerDesktop::OnReportEventTriggered(

@@ -18,6 +18,7 @@
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_uploader.h"
+#include "components/enterprise/browser/reporting/user_security_signals_service.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -52,7 +53,7 @@ class ReportScheduler {
     virtual PrefService* GetPrefService() = 0;
 
     // Run once after initialization of the scheduler is complete.
-    virtual void OnInitializationCompleted() = 0;
+    virtual void OnInitializationCompleted();
 
     // Browser version
     virtual void StartWatchingUpdatesIfNeeded(
@@ -65,13 +66,15 @@ class ReportScheduler {
     virtual std::string GetProfileClientId() = 0;
 
     // Security signals
-    virtual bool AreSecurityReportsEnabled() = 0;
-    virtual bool UseCookiesInUploads() = 0;
+    virtual bool AreSecurityReportsEnabled();
+    virtual bool UseCookiesInUploads();
     // Invoked when security signals was uploaded by a report.
-    virtual void OnSecuritySignalsUploaded() = 0;
+    virtual void OnSecuritySignalsUploaded();
 
    protected:
     ReportTriggerCallback trigger_report_callback_;
+    // Only set for Profile-level schedulers.
+    std::unique_ptr<UserSecuritySignalsService> user_security_signals_service_;
   };
 
   struct CreateParams {

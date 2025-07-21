@@ -32,7 +32,6 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
 
   // ReportScheduler::Delegate implementation.
   PrefService* GetPrefService() override;
-  void OnInitializationCompleted() override;
   void StartWatchingUpdatesIfNeeded(base::Time last_upload,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
@@ -40,10 +39,6 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
 
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
-
-  bool AreSecurityReportsEnabled() override;
-  bool UseCookiesInUploads() override;
-  void OnSecuritySignalsUploaded() override;
 
   // UserSecuritySignalsService::Delegate implementation.
   void OnReportEventTriggered(SecurityReportTrigger trigger) override;
@@ -55,9 +50,6 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> prefs_;
-
-  // Only set for Profile-level schedulers.
-  std::unique_ptr<UserSecuritySignalsService> user_security_signals_service_;
 };
 
 }  // namespace enterprise_reporting

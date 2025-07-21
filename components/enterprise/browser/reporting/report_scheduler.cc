@@ -49,6 +49,28 @@ bool IsBrowserVersionUploaded(ReportTrigger trigger) {
 ReportScheduler::Delegate::Delegate() = default;
 ReportScheduler::Delegate::~Delegate() = default;
 
+void ReportScheduler::Delegate::OnInitializationCompleted() {
+  if (user_security_signals_service_) {
+    user_security_signals_service_->Start();
+  }
+}
+
+bool ReportScheduler::Delegate::AreSecurityReportsEnabled() {
+  return user_security_signals_service_ &&
+         user_security_signals_service_->IsSecuritySignalsReportingEnabled();
+}
+
+bool ReportScheduler::Delegate::UseCookiesInUploads() {
+  return user_security_signals_service_ &&
+         user_security_signals_service_->ShouldUseCookies();
+}
+
+void ReportScheduler::Delegate::OnSecuritySignalsUploaded() {
+  if (user_security_signals_service_) {
+    user_security_signals_service_->OnReportUploaded();
+  }
+}
+
 ReportScheduler::CreateParams::CreateParams() = default;
 ReportScheduler::CreateParams::CreateParams(
     ReportScheduler::CreateParams&& other) = default;
