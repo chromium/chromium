@@ -676,43 +676,6 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(
   return LoadSeedResult::kSuccess;
 }
 
-StoreSeedResult VariationsSeedStore::ResolveDelta(
-    const std::string& delta_bytes,
-    std::string* seed_bytes) {
-  DCHECK(seed_bytes);
-  std::string existing_seed_bytes;
-  LoadSeedResult read_result =
-      ReadSeedData(SeedType::LATEST, &existing_seed_bytes);
-  if (read_result != LoadSeedResult::kSuccess)
-    return StoreSeedResult::kFailedDeltaReadSeed;
-  if (!ApplyDeltaPatch(existing_seed_bytes, delta_bytes, seed_bytes))
-    return StoreSeedResult::kFailedDeltaApply;
-  return StoreSeedResult::kSuccess;
-}
-
-StoreSeedResult VariationsSeedStore::ResolveInstanceManipulations(
-    const std::string& data,
-    const InstanceManipulations& im,
-    std::string* seed_bytes) {
-  DCHECK(seed_bytes);
-  // If the data is gzip compressed, first uncompress it.
-  std::string ungzipped_data;
-  if (im.gzip_compressed) {
-    StoreSeedResult result = Uncompress(data, &ungzipped_data);
-    if (result != StoreSeedResult::kSuccess)
-      return result;
-  } else {
-    ungzipped_data = data;
-  }
-
-  if (!im.delta_compressed) {
-    seed_bytes->swap(ungzipped_data);
-    return StoreSeedResult::kSuccess;
-  }
-
-  return ResolveDelta(ungzipped_data, seed_bytes);
-}
-
 void VariationsSeedStore::OnSeedDataProcessed(
     base::OnceCallback<void(bool, VariationsSeed)> done_callback,
     SeedProcessingResult result) {

@@ -354,18 +354,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       std::string* seed_data,
       std::string* base64_seed_signature = nullptr);
 
-  // Resolves a |delta_bytes| against the latest seed.
-  // Returns success or an error, populating |seed_bytes| on success.
-  [[nodiscard]] StoreSeedResult ResolveDelta(const std::string& delta_bytes,
-                                             std::string* seed_bytes);
-
-  // Resolves instance manipulations applied to received data.
-  // Returns success or an error, populating |seed_bytes| on success.
-  [[nodiscard]] StoreSeedResult ResolveInstanceManipulations(
-      const std::string& data,
-      const InstanceManipulations& im,
-      std::string* seed_bytes);
-
   // Called on the UI thread after the seed has been processed.
   void OnSeedDataProcessed(
       base::OnceCallback<void(bool, VariationsSeed)> done_callback,
