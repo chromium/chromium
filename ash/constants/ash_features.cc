@@ -1696,6 +1696,10 @@ BASE_FEATURE(kJapaneseOSSettings,
              "JapaneseOSSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kJupiterScreensaver,
+             "JupiterScreensaver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the "Remember password" button in the Kerberos "Add account"
 // dialog should be checked by default.
 BASE_FEATURE(kKerberosRememberPasswordByDefault,
@@ -3924,6 +3928,11 @@ bool IsIppClientInfoEnabled() {
 
 bool IsIsolatedWebAppKioskEnabled() {
   return base::FeatureList::IsEnabled(kIsolatedWebAppKiosk);
+}
+
+bool IsJupiterScreensaverEnabled() {
+  return base::FeatureList::IsEnabled(kJupiterScreensaver) &&
+         IsTimeOfDayScreenSaverEnabled();
 }
 
 bool IsKerberosRememberPasswordByDefaultEnabled() {
