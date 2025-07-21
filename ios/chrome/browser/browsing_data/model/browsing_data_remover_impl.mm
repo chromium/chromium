@@ -758,6 +758,9 @@ void BrowsingDataRemoverImpl::RemoveDataFromWKWebsiteDataStore(
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_VISITED_LINKS)) {
     types |= web::ClearBrowsingDataMask::kRemoveVisitedLinks;
   }
+  if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_SERVICE_WORKERS)) {
+    types |= web::ClearBrowsingDataMask::kRemoveServiceWorkers;
+  }
 
   web::ClearBrowsingData(profile_, types, delete_begin,
                          CreatePendingTaskCompletionClosure());

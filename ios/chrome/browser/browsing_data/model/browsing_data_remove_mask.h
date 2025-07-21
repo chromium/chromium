@@ -29,13 +29,14 @@ enum class BrowsingDataRemoveMask {
   REMOVE_LAST_USER_ACCOUNT = 1 << 15,
   CLOSE_TABS = 1 << 16,
   REMOVE_ORIGIN_PRIVATE_FILE_SYSTEM = 1 << 17,
+  REMOVE_SERVICE_WORKERS = 1 << 18,
 
   // "Site data" includes cookies, appcache, indexed DBs, local storage, webSQL,
   // cache storage, and visited links.
   REMOVE_SITE_DATA = REMOVE_APPCACHE | REMOVE_COOKIES | REMOVE_INDEXEDDB |
                      REMOVE_LOCAL_STORAGE | REMOVE_CACHE_STORAGE |
                      REMOVE_WEBSQL | REMOVE_ORIGIN_PRIVATE_FILE_SYSTEM |
-                     REMOVE_VISITED_LINKS,
+                     REMOVE_VISITED_LINKS | REMOVE_SERVICE_WORKERS,
 
   // Includes all the available remove options. Meant to be used by clients that
   // wish to wipe as much data as possible from a ProfileIOS, to make it
