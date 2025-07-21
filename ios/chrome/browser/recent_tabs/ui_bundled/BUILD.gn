@@ -123,7 +123,7 @@ source_set("ui") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions/model",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/suggested_actions/resources",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/resources",
     "//ios/chrome/browser/tabs_search/model",
     "//ios/chrome/browser/tabs_search/model:model_factory",
     "//ios/chrome/browser/url_loading/model",

@@ -70,7 +70,7 @@ source_set("cells") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells/resources",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/suggested_actions/resources",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/resources",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
