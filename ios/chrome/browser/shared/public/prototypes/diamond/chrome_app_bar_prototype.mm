@@ -19,6 +19,17 @@ namespace {
 // Size of the symbols.
 const CGFloat kSymbolSize = 22;
 
+// Height of the "gap" in the mask of the browser background. This needs to be
+// twice the corner radius because the
+// bezierPathWithRoundedRect:byRoundingCorners:cornerRadii: method requires the
+// height to be at least twice the corner radius.
+CGFloat BrowserBackgroundGapHeight() {
+  return 2 * kDiamondBrowserCornerRadius;
+}
+
+// Duration of the animation.
+const CGFloat kBackgroundTransitionTime = 0.25;
+
 UIButtonConfiguration* ButtonConfiguration() {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
@@ -39,36 +50,50 @@ UIButtonConfiguration* ButtonConfiguration() {
 
 }  // namespace
 
-@implementation ChromeAppBarPrototype
+@implementation ChromeAppBarPrototype {
+  CAShapeLayer* _maskLayer;
+  // Background when the tab grid is visible.
+  UIVisualEffectView* _tabGridBackground;
+  // Background when the browser is visible.
+  UIVisualEffectView* _browserBackground;
+  // The blur effect for the backgrounds.
+  UIBlurEffect* _blurEffect;
+}
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     CHECK(IsDiamondPrototypeEnabled());
 
-    UIColor* backgroundColor =
-        [[UIColor colorNamed:kStaticGrey600Color] colorWithAlphaComponent:0.4];
-    self.backgroundColor = backgroundColor;
-    GradientView* gradientView =
-        [[GradientView alloc] initWithTopColor:UIColor.clearColor
-                                   bottomColor:backgroundColor];
-    gradientView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:gradientView];
+    _blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterialDark];
 
+    _tabGridBackground =
+        [[UIVisualEffectView alloc] initWithEffect:_blurEffect];
+    _tabGridBackground.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_tabGridBackground];
+    AddSameConstraints(self, _tabGridBackground);
+
+    _browserBackground = [[UIVisualEffectView alloc] initWithEffect:nil];
+    _browserBackground.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_browserBackground];
     [NSLayoutConstraint activateConstraints:@[
-      [gradientView.bottomAnchor constraintEqualToAnchor:self.topAnchor],
-      [gradientView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-      [gradientView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-      [gradientView.heightAnchor constraintEqualToConstant:16],
+      [_browserBackground.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor],
+      [_browserBackground.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [_browserBackground.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor],
+      [_browserBackground.topAnchor
+          constraintEqualToAnchor:self.topAnchor
+                         constant:-BrowserBackgroundGapHeight()],
     ]];
 
-    UIBlurEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterialDark];
-    UIVisualEffectView* blurBackground =
-        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    blurBackground.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:blurBackground];
-    AddSameConstraints(self, blurBackground);
+    _maskLayer = [CAShapeLayer layer];
+    _maskLayer.fillRule = kCAFillRuleEvenOdd;
+    _maskLayer.fillColor = [UIColor blackColor].CGColor;
+    _browserBackground.layer.mask = _maskLayer;
+    [self updateMask];
 
     UIButtonConfiguration* askGeminiConfiguration = ButtonConfiguration();
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
@@ -115,6 +140,17 @@ UIButtonConfiguration* ButtonConfiguration() {
         constraintEqualToConstant:kChromeAppBarPrototypeHeight]
         .active = YES;
     AddSameConstraints(self.safeAreaLayoutGuide, stackView);
+
+    NSNotificationCenter* notificationCenter =
+        [NSNotificationCenter defaultCenter];
+    [notificationCenter addObserver:self
+                           selector:@selector(didEnterTabGrid)
+                               name:kDiamondEnterTabGridNotification
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(didLeaveTabGrid)
+                               name:kDiamondLeaveTabGridNotification
+                             object:nil];
   }
   return self;
 }
@@ -122,6 +158,55 @@ UIButtonConfiguration* ButtonConfiguration() {
 - (void)didMoveToSuperview {
   [super didMoveToSuperview];
   CHECK(IsDiamondPrototypeEnabled());
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  [self updateMask];
+}
+
+#pragma mark - Private
+
+// Callback when exiting the grid.
+- (void)didLeaveTabGrid {
+  __weak UIVisualEffectView* browserBackground = _browserBackground;
+  __weak UIVisualEffectView* tabGridBackground = _tabGridBackground;
+  UIBlurEffect* blur = _blurEffect;
+  [UIView animateWithDuration:kBackgroundTransitionTime
+                   animations:^{
+                     browserBackground.effect = blur;
+                     tabGridBackground.effect = nil;
+                   }];
+}
+
+// Callback when entering the grid.
+- (void)didEnterTabGrid {
+  __weak UIVisualEffectView* browserBackground = _browserBackground;
+  __weak UIVisualEffectView* tabGridBackground = _tabGridBackground;
+  UIBlurEffect* blur = _blurEffect;
+  [UIView animateWithDuration:kBackgroundTransitionTime
+                   animations:^{
+                     browserBackground.effect = nil;
+                     tabGridBackground.effect = blur;
+                   }];
+}
+
+// Updates the mask of the background blur.
+- (void)updateMask {
+  CGRect maskFrame = CGRectMake(0, 0, _browserBackground.bounds.size.width,
+                                BrowserBackgroundGapHeight());
+
+  UIBezierPath* path =
+      [UIBezierPath bezierPathWithRect:_browserBackground.bounds];
+  UIBezierPath* cutoutPath = [UIBezierPath
+      bezierPathWithRoundedRect:maskFrame
+              byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
+                    cornerRadii:CGSizeMake(kDiamondBrowserCornerRadius,
+                                           kDiamondBrowserCornerRadius)];
+  [path appendPath:cutoutPath];
+
+  _maskLayer.frame = maskFrame;
+  _maskLayer.path = path.CGPath;
 }
 
 @end

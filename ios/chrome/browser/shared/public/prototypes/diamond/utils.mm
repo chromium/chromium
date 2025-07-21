@@ -37,6 +37,11 @@ const CGFloat kChromeAppBarPrototypeHeight = 58;
 
 const CGFloat kDiamondBrowserCornerRadius = 18;
 
+NSString* kDiamondEnterTabGridNotification =
+    @"kDiamondEnterTabGridNotification";
+NSString* kDiamondLeaveTabGridNotification =
+    @"kDiamondLeaveTabGridNotification";
+
 void DiamondPrototypeStartGemini(bool from_tab_grid,
                                  bool incognito_grid,
                                  Browser* regular_browser,

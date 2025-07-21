@@ -436,6 +436,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   CHECK_NE(page, TabGridPageTabGroups);
   [_mediator setActivePage:page];
 
+  if (IsDiamondPrototypeEnabled()) {
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kDiamondEnterTabGridNotification
+                      object:nil];
+  }
+
   BOOL animated = !self.animationsDisabledForTesting;
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
@@ -589,6 +595,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   DCHECK(viewController || self.bvcContainer);
 
   __weak TabGridCoordinator* weakSelf = self;
+
+  if (IsDiamondPrototypeEnabled()) {
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kDiamondLeaveTabGridNotification
+                      object:nil];
+  }
 
   completion = ^{
     if (self.tabGridEnterTime.is_null()) {
