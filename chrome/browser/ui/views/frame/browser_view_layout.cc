@@ -338,32 +338,34 @@ void BrowserViewLayout::SetContentBorderBounds(
 
 void BrowserViewLayout::Layout(views::View* browser_view) {
   TRACE_EVENT0("ui", "BrowserViewLayout::Layout");
-  const gfx::Rect local_bounds = browser_view->GetLocalBounds();
+  gfx::Rect available_bounds = browser_view->GetLocalBounds();
+
   // The window scrim covers the entire browser view.
   if (window_scrim_) {
-    window_scrim_->SetBoundsRect(local_bounds);
+    window_scrim_->SetBoundsRect(available_bounds);
   }
 
-  int top_inset = delegate_->GetTopInsetInBrowserView();
-  int top = LayoutTitleBarForWebApp(top_inset);
+  available_bounds.set_y(available_bounds.y() +
+                         delegate_->GetTopInsetInBrowserView());
+  LayoutTitleBarForWebApp(available_bounds);
   if (delegate_->ShouldLayoutTabStrip()) {
-    top = LayoutTabStripRegion(top);
+    LayoutTabStripRegion(available_bounds);
     if (delegate_->ShouldDrawTabStrip()) {
       tab_strip_->SetBackgroundOffset(tab_strip_region_view_->GetMirroredX() +
                                       browser_view_->GetMirroredX());
     }
-    top = LayoutWebUITabStrip(top, local_bounds);
+    LayoutWebUITabStrip(available_bounds);
   }
-  top = LayoutToolbar(top, local_bounds);
+  LayoutToolbar(available_bounds);
 
-  top = LayoutBookmarkAndInfoBars(top, browser_view->y(), local_bounds);
+  LayoutBookmarkAndInfoBars(available_bounds, browser_view->y());
 
   // Top container requires updated toolbar and bookmark bar to compute bounds.
-  UpdateTopContainerBounds(local_bounds);
+  UpdateTopContainerBounds(available_bounds);
 
   // Layout the contents container in the remaining space.
   const int bottom = browser_view->height();
-  LayoutContentsContainerView(top, bottom, local_bounds);
+  LayoutContentsContainerView(available_bounds.y(), bottom, available_bounds);
 
   LayoutContentBorder();
 
@@ -453,10 +455,10 @@ int BrowserViewLayout::GetMinWebContentsWidthForTesting() const {
 //////////////////////////////////////////////////////////////////////////////
 // BrowserViewLayout, private:
 
-int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
+void BrowserViewLayout::LayoutTitleBarForWebApp(gfx::Rect& available_bounds) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTitleBarForWebApp");
   if (!web_app_frame_toolbar_) {
-    return top;
+    return;
   }
 
   if (delegate_->GetBorderlessModeEnabled()) {
@@ -464,7 +466,7 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
     if (web_app_window_title_) {
       web_app_window_title_->SetVisible(false);
     }
-    return top;
+    return;
   }
 
   gfx::Rect toolbar_bounds(
@@ -475,7 +477,7 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
     web_app_window_title_->SetVisible(!toolbar_bounds.IsEmpty());
   }
   if (toolbar_bounds.IsEmpty()) {
-    return top;
+    return;
   }
 
   if (delegate_->IsWindowControlsOverlayEnabled()) {
@@ -485,7 +487,7 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
     if (web_app_window_title_) {
       web_app_window_title_->SetVisible(false);
     }
-    return top;
+    return;
   }
 
   gfx::Rect window_title_bounds =
@@ -500,15 +502,15 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
     }
   }
 
-  return toolbar_bounds.bottom();
+  available_bounds.set_y(toolbar_bounds.bottom());
 }
 
-int BrowserViewLayout::LayoutTabStripRegion(int top) {
+void BrowserViewLayout::LayoutTabStripRegion(gfx::Rect& available_bounds) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTabStripRegion");
   if (!delegate_->ShouldDrawTabStrip()) {
     SetViewVisibility(tab_strip_region_view_, false);
     tab_strip_region_view_->SetBounds(0, 0, 0, 0);
-    return top;
+    return;
   }
   // This retrieves the bounds for the tab strip based on whether or not we show
   // anything to the left of it, like the incognito avatar.
@@ -523,68 +525,64 @@ int BrowserViewLayout::LayoutTabStripRegion(int top) {
   SetViewVisibility(tab_strip_region_view_, true);
   tab_strip_region_view_->SetBoundsRect(tab_strip_region_bounds);
 
-  return tab_strip_region_bounds.bottom() -
-         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+  available_bounds.set_y(tab_strip_region_bounds.bottom() -
+                         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
 }
 
-int BrowserViewLayout::LayoutWebUITabStrip(
-    int top,
-    const gfx::Rect& browser_view_bounds) {
+void BrowserViewLayout::LayoutWebUITabStrip(gfx::Rect& available_bounds) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutWebUITabStrip");
   if (!webui_tab_strip_) {
-    return top;
+    return;
   }
   if (!webui_tab_strip_->GetVisible()) {
     webui_tab_strip_->SetBoundsRect(gfx::Rect());
-    return top;
+    return;
   }
   webui_tab_strip_->SetBounds(
-      browser_view_bounds.x(), top, browser_view_bounds.width(),
-      webui_tab_strip_->GetHeightForWidth(browser_view_bounds.width()));
-  return webui_tab_strip_->bounds().bottom();
+      available_bounds.x(), available_bounds.y(), available_bounds.width(),
+      webui_tab_strip_->GetHeightForWidth(available_bounds.width()));
+  available_bounds.set_y(webui_tab_strip_->bounds().bottom());
 }
 
-int BrowserViewLayout::LayoutToolbar(int top,
-                                     const gfx::Rect& browser_view_bounds) {
+void BrowserViewLayout::LayoutToolbar(gfx::Rect& available_bounds) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutToolbar");
-  int browser_view_width = browser_view_bounds.width();
+  int browser_view_width = available_bounds.width();
   bool toolbar_visible = delegate_->IsToolbarVisible();
   int height = toolbar_visible ? toolbar_->GetPreferredSize().height() : 0;
   SetViewVisibility(toolbar_, toolbar_visible);
-  toolbar_->SetBounds(browser_view_bounds.x(), top, browser_view_width, height);
+  toolbar_->SetBounds(available_bounds.x(), available_bounds.y(),
+                      browser_view_width, height);
   SetClipPathWithBottomAllowance(toolbar_);
-  return toolbar_->bounds().bottom();
+  available_bounds.set_y(toolbar_->bounds().bottom());
 }
 
-int BrowserViewLayout::LayoutBookmarkAndInfoBars(
-    int top,
-    int browser_view_y,
-    const gfx::Rect& browser_view_bounds) {
+void BrowserViewLayout::LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds,
+                                                  int browser_view_y) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutBookmarkAndInfoBars");
-  dialog_top_y_ = top + browser_view_y - kConstrainedWindowOverlap;
+  dialog_top_y_ =
+      available_bounds.y() + browser_view_y - kConstrainedWindowOverlap;
 
   if (bookmark_bar_) {
-    top = std::max(toolbar_->bounds().bottom(),
-                   LayoutBookmarkBar(top, browser_view_bounds));
+    available_bounds.set_y(
+        std::max(toolbar_->bounds().bottom(), available_bounds.y()));
+    LayoutBookmarkBar(available_bounds);
   }
 
   if (delegate_->IsContentsSeparatorEnabled() &&
-      (toolbar_->GetVisible() || bookmark_bar_) && top > 0) {
+      (toolbar_->GetVisible() || bookmark_bar_) && available_bounds.y() > 0) {
     SetViewVisibility(contents_separator_, true);
     const int separator_height =
         contents_separator_->GetPreferredSize().height();
-    contents_separator_->SetBounds(browser_view_bounds.x(), top,
-                                   browser_view_bounds.width(),
-                                   separator_height);
+    contents_separator_->SetBounds(available_bounds.x(), available_bounds.y(),
+                                   available_bounds.width(), separator_height);
     if (loading_bar_) {
       SetViewVisibility(loading_bar_, true);
-      loading_bar_->SetBounds(browser_view_bounds.x(), top - 2,
-                              browser_view_bounds.width(),
-                              separator_height + 2);
+      loading_bar_->SetBounds(available_bounds.x(), available_bounds.y() - 2,
+                              available_bounds.width(), separator_height + 2);
       top_container_->ReorderChildView(loading_bar_,
                                        top_container_->children().size());
     }
-    top += separator_height;
+    available_bounds.set_y(available_bounds.y() + separator_height);
   } else {
     SetViewVisibility(contents_separator_, false);
     if (loading_bar_) {
@@ -592,23 +590,23 @@ int BrowserViewLayout::LayoutBookmarkAndInfoBars(
     }
   }
 
-  return LayoutInfoBar(top, browser_view_bounds);
+  LayoutInfoBar(available_bounds);
 }
 
-int BrowserViewLayout::LayoutBookmarkBar(int top,
-                                         const gfx::Rect& browser_view_bounds) {
+void BrowserViewLayout::LayoutBookmarkBar(gfx::Rect& available_bounds) {
   if (!delegate_->IsBookmarkBarVisible()) {
     SetViewVisibility(bookmark_bar_, false);
     // TODO(jamescook): Don't change the bookmark bar height when it is
     // invisible, so we can use its height for layout even in that state.
-    bookmark_bar_->SetBounds(0, top, browser_view_->width(), 0);
-    return top;
+    bookmark_bar_->SetBounds(0, available_bounds.y(), browser_view_->width(),
+                             0);
+    return;
   }
 
   bookmark_bar_->SetInfoBarVisible(IsInfobarVisible());
   int bookmark_bar_height = bookmark_bar_->GetPreferredSize().height();
-  bookmark_bar_->SetBounds(browser_view_bounds.x(), top,
-                           browser_view_bounds.width(), bookmark_bar_height);
+  bookmark_bar_->SetBounds(available_bounds.x(), available_bounds.y(),
+                           available_bounds.width(), bookmark_bar_height);
   SetClipPathWithBottomAllowance(bookmark_bar_);
   if (!features::IsPixelCanvasRecordingEnabled()) {
     // Make sure the contents separator is painted last as the background for
@@ -624,16 +622,16 @@ int BrowserViewLayout::LayoutBookmarkBar(int top,
   // Set visibility after setting bounds, as the visibility update uses the
   // bounds to determine if the mouse is hovering over a button.
   SetViewVisibility(bookmark_bar_, true);
-  return top + bookmark_bar_height;
+  available_bounds.set_y(available_bounds.y() + bookmark_bar_height);
 }
 
-int BrowserViewLayout::LayoutInfoBar(int top,
-                                     const gfx::Rect& browser_view_bounds) {
+void BrowserViewLayout::LayoutInfoBar(gfx::Rect& available_bounds) {
   // In immersive fullscreen or when top-chrome is fully hidden due to the page
   // gesture scroll slide behavior, the infobar always starts near the top of
   // the screen.
   const ImmersiveModeController* immersive_mode_controller =
       delegate_->GetImmersiveModeController();
+  int top = available_bounds.y();
   if (immersive_mode_controller->IsEnabled() ||
       (delegate_->IsTopControlsSlideBehaviorEnabled() &&
        delegate_->GetTopControlsSlideBehaviorShownRatio() == 0.f)) {
@@ -649,12 +647,12 @@ int BrowserViewLayout::LayoutInfoBar(int top,
   SetViewVisibility(infobar_container_, IsInfobarVisible());
   if (infobar_container_->GetVisible()) {
     infobar_container_->SetBounds(
-        browser_view_bounds.x(), infobar_top, browser_view_bounds.width(),
+        available_bounds.x(), infobar_top, available_bounds.width(),
         infobar_container_->GetPreferredSize().height());
   } else {
-    infobar_container_->SetBounds(browser_view_bounds.x(), infobar_top, 0, 0);
+    infobar_container_->SetBounds(available_bounds.x(), infobar_top, 0, 0);
   }
-  return content_top;
+  available_bounds.set_y(content_top);
 }
 
 BrowserViewLayout::ContentsContainerLayoutResult

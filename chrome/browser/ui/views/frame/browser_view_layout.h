@@ -119,17 +119,16 @@ class BrowserViewLayout : public views::LayoutManager {
   FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, Layout);
   class WebContentsModalDialogHostViews;
 
-  // Layout the following controls, starting at |top|, returns the coordinate
-  // of the bottom of the control, for laying out the next control.
-  int LayoutTitleBarForWebApp(int top);
-  int LayoutTabStripRegion(int top);
-  int LayoutWebUITabStrip(int top, const gfx::Rect& browser_view_bounds);
-  int LayoutToolbar(int top, const gfx::Rect& browser_view_bounds);
-  int LayoutBookmarkAndInfoBars(int top,
-                                int browser_view_y,
-                                const gfx::Rect& browser_view_bounds);
-  int LayoutBookmarkBar(int top, const gfx::Rect& browser_view_bounds);
-  int LayoutInfoBar(int top, const gfx::Rect& browser_view_bounds);
+  // Layout the following controls, updating `available_bounds` to leave the
+  // remaining space available for future controls.
+  void LayoutTitleBarForWebApp(gfx::Rect& available_bounds);
+  void LayoutTabStripRegion(gfx::Rect& available_bounds);
+  void LayoutWebUITabStrip(gfx::Rect& available_bounds);
+  void LayoutToolbar(gfx::Rect& available_bounds);
+  void LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds,
+                                 int browser_view_y);
+  void LayoutBookmarkBar(gfx::Rect& available_bounds);
+  void LayoutInfoBar(gfx::Rect& available_bounds);
 
   // Helper struct and function for LayoutContentsContainerView that calculates
   // bounds for |contents_container_| and |unified_side_panel_|.
