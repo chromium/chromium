@@ -186,6 +186,8 @@ message DeviceRegisterRequest {
     BROWSER = 3;          // Register for desktop Chrome browser user policies.
     ANDROID_BROWSER = 4;  // Register for Android Chrome browser user policies.
     IOS_BROWSER = 6;      // Register for iOS Chrome browser user policies.
+    ANDROID_DESKTOP_BROWSER =
+        7;  // Register for Android Desktop Chrome browser user policies.
   }
   // NOTE: we also use this field to detect client version.  If this
   // field is missing, then the request comes from TT.  We will remove
