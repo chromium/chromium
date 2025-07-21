@@ -931,8 +931,6 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isDemoSession",
                           ash::demo_mode::IsDeviceInDemoMode());
 
-  html_source->AddBoolean("enableInputDeviceSettingsSplit", true);
-
   html_source->AddBoolean("enablePeripheralCustomization",
                           ash::features::IsPeripheralCustomizationEnabled());
 
@@ -1389,7 +1387,6 @@ void DeviceSection::AddDevicePointersStrings(
       {"pointerSlow", IDS_SETTINGS_POINTER_SPEED_SLOW_LABEL},
       {"pointerFast", IDS_SETTINGS_POINTER_SPEED_FAST_LABEL},
       {"mouseScrollSpeed", IDS_SETTINGS_MOUSE_SCROLL_SPEED_LABEL},
-      {"mouseSpeed", IDS_SETTINGS_MOUSE_SPEED_LABEL},
       {"cursorSpeed", IDS_SETTINGS_CURSOR_SPEED_LABEL},
       {"pointingStickSpeed", IDS_SETTINGS_POINTING_STICK_SPEED_LABEL},
       {"mouseSwapButtonsLabel", IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL},
@@ -1403,7 +1400,6 @@ void DeviceSection::AddDevicePointersStrings(
       {"mouseReverseScrollLabel", IDS_OS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL},
       {"mouseReverseScrollDescription",
        IDS_OS_SETTINGS_MOUSE_REVERSE_SCROLL_DESCRIPTION},
-      {"mouseAccelerationLabel", IDS_OS_SETTINGS_MOUSE_ACCELERATION_LABEL},
       {"mouseAccelerationDescription",
        IDS_OS_SETTINGS_MOUSE_ACCELERATION_DESCRIPTION},
       {"cursorAccelerationLabel", IDS_SETTINGS_CURSOR_ACCELERATION_LABEL},
@@ -1460,8 +1456,6 @@ void DeviceSection::AddDevicePointersStrings(
       GetHelpUrlWithBoard(chrome::kControlledScrollingHelpURL));
   html_source->AddString("hapticFeedbackLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
-
-  html_source->AddBoolean("allowScrollSettings", true);
 }
 
 void DeviceSection::AddDeviceGraphicsTabletStrings(

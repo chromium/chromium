@@ -40,15 +40,12 @@ suite('<settings-per-device-mouse-subsection>', function() {
     subsection = document.createElement('settings-per-device-mouse-subsection');
     assert(subsection);
     subsection.set('mouse', {...fakeMice[0]});
-    subsection.set('allowScrollSettings_', true);
     document.body.appendChild(subsection);
     return flushTasks();
   }
 
-  function changeMouseSubsectionState(
-      mouse: Mouse, allowScrollSettings: boolean): Promise<void> {
+  function changeMouseSubsectionState(mouse: Mouse): Promise<void> {
     subsection.set('mouse', mouse);
-    subsection.set('allowScrollSettings_', allowScrollSettings);
     return flushTasks();
   }
 
@@ -257,7 +254,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
         mouseScrollSpeedSlider.pref.value);
 
     assert(fakeMice[1]);
-    await changeMouseSubsectionState(fakeMice[1], false);
+    await changeMouseSubsectionState(fakeMice[1]);
     mouseSwapButtonDropdown =
         subsection.shadowRoot!.querySelector('#mouseSwapButtonDropdown');
     assertEquals(
@@ -275,11 +272,20 @@ suite('<settings-per-device-mouse-subsection>', function() {
         fakeMice[1].settings.reverseScrolling,
         subsection.get('reverseScrollValue'));
     mouseControlledScrollingToggleButton =
-        subsection.shadowRoot!.querySelector('#mouseControlledScrolling');
-    assertFalse(isVisible(mouseControlledScrollingToggleButton));
+        subsection.shadowRoot!.querySelector<CrToggleElement>(
+            '#mouseControlledScrolling');
+    assertTrue(isVisible(mouseControlledScrollingToggleButton));
+    assertEquals(
+        fakeMice[1].settings.scrollAcceleration,
+        !mouseControlledScrollingToggleButton!.checked);
+
     mouseScrollSpeedSlider =
-        subsection.shadowRoot!.querySelector('#mouseScrollSpeedSlider');
-    assertFalse(isVisible(mouseScrollSpeedSlider));
+        subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#mouseScrollSpeedSlider');
+    assertTrue(isVisible(mouseScrollSpeedSlider));
+    assertEquals(
+        fakeMice[1].settings.scrollSensitivity,
+        mouseScrollSpeedSlider!.pref.value);
   });
 
   /**

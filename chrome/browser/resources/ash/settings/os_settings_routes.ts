@@ -13,7 +13,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable} from './common/load_time_booleans.js';
+import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isKerberosEnabled, isPluginVmAvailable} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /**
@@ -188,7 +188,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   INTERNET_NETWORKS: Route;
   KERBEROS: Route;
   KERBEROS_ACCOUNTS_V2: Route;
-  KEYBOARD: Route;
+  KEYBOARD: Route;  // TODO(crbug.com/432663439): Remove this route.
   KNOWN_NETWORKS: Route;
   LOCK_SCREEN: Route;
   MANAGE_ACCESSIBILITY: Route;
@@ -222,7 +222,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   PER_DEVICE_POINTING_STICK: Route;
   PER_DEVICE_TOUCHPAD: Route;
   PERSONALIZATION: Route;
-  POINTERS: Route;
+  POINTERS: Route;  // TODO(crbug.com/432663439): Remove this route.
   POWER: Route;
   PRIVACY: Route;
   PRIVACY_HUB: Route;
@@ -359,24 +359,22 @@ export function createRoutes(): OsSettingsRoutes {
       r.DEVICE, routesMojom.DISPLAY_SUBPAGE_PATH, Subpage.kDisplay);
   r.AUDIO =
       createSubpage(r.DEVICE, routesMojom.AUDIO_SUBPAGE_PATH, Subpage.kAudio);
-  if (isInputDeviceSettingsSplitEnabled()) {
-    r.PER_DEVICE_KEYBOARD = createSubpage(
-        r.DEVICE, routesMojom.PER_DEVICE_KEYBOARD_SUBPAGE_PATH,
-        Subpage.kPerDeviceKeyboard);
-    r.PER_DEVICE_MOUSE = createSubpage(
-        r.DEVICE, routesMojom.PER_DEVICE_MOUSE_SUBPAGE_PATH,
-        Subpage.kPerDeviceMouse);
-    r.PER_DEVICE_POINTING_STICK = createSubpage(
-        r.DEVICE, routesMojom.PER_DEVICE_POINTING_STICK_SUBPAGE_PATH,
-        Subpage.kPerDevicePointingStick);
-    r.PER_DEVICE_TOUCHPAD = createSubpage(
-        r.DEVICE, routesMojom.PER_DEVICE_TOUCHPAD_SUBPAGE_PATH,
-        Subpage.kPerDeviceTouchpad);
-    r.PER_DEVICE_KEYBOARD_REMAP_KEYS = createSubpage(
-        r.PER_DEVICE_KEYBOARD,
-        routesMojom.PER_DEVICE_KEYBOARD_REMAP_KEYS_SUBPAGE_PATH,
-        Subpage.kPerDeviceKeyboardRemapKeys);
-  }
+  r.PER_DEVICE_KEYBOARD = createSubpage(
+      r.DEVICE, routesMojom.PER_DEVICE_KEYBOARD_SUBPAGE_PATH,
+      Subpage.kPerDeviceKeyboard);
+  r.PER_DEVICE_MOUSE = createSubpage(
+      r.DEVICE, routesMojom.PER_DEVICE_MOUSE_SUBPAGE_PATH,
+      Subpage.kPerDeviceMouse);
+  r.PER_DEVICE_POINTING_STICK = createSubpage(
+      r.DEVICE, routesMojom.PER_DEVICE_POINTING_STICK_SUBPAGE_PATH,
+      Subpage.kPerDevicePointingStick);
+  r.PER_DEVICE_TOUCHPAD = createSubpage(
+      r.DEVICE, routesMojom.PER_DEVICE_TOUCHPAD_SUBPAGE_PATH,
+      Subpage.kPerDeviceTouchpad);
+  r.PER_DEVICE_KEYBOARD_REMAP_KEYS = createSubpage(
+      r.PER_DEVICE_KEYBOARD,
+      routesMojom.PER_DEVICE_KEYBOARD_REMAP_KEYS_SUBPAGE_PATH,
+      Subpage.kPerDeviceKeyboardRemapKeys);
   if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
     r.GRAPHICS_TABLET = createSubpage(
         r.DEVICE, routesMojom.GRAPHICS_TABLET_SUBPAGE_PATH,
@@ -530,11 +528,8 @@ export function createRoutes(): OsSettingsRoutes {
       Subpage.kInternalStorybook);
 
   // Device section, Input subpages.
-  const inputParentRoute =
-      isInputDeviceSettingsSplitEnabled() ? r.PER_DEVICE_KEYBOARD : r.KEYBOARD;
-  assert(inputParentRoute);
   r.OS_LANGUAGES_INPUT = createSubpage(
-      inputParentRoute, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
+      r.PER_DEVICE_KEYBOARD, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
   r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
       r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
       Subpage.kInputMethodOptions);

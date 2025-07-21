@@ -135,17 +135,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       },
 
       /**
-       * TODO(khorimoto): Remove this conditional once the feature is launched.
-       */
-      allowScrollSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowScrollSettings');
-        },
-        reflectToAttribute: true,
-      },
-
-      /**
        * TODO(michaelpg): settings-slider should optionally take a min and max
        * so we don't have to generate a simple range of natural numbers
        * ourselves. These values match the TouchpadSensitivity enum in
@@ -265,7 +254,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   private isLastDevice: boolean;
   private customizationRestriction: CustomizationRestriction;
   private currentMouseChanged: boolean;
-  private readonly allowScrollSettings_: boolean;
   private readonly sensitivityValues_: number[];
   private readonly swapPrimaryOptions_: Array<{value: boolean, name: string}>;
 
@@ -378,16 +366,11 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   }
 
   private getCursorSpeedString(): TrustedHTML {
-    return this.i18nAdvanced(
-        loadTimeData.getBoolean('allowScrollSettings') ? 'cursorSpeed' :
-                                                         'mouseSpeed');
+    return this.i18nAdvanced('cursorSpeed');
   }
 
   private getCursorAccelerationString(): TrustedHTML {
-    return this.i18nAdvanced(
-        loadTimeData.getBoolean('allowScrollSettings') ?
-            'cursorAccelerationLabel' :
-            'mouseAccelerationLabel');
+    return this.i18nAdvanced('cursorAccelerationLabel');
   }
 
   private onCustomizeButtonsClick(): void {

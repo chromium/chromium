@@ -58,10 +58,6 @@ export function isExternalStorageEnabled(): boolean {
   return loadTimeData.getBoolean('isExternalStorageEnabled');
 }
 
-export function isInputDeviceSettingsSplitEnabled(): boolean {
-  return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
-}
-
 export function isDisplayBrightnessControlInSettingsEnabled(): boolean {
   return loadTimeData.getBoolean('enableDisplayBrightnessControlInSettings');
 }

@@ -28,7 +28,6 @@ import type {BluetoothSystemProperties, PairedBluetoothDeviceProperties} from 'c
 import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
 import type {Route} from '../router.js';
@@ -134,14 +133,8 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
     this.addEventListener(
         'forget-bluetooth-device', this.forgetDeviceConfirmed_);
 
-    if (isInputDeviceSettingsSplitEnabled()) {
-      this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#changeMouseSettings');
-      this.addFocusConfig(
-          routes.PER_DEVICE_KEYBOARD, '#changeKeyboardSettings');
-    } else {
-      this.addFocusConfig(routes.POINTERS, '#changeMouseSettings');
-      this.addFocusConfig(routes.KEYBOARD, '#changeKeyboardSettings');
-    }
+    this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#changeMouseSettings');
+    this.addFocusConfig(routes.PER_DEVICE_KEYBOARD, '#changeKeyboardSettings');
   }
 
   override currentRouteChanged(route: Route, oldRoute?: Route): void {
@@ -512,19 +505,11 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private onMouseRowClick_(): void {
-    if (isInputDeviceSettingsSplitEnabled()) {
-      Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
-    } else {
-      Router.getInstance().navigateTo(routes.POINTERS);
-    }
+    Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
   }
 
   private onKeyboardRowClick_(): void {
-    if (isInputDeviceSettingsSplitEnabled()) {
-      Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
-    } else {
-      Router.getInstance().navigateTo(routes.KEYBOARD);
-    }
+    Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
   }
 
   private getForgetA11yLabel_(): string {

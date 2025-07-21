@@ -19,7 +19,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
@@ -115,17 +114,6 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
         value: [2000, 1000, 500, 300, 200, 100, 50, 30, 20],
         readOnly: true,
       },
-
-      /**
-       * Whether settings should be split per device.
-       */
-      isDeviceSettingsSplitEnabled_: {
-        type: Boolean,
-        value() {
-          return isInputDeviceSettingsSplitEnabled();
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -148,7 +136,6 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   private showAppleCommandKey_: boolean;
   private showCapsLock_: boolean;
   private showExternalMetaKey_: boolean;
-  private isDeviceSettingsSplitEnabled_: boolean;
 
   constructor() {
     super();
@@ -177,8 +164,7 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     if (newRoute !== this.route) {
       return;
     }
-    if (Router.getInstance().currentRoute === this.route &&
-        this.isDeviceSettingsSplitEnabled_) {
+    if (Router.getInstance().currentRoute === this.route) {
       // Call setCurrentRoute function to go to the per device keyboard subpage
       // when the feature flag is turned on. We don't use navigateTo function
       // since we don't want to navigate back to the previous keyboard subpage.

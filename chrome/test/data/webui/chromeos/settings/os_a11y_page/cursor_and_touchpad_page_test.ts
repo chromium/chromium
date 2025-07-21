@@ -75,9 +75,6 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   async function setUpNavigationTest(
       hasMouse: boolean, hasTouchpad: boolean,
       hasPointingStick: boolean): Promise<void> {
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: true,
-    });
     const testRouter = createRouterForTesting();
     Router.resetInstanceForTesting(testRouter);
     await initPage();
@@ -138,49 +135,9 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     assertFalse(cursorColorEnabledPref.value);
   });
 
-  // Only run this test when input device setting split feature flag is
-  // disabled.
-  test(
-      'should focus pointerSubpageButton button when returning from Pointers subpage',
-      async () => {
-        loadTimeData.overrideValues({
-          enableInputDeviceSettingsSplit: false,
-        });
-        const testRouter = createRouterForTesting();
-        Router.resetInstanceForTesting(testRouter);
-        const selector = '#pointerSubpageButton';
-        const route = routes.POINTERS;
-        await initPage();
-        flush();
-        const router = Router.getInstance();
-
-        const subpageButton =
-            page.shadowRoot!.querySelector<HTMLElement>(selector);
-        assert(subpageButton);
-
-        subpageButton.click();
-        assertEquals(route, router.currentRoute);
-        assertNotEquals(
-            subpageButton, page.shadowRoot!.activeElement,
-            `${selector} should not be focused`);
-
-        const popStateEventPromise = eventToPromise('popstate', window);
-        router.navigateToPreviousRoute();
-        await popStateEventPromise;
-        await waitAfterNextRender(page);
-
-        assertEquals(routes.A11Y_CURSOR_AND_TOUCHPAD, router.currentRoute);
-        assertEquals(
-            subpageButton, page.shadowRoot!.activeElement,
-            `${selector} should be focused`);
-      });
-
   test(
       'should focus pointerSubpageButton button when returning from touchpad subpage',
       async () => {
-        loadTimeData.overrideValues({
-          enableInputDeviceSettingsSplit: true,
-        });
         const testRouter = createRouterForTesting();
         Router.resetInstanceForTesting(testRouter);
         const selector = '#pointerSubpageButton';
