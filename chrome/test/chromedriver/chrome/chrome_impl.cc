@@ -119,6 +119,13 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
       continue;
     }
 
+    // When auto-open-devtools-for-tabs is used, the DevTools target can race
+    // against the primary web view; exclude devtools tabs from primary window
+    // determination.
+    if (view.url.starts_with("devtools://")) {
+      continue;
+    }
+
     *web_view_id = view.id;
     return Status(kOk);
   }
