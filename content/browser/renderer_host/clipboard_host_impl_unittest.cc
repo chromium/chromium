@@ -762,7 +762,8 @@ class ClipboardHostImplChangeTest : public RenderViewHostTestHarness {
   ClipboardHostImplChangeTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(features::kClipboardChangeEvent);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPlatformClipboardMonitor);
     ui::TestClipboard::CreateForCurrentThread();
   }
 

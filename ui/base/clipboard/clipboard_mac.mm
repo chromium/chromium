@@ -117,7 +117,7 @@ Clipboard* Clipboard::Create() {
 // ClipboardMac implementation.
 ClipboardMac::ClipboardMac() {
   DCHECK(CalledOnValidThread());
-  if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+  if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
     ClipboardMonitor::GetInstance()->SetNotifier(this);
   }
 }

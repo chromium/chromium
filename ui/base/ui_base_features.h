@@ -230,7 +230,7 @@ BASE_DECLARE_FEATURE(kAsyncFullscreenWindowState);
 // Enable ClipboardChange event API
 // https://chromestatus.com/feature/5085102657503232
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kClipboardChangeEvent);
+BASE_DECLARE_FEATURE(kPlatformClipboardMonitor);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kEnablePixelCanvasRecording);

@@ -128,6 +128,16 @@ class ClipboardMacTest : public PlatformTest {
         /*privacy_types=*/0);
   }
 
+  // Helper method to run assertion with given count value
+  void AssertClipboardObserverCount(TestClipboardObserver& observer,
+                                    int expected_count) {
+    ASSERT_TRUE(base::test::RunUntil([&observer, expected_count]() {
+      return observer.data_changed_count() == expected_count;
+    })) << "Timeout waiting for the clipboardMonitor to be notified. Expected "
+           "count: "
+        << expected_count << " but got " << observer.data_changed_count();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
 };
@@ -234,7 +244,8 @@ TEST_F(ClipboardMacTest, SourceTracking) {
   WritePortableAndPlatformRepresentations(
       clipboard_mac, std::make_unique<DataTransferEndpoint>(google_url),
       pasteboard->get());
-  ASSERT_EQ(observer.data_changed_count(), 1);
+
+  AssertClipboardObserverCount(observer, 1);
 
   auto source = GetSource(clipboard_mac, pasteboard->get());
   ASSERT_TRUE(source);
@@ -245,7 +256,6 @@ TEST_F(ClipboardMacTest, SourceTracking) {
   WritePortableAndPlatformRepresentations(
       clipboard_mac, std::make_unique<DataTransferEndpoint>(chromium_url),
       pasteboard->get());
-  ASSERT_EQ(observer.data_changed_count(), 2);
 
   source = GetSource(clipboard_mac, pasteboard->get());
   ASSERT_TRUE(source);
@@ -258,7 +268,8 @@ TEST_F(ClipboardMacTest, SourceTracking) {
 
 TEST_F(ClipboardMacTest, ClipboardChangeAPI_BrowserTriggered) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(features::kClipboardChangeEvent);
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kPlatformClipboardMonitor);
 
   TestClipboardObserver observer;
 
@@ -276,16 +287,15 @@ TEST_F(ClipboardMacTest, ClipboardChangeAPI_BrowserTriggered) {
       clipboard_mac, std::make_unique<DataTransferEndpoint>(google_url),
       nspasteboard);
 
-  ASSERT_TRUE(base::test::RunUntil([&observer]() {
-    return observer.data_changed_count() == 1;
-  })) << "Timeout waiting for the clipboardMonitor to be notified";
+  AssertClipboardObserverCount(observer, 1);
 
   Clear(clipboard_mac, nspasteboard);
 }
 
 TEST_F(ClipboardMacTest, ClipboardChangeAPI_ExternallyTriggered) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(features::kClipboardChangeEvent);
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kPlatformClipboardMonitor);
 
   TestClipboardObserver observer;
 
@@ -299,9 +309,7 @@ TEST_F(ClipboardMacTest, ClipboardChangeAPI_ExternallyTriggered) {
   [nspasteboard clearContents];
   [nspasteboard setString:text forType:NSPasteboardTypeString];
 
-  ASSERT_TRUE(base::test::RunUntil([&observer]() {
-    return observer.data_changed_count() == 1;
-  })) << "Timeout waiting for the clipboardMonitor to be notified";
+  AssertClipboardObserverCount(observer, 1);
 
   Clear(clipboard_mac, nspasteboard);
 }

@@ -679,10 +679,6 @@ void SystemClipboard::OnClipboardDataChanged() {
 }
 
 void SystemClipboard::StartListening(LocalDOMWindow* window) {
-  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
-    return;
-  }
-
   // If we're already listening (receiver is bound), no need to register again
   if (!clipboard_listener_receiver_.is_bound() && clipboard_.is_bound()) {
     clipboard_->RegisterClipboardListener(

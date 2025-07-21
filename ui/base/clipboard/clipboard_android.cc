@@ -485,7 +485,7 @@ void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
     // sequence number, last modified time and notify the ClipboardMonitor if
     // monitoring external clipboard changes.
     GetClipboardMap().OnPrimaryClipTimestampInvalidated(timestamp);
-    if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+    if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
       ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
     }
   }

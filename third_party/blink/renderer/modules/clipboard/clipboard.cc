@@ -68,7 +68,8 @@ void Clipboard::AddedEventListener(
     RegisteredEventListener& registered_listener) {
   EventTarget::AddedEventListener(event_type, registered_listener);
 
-  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent) ||
+  if (!RuntimeEnabledFeatures::ClipboardChangeEventEnabled(
+          GetExecutionContext()) ||
       event_type != event_type_names::kClipboardchange) {
     return;
   }
@@ -94,7 +95,8 @@ void Clipboard::RemovedEventListener(
     const RegisteredEventListener& registered_listener) {
   EventTarget::RemovedEventListener(event_type, registered_listener);
 
-  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent) ||
+  if (!RuntimeEnabledFeatures::ClipboardChangeEventEnabled(
+          GetExecutionContext()) ||
       event_type != event_type_names::kClipboardchange) {
     return;
   }

@@ -907,7 +907,8 @@
       // system clipboard
       // https://chromestatus.com/feature/5085102657503232
       name: "ClipboardChangeEvent",
-      base_feature: "none",
+      origin_trial_feature_name: "ClipboardChangeEvent",
+      status: "experimental",
     },
     // This ensures that clipboard event fires on a target node which is
     // focused in case no visible selection is present.

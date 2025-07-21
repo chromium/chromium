@@ -571,9 +571,6 @@ TEST_F(SystemClipboardTest, SequenceNumberWithUnboundClipboardHost) {
 }
 
 TEST_F(SystemClipboardTest, ClipboardChangeNotification) {
-  // GIVEN: Feature flag is enabled
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kClipboardChangeEvent);
   auto* mock_controller = controller();
 
   // EXPECT: Controller should receive exactly one update notification
@@ -589,9 +586,6 @@ TEST_F(SystemClipboardTest, ClipboardChangeNotification) {
 }
 
 TEST_F(SystemClipboardTest, ClipboardChangeNotification_MultipleRegistrations) {
-  // GIVEN: Feature flag is enabled
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kClipboardChangeEvent);
   auto* mock_controller = controller();
 
   // EXPECT: Controller should receive notifications after each registration

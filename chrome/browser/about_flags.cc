@@ -12031,7 +12031,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-clipboardchange-event",
      flag_descriptions::kClipboardChangeEventName,
      flag_descriptions::kClipboardChangeEventDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kClipboardChangeEvent)},
+     FEATURE_VALUE_TYPE(blink::features::kClipboardChangeEvent)},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

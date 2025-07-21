@@ -461,10 +461,10 @@ BASE_FEATURE(kAsyncFullscreenWindowState,
              "AsyncFullscreenWindowState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature flag for enabling the clipboardchange event.
-BASE_FEATURE(kClipboardChangeEvent,
-             "ClipboardChangeEvent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Feature flag for enabling platform clipboard monitoring.
+BASE_FEATURE(kPlatformClipboardMonitor,
+             "PlatformClipboardMonitor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, all draw commands recorded on canvas are done in pixel aligned
 // measurements. This also enables scaling of all elements in views and layers

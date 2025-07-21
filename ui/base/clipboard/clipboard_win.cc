@@ -237,7 +237,7 @@ ClipboardWin::ClipboardWin() {
   if (base::CurrentUIThread::IsSet())
     clipboard_owner_ = std::make_unique<base::win::MessageWindow>();
 
-  if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+  if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
     ui::ClipboardMonitor::GetInstance()->SetNotifier(this);
   }
 }
