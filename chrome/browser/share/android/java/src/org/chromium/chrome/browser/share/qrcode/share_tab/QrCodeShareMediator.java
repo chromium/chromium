@@ -19,6 +19,7 @@ import android.text.TextUtils.TruncateAt;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
@@ -31,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * QrCodeShareMediator is in charge of calculating and setting values for QrCodeShareViewProperties.
  */
+@NullMarked
 class QrCodeShareMediator {
     // QR code version 40 with M-level error correction can encode binary inputs of up to 2331
     // bytes, and digit-only inputs of up to 5596 bytes.  See
@@ -48,7 +50,7 @@ class QrCodeShareMediator {
     private int mNumDownloads;
 
     private boolean mIsDownloadInProgress;
-    private final @Nullable String mUrl;
+    private final String mUrl;
     private final Runnable mCloseDialog;
 
     /**
@@ -63,7 +65,7 @@ class QrCodeShareMediator {
             Context context,
             PropertyModel propertyModel,
             Runnable closeDialog,
-            @Nullable String url,
+            String url,
             @Nullable WindowAndroid windowAndroid) {
         mContext = context;
         mPropertyModel = propertyModel;
@@ -187,7 +189,7 @@ class QrCodeShareMediator {
         mNumDownloads++;
     }
 
-    private Bitmap addUrlToBitmap(Bitmap bitmap, @Nullable String url) {
+    private Bitmap addUrlToBitmap(Bitmap bitmap, String url) {
         int qrCodeSize = mContext.getResources().getDimensionPixelSize(R.dimen.qrcode_size);
         int fontSize = mContext.getResources().getDimensionPixelSize(R.dimen.text_size_large);
         int sidePadding = mContext.getResources().getDimensionPixelSize(R.dimen.side_padding);
