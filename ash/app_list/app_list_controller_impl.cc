@@ -1364,8 +1364,6 @@ void AppListControllerImpl::InvokeSearchResultAction(
 }
 
 void AppListControllerImpl::ViewShown(int64_t display_id) {
-  UpdateSearchBoxUiVisibilities();
-
   // Note that IsHomeScreenVisible() might still return false at this point, as
   // the home screen visibility takes into account whether the app list view is
   // obscured by an app window, or overview UI. This method gets called when the
@@ -1828,6 +1826,7 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
     }
 
     if (real_target_visibility) {
+      UpdateSearchBoxUiVisibilities();
       // The virtual keyboard should be hidden before the bubble launcher
       // calculating the work area.
       keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
