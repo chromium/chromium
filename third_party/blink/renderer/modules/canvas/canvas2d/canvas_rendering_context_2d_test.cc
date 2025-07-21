@@ -1936,25 +1936,25 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Wait for context to be lost.
   {
-    EXPECT_FALSE(CanvasElement().IsContextLost());
+    EXPECT_FALSE(Context2D()->IsContextLost());
     base::RunLoop run_loop;
     CanvasElement().addEventListener(
         event_type_names::kContextlost,
         MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
     run_loop.Run();
-    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_TRUE(Context2D()->IsContextLost());
     EXPECT_THAT(Context2D()->GetResourceProviderForCanvas2D(), IsNull());
   }
 
   // Wait for context to be restored.
   {
-    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_TRUE(Context2D()->IsContextLost());
     base::RunLoop run_loop;
     CanvasElement().addEventListener(
         event_type_names::kContextrestored,
         MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
     run_loop.Run();
-    EXPECT_FALSE(CanvasElement().IsContextLost());
+    EXPECT_FALSE(Context2D()->IsContextLost());
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
     EXPECT_THAT(Context2D()->GetResourceProviderForCanvas2D(),
                 Pointee(IsValid()));
@@ -1981,23 +1981,23 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Wait for context to be lost.
   {
-    EXPECT_FALSE(CanvasElement().IsContextLost());
+    EXPECT_FALSE(Context2D()->IsContextLost());
     base::RunLoop run_loop;
     CanvasElement().addEventListener(
         event_type_names::kContextlost,
         MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
     run_loop.Run();
-    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_TRUE(Context2D()->IsContextLost());
     EXPECT_THAT(Context2D()->GetResourceProviderForCanvas2D(), IsNull());
   }
 
   // Context restoration will fail, wait for the context to give up.
   {
-    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_TRUE(Context2D()->IsContextLost());
     base::RunLoop run_loop;
     Context2D()->SetRestoreFailedCallbackForTesting(run_loop.QuitClosure());
     run_loop.Run();
-    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_TRUE(Context2D()->IsContextLost());
     EXPECT_THAT(Context2D()->GetResourceProviderForCanvas2D(), IsNull());
   }
 }
@@ -2330,9 +2330,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
   test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
       GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
-  EXPECT_FALSE(CanvasElement().IsContextLost());
+  EXPECT_FALSE(Context2D()->IsContextLost());
   blink::test::RunPendingTasks();
-  EXPECT_TRUE(CanvasElement().IsContextLost());
+  EXPECT_TRUE(Context2D()->IsContextLost());
 
   // Run hibernation task.
   RunIdleTasks();
@@ -2346,7 +2346,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Wait for context to be restored.
   run_loop.Run();
-  EXPECT_FALSE(CanvasElement().IsContextLost());
+  EXPECT_FALSE(Context2D()->IsContextLost());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_THAT(Context2D()->GetResourceProviderForCanvas2D(),
               Pointee(IsValid()));

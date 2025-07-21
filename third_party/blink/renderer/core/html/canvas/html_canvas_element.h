@@ -238,14 +238,10 @@ class CORE_EXPORT HTMLCanvasElement final
   void RegisterContentsLayer(cc::Layer*) override;
   void UnregisterContentsLayer(cc::Layer*) override;
 
-  bool IsContextLost() const;
   bool IsPageVisible() const override;
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const {
     CHECK(IsRenderingContext2D());
     return resource_provider_for_canvas2d_.get();
-  }
-  void ResetResourceProviderForCanvas2D() {
-    ReplaceResourceProviderForCanvas2D(nullptr);
   }
 
   // CanvasResourceProvider::Delegate implementation
