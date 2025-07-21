@@ -18,13 +18,10 @@ import {getTemplate} from './address_remove_confirmation_dialog.html.js';
 
 export interface SettingsAddressRemoveConfirmationDialogElement {
   $: {
-    accountAddressDescription: HTMLElement,
-    body: HTMLElement,
+    description: HTMLElement,
     cancel: HTMLElement,
     dialog: CrDialogElement,
-    localAddressDescription: HTMLElement,
     remove: HTMLElement,
-    syncAddressDescription: HTMLElement,
   };
 }
 
@@ -45,38 +42,66 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
       address: Object,
       accountInfo: Object,
 
-      isAccountAddress_: {
-        type: Boolean,
-        computed: 'computeIsAccountAddress_(address)',
+      /**
+       * The title of the confirmation dialog.
+       */
+      confirmationTitle_: {
+        type: String,
+        computed: 'computeConfirmationTitle_()',
       },
 
-      isProfileSyncEnabled_: {
-        type: Boolean,
-        computed: 'computeIsProfileSyncEnabled_(accountInfo)',
-        value: false,
+      /**
+       * The body of the confirmation dialog.
+       */
+      confirmationDescription_: {
+        type: String,
+        computed: 'computeConfirmationDescription_(address, accountInfo)',
+      },
+
+      /**
+       * The label for the remove button.
+       */
+      removeButtonLabel_: {
+        type: String,
+        computed: 'computeRemoveButtonLabel_()',
       },
     };
   }
 
   declare address: chrome.autofillPrivate.AddressEntry;
   declare accountInfo?: chrome.autofillPrivate.AccountInfo;
-  declare private isAccountAddress_: boolean;
-  declare private isProfileSyncEnabled_: boolean;
+
+  declare private confirmationTitle_: string;
+  declare private confirmationDescription_: string;
+  declare private removeButtonLabel_: string;
 
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  private computeIsAccountAddress_(
-      address: chrome.autofillPrivate.AddressEntry): boolean {
-    return address.metadata !== undefined &&
-        address.metadata.recordType ===
-        chrome.autofillPrivate.AddressRecordType.ACCOUNT;
+  private computeConfirmationTitle_(): string {
+    return this.i18n('removeAddressConfirmationTitle');
   }
 
-  private computeIsProfileSyncEnabled_(
-      accountInfo?: chrome.autofillPrivate.AccountInfo): boolean {
-    return !!accountInfo?.isSyncEnabledForAutofillProfiles;
+  private computeConfirmationDescription_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo?: chrome.autofillPrivate.AccountInfo): string {
+    const isAccountAddress = address?.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT;
+
+    if (isAccountAddress) {
+      return this.i18n(
+          'deleteAccountAddressRecordTypeNotice', accountInfo?.email || '');
+    }
+
+    const isSyncEnabled = !!accountInfo?.isSyncEnabledForAutofillProfiles;
+    return this.i18n(
+        isSyncEnabled ? 'removeSyncAddressConfirmationDescription' :
+                        'removeLocalAddressConfirmationDescription');
+  }
+
+  private computeRemoveButtonLabel_(): string {
+    return this.i18n('removeAddress');
   }
 
   private onRemoveClick() {
