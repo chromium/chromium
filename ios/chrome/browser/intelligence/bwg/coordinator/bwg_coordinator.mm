@@ -144,6 +144,11 @@ const CGFloat kPromoMaxImpressionCount = 3;
                                         BWGCoordinator* strongSelf = weakSelf;
                                         strongSelf->_wasPromoShown = showPromo;
                                       }];
+
+  if (BWGTabHelper) {
+    BWGTabHelper->SetBwgUiShowing(true);
+  }
+
   return YES;
 }
 
@@ -163,6 +168,11 @@ const CGFloat kPromoMaxImpressionCount = 3;
     [strongSelf presentPageActionMenuIPH];
     [strongSelf->_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
   }];
+
+  BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
+  if (BWGTabHelper) {
+    BWGTabHelper->SetBwgUiShowing(false);
+  }
 }
 
 #pragma mark - UISheetPresentationControllerDelegate

@@ -150,7 +150,6 @@ void BwgTabHelper::WasShown(web::WebState* web_state) {
   if (is_bwg_session_active_in_background_) {
     [bwg_commands_handler_
         startBWGFlowWithEntryPoint:bwg::EntryPoint::TabReopen];
-    is_bwg_session_active_in_background_ = false;
     cached_snapshot_ = nil;
   }
 }
@@ -159,14 +158,11 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
   if (is_bwg_ui_showing_) {
     cached_snapshot_ =
         bwg_snapshot_utils::GetCroppedFullscreenSnapshot(web_state_->GetView());
-  }
-
-  UpdateWebStateSnapshotInStorage();
-
-  if (is_bwg_ui_showing_) {
     is_bwg_session_active_in_background_ = true;
     [bwg_commands_handler_ dismissBWGFlowWithCompletion:nil];
   }
+
+  UpdateWebStateSnapshotInStorage();
 }
 
 void BwgTabHelper::PageLoaded(
