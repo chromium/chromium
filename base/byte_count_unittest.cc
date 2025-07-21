@@ -4,6 +4,7 @@
 
 #include "base/byte_count.h"
 
+#include "base/numerics/checked_math.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,9 +34,21 @@ TEST(ByteCount, ConstructionUnsigned) {
   EXPECT_EQ(5, bytes.InBytes());
 }
 
-TEST(ByteCount, ConstructionUnsignedInvalid) {
+TEST(ByteCountDeathTest, ConstructionUnsignedInvalid) {
   BASE_EXPECT_DEATH(
-      { ByteCount::FromUnsigned(std::numeric_limits<uint64_t>::max()); }, "");
+      ByteCount::FromUnsigned(std::numeric_limits<uint64_t>::max()), "");
+}
+
+TEST(ByteCount, ConstructionChecked) {
+  auto bytes = ByteCount::FromChecked(CheckedNumeric<uint64_t>(5));
+  EXPECT_EQ(5, bytes.InBytes());
+}
+
+TEST(ByteCountDeathTest, ConstructionCheckedInvalid) {
+  BASE_EXPECT_DEATH(
+      ByteCount::FromChecked(
+          CheckedNumeric<int64_t>(std::numeric_limits<int64_t>::max()) + 1),
+      "");
 }
 
 TEST(ByteCount, ConstructionOtherUnit) {
@@ -49,12 +62,12 @@ TEST(ByteCount, ConstructionOtherUnit) {
   EXPECT_EQ(5ll * 1024 * 1024 * 1024, gib5.InBytes());
 }
 
-TEST(ByteCount, ConstructionOtherUnitInvalid) {
-  BASE_EXPECT_DEATH({ KiB(std::numeric_limits<int64_t>::max()); }, "");
+TEST(ByteCountDeathTest, ConstructionOtherUnitInvalid) {
+  BASE_EXPECT_DEATH(KiB(std::numeric_limits<int64_t>::max()), "");
 
-  BASE_EXPECT_DEATH({ MiB(std::numeric_limits<int64_t>::max()); }, "");
+  BASE_EXPECT_DEATH(MiB(std::numeric_limits<int64_t>::max()), "");
 
-  BASE_EXPECT_DEATH({ GiB(std::numeric_limits<int64_t>::max()); }, "");
+  BASE_EXPECT_DEATH(GiB(std::numeric_limits<int64_t>::max()), "");
 }
 
 TEST(ByteCount, IsZero) {
@@ -70,9 +83,9 @@ TEST(ByteCount, InFloating) {
   EXPECT_THAT(bytes.InGiBF(), testing::DoubleEq(3.1999999992549419));
 }
 
-TEST(ByteCount, InUnsignedInvalid) {
+TEST(ByteCountDeathTest, InUnsignedInvalid) {
   ByteCount bytes(-2);
-  BASE_EXPECT_DEATH({ bytes.InBytesUnsigned(); }, "");
+  BASE_EXPECT_DEATH(bytes.InBytesUnsigned(), "");
 }
 
 TEST(ByteCount, Arithmetic) {
@@ -91,7 +104,7 @@ TEST(ByteCount, Arithmetic) {
   EXPECT_EQ(21, div.InBytes());
 }
 
-TEST(ByteCount, ArithmeticInvalid) {
+TEST(ByteCountDeathTest, ArithmeticInvalid) {
   ByteCount max_bytes(std::numeric_limits<int64_t>::max());
 
   BASE_EXPECT_DEATH({ max_bytes + max_bytes; }, "");

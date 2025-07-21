@@ -33,6 +33,7 @@ class ByteCount {
   constexpr ByteCount() = default;
 
   constexpr explicit ByteCount(int64_t bytes) : bytes_(bytes) {}
+
   ~ByteCount() = default;
 
   ByteCount(const ByteCount&) = default;
@@ -40,6 +41,11 @@ class ByteCount {
 
   static constexpr ByteCount FromUnsigned(uint64_t bytes) {
     return ByteCount(checked_cast<int64_t>(bytes));
+  }
+
+  static constexpr ByteCount FromChecked(
+      const CheckedNumeric<int64_t>& checked_bytes) {
+    return ByteCount(checked_bytes.ValueOrDie());
   }
 
   constexpr bool is_zero() const { return bytes_ == 0; }
@@ -61,23 +67,26 @@ class ByteCount {
     return checked_cast<uint64_t>(bytes_);
   }
 
+  // Math operations.
+
   constexpr ByteCount operator+(ByteCount other) const {
-    return ByteCount(
-        (CheckedNumeric<int64_t>(bytes_) + other.bytes_).ValueOrDie());
+    return ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) +
+                                  other.bytes_);
   }
+
   constexpr ByteCount operator-(ByteCount other) const {
-    return ByteCount(
-        (CheckedNumeric<int64_t>(bytes_) - other.bytes_).ValueOrDie());
+    return ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) -
+                                  other.bytes_);
   }
 
   template <typename T>
   constexpr ByteCount operator*(T value) const {
-    return ByteCount((CheckedNumeric<int64_t>(bytes_) * value).ValueOrDie());
+    return ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) * value);
   }
 
   template <typename T>
   constexpr ByteCount operator/(T value) const {
-    return ByteCount((CheckedNumeric<int64_t>(bytes_) / value).ValueOrDie());
+    return ByteCount::FromChecked(CheckedNumeric<int64_t>(bytes_) / value);
   }
 
   constexpr friend bool operator==(const ByteCount& a,
@@ -92,20 +101,20 @@ class ByteCount {
 template <typename T>
   requires std::is_integral_v<T>
 constexpr ByteCount KiB(T kib) {
-  return ByteCount((CheckedNumeric<int64_t>(kib) * 1024).ValueOrDie());
+  return ByteCount::FromChecked(CheckedNumeric<int64_t>(kib) * 1024);
 }
 
 template <typename T>
   requires std::is_integral_v<T>
 constexpr ByteCount MiB(T mib) {
-  return ByteCount((CheckedNumeric<int64_t>(mib) * 1024 * 1024).ValueOrDie());
+  return ByteCount::FromChecked(CheckedNumeric<int64_t>(mib) * 1024 * 1024);
 }
 
 template <typename T>
   requires std::is_integral_v<T>
 constexpr ByteCount GiB(T gib) {
-  return ByteCount(
-      (CheckedNumeric<int64_t>(gib) * 1024 * 1024 * 1024).ValueOrDie());
+  return ByteCount::FromChecked(CheckedNumeric<int64_t>(gib) * 1024 * 1024 *
+                                1024);
 }
 
 }  // namespace base
