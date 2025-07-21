@@ -460,6 +460,11 @@ bundle_data("test_data") {
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
+# TODO(crbug.com/433273929): Remove once fixed.
+config("no_nonnull") {
+  cflags = [ "-Wno-nonnull" ]
+}
+
 source_set("quiche_tests") {
   testonly = true
 
@@ -775,6 +780,9 @@ source_set("quiche_tests") {
       ":epoll_tool_support",
     ]
   }
+
+  # TODO(crbug.com/433273929): Remove once fixed.
+  configs += [ ":no_nonnull" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
