@@ -6,6 +6,7 @@
 #define UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_TEST_API_H_
 
 #include "ui/views/accessibility/tree/widget_ax_manager.h"
+#include "ui/views/accessibility/tree/widget_view_ax_cache.h"
 
 namespace views {
 
@@ -26,6 +27,7 @@ class WidgetAXManagerTestApi {
   const ui::AXTreeID& parent_ax_tree_id() const {
     return manager_->parent_ax_tree_id_;
   }
+  WidgetViewAXCache* cache() const { return manager_->cache_.get(); }
 
   void TearDown() { manager_ = nullptr; }
 

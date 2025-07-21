@@ -90,6 +90,18 @@ void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
   }
 }
 
+ui::AXPlatformNodeId WidgetAXManager::GetOrCreateAXNodeUniqueId(
+    ui::AXNodeID ax_node_id) {
+  // ViewAccessibility already generates a unique ID for each View. Return it.
+  ViewAccessibility* view_ax = cache_->Get(ax_node_id);
+  return view_ax ? view_ax->GetUniqueId() : ui::AXPlatformNodeId();
+}
+
+void WidgetAXManager::OnAXNodeDeleted(ui::AXNodeID ax_node_id) {
+  // Do nothing. Those unique IDs aren't cached in WidgetAXManager, so they
+  // don't need to be removed.
+}
+
 void WidgetAXManager::AccessibilityPerformAction(const ui::AXActionData& data) {
   tree_source_->HandleAccessibleAction(data);
 }

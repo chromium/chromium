@@ -369,4 +369,18 @@ TEST_F(WidgetAXManagerTest, CanFireAccessibilityEvents) {
   EXPECT_TRUE(manager()->CanFireAccessibilityEvents());
 }
 
+TEST_F(WidgetAXManagerTest, GetOrCreateAXNodeUniqueId) {
+  auto v = ViewAccessibility::Create(nullptr);
+
+  WidgetAXManagerTestApi test_api(manager());
+  ASSERT_FALSE(test_api.cache()->HasCachedChildren(v.get()));
+  EXPECT_EQ(manager()->GetOrCreateAXNodeUniqueId(v->GetUniqueId()),
+            ui::AXUniqueId::CreateInvalid());
+
+  test_api.cache()->Insert(v.get());
+
+  EXPECT_EQ(manager()->GetOrCreateAXNodeUniqueId(v->GetUniqueId()),
+            v->GetUniqueId());
+}
+
 }  // namespace views::test
