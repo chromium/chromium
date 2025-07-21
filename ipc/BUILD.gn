@@ -40,8 +40,6 @@ component("ipc") {
       "ipc_channel_mojo.h",
       "ipc_channel_proxy.cc",
       "ipc_channel_proxy.h",
-      "ipc_channel_reader.cc",
-      "ipc_channel_reader.h",
       "ipc_listener.cc",
       "ipc_listener.h",
       "ipc_message_macros.h",
@@ -268,7 +266,6 @@ if (use_blink) {
     sources = [
       "ipc_channel_mojo_unittest.cc",
       "ipc_channel_proxy_unittest.cc",
-      "ipc_channel_reader_unittest.cc",
       "ipc_fuzzing_tests.cc",
       "ipc_message_protobuf_utils_unittest.cc",
       "ipc_message_unittest.cc",

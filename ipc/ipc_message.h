@@ -25,10 +25,6 @@ struct UnmappedNativeStructSerializerImpl;
 
 namespace IPC {
 
-namespace internal {
-class ChannelReader;
-}  // namespace internal
-
 //------------------------------------------------------------------------------
 
 class MessageAttachmentSet;
@@ -209,7 +205,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
   friend class ChannelMojo;
   friend class ChannelPosix;
   friend class ChannelWin;
-  friend class internal::ChannelReader;
   friend class MessageReplyDeserializer;
   friend class SyncMessage;
 
