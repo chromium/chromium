@@ -548,6 +548,7 @@ public class UrlOverridingTest {
                                 public void onNewTabCreated(
                                         Tab newTab, @TabCreationState int creationState) {
                                     Assert.assertTrue(params.createsNewTab);
+                                    latestTabHolder.value = newTab;
                                     newTabCallback.notifyCalled();
                                     loadCallback.notifyCalled();
                                     newTab.addObserver(
@@ -557,7 +558,6 @@ public class UrlOverridingTest {
                                                     destroyedCallback,
                                                     failCallback,
                                                     loadCallback));
-                                    latestTabHolder.value = newTab;
                                     TestChildFrameNavigationObserver
                                             .createAndAttachToNativeWebContents(
                                                     newTab.getWebContents(),
@@ -619,11 +619,20 @@ public class UrlOverridingTest {
             newTabCallback.waitForCallback("New Tab was not created.", 0, 1, 20, TimeUnit.SECONDS);
         }
 
-        if (params.createsNewTab
-                && UrlUtilities.isHttpOrHttps(latestTabHolder.value.getUrl())
-                && !params.shouldLaunchExternalIntent) {
-            firstPaintCallback.waitForCallback(
-                    "New Tab content was not drawn.", 1, 1, 20, TimeUnit.SECONDS);
+        if (params.createsNewTab && !params.shouldLaunchExternalIntent) {
+            ChromeTabUtils.waitForInteractable(tab);
+            // The new tab URL is sometimes empty and not strictly linked to the interactable state.
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        Criteria.checkThat(
+                                GURL.isEmptyOrInvalid(latestTabHolder.value.getUrl()),
+                                Matchers.is(false));
+                    });
+
+            if (UrlUtilities.isHttpOrHttps(latestTabHolder.value.getUrl())) {
+                firstPaintCallback.waitForCallback(
+                        "New Tab content was not drawn.", 1, 1, 20, TimeUnit.SECONDS);
+            }
         }
 
         if (params.shouldFailNavigation) {
