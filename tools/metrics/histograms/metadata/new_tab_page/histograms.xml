@@ -252,6 +252,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Composebox.ConfigParseSuccess" enum="Boolean"
+    expires_after="2026-06-17">
+  <owner>mahmadi@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Recorded the first time the NTP composebox feature is accessed (on the first
+    NTP load) and the configuration proto feature parameter is set to a
+    non-empty value. This metric records whether the config proto was
+    successfully parsed from the base64-encoded string.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Composebox.FromNTPLoadToSessionStart" units="ms"
     expires_after="2026-06-17">
   <owner>niharm@google.com</owner>

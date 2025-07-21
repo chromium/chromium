@@ -1,9 +1,11 @@
 include_rules = [
   "+components/keyed_service/core",
   "+components/omnibox/browser",
+  "+components/omnibox/common",
   "+components/search_engines",
   "+net",
-  "+services/network/test",
-  "+services/network/public",
   "+services/data_decoder/public",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/omnibox_proto",
 ]
