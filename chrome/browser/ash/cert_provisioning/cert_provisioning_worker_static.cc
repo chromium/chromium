@@ -462,7 +462,6 @@ void CertProvisioningWorkerStatic::OnStartCsrDone(
     policy::DeviceManagementStatus status,
     std::optional<CertProvisioningResponseErrorType> error,
     std::optional<int64_t> try_later,
-    const std::string& invalidation_topic,
     const std::string& va_challenge,
     enterprise_management::HashingAlgorithm hashing_algorithm,
     std::vector<uint8_t> data_to_sign) {
@@ -488,12 +487,11 @@ void CertProvisioningWorkerStatic::OnStartCsrDone(
   }
 
   csr_ = BytesToStr(data_to_sign);
-  invalidation_topic_ = invalidation_topic;
   va_challenge_ = va_challenge;
   UpdateState(FROM_HERE,
               CertProvisioningWorkerState::kStartCsrResponseReceived);
 
-  RegisterForInvalidationTopic();
+  RegisterForInvalidations();
 
   DoStep();
 }
@@ -928,7 +926,7 @@ void CertProvisioningWorkerStatic::CancelScheduledTasks() {
 void CertProvisioningWorkerStatic::CleanUpAndRunCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UnregisterFromInvalidationTopic();
+  UnregisterFromInvalidations();
 
   // Keep conditions mutually exclusive.
   if (state_ == CertProvisioningWorkerState::kSucceeded) {
@@ -1055,7 +1053,7 @@ void CertProvisioningWorkerStatic::HandleSerialization() {
 void CertProvisioningWorkerStatic::InitAfterDeserialization() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RegisterForInvalidationTopic();
+  RegisterForInvalidations();
 
   tpm_challenge_key_subtle_impl_ =
       attestation::TpmChallengeKeySubtleFactory::CreateForPreparedKey(
@@ -1065,22 +1063,16 @@ void CertProvisioningWorkerStatic::InitAfterDeserialization() {
           profile_);
 }
 
-void CertProvisioningWorkerStatic::RegisterForInvalidationTopic() {
+void CertProvisioningWorkerStatic::RegisterForInvalidations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(invalidator_);
-
-  // Can be empty after deserialization if no topic was received yet. Also
-  // protects from errors on the server side.
-  if (invalidation_topic_.empty()) {
-    return;
-  }
 
   // Registering the callback with base::Unretained is OK because this class
   // owns |invalidator_|, and the callback will never be called after
   // |invalidator_| is destroyed.
   invalidator_->Register(
-      invalidation_topic_, MakeInvalidationListenerType(process_id_),
+      MakeInvalidationListenerType(process_id_),
       base::BindRepeating(&CertProvisioningWorkerStatic::OnInvalidationEvent,
                           base::Unretained(this)));
 
@@ -1088,7 +1080,7 @@ void CertProvisioningWorkerStatic::RegisterForInvalidationTopic() {
               CertProvisioningEvent::kRegisteredToInvalidationTopic);
 }
 
-void CertProvisioningWorkerStatic::UnregisterFromInvalidationTopic() {
+void CertProvisioningWorkerStatic::UnregisterFromInvalidations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(invalidator_);

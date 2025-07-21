@@ -25,7 +25,6 @@ constexpr char kKeyNameCertScope[] = "cert_scope";
 constexpr char kKeyNameCertProfile[] = "cert_profile";
 constexpr char kKeyNameState[] = "state";
 constexpr char kKeyNamePublicKey[] = "public_key";
-constexpr char kKeyNameInvalidationTopic[] = "invalidation_topic";
 constexpr char kKeyNameKeyLocation[] = "key_location";
 constexpr char kKeyNameAttemptedVaChallenge[] = "attempted_va_challenge";
 constexpr char kKeyNameAttemptedProofOfPossession[] =
@@ -244,7 +243,6 @@ void CertProvisioningSerializer::DeleteWorkerFromPrefs(
 //   "cert_profile": <CertProfile>,
 //   "state": <number>,
 //   "public_key": <string>,
-//   "invalidation_topic": <string>,
 // }
 base::Value::Dict CertProvisioningSerializer::SerializeWorker(
     const CertProvisioningWorkerStatic& worker) {
@@ -258,7 +256,6 @@ base::Value::Dict CertProvisioningSerializer::SerializeWorker(
   result.Set(kKeyNameCertScope, static_cast<int>(worker.cert_scope_));
   result.Set(kKeyNameState, static_cast<int>(worker.state_));
   result.Set(kKeyNamePublicKey, SerializeBase64Encoded(worker.public_key_));
-  result.Set(kKeyNameInvalidationTopic, worker.invalidation_topic_);
   return result;
 }
 
@@ -268,7 +265,6 @@ base::Value::Dict CertProvisioningSerializer::SerializeWorker(
 //   "cert_profile": <CertProfile>,
 //   "state": <number>,
 //   "public_key": <string>,
-//   "invalidation_topic": <string>,
 //   "key_location": <number>,
 //   "attempted_va_challenge": <bool>,
 //   "proof_of_possession_count": <number>,
@@ -285,7 +281,6 @@ base::Value::Dict CertProvisioningSerializer::SerializeWorker(
   result.Set(kKeyNameCertScope, static_cast<int>(worker.cert_scope_));
   result.Set(kKeyNameState, static_cast<int>(worker.state_));
   result.Set(kKeyNamePublicKey, SerializeBase64Encoded(worker.public_key_));
-  result.Set(kKeyNameInvalidationTopic, worker.invalidation_topic_);
   result.Set(kKeyNameKeyLocation, static_cast<int>(worker.key_location_));
   result.Set(kKeyNameAttemptedVaChallenge, worker.attempted_va_challenge_);
   result.Set(kKeyNameAttemptedProofOfPossession,
@@ -325,10 +320,6 @@ bool CertProvisioningSerializer::DeserializeWorker(
   is_ok = is_ok && ++error_code &&
           DeserializeBase64Encoded(saved_worker, kKeyNamePublicKey,
                                    &(worker->public_key_));
-
-  is_ok = is_ok && ++error_code &&
-          DeserializeStringValue(saved_worker, kKeyNameInvalidationTopic,
-                                 &(worker->invalidation_topic_));
 
   is_ok = is_ok && ++error_code &&
           DeserializeStringValue(saved_worker, kKeyNameProcessId,
@@ -376,10 +367,6 @@ bool CertProvisioningSerializer::DeserializeWorker(
   is_ok = is_ok && ++error_code &&
           DeserializeBase64Encoded(saved_worker, kKeyNamePublicKey,
                                    &(worker->public_key_));
-
-  is_ok = is_ok && ++error_code &&
-          DeserializeStringValue(saved_worker, kKeyNameInvalidationTopic,
-                                 &(worker->invalidation_topic_));
 
   is_ok = is_ok && ++error_code &&
           DeserializeEnumValue<KeyLocation>(saved_worker, kKeyNameKeyLocation,

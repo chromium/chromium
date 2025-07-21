@@ -21,6 +21,9 @@ inline constexpr std::string_view kCertProvBackendErrorHistogramName =
 // The enum is used for UMA, the values should not be renumerated.
 enum class CertProvisioningEvent {
   // Some worker tried to register(or reregister) for invalidation topic.
+  // TODO(crbug.com/341377023): Since topics are no longer used for
+  // invalidations, the event should be renamed (just drop the topic part), or
+  // removed.
   kRegisteredToInvalidationTopic = 0,
   // Invalidation received.
   kInvalidationReceived = 1,
@@ -36,6 +39,8 @@ enum class CertProvisioningEvent {
   kWorkerDeserializationFailed = 7,
   // The subscription to an invalidation topic (the start of which is reported
   // as kRegisteredToInvalidationTopic) has successfully finished.
+  // TODO(crbug.com/341377023): Since topics are no longer used for
+  // invalidations, the event should be removed.
   kSuccessfullySubscribedToInvalidationTopic = 8,
   kMaxValue = kSuccessfullySubscribedToInvalidationTopic
 };

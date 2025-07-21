@@ -504,8 +504,7 @@ void CertProvisioningWorkerDynamic::OnStartResponse(
     return;
   }
 
-  invalidation_topic_ = response.value().invalidation_topic();
-  RegisterForInvalidationTopic();
+  RegisterForInvalidations();
 
   RETURN_ON_FINAL_STATE(UpdateState(
       FROM_HERE, CertProvisioningWorkerState::kReadyForNextOperation));
@@ -1102,7 +1101,7 @@ void CertProvisioningWorkerDynamic::CancelScheduledTasks() {
 void CertProvisioningWorkerDynamic::CleanUpAndRunCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UnregisterFromInvalidationTopic();
+  UnregisterFromInvalidations();
 
   if (state_ == CertProvisioningWorkerState::kSucceeded) {
     // No extra clean up is necessary.
@@ -1219,7 +1218,7 @@ void CertProvisioningWorkerDynamic::HandleSerialization() {
 void CertProvisioningWorkerDynamic::InitAfterDeserialization() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RegisterForInvalidationTopic();
+  RegisterForInvalidations();
 
   // Only initialize TpmChallengeKeySubtle if any Verified Access operations can
   // still happen, i.e. if VA is enabled and the key has not been moved into the
@@ -1246,22 +1245,16 @@ void CertProvisioningWorkerDynamic::InitAfterDeserialization() {
   }
 }
 
-void CertProvisioningWorkerDynamic::RegisterForInvalidationTopic() {
+void CertProvisioningWorkerDynamic::RegisterForInvalidations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(invalidator_);
-
-  // Can be empty after deserialization if no topic was received yet. Also
-  // protects from errors on the server side.
-  if (invalidation_topic_.empty()) {
-    return;
-  }
 
   // Registering the callback with base::Unretained is OK because this class
   // owns |invalidator_|, and the callback will never be called after
   // |invalidator_| is destroyed.
   invalidator_->Register(
-      invalidation_topic_, MakeInvalidationListenerType(process_id_),
+      MakeInvalidationListenerType(process_id_),
       base::BindRepeating(&CertProvisioningWorkerDynamic::OnInvalidationEvent,
                           base::Unretained(this)));
 
@@ -1269,7 +1262,7 @@ void CertProvisioningWorkerDynamic::RegisterForInvalidationTopic() {
               CertProvisioningEvent::kRegisteredToInvalidationTopic);
 }
 
-void CertProvisioningWorkerDynamic::UnregisterFromInvalidationTopic() {
+void CertProvisioningWorkerDynamic::UnregisterFromInvalidations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(invalidator_);

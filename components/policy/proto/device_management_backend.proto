@@ -4430,6 +4430,8 @@ message StartCsrRequest {}
 message StartCsrResponse {
   // The client should register for FCM messages using this topic in order to
   // receive notifications for the certificate provisioning process.
+  // TODO(crbug.com/341377023): Deprecate once no clients use topic
+  // invalidations.
   optional string invalidation_topic = 1;
 
   // The verified access challenge.
@@ -4472,6 +4474,8 @@ message CertProvStartRequest {}
 message CertProvStartResponse {
   // The client should register for FCM messages using this topic in order to
   // receive notifications for the certificate provisioning process.
+  // TODO(crbug.com/341377023): Deprecate once no clients use topic
+  // invalidations.
   optional string invalidation_topic = 1;
 }
 

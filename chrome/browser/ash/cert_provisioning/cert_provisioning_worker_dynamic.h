@@ -143,13 +143,13 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   };
   void OnShouldContinue(ContinueReason reason);
 
-  // Registers for |invalidation_topic_| that allows to receive notification
+  // Registers for invalidations that allows to receive notification
   // when server side is ready to continue provisioning process.
-  void RegisterForInvalidationTopic();
+  void RegisterForInvalidations();
   // Should be called only when provisioning process is finished (successfully
   // or not). Should not be called when the worker is destroyed, but will be
   // deserialized back later.
-  void UnregisterFromInvalidationTopic();
+  void UnregisterFromInvalidations();
 
   // Callback from invalidations system.
   void OnInvalidationEvent(InvalidationEvent invalidation_event);
@@ -243,7 +243,6 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // Public key - represented as DER-encoded X.509 SubjectPublicKeyInfo
   // (binary).
   std::vector<uint8_t> public_key_;
-  std::string invalidation_topic_;
 
   // These variables may not contain valid values after
   // kFinishCsrResponseReceived state because of deserialization (and they don't
