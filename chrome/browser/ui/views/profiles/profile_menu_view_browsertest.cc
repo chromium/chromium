@@ -276,6 +276,52 @@ class ProfileMenuViewTestBase {
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> target_browser_ = nullptr;
 };
 
+class ProfileMenuViewBrowserTest : public ProfileMenuViewTestBase,
+                                   public InProcessBrowserTest {
+ public:
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetTargetBrowser(browser());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
+                       ProfileMenuDoesNotOutliveBrowser) {
+  // Observer that asserts the profile menu widget does not outlive the host
+  // browser.
+  class WidgetDestroyedObserver : public views::WidgetObserver {
+   public:
+    WidgetDestroyedObserver(views::Widget* widget,
+                            BrowserWindowInterface* host_browser)
+        : widget_(widget->GetWeakPtr()),
+          host_browser_(host_browser->GetWeakPtr()) {
+      widget_->AddObserver(this);
+    }
+    ~WidgetDestroyedObserver() override { CHECK(!widget_); }
+
+   private:
+    // WidgetObserver:
+    void OnWidgetDestroyed(views::Widget* widget) override {
+      EXPECT_EQ(widget, widget_.get());
+      // `widget_` should not outlive its host browser.
+      EXPECT_TRUE(host_browser_);
+    }
+
+    base::WeakPtr<views::Widget> widget_;
+    base::WeakPtr<BrowserWindowInterface> host_browser_;
+  };
+
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+
+  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
+  EXPECT_TRUE(coordinator->IsShowing());
+
+  WidgetDestroyedObserver destroyed_observer(
+      coordinator->GetProfileMenuViewBaseForTesting()->GetWidget(), browser());
+  CloseBrowserSynchronously(browser());
+}
+
 class ProfileMenuViewExtensionsTest
     : public ProfileMenuViewTestBase,
       public InteractiveFeaturePromoTestT<extensions::ExtensionBrowserTest> {

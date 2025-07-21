@@ -25,7 +25,13 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-ProfileMenuCoordinator::~ProfileMenuCoordinator() = default;
+ProfileMenuCoordinator::~ProfileMenuCoordinator() {
+  // Ensure the ProfileMenuCoordinator does not outlive its associated bubble
+  // widget to mitigate the risk of dangling references.
+  if (bubble_tracker_ && bubble_tracker_.view()->GetWidget()) {
+    bubble_tracker_.view()->GetWidget()->CloseNow();
+  }
+}
 
 void ProfileMenuCoordinator::Show(
     bool is_source_accelerator,
