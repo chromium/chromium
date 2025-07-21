@@ -226,12 +226,14 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.RedirectTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
@@ -426,6 +428,19 @@ public class ChromeTabbedActivity extends ChromeActivity {
         int ON_NEW_INTENT = 2;
     }
 
+    /** The type of tab/profile the activity supports. */
+    @IntDef({
+        SupportedProfileType.REGULAR,
+        SupportedProfileType.OFF_THE_RECORD,
+        SupportedProfileType.MIXED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SupportedProfileType {
+        int REGULAR = 1;
+        int OFF_THE_RECORD = 2;
+        int MIXED = 3;
+    }
+
     private final TabModelNotificationDotManager mTabModelNotificationDotManager =
             new TabModelNotificationDotManager(this);
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
@@ -596,6 +611,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mXrSceneCoreSessionManagerSupplier =
                     LazyOneshotSupplier.fromSupplier(this::createXrSceneCoreSessionManager);
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
+    private @SupportedProfileType int mSupportedProfileType;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -3173,25 +3189,64 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     @Override
     protected Pair<ChromeTabCreator, ChromeTabCreator> createTabCreators() {
-        return Pair.create(
-                new ChromeTabCreator(
-                        this,
-                        getWindowAndroid(),
-                        this::getTabDelegateFactory,
-                        getProfileProviderSupplier(),
-                        false,
-                        AsyncTabParamsManagerSingleton.getInstance(),
-                        getTabModelSelectorSupplier(),
-                        getCompositorViewHolderSupplier()),
-                new ChromeTabCreator(
-                        this,
-                        getWindowAndroid(),
-                        this::getTabDelegateFactory,
-                        getProfileProviderSupplier(),
-                        true,
-                        AsyncTabParamsManagerSingleton.getInstance(),
-                        getTabModelSelectorSupplier(),
-                        getCompositorViewHolderSupplier()));
+        Intent intent = getIntent();
+        if (ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()) {
+            mSupportedProfileType =
+                    intent != null
+                                    && intent.getBooleanExtra(
+                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                            ? SupportedProfileType.OFF_THE_RECORD
+                            : SupportedProfileType.REGULAR;
+        } else {
+            mSupportedProfileType = SupportedProfileType.MIXED;
+        }
+
+        ChromeTabCreator regularCreator =
+                createTabCreator(
+                        false, mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD);
+        ChromeTabCreator incognitoCreator =
+                createTabCreator(true, mSupportedProfileType == SupportedProfileType.REGULAR);
+        return Pair.create(regularCreator, incognitoCreator);
+    }
+
+    /**
+     * Creates a ChromeTabCreator or RedirectTabCreator instance with common arguments.
+     *
+     * @param isIncognito Whether the created tab creator is for incognito mode.
+     * @param useRedirectTabCreator If true, creates a RedirectTabCreator; otherwise,
+     *     ChromeTabCreator.
+     */
+    private ChromeTabCreator createTabCreator(boolean isIncognito, boolean useRedirectTabCreator) {
+        Activity activity = this;
+        WindowAndroid windowAndroid = getWindowAndroid();
+        Supplier<TabDelegateFactory> tabDelegateFactorySupplier = this::getTabDelegateFactory;
+        OneshotSupplier<ProfileProvider> profileProviderSupplier = getProfileProviderSupplier();
+        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
+        Supplier<TabModelSelector> tabModelSelectorSupplier = getTabModelSelectorSupplier();
+        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                getCompositorViewHolderSupplier();
+
+        if (useRedirectTabCreator) {
+            return new RedirectTabCreator(
+                    activity,
+                    windowAndroid,
+                    tabDelegateFactorySupplier,
+                    profileProviderSupplier,
+                    isIncognito,
+                    asyncTabParamsManager,
+                    tabModelSelectorSupplier,
+                    compositorViewHolderSupplier);
+        } else {
+            return new ChromeTabCreator(
+                    activity,
+                    windowAndroid,
+                    tabDelegateFactorySupplier,
+                    profileProviderSupplier,
+                    isIncognito,
+                    asyncTabParamsManager,
+                    tabModelSelectorSupplier,
+                    compositorViewHolderSupplier);
+        }
     }
 
     @Override
@@ -3858,7 +3913,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
      *     the default behavior for making that determination.
      * @param intent The original intent.
      */
-    private Tab launchIntent(
+    private @Nullable Tab launchIntent(
             LoadUrlParams loadUrlParams, String externalAppId, boolean forceNewTab, Intent intent) {
         if (mUiWithNativeInitialized
                 && (IntentUtils.safeHasExtra(intent, IntentHandler.EXTRA_URL_DRAG_SOURCE)
@@ -4524,5 +4579,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
         return xrSceneCoreSessionManager != null
                 ? xrSceneCoreSessionManager.getXrSpaceModeObservableSupplier()
                 : null;
+    }
+
+    public @SupportedProfileType int getSupportedProfileType() {
+        return mSupportedProfileType;
     }
 }

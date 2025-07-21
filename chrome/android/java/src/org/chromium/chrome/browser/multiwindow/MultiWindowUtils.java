@@ -43,6 +43,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ChromeTabbedActivity.SupportedProfileType;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -499,30 +500,74 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * @param current Current activity trying to find its adjacent one.
-     * @return ChromeTabbedActivity instance of the task running adjacently to the current one.
-     *     {@code null} if there is no such task.
+     * @param current Current activity trying to find another foreground activity.
+     * @return ChromeTabbedActivity instance of the task that is running in foreground and also
+     *     satisfies the profile requirement. {@code null} if there is no such task.
      */
-    public static @Nullable Activity getAdjacentWindowActivity(Activity current) {
+    public static @Nullable Activity getForegroundWindowActivity(Activity current) {
         if (sActivitySupplierForTesting != null) {
             return sActivitySupplierForTesting.get();
         }
         List<Activity> runningActivities = ApplicationStatus.getRunningActivities();
         int currentTaskId = current.getTaskId();
+        // The outer loop finds a visible task.
         for (Activity activity : runningActivities) {
             int taskId = activity.getTaskId();
-            if (taskId != currentTaskId && isActivityVisible(activity)) {
-                // Found a visible task. Return its base ChromeTabbedActivity instance.
-                StringBuilder activityNameBuilder = new StringBuilder();
-                for (Activity a : runningActivities) {
-                    if (a.getTaskId() == taskId) {
-                        activityNameBuilder.append(a.getClass().getName()).append(",");
-                        if (a instanceof ChromeTabbedActivity) return a;
-                    }
+            if (taskId == currentTaskId || !isActivityVisible(activity)) {
+                continue;
+            }
+            // The inner loop finds the ChromeTabbedActivity within the visible task.
+            // This ChromeTabbedActivity may not be visible.
+            for (Activity a : runningActivities) {
+                if (a.getTaskId() == taskId && a instanceof ChromeTabbedActivity) {
+                    return a;
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * @param current Current activity trying to find another foreground activity.
+     * @param incognito Whether the foreground activity should be incognito profile.
+     * @return ChromeTabbedActivity instance of the task that is running in foreground and also
+     *     satisfies the profile requirement. {@code null} if there is no such task.
+     */
+    public static @Nullable Activity getForegroundWindowActivityWithProfileType(
+            Activity current, boolean incognito) {
+        if (sActivitySupplierForTesting != null) {
+            return sActivitySupplierForTesting.get();
+        }
+        List<Activity> runningActivities = ApplicationStatus.getRunningActivities();
+        int currentTaskId = current.getTaskId();
+        // The outer loop finds a visible task.
+        for (Activity activity : runningActivities) {
+            int taskId = activity.getTaskId();
+            if (taskId == currentTaskId || !isActivityVisible(activity)) {
+                continue;
+            }
+            // The inner loop finds the ChromeTabbedActivity within the visible task.
+            // This ChromeTabbedActivity may not be visible.
+            for (Activity a : runningActivities) {
+                if (a.getTaskId() == taskId
+                        && a instanceof ChromeTabbedActivity cta
+                        && isProfileTypeSupported(cta, incognito)) {
+                    return a;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isProfileTypeSupported(ChromeTabbedActivity cta, boolean incognito) {
+        @SupportedProfileType int supportedProfileType = cta.getSupportedProfileType();
+        if (incognito) {
+            return supportedProfileType == SupportedProfileType.MIXED
+                    || supportedProfileType == SupportedProfileType.OFF_THE_RECORD;
+        } else {
+            return supportedProfileType == SupportedProfileType.MIXED
+                    || supportedProfileType == SupportedProfileType.REGULAR;
+        }
     }
 
     /**
@@ -687,11 +732,11 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * @param currentActivity Current {@link Activity} in the foreground.
-     * @return Whether there is an activity, other than the current one, that is running
-     *         in the foreground.
+     * @return Whether there is an activity, other than the current one, that is running in the
+     *     foreground.
      */
     public boolean isChromeRunningInAdjacentWindow(Activity currentActivity) {
-        return getAdjacentWindowActivity(currentActivity) != null;
+        return getForegroundWindowActivity(currentActivity) != null;
     }
 
     /**

@@ -392,7 +392,7 @@ public class CustomTabActivityNavigationController
             mActivity.startActivity(intent, startActivityOptions);
             finish(FinishReason.OPEN_IN_BROWSER);
         } else if (canFinishActivity && willChromeHandleIntent) {
-            Activity adjacentActivity = MultiWindowUtils.getAdjacentWindowActivity(mActivity);
+            Activity adjacentActivity = MultiWindowUtils.getForegroundWindowActivity(mActivity);
             if (adjacentActivity != null) {
                 openInAdjacentActivity(tab, adjacentActivity);
             } else {

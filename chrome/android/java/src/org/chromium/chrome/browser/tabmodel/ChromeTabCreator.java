@@ -56,11 +56,11 @@ import org.chromium.url.GURL;
 @NullMarked
 public class ChromeTabCreator extends TabCreator
         implements NeedsTabModel, NeedsTabModelOrderController {
-    private final Activity mActivity;
+    final Activity mActivity;
     private final WindowAndroid mNativeWindow;
     private final Supplier<TabDelegateFactory> mTabDelegateFactorySupplier;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final boolean mIncognito;
+    final boolean mIncognito;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
@@ -195,10 +195,10 @@ public class ChromeTabCreator extends TabCreator
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
-     * @return The new tab.
+     * @return The new tab or null if the tab in not created in current window.
      */
     @Override
-    public Tab createNewTab(
+    public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent) {
         return createNewTab(loadUrlParams, type, parent, null);
     }
@@ -210,10 +210,10 @@ public class ChromeTabCreator extends TabCreator
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      * @param position the requested position (index in the tab model)
-     * @return The new tab.
+     * @return The new tab or null if the tab in not created in current window.
      */
     @Override
-    public Tab createNewTab(
+    public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
             @TabLaunchType int type,
             @Nullable Tab parent,
@@ -230,10 +230,10 @@ public class ChromeTabCreator extends TabCreator
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      * @param position the requested position (index in the tab model)
-     * @return The new tab.
+     * @return The new tab or null if the tab in not created in current window.
      */
     @Override
-    public Tab createNewTab(
+    public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
             @Nullable String title,
             @TabLaunchType int type,
@@ -250,9 +250,9 @@ public class ChromeTabCreator extends TabCreator
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      * @param intent the source of the url if it isn't null.
-     * @return The new tab.
+     * @return The new tab or null if the tab in not created in current window.
      */
-    public Tab createNewTab(
+    public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
             @TabLaunchType int type,
             @Nullable Tab parent,
@@ -282,9 +282,9 @@ public class ChromeTabCreator extends TabCreator
      * @param position the requested position (index in the tab model)
      * @param intent the source of the url if it isn't null.
      * @param copyHistory Whether the new tab should have the same history stack as {@param parent}.
-     * @return The new tab.
+     * @return The new tab or null if the tab in not created in current window.
      */
-    private Tab createNewTab(
+    @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
             @Nullable String title,
             @TabLaunchType int type,
@@ -534,7 +534,7 @@ public class ChromeTabCreator extends TabCreator
     }
 
     @Override
-    public Tab launchUrl(String url, @TabLaunchType int type) {
+    public @Nullable Tab launchUrl(String url, @TabLaunchType int type) {
         return launchUrl(url, type, null, 0);
     }
 
@@ -547,9 +547,9 @@ public class ChromeTabCreator extends TabCreator
      *     (for example, in the foreground or background).
      * @param intent the source of url if it isn't null.
      * @param intentTimestamp the time the intent was received.
-     * @return the created tab.
+     * @return the created tab or null if the tab in not created in current window.
      */
-    public Tab launchUrl(
+    public @Nullable Tab launchUrl(
             String url, @TabLaunchType int type, @Nullable Intent intent, long intentTimestamp) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         loadUrlParams.setIntentReceivedTimestamp(intentTimestamp);
@@ -568,7 +568,7 @@ public class ChromeTabCreator extends TabCreator
      * @return the tab the URL was opened in, could be a new tab or a reused one.
      */
     // TODO(crbug.com/40691614): Clean up the launches from SearchActivity/Chrome.
-    public Tab launchUrlFromExternalApp(
+    public @Nullable Tab launchUrlFromExternalApp(
             LoadUrlParams loadUrlParams, String appId, boolean forceNewTab, Intent intent) {
         assert !mIncognito;
         // Don't re-use tabs for intents from Chrome. Note that this can be spoofed so shouldn't be
@@ -612,6 +612,7 @@ public class ChromeTabCreator extends TabCreator
                                 i,
                                 intent,
                                 /* copyHistory= */ false);
+                assert newTab != null;
                 TabAssociatedApp.from(newTab).setAppId(appId);
                 mTabModel
                         .getTabRemover()
@@ -624,6 +625,7 @@ public class ChromeTabCreator extends TabCreator
 
         // No tab for that app, we'll have to create a new one.
         Tab tab = createNewTab(loadUrlParams, TabLaunchType.FROM_EXTERNAL_APP, null, intent);
+        assert tab != null;
         TabAssociatedApp.from(tab).setAppId(appId);
         return tab;
     }
@@ -691,7 +693,8 @@ public class ChromeTabCreator extends TabCreator
      * @param originalTransitionType The original transition type.
      * @return The page transition type constant.
      */
-    private int getTransitionType(
+    @PageTransition
+    int getTransitionType(
             @TabLaunchType int tabLaunchType,
             @Nullable Intent intent,
             @PageTransition int originalTransitionType) {

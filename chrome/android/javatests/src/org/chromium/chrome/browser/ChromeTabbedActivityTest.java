@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
+import org.chromium.chrome.browser.tabmodel.RedirectTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -484,6 +485,114 @@ public class ChromeTabbedActivityTest {
                 ChromeTabbedActivity.class,
                 Stage.CREATED,
                 () -> mActivity.getApplicationContext().startActivity(intent));
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewRegularTab_SameWindow() {
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        ChromeTabCreator tabCreatorRegular = mActivity.getTabCreator(false);
+        Assert.assertFalse(tabCreatorRegular instanceof RedirectTabCreator);
+
+        LoadUrlParams param =
+                new LoadUrlParams(mActivityTestRule.getTestServer().getURL(FILE_PATH));
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return tabCreatorRegular.createNewTab(
+                                    param, TabLaunchType.FROM_CHROME_UI, null);
+                        });
+        Assert.assertNotNull(tab);
+        Assert.assertEquals(
+                2,
+                mActivity
+                        .getTabModelSelector()
+                        .getModel(false)
+                        .getTabCountSupplier()
+                        .get()
+                        .intValue());
+        Assert.assertEquals(
+                0,
+                mActivity
+                        .getTabModelSelector()
+                        .getModel(true)
+                        .getTabCountSupplier()
+                        .get()
+                        .intValue());
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewIncognitoTab_NewWindow() {
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        ChromeTabCreator tabCreatorIncognito = mActivity.getTabCreator(true);
+        Assert.assertTrue(tabCreatorIncognito instanceof RedirectTabCreator);
+
+        LoadUrlParams param =
+                new LoadUrlParams(mActivityTestRule.getTestServer().getURL(FILE_PATH));
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return tabCreatorIncognito.createNewTab(
+                                    param, TabLaunchType.FROM_CHROME_UI, null);
+                        });
+        Assert.assertNull(tab);
+        Assert.assertEquals(
+                1,
+                mActivity
+                        .getTabModelSelector()
+                        .getModel(false)
+                        .getTabCountSupplier()
+                        .get()
+                        .intValue());
+        Assert.assertEquals(
+                0,
+                mActivity
+                        .getTabModelSelector()
+                        .getModel(true)
+                        .getTabCountSupplier()
+                        .get()
+                        .intValue());
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewIncognitoTab_SameWindow() {
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        ChromeTabCreator tabCreatorIncognito = mActivity.getTabCreator(true);
+        Assert.assertFalse(tabCreatorIncognito instanceof RedirectTabCreator);
+
+        LoadUrlParams param =
+                new LoadUrlParams(mActivityTestRule.getTestServer().getURL(FILE_PATH));
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return tabCreatorIncognito.createNewTab(
+                                    param, TabLaunchType.FROM_CHROME_UI, null);
+                        });
+        Assert.assertNotNull(tab);
+        Assert.assertEquals(
+                1,
+                mActivity
+                        .getTabModelSelector()
+                        .getModel(false)
+                        .getTabCountSupplier()
+                        .get()
+                        .intValue());
+        Assert.assertEquals(
+                1,
+                mActivity
+                        .getTabModelSelector()
+                        .getModel(true)
+                        .getTabCountSupplier()
+                        .get()
+                        .intValue());
     }
 
     @Test

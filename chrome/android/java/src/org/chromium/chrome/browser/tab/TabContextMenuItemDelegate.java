@@ -285,7 +285,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 loadUrlParams,
                 assumeNonNull(activity),
                 mTab.getParentId(),
-                MultiWindowUtils.getAdjacentWindowActivity(activity));
+                MultiWindowUtils.getForegroundWindowActivity(activity));
     }
 
     /**

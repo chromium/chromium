@@ -710,6 +710,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidMinimalUiLargeScreen =
             newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, true);
+    public static final CachedFlag sAndroidOpenIncognitoAsWindow =
+            newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW, false);
     public static final CachedFlag sAndroidProgressBarVisualUpdate =
             newCachedFlag(
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
@@ -1066,6 +1068,7 @@ public abstract class ChromeFeatureList {
                     sAndroidDataImporterService,
                     sAndroidElegantTextHeight,
                     sAndroidMinimalUiLargeScreen,
+                    sAndroidOpenIncognitoAsWindow,
                     sAndroidProgressBarVisualUpdate,
                     sAndroidSurfaceColorUpdate,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
