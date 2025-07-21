@@ -19,6 +19,7 @@ import android.text.TextUtils.TruncateAt;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -41,13 +42,13 @@ class QrCodeShareMediator {
 
     private final Context mContext;
     private final PropertyModel mPropertyModel;
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
 
     // The number of times the user has attempted to download the QR code in this dialog.
     private int mNumDownloads;
 
     private boolean mIsDownloadInProgress;
-    private final String mUrl;
+    private final @Nullable String mUrl;
     private final Runnable mCloseDialog;
 
     /**
@@ -62,8 +63,8 @@ class QrCodeShareMediator {
             Context context,
             PropertyModel propertyModel,
             Runnable closeDialog,
-            String url,
-            WindowAndroid windowAndroid) {
+            @Nullable String url,
+            @Nullable WindowAndroid windowAndroid) {
         mContext = context;
         mPropertyModel = propertyModel;
         mCloseDialog = closeDialog;
@@ -76,9 +77,10 @@ class QrCodeShareMediator {
 
     /**
      * Refreshes the QR Code bitmap for given data.
+     *
      * @param data The data to encode.
      */
-    protected void refreshQrCode(String data) {
+    protected void refreshQrCode(@Nullable String data) {
         if (TextUtils.isEmpty(data)) {
             mPropertyModel.set(
                     QrCodeShareViewProperties.ERROR_STRING,
@@ -185,7 +187,7 @@ class QrCodeShareMediator {
         mNumDownloads++;
     }
 
-    private Bitmap addUrlToBitmap(Bitmap bitmap, String url) {
+    private Bitmap addUrlToBitmap(Bitmap bitmap, @Nullable String url) {
         int qrCodeSize = mContext.getResources().getDimensionPixelSize(R.dimen.qrcode_size);
         int fontSize = mContext.getResources().getDimensionPixelSize(R.dimen.text_size_large);
         int sidePadding = mContext.getResources().getDimensionPixelSize(R.dimen.side_padding);

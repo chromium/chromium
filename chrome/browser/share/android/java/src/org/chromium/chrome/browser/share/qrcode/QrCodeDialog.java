@@ -17,6 +17,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -31,13 +33,16 @@ public class QrCodeDialog extends DialogFragment {
     // Used to pass the URL in the bundle.
     public static String URL_KEY = "url_key";
 
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
     // TODO(crbug.com/40280300): Remove list of Tabs.
-    protected ArrayList<QrCodeDialogTab> mTabs;
+    protected @Nullable ArrayList<QrCodeDialogTab> mTabs;
+
+    @SuppressWarnings("NullAway.Init")
     private TabLayoutPageListener mTabLayoutPageListener;
 
     /**
      * Create a new instance of {@link QrCodeDialog} and set the URL.
+     *
      * @param windowAndroid The AndroidPermissionDelegate to be query for download permissions.
      */
     static QrCodeDialog newInstance(String url, WindowAndroid windowAndroid) {
@@ -103,6 +108,7 @@ public class QrCodeDialog extends DialogFragment {
         }
     }
 
+    @NullUnmarked
     @VisibleForTesting
     protected View getDialogView(Activity activity) {
         View dialogView = activity.getLayoutInflater().inflate(R.layout.qrcode_dialog, null);

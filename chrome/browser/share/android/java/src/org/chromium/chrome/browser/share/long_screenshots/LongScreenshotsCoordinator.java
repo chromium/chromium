@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -22,7 +21,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
     private final Activity mActivity;
     private final EntryManager mEntryManager;
     private final Tab mTab;
-    private LongScreenshotsMediator mMediator;
+    private @Nullable LongScreenshotsMediator mMediator;
 
     /**
      * Private internal method to construct a LongScreenshotsCoordinator. Other users of this class
@@ -35,7 +34,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param manager The {@link EntryManager} to retrieve bitmaps of the current tab.
      * @param mediator The {@link LongScreenshotsMediator} The mediator that controls the long
-     * screenshots dialog behavior.
+     *     screenshots dialog behavior.
      * @param shouldWarmupCompositor If the PaintPreview compositor should be warmed up.
      */
     private LongScreenshotsCoordinator(
@@ -44,7 +43,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
-            EntryManager manager,
+            @Nullable EntryManager manager,
             @Nullable LongScreenshotsMediator mediator,
             boolean shouldWarmupCompositor) {
         super(
