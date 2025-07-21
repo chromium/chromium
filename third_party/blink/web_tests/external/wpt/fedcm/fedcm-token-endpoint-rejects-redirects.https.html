@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Federated Credential Management API network request tests.</title>
+<title>Federated Credential Management API token endpoint does not follow redirects.</title>
 <link rel="help" href="https://fedidcg.github.io/FedCM">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,22 +12,7 @@ import {request_options_with_mediation_required,
         select_manifest,
         mark_signed_in,
         fedcm_error_dialog_dismiss,
-        fedcm_get_dialog_type_promise,
         fedcm_get_and_select_first_account} from './support/fedcm-helper.sub.js';
-
-fedcm_test(async t => {
-  await mark_signed_in();
-
-  let test_options = request_options_with_mediation_required("manifest_redirect_accounts.json");
-  await select_manifest(t, test_options);
-
-  const cred = navigator.credentials.get(test_options);
-  // We expect a mismatch dialog.
-  const type = await fedcm_get_dialog_type_promise(t);
-  assert_equals(type, 'ConfirmIdpLogin');
-  window.test_driver.cancel_fedcm_dialog();
-  return promise_rejects_dom(t, 'NetworkError', cred);
-}, 'Test that promise is rejected if accounts endpoint redirects');
 
 fedcm_test(async t => {
   await mark_signed_in();
@@ -47,4 +32,4 @@ fedcm_test(async t => {
     assert_equals(e.code, "");
   }
 }, 'Test that token endpoint does not follow redirects');
-</script>
+  </script>
