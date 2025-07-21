@@ -54,11 +54,12 @@ enum TrustedTypeViolationKind {
   kScriptExecutionAndDefaultPolicyFailed,
 };
 
-// String to determine whether an incoming eval-ish call is comig from
-// an actual eval or a Function constructor. The value is derived from
-// from how JS builds up a string in the Function constructor, which in
-// turn is defined in the TC39 spec.
-const char* kAnonymousPrefix = "(function anonymous";
+// Strings to support building a sample, used in:
+// https://www.w3.org/TR/trusted-types/#should-block-sink-type-mismatch
+const char* kFunctionAnonymousPrefix = "(function anonymous";
+const char* kAsyncFunctionAnonymousPrefix = "(async function anonymous";
+const char* kGeneratorAnonymousPrefix = "(function* anonymous";
+const char* kAsyncGeneratorAnonymousPrefix = "(async function* anonymous";
 
 const char kFunctionConstructorFailureConsoleMessage[] =
     "The JavaScript Function constructor does not accept TrustedString "
@@ -126,9 +127,13 @@ String GetSamplePrefix(const char* interface_name,
   if (!interface_name) {
     // No interface name? Then we have no prefix to use.
   } else if (UNSAFE_TODO(strcmp("eval", interface_name)) == 0) {
-    // eval? Try to distinguish between eval and Function constructor.
-    sample_prefix.Append(value.StartsWith(kAnonymousPrefix) ? "Function"
-                                                            : "eval");
+    bool is_function = RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()
+                           ? (value.StartsWith(kFunctionAnonymousPrefix) ||
+                              value.StartsWith(kAsyncFunctionAnonymousPrefix) ||
+                              value.StartsWith(kGeneratorAnonymousPrefix) ||
+                              value.StartsWith(kAsyncGeneratorAnonymousPrefix))
+                           : value.StartsWith(kFunctionAnonymousPrefix);
+    sample_prefix.Append(is_function ? "Function" : "eval");
   } else if ((UNSAFE_TODO(strcmp("Worker", interface_name)) == 0 ||
               UNSAFE_TODO(strcmp("SharedWorker", interface_name)) == 0) &&
              property_name) {
@@ -190,19 +195,30 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
     execution_context->GetTrustedTypes()->CountTrustedTypeAssignmentError();
 
   String prefix = GetSamplePrefix(interface_name, property_name, value);
+
+  // https://www.w3.org/TR/trusted-types/#should-block-sink-type-mismatch step 3
+  size_t strip = 0;
+  if (prefix == "Function") {
+    if (value.StartsWith(kFunctionAnonymousPrefix)) {
+      strip = strlen(kFunctionAnonymousPrefix);
+    } else if (value.StartsWith(kAsyncFunctionAnonymousPrefix)) {
+      strip = strlen(kAsyncFunctionAnonymousPrefix);
+    } else if (value.StartsWith(kGeneratorAnonymousPrefix)) {
+      strip = strlen(kGeneratorAnonymousPrefix);
+    } else if (value.StartsWith(kAsyncGeneratorAnonymousPrefix)) {
+      strip = strlen(kAsyncGeneratorAnonymousPrefix);
+    };
+  }
+
   // This issue_id is used to generate a link in the DevTools front-end from
   // the JavaScript TypeError to the inspector issue which is reported by
   // ContentSecurityPolicy::ReportViolation via the call to
   // AllowTrustedTypeAssignmentFailure below.
   base::UnguessableToken issue_id = base::UnguessableToken::Create();
-  bool allow =
-      execution_context->GetContentSecurityPolicy()
-          ->AllowTrustedTypeAssignmentFailure(
-              GetMessage(kind),
-              prefix == "Function" ? value.Substring(static_cast<wtf_size_t>(
-                                         strlen(kAnonymousPrefix)))
-                                   : value,
-              prefix, issue_id);
+  bool allow = execution_context->GetContentSecurityPolicy()
+                   ->AllowTrustedTypeAssignmentFailure(
+                       GetMessage(kind), strip ? value.Substring(strip) : value,
+                       prefix, issue_id);
 
   // TODO(1087743): Add a console message for Trusted Type-related Function
   // constructor failures, to warn the developer of the outstanding issues
