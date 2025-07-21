@@ -135,21 +135,44 @@ function createEventInfo(contextMenusEventName) {
 }
 
 function unwebifyContextMenusProperties(properties) {
-  renameObjectKeys(properties, {
+  const unwebifiedProperties = extractAndMapValues(properties, {
+    checked: identity,
+    contexts: identity,
+    documentURLPatterns: identity,
+    enabled: identity,
+    parentId: identity,
+    targetURLPatterns: identity,
+    title: identity,
+    type: identity,
+  });
+
+  renameObjectKeys(unwebifiedProperties, {
     __proto__: null,
     documentURLPatterns: 'documentUrlPatterns',
     targetURLPatterns: 'targetUrlPatterns',
   });
-  return properties;
+  return unwebifiedProperties;
 }
 
 function unwebifyContextMenusCreateProperties(properties) {
-  renameObjectKeys(properties, {
+  const unwebifiedProperties = extractAndMapValues(properties, {
+    id: identity,
+    checked: identity,
+    contexts: identity,
+    documentURLPatterns: identity,
+    enabled: identity,
+    parentId: identity,
+    targetURLPatterns: identity,
+    title: identity,
+    type: identity,
+  });
+
+  renameObjectKeys(unwebifiedProperties, {
     __proto__: null,
     documentURLPatterns: 'documentUrlPatterns',
     targetURLPatterns: 'targetUrlPatterns',
   });
-  return properties;
+  return unwebifiedProperties;
 }
 
 function webifyClickEventDetails(details) {
@@ -213,6 +236,7 @@ class ControlledFrameContextMenus extends EventTarget {
       return Promise.reject(
           new Error('Cannot create context menu without properties.'));
     }
+
     return this.#contextMenusImpl.create(
         unwebifyContextMenusCreateProperties(properties), ...remainingArgs);
   }
