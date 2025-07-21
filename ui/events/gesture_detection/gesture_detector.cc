@@ -593,7 +593,6 @@ bool GestureDetector::IsWithinSlopForTap(const MotionEvent& ev) {
     float dx = source_pointer_down_event->GetX(source_index) - ev.GetX(i);
     float dy = source_pointer_down_event->GetY(source_index) - ev.GetY(i);
     bool is_stylus_slop_effective =
-        base::FeatureList::IsEnabled(features::kStylusSpecificTapSlop) &&
         ev.GetToolType(i) == MotionEvent::ToolType::STYLUS;
     float slop_square =
         is_stylus_slop_effective ? stylus_slop_square_ : touch_slop_square_;

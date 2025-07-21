@@ -146,15 +146,6 @@ BASE_FEATURE(kOverrideDefaultOzonePlatformHintToAuto,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
-// Uses a stylus-specific tap slop region parameter for gestures.  Stylus taps
-// tend to slip more than touch taps (presumably because the user doesn't feel
-// the movement friction with a stylus).  As a result, it is harder to tap with
-// a stylus. This feature makes the slop region for stylus input bigger than the
-// touch slop.
-BASE_FEATURE(kStylusSpecificTapSlop,
-             "StylusSpecificTapSlop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the feature will query the OS for a default cursor size,
 // to be used in determining the concrete object size of a custom cursor in
 // blink. Currently enabled by default on Windows only.
