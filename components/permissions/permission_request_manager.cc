@@ -1195,13 +1195,11 @@ void PermissionRequestManager::CurrentRequestsDecided(
             ? base::TimeDelta::Max()
             : base::Time::Now() - current_request_first_display_time_;
     PermissionsClient::Get()->OnPromptResolved(
-        request->request_type(), permission_action,
-        request->requesting_origin(), DetermineCurrentRequestUIDisposition(),
-        DetermineCurrentRequestUIDispositionReasonForUMA(),
-        request->GetGestureType(), quiet_ui_reason, time_since_shown,
-        current_request_pepc_prompt_position_,
-        GetRequestInitialStatus(request.get()), web_contents(),
-        request->get_preview_parameters());
+        request.get(), permission_action,
+        DetermineCurrentRequestUIDisposition(),
+        DetermineCurrentRequestUIDispositionReasonForUMA(), quiet_ui_reason,
+        time_since_shown, current_request_pepc_prompt_position_,
+        GetRequestInitialStatus(request.get()), web_contents());
 
     PermissionUmaUtil::RecordEmbargoStatus(RecordActionAndGetEmbargoStatus(
         browser_context, request.get(), permission_action));

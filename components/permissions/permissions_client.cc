@@ -43,8 +43,9 @@ double PermissionsClient::GetSiteEngagementScore(
 void PermissionsClient::AreSitesImportant(
     content::BrowserContext* browser_context,
     std::vector<std::pair<url::Origin, bool>>* origins) {
-  for (auto& entry : *origins)
+  for (auto& entry : *origins) {
     entry.second = false;
+  }
 }
 
 bool PermissionsClient::IsCookieDeletionDisabled(
@@ -93,20 +94,16 @@ void PermissionsClient::TriggerPromptHatsSurveyIfEnabled(
         preview_parameters) {}
 
 void PermissionsClient::OnPromptResolved(
-    RequestType request_type,
+    const PermissionRequest* request,
     PermissionAction action,
-    const GURL& origin,
     PermissionPromptDisposition prompt_disposition,
     PermissionPromptDispositionReason prompt_disposition_reason,
-    PermissionRequestGestureType gesture_type,
     std::optional<QuietUiReason> quiet_ui_reason,
     base::TimeDelta prompt_display_duration,
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    content::WebContents* web_contents,
-    std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
-        preview_parameters) {}
+    content::WebContents* web_contents) {}
 
 std::optional<bool>
 PermissionsClient::HadThreeConsecutiveNotificationPermissionDenies(

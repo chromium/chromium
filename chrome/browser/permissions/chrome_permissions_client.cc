@@ -111,6 +111,13 @@
 
 namespace {
 
+using PreviewParametersForHats =
+    permissions::PermissionHatsTriggerHelper::PreviewParametersForHats;
+using permissions::PermissionPromptDisposition;
+using permissions::PermissionPromptDispositionReason;
+using permissions::PermissionRequest;
+using permissions::PermissionRequestGestureType;
+
 #if BUILDFLAG(IS_ANDROID)
 bool ShouldUseQuietUI(content::WebContents* web_contents,
                       ContentSettingsType type) {
@@ -273,8 +280,9 @@ void ChromePermissionsClient::AreSitesImportant(
         net::registry_controlled_domains::GetDomainAndRegistry(
             origin,
             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-    if (registerable_domain.empty())
+    if (registerable_domain.empty()) {
       registerable_domain = host;  // IP address or internal hostname.
+    }
     entry.second = base::Contains(important_domains, registerable_domain,
                                   &site_engagement::ImportantSitesUtil::
                                       ImportantDomainInfo::registerable_domain);
@@ -286,8 +294,9 @@ void ChromePermissionsClient::AreSitesImportant(
 bool ChromePermissionsClient::IsCookieDeletionDisabled(
     content::BrowserContext* browser_context,
     const GURL& origin) {
-  if (!Profile::FromBrowserContext(browser_context)->IsChild())
+  if (!Profile::FromBrowserContext(browser_context)->IsChild()) {
     return false;
+  }
 
   return google_util::IsYoutubeDomainUrl(origin, google_util::ALLOW_SUBDOMAIN,
                                          google_util::ALLOW_NON_STANDARD_PORTS);
@@ -322,8 +331,9 @@ permissions::IconId ChromePermissionsClient::GetOverrideIconId(
     permissions::RequestType request_type) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(xhwang): fix this icon, see crbug.com/446263.
-  if (request_type == permissions::RequestType::kProtectedMediaIdentifier)
+  if (request_type == permissions::RequestType::kProtectedMediaIdentifier) {
     return vector_icons::kProductIcon;
+  }
 #endif
   return PermissionsClient::GetOverrideIconId(request_type);
 }
@@ -334,9 +344,9 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     content::WebContents* web_contents,
     permissions::RequestType request_type,
     std::optional<permissions::PermissionAction> action,
-    permissions::PermissionPromptDisposition prompt_disposition,
-    permissions::PermissionPromptDispositionReason prompt_disposition_reason,
-    permissions::PermissionRequestGestureType gesture_type,
+    PermissionPromptDisposition prompt_disposition,
+    PermissionPromptDispositionReason prompt_disposition_reason,
+    PermissionRequestGestureType gesture_type,
     std::optional<base::TimeDelta> prompt_display_duration,
     bool is_post_prompt,
     const GURL& gurl,
@@ -344,9 +354,7 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
         pepc_prompt_position,
     ContentSetting initial_permission_status,
     base::OnceCallback<void()> hats_shown_callback,
-    std::optional<
-        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats>
-        preview_parameters) {
+    std::optional<PreviewParametersForHats> preview_parameters) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::optional<GURL> recorded_gurl =
@@ -432,21 +440,22 @@ ChromePermissionsClient::CreatePermissionUiSelectors(
 }
 
 void ChromePermissionsClient::OnPromptResolved(
-    permissions::RequestType request_type,
+    const PermissionRequest* request,
     permissions::PermissionAction action,
-    const GURL& origin,
-    permissions::PermissionPromptDisposition prompt_disposition,
-    permissions::PermissionPromptDispositionReason prompt_disposition_reason,
-    permissions::PermissionRequestGestureType gesture_type,
+    PermissionPromptDisposition prompt_disposition,
+    PermissionPromptDispositionReason prompt_disposition_reason,
     std::optional<QuietUiReason> quiet_ui_reason,
     base::TimeDelta prompt_display_duration,
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    content::WebContents* web_contents,
-    std::optional<
-        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats>
-        preview_parameters) {
+    content::WebContents* web_contents) {
+  permissions::RequestType request_type = request->request_type();
+  const GURL& origin = request->requesting_origin();
+  PermissionRequestGestureType gesture_type = request->GetGestureType();
+  std::optional<PreviewParametersForHats> preview_parameters =
+      request->get_preview_parameters();
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   PermissionActionsHistoryFactory::GetForProfile(profile)->RecordAction(
@@ -573,8 +582,9 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
   // Extensions are excluded from origin checks as currently they can request
   // permission from iframes when embedded in non-secure contexts
   // (https://crbug.com/530507).
-  if (requesting_origin.SchemeIs(extensions::kExtensionScheme))
+  if (requesting_origin.SchemeIs(extensions::kExtensionScheme)) {
     return true;
+  }
 #endif
 
   // The New Tab Page is excluded from origin checks as its effective
@@ -652,11 +662,11 @@ void ChromePermissionsClient::RepromptForAndroidPermissions(
     const std::vector<std::string>& required_permissions,
     const std::vector<std::string>& optional_permissions,
     PermissionsUpdatedCallback callback) {
-    PermissionUpdateMessageController::CreateForWebContents(web_contents);
-    PermissionUpdateMessageController::FromWebContents(web_contents)
-        ->ShowMessage(content_settings_types, filtered_content_settings_types,
-                      required_permissions, optional_permissions,
-                      std::move(callback));
+  PermissionUpdateMessageController::CreateForWebContents(web_contents);
+  PermissionUpdateMessageController::FromWebContents(web_contents)
+      ->ShowMessage(content_settings_types, filtered_content_settings_types,
+                    required_permissions, optional_permissions,
+                    std::move(callback));
 }
 
 int ChromePermissionsClient::MapToJavaDrawableId(int resource_id) {
