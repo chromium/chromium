@@ -15,7 +15,10 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar_manager.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
@@ -33,8 +36,36 @@ using ::content::RenderFrameHost;
 using ::content::WebContents;
 using QuietUiReason = ::permissions::PermissionUiSelector::QuietUiReason;
 using ::base::test::ScopedFeatureList;
+using ::infobars::InfoBar;
+using ::infobars::InfoBarManager;
 using ::testing::Combine;
 using ::testing::Values;
+
+class InfoBarObserver : public InfoBarManager::Observer {
+ public:
+  explicit InfoBarObserver(WebContents* web_contents)
+      : web_contents_(web_contents) {
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents);
+    CHECK(infobar_manager != nullptr);
+    infobar_manager->AddObserver(this);
+  }
+  ~InfoBarObserver() override {
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents_);
+    CHECK(infobar_manager != nullptr);
+    infobar_manager->RemoveObserver(this);
+  }
+  void OnInfoBarAdded(InfoBar* infobar) override { info_bar_added_ = true; }
+  void OnInfoBarRemoved(InfoBar* infobar, bool animate) override {}
+  void OnInfoBarReplaced(InfoBar* old_infobar, InfoBar* new_infobar) override {}
+  void OnManagerShuttingDown(InfoBarManager* manager) override {}
+
+  bool info_bar_added_ = false;
+
+ private:
+  raw_ptr<WebContents> web_contents_;
+};
 }  // namespace
 
 namespace test {
@@ -86,6 +117,9 @@ class MockPermissionRequestManager
     ON_CALL(*this, Ignore).WillByDefault([]() { NOTREACHED(); });
     ON_CALL(*this, Accept).WillByDefault([]() { NOTREACHED(); });
     ON_CALL(*this, PreIgnoreQuietPrompt).WillByDefault([]() { NOTREACHED(); });
+    ON_CALL(*this, FinalizeCurrentRequests).WillByDefault([]() {
+      NOTREACHED();
+    });
   }
 
  public:
@@ -137,8 +171,8 @@ class MockPermissionRequestManager
   MOCK_METHOD(void, Ignore, (), (override));
   MOCK_METHOD(void, Accept, (), (override));
   MOCK_METHOD(void, PreIgnoreQuietPrompt, (), (override));
+  MOCK_METHOD(void, FinalizeCurrentRequests, (), (override));
 
-  void FinalizeCurrentRequests() override { NOTREACHED(); }
   void OpenHelpCenterLink(const ui::Event& event) override {}
   void SetManageClicked() override { requests_.clear(); }
   void SetLearnMoreClicked() override { requests_.clear(); }
@@ -176,6 +210,10 @@ class MockPermissionRequestManager
   void SetAlreadyDisplayed() { was_current_request_already_displayed_ = true; }
 
   void ClearRequests() { requests_.clear(); }
+
+  void SetView(std::unique_ptr<permissions::PermissionPrompt> view) {
+    view_ = std::move(view);
+  }
 
  private:
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
@@ -216,13 +254,6 @@ class PermissionChipUnitTest : public TestWithBrowserView {
     auto* bubble = controller->GetContentSettingBubbleContentsForTesting();
     EXPECT_NE(bubble, nullptr);
     bubble->AsDialogDelegate()->Accept();
-  }
-
-  void ClickOnChipAllowForThisSiteButton(PermissionChipView& chip) {
-    views::test::ButtonTestApi(&chip).NotifyClick(
-        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    base::RunLoop().RunUntilIdle();
   }
 
   raw_ptr<WebContents, DanglingUntriaged> web_contents_;
@@ -612,6 +643,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(QuietUiAbusiveRequestsTest, GetsDenied) {
   auto [request_type, quiet_ui_reason] = GetParam();
+  InfoBarObserver infobar_observer(web_contents_);
 
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {request_type}, true, quiet_ui_reason,
@@ -675,4 +707,53 @@ TEST_P(QuietUiNonAbusiveRequestsTest, GetsAccepted) {
   EXPECT_TRUE(delegate.IsRequestInProgress());
   ClickOnAcceptPermissionRequestQuietChip(chip_controller);
   EXPECT_FALSE(delegate.IsRequestInProgress());
+}
+class InfobarTest
+    : public PermissionPromiseLifetimeModulationTest,
+      public testing::WithParamInterface<permissions::RequestType> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    TestCases,
+    InfobarTest,
+    testing::ValuesIn<permissions::RequestType>({
+        permissions::RequestType::kNotifications,
+        permissions::RequestType::kGeolocation,
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<InfobarTest::ParamType>& info) {
+      return std::string(test::ToString(info.param));
+    });
+
+TEST_P(InfobarTest, ShowInfobarIfNecessary) {
+  InfoBarObserver infobar_observer(web_contents_);
+
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {GetParam()}, true,
+      QuietUiReason::kEnabledInPrefs, web_contents_);
+
+  EXPECT_CALL(delegate, PreIgnoreQuietPrompt()).WillOnce([&delegate]() {
+    return delegate.PermissionRequestManager::PreIgnoreQuietPrompt();
+  });
+
+  auto chip_prompt = std::make_unique<PermissionPromptChip>(
+      browser(), web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt->get_chip_controller_for_testing();
+  delegate.SetView(std::move(chip_prompt));
+
+  // Open a permission popup bubble.
+  ClickOnChip(chip_controller);
+  ASSERT_TRUE(chip_controller->IsBubbleShowing());
+
+  EXPECT_CALL(delegate, Accept()).WillOnce([&delegate]() {
+    delegate.PermissionRequestManager::Accept();
+  });
+  EXPECT_CALL(delegate, FinalizeCurrentRequests()).WillOnce([&delegate]() {
+    delegate.PermissionRequestManager::FinalizeCurrentRequests();
+  });
+
+  EXPECT_TRUE(delegate.IsRequestInProgress());
+  ClickOnAcceptPermissionRequestQuietChip(chip_controller);
+  EXPECT_FALSE(delegate.IsRequestInProgress());
+  EXPECT_EQ(infobar_observer.info_bar_added_, true);
 }

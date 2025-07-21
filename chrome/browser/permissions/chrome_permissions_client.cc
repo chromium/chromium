@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/common/channel_info.h"
@@ -53,6 +54,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/google/core/common/google_util.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar_manager.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/features.h"
@@ -175,6 +178,44 @@ bool IsPermissionSetByAdministator(ContentSetting setting,
            info.source == content_settings::SettingSource::kSupervised));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/412616723): Support Android
+bool ShouldShowInfobarOnPromptResolved(
+    content::WebContents* web_contents,
+    const PermissionRequest* request,
+    std::optional<permissions::PermissionsClient::QuietUiReason>
+        quiet_ui_reason,
+    permissions::PermissionAction action) {
+  if (!quiet_ui_reason ||
+      (action != permissions::PermissionAction::GRANTED &&
+       action != permissions::PermissionAction::GRANTED_ONCE) ||
+      (request->request_type() != permissions::RequestType::kNotifications &&
+       request->request_type() != permissions::RequestType::kGeolocation)) {
+    return false;
+  }
+  content::PermissionController* permission_controller =
+      web_contents->GetBrowserContext()->GetPermissionController();
+  if (!permission_controller) {
+    return false;
+  }
+
+  if (request->IsSourceSubscribedToPermissionChangeEvent(
+          permission_controller)) {
+    return false;
+  }
+  return true;
+}
+
+void ShowInfobar(content::WebContents* web_contents) {
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (!infobar_manager) {
+    return;
+  }
+
+  PageInfoInfoBarDelegate::Create(infobar_manager);
+}
+#endif
 }  // namespace
 
 // static
@@ -486,6 +527,17 @@ void ChromePermissionsClient::OnPromptResolved(
     }
 #endif
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/412616723): Support Android
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionPromiseLifetimeModulation)) {
+    if (ShouldShowInfobarOnPromptResolved(web_contents, request,
+                                          quiet_ui_reason, action)) {
+      ShowInfobar(web_contents);
+    }
+  }
+#endif
 
   auto content_setting_type = RequestTypeToContentSettingsType(request_type);
   if (content_setting_type.has_value()) {

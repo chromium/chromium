@@ -11,33 +11,29 @@ function requestNotification() {
 
 async function requestCamera() {
   try {
-    var constraints = {video: true};
+    var constraints = { video: true };
     cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 async function requestMicrophone() {
   try {
-    var constraints = {audio: true};
+    var constraints = { audio: true };
     micStream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 async function requestCameraAndMicrophone() {
   try {
-    var constraints = {audio: true, video: true};
+    var constraints = { audio: true, video: true };
     await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 async function requestLocation() {
   try {
     await navigator.geolocation.getCurrentPosition((position_) => {});
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 function stopCamera() {
@@ -48,4 +44,20 @@ function stopCamera() {
 function stopMic() {
   const track = micStream.getAudioTracks()[0];
   track.stop();
+}
+
+function registerDummyPermissionChangeListener(permissionName) {
+  return new Promise((resolve, reject) => {
+    if (!navigator.permissions) {
+      reject(new Error("Permissions API not supported."));
+      return;
+    }
+    navigator.permissions
+      .query({ name: permissionName })
+      .then((permissionStatus) => {
+        permissionStatus.onchange = () => {};
+        resolve();
+      })
+      .catch((err) => reject(err));
+  });
 }

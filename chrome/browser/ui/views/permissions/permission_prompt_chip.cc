@@ -113,11 +113,14 @@ void PermissionPromptChip::ModulatePermissionPromiseLifetime() {
   // enabled only for `NOTIFICATIONS` and `GEOLOCATION`.
   DCHECK(delegate()->ShouldCurrentRequestUseQuietUI());
 
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/412616723): Support Android
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionPromiseLifetimeModulation)) {
     delegate()->PreIgnoreQuietPrompt();
     return;
   }
+#endif
   content::PermissionController* permission_controller =
       web_contents()->GetBrowserContext()->GetPermissionController();
 
