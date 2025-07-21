@@ -478,8 +478,6 @@ public class NewTabAnimationLayout extends Layout {
      */
     @VisibleForTesting
     void forceNewTabAnimationToFinish() {
-        // TODO(crbug.com/40933120): Make sure the right mode is selected after forcing the
-        // animation to finish.
         runQueuedRunnableIfExists();
         if (mTabCreatedForegroundAnimation != null) {
             mAnimationHostView.removeView(mForegroundHostView);
@@ -524,9 +522,6 @@ public class NewTabAnimationLayout extends Layout {
         int backgroundColor = NewTabAnimationUtils.getBackgroundColor(context, newIsIncognito);
         mRectView.setRoundedFillColor(backgroundColor);
 
-        // TODO(crbug.com/40933120): Investigate why {@link
-        // RoundedCornerImageView#setRoundedCorners} sometimes incorrectly detects the view as LTR
-        // during the animation.
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         mRectView.setLayoutDirection(isRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
 
@@ -632,6 +627,11 @@ public class NewTabAnimationLayout extends Layout {
                         startHiding();
                         mTabModelSelector.selectModel(newIsIncognito);
                         mNextTabId = id;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        mTabCreatedForegroundAnimation.end();
                     }
                 });
         mAnimationRunnable =
@@ -759,6 +759,11 @@ public class NewTabAnimationLayout extends Layout {
                                 public void onAnimationEnd(Animator animation) {
                                     interruptor.destroy();
                                     cleanUpAnimation();
+                                }
+
+                                @Override
+                                public void onAnimationCancel(Animator animation) {
+                                    mTabCreatedBackgroundAnimation.end();
                                 }
                             });
                     mBackgroundHostView.setVisibility(View.VISIBLE);
