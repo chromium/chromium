@@ -903,9 +903,9 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   if (RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
     if (Attribute* patchfor_attribute =
             token->GetAttributeItem(html_names::kPatchforAttr)) {
-      TreeScope* scope = &CurrentElement()->GetTreeScope();
+      TreeScope* scope = &CurrentNode()->GetTreeScope();
       if (HTMLTemplateElement* template_parent =
-              DynamicTo<HTMLTemplateElement>(CurrentElement())) {
+              DynamicTo<HTMLTemplateElement>(CurrentNode())) {
         if (ShadowRoot* shadow_root =
                 DynamicTo<ShadowRoot>(template_parent->InsertionTarget())) {
           scope = shadow_root;
