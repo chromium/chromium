@@ -16551,26 +16551,6 @@
             ]
         }
     ],
-    "PWANavigationCapturingAndroidDesktopWindowing": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDesktopWindowingNavigations",
-                    "params": {
-                        "auxiliary_navigation_stays_in_browser": "desktop_wm"
-                    },
-                    "enable_features": [
-                        "AuxiliaryNavigationStaysInBrowser",
-                        "ReparentAuxiliaryNavigationFromPWA",
-                        "ReparentTopLevelNavigationFromPWA"
-                    ]
-                }
-            ]
-        }
-    ],
     "PWANavigationCapturingV2ChromeOS": [
         {
             "platforms": [

@@ -71,7 +71,7 @@ public class ExternalIntentsFeatures {
 
     public static class AuxiliaryNavigationStaysInBrowserFeature extends ExternalIntentsFeature {
         private static final String PARAM_NAME = "auxiliary_navigation_stays_in_browser";
-        private static final String DESKTOP_WM_FIELD = "desktop_wm";
+        // private static final String DESKTOP_WM_FIELD = "desktop_wm";
         private static final String ALL_WM_FIELD = "all_wm";
 
         private AuxiliaryNavigationStaysInBrowserFeature(int ordinal, String name) {
@@ -83,20 +83,15 @@ public class ExternalIntentsFeatures {
                 return false;
             }
 
+            // The feature is supposed to work on desktop windowing mode Android only.
+            if (isInDesktopWindowingMode) {
+                return true;
+            }
+
             String featureString = getFieldTrialParamByFeatureAsString(PARAM_NAME);
 
-            // The feature is supposed to work for desktop windowing only.
-            if (featureString.equals(DESKTOP_WM_FIELD) && isInDesktopWindowingMode) {
-                return true;
-            }
-
-            // The feature is supposed to work independently of windowing mode.
+            // The feature is supposed to work on all Android windowing modes.
             if (featureString.equals(ALL_WM_FIELD)) {
-                return true;
-            }
-
-            // Enabled for testing. Also corresponds to the "Enabled" option in chrome://flags.
-            if (featureString.isEmpty()) {
                 return true;
             }
 

@@ -47,15 +47,15 @@ BASE_FEATURE(kNavigationCaptureRefactorAndroid,
 
 BASE_FEATURE(kAuxiliaryNavigationStaysInBrowser,
              "AuxiliaryNavigationStaysInBrowser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReparentTopLevelNavigationFromPWA,
              "ReparentTopLevelNavigationFromPWA",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReparentAuxiliaryNavigationFromPWA,
              "ReparentAuxiliaryNavigationFromPWA",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jlong JNI_ExternalIntentsFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);
