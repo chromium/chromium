@@ -60,7 +60,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_annotation_annotation_experimental_java") {
-    aar_path = "../androidx/cipd/libs/androidx_annotation_annotation_experimental/annotation-experimental-1.5.1.aar"
+    aar_path = "../androidx/cipd/libs/androidx_annotation_annotation_experimental/annotation-experimental-1.6.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_annotation_annotation_experimental/androidx_annotation_annotation_experimental.info"
     enable_bytecode_checks = false
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
@@ -1916,7 +1916,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_compose_material3_material3_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_compose_material3_material3_android/material3-android-1.4.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_compose_material3_material3_android/material3-android-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_compose_material3_material3_android/androidx_compose_material3_material3_android.info"
     enable_bytecode_checks = false
 
