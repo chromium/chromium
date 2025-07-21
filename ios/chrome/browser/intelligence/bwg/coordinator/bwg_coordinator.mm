@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
@@ -24,6 +22,13 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+// The max number of times the promo page should be shown.
+const CGFloat kPromoMaxImpressionCount = 3;
+
+}  // namespace
 
 @interface BWGCoordinator () <UISheetPresentationControllerDelegate,
                               BWGMediatorDelegate,
@@ -50,9 +55,6 @@
   // Pref service.
   raw_ptr<PrefService> _prefService;
 
-  // FET(Feature engagement tracker) for promo updates.
-  raw_ptr<feature_engagement::Tracker> _tracker;
-
   // Promo was shown.
   BOOL _wasPromoShown;
 }
@@ -72,8 +74,6 @@
 - (void)start {
   _prefService = self.profile->GetPrefs();
   CHECK(_prefService);
-
-  _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   _BWGCommandsHandler = HandlerForProtocol(dispatcher, BWGCommands);
@@ -100,7 +100,6 @@
   _helpCommandsHandler = nil;
   _mediator = nil;
   _prefService = nil;
-  _tracker = nil;
   [self dismissPresentedViewWithCompletion:completion];
   [super stop];
 }
@@ -121,12 +120,10 @@
 
   base::UmaHistogramEnumeration(kFREEntryPointHistogram, _entryPoint);
 
-  // If promo was shown outside the promos manager, ensure the promo doesn't
-  // show through the promos manager.
-  if (_entryPoint != bwg::EntryPoint::Promo) {
-    _prefService->SetBoolean(prefs::kIOSBWGManualPromo, true);
-    _tracker->UnregisterPriorityNotificationHandler(
-        feature_engagement::kIPHIOSBWGPromoFeature);
+  if (showPromo) {
+    _prefService->SetInteger(
+        prefs::kIOSBWGPromoImpressionCount,
+        _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) + 1);
   }
 
   _navigationController =
@@ -197,13 +194,12 @@
 
 // If YES, BWG Promo should be shown.
 - (BOOL)shouldShowBWGPromo {
-  BOOL promoShownManually = _prefService->GetBoolean(prefs::kIOSBWGManualPromo);
   BOOL forcePromo = ShouldForceBWGPromo();
-  BOOL promoTriggered = _tracker->HasEverTriggered(
-      feature_engagement::kIPHIOSBWGPromoFeature, true);
-  BOOL isPromoEntry = _entryPoint == bwg::EntryPoint::Promo;
+  BOOL promoImpressionsExhausted =
+      _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) >=
+      kPromoMaxImpressionCount;
 
-  return isPromoEntry || (!promoTriggered && !promoShownManually) || forcePromo;
+  return forcePromo || !promoImpressionsExhausted;
 }
 
 // Presents the page action menu IPH.

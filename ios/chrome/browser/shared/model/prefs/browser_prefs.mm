@@ -613,8 +613,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
                                 0);
 
-  registry->RegisterIntegerPref(prefs::kBWGSettingsNewBadgeShownCount, 0);
-
   registry->RegisterIntegerPref(
       prefs::kProminenceNotificationAlertImpressionCount, 0);
 
@@ -1033,15 +1031,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kProvisionalNotificationsAllowedByPolicy,
                                 true);
 
+  // BWG prefs.
   registry->RegisterDictionaryPref(prefs::kBwgSessionMap);
-
+  registry->RegisterIntegerPref(prefs::kBWGSettingsNewBadgeShownCount, 0);
   registry->RegisterBooleanPref(prefs::kIOSBwgConsent, false);
-
   registry->RegisterBooleanPref(prefs::kIOSBWGPreciseLocationSetting, false);
-
   registry->RegisterBooleanPref(prefs::kIOSBWGPageContentSetting, true);
-
-  registry->RegisterBooleanPref(prefs::kIOSBWGManualPromo, false);
+  registry->RegisterIntegerPref(prefs::kIOSBWGPromoImpressionCount, 0);
+  registry->RegisterBooleanPref(prefs::kIOSBWGFloatyShown, false);
 
   registry->RegisterTimePref(prefs::kIosSyncInfobarErrorLastDismissedTimestamp,
                              base::Time());

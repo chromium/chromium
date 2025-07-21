@@ -38,8 +38,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/welcome_back/ui/welcome_back_display_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_display_handler.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_provider.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
@@ -639,16 +637,6 @@
   if (first_run::IsWelcomeBackInFirstRunEnabled()) {
     _displayHandlerPromos[promos_manager::Promo::WelcomeBack] =
         [[WelcomeBackDisplayHandler alloc] init];
-  }
-
-  // BWG promo handler.
-  if (IsPageActionMenuEnabled()) {
-    PrefService* prefService = self.profile->GetPrefs();
-    BOOL manualPromoShown = prefService->GetBoolean(prefs::kIOSBWGManualPromo);
-    if (!manualPromoShown) {
-      _displayHandlerPromos[promos_manager::Promo::BWGPromo] =
-          [[BWGPromoDisplayHandler alloc] init];
-    }
   }
 
   // Safari Import remind me later handler.

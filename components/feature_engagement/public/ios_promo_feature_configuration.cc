@@ -256,24 +256,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
-  if (kIPHIOSBWGPromoFeature.name == feature->name) {
-    // Show the promo any time the conditions are met.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
-    config.used =
-        EventConfig(feature_engagement::events::kIOSBWGPromoUsed,
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    config.trigger =
-        EventConfig(feature_engagement::events::kIOSBWGPromoTrigger,
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    config.storage_type = StorageType::DEVICE;
-    return config;
-  }
-
   if (kIPHIOSPageActionMenu.name == feature->name) {
     // Show the promo only once when the conditions are met.
     FeatureConfig config;

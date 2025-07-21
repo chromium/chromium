@@ -114,6 +114,8 @@
     _pageContextWrapper = nil;
   }
 
+  _prefService->SetBoolean(prefs::kIOSBWGFloatyShown, true);
+
   // Configure the callback to be executed once the page context is ready.
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(PageContextWrapperCallbackResponse)>

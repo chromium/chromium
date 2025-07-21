@@ -9,8 +9,6 @@ source_set("ui") {
     "bwg_consent_view_controller.mm",
     "bwg_navigation_controller.h",
     "bwg_navigation_controller.mm",
-    "bwg_promo_display_handler.h",
-    "bwg_promo_display_handler.mm",
     "bwg_promo_view_controller.h",
     "bwg_promo_view_controller.mm",
     "bwg_promo_view_controller_delegate.h",

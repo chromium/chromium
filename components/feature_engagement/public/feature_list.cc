@@ -190,7 +190,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSSettingsInOverflowMenuBubbleFeature,
     &kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature,
     &kIPHiOSWelcomeBackFeature,
-    &kIPHIOSBWGPromoFeature,
     &kIPHiOSSafariImportFeature,
     &kIPHIOSPageActionMenu,
     &kIPHiOSHomepageLensNewBadge,

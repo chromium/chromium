@@ -169,6 +169,18 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
   }
 }
 
+void BwgTabHelper::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  bool bwg_promo_shown =
+      profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
+  if (!bwg_promo_shown) {
+    [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
+  }
+}
+
 void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_observation_.Reset();
   CleanupSessionFromPrefs(GetClientId());

@@ -61,6 +61,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:

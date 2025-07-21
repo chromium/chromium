@@ -20,6 +20,10 @@ enum class EntryPoint;
 // Dismiss the BWG flow with a completion block.
 - (void)dismissBWGFlowWithCompletion:(ProceduralBlock)completion;
 
+// Attempts to display the automatic BWG promo depending on whether the active
+// web state is eligible. If the page is ineligible, does nothing.
+- (void)showBWGPromoIfPageIsEligible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BWG_COMMANDS_H_

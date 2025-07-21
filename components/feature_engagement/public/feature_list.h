@@ -339,7 +339,6 @@ DEFINE_VARIATION_PARAM(
     kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature,
     "IPH_iOSSwitchAccountsWithNTPAccountParticleDiscFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSWelcomeBackFeature, "IPH_iOSWelcomeBack");
-DEFINE_VARIATION_PARAM(kIPHIOSBWGPromoFeature, "IPH_iOSBWGPromo");
 DEFINE_VARIATION_PARAM(kIPHiOSSafariImportFeature,
                        "IPH_iOSSafariImportFeature");
 DEFINE_VARIATION_PARAM(kIPHIOSPageActionMenu, "IPH_iOSPageActionMenu");
@@ -759,7 +758,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
             kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature),
         VARIATION_ENTRY(kIPHiOSDownloadAutoDeletionFeature),
         VARIATION_ENTRY(kIPHiOSWelcomeBackFeature),
-        VARIATION_ENTRY(kIPHIOSBWGPromoFeature),
         VARIATION_ENTRY(kIPHiOSSafariImportFeature),
         VARIATION_ENTRY(kIPHIOSPageActionMenu),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

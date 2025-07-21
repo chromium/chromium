@@ -126,6 +126,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
@@ -2997,6 +2999,13 @@ enum class ToolbarKind {
   _BWGCoordinator = nil;
 }
 
+- (void)showBWGPromoIfPageIsEligible {
+  BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
+  if (BWGService->IsBwgAvailableForWebState(self.activeWebState)) {
+    [self startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
+  }
+}
+
 #pragma mark - PromosManagerCommands
 
 - (void)showPromo {
@@ -3084,20 +3093,6 @@ enum class ToolbarKind {
                                              id<SystemIdentity>) {
         [self.promosManagerCoordinator promoWasDismissed];
       }];
-}
-
-- (void)showBWGPromo {
-  if (IsPageActionMenuEnabled()) {
-    web::WebState* activeWebState = self.activeWebState;
-    DCHECK(activeWebState);
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(activeWebState);
-    BOOL isNTP = NTPHelper && NTPHelper->IsActive();
-
-    if (!isNTP) {
-      [self startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
-    }
-  }
 }
 
 - (void)showWelcomeBackPromo {
