@@ -199,7 +199,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   if (placeholderType == _placeholderType) {
     return;
   }
-  _placeholderType = placeholderType;
+  if (IsDiamondPrototypeEnabled()) {
+    _placeholderType = LocationBarPlaceholderType::kNone;
+  } else {
+    _placeholderType = placeholderType;
+  }
   if (self.isViewLoaded) {
     [self updatePlaceholderView];
   }
@@ -683,6 +687,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   TrailingButtonState state = self.trailingButtonState;
   if (state == kShareButton && self.hideShareButtonWhileOnIncognitoNTP) {
+    state = kNoButton;
+  }
+
+  if (IsDiamondPrototypeEnabled()) {
     state = kNoButton;
   }
 

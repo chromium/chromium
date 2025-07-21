@@ -201,6 +201,9 @@
   self.incognitoBadgeView.hidden = !_incognitoBadgeViewShouldBeVisible;
   self.badgeView.hidden =
       !_badgeViewShouldBeVisible || _readerModeChipShouldBeVisible;
+  if (IsDiamondPrototypeEnabled()) {
+    self.badgeView.hidden = YES;
+  }
   self.contextualPanelEntrypointView.hidden =
       !_contextualPanelEntrypointShouldBeVisible ||
       _readerModeChipShouldBeVisible;
