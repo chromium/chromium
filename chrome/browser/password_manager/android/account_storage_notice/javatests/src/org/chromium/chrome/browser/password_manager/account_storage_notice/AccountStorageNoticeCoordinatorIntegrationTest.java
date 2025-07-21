@@ -40,7 +40,9 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -58,7 +60,9 @@ import java.io.IOException;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AccountStorageNoticeCoordinatorIntegrationTest {
-    @Rule public ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public FreshCtaTransitTestRule mActivityRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -78,11 +82,12 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
     private static final String RAW_SUBTITLE_TEXT =
             "When you’re signed in to Chrome, passwords you save will go in your Google Account. To"
                     + " turn this off, go to settings.";
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
         AccountStorageNoticeCoordinatorJni.setInstanceForTesting(mJniMock);
-        mActivityRule.startMainActivityOnBlankPage();
+        mPage = mActivityRule.startOnBlankPage();
     }
 
     @Test
