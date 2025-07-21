@@ -178,4 +178,8 @@ source_set("confirm_fuzztest_init") {
     ":fuzztest_init_support",
     "//third_party/fuzztest:init_fuzztest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

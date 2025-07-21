@@ -324,6 +324,10 @@ template("fuzzer_test") {
       }
       configs += [ "//testing/libfuzzer:fuzzer_test_config" ]
 
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
       # Used by WebRTC to suppress some Clang warnings in their codebase.
       if (defined(invoker.suppressed_configs)) {
         configs -= invoker.suppressed_configs
