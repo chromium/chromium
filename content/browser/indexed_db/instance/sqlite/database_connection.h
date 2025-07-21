@@ -154,7 +154,9 @@ class DatabaseConnection {
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       IndexedDBValue value);
-  Status DeleteRange(int64_t object_store_id, const blink::IndexedDBKeyRange&);
+  Status DeleteRange(base::PassKey<BackingStoreTransactionImpl>,
+                     int64_t object_store_id,
+                     const blink::IndexedDBKeyRange&);
   Status ClearObjectStore(base::PassKey<BackingStoreTransactionImpl>,
                           int64_t object_store_id);
   StatusOr<uint32_t> GetObjectStoreKeyCount(

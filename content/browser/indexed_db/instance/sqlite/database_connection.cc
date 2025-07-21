@@ -459,7 +459,7 @@ class IndexRecordIterator : public RecordIterator {
       bool ascending_order,
       bool first_primary_keys_only) {
     std::vector<std::string_view> query_pieces{
-        "WITH record_range AS (SELECT index_references.key AS index_key"};
+        "SELECT index_references.key AS index_key"};
     if (first_primary_keys_only) {
       query_pieces.push_back(", MIN(records.key) AS primary_key");
     } else {
@@ -487,22 +487,9 @@ class IndexRecordIterator : public RecordIterator {
                                  : " AND index_references.key <= @upper");
     }
     if (first_primary_keys_only) {
-      query_pieces.push_back(" GROUP BY index_references.key");
-    }
-    if (ascending_order) {
-      query_pieces.push_back(" ORDER BY index_key ASC, primary_key ASC)");
+      query_pieces.push_back(" GROUP BY index_references.key HAVING");
     } else {
-      query_pieces.push_back(" ORDER BY index_key DESC, primary_key DESC)");
-    }
-    // The "WITH" clause ends here.
-    if (key_only_) {
-      query_pieces.push_back(
-          " SELECT index_key, primary_key"
-          " FROM record_range WHERE");
-    } else {
-      query_pieces.push_back(
-          " SELECT index_key, primary_key, value, record_row_id"
-          " FROM record_range WHERE");
+      query_pieces.push_back(" AND");
     }
     if (ascending_order) {
       query_pieces.push_back(
@@ -517,7 +504,8 @@ class IndexRecordIterator : public RecordIterator {
           " @target_primary_key IS NULL"
           " OR (index_key = @target_key AND primary_key >= @target_primary_key)"
           " OR index_key > @target_key"
-          ")");
+          ")"
+          "ORDER BY index_key ASC, primary_key ASC");
     } else {
       query_pieces.push_back(
           "("
@@ -531,7 +519,8 @@ class IndexRecordIterator : public RecordIterator {
           " @target_primary_key IS NULL"
           " OR (index_key = @target_key AND primary_key <= @target_primary_key)"
           " OR index_key < @target_key"
-          ")");
+          ")"
+          "ORDER BY index_key DESC, primary_key DESC");
     }
     // LIMIT is needed to use OFFSET. A negative LIMIT implies no limit on the
     // number of rows returned:
@@ -1289,6 +1278,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 }
 
 Status DatabaseConnection::DeleteRange(
+    base::PassKey<BackingStoreTransactionImpl>,
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& key_range) {
   std::vector<std::string_view> query_pieces =
@@ -1352,13 +1342,12 @@ StatusOr<blink::IndexedDBKey> DatabaseConnection::GetFirstPrimaryKeyForIndexKey(
     const blink::IndexedDBKey& key) {
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT records.key "
+      "SELECT MIN(records.key) "
       "FROM index_references INNER JOIN records"
       " ON index_references.record_row_id = records.row_id "
       "WHERE index_references.object_store_id = ?"
       " AND index_references.index_id = ?"
-      " AND index_references.key = ? "
-      "ORDER BY records.key ASC"));
+      " AND index_references.key = ?"));
   statement.BindInt64(0, object_store_id);
   statement.BindInt64(1, index_id);
   statement.BindBlob(2, EncodeSortableIDBKey(key));
