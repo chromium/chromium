@@ -2793,6 +2793,9 @@ if (!is_robolectric && enable_java_templates) {
                                "suffix_apk_assets_used_by",
                                "uses_split",
                              ])
+      if (_generate_productconfig_java) {
+        create_locales_java_list = true
+      }
       version_code = _version_code
       version_name = _version_name
       enable_lint = _enable_lint

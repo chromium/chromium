@@ -181,6 +181,8 @@ class _TransitiveValuesBuilder:
           direct_deps.recursive().not_of_type('system_java_library'))
 
     self._CollectClasspath(direct_deps, all_deps)
+    if params.merges_manifests():
+      self._CollectManifests(all_deps_without_under_test)
     if params.collects_resources():
       self._CollectResources(all_deps_without_under_test)
     self._CollectExtraPackageNames(direct_deps, all_deps)
@@ -247,17 +249,12 @@ class _TransitiveValuesBuilder:
     self._ret.direct_interface_jars.add(base_module['interface_jar_path'])
     self._ret.all_interface_jars.add(base_module['interface_jar_path'])
 
-  def _CollectResources(self, all_deps_without_under_test):
-    params = self._params
-    ret = self._ret
-    resource_deps = params.resource_deps()
-    ret.dependency_zips.update(resource_deps.collect('resources_zip'))
-    ret.dependency_zip_overlays.update(
-        resource_deps.collect('resources_overlay_zip'))
-
+  def _CollectManifests(self, all_deps_without_under_test):
     # Manifests are listed from highest priority to lowest priority.
     # Ensure direct manifests come first, then sort the rest by name.
     # https://developer.android.com/build/manage-manifests#merge_priorities
+    params = self._params
+    ret = self._ret
     ret.android_manifests.update(params.get('mergeable_android_manifests', []))
     indirect_manifests = all_deps_without_under_test.collect(
         'mergeable_android_manifests', flatten=True)
@@ -267,6 +264,14 @@ class _TransitiveValuesBuilder:
     if path := params.get('android_manifest'):
       if path in ret.android_manifests:
         ret.android_manifests.remove(path)
+
+  def _CollectResources(self, all_deps_without_under_test):
+    params = self._params
+    ret = self._ret
+    resource_deps = params.resource_deps()
+    ret.dependency_zips.update(resource_deps.collect('resources_zip'))
+    ret.dependency_zip_overlays.update(
+        resource_deps.collect('resources_overlay_zip'))
 
     assets, uncompressed_assets, locale_paks = _MergeAssets(
         all_deps_without_under_test.of_type('android_assets'))
@@ -725,17 +730,21 @@ def main():
     config['dist_jar']['jars'] = list(dist_jars)
 
   if params.collects_resources():
-    config['extra_android_manifests'] = list(tv.android_manifests)
-    config['assets'] = list(tv.assets)
-    config['uncompressed_assets'] = list(tv.uncompressed_assets)
-    config['locales_java_list'] = _CreateJavaLocaleListFromAssets(
-        tv.uncompressed_assets, tv.locale_paks)
     # Safe to sort: Build checks that non-overlay resource have no overlap.
     config['dependency_zips'] = sorted(tv.dependency_zips)
     config['dependency_zip_overlays'] = list(tv.dependency_zip_overlays)
+    config['assets'] = sorted(tv.assets)
+    config['uncompressed_assets'] = sorted(tv.uncompressed_assets)
 
-  if has_classpath:
+  if params.get('create_locales_java_list'):
+    config['locales_java_list'] = _CreateJavaLocaleListFromAssets(
+        tv.uncompressed_assets, tv.locale_paks)
+
+  if params.compiles_resources():
     config['extra_package_names'] = sorted(tv.extra_package_names)
+
+  if params.merges_manifests():
+    config['extra_android_manifests'] = list(tv.android_manifests)
 
   if is_bundle:
     module_deps = params.module_deps()

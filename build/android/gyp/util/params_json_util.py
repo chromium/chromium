@@ -28,12 +28,13 @@ _ROOT_TYPES = frozenset([
 # Types that should not allow code deps to pass through.
 _RESOURCE_TYPES = frozenset(['android_assets', 'android_resources'])
 
-_COLLECTS_RESOURCES_TYPES = frozenset([
+_COMPILE_RESOURCES_TYPES = frozenset([
     'android_apk',
     'android_app_bundle_module',
-    'dist_aar',
     'robolectric_binary',
 ])
+
+_MERGES_MANIFESTS_TYPES = _COMPILE_RESOURCES_TYPES
 
 _COLLECTS_NATIVE_LIBRARIES_TYPES = frozenset([
     'android_apk',
@@ -48,7 +49,6 @@ _CLASSPATH_TYPES = frozenset([
     'dist_jar',
     'java_annotation_processor',
     'java_binary',
-    'java_library',
     'robolectric_binary',
 ])
 
@@ -331,7 +331,15 @@ class ParamsJson(dict):
 
   def collects_resources(self):
     """Returns True if the target type collects Android resources."""
-    return self.type in _COLLECTS_RESOURCES_TYPES
+    return self.compiles_resources() or self.type == 'dist_aar'
+
+  def compiles_resources(self):
+    """Returns True if the target type runs compile_resources.py."""
+    return self.type in _COMPILE_RESOURCES_TYPES
+
+  def merges_manifests(self):
+    """Returns True if the target type runs manifest_merger.py."""
+    return self.type in _MERGES_MANIFESTS_TYPES
 
   def collects_dex_paths(self):
     """Returns True if the target type collects transitive .dex files."""
@@ -360,6 +368,8 @@ class ParamsJson(dict):
 
   def has_classpath(self):
     """Returns True if the target type has a classpath."""
+    if self.is_library():
+      return self.get('dex_needs_classpath') or not self.get('is_prebuilt')
     return self.type in _CLASSPATH_TYPES
 
   def is_resource_type(self):
