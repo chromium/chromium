@@ -19013,6 +19013,21 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MULTI_CAPTURE_ACTIVE_CAPTURE_NOTIFICATION_MESSAGE" desc="String notifying that the screens are captured by a specific app.">
         Your administrator is recording your screen with <ph name="APP0_NAME">{APP_NAME}</ph>.
       </message>
+      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_HEADING" desc="Heading for the multi capture details view.">
+        Your administrator can record your screen
+      </message>
+      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_NO_APP_ON_ALLOWLIST_MESSAGE" desc="Message for the multi capture details view where no app is on the allowlist that enables an app not to show a notification.">
+        These apps will be used to record your screen:
+      </message>
+      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_NO_APP_ON_ALLOWLIST_FOOTER_MESSAGE" desc="Footer for the multi capture details view where no app is on the allowlist that enables an app not to show a notification.">
+        You will be notified when the recording starts.
+      </message>
+      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_CLOSE_BUTTON_TEXT" desc="Close button text for the multi capture details view.">
+        Got it
+      </message>
+      <message name="IDS_MULTI_CAPTURE_NOTIFICATION_BUTTON_TEXT" desc="Text for the notification button to reach the details view.">
+        View details
+      </message>
     </if>
 
   <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE" desc="The title for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied.">

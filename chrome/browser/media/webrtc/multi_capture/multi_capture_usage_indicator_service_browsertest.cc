@@ -101,7 +101,7 @@ class MultiCaptureUsageIndicatorBrowserTest
   void OnNotificationDisplayed(
       const message_center::Notification& notification,
       const NotificationCommon::Metadata* const metadata) override {
-    visible_notifications_.insert({notification.id(), notification});
+    visible_notifications_.insert_or_assign(notification.id(), notification);
   }
 
   void OnNotificationClosed(const std::string& notification_id) override {
@@ -184,26 +184,6 @@ class MultiCaptureUsageIndicatorBrowserTest
     return provider().registrar_unsafe().GetAppById(app_id);
   }
 
-  bool WaitForNotifications(const size_t wait_for_notifications_count) {
-    bool notifications_received = base::test::RunUntil([&]() -> bool {
-      base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
-      notificiation_display_service().GetDisplayed(
-          get_displayed_future.GetCallback());
-      const auto displayed_notifications =
-          get_displayed_future.Get<std::set<std::string>>();
-      return displayed_notifications.size() == wait_for_notifications_count;
-    });
-    return notifications_received;
-  }
-
-  void ClearAllNotifications() {
-    auto visible_notifications = visible_notifications_;
-    for (const auto& [notification_id, _] : visible_notifications) {
-      notificiation_display_service().Close(
-          NotificationHandler::Type::ANNOUNCEMENT, notification_id);
-    }
-  }
-
   webapps::AppId GetAppIdForBundle(const std::string& bundle_id) {
     GURL url("isolated-app://" + bundle_id);
     const std::optional<webapps::AppId> app_id =
@@ -213,13 +193,12 @@ class MultiCaptureUsageIndicatorBrowserTest
     return *app_id;
   }
 
-  webapps::AppId GetCapturingNotificationWithAppId() const {
-    for (const auto& [visible_notification_id, _] : visible_notifications_) {
-      if (visible_notification_id.starts_with(kCurrentCaptureNotificationId)) {
-        return visible_notification_id;
-      }
-    }
-    NOTREACHED();
+  webapps::AppId GetLastCapturingNotificationWithAppId() {
+    return std::string(kCurrentCaptureNotificationId) +
+           GetAppIdForBundle(
+               GetParam()
+                   .capturing_apps[GetParam().capturing_apps.size() - 1]
+                   .bundle_id.id());
   }
 
   NotificationDisplayService& notificiation_display_service() {
@@ -245,7 +224,6 @@ IN_PROC_BROWSER_TEST_P(
       profile())
       ->ShowUsageIndicatorsOnStart();
 
-  ASSERT_TRUE(WaitForNotifications(/*wait_for_notifications_count=*/1u));
   ASSERT_TRUE(visible_notifications_.contains(
       "multi-capture-login-privacy-indicators"));
   const auto& notification =
@@ -264,7 +242,6 @@ IN_PROC_BROWSER_TEST_P(
 
   service.ShowUsageIndicatorsOnStart();
 
-  ASSERT_TRUE(WaitForNotifications(/*wait_for_notifications_count=*/1u));
   ASSERT_TRUE(visible_notifications_.contains(
       "multi-capture-login-privacy-indicators"));
   const auto& notification =
@@ -278,16 +255,11 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   for (const InstalledApp& app : GetParam().capturing_apps) {
-    ClearAllNotifications();
     service.MultiCaptureStarted(
         /*label=*/"label1",
         /*app_id=*/GetAppIdForBundle(app.bundle_id.id()));
   }
 
-  const size_t expected_notification_count =
-      GetParam().expected_no_icon_notification_message_after_capture ? 2u : 1u;
-  ASSERT_TRUE(WaitForNotifications(expected_notification_count));
-  ASSERT_EQ(visible_notifications_.size(), expected_notification_count);
   EXPECT_THAT(
       visible_notifications_,
       Contains(Pair(
@@ -301,11 +273,12 @@ IN_PROC_BROWSER_TEST_P(
                        Field(&message_center::NotifierId::id,
                              "multi-capture-login-privacy-indicators"))))));
 
-  if (expected_notification_count == 2) {
+  if (GetParam()
+          .expected_no_icon_notification_message_after_capture.has_value()) {
     EXPECT_THAT(
         visible_notifications_,
         Contains(Pair(
-            GetCapturingNotificationWithAppId(),
+            GetLastCapturingNotificationWithAppId(),
             AllOf(Property(&message_center::Notification::title, u""),
                   Property(
                       &message_center::Notification::message,

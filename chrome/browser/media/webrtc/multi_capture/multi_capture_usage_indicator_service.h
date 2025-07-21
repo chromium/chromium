@@ -70,6 +70,8 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
       MultiCaptureUsageIndicatorBrowserTest,
       YouAreCapturedNotificationShowsIfAppInstalledAndAllowlisted);
 
+  message_center::Notification CreateFutureCaptureNotification(
+      const MultiCaptureUsageIndicatorService::AllowListedAppNames& apps);
   message_center::Notification CreateActiveCaptureNotification(
       const webapps::AppId& app_id,
       const std::string& app_name,

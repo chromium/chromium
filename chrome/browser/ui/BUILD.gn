@@ -4762,6 +4762,13 @@ static_library("ui") {
 
     sources += get_target_outputs(":webui_name_variants")
 
+    if (is_chromeos) {
+      sources += [
+        "views/web_apps/isolated_web_apps/multi_capture_notification_details_view.cc",
+        "views/web_apps/isolated_web_apps/multi_capture_notification_details_view.h",
+      ]
+    }
+
     if (is_mac) {
       sources +=
           [ "views/user_education/browser_help_bubble_event_relay_mac.mm" ]

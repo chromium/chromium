@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_constants.h"
@@ -17,12 +18,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/multi_capture_notification_details_view.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -38,6 +41,7 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
 namespace multi_capture {
@@ -51,6 +55,23 @@ const char kPrivacyIndicatorsMultiCaptureLoginNotifierId[] =
     "multi-capture-login-privacy-indicators";
 const char kPrivacyIndicatorsMultiCaptureActiveNotificationIdBase[] =
     "multi-capture-active-privacy-indicators-";
+
+std::vector<std::string> GetAllCaptureWithNotificationApps(
+    const MultiCaptureUsageIndicatorService::AllowListedAppNames& apps) {
+  std::vector<std::string> capturing_apps_with_notification;
+  for (const auto& [_, app_name] : apps.future_capture_notification_apps) {
+    capturing_apps_with_notification.push_back(app_name);
+  }
+
+  for (const auto& [_, app_name] : apps.current_capture_notification_apps) {
+    capturing_apps_with_notification.push_back(app_name);
+  }
+
+  std::sort(capturing_apps_with_notification.begin(),
+            capturing_apps_with_notification.end());
+
+  return capturing_apps_with_notification;
+}
 
 std::string GenerateActiveNotifcationId(const webapps::AppId& app_id) {
   return kPrivacyIndicatorsMultiCaptureActiveNotificationIdBase + app_id;
@@ -101,44 +122,6 @@ std::u16string CreateFutureCaptureNotificationMessage(
   return base::i18n::MessageFormatter::FormatWithNamedArgs(
       message, "NUM_APPS", static_cast<int>(merged_app_names.size()),
       "APP0_NAME", app_name_0, "APP1_NAME", app_name_1);
-}
-
-message_center::Notification CreateFutureCaptureNotification(
-    const MultiCaptureUsageIndicatorService::AllowListedAppNames& apps) {
-  CHECK(!apps.future_capture_notification_apps.empty() ||
-        !apps.future_capture_no_notification_apps.empty());
-
-  message_center::RichNotificationData optional_fields;
-  // Make the notification low priority so that it is silently added (no
-  // popup).
-  optional_fields.priority = message_center::LOW_PRIORITY;
-  optional_fields.pinned = true;
-  // TODO(crbug.com/424102053): Replace with finalized icon.
-  optional_fields.vector_small_image = &vector_icons::kScreenShareIcon;
-
-  message_center::Notification notification(
-      message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      // TODO(crbug.com/428895081): Prevent this text from being trimmed.
-      kPrivacyIndicatorsMultiCaptureLoginNotificationId,
-      /*title=*/u"",
-      /*message=*/
-      CreateFutureCaptureNotificationMessage(apps),
-      /*icon=*/ui::ImageModel(),
-      /*display_source=*/std::u16string(),
-      /*origin_url=*/GURL(),
-      message_center::NotifierId(
-          message_center::NotifierType::SYSTEM_COMPONENT,
-          kPrivacyIndicatorsMultiCaptureLoginNotifierId,
-          ash::NotificationCatalogName::kPrivacyIndicators),
-      optional_fields,
-      // TODO(crbug.com/424104858): Add button to show more details on the
-      // capturing apps.
-      /*delegate=*/nullptr);
-  notification.set_system_notification_warning_level(
-      message_center::SystemNotificationWarningLevel::NORMAL);
-  notification.set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
-
-  return notification;
 }
 
 bool ShouldReuseFutureNotificationId(
@@ -208,13 +191,66 @@ void MultiCaptureUsageIndicatorService::MultiCaptureStopped(
   started_captures_[app_id].erase(label);
   label_to_app_id_.erase(label);
   if (started_captures_[app_id].empty()) {
-    notification_display_service_->Close(
-        NotificationHandler::Type::ANNOUNCEMENT,
-        GenerateActiveNotifcationId(app_id));
+    notification_display_service_->Close(NotificationHandler::Type::TRANSIENT,
+                                         GenerateActiveNotifcationId(app_id));
     notification_shown_for_app_id_.erase(app_id);
     started_captures_.erase(app_id);
     RefreshNotifications();
   }
+}
+
+message_center::Notification
+MultiCaptureUsageIndicatorService::CreateFutureCaptureNotification(
+    const MultiCaptureUsageIndicatorService::AllowListedAppNames& apps) {
+  CHECK(!apps.future_capture_notification_apps.empty() ||
+        !apps.future_capture_no_notification_apps.empty());
+
+  message_center::RichNotificationData optional_fields;
+  // Make the notification low priority so that it is silently added (no
+  // popup).
+  optional_fields.priority = message_center::LOW_PRIORITY;
+  optional_fields.pinned = true;
+  // TODO(crbug.com/424102053): Replace with finalized icon.
+  optional_fields.vector_small_image = &vector_icons::kScreenShareIcon;
+
+  optional_fields.buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_BUTTON_TEXT));
+
+  message_center::Notification notification(
+      message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
+      // TODO(crbug.com/428895081): Prevent this text from being trimmed.
+      kPrivacyIndicatorsMultiCaptureLoginNotificationId,
+      /*title=*/u"",
+      /*message=*/
+      CreateFutureCaptureNotificationMessage(apps),
+      /*icon=*/ui::ImageModel(),
+      /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kPrivacyIndicatorsMultiCaptureLoginNotifierId,
+          ash::NotificationCatalogName::kPrivacyIndicators),
+      optional_fields,
+      /*delegate=*/
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              [](base::WeakPtr<MultiCaptureUsageIndicatorService> service,
+                 std::optional<int> button_index) {
+                if (!service || !button_index) {
+                  return;
+                }
+
+                MultiCaptureNotificationDetailsView::ShowCaptureDetails(
+                    GetAllCaptureWithNotificationApps(
+                        service->GetInstalledAndAllowlistedAppNames()));
+              },
+              weak_ptr_factory_.GetWeakPtr())));
+
+  notification.set_system_notification_warning_level(
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  notification.set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
+
+  return notification;
 }
 
 message_center::Notification
@@ -266,7 +302,8 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
           ash::NotificationCatalogName::kPrivacyIndicators),
       optional_fields,
       // TODO(crbug.com/424104858): Make the notification do nothing on click.
-      /*delegate=*/nullptr);
+      /*delegate=*/
+      base::MakeRefCounted<message_center::NotificationDelegate>());
   notification.set_system_notification_warning_level(
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification.set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
@@ -361,10 +398,9 @@ void MultiCaptureUsageIndicatorService::ShowFutureMultiCaptureNotification(
     return;
   }
 
-  notification_display_service_->Display(
-      NotificationHandler::Type::ANNOUNCEMENT,
-      CreateFutureCaptureNotification(apps),
-      /*metadata=*/nullptr);
+  notification_display_service_->Display(NotificationHandler::Type::TRANSIENT,
+                                         CreateFutureCaptureNotification(apps),
+                                         /*metadata=*/nullptr);
 }
 
 void MultiCaptureUsageIndicatorService::ShowActiveMultiCaptureNotifications(
@@ -399,19 +435,18 @@ void MultiCaptureUsageIndicatorService::ShowActiveMultiCaptureNotifications(
       // TODO(crbug.com/428931746): Check that we only close an actual capturing
       // notification.
       notification_display_service_->Close(
-          NotificationHandler::Type::ANNOUNCEMENT,
+          NotificationHandler::Type::TRANSIENT,
           kPrivacyIndicatorsMultiCaptureLoginNotificationId);
     }
 
     // TODO(crbug.com/432202914): This works well, but in most cases we don't
     // actually need to close and reopen. Keep track of the already shown id's
     // and only execute this if there is a change.
-    notification_display_service_->Close(
-        NotificationHandler::Type::ANNOUNCEMENT,
-        GenerateActiveNotifcationId(app_id));
+    notification_display_service_->Close(NotificationHandler::Type::TRANSIENT,
+                                         GenerateActiveNotifcationId(app_id));
 
     notification_display_service_->Display(
-        NotificationHandler::Type::ANNOUNCEMENT,
+        NotificationHandler::Type::TRANSIENT,
         CreateActiveCaptureNotification(app_id, app_name,
                                         reuse_future_notification_id),
         /*metadata=*/nullptr);
