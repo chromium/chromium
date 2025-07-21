@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ui/base/models/table_model.h"
@@ -20,6 +21,31 @@ class TemplateURLService;
 namespace search_engines {
 enum class ChoiceMadeLocation;
 }
+
+namespace internal {
+
+// Allows sorting site search engines by group (either created by the
+// SiteSearchSettings policy, or not created by policy) and alphabetically
+// inside each group.
+//
+// Alphabetical comparison is case-insensitive according to the current locale.
+// In case of loading errors for ICU, fallback to regular string comparison.
+class OrderByManagedAndAlphabetically {
+ public:
+  OrderByManagedAndAlphabetically();
+  OrderByManagedAndAlphabetically(const OrderByManagedAndAlphabetically& other);
+  ~OrderByManagedAndAlphabetically();
+
+  bool operator()(const TemplateURL* lhs, const TemplateURL* rhs) const;
+
+  // Exposed for testing
+  std::string GetShortNameSortKey(const std::u16string& short_name) const;
+
+ private:
+  std::unique_ptr<icu::Collator> collator_;
+};
+
+}  // namespace internal
 
 // TemplateURLTableModel is the TableModel implementation used by
 // KeywordEditorView to show the keywords in a TableView.
