@@ -11,10 +11,9 @@ build_webui("build") {
 
   static_files = [ "actor_overlay.html" ]
 
-  ts_files = [
-    "app.ts",
-    "app.html.ts",
-  ]
+  ts_files = [ "app.ts" ]
+
+  css_files = [ "app.css" ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
