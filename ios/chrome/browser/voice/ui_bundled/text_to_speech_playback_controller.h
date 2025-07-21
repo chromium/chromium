@@ -5,11 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_VOICE_UI_BUNDLED_TEXT_TO_SPEECH_PLAYBACK_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_VOICE_UI_BUNDLED_TEXT_TO_SPEECH_PLAYBACK_CONTROLLER_H_
 
-#import <Foundation/Foundation.h>
+#include <Foundation/Foundation.h>
 
-#import "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#include "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 
 @class TextToSpeechNotificationHandler;
@@ -21,6 +23,7 @@ class TextToSpeechPlaybackController : public KeyedService,
                                        public web::WebStateObserver {
  public:
   explicit TextToSpeechPlaybackController();
+  ~TextToSpeechPlaybackController() override;
 
   TextToSpeechPlaybackController(const TextToSpeechPlaybackController&) =
       delete;
@@ -42,9 +45,6 @@ class TextToSpeechPlaybackController : public KeyedService,
   void Shutdown() override;
 
   // WebStateListObserver:
-  void WebStateListWillChange(WebStateList* web_state_list,
-                              const WebStateListChangeDetach& detach_change,
-                              const WebStateListStatus& status) override;
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
@@ -57,11 +57,11 @@ class TextToSpeechPlaybackController : public KeyedService,
   // Helper object that listens for TTS notifications.
   __strong TextToSpeechNotificationHandler* notification_helper_ = nil;
 
-  // The WebStateList.
-  raw_ptr<WebStateList> web_state_list_ = nullptr;
-
-  // The WebState being observed.
-  raw_ptr<web::WebState> web_state_ = nullptr;
+  // Scoped observation of the WebStateList and the active WebState.
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      active_web_state_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_VOICE_UI_BUNDLED_TEXT_TO_SPEECH_PLAYBACK_CONTROLLER_H_
