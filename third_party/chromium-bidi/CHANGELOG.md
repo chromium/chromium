@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.1.1...chromium-bidi-v7.2.0) (2025-07-21)
+
+
+### Features
+
+* implement `emulation.setTimezoneOverride` ([#3589](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3589)) ([1b7acaa](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1b7acaae8e30194fb39e1d5d57b01effb1d2f4bd))
+* support timezone offset emulation ([#3591](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3591)) ([a645f8e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a645f8e8956e67ee86b6f7e82a5f42912802d5cd))
+
 ## [7.1.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.1.0...chromium-bidi-v7.1.1) (2025-07-16)
 
 
