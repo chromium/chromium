@@ -421,24 +421,23 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
   const bool supports_zero_copy_webgpu_import =
       gmb_handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
 
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
-  DCHECK(buffer_format);
+  auto si_format = VideoPixelFormatToSharedImageFormat(pixel_format);
+  DCHECK(si_format);
 
-    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
-                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    auto shared_image = sii->CreateSharedImage(
-        {viz::GetSharedImageFormat(*buffer_format), coded_size,
-         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
-         "PlatformVideoFrameUtils"},
-        gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  auto shared_image = sii->CreateSharedImage(
+      {*si_format, coded_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "PlatformVideoFrameUtils"},
+      gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
 
-    auto video_frame = media::VideoFrame::WrapMappableSharedImage(
-        std::move(shared_image), sii->GenVerifiedSyncToken(),
-        base::NullCallback(), visible_rect, natural_size, timestamp);
+  auto video_frame = media::VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), sii->GenVerifiedSyncToken(),
+      base::NullCallback(), visible_rect, natural_size, timestamp);
 
-    if (!video_frame) {
-      return nullptr;
-    }
+  if (!video_frame) {
+    return nullptr;
+  }
 
   // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
   // TODO(crbug.com/40201271): Add DISJOINT support.

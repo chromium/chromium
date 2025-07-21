@@ -40,18 +40,17 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           pixel_format, coded_size, visible_rect, natural_size, timestamp);
     case media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER: {
       CHECK(test_sii);
-      std::optional<gfx::BufferFormat> buffer_format =
-          media::VideoPixelFormatToGfxBufferFormat(pixel_format);
-      CHECK(buffer_format) << "Pixel format "
-                           << media::VideoPixelFormatToString(pixel_format)
-                           << " has no corresponding gfx::BufferFormat";
+      std::optional<viz::SharedImageFormat> si_format =
+          media::VideoPixelFormatToSharedImageFormat(pixel_format);
+      CHECK(si_format) << "Pixel format "
+                       << media::VideoPixelFormatToString(pixel_format)
+                       << " has no corresponding viz::SharedImageFormat";
       const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                             gpu::SHARED_IMAGE_USAGE_RASTER_READ;
       auto shared_image = test_sii->CreateSharedImage(
-          {viz::GetSharedImageFormat(*buffer_format), coded_size,
-           gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
-           "CreateTestFrame"},
+          {*si_format, coded_size, gfx::ColorSpace(),
+           gpu::SharedImageUsageSet(si_usage), "CreateTestFrame"},
           gpu::kNullSurfaceHandle,
           gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
       if (!shared_image) {
@@ -69,14 +68,14 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       return frame;
     }
     case media::VideoFrame::STORAGE_OPAQUE: {
-      std::optional<gfx::BufferFormat> buffer_format =
-          media::VideoPixelFormatToGfxBufferFormat(pixel_format);
-      CHECK(buffer_format) << "Pixel format "
-                           << media::VideoPixelFormatToString(pixel_format)
-                           << " has no corresponding gfx::BufferFormat";
+      std::optional<viz::SharedImageFormat> si_format =
+          media::VideoPixelFormatToSharedImageFormat(pixel_format);
+      CHECK(si_format) << "Pixel format "
+                       << media::VideoPixelFormatToString(pixel_format)
+                       << " has no corresponding viz::SharedImageFormat";
 
       gpu::SharedImageMetadata metadata;
-      metadata.format = viz::GetSharedImageFormat(*buffer_format);
+      metadata.format = *si_format;
       metadata.size = coded_size;
       metadata.color_space = color_space;
       metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
