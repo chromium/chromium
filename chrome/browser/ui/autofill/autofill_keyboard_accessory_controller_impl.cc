@@ -303,12 +303,13 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
            AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
   std::u16string title;
   std::u16string body;
-  if (!GetRemovalConfirmationText(index, &title, &body)) {
+  std::u16string confirm_button_text;
+  if (!GetRemovalConfirmationText(index, &title, &body, &confirm_button_text)) {
     return false;
   }
 
   view_->ConfirmDeletion(
-      title, body,
+      title, body, confirm_button_text,
       base::BindOnce(
           &AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed,
           GetWeakPtr(), index));
@@ -516,7 +517,8 @@ AutofillKeyboardAccessoryControllerImpl::GetSuggestionLabelsAt(int row) const {
 bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     int index,
     std::u16string* title,
-    std::u16string* body) {
+    std::u16string* body,
+    std::u16string* confirm_button_text) {
   CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
   const SuggestionType type = suggestions_[index].type;
@@ -529,6 +531,10 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     if (body) {
       body->assign(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
+    }
+    if (confirm_button_text) {
+      confirm_button_text->assign(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
     }
     return true;
   }
@@ -554,6 +560,10 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
         body->assign(l10n_util::GetStringUTF16(
             IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
       }
+      if (confirm_button_text) {
+        confirm_button_text->assign(
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
+      }
       return true;
     }
     return false;
@@ -575,6 +585,10 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
       if (body) {
         body->assign(l10n_util::GetStringUTF16(
             IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
+      }
+      if (confirm_button_text) {
+        confirm_button_text->assign(
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_DELETE_SUGGESTION_BUTTON));
       }
 
       return true;

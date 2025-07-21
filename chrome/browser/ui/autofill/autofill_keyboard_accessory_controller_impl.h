@@ -86,7 +86,8 @@ class AutofillKeyboardAccessoryControllerImpl
       int row) const override;
   bool GetRemovalConfirmationText(int index,
                                   std::u16string* title,
-                                  std::u16string* body) override;
+                                  std::u16string* body,
+                                  std::u16string* confirm_button_text) override;
 
   base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

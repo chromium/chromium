@@ -25,11 +25,19 @@ class AutofillKeyboardAccessoryController
   virtual std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
       int row) const = 0;
 
-  // Returns whether the item at `list_index` can be removed. If so, fills
-  // out `title` and `body` (when non-null) with relevant user-facing text.
-  virtual bool GetRemovalConfirmationText(int index,
-                                          std::u16string* title,
-                                          std::u16string* body) = 0;
+  // Checks if the item at `index` can be removed.
+  //
+  // If removable, this populates the non-null output parameters with
+  // user-facing text for a confirmation dialog (e.g., for a "Remove" or
+  // "Delete" action).
+  //
+  // Returns `true` if the item can be removed and the text was populated, or
+  // `false` otherwise.
+  virtual bool GetRemovalConfirmationText(
+      int index,
+      std::u16string* title,
+      std::u16string* body,
+      std::u16string* confirm_button_text) = 0;
 };
 
 }  // namespace autofill

@@ -677,10 +677,14 @@ class ManualFillingMediator
         if (isInitialized() && mAccessorySheet.isShown()) onCloseAccessorySheet();
     }
 
-    void confirmOperation(
-            String title, String message, Runnable confirmedCallback, Runnable declinedCallback) {
+    void confirmDeletionOperation(
+            String title,
+            String message,
+            String confirmButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback) {
         mConfirmationHelper.showConfirmation(
-                title, message, R.string.ok, confirmedCallback, declinedCallback);
+                title, message, confirmButtonText, confirmedCallback, declinedCallback);
     }
 
     private void changeBottomControlSpaceForState(int extensionState) {

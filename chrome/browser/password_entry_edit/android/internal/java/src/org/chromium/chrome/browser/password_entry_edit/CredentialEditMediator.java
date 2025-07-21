@@ -245,10 +245,12 @@ public class CredentialEditMediator implements UiActionHandler {
                                 ? R.string.password_check_delete_credential_dialog_body
                                 : R.string.password_entry_edit_deletion_dialog_body,
                         mModel.get(URL_OR_APP));
+        String confirmation =
+                resources.getString(R.string.password_entry_edit_delete_credential_dialog_confirm);
         mDeleteDialogHelper.showConfirmation(
                 title,
                 message,
-                R.string.password_entry_edit_delete_credential_dialog_confirm,
+                confirmation,
                 () -> {
                     recordDeleted();
                     mCredentialActionDelegate.deleteCredential();

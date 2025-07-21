@@ -43,6 +43,7 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
   void ConfirmDeletion(
       const std::u16string& confirmation_title,
       const std::u16string& confirmation_body,
+      const std::u16string& confirm_button_text,
       base::OnceCallback<void(bool)> deletion_callback) override;
 
   // --------------------------------------------------------------------------

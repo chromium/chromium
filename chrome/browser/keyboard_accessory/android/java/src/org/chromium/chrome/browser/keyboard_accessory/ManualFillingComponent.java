@@ -246,15 +246,20 @@ public interface ManualFillingComponent extends BackPressHandler {
     boolean removeObserver(Observer observer);
 
     /**
-     * Show a confimation dialog.
+     * Show a deletion confimation dialog.
      *
      * @param title A title of the confirmation dialog.
      * @param message The message of the confirmation dialog.
+     * @param confirmButtonText The text on the confirmation button.
      * @param confirmedCallback A {@link Runnable} to trigger upon confirmation.
      * @param declinedCallback A {@link Runnable} to trigger upon rejection.
      */
-    void confirmOperation(
-            String title, String message, Runnable confirmedCallback, Runnable declinedCallback);
+    void confirmDeletionOperation(
+            String title,
+            String message,
+            String confirmButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback);
 
     /**
      * Returns the amount that the keyboard will be extended by the filling component when shown.

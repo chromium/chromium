@@ -1422,13 +1422,13 @@ public class ManualFillingControllerTest {
     public void testCallsHelperToConfirmDeletion() {
         Runnable testConfirmRunnable = CallbackUtils.emptyRunnable();
         Runnable testDeclineRunnable = CallbackUtils.emptyRunnable();
-        mMediator.confirmOperation(
-                "Suggestion", "Delete it?", testConfirmRunnable, testDeclineRunnable);
+        mMediator.confirmDeletionOperation(
+                "Suggestion", "Delete it?", "Delete", testConfirmRunnable, testDeclineRunnable);
         verify(mMockConfirmationHelper)
                 .showConfirmation(
                         "Suggestion",
                         "Delete it?",
-                        R.string.ok,
+                        "Delete",
                         testConfirmRunnable,
                         testDeclineRunnable);
     }

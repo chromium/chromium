@@ -119,11 +119,14 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
 
     @CalledByNative
     private void confirmDeletion(
-            @JniType("std::u16string") String title, @JniType("std::u16string") String body) {
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String body,
+            @JniType("std::u16string") String confirmButtonText) {
         assert mManualFillingComponent != null;
-        mManualFillingComponent.confirmOperation(
+        mManualFillingComponent.confirmDeletionOperation(
                 title,
                 body,
+                confirmButtonText,
                 () -> this.onDeletionDialogClosed(/* confirmed= */ true),
                 () -> this.onDeletionDialogClosed(/* confirmed= */ false));
     }

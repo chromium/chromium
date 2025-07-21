@@ -214,9 +214,14 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void confirmOperation(
-            String title, String message, Runnable confirmedCallback, Runnable declinedCallback) {
-        mMediator.confirmOperation(title, message, confirmedCallback, declinedCallback);
+    public void confirmDeletionOperation(
+            String title,
+            String message,
+            String confirmButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback) {
+        mMediator.confirmDeletionOperation(
+                title, message, confirmButtonText, confirmedCallback, declinedCallback);
     }
 
     ManualFillingMediator getMediatorForTesting() {

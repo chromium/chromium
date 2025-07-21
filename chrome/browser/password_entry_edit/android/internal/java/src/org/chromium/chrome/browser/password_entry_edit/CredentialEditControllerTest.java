@@ -274,7 +274,8 @@ public class CredentialEditControllerTest {
                 resources.getString(R.string.password_entry_edit_delete_credential_dialog_title);
         String message =
                 resources.getString(R.string.password_entry_edit_deletion_dialog_body, TEST_URL);
-        int confirmButtonTextId = R.string.password_entry_edit_delete_credential_dialog_confirm;
+        String confirmButtonText =
+                resources.getString(R.string.password_entry_edit_delete_credential_dialog_confirm);
         doAnswer(
                         (invocation) -> {
                             Runnable callback = (Runnable) invocation.getArguments()[3];
@@ -283,13 +284,13 @@ public class CredentialEditControllerTest {
                         })
                 .when(mDeleteDialogHelper)
                 .showConfirmation(
-                        eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
+                        eq(title), eq(message), eq(confirmButtonText), any(Runnable.class));
 
         mMediator.onDelete();
 
         verify(mDeleteDialogHelper)
                 .showConfirmation(
-                        eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
+                        eq(title), eq(message), eq(confirmButtonText), any(Runnable.class));
         verify(mCredentialActionDelegate).deleteCredential();
 
         assertThat(
@@ -309,12 +310,13 @@ public class CredentialEditControllerTest {
         String message =
                 resources.getString(
                         R.string.password_check_delete_credential_dialog_body, TEST_URL);
-        int confirmButtonTextId = R.string.password_entry_edit_delete_credential_dialog_confirm;
+        String confirmButtonText =
+                resources.getString(R.string.password_entry_edit_delete_credential_dialog_confirm);
 
         mMediator.onDelete();
         verify(mDeleteDialogHelper)
                 .showConfirmation(
-                        eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
+                        eq(title), eq(message), eq(confirmButtonText), any(Runnable.class));
     }
 
     @Test
@@ -328,7 +330,8 @@ public class CredentialEditControllerTest {
                 resources.getString(R.string.password_entry_edit_delete_credential_dialog_title);
         String message =
                 resources.getString(R.string.password_entry_edit_deletion_dialog_body, TEST_URL);
-        int confirmButtonTextId = R.string.password_entry_edit_delete_credential_dialog_confirm;
+        String confirmButtonText =
+                resources.getString(R.string.password_entry_edit_delete_credential_dialog_confirm);
 
         doAnswer(
                         (invocation) -> {
@@ -338,13 +341,13 @@ public class CredentialEditControllerTest {
                         })
                 .when(mDeleteDialogHelper)
                 .showConfirmation(
-                        eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
+                        eq(title), eq(message), eq(confirmButtonText), any(Runnable.class));
 
         mMediator.onDelete();
 
         verify(mDeleteDialogHelper)
                 .showConfirmation(
-                        eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
+                        eq(title), eq(message), eq(confirmButtonText), any(Runnable.class));
         verify(mCredentialActionDelegate).deleteCredential();
 
         assertThat(
@@ -375,7 +378,10 @@ public class CredentialEditControllerTest {
         verify(mDeleteDialogHelper, never()).getResources();
         verify(mDeleteDialogHelper, never())
                 .showConfirmation(
-                        any(String.class), any(String.class), anyInt(), any(Runnable.class));
+                        any(String.class),
+                        any(String.class),
+                        any(String.class),
+                        any(Runnable.class));
         verify(mCredentialActionDelegate).deleteCredential();
 
         assertThat(
