@@ -54,31 +54,23 @@ struct TabUiUpdate {
 };
 
 auto GetNewUiStateFn(ActorUiStateManager& manager) {
-  return Visitor{
-      [&manager](const StartingToActOnTab& e) -> TabUiUpdate {
-        auto* tab = e.tab_handle.Get();
-        if (auto* tab_controller = manager.GetUiTabController(tab)) {
-          tab_controller->SetActiveTaskId(e.task_id);
-        }
-        return TabUiUpdate{tab, GetAgentControlledUiTabState()};
-      },
-      [&manager](const StoppedActingOnTab& e) -> TabUiUpdate {
-        auto* tab = e.tab_handle.Get();
-        if (auto* tab_controller = manager.GetUiTabController(tab)) {
-          tab_controller->ClearActiveTaskId();
-        }
-        return TabUiUpdate{tab, GetCompletedUiTabState()};
-      },
-      [](const MouseClick& e) -> TabUiUpdate {
-        UiTabState ui_tab_state = GetAgentControlledUiTabState();
-        ui_tab_state.actor_overlay.mouse_down = true;
-        return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-      },
-      [](const MouseMove& e) -> TabUiUpdate {
-        UiTabState ui_tab_state = GetAgentControlledUiTabState();
-        ui_tab_state.actor_overlay.mouse_target = e.target;
-        return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-      }};
+  return Visitor{[&manager](const StartingToActOnTab& e) -> TabUiUpdate {
+                   auto* tab = e.tab_handle.Get();
+                   if (auto* tab_controller = manager.GetUiTabController(tab)) {
+                     tab_controller->SetActiveTaskId(e.task_id);
+                   }
+                   return TabUiUpdate{tab, GetAgentControlledUiTabState()};
+                 },
+                 [](const MouseClick& e) -> TabUiUpdate {
+                   UiTabState ui_tab_state = GetAgentControlledUiTabState();
+                   ui_tab_state.actor_overlay.mouse_down = true;
+                   return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+                 },
+                 [](const MouseMove& e) -> TabUiUpdate {
+                   UiTabState ui_tab_state = GetAgentControlledUiTabState();
+                   ui_tab_state.actor_overlay.mouse_target = e.target;
+                   return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+                 }};
 }
 
 // TODO(crbug.com/424495020): Bool may be converted to a map of ui
@@ -202,6 +194,15 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
                      },
                      [this](const TaskStateChanged& e) {
                        this->OnActorTaskStateChange(e.task_id, e.state);
+                     },
+                     [this](const StoppedActingOnTab& e) {
+                       auto* tab = e.tab_handle.Get();
+                       if (auto* tab_controller = GetUiTabController(tab)) {
+                         tab_controller->ClearActiveTaskId();
+                         tab_controller->OnUiTabStateChange(
+                             GetCompletedUiTabState(),
+                             base::BindOnce(&LogUiChangeError));
+                       }
                      }},
              event);
 }

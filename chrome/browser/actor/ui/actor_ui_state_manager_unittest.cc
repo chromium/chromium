@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/mock_event_dispatcher.h"
+#include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -363,6 +364,11 @@ class ActorUiStateManagerUiEventUiTabScopedTest
  public:
   void VerifyUiEvent(AsyncUiEvent event, UiTabState expected_state) {
     OnUiEventComplete(event);
+    EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_state);
+  }
+
+  void VerifyUiEvent(SyncUiEvent event, UiTabState expected_state) {
+    actor_ui_state_manager()->OnUiEvent(event);
     EXPECT_EQ(actor_ui_state_manager()->GetUiTabState(), expected_state);
   }
 
