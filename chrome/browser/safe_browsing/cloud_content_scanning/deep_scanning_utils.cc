@@ -164,15 +164,10 @@ void MaybeReportDeepScanningVerdict(
     const enterprise_connectors::ContentAnalysisResponse& response,
     enterprise_connectors::EventResult event_result) {
   DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
-  // TODO(crbug.com/432679921): Remove unused safe browsing router and make
-  // reporting event router better at handling test cases in which the reporting
-  // set-up is missing.
-  auto* safe_browsing_router =
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   auto* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile);
-  if (!safe_browsing_router || !reporting_event_router) {
+  if (!reporting_event_router) {
     return;
   }
 
