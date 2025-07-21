@@ -18,11 +18,7 @@ proto_library("chrome_track_event") {
     # Wrapper file importing all files in `chrome_track_event_sources`.
     chrome_track_event_descriptor_source,
   ]
-  import_dirs = [
-    # `chrome_track_event_descriptor_source` imports protos from the current dir.
-    "//base/tracing/protos/",
-    "//third_party/perfetto/",
-  ]
+  import_dirs = [ "//third_party/perfetto/" ]
   generate_cc = false
   generate_python = false
   generate_descriptor = "chrome_track_event.descriptor"
