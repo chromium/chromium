@@ -413,11 +413,13 @@ void PasswordChangeUIController::ShowDialog(
   // TODO(crbug.com/338254375): Remove once it is a default state.
   model_host->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  auto tab_dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
+  tab_dialog_params->close_on_navigate = false;
   dialog_widget_ = tab_interface_->GetTabFeatures()
                        ->tab_dialog_manager()
-                       ->CreateAndShowDialog(
-                           model_host.release(),
-                           std::make_unique<tabs::TabDialogManager::Params>());
+                       ->CreateAndShowDialog(model_host.release(),
+                                             std::move(tab_dialog_params));
   dialog_widget_->MakeCloseSynchronous(
       base::BindOnce(&PasswordChangeUIController::CloseDialogWidget,
                      weak_ptr_factory_.GetWeakPtr()));
