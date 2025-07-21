@@ -697,6 +697,8 @@ component("views") {
       "controls/views_text_services_context_menu_mac.mm",
       "drag_utils_mac.mm",
       "event_monitor_mac.mm",
+      "event_monitor_remote_cocoa.h",
+      "event_monitor_remote_cocoa.mm",
       "metrics_mac.cc",
       "style/platform_style_mac.mm",
       "widget/native_widget_mac.mm",
