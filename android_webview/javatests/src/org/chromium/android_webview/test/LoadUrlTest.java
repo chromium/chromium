@@ -6,9 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
-import android.content.Context;
 import android.util.Base64;
-import android.view.ViewGroup;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
@@ -23,15 +21,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContents.DependencyFactory;
-import org.chromium.android_webview.AwContents.InternalAccessDelegate;
-import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.WebviewErrorCode;
-import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
@@ -804,30 +796,6 @@ public class LoadUrlTest extends AwParameterizedTest {
             Assert.assertEquals(iframeLoadedMessage, addMessageToConsoleHelper.getMessage());
         } finally {
             webServer.shutdown();
-        }
-    }
-
-    static class TestAwContentsClientTestDependencyFactory
-            extends AwActivityTestRule.TestDependencyFactory {
-        @Override
-        public AwContents createAwContents(
-                AwBrowserContext browserContext,
-                ViewGroup containerView,
-                Context context,
-                InternalAccessDelegate internalAccessAdapter,
-                AwDrawFnImpl.DrawFnAccess drawFnAccess,
-                AwContentsClient contentsClient,
-                AwSettings settings,
-                DependencyFactory dependencyFactory) {
-            return new TestAwContents(
-                    browserContext,
-                    containerView,
-                    context,
-                    internalAccessAdapter,
-                    drawFnAccess,
-                    contentsClient,
-                    settings,
-                    dependencyFactory);
         }
     }
 }

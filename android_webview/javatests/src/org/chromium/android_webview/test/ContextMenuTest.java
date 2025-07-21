@@ -22,7 +22,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 import android.util.Pair;
-import android.view.ViewGroup;
 
 import androidx.activity.ComponentDialog;
 import androidx.core.content.ContextCompat;
@@ -43,12 +42,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.AwBrowserContext;
-import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContents.DependencyFactory;
-import org.chromium.android_webview.AwContents.InternalAccessDelegate;
-import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.contextmenu.AwContextMenuCoordinator;
@@ -56,7 +49,6 @@ import org.chromium.android_webview.contextmenu.AwContextMenuHeaderCoordinator;
 import org.chromium.android_webview.contextmenu.AwContextMenuHeaderProperties;
 import org.chromium.android_webview.contextmenu.AwContextMenuHelper;
 import org.chromium.android_webview.contextmenu.AwContextMenuPopulator;
-import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -841,31 +833,6 @@ public class ContextMenuTest extends AwParameterizedTest {
                 Assert.assertEquals(
                         "Pixels differ at (" + x + "," + y + ")", expectedPixel, actualPixel);
             }
-        }
-    }
-
-    // TODO (yaris): refactor this class into a separate file and use it here and in LoadUrlTest.
-    static class TestAwContentsClientTestDependencyFactory
-            extends AwActivityTestRule.TestDependencyFactory {
-        @Override
-        public AwContents createAwContents(
-                AwBrowserContext browserContext,
-                ViewGroup containerView,
-                Context context,
-                InternalAccessDelegate internalAccessAdapter,
-                AwDrawFnImpl.DrawFnAccess drawFnAccess,
-                AwContentsClient contentsClient,
-                AwSettings settings,
-                DependencyFactory dependencyFactory) {
-            return new TestAwContents(
-                    browserContext,
-                    containerView,
-                    context,
-                    internalAccessAdapter,
-                    drawFnAccess,
-                    contentsClient,
-                    settings,
-                    dependencyFactory);
         }
     }
 }
