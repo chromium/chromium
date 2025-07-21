@@ -181,6 +181,16 @@ PreloadDecoder::PreloadDecoder(const uint8_t* huffman_tree,
       bit_reader_(trie, trie_bits),
       trie_root_position_(trie_root_position) {}
 
+PreloadDecoder::PreloadDecoder(base::span<const uint8_t> huffman_tree,
+                               base::span<const uint8_t> trie,
+                               size_t trie_bits,
+                               size_t trie_root_position)
+    : huffman_decoder_(huffman_tree.data(), huffman_tree.size()),
+      bit_reader_(trie.data(), trie_bits),
+      trie_root_position_(trie_root_position) {
+  CHECK_LE((trie_bits + 7) / 8, trie.size());
+}
+
 PreloadDecoder::~PreloadDecoder() = default;
 
 bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {

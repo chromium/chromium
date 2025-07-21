@@ -81,21 +81,19 @@ std::string FormatVectorAsArray(const std::vector<uint8_t>& bytes) {
 
 std::string WritePinsetList(const std::string& name,
                             const std::vector<std::string>& pins) {
-  std::string output = "static const char* const " + name + "[] = {";
+  std::string output =
+      "static constexpr SHA256HashValue const * " + name + "[] = {";
   output.append(kNewLine);
 
   for (const auto& pin_name : pins) {
     output.append(kIndent);
     output.append(kIndent);
+    output.append("&");
     output.append(FormatSPKIName(pin_name));
     output.append(",");
     output.append(kNewLine);
   }
 
-  output.append(kIndent);
-  output.append(kIndent);
-  output.append("nullptr,");
-  output.append(kNewLine);
   output.append("};");
 
   return output;
@@ -189,25 +187,22 @@ void PreloadedStateGenerator::ProcessSPKIHashes(const Pinsets& pinset,
     const std::string& name = current.first;
     const SPKIHash& hash = current.second;
 
-    output.append("static const char " + FormatSPKIName(name) + "[] =");
+    output.append("static constexpr SHA256HashValue " + FormatSPKIName(name) +
+                  " = {");
     output.append(kNewLine);
 
     for (size_t i = 0; i < hash.size() / 16; ++i) {
       output.append(kIndent);
       output.append(kIndent);
-      output.append("\"");
 
       for (size_t j = i * 16; j < ((i + 1) * 16); ++j) {
-        base::StringAppendF(&output, "\\x%02x", hash.span()[j]);
+        base::StringAppendF(&output, "0x%02x, ", hash.span()[j]);
       }
 
-      output.append("\"");
-      if (i + 1 == hash.size() / 16) {
-        output.append(";");
-      }
       output.append(kNewLine);
     }
 
+    output.append("};");
     output.append(kNewLine);
   }
 
@@ -234,7 +229,9 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
         WritePinsetList(accepted_pins_names, pinset_ptr->static_spki_hashes()));
     certs_output.append(kNewLine);
 
-    std::string rejected_pins_names = "kNoRejectedPublicKeys";
+    // Initialized with a placeholder for when no public keys are rejected.
+    std::string rejected_pins_names = "{}";
+
     if (pinset_ptr->bad_static_spki_hashes().size()) {
       rejected_pins_names = FormatRejectedKeyName(uppercased_name);
       certs_output.append(WritePinsetList(

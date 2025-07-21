@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 
 namespace net::extras {
@@ -112,6 +113,11 @@ class PreloadDecoder {
   PreloadDecoder(const uint8_t* huffman_tree,
                  size_t huffman_tree_size,
                  const uint8_t* trie,
+                 size_t trie_bits,
+                 size_t trie_root_position);
+
+  PreloadDecoder(base::span<const uint8_t> huffman_tree,
+                 base::span<const uint8_t> trie,
                  size_t trie_bits,
                  size_t trie_root_position);
 

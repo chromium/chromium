@@ -12,27 +12,21 @@
 
 [[SPKI_HASHES]]
 
-static const char* const kNoRejectedPublicKeys[] = {
-    nullptr,
-};
-
 [[ACCEPTABLE_CERTS]]
 
-static const struct net::TransportSecurityStateSource::Pinset kPinsets[] = [[PINSETS]];
+static constexpr net::TransportSecurityStateSource::Pinset kPinsets[] = [[PINSETS]];
 
-static const uint8_t kHSTSHuffmanTree[] = [[HUFFMAN_TREE]];
+static constexpr uint8_t kHSTSHuffmanTree[] = [[HUFFMAN_TREE]];
 
-static const uint8_t kPreloadedHSTSData[] = [[HSTS_TRIE]];
+static constexpr uint8_t kPreloadedHSTSData[] = [[HSTS_TRIE]];
 
-static const unsigned kPreloadedHSTSBits = [[HSTS_TRIE_BITS]];
-static const unsigned kHSTSRootPosition = [[HSTS_TRIE_ROOT]];
+static constexpr unsigned kPreloadedHSTSBits = [[HSTS_TRIE_BITS]];
+static constexpr unsigned kHSTSRootPosition = [[HSTS_TRIE_ROOT]];
 
-static const net::TransportSecurityStateSource kHSTSSource = {
+static constexpr net::TransportSecurityStateSource kHSTSSource = {
   kHSTSHuffmanTree,
-  sizeof(kHSTSHuffmanTree),
   kPreloadedHSTSData,
   kPreloadedHSTSBits,
   kHSTSRootPosition,
   kPinsets,
-  std::size(kPinsets)
 };

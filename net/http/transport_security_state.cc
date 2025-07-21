@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/transport_security_state.h"
 
 #include <algorithm>
@@ -79,14 +74,6 @@ bool HashesIntersect(const absl::flat_hash_set<SHA256HashValue>& a,
     }
   }
   return false;
-}
-
-bool AddHash(base::span<const uint8_t> sha256_hash,
-             absl::flat_hash_set<SHA256HashValue>& out) {
-  SHA256HashValue value;
-  base::span(value).copy_from(sha256_hash);
-  out.insert(value);
-  return true;
 }
 
 // Converts |hostname| from dotted form ("www.google.com") to the form
@@ -223,9 +210,8 @@ bool DecodeHSTSPreload(std::string_view search_hostname, PreloadResult* out) {
   }
 
   HSTSPreloadDecoder decoder(
-      g_hsts_source->huffman_tree, g_hsts_source->huffman_tree_size,
-      g_hsts_source->preloaded_data, g_hsts_source->preloaded_bits,
-      g_hsts_source->root_position);
+      g_hsts_source->huffman_tree, g_hsts_source->preloaded_data,
+      g_hsts_source->preloaded_bits, g_hsts_source->root_position);
   if (!decoder.Decode(hostname, &found)) {
     DCHECK(false) << "Internal error in DecodeHSTSPreload for hostname "
                   << hostname;
@@ -707,8 +693,9 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
       search_hostname = search_hostname.substr(dot_pos + 1);
     }
   } else if (DecodeHSTSPreload(host, &result) && result.has_pins) {
-    if (result.pinset_id >= g_hsts_source->pinsets_count)
+    if (result.pinset_id >= g_hsts_source->pinsets.size()) {
       return false;
+    }
 
     pkp_result->domain = host.substr(result.hostname_offset);
     pkp_result->include_subdomains = result.pkp_include_subdomains;
@@ -717,25 +704,11 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
     const TransportSecurityStateSource::Pinset* pinset =
         &g_hsts_source->pinsets[result.pinset_id];
 
-    if (pinset->accepted_pins) {
-      // TODO(crbug.com/41286522): Try to change the preload code generator to
-      // generate the pins as `constexpr array<uint8_t, 32>` to simplify this.
-      const char* const* sha256_hash = pinset->accepted_pins;
-      while (*sha256_hash) {
-        AddHash(UNSAFE_TODO(base::as_bytes(base::span<const char>(
-                    *sha256_hash, crypto::hash::kSha256Size))),
-                pkp_result->spki_hashes);
-        sha256_hash++;
-      }
+    for (const SHA256HashValue* hash : pinset->accepted_pins) {
+      pkp_result->spki_hashes.insert(*hash);
     }
-    if (pinset->rejected_pins) {
-      const char* const* sha256_hash = pinset->rejected_pins;
-      while (*sha256_hash) {
-        AddHash(UNSAFE_TODO(base::as_bytes(base::span<const char>(
-                    *sha256_hash, crypto::hash::kSha256Size))),
-                pkp_result->bad_spki_hashes);
-        sha256_hash++;
-      }
+    for (const SHA256HashValue* hash : pinset->rejected_pins) {
+      pkp_result->bad_spki_hashes.insert(*hash);
     }
     return true;
   }
