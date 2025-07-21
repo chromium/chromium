@@ -69,6 +69,7 @@ BASE_DECLARE_FEATURE(kSwitchToKeyMintOnTOverride);
 BASE_DECLARE_FEATURE(kSyncInstallPriority);
 BASE_DECLARE_FEATURE(kUnthrottleOnActiveAudioV2);
 BASE_DECLARE_FEATURE(kVideoDecoder);
+BASE_DECLARE_FEATURE(kVideoEncodeUseMappableSI);
 BASE_DECLARE_FEATURE(kVmMemoryPSIReports);
 BASE_DECLARE_FEATURE_PARAM(int, kVmMemoryPSIReportsPeriod);
 BASE_DECLARE_FEATURE(kVmMemorySize);
