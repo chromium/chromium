@@ -111,10 +111,23 @@ class IsolatedWebAppReaderRegistry
   };
 
  private:
+  class Cache;
+
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
                            TestConcurrentRequests);
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
                            TestSignedWebBundleReaderLifetime);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReaderCacheState {
+    kNotCached = 0,
+    kCachedReady = 1,
+    kCachedPending = 2,
+    kMaxValue = kCachedPending
+  };
+
+  bool IsCleanupTimerRunningForTesting() const;
 
   // IwaKeyDistributionInfoProvider::Observer:
   void OnComponentUpdateSuccess(const base::Version& version,
@@ -135,119 +148,6 @@ class IsolatedWebAppReaderRegistry
       base::expected<IsolatedWebAppResponseReader::Response,
                      IsolatedWebAppResponseReader::Error> response);
 
-  enum class ReaderCacheState;
-
-  // A thin wrapper around `base::flat_map<Cache::Key, Cache::Entry>` that
-  // automatically removes entries from the cache if they have not been accessed
-  // for some time. This makes sure that `IsolatedWebAppResponseReader`s are not
-  // kept alive indefinitely, since each of them holds an open file handle and
-  // memory.
-  class Cache {
-   public:
-    using Key = base::FilePath;
-
-    class Entry;
-
-    Cache();
-    ~Cache();
-
-    Cache(Cache&& other) = delete;
-    Cache& operator=(Cache&& other) = delete;
-
-    base::flat_map<Key, Entry>::iterator Find(const Key& key);
-
-    base::flat_map<Key, Entry>::iterator End();
-
-    template <class... Args>
-    std::pair<base::flat_map<Key, Entry>::iterator, bool> Emplace(
-        Args&&... args);
-
-    void Erase(base::flat_map<Key, Entry>::iterator iterator);
-
-    // A cache `Entry` has two states: In its initial `kPending` state, it
-    // caches requests made to a Signed Web Bundle until an
-    // `IsolatedWebAppResponseReader` is ready. Once the
-    // `IsolatedWebAppResponseReader` is ready and set via `set_reader`, all
-    // queued requests are run and the state is updated to `kReady`.
-    class Entry {
-     public:
-      Entry();
-      ~Entry();
-
-      Entry(const Entry& other) = delete;
-      Entry& operator=(const Entry& other) = delete;
-
-      Entry(Entry&& other);
-      Entry& operator=(Entry&& other);
-
-      IsolatedWebAppResponseReader& GetReader() {
-        DCHECK(reader_);
-        last_access_ = base::TimeTicks::Now();
-        return *reader_;
-      }
-
-      const base::TimeTicks last_access() const { return last_access_; }
-
-      ReaderCacheState AsReaderCacheState() {
-        switch (state()) {
-          case State::kPending:
-            return ReaderCacheState::kCachedPending;
-          case State::kReady:
-            return ReaderCacheState::kCachedReady;
-        }
-      }
-
-      enum class State { kPending, kReady };
-      State state() const { return reader_ ? State::kReady : State::kPending; }
-
-      bool IsCloseReaderRequested() const;
-      void SetCloseReaderCallback(base::OnceClosure callback);
-      base::OnceClosure GetCloseReaderCallback();
-
-      std::unique_ptr<IsolatedWebAppResponseReader> StealReader();
-
-      void set_reader(std::unique_ptr<IsolatedWebAppResponseReader> reader) {
-        reader_ = std::move(reader);
-      }
-
-      std::vector<std::pair<network::ResourceRequest,
-                            IsolatedWebAppReaderRegistry::ReadResponseCallback>>
-          pending_requests;
-
-     private:
-      std::unique_ptr<IsolatedWebAppResponseReader> reader_;
-      // The point in time when the `reader` was last accessed.
-      base::TimeTicks last_access_;
-      base::OnceClosure pending_closed_callback_;
-    };
-
-    bool IsCleanupTimerRunningForTesting() const {
-      return cleanup_timer_.IsRunning();
-    }
-
-   private:
-    void StartCleanupTimerIfNotRunning();
-
-    void StopCleanupTimerIfCacheIsEmpty();
-
-    void CleanupOldEntries();
-
-    base::flat_map<Key, Entry> cache_;
-    base::RepeatingTimer cleanup_timer_;
-    SEQUENCE_CHECKER(sequence_checker_);
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class ReaderCacheState {
-    kNotCached = 0,
-    kCachedReady = 1,
-    kCachedPending = 2,
-    kMaxValue = kCachedPending
-  };
-
-  Cache reader_cache_;
-
   base::ScopedObservation<IwaKeyDistributionInfoProvider,
                           IwaKeyDistributionInfoProvider::Observer>
       key_distribution_info_observation_{this};
@@ -260,6 +160,8 @@ class IsolatedWebAppReaderRegistry
   const raw_ref<Profile> profile_;
 
   std::unique_ptr<IsolatedWebAppResponseReaderFactory> reader_factory_;
+
+  std::unique_ptr<Cache> cache_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<IsolatedWebAppReaderRegistry> weak_ptr_factory_{this};

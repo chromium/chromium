@@ -430,7 +430,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
 #endif
 
   // Verify that the cache cleanup timer has not yet started.
-  EXPECT_FALSE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
+  EXPECT_FALSE(registry_->IsCleanupTimerRunningForTesting());
 
   {
     base::test::TestFuture<ReadResult> read_response_future;
@@ -456,7 +456,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
   }
 
   // Verify that the cache cleanup timer has started.
-  EXPECT_TRUE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
+  EXPECT_TRUE(registry_->IsCleanupTimerRunningForTesting());
 
   {
     base::test::TestFuture<ReadResult> read_response_future;
@@ -474,7 +474,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
   }
 
   // Verify that the cache cleanup timer is still running.
-  EXPECT_TRUE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
+  EXPECT_TRUE(registry_->IsCleanupTimerRunningForTesting());
 
   // After some time has passed, the `SignedWebBundleReader` should be evicted
   // from the cache.
@@ -482,7 +482,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
 
   // Verify that the cache cleanup timer has stopped, given that the cache is
   // now empty again.
-  EXPECT_FALSE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
+  EXPECT_FALSE(registry_->IsCleanupTimerRunningForTesting());
 
   {
     base::test::TestFuture<ReadResult> read_response_future;
@@ -502,7 +502,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
   }
 
   // Verify that the cache cleanup timer has started again.
-  EXPECT_TRUE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
+  EXPECT_TRUE(registry_->IsCleanupTimerRunningForTesting());
 }
 
 class IsolatedWebAppReaderRegistryIntegrityBlockParserErrorTest
