@@ -54,7 +54,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -141,10 +140,6 @@
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
-#endif
 
 using content::BrowserThread;
 using content::NavigationController;
@@ -408,32 +403,6 @@ bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
     intersect_area += display_bounds.size().GetArea();
   }
   return intersect_area >= (bounds.size().GetArea() / 2);
-}
-
-void NotifyExtensionTelemetry(Profile* profile,
-                              const Extension* extension,
-                              safe_browsing::TabsApiInfo::ApiMethod api_method,
-                              const std::string& current_url,
-                              const std::string& new_url,
-                              const std::optional<StackTrace>& js_callstack) {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  // Ignore API calls that are not invoked by extensions.
-  if (!extension) {
-    return;
-  }
-
-  auto* extension_telemetry_service =
-      safe_browsing::ExtensionTelemetryService::Get(profile);
-
-  if (!extension_telemetry_service || !extension_telemetry_service->enabled()) {
-    return;
-  }
-
-  auto tabs_api_signal = std::make_unique<safe_browsing::TabsApiSignal>(
-      extension->id(), api_method, current_url, new_url,
-      js_callstack.value_or(StackTrace()));
-  extension_telemetry_service->AddSignal(std::move(tabs_api_signal));
-#endif
 }
 
 class ScopedPinBrowserAtFront {
@@ -1276,11 +1245,13 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
       return Error(result.error());
     }
 
-    NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
-                             extension(), safe_browsing::TabsApiInfo::CREATE,
-                             /*current_url=*/std::string(),
-                             options.url.value_or(std::string()),
-                             js_callstack());
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+    tabs_internal::NotifyExtensionTelemetry(
+        Profile::FromBrowserContext(browser_context()), extension(),
+        safe_browsing::TabsApiInfo::CREATE,
+        /*current_url=*/std::string(), options.url.value_or(std::string()),
+        js_callstack());
+#endif
 
     // Return data about the newly created tab.
     return has_callback() ? WithArguments(std::move(*result)) : NoArguments();
@@ -1602,9 +1573,12 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
       return RespondNow(Error(std::move(error)));
     }
 
-    NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
-                             extension(), safe_browsing::TabsApiInfo::UPDATE,
-                             current_url, updated_url, js_callstack());
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+    tabs_internal::NotifyExtensionTelemetry(
+        Profile::FromBrowserContext(browser_context()), extension(),
+        safe_browsing::TabsApiInfo::UPDATE, current_url, updated_url,
+        js_callstack());
+#endif
   }
 
   return RespondNow(GetResult());
@@ -1840,118 +1814,6 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
 
   return RespondNow(NoArguments());
 }
-
-TabsRemoveFunction::TabsRemoveFunction() = default;
-TabsRemoveFunction::~TabsRemoveFunction() = default;
-
-ExtensionFunction::ResponseAction TabsRemoveFunction::Run() {
-  std::optional<tabs::Remove::Params> params =
-      tabs::Remove::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::string error;
-  if (params->tab_ids.as_integers) {
-    std::vector<int>& tab_ids = *params->tab_ids.as_integers;
-    for (int tab_id : tab_ids) {
-      if (!RemoveTab(tab_id, &error)) {
-        return RespondNow(Error(std::move(error)));
-      }
-    }
-  } else {
-    EXTENSION_FUNCTION_VALIDATE(params->tab_ids.as_integer);
-    if (!RemoveTab(*params->tab_ids.as_integer, &error)) {
-      return RespondNow(Error(std::move(error)));
-    }
-  }
-  triggered_all_tab_removals_ = true;
-  DCHECK(!did_respond());
-  // WebContentsDestroyed will return the response in most cases, except when
-  // the last tab closed immediately (it won't return a response because
-  // |triggered_all_tab_removals_| will still be false). In this case we should
-  // return the response from here.
-  if (remaining_tabs_count_ == 0) {
-    return RespondNow(NoArguments());
-  }
-  return RespondLater();
-}
-
-bool TabsRemoveFunction::RemoveTab(int tab_id, std::string* error) {
-  WindowController* window = nullptr;
-  WebContents* contents = nullptr;
-  if (!tabs_internal::GetTabById(tab_id, browser_context(),
-                                 include_incognito_information(), &window,
-                                 &contents, nullptr, error) ||
-      !window) {
-    return false;
-  }
-
-  // Don't let the extension remove a tab if the user is dragging tabs around.
-  if (!window->HasEditableTabStrip()) {
-    *error = ExtensionTabUtil::kTabStripNotEditableError;
-    return false;
-  }
-
-  // Get last committed or pending URL.
-  std::string current_url = contents->GetVisibleURL().is_valid()
-                                ? contents->GetVisibleURL().spec()
-                                : std::string();
-  NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
-                           extension(), safe_browsing::TabsApiInfo::REMOVE,
-                           current_url, /*new_url=*/std::string(),
-                           js_callstack());
-
-  // The tab might not immediately close after calling Close() below, so we
-  // should wait until WebContentsDestroyed is called before responding.
-  web_contents_destroyed_observers_.push_back(
-      std::make_unique<WebContentsDestroyedObserver>(this, contents));
-  // Ensure that we're going to keep this class alive until
-  // |remaining_tabs_count| reaches zero. This relies on WebContents::Close()
-  // always (eventually) resulting in a WebContentsDestroyed() call; otherwise,
-  // this function will never respond and may leak.
-  AddRef();
-  remaining_tabs_count_++;
-
-  // There's a chance that the tab is being dragged, or we're in some other
-  // nested event loop. This code path ensures that the tab is safely closed
-  // under such circumstances, whereas |TabStripModel::CloseWebContentsAt()|
-  // does not.
-  contents->Close();
-  return true;
-}
-
-void TabsRemoveFunction::TabDestroyed() {
-  DCHECK_GT(remaining_tabs_count_, 0);
-  // One of the tabs we wanted to remove had been destroyed.
-  remaining_tabs_count_--;
-  // If we've triggered all the tab removals we need, and this is the last tab
-  // we're waiting for and we haven't sent a response (it's possible that we've
-  // responded earlier in case of errors, etc.), send a response.
-  if (triggered_all_tab_removals_ && remaining_tabs_count_ == 0 &&
-      !did_respond()) {
-    Respond(NoArguments());
-  }
-  Release();
-}
-
-class TabsRemoveFunction::WebContentsDestroyedObserver
-    : public content::WebContentsObserver {
- public:
-  WebContentsDestroyedObserver(extensions::TabsRemoveFunction* owner,
-                               content::WebContents* watched_contents)
-      : content::WebContentsObserver(watched_contents), owner_(owner) {}
-
-  ~WebContentsDestroyedObserver() override = default;
-  WebContentsDestroyedObserver(const WebContentsDestroyedObserver&) = delete;
-  WebContentsDestroyedObserver& operator=(const WebContentsDestroyedObserver&) =
-      delete;
-
-  // WebContentsObserver
-  void WebContentsDestroyed() override { owner_->TabDestroyed(); }
-
- private:
-  // Guaranteed to outlive this object.
-  raw_ptr<extensions::TabsRemoveFunction> owner_;
-};
 
 ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   std::optional<tabs::Group::Params> params =
@@ -2210,14 +2072,16 @@ ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   // Get last committed URL.
   std::string current_url = contents->GetLastCommittedURL().is_valid()
                                 ? contents->GetLastCommittedURL().spec()
                                 : std::string();
-  NotifyExtensionTelemetry(
+  tabs_internal::NotifyExtensionTelemetry(
       Profile::FromBrowserContext(browser_context()), extension(),
       safe_browsing::TabsApiInfo::CAPTURE_VISIBLE_TAB, current_url,
       /*new_url=*/std::string(), js_callstack());
+#endif
 
   // NOTE: CaptureAsync() may invoke its callback from a background thread,
   // hence the BindPostTask().

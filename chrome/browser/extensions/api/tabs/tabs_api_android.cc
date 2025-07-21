@@ -221,16 +221,6 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-TabsRemoveFunction::TabsRemoveFunction() = default;
-TabsRemoveFunction::~TabsRemoveFunction() = default;
-
-ExtensionFunction::ResponseAction TabsRemoveFunction::Run() {
-  std::optional<tabs::Remove::Params> params =
-      tabs::Remove::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   std::optional<tabs::Group::Params> params =
       tabs::Group::Params::Create(args());

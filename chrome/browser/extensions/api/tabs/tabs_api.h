@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -27,6 +28,10 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #endif
 
 class BrowserWindowInterface;
@@ -114,6 +119,16 @@ bool GetTabById(int tab_id,
                 content::WebContents** contents_out,
                 int* index_out,
                 std::string* error_out);
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+// Notifies the safe browsing telemetry service of a relevant extension action.
+void NotifyExtensionTelemetry(Profile* profile,
+                              const Extension* extension,
+                              safe_browsing::TabsApiInfo::ApiMethod api_method,
+                              const std::string& current_url,
+                              const std::string& new_url,
+                              const std::optional<StackTrace>& js_callstack);
+#endif
 
 }  // namespace tabs_internal
 
@@ -254,11 +269,10 @@ class TabsRemoveFunction : public ExtensionFunction {
   int remaining_tabs_count_ = 0;
   bool triggered_all_tab_removals_ = false;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   class WebContentsDestroyedObserver;
   std::vector<std::unique_ptr<WebContentsDestroyedObserver>>
       web_contents_destroyed_observers_;
-#endif
+
   DECLARE_EXTENSION_FUNCTION("tabs.remove", TABS_REMOVE)
 };
 class TabsGroupFunction : public ExtensionFunction {
