@@ -44,13 +44,14 @@ constexpr base::TimeDelta kSleepBetweenTriggerFormExtractionCalls =
     base::Seconds(1);
 constexpr base::TimeDelta kTimeout = base::Minutes(30);
 
-constexpr auto kSupportedFormTypes = base::MakeFixedFlatSet<autofill::FormType>(
+constexpr auto kSupportedFormTypes = autofill::DenseSet<autofill::FormType>(
     {autofill::FormType::kAddressForm, autofill::FormType::kCreditCardForm});
 
 constexpr auto kAddressFieldTypes =
-    base::MakeFixedFlatSet<autofill::FieldTypeGroup>(
+    autofill::DenseSet<autofill::FieldTypeGroup>(
         {autofill::FieldTypeGroup::kName, autofill::FieldTypeGroup::kEmail,
-         autofill::FieldTypeGroup::kPhone, autofill::FieldTypeGroup::kAddress});
+         autofill::FieldTypeGroup::kPhone, autofill::FieldTypeGroup::kAddress,
+         autofill::FieldTypeGroup::kCompany});
 
 bool IsVisibleTextField(const autofill::AutofillField& field) {
   return field.IsFocusable() && field.IsTextInputElement();
