@@ -3416,7 +3416,7 @@
   {
     "name": "enable-fenced-frames-developer-mode",
     "owners": [ "dom@chromium.org", "shivanisha@chromium.org", "chrome-fenced-frames@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 144
   },
   {
     "name": "enable-fingerprinting-protection-blocklist",
