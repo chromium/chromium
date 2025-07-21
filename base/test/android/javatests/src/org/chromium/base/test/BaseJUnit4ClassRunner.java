@@ -549,8 +549,8 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         // assertions, and to match the semantics of Robolectric's runners.
         BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                 ResettersForTesting::afterClassHooksDidExecute);
-        ActivityFinisher.finishAll();
-        if (afterClassPassed) {
+        boolean finishSuccess = ActivityFinisher.finishAll();
+        if (afterClassPassed && finishSuccess) {
             LifetimeAssert.assertAllInstancesDestroyedForTesting();
         } else {
             LifetimeAssert.resetForTesting();
