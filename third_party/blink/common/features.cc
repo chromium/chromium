@@ -2781,10 +2781,6 @@ BASE_FEATURE(kWebFontsCacheAwareTimeoutAdaption,
 #endif
 );
 
-BASE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread,
-             "WebRtcCombinedNetworkAndWorkerThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
 // should be detangled such that software decoding can be enabled without
 // software encoding.

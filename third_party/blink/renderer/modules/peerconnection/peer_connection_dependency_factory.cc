@@ -291,11 +291,7 @@ class LocalNetworkAccessPermissionFactory final
 };
 
 std::string WorkerThreadName() {
-  if (base::FeatureList::IsEnabled(
-          features::kWebRtcCombinedNetworkAndWorkerThread)) {
-    return "WebRTC_W_and_N";
-  }
-  return "WebRTC_Worker";
+  return "WebRTC_W_and_N";
 }
 
 // Encapsulates process-wide static dependencies used by
@@ -306,12 +302,7 @@ class PeerConnectionStaticDeps {
  public:
   PeerConnectionStaticDeps()
       : chrome_signaling_thread_("WebRTC_Signaling"),
-        chrome_worker_thread_(WorkerThreadName()) {
-    if (!base::FeatureList::IsEnabled(
-            features::kWebRtcCombinedNetworkAndWorkerThread)) {
-      chrome_network_thread_.emplace("WebRTC_Network");
-    }
-  }
+        chrome_worker_thread_(WorkerThreadName()) {}
 
   ~PeerConnectionStaticDeps() {
     if (chrome_worker_thread_.IsRunning()) {
