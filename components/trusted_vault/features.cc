@@ -18,7 +18,7 @@ BASE_FEATURE(kSetClientEncryptionKeysJsApi,
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kEnableICloudKeychainRecoveryFactor,
              "EnableICloudKeychainRecoveryFactor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kEnableRegistrationStateSecurityDomainFiltering,
