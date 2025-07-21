@@ -246,7 +246,7 @@
 
 // Shows the UMA dialog so the user can manage metric reporting.
 - (void)showUMADialog {
-  DCHECK(!self.UMACoordinator);
+  CHECK(!self.UMACoordinator, base::NotFatalUntil::M144);
   self.UMACoordinator = [[UMACoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
@@ -256,7 +256,7 @@
 }
 
 - (void)showTOSPage {
-  DCHECK(!self.TOSCoordinator);
+  CHECK(!self.TOSCoordinator, base::NotFatalUntil::M144);
   self.mediator.TOSLinkWasTapped = YES;
   self.TOSCoordinator =
       [[TOSCoordinator alloc] initWithBaseViewController:self.viewController
@@ -331,7 +331,10 @@
 #pragma mark - FullscreenSigninScreenViewControllerDelegate
 
 - (void)showAccountPickerFromPoint:(CGPoint)point {
-  DCHECK(!self.identityChooserCoordinator);
+  if (self.identityChooserCoordinator) {
+    // This may occur if the user double tap on the identity button.
+    return;
+  }
   self.identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
