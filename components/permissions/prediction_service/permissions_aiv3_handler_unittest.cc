@@ -133,8 +133,6 @@ class Aiv3HandlerTestBase : public testing::Test {
         model_provider_.get(),
         /*optimization_target=*/kOptTargetGeolocation,
         /*request_type=*/RequestType::kGeolocation,
-        task_environment_.GetMainThreadTaskRunner(),
-        task_environment_.GetMainThreadTaskRunner(),
         std::move(geolocation_encoder_mock));
 
     auto notification_encoder_mock =
@@ -145,8 +143,6 @@ class Aiv3HandlerTestBase : public testing::Test {
         model_provider_.get(),
         /*optimization_target=*/kOptTargetNotification,
         /*request_type=*/RequestType::kNotifications,
-        task_environment_.GetMainThreadTaskRunner(),
-        task_environment_.GetMainThreadTaskRunner(),
         std::move(notification_encoder_mock));
   }
 

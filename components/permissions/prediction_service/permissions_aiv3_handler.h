@@ -27,9 +27,12 @@ class PermissionsAiv3Handler : public optimization_guide::ModelHandler<
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::proto::OptimizationTarget optimization_target,
       RequestType request_type,
-      scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
-      std::unique_ptr<PermissionsAiv3Encoder> model_executor);
+      std::unique_ptr<PermissionsAiv3Encoder> model_executor,
+      scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner =
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
+      scoped_refptr<base::SequencedTaskRunner> reply_task_runner =
+          base::SequencedTaskRunner::GetCurrentDefault());
   ~PermissionsAiv3Handler() override;
 
   PermissionsAiv3Handler(const PermissionsAiv3Handler&) = delete;

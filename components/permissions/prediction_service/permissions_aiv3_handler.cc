@@ -23,9 +23,9 @@ PermissionsAiv3Handler::PermissionsAiv3Handler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     optimization_guide::proto::OptimizationTarget optimization_target,
     RequestType request_type,
+    std::unique_ptr<PermissionsAiv3Encoder> model_executor,
     scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
-    std::unique_ptr<PermissionsAiv3Encoder> model_executor)
+    scoped_refptr<base::SequencedTaskRunner> reply_task_runner)
     : ModelHandler<ModelOutput, const ModelInput&>(
           model_provider,
           model_executor_task_runner,
@@ -43,10 +43,6 @@ PermissionsAiv3Handler::PermissionsAiv3Handler(
           model_provider,
           optimization_target,
           request_type,
-          /*model_executor_task_runner=*/
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
-          /*reply_task_runner-=*/base::SequencedTaskRunner::GetCurrentDefault(),
           /*model_executor=*/
           std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
 
