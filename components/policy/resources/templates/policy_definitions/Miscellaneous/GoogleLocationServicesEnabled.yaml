@@ -8,7 +8,7 @@ desc: |-
 
   Note: This policy deprecates the <ph name="ARC_GLS_POLICY_NAME">ArcGoogleLocationServicesEnabled</ph> policy. Also when this policy is set, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME">DefaultGeolocationSetting</ph> will no longer affect the <ph name="ANDROID_NAME">Android</ph> location preference on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 supported_on:
-- chrome_os:124-
+- chrome_os:128-
 features:
   dynamic_refresh: true
   internal_only: true
