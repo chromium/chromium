@@ -631,7 +631,7 @@ TEST_F(TipsNotificationClientTest, ClassifyUserLessEngaged) {
 }
 
 // Tests that the correct trigger time is used, depending on the user's
-// classification.
+// classification and notification type.
 TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
   EXPECT_EQ(
       TipsNotificationTriggerDelta(false, TipsNotificationUserType::kUnknown),
@@ -642,6 +642,10 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
   EXPECT_EQ(TipsNotificationTriggerDelta(
                 false, TipsNotificationUserType::kActiveSeeker),
             base::Days(7));
+  EXPECT_EQ(TipsNotificationTriggerDelta(
+                true, TipsNotificationUserType::kUnknown,
+                TipsNotificationType::kTrustedVaultKeyRetrieval),
+            base::Minutes(5));
 
   // Verify that the experimental settings can override the trigger time.
   [[NSUserDefaults standardUserDefaults] setInteger:111
@@ -662,6 +666,10 @@ TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
   EXPECT_EQ(
       TipsNotificationTriggerDelta(true, TipsNotificationUserType::kUnknown),
       base::Seconds(30));
+  EXPECT_EQ(TipsNotificationTriggerDelta(
+                true, TipsNotificationUserType::kUnknown,
+                TipsNotificationType::kTrustedVaultKeyRetrieval),
+            base::Seconds(30));
 }
 
 // Tests that the order of notification types changes correctly when the feature

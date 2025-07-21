@@ -73,10 +73,22 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
   }
 }
 
-// Returns the default trigger TimeDelta for the given `user_type` depending
-// on whether this is for a reactivation notification or not.
-base::TimeDelta DefaultTriggerDelta(bool for_reactivation,
-                                    TipsNotificationUserType user_type) {
+// Returns the default trigger TimeDelta for the given `user_type` and
+// `notification_type` depending on whether this is for a reactivation
+// notification or not.
+base::TimeDelta DefaultTriggerDelta(
+    bool for_reactivation,
+    TipsNotificationUserType user_type,
+    std::optional<TipsNotificationType> notification_type) {
+  if (notification_type.has_value() &&
+      notification_type.value() ==
+          TipsNotificationType::kTrustedVaultKeyRetrieval) {
+    // We need to use a short trigger delta for the notification type
+    // `kTrustedVaultKeyRetrieval` because we want to ensure that users fix the
+    // issue as soon as possible. The trigger delta of 5 minutes in this case
+    // has been chosen arbitrarily.
+    return base::Minutes(5);
+  }
   if (for_reactivation) {
     return base::Days(7);
   }
@@ -194,9 +206,10 @@ UNNotificationContent* ContentForTipsNotificationType(
 
 base::TimeDelta TipsNotificationTriggerDelta(
     bool for_reactivation,
-    TipsNotificationUserType user_type) {
+    TipsNotificationUserType user_type,
+    std::optional<TipsNotificationType> notification_type) {
   base::TimeDelta default_trigger =
-      DefaultTriggerDelta(for_reactivation, user_type);
+      DefaultTriggerDelta(for_reactivation, user_type, notification_type);
   if (for_reactivation) {
     return GetFieldTrialParamByFeatureAsTimeDelta(
         kIOSReactivationNotifications,

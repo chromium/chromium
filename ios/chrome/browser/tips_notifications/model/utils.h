@@ -118,7 +118,8 @@ UNNotificationContent* ContentForTipsNotificationType(
 // Returns the time delta used to trigger Tips notifications.
 base::TimeDelta TipsNotificationTriggerDelta(
     bool for_reactivation,
-    TipsNotificationUserType user_type);
+    TipsNotificationUserType user_type,
+    std::optional<TipsNotificationType> notification_type = std::nullopt);
 
 // Returns a bitfield indicating which types of notifications should be
 // enabled. Bits are assigned based on the enum `TipsNotificationType`.

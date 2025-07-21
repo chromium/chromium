@@ -336,53 +336,52 @@ void TipsNotificationClient::ClearAllRequestedNotifications() {
       ]];
 }
 
-void TipsNotificationClient::RequestNotification(TipsNotificationType type,
-                                                 std::string_view profile_name,
-                                                 base::OnceClosure completion) {
+void TipsNotificationClient::RequestNotification(
+    TipsNotificationType notification_type,
+    std::string_view profile_name,
+    base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::TimeDelta trigger_delta = TipsNotificationTriggerDelta(
+      CanSendReactivation(), user_type_, notification_type);
 
   if (IsNotificationCollisionManagementEnabled()) {
     ScheduledNotificationRequest request = {
         kTipsNotificationId,
-        ContentForTipsNotificationType(type, CanSendReactivation(),
+        ContentForTipsNotificationType(notification_type, CanSendReactivation(),
                                        profile_name),
-        // TODO(crbug.com/413671723): Implement the logic that uses an almost
-        // instant trigger delta for the notification type
-        // `kTrustedVaultKeyRetrieval` (because we want to ensure that users fix
-        // this issue as soon as possible).
-        TipsNotificationTriggerDelta(CanSendReactivation(), user_type_)};
+        trigger_delta};
     CheckRateLimitBeforeSchedulingNotification(
         request,
         base::BindPostTask(
             base::SequencedTaskRunner::GetCurrentDefault(),
             base::BindOnce(&TipsNotificationClient::OnNotificationRequested,
-                           weak_ptr_factory_.GetWeakPtr(), type)
+                           weak_ptr_factory_.GetWeakPtr(), notification_type)
                 .Then(std::move(completion))));
-    MarkNotificationTypeSent(type);
+    MarkNotificationTypeSent(notification_type);
     return;
   }
 
   UNNotificationRequest* request = [UNNotificationRequest
       requestWithIdentifier:kTipsNotificationId
                     content:ContentForTipsNotificationType(
-                                type, CanSendReactivation(), profile_name)
+                                notification_type, CanSendReactivation(),
+                                profile_name)
                     trigger:[UNTimeIntervalNotificationTrigger
-                                triggerWithTimeInterval:
-                                    TipsNotificationTriggerDelta(
-                                        CanSendReactivation(), user_type_)
-                                        .InSecondsF()
+                                triggerWithTimeInterval:trigger_delta
+                                                            .InSecondsF()
                                                 repeats:NO]];
 
   auto completion_block = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&TipsNotificationClient::OnNotificationRequested,
-                     weak_ptr_factory_.GetWeakPtr(), type)
+                     weak_ptr_factory_.GetWeakPtr(), notification_type)
           .Then(std::move(completion))));
 
   [UNUserNotificationCenter.currentNotificationCenter
       addNotificationRequest:request
        withCompletionHandler:completion_block];
-  MarkNotificationTypeSent(type);
+  MarkNotificationTypeSent(notification_type);
 }
 
 void TipsNotificationClient::OnNotificationRequested(TipsNotificationType type,
