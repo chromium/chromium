@@ -4,6 +4,8 @@ kenrb@chromium.org
 
 # Touch input and gesture relatated code.
 jonross@chromium.org
+amanvr@google.com
+kartarsingh@google.com
 
 # Surface ID propagation and synchronization, and compositing embedding
 # via DelegatedFrame*.
