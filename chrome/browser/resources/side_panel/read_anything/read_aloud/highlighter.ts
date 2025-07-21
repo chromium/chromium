@@ -224,52 +224,57 @@ export class ReadAloudHighlighter {
   private highlightCurrentWordOrPhrase_(highlightPhrases: boolean): void {
     this.resetCurrentHighlight_();
     this.resetPreviousHighlight();
-    const wordBoundaryState = this.wordBoundaries_.state;
-    const index = wordBoundaryState.speechUtteranceStartIndex +
-        wordBoundaryState.previouslySpokenIndex;
-    const speechUtteranceLength = wordBoundaryState.speechUtteranceLength;
-    let alreadyHighlightedSpeechUtteranceLength = 0;
-
-    const highlightNodes =
+    const {
+      speechUtteranceStartIndex,
+      previouslySpokenIndex,
+      speechUtteranceLength,
+    } = this.wordBoundaries_.state;
+    const index = speechUtteranceStartIndex + previouslySpokenIndex;
+    const highlightSegments =
         chrome.readingMode.getHighlightForCurrentSegmentIndex(
             index, highlightPhrases);
-    let hasHighlights = false;
-    for (const highlightNode of highlightNodes) {
-      const nodeId = highlightNode.nodeId;
-      const remainingSpeechUtteranceLength = Math.max(
-          speechUtteranceLength - alreadyHighlightedSpeechUtteranceLength, 0);
-      // For phrase highlighting, always use the length received from
-      // getHighlightForCurrentSegmentIndex. For word highlighting, use the word
-      // boundary received from the TTS engine if there is one.
-      const highlightLength: number =
-          (!highlightPhrases && speechUtteranceLength) ?
-          (remainingSpeechUtteranceLength) :
-          highlightNode.length;
-      const highlightStartIndex = highlightNode.start;
-      const endIndex = highlightStartIndex + highlightLength;
-      const node = this.nodeStore_.getDomNode(nodeId);
+    let accumulatedHighlightLength = 0;
+    let didApplyHighlight = false;
+    for (const segment of highlightSegments) {
+      const {nodeId, start, length: segmentLength} = segment;
 
+      const node = this.nodeStore_.getDomNode(nodeId);
       if (!node) {
         continue;
       }
-      const currentText =
-          node.textContent?.substring(highlightStartIndex, endIndex).trim();
-      if (this.isInvalidHighlightForWordHighlighting(currentText)) {
+
+
+      // For phrase highlighting, always use the segment length received from
+      // getHighlightForCurrentSegmentIndex. For word highlighting, prioritize
+      // the word boundary received from the TTS engine if there is one.
+      const useTtsWordLength = !highlightPhrases && speechUtteranceLength > 0;
+      const remainingTtsLength =
+          Math.max(speechUtteranceLength - accumulatedHighlightLength, 0);
+      const highlightLength =
+          useTtsWordLength ? remainingTtsLength : segmentLength;
+
+      if (highlightLength <= 0) {
         continue;
       }
 
+      const endIndex = start + highlightLength;
+      const textContent = node.textContent?.substring(start, endIndex).trim();
+      if (this.isInvalidHighlightForWordHighlighting(textContent)) {
+        continue;
+      }
+
+      const element = node as HTMLElement;
+      const highlightedNode =
+          this.highlightCurrentText_(start, endIndex, element);
+      this.nodeStore_.replaceDomNode(element, highlightedNode);
+
       // Keep track of the highlight length that's been spoken so that
       // speechUtteranceLength can be used across multiple nodes.
-      alreadyHighlightedSpeechUtteranceLength += highlightLength;
-
-      hasHighlights = true;
-      const element = node as HTMLElement;
-      const highlighted =
-          this.highlightCurrentText_(highlightStartIndex, endIndex, element);
-      this.nodeStore_.replaceDomNode(element, highlighted);
+      accumulatedHighlightLength += highlightLength;
+      didApplyHighlight = true;
     }
 
-    if (hasHighlights) {
+    if (didApplyHighlight) {
       this.scrollHighlightIntoView_();
     }
   }
