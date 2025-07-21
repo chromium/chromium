@@ -239,7 +239,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
       CanvasHibernationHandler::ReportHibernationEvent(
           CanvasHibernationHandler::HibernationEvent::
               kHibernationEndedWithTeardown);
-      element->GetHibernationHandler()->Clear();
+      GetHibernationHandler()->Clear();
     }
     element->DiscardResources();
     element->DiscardResourceDispatcher();
@@ -678,7 +678,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
 
   if (IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
-        canvas()->GetHibernationHandler()->GetImage());
+        GetHibernationHandler()->GetImage());
   }
 
   if (!IsCanvas2DResourceValid()) {
@@ -933,11 +933,7 @@ bool CanvasRenderingContext2D::IsPaintable() const {
 }
 
 bool CanvasRenderingContext2D::IsHibernating() const {
-  if (!canvas()) {
-    return false;
-  }
-
-  auto* hibernation_handler = canvas()->GetHibernationHandler();
+  auto* hibernation_handler = GetHibernationHandler();
   return hibernation_handler && hibernation_handler->IsHibernating();
 }
 
@@ -967,7 +963,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
   if (features::IsCanvas2DHibernationEnabled() && !page_is_visible &&
       !IsHibernating() && resource_provider &&
       resource_provider->IsAccelerated()) {
-    element->GetHibernationHandler()->InitiateHibernationIfNecessary();
+    GetHibernationHandler()->InitiateHibernationIfNecessary();
   }
 
   // The impl tree may have dropped the transferable resource for this canvas
@@ -1159,9 +1155,17 @@ void CanvasRenderingContext2D::SizeChanged() {
     CanvasHibernationHandler::ReportHibernationEvent(
         CanvasHibernationHandler::HibernationEvent::
             kHibernationEndedWithTeardown);
-    canvas()->GetHibernationHandler()->Clear();
+    GetHibernationHandler()->Clear();
   }
   did_fail_to_create_resource_provider_ = false;
+}
+
+CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
+    const {
+  if (!canvas()) {
+    return nullptr;
+  }
+  return canvas()->GetHibernationHandler();
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -1315,7 +1319,7 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
 
   canvas()->UpdatePreferred2DRasterMode();
 
-  if (!canvas()->GetHibernationHandler()) {
+  if (!GetHibernationHandler()) {
     canvas()->RecreateHibernationHandler();
   }
 
@@ -1374,7 +1378,7 @@ void CanvasRenderingContext2D::
 
 CanvasResourceProvider*
 CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
-  CHECK(canvas()->GetHibernationHandler());
+  CHECK(GetHibernationHandler());
 
   auto* resource_provider = GetResourceProviderForCanvas2D();
   if (!resource_provider && !did_fail_to_create_resource_provider_) {
@@ -1395,7 +1399,7 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
     return nullptr;
   }
 
-  auto* hibernation_handler = canvas()->GetHibernationHandler();
+  auto* hibernation_handler = GetHibernationHandler();
   if (!hibernation_handler->IsHibernating()) {
     return resource_provider;
   }

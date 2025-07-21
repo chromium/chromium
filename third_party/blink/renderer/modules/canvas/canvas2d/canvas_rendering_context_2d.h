@@ -271,6 +271,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
       std::unique_ptr<CanvasResourceProvider> provider,
       const gfx::Size& size);
 
+  // TODO(crbug.com/352263194): Migrate canvas_rendering_context_2d_test.cc
+  // callsites and make this method private.
+  CanvasHibernationHandler* GetHibernationHandler() const;
+
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
   UniqueFontSelector* GetFontSelector() const final;
