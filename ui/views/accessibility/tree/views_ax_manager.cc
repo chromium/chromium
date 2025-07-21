@@ -357,7 +357,7 @@ void ViewsAXManager::SendPendingUpdate() {
 
   // We must now serialize any changes that were not associated with an event.
   ui::AXTreeUpdate update;
-  for (auto& id : pending_data_changes_copy) {
+  for (auto id : pending_data_changes_copy) {
     auto* aura_obj = cache_->Get(id);
     if (!aura_obj) {
       continue;

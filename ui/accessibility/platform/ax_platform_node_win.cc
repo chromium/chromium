@@ -16,7 +16,6 @@
 #include <map>
 #include <set>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -46,6 +45,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "skia/ext/skia_utils_win.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -241,7 +241,7 @@ size_t g_live_node_count_ = 0;
 // tool holding references).
 size_t g_ghost_node_count_ = 0;
 
-typedef std::unordered_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
+typedef absl::flat_hash_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
 // Set of all AXPlatformNodeWin objects that were the target of an
 // alert event.
 AXPlatformNodeWinSet& GetAlertTargets() {

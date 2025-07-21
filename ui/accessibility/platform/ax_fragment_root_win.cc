@@ -5,7 +5,6 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 
 #include <limits>
-#include <unordered_map>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +16,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/win/scoped_safearray.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -308,8 +308,8 @@ class AXFragmentRootMapWin {
   }
 
  private:
-  std::unordered_map<gfx::AcceleratedWidget,
-                     raw_ptr<AXFragmentRootWin, CtnExperimental>>
+  absl::flat_hash_map<gfx::AcceleratedWidget,
+                      raw_ptr<AXFragmentRootWin, CtnExperimental>>
       map_;
 };
 

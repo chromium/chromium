@@ -6,7 +6,6 @@
 
 #include <iostream>
 #include <string>
-#include <unordered_set>
 
 #include "base/check.h"
 #include "base/logging.h"

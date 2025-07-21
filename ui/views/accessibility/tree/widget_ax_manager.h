@@ -6,11 +6,11 @@
 #define UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_H_
 
 #include <memory>
-#include <unordered_set>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -118,7 +118,7 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
     // TODO(accessibility): Implement action request tracking.
   };
   std::vector<Event> pending_events_;
-  std::unordered_set<ui::AXNodeID> pending_data_updates_;
+  absl::flat_hash_set<ui::AXNodeID> pending_data_updates_;
 
   // Ensure posted tasks don’t run after we’re destroyed.
   base::WeakPtrFactory<WidgetAXManager> weak_factory_{this};
