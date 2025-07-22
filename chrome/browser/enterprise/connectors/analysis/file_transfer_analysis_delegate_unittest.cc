@@ -991,6 +991,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1014,6 +1016,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1045,6 +1048,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
   {
     // Check reporting.
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1068,6 +1073,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
         /*user_justification*/ std::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
+    run_loop.Run();
   }
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
@@ -1106,6 +1112,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
   {
     // Check reporting.
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1129,6 +1137,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*user_justification*/ std::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
+    run_loop.Run();
   }
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
@@ -1146,6 +1155,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
   {
     // Check reporting of bypass.
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1169,6 +1180,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*user_justification*/ kUserJustification);
 
     file_transfer_analysis_delegate_->BypassWarnings(kUserJustification);
+    run_loop.Run();
   }
 }
 
@@ -1322,6 +1334,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1345,6 +1359,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_url, destination_url);
+  run_loop.Run();
 
   // No checks for GetAnalysisResultAfterScan, because it's not allowed to be
   // called for report-only mode.
@@ -1377,6 +1392,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1398,6 +1415,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
       /*scan_id*/ scan_id);
 
   ScanUpload(source_url, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1436,6 +1454,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncryptedd) {
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   // When resumable upload is in use and the policy does not block encrypted
   // files by default, the file's metadata is uploaded for scanning.
   validator.ExpectSensitiveDataEvent(
@@ -1461,6 +1481,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncryptedd) {
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1512,6 +1533,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1535,6 +1558,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1591,6 +1615,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   storage::FileSystemURL source_url = PathToFileSystemURL(paths[0]);
 
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1619,6 +1645,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1659,6 +1686,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   storage::FileSystemURL source_url = PathToFileSystemURL(paths[0]);
 
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1685,6 +1714,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1749,6 +1779,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
   storage::FileSystemURL source_url = PathToFileSystemURL(paths[0]);
 
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1773,6 +1805,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1852,6 +1885,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
     }
 
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1876,6 +1911,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*user_justification*/ std::nullopt);
 
     ScanUpload(source_directory_url_, destination_directory_url_);
+    run_loop.Run();
   }
 
   auto warned_files = file_transfer_analysis_delegate_->GetWarnedFiles();
@@ -1932,6 +1968,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
     }
 
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1956,6 +1994,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*user_justification*/ kUserJustification);
 
     file_transfer_analysis_delegate_->BypassWarnings(kUserJustification);
+    run_loop.Run();
   }
 
   // Should now no longer block bypassed files.
