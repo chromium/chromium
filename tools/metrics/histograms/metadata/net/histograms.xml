@@ -1820,6 +1820,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.DeviceBoundSessions.{RefreshOrRegistration}.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-01-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the network result of a {RefreshOrRegistration} request for a
+    Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is logged
+    when {RefreshOrRegistration} network response processing starts.
+  </summary>
+  <token key="RefreshOrRegistration">
+    <variant name="Refresh" summary="refresh"/>
+    <variant name="Registration" summary="registration"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DNS.DnsConfig.AdditionalDnsQueryTypesEnabled"
     enum="BooleanEnabled" expires_after="2025-02-10">
   <owner>horo@chromium.org</owner>

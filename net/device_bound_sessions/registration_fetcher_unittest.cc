@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
@@ -226,6 +227,7 @@ class UnauthorizedThenSuccessResponseContainer {
 };
 
 TEST_F(RegistrationTest, BasicSuccess) {
+  base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating([](const test_server::HttpRequest& request) {
@@ -258,6 +260,8 @@ TEST_F(RegistrationTest, BasicSuccess) {
       session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Registration.Network.Result", HTTP_OK, 1);
 }
 
 TEST_F(RegistrationTest, NoScopeJson) {
@@ -680,6 +684,7 @@ TEST_F(RegistrationTest, ReturnEmptyJson) {
 }
 
 TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
+  base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   ASSERT_TRUE(server_.Start());
   GURL url = server_.GetURL("/");
@@ -697,6 +702,9 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
   EXPECT_FALSE(callback.outcome().has_value());
   EXPECT_EQ(callback.outcome().error().type,
             SessionError::ErrorType::kNetError);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.Registration.Network.Result",
+      net::ERR_CONNECTION_REFUSED, 1);
 }
 
 TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
@@ -996,6 +1004,7 @@ Return401ResponseWithInvalidChallenge(const test_server::HttpRequest& request) {
 }
 
 TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
+  base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -1025,6 +1034,9 @@ TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
       session_params.credentials,
       ElementsAre(SessionParams::Credential(
           "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.Refresh.Network.Result", HTTP_OK, 1);
 }
 
 TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {

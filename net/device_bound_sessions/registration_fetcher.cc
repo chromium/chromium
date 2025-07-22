@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
@@ -66,6 +68,15 @@ constexpr int kBufferSize = 4096;
 // New session registration doesn't block the user and can be done with a delay.
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
+
+void RecordHttpResponseOrErrorCode(const char* metric_name,
+                                   int net_error,
+                                   int http_response_code) {
+  // No need to special-case `net::ERR_HTTP_RESPONSE_CODE_FAILURE` to return
+  // the HTTP response code, because `UrlRequest` does not use that net error.
+  base::UmaHistogramSparse(
+      metric_name, net_error == net::OK ? http_response_code : net_error);
+}
 
 void OnDataSigned(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
@@ -158,15 +169,20 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   // This is always called unless the request is deleted before it is called.
   void OnResponseStarted(URLRequest* request, int net_error) override {
+    HttpResponseHeaders* headers = request->response_headers();
+    const int response_code = headers ? headers->response_code() : 0;
+    const char* histogram_name =
+        IsForRefreshRequest()
+            ? "Net.DeviceBoundSessions.Refresh.Network.Result"
+            : "Net.DeviceBoundSessions.Registration.Network.Result";
+    RecordHttpResponseOrErrorCode(histogram_name, net_error, response_code);
+
     if (net_error != OK) {
       OnResponseCompleted(
           /*error_on_no_data=*/SessionError::ErrorType::kNetError);
       // *this is deleted here
       return;
     }
-
-    HttpResponseHeaders* headers = request->response_headers();
-    const int response_code = headers ? headers->response_code() : 0;
 
     if (response_code == 401) {
       auto challenge_params =
