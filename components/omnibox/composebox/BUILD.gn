@@ -13,6 +13,8 @@ mojom("mojo_bindings") {
 
 source_set("composebox") {
   sources = [
+    "composebox_metrics_recorder.cc",
+    "composebox_metrics_recorder.h",
     "composebox_query_controller.cc",
     "composebox_query_controller.h",
   ]
@@ -71,7 +73,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "composebox_query_controller_unittest.cc" ]
+  sources = [
+    "composebox_metrics_recorder_unittest.cc",
+    "composebox_query_controller_unittest.cc",
+  ]
   deps = [
     ":composebox",
     ":mojo_bindings",

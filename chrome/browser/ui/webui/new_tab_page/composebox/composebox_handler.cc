@@ -13,8 +13,10 @@ ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     std::unique_ptr<ComposeboxQueryController> query_controller,
+    std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
     content::WebContents* web_contents)
     : query_controller_(std::move(query_controller)),
+      metrics_recorder_(std::move(metrics_recorder)),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
@@ -27,11 +29,12 @@ ComposeboxHandler::~ComposeboxHandler() {
 
 void ComposeboxHandler::NotifySessionStarted() {
   query_controller_->NotifySessionStarted();
+  metrics_recorder_->NotifySessionStateChanged(SessionState::kSessionStarted);
 }
 
 void ComposeboxHandler::NotifySessionAbandoned() {
-  query_controller_->ClearFiles();
   query_controller_->NotifySessionAbandoned();
+  metrics_recorder_->NotifySessionStateChanged(SessionState::kSessionAbandoned);
 }
 
 void ComposeboxHandler::SubmitQuery(const std::string& query_text,
@@ -43,10 +46,13 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
   // This is the time that the user clicked the submit button, and should not
   // go any lower in this method.
   base::Time query_start_time = base::Time::Now();
+  metrics_recorder_->NotifySessionStateChanged(SessionState::kQuerySubmitted);
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
   OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time), disposition);
+  metrics_recorder_->NotifySessionStateChanged(
+      SessionState::kNavigationOccurred);
 }
 
 void ComposeboxHandler::OpenUrl(GURL url,

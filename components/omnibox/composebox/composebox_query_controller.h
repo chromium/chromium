@@ -32,13 +32,6 @@ class TemplateURLService;
 #include "third_party/skia/include/core/SkBitmap.h"
 #endif  // !BUILDFLAG(IS_IOS)
 
-enum class SessionState {
-  kNone = 0,
-  kSessionStarted = 1,
-  kSessionAbandoned = 2,
-  kQuerySubmitted = 3,
-};
-
 enum class QueryControllerState {
   // The initial state, before NotifySessionStarted() is called.
   kOff = 0,
@@ -203,8 +196,6 @@ class ComposeboxQueryController {
   void AddObserver(FileUploadStatusObserver* obs);
   void RemoveObserver(FileUploadStatusObserver* obs);
 
-  SessionState session_state() { return session_state_; }
-
   // Triggers upload of the file with data and stores the file info in the
   // internal map. Call after setting the file info fields. Virtual for testing.
   virtual void StartFileUploadFlow(
@@ -232,6 +223,9 @@ class ComposeboxQueryController {
   // Creates the client context for Lens requests. Protected to allow access
   // from tests.
   lens::LensOverlayClientContext CreateClientContext() const;
+
+  // Clears all cluster info.
+  void ClearClusterInfo();
 
   // Resets the request cluster info state. Protected to allow tests to
   // override.
@@ -340,9 +334,6 @@ class ComposeboxQueryController {
   // incognito profiles.
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  // TODO(420701010) Create SessionMetrics struct.
-  base::Time session_start_time_;
-
   // The url loader factory to use for Lens network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -354,9 +345,6 @@ class ComposeboxQueryController {
 
   // The request id generator for this query flow instance.
   lens::LensOverlayRequestIdGenerator request_id_generator_;
-
-  // The session state.
-  SessionState session_state_ = SessionState::kNone;
 
   // The observer list, managed via AddObserver() and RemoveObserver().
   base::ObserverList<FileUploadStatusObserver> observers_;

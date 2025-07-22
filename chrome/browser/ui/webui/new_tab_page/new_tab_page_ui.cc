@@ -81,6 +81,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/composebox/composebox_metrics_recorder.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
@@ -916,6 +917,7 @@ void NewTabPageUI::CreatePageHandler(
           TemplateURLServiceFactory::GetForProfile(profile_),
           profile_->GetVariationsClient(),
           ntp_composebox::kSendLnsSurfaceParam.Get()),
+      std::make_unique<ComposeboxMetricsRecorder>("NewTabPage."),
       web_contents());
 }
 
