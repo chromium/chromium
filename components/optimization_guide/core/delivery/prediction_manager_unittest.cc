@@ -378,6 +378,7 @@ class PredictionManagerTestBase : public testing::Test {
     prefs::RegisterLocalStatePrefs(local_state_prefs_->registry());
     component_updater::RegisterComponentUpdateServicePrefs(
         local_state_prefs_->registry());
+    SetFetchModelEnabled(true);
 
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
