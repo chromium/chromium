@@ -41,7 +41,7 @@ BASE_FEATURE(kLensOverlayImageContextMenuActions,
 
 BASE_FEATURE(kLensOverlayContextualSearchbox,
              "LensOverlayContextualSearchbox",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayContextualSearchboxForOmniboxSuggestions,
              "LensOverlayContextualSearchboxForOmniboxSuggestions",
@@ -991,12 +991,6 @@ bool IsLensOverlaySaveAsImageEnabled() {
 
 int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
   return kLensOverlayImageContextMenuActionsTextReceivedTimeout.Get();
-}
-
-bool IsLensOverlayContextualSearchboxEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox) ||
-         base::FeatureList::IsEnabled(
-             kLensOverlayContextualSearchboxForOmniboxSuggestions);
 }
 
 bool IsLensOverlaySidePanelOpenInNewTabEnabled() {

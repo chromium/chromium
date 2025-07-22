@@ -161,11 +161,6 @@ void RecordContextualSearchboxSessionEndMetrics(
     ContextualSearchboxSessionEndMetrics session_end_metrics,
     lens::MimeType page_content_type,
     lens::MimeType document_content_type) {
-  // Only record if the contextual search box feature is enabled.
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
-    return;
-  }
-
   // UMA contextual searchbox shown in session.
   base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.ShownInSession",
                             session_end_metrics.searchbox_shown_);
