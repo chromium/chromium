@@ -5,12 +5,14 @@
 # TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builders.
 # Note that CI builders can't use `mirrors`.
 
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os", "siso")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/html.star", "linkify_builder")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//html.star", "linkify_builder")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/siso.star", "siso")
 load("//lib/xcode.star", "xcode")
 load("//project.star", "settings")
 
@@ -53,7 +55,7 @@ luci.bucket(
     name = "build.shadow",
     shadows = "build",
     constraints = luci.bucket_constraints(
-        pools = [ci.DEFAULT_POOL],
+        pools = [ci_constants.DEFAULT_POOL],
         service_accounts = [
             "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
         ],
@@ -84,14 +86,14 @@ ci.defaults.set(
     bucket = "build",
     triggered_by = ["chrome-build-gitiles-trigger"],
     builder_group = "chromium.build",
-    pool = ci.DEFAULT_POOL,
+    pool = ci_constants.DEFAULT_POOL,
     builderless = False,
     # rely on the builder dimension for the bot selection.
     cores = None,
     build_numbers = True,
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 10 * time.hour,
-    priority = ci.DEFAULT_FYI_PRIORITY,
+    priority = ci_constants.DEFAULT_FYI_PRIORITY,
     resultdb_enable = False,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_configs = [],

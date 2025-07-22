@@ -22,6 +22,17 @@ pkg.options.lint_checks([
 pkg.entrypoint("main.star")
 pkg.entrypoint("dev.star")
 
+pkg.depend(
+    name = "@chromium-luci",
+    source = pkg.source.googlesource(
+        host = "chromium",
+        repo = "infra/chromium",
+        ref = "refs/heads/main",
+        path = "starlark-libs/chromium-luci",
+        revision = "7af22527170d64d84dac041cc2028c11f8bb121d",
+    ),
+)
+
 pkg.resources([
     "dev/chromium-header.textpb",
     "lib/linux-default.json",

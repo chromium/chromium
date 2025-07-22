@@ -434,7 +434,15 @@ def GPUWebGLRuntimeFile(test_config, _, tester_config):
       f'../../content/test/data/gpu/{suite}_{chosen_os}_runtimes.json')
   return [f'--read-abbreviated-json-results-from={runtime_filepath}']
 
-# LINT.ThenChange(//infra/config/lib/targets-internal/magic_args.star)
+# LINT.ThenChange(//infra/config/PACKAGE.star)
+#
+# Adding a new substitution or changing the implementation of one requires a
+# corresponding change to the magic_args.star file, which is now located at
+# chromium.googlesource.com/infra/chromium/+/HEAD/starlark-libs/chromium-luci
+#
+# First a change to update magic_args.star should be submitted, then a CL can be
+# made that updates the @chromium-luci pin in PACKAGE.star to use the new
+# revision of infra/chromium and updates this file
 
 def TestOnlySubstitution(_, __, ___):
   """Magic substitution used for unittests."""

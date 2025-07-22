@@ -6,7 +6,11 @@
 # See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md
 # for information on starlark/lucicfg
 
-load("//lib/branches.star", "branches")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//chromium_luci.star", "chromium_luci")
+load("//lib/builder_exemptions.star", "exempted_from_contact_builders")
+load("//project.star", "settings")
 
 lucicfg.check_version(
     min = "1.44.1",
@@ -51,6 +55,34 @@ lucicfg.emit(
 lucicfg.emit(
     dest = "luci/testhaus-staging.cfg",
     data = io.read_file("testhaus-staging.cfg"),
+)
+
+chromium_luci.configure_project(
+    name = settings.project,
+    is_main = settings.is_main,
+    platforms = settings.platforms,
+)
+
+chromium_luci.configure_per_builder_outputs(
+    root_dir = "builders-dev",
+)
+
+chromium_luci.configure_builders(
+    os_dimension_overrides = {
+        os.LINUX_DEFAULT: chromium_luci.os_dimension_overrides(
+            default = os.LINUX_JAMMY,
+            overrides = json.decode(io.read_file("//lib/linux-default.json")),
+        ),
+        os.MAC_DEFAULT: os.MAC_15,
+        os.MAC_BETA: "Mac-15|Mac-26",
+        os.WINDOWS_DEFAULT: os.WINDOWS_10,
+    },
+)
+
+chromium_luci.configure_builder_health_indicators(
+    unhealthy_period_days = 7,
+    pending_time_p50_min = 20,
+    exempted_from_contact_builders = exempted_from_contact_builders,
 )
 
 branches.exec("//dev/dev.star")

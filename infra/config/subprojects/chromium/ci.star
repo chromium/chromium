@@ -2,10 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders", "cpu", "siso")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builders.star", "builders", "cpu")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/gardener_rotations.star", "gardener_rotations")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
 load("//project.star", "settings")
 
 # Bucket-wide defaults
@@ -79,15 +83,15 @@ luci.bucket(
                 "chromium-led-users",
             ],
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
         luci.binding(
             roles = "role/buildbucket.triggerer",
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
         # TODO(crbug.com/40941662): Remove this binding after shadow bucket
@@ -102,8 +106,8 @@ luci.bucket(
         luci.binding(
             roles = "role/resultdb.invocationCreator",
             users = [
-                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
-                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+                ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                gpu.ci.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
     ],
@@ -151,8 +155,9 @@ luci.gitiles_poller(
 )]
 
 def register_gardener_rotation_consoles():
-    rotations = [getattr(builders.gardener_rotations, a) for a in dir(builders.gardener_rotations)]
-    for rotation in rotations:
+    rotations = [getattr(gardener_rotations, a) for a in dir(gardener_rotations)]
+    for r in rotations:
+        rotation = r.get()
         if rotation:
             consoles.console_view(name = rotation.console_name)
             if rotation.tree_closer_console:

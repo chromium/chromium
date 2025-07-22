@@ -6,7 +6,7 @@
 # be referenced by other bundles or by builders. Bundles cannot be used in
 # //testing/buildbot
 
-load("//lib/targets.star", "targets")
+load("@chromium-luci//targets.star", "targets")
 
 # No bundle definitions should be above
 # TODO: b/402830227 - Once the AyeAye analyzer correctly includes the closing
