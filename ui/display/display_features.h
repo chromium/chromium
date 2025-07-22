@@ -82,6 +82,12 @@ BASE_DECLARE_FEATURE(kScreenWinDisplayLookupByHMONITOR);
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 bool IsScreenWinDisplayLookupByHMONITOREnabled();
 
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kMaximumDisplaySupportedNotification);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+bool IsMaximumDisplaySupportedNotifacationEnabled();
+
 }  // namespace features
 }  // namespace display
 

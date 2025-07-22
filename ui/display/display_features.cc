@@ -157,5 +157,15 @@ bool IsScreenWinDisplayLookupByHMONITOREnabled() {
          base::FeatureList::IsEnabled(kScreenWinDisplayLookupByHMONITOR);
 }
 
+// When this feature is enabled, a different notification will be displayed to
+// indicate there is a limit on the number of displays supported by the device.
+BASE_FEATURE(kMaximumDisplaySupportedNotification,
+             "MaximumDisplaySupportedNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsMaximumDisplaySupportedNotificationEnabled() {
+  return base::FeatureList::IsEnabled(kMaximumDisplaySupportedNotification);
+}
+
 }  // namespace features
 }  // namespace display
