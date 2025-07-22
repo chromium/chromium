@@ -51,15 +51,6 @@ lucicfg.config(
         "testing/*.pyl",
     ],
     fail_on_warnings = True,
-    lint_checks = [
-        "default",
-        "-confusing-name",
-        "-function-docstring",
-        "-function-docstring-args",
-        "-function-docstring-return",
-        "-function-docstring-header",
-        "-module-docstring",
-    ],
 )
 
 # Just copy Testhaus config to generated outputs.
