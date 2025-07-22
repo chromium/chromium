@@ -1754,31 +1754,29 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     }
   }
 
-  PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_info.rect.size, GetConstraintSpace().GetWritingMode());
   const WritingModeConverter container_converter(
       container_info.writing_direction,
       container_builder_->SizeForAnchorQueries());
-  PhysicalOffset offset_to_padding_box =
-      container_converter.ToPhysical(container_info.rect).offset;
+  const PhysicalRect container_rect =
+      container_converter.ToPhysical(container_info.rect);
+
   if (anchor_queries) {
     // When the containing block is block-fragmented, the |container_builder_|
     // is the fragmentainer, not the containing block, and the coordinate system
     // is stitched. Use the given |anchor_query|.
     const LayoutObject* css_containing_block = candidate_layout_box.Container();
     CHECK(css_containing_block);
-    return AnchorEvaluatorImpl(
-        candidate_layout_box, *anchor_queries, implicit_anchor,
-        *css_containing_block, container_info.writing_direction,
-        offset_to_padding_box, container_physical_content_size);
+    return AnchorEvaluatorImpl(candidate_layout_box, *anchor_queries,
+                               implicit_anchor, *css_containing_block,
+                               container_info.writing_direction,
+                               container_rect);
   }
   if (const PhysicalAnchorQuery* anchor_query =
           container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
     return AnchorEvaluatorImpl(
         candidate_layout_box, *anchor_query, implicit_anchor,
-        container_info.writing_direction, offset_to_padding_box,
-        container_physical_content_size);
+        container_info.writing_direction, container_rect);
   }
   return AnchorEvaluatorImpl();
 }

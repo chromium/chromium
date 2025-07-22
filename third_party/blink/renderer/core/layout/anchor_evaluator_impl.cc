@@ -743,7 +743,7 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
 
 PhysicalRect AnchorEvaluatorImpl::PositionAreaModifiedContainingBlock(
     const std::optional<PositionAreaOffsets>& position_area_offsets) const {
-  PhysicalRect rect = containing_block_rect_;
+  PhysicalRect rect = container_rect_;
 
   // If calculated, reduce the containing-block rect based on the position-area.
   if (position_area_offsets) {

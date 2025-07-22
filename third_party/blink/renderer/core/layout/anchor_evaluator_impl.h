@@ -243,13 +243,12 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       const PhysicalAnchorQuery& anchor_query,
                       const LayoutObject* implicit_anchor,
                       WritingDirectionMode container_writing_direction,
-                      const PhysicalOffset& offset_to_padding_box,
-                      const PhysicalSize& available_size)
+                      const PhysicalRect& container_rect)
       : query_box_(&query_box),
         anchor_query_(&anchor_query),
         implicit_anchor_(implicit_anchor),
         container_writing_direction_(container_writing_direction),
-        containing_block_rect_(offset_to_padding_box, available_size),
+        container_rect_(container_rect),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
     DCHECK(anchor_query_);
@@ -262,14 +261,13 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       const LayoutObject* implicit_anchor,
                       const LayoutObject& containing_block,
                       WritingDirectionMode container_writing_direction,
-                      const PhysicalOffset& offset_to_padding_box,
-                      const PhysicalSize& available_size)
+                      const PhysicalRect& container_rect)
       : query_box_(&query_box),
         anchor_queries_(&anchor_queries),
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
         container_writing_direction_(container_writing_direction),
-        containing_block_rect_(offset_to_padding_box, available_size),
+        container_rect_(container_rect),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
     DCHECK(anchor_queries_);
@@ -366,7 +364,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                                                     TextDirection::kLtr};
 
   // Either width or height will be used, depending on IsYAxis().
-  PhysicalRect containing_block_rect_;
+  const PhysicalRect container_rect_;
 
   // A single-value cache. If a call to Get has the same key as the last call,
   // then the cached result it returned. Otherwise, the value is created using
