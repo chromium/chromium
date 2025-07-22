@@ -24751,29 +24751,6 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Suspend"/>
 </enum>
 
-<enum name="SnapshotItemId">
-  <int value="0" label="LocalState"/>
-  <int value="1" label="HighResAvatar"/>
-  <int value="2" label="LastBrowser"/>
-  <int value="3" label="Preferences"/>
-  <int value="4" label="SecurePreferences"/>
-  <int value="5" label="History"/>
-  <int value="6" label="Favicons"/>
-  <int value="7" label="TopSites"/>
-  <int value="8" label="LocalOrSyncableBookmarks"/>
-  <int value="9" label="CurrentTabSession"/>
-  <int value="10" label="CurrentSession"/>
-  <int value="11" label="GAIAPicture"/>
-  <int value="12" label="AffiliationDatabase"/>
-  <int value="13" label="LoginDataForProfile"/>
-  <int value="14" label="LoginDataForAccount"/>
-  <int value="15" label="WebData"/>
-  <int value="16" label="StrikeDatabase"/>
-  <int value="17" label="Cookie"/>
-  <int value="18" label="ProfileIcon"/>
-  <int value="19" label="LastVersion"/>
-</enum>
-
 <enum name="SnapshotOperationResult">
   <int value="0" label="Success">Operation succeeded</int>
   <int value="1" label="Partial Sucess">Operation suceeded partially</int>

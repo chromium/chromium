@@ -6665,7 +6665,6 @@ test("unit_tests") {
 
   if (enable_downgrade_processing) {
     sources += [
-      "../browser/downgrade/snapshot_file_collector_unittest.cc",
       "../browser/downgrade/snapshot_manager_unittest.cc",
       "../browser/downgrade/user_data_downgrade_unittest.cc",
     ]

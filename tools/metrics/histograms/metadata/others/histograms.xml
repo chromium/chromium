@@ -4215,17 +4215,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Downgrade.TakeSnapshot.ItemFailure" enum="SnapshotItemId"
-    expires_after="2025-07-01">
-  <owner>grt@chromium.org</owner>
-  <owner>ydago@chromium.org</owner>
-  <summary>
-    Indicates the id of an item that failed to be copied when taking a user data
-    snapshot. The metrics does not cover the data from 12/12/2021 to 03/29/2022.
-    Expired April 2024, revived September 2024.
-  </summary>
-</histogram>
-
 <histogram name="Drive.PushNotificationRegistered" enum="BooleanRegistered"
     expires_after="2025-09-28">
   <owner>simmonsjosh@google.com</owner>
