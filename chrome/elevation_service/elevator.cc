@@ -215,7 +215,7 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   }
   bool should_reencrypt = false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  InternalFlags flags;
+  InternalFlags flags{.use_latest_encryption = true};
   auto post_process_result = PostProcessData(plaintext_str, &flags);
   if (!post_process_result.has_value()) {
     return post_process_result.error();

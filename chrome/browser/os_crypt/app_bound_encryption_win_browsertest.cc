@@ -512,9 +512,10 @@ IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, EncryptDecrypt) {
   std::string ciphertext;
   DWORD last_error;
   base::HistogramTester histograms;
+  elevation_service::EncryptFlags flags{.use_latest_key = true};
   HRESULT hr =
       EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
-                            plaintext, ciphertext, last_error);
+                            plaintext, ciphertext, last_error, &flags);
 
   ASSERT_HRESULT_SUCCEEDED(hr);
 
