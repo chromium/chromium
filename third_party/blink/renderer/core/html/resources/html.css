@@ -2067,6 +2067,8 @@ dialog:where(:modal) {
 
   select:-internal-list-box {
     box-sizing: -internal-auto-base(border-box, initial);
+    overflow-inline: -internal-auto-base(hidden, auto);
+    overflow-block: -internal-auto-base(scroll, auto);
   }
 
   select:-internal-list-box::picker-icon {
