@@ -34,6 +34,16 @@ TestTabModel::TestTabModel(Profile* profile,
 
 TestTabModel::~TestTabModel() = default;
 
+void TestTabModel::AddTabListInterfaceObserver(
+    TabListInterfaceObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
+void TestTabModel::RemoveTabListInterfaceObserver(
+    TabListInterfaceObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
 int TestTabModel::GetTabCount() const {
   return tab_count_ != 0 ? tab_count_
                          : static_cast<int>(web_contents_list_.size());
@@ -197,6 +207,16 @@ OwningTestTabModel::OwningTestTabModel(
 OwningTestTabModel::~OwningTestTabModel() {
   ForceCloseAllTabs();
   TabModelList::RemoveTabModel(this);
+}
+
+void OwningTestTabModel::AddTabListInterfaceObserver(
+    TabListInterfaceObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
+void OwningTestTabModel::RemoveTabListInterfaceObserver(
+    TabListInterfaceObserver* observer) {
+  NOTIMPLEMENTED();
 }
 
 int OwningTestTabModel::GetTabCount() const {

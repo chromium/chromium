@@ -51,6 +51,9 @@ class TabModelJniBridge : public TabModel {
   void DuplicateTabForTesting(JNIEnv* env, TabAndroid* tab);
 
   // TabModel::
+  void AddTabListInterfaceObserver(TabListInterfaceObserver* observer) override;
+  void RemoveTabListInterfaceObserver(
+      TabListInterfaceObserver* observer) override;
   int GetTabCount() const override;
   int GetActiveIndex() const override;
   tabs::TabInterface* GetActiveTab() override;

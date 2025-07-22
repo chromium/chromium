@@ -12,9 +12,23 @@ DEFINE_USER_DATA(TabListBridge);
 TabListBridge::TabListBridge(TabStripModel& tab_strip_model,
                              ui::UnownedUserDataHost& unowned_user_data_host)
     : tab_strip_(tab_strip_model),
-      scoped_data_holder_(unowned_user_data_host, *this) {}
+      scoped_data_holder_(unowned_user_data_host, *this) {
+  tab_strip_->AddObserver(this);
+}
 
+// Note: TabStripObserver already implements RemoveObserver() calls; no need to
+// remove this object as an observer here.
 TabListBridge::~TabListBridge() = default;
+
+void TabListBridge::AddTabListInterfaceObserver(
+    TabListInterfaceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabListBridge::RemoveTabListInterfaceObserver(
+    TabListInterfaceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 int TabListBridge::GetTabCount() const {
   return tab_strip_->count();
@@ -82,6 +96,34 @@ std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
 void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {}
 
 void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {}
+
+void TabListBridge::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  switch (change.type()) {
+    case TabStripModelChange::kInserted: {
+      // See comment on TabStripModelChange::Insert for notes about the format
+      // of `contents`.
+      // NOTE: This might be *unsafe* if callers mutate the tab strip model
+      // synchronously from this event.
+      for (const auto& web_contents_and_index : change.GetInsert()->contents) {
+        // This will (correctly) crash if `tab` is not found. Since we just
+        // inserted the tab, we know it should exist.
+        tabs::TabInterface* tab = web_contents_and_index.tab.get();
+        for (auto& observer : observers_) {
+          observer.OnTabAdded(tab, web_contents_and_index.index);
+        }
+      }
+      break;
+    }
+    case TabStripModelChange::kRemoved:
+    case TabStripModelChange::kMoved:
+    case TabStripModelChange::kReplaced:
+    case TabStripModelChange::kSelectionOnly:
+      break;
+  }
+}
 
 // static
 // From //chrome/browser/ui/tabs/tab_list_interface.h

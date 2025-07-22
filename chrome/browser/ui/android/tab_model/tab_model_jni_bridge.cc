@@ -97,6 +97,27 @@ void TabModelJniBridge::DuplicateTabForTesting(JNIEnv* env,
   DuplicateTab(tab);
 }
 
+void TabModelJniBridge::AddTabListInterfaceObserver(
+    TabListInterfaceObserver* observer) {
+  // If a first observer is being added then instantiate an observer bridge.
+  if (!observer_bridge_) {
+    JNIEnv* env = AttachCurrentThread();
+    observer_bridge_ = std::make_unique<TabModelObserverJniBridge>(
+        env, java_object_.get(env), *this);
+  }
+  observer_bridge_->AddTabListInterfaceObserver(observer);
+}
+
+void TabModelJniBridge::RemoveTabListInterfaceObserver(
+    TabListInterfaceObserver* observer) {
+  observer_bridge_->RemoveTabListInterfaceObserver(observer);
+
+  // Tear down the bridge if there are no observers left.
+  if (!observer_bridge_->has_observers()) {
+    observer_bridge_.reset();
+  }
+}
+
 int TabModelJniBridge::GetTabCount() const {
   JNIEnv* env = AttachCurrentThread();
   return Java_TabModelJniBridge_getCount(env, java_object_.get(env));
@@ -215,8 +236,8 @@ void TabModelJniBridge::AddObserver(TabModelObserver* observer) {
   // If a first observer is being added then instantiate an observer bridge.
   if (!observer_bridge_) {
     JNIEnv* env = AttachCurrentThread();
-    observer_bridge_ =
-        std::make_unique<TabModelObserverJniBridge>(env, java_object_.get(env));
+    observer_bridge_ = std::make_unique<TabModelObserverJniBridge>(
+        env, java_object_.get(env), *this);
   }
   observer_bridge_->AddObserver(observer);
 }

@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
+class TabListInterfaceObserver;
 
 // Interface for supporting a basic set of tab operations on Android and
 // Desktop.
@@ -28,6 +29,12 @@ class TabListInterface {
 
   // Returns the TabListInterface associated with the given `browser`.
   static TabListInterface* From(BrowserWindowInterface* browser);
+
+  // Adds / removes observers from this tab list.
+  virtual void AddTabListInterfaceObserver(
+      TabListInterfaceObserver* observer) = 0;
+  virtual void RemoveTabListInterfaceObserver(
+      TabListInterfaceObserver* observer) = 0;
 
   // Returns the count of tabs within the tab list.
   virtual int GetTabCount() const = 0;

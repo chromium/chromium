@@ -38,6 +38,9 @@ class TestTabModel : public TabModel {
   ~TestTabModel() override;
 
   // TabModel:
+  void AddTabListInterfaceObserver(TabListInterfaceObserver* observer) override;
+  void RemoveTabListInterfaceObserver(
+      TabListInterfaceObserver* observer) override;
   // Returns tab_count_ if not 0. Otherwise, returns size of web_contents_list_.
   int GetTabCount() const override;
   int GetActiveIndex() const override;
@@ -119,6 +122,9 @@ class OwningTestTabModel : public TabModel {
 
   // TabModel:
 
+  void AddTabListInterfaceObserver(TabListInterfaceObserver* observer) override;
+  void RemoveTabListInterfaceObserver(
+      TabListInterfaceObserver* observer) override;
   int GetTabCount() const override;
   int GetActiveIndex() const override;
   tabs::TabInterface* GetActiveTab() override;
