@@ -43,10 +43,6 @@ BASE_FEATURE(kEnableOrdinalMotion,
              "EnableOrdinalMotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnablePalmOnMaxTouchMajor,
-             "EnablePalmOnMaxTouchMajor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnablePalmOnToolTypePalm,
              "EnablePalmOnToolTypePalm",
              base::FEATURE_ENABLED_BY_DEFAULT);
