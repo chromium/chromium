@@ -35,7 +35,6 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/metadata/metadata_types.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -297,12 +296,10 @@ void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
 ExtensionsMenuViewController::ExtensionsMenuViewController(
     Browser* browser,
     ExtensionsContainer* extensions_container,
-    views::View* bubble_contents,
-    views::BubbleDialogDelegate* bubble_delegate)
+    views::View* bubble_contents)
     : browser_(browser),
       extensions_container_(extensions_container),
       bubble_contents_(bubble_contents),
-      bubble_delegate_(bubble_delegate),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
   browser_->tab_strip_model()->AddObserver(this);
   toolbar_model_observation_.Observe(toolbar_model_.get());

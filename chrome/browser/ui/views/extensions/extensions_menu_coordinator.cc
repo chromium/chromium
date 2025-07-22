@@ -89,7 +89,7 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   bubble_tracker_.SetView(bubble_contents);
 
   controller_ = std::make_unique<ExtensionsMenuViewController>(
-      browser_, extensions_container, bubble_contents, bubble_delegate.get());
+      browser_, extensions_container, bubble_contents);
   controller_->OpenMainPage();
 
   return bubble_delegate;
