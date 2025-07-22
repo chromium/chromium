@@ -35,6 +35,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
@@ -526,9 +527,9 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
         router->OnAnalysisConnectorWarningBypassed(
             item->GetURL(), item->GetTabUrl(), "", "", metadata.filename,
             metadata.sha256, metadata.mime_type,
-            extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            metadata.scan_response.request_token(), "",
-            referrer_chain, result, metadata.size,
+            enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+            metadata.scan_response.request_token(), "", referrer_chain, result,
+            metadata.size,
             /*user_justification=*/std::nullopt);
 
         // There won't be multiple DLP verdicts in the same response, so no need

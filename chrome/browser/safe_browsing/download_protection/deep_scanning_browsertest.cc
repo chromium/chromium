@@ -23,12 +23,11 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -48,6 +47,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/obfuscation/core/utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -919,7 +919,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
       /*threat_type*/ "POTENTIALLY_UNWANTED",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*dlp_verdict*/ *dlp_result,
       /*mimetypes*/ &zip_types,
       /*size*/ is_obfuscated() ? 276 + kSingleChunkObfuscationOverhead : 276,
@@ -1023,7 +1023,7 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
       /*sha*/ "",
       /*threat_type*/ "DANGEROUS_FILE_TYPE",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
       /*result*/
@@ -1282,7 +1282,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*dlp_verdict*/ *result,
       /*mimetypes*/ &mimetypes,
       /*size*/ 54,
@@ -1355,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*dlp_verdict*/ *result,
       /*mimetypes*/ &mimetypes,
       /*size*/ 54,
@@ -1399,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*dlp_verdict*/ *result,
       /*mimetypes*/ &mimetypes,
       /*size*/ 54,
@@ -1473,7 +1473,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*dlp_verdict*/ *result,
       /*mimetypes*/ &mimetypes,
       /*size*/ 54,
@@ -1554,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*dlp_verdict*/ *result,
       /*mimetypes*/ &mimetypes,
       /*size*/ 54,
@@ -1698,7 +1698,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
       /*sha*/
       "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*dlp_verdict*/ response.results(0),
       /*mimetypes*/ &mimetypes,
       /*size*/ sizeof(kTestContent) - 1,
@@ -1823,7 +1823,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
       /*sha*/
       "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*dlp_verdict*/ response.results(0),
       /*mimetypes*/ &mimetypes,
       /*size*/ sizeof(kTestContent) - 1,

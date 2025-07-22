@@ -36,6 +36,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -531,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
       /*sha*/
       "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
       /*threat_type*/ "DANGEROUS",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
+      /*trigger*/ kFileUploadDataTransferEventTrigger,
       /*mimetypes*/ ExeMimeTypes(),
       /*size*/ std::string("bad file content").size(),
       /*result*/
@@ -634,7 +635,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, ForFiles) {
       /*sha*/
       "77AE96C38386429D28E53F5005C46C7B4D8D39BE73D757CE61E0AE65CC1A5A5D",
       /*threat_type*/ "DANGEROUS",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
+      /*trigger*/ kFileUploadDataTransferEventTrigger,
       /*mimetypes*/ ExeMimeTypes(),
       /*size*/ std::string("bad file content").size(),
       /*result*/
@@ -775,7 +776,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
       /*filename*/ "Text data",
       // The hash should not be included for string requests.
       /*sha*/ "",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
+      /*trigger*/ kWebContentUploadDataTransferEventTrigger,
       /*dlp_verdict*/ *result,
       /*mimetype*/ TextMimeTypes(),
       /*size*/ 200,
@@ -878,7 +879,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
       /*filename*/ "Text data",
       // The hash should not be included for string requests.
       /*sha*/ "",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
+      /*trigger*/ kWebContentUploadDataTransferEventTrigger,
       /*dlp_verdict*/ *result,
       /*mimetype*/ TextMimeTypes(),
       /*size*/ 200,
@@ -1056,7 +1057,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
       /*filename*/ "Text data",
       // The hash should not be included for string requests.
       /*sha*/ "",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
+      /*trigger*/ kWebContentUploadDataTransferEventTrigger,
       /*dlp_verdict*/ *text_result,
       /*mimetype*/ TextMimeTypes(),
       /*size*/ 100,
@@ -1163,7 +1164,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
       /*filename*/ "Text data",
       // The hash should not be included for string requests.
       /*sha*/ "",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
+      /*trigger*/ kWebContentUploadDataTransferEventTrigger,
       /*dlp_verdict*/ *text_result,
       /*mimetype*/ TextMimeTypes(),
       /*size*/ 100,
@@ -1258,7 +1259,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
           // printf "c content" | sha256sum | tr '[:lower:]' '[:upper:]'
           "2E6D1C4A1F39A02562BF1505AD775C0323D7A04C0C37C9B29D25F532B9972080",
       },
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
+      /*trigger*/ kFileUploadDataTransferEventTrigger,
       /*reason*/ "TOO_MANY_REQUESTS",
       /*mimetypes*/ ExeMimeTypes(),
       /*size*/ 9,
@@ -1405,7 +1406,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       // encrypted.zip |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
+      /*trigger*/ kFileUploadDataTransferEventTrigger,
       /*reason*/ "FILE_PASSWORD_PROTECTED",
       /*mimetypes*/ ZipMimeTypes(),
       // du chrome/test/data/safe_browsing/download_protection/encrypted.zip -b
@@ -1509,7 +1510,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       // sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
       "6F040FFDD67004CA3074BFB39936F553A49669427C477CC60DBE064C355EE1B1",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
+      /*trigger*/ kFileUploadDataTransferEventTrigger,
       /*reason*/ "FILE_TOO_LARGE",
       /*mimetypes*/ DocMimeTypes(),
       /*size*/ kLargeSize,
@@ -1607,7 +1608,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       // python3 -c "print('a' * (51 * 1024 * 1024), end='')" |\
       // sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/ "",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      /*trigger*/ kPagePrintDataTransferEventTrigger,
       /*reason*/ "FILE_TOO_LARGE",
       /*mimetypes*/ DocMimeTypes(),
       /*size*/ std::nullopt,
@@ -1736,7 +1737,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       "B3A2E2EDBAA3C798B4FC267792B1641B94793DE02D870124E5CBE663750B4CFC",
       /*threat_type*/ "DANGEROUS",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
+      kFileUploadDataTransferEventTrigger,
       /*dlp_verdict*/ *dlp_result,
       /*mimetypes*/ DocMimeTypes(),
       /*size*/ std::string("foo content").size(),
@@ -1844,7 +1845,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       /*filename*/ "Text data",
       // The hash should not be included for string requests.
       /*sha*/ "",
-      /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
+      /*trigger*/ kWebContentUploadDataTransferEventTrigger,
       /*dlp_verdict*/ *dlp_result,
       /*mimetypes*/ TextMimeTypes(),
       /*size*/ 100,

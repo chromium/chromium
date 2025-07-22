@@ -6,9 +6,9 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 
 namespace enterprise_connectors {
 
@@ -96,9 +96,9 @@ void ClipboardRequestHandler::ReportWarningBypass(
       /*destination*/ url_.spec(),
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      content_transfer_method_, content_size_,
-      content_analysis_info_->referrer_chain(), response_, user_justification);
+      kWebContentUploadDataTransferEventTrigger, content_transfer_method_,
+      content_size_, content_analysis_info_->referrer_chain(), response_,
+      user_justification);
 }
 
 void ClipboardRequestHandler::UploadForDeepScanning(
@@ -171,8 +171,7 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
       /*destination*/ url_.spec(),
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      content_transfer_method_,
+      kWebContentUploadDataTransferEventTrigger, content_transfer_method_,
       content_analysis_info_->GetContentAreaAccountEmail(), content_size_,
       content_analysis_info_->referrer_chain(), result, response_,
       CalculateEventResult(content_analysis_info_->settings(),

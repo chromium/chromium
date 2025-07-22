@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -374,7 +375,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
       /*filename*/ "New Tab",
       /*sha*/ "",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      enterprise_connectors::kPagePrintDataTransferEventTrigger,
       /*dlp_verdict*/
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::REPORT_ONLY),
       /*mimetype*/ PrintMimeTypes(),
@@ -433,7 +434,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
       /*filename*/ "New Tab",
       /*sha*/ "",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      enterprise_connectors::kPagePrintDataTransferEventTrigger,
       /*dlp_verdict*/
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::WARN),
       /*mimetype*/ PrintMimeTypes(),
@@ -492,7 +493,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
       /*filename*/ "New Tab",
       /*sha*/ "",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      enterprise_connectors::kPagePrintDataTransferEventTrigger,
       /*dlp_verdict*/
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::WARN),
       /*mimetype*/ PrintMimeTypes(),
@@ -537,7 +538,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
       /*filename*/ "New Tab",
       /*sha*/ "",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      enterprise_connectors::kPagePrintDataTransferEventTrigger,
       /*dlp_verdict*/
       CreateResult(ContentAnalysisResponse::Result::TriggeredRule::BLOCK),
       /*mimetype*/ PrintMimeTypes(),

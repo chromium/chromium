@@ -10,10 +10,10 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 
 namespace enterprise_connectors {
@@ -104,8 +104,7 @@ void PagePrintRequestHandler::ReportWarningBypass(
       content_analysis_info_->tab_url(), /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info_->tab_title(),
       /*sha256*/ std::string(),
-      /*mime_type*/ std::string(),
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
       /*content_tranfer_method*/ "",
       /*content_size*/ -1, content_analysis_info_->referrer_chain(), response_,
       user_justification);
@@ -183,8 +182,7 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
       content_analysis_info_->tab_url(), /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info_->tab_title(),
       /*sha256*/ std::string(),
-      /*mime_type*/ std::string(),
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
       /*content_tranfer_method*/ "",
       content_analysis_info_->GetContentAreaAccountEmail(),
       /*content_size*/ -1, content_analysis_info_->referrer_chain(), result,

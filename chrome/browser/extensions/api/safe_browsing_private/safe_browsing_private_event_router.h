@@ -78,15 +78,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static constexpr char kKeyHasWatermarking[] = "hasWatermarking";
   static const char kKeyUnscannedReason[];
 
-  // String constants for the "trigger" event field.  This corresponds to
-  // an enterprise connector.
-  static const char kTriggerFileDownload[];
-  static const char kTriggerFileUpload[];
-  static const char kTriggerWebContentUpload[];
-  static const char kTriggerPagePrint[];
-  static const char kTriggerFileTransfer[];
-  static const char kTriggerClipboardCopy[];
-
   explicit SafeBrowsingPrivateEventRouter(content::BrowserContext* context);
 
   SafeBrowsingPrivateEventRouter(const SafeBrowsingPrivateEventRouter&) =

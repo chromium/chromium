@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 
 namespace safe_browsing {
 
@@ -33,18 +34,18 @@ std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
       return "";
 
     case BinaryUploadService::Result::FILE_TOO_LARGE:
-      return "FILE_TOO_LARGE";
+      return enterprise_connectors::kFileTooLargeUnscannedReason;
     case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-      return "TOO_MANY_REQUESTS";
+      return enterprise_connectors::kTooManyRequestsUnscannedReason;
     case BinaryUploadService::Result::TIMEOUT:
-      return "TIMEOUT";
+      return enterprise_connectors::kTimeoutUnscannedReason;
     case BinaryUploadService::Result::UNKNOWN:
     case BinaryUploadService::Result::UPLOAD_FAILURE:
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
     case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
-      return "SERVICE_UNAVAILABLE";
+      return enterprise_connectors::kServiceUnavailableUnscannedReason;
     case BinaryUploadService::Result::FILE_ENCRYPTED:
-      return "FILE_PASSWORD_PROTECTED";
+      return enterprise_connectors::kFilePasswordProtectedUnscannedReason;
   }
 }
 

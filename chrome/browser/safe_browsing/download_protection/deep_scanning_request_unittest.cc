@@ -48,6 +48,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -848,7 +849,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*threat_type*/ "DANGEROUS",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -928,7 +929,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*threat_type*/ "POTENTIALLY_UNWANTED",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -998,7 +999,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -1068,7 +1069,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -1142,7 +1143,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -1207,7 +1208,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*reason*/ "DLP_SCAN_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -1271,7 +1272,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*reason*/ "MALWARE_SCAN_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -1345,7 +1346,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, ProcessesResponseCorrectly) {
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*reason*/ "MALWARE_SCAN_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -1634,7 +1635,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
         /*sha256*/
         "DDAB29FF2C393EE52855D21A240EB05F775DF88E3CE347DF759F0C4B80356C35",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*reason*/ "MALWARE_SCAN_FAILED",
         /*mimetypes*/ TxtMimeTypes(),
         /*size*/ std::string("foo.exe").size(),
@@ -1743,7 +1744,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
             "08BD2D247CC7AA38B8C4B7FD20EE7EDAD0B593C3DEBCE92F595C9D016DA40BAE",
         },
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         expected_dlp_verdicts,
         /*mimetypes*/ TxtMimeTypes(),
         /*size*/ std::string("foo.exe").size(),
@@ -1813,7 +1814,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
       /*sha256*/
       "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+      enterprise_connectors::kFileDownloadDataTransferEventTrigger,
       /*reason*/ "TIMEOUT",
       /*mimetypes*/ ExeMimeTypes(),
       /*size*/ std::string("download contents").size(),
@@ -2032,7 +2033,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*threat_type*/ "DANGEROUS",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/
@@ -2101,7 +2102,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*threat_type*/ "POTENTIALLY_UNWANTED",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/
@@ -2160,7 +2161,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*reason*/ "FILE_TOO_LARGE",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -2226,7 +2227,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*sha256*/
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*reason*/ "FILE_TOO_LARGE",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),

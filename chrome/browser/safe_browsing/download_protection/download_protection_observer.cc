@@ -30,6 +30,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #endif
 
 namespace safe_browsing {
@@ -152,7 +153,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
       ReportAnalysisConnectorWarningBypass(
           profile, download->GetURL(), download->GetTabUrl(), "", "",
           metadata.filename, metadata.sha256, metadata.mime_type,
-          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
+          enterprise_connectors::kFileDownloadDataTransferEventTrigger, "",
           metadata.size, referrer_chain, metadata.scan_response,
           stored_result->user_justification);
     }
@@ -161,7 +162,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
         profile, download->GetURL(), download->GetTabUrl(), "", "",
         download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(download->GetHash()), download->GetMimeType(),
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger, "",
         download->GetTotalBytes(), referrer_chain,
         enterprise_connectors::ContentAnalysisResponse(),
         /*user_justification=*/std::nullopt);

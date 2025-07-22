@@ -15,11 +15,11 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -59,13 +59,13 @@ AnalysisConnector AccessPointToEnterpriseConnector(
 std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
   switch (access_point) {
     case DeepScanAccessPoint::FILE_TRANSFER:
-      return extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer;
+      return kFileTransferDataTransferEventTrigger;
     case DeepScanAccessPoint::UPLOAD:
     case DeepScanAccessPoint::DRAG_AND_DROP:
     case DeepScanAccessPoint::PASTE:
       // A file can be uploaded to a website by either a normal file picker, a
       // dragNdrop event or using copy+paste.
-      return extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload;
+      return kFileUploadDataTransferEventTrigger;
     case DeepScanAccessPoint::DOWNLOAD:
     case DeepScanAccessPoint::PRINT:
       NOTREACHED();

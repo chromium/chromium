@@ -147,17 +147,6 @@ const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
     "unscannedReason";
 const char SafeBrowsingPrivateEventRouter::kKeyTabUrl[] = "tabUrl";
 
-const char SafeBrowsingPrivateEventRouter::kTriggerFileDownload[] =
-    "FILE_DOWNLOAD";
-const char SafeBrowsingPrivateEventRouter::kTriggerFileUpload[] = "FILE_UPLOAD";
-const char SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload[] =
-    "WEB_CONTENT_UPLOAD";
-const char SafeBrowsingPrivateEventRouter::kTriggerPagePrint[] = "PAGE_PRINT";
-const char SafeBrowsingPrivateEventRouter::kTriggerFileTransfer[] =
-    "FILE_TRANSFER";
-const char SafeBrowsingPrivateEventRouter::kTriggerClipboardCopy[] =
-    "CLIPBOARD_COPY";
-
 SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
     content::BrowserContext* context)
     : context_(context) {
@@ -279,7 +268,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   if (content_size >= 0) {
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
-  event.Set(kKeyTrigger, kTriggerFileDownload);
+  event.Set(kKeyTrigger,
+            enterprise_connectors::kFileDownloadDataTransferEventTrigger);
   event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
                                  enterprise_connectors::EventResult::BYPASSED));
   event.Set(kKeyClickedThrough, true);
@@ -472,7 +462,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
   if (content_size >= 0) {
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
-  event.Set(kKeyTrigger, kTriggerFileDownload);
+  event.Set(kKeyTrigger,
+            enterprise_connectors::kFileDownloadDataTransferEventTrigger);
   event.Set(kKeyEventResult,
             enterprise_connectors::EventResultToString(event_result));
 
@@ -543,7 +534,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
   if (content_size >= 0) {
     event.Set(kKeyContentSize, base::Int64ToValue(content_size));
   }
-  event.Set(kKeyTrigger, kTriggerFileDownload);
+  event.Set(kKeyTrigger,
+            enterprise_connectors::kFileDownloadDataTransferEventTrigger);
   event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
                                  enterprise_connectors::EventResult::BYPASSED));
   // The scan ID can be empty when the reported dangerous download is from a

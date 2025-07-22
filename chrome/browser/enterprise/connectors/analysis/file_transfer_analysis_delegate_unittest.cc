@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 
 #include <map>
@@ -44,6 +43,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1001,7 +1001,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       /*sha*/
       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdict*/ response.results()[0],
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
@@ -1055,7 +1055,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
         /*sha*/
         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdict*/ response.results()[0],
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
@@ -1116,7 +1116,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*sha*/
         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdict*/ response.results()[0],
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
@@ -1156,7 +1156,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*sha*/
         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdict*/ response.results()[0],
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
@@ -1332,7 +1332,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*sha*/
       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdict*/ response.results()[0],
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
@@ -1388,7 +1388,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
       /*thread_type*/ "DANGEROUS",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
       /*result*/
@@ -1448,7 +1448,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncryptedd) {
       /*sha*/
       "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdict*/ response.results()[0],
       /*mimetype*/ ZipMimeTypes(),
       /*size*/ 20015,
@@ -1522,7 +1522,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*sha*/
       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdict*/ response.results()[0],
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
@@ -1603,7 +1603,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdicts*/
       {response.results()[0], response.results()[0], response.results()[0]},
       /*mimetype*/ DocMimeTypes(),
@@ -1670,7 +1670,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       {"ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdicts*/
       {result, result},
       /*mimetype*/ DocMimeTypes(),
@@ -1759,7 +1759,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       /*sha256s*/
       expected_shas,
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdicts*/
       expected_dlp_verdicts,
       /*mimetype*/ DocMimeTypes(),
@@ -1862,7 +1862,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*sha256s*/
         expected_shas,
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdicts*/
         expected_dlp_verdicts,
         /*mimetype*/ DocMimeTypes(),
@@ -1942,7 +1942,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*sha256s*/
         expected_shas,
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdicts*/
         expected_dlp_verdicts,
         /*mimetype*/ DocMimeTypes(),

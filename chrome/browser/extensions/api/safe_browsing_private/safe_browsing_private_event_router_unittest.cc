@@ -39,6 +39,7 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -218,7 +219,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDataControlsSensitiveDataEvent(
             GURL(kUrl), GURL(kTabUrl), kSource, kDestination, "text/plain",
-            SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
+            enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
             "active_user@gmail.com", triggered_rules,
             enterprise_connectors::EventResult::BLOCKED, 12345);
   }
@@ -468,7 +469,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
                        SafeBrowsingPrivateEventRouter::kKeyContentType));
   EXPECT_EQ("1234", *event->FindString(
                         SafeBrowsingPrivateEventRouter::kKeyContentSize));
-  EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+  EXPECT_EQ(enterprise_connectors::kFileDownloadDataTransferEventTrigger,
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
   EXPECT_EQ(
       enterprise_connectors::EventResultToString(
@@ -923,7 +924,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
   EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyContentType),
             "text/plain");
   EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger),
-            SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload);
+            enterprise_connectors::kWebContentUploadDataTransferEventTrigger);
   EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult),
             enterprise_connectors::EventResultToString(
                 enterprise_connectors::EventResult::BLOCKED));

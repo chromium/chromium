@@ -42,6 +42,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
@@ -712,7 +713,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
           /*sha*/
           shas,
           /*trigger*/
-          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+          enterprise_connectors::kFileTransferDataTransferEventTrigger,
           /*dlp_verdict*/ expected_dlp_verdicts,
           /*mimetype*/ JpgMimeTypes(),
           /*size*/ 886,

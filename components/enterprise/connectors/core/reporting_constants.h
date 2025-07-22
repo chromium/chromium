@@ -42,8 +42,6 @@ inline constexpr char kPotentiallyUnwantedDownloadThreatType[] =
     "POTENTIALLY_UNWANTED";
 inline constexpr char kUnknownDownloadThreatType[] = "UNKNOWN";
 
-// TODO(crbug.com/432065125): Use these constants for event reporting and delete
-// the duplicates.
 inline constexpr char kFilePasswordProtectedUnscannedReason[] =
     "FILE_PASSWORD_PROTECTED";
 inline constexpr char kFileTooLargeUnscannedReason[] = "FILE_TOO_LARGE";

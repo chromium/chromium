@@ -29,6 +29,7 @@ source_set("data_controls") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//components/enterprise/common/proto:dlp_policy_event_proto",
+    "//components/enterprise/connectors/core:constants",
     "//components/enterprise/content",
     "//components/keyed_service/core",
     "//components/policy/core/browser",

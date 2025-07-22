@@ -73,6 +73,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -2915,8 +2916,8 @@ TEST_F(DownloadProtectionServiceTest,
       final_path_.AsUTF8Unsafe(),  // Full path, including the directory
       "68617368",                  // SHA256 of the fake download
       "DANGEROUS_FILE_TYPE",       // expected_threat_type
-      extensions::SafeBrowsingPrivateEventRouter::
-          kTriggerFileDownload,  // expected_trigger
+      enterprise_connectors::
+          kFileDownloadDataTransferEventTrigger,  // expected_trigger
       &expected_mimetypes,
       0,  // expected_content_size
       enterprise_connectors::EventResultToString(
@@ -2988,8 +2989,8 @@ TEST_F(DownloadProtectionServiceTest,
       "",                          // destination, not used for file downloads.
       final_path_.AsUTF8Unsafe(),  // Full path, including the directory
       "68617368",                  // SHA256 of the fake download
-      extensions::SafeBrowsingPrivateEventRouter::
-          kTriggerFileDownload,  // expected_trigger
+      enterprise_connectors::
+          kFileDownloadDataTransferEventTrigger,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
       enterprise_connectors::EventResultToString(
@@ -3046,8 +3047,8 @@ TEST_F(DownloadProtectionServiceTest,
       final_path_.AsUTF8Unsafe(),  // Full path, including the directory
       "68617368",                  // SHA256 of the fake download
       "DANGEROUS_FILE_TYPE",       // expected_threat_type
-      extensions::SafeBrowsingPrivateEventRouter::
-          kTriggerFileDownload,  // expected_trigger
+      enterprise_connectors::
+          kFileDownloadDataTransferEventTrigger,  // expected_trigger
       &expected_mimetypes,
       0,  // expected_content_size
       enterprise_connectors::EventResultToString(
@@ -3113,8 +3114,8 @@ TEST_F(DownloadProtectionServiceTest,
       "",                          // destination, not used for file downloads.
       final_path_.AsUTF8Unsafe(),  // Full path, including the directory
       "68617368",                  // SHA256 of the fake download
-      extensions::SafeBrowsingPrivateEventRouter::
-          kTriggerFileDownload,  // expected_trigger
+      enterprise_connectors::
+          kFileDownloadDataTransferEventTrigger,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
       enterprise_connectors::EventResultToString(
@@ -3181,8 +3182,8 @@ TEST_F(DownloadProtectionServiceTest,
       "",                          // destination, not used for file downloads.
       final_path_.AsUTF8Unsafe(),  // Full path, including the directory
       "68617368",                  // SHA256 of the fake download
-      extensions::SafeBrowsingPrivateEventRouter::
-          kTriggerFileDownload,  // expected_trigger
+      enterprise_connectors::
+          kFileDownloadDataTransferEventTrigger,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
       enterprise_connectors::EventResultToString(

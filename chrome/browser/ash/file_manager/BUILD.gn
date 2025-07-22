@@ -515,6 +515,7 @@ source_set("browser_tests") {
     "//components/application_locale_storage",
     "//components/download/public/common:public",
     "//components/drive",
+    "//components/enterprise/connectors/core:constants",
     "//components/file_access:test_support",
     "//components/keyed_service/core",
     "//components/media_router/browser:test_support",
