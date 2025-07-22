@@ -83,11 +83,11 @@ TEST_P(HostResolverManagerIPv6ReachabilityOverrideTest, Request) {
 
   if (GetParam()) {
     EXPECT_THAT(
-        request->GetAddressResults()->endpoints(),
+        request->GetAddressResults(),
         testing::UnorderedElementsAre(CreateExpected("192.0.2.1", 80),
                                       CreateExpected("2001:db8::1", 80)));
   } else {
-    EXPECT_THAT(request->GetAddressResults()->endpoints(),
+    EXPECT_THAT(request->GetAddressResults(),
                 testing::UnorderedElementsAre(CreateExpected("192.0.2.1", 80)));
   }
 }

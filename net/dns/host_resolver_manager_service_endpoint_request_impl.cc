@@ -109,7 +109,7 @@ bool HostResolverManager::ServiceEndpointRequestImpl::IsStaleWhileRefresing()
          stale_info_.has_value() && stale_info_.value().is_stale();
 }
 
-const std::vector<ServiceEndpoint>&
+base::span<const ServiceEndpoint>
 HostResolverManager::ServiceEndpointRequestImpl::GetEndpointResults() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -130,8 +130,7 @@ HostResolverManager::ServiceEndpointRequestImpl::GetEndpointResults() {
     return job_.value()->dns_task_results_manager()->GetCurrentEndpoints();
   }
 
-  static const base::NoDestructor<std::vector<ServiceEndpoint>> kEmptyEndpoints;
-  return *kEmptyEndpoints.get();
+  return {};
 }
 
 const std::set<std::string>&

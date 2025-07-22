@@ -97,48 +97,46 @@ int HostResolverManager::RequestImpl::Start(CompletionOnceCallback callback) {
   return rv;
 }
 
-const AddressList* HostResolverManager::RequestImpl::GetAddressResults() const {
+const AddressList& HostResolverManager::RequestImpl::GetAddressResults() const {
   DCHECK(complete_);
-  return base::OptionalToPtr(legacy_address_results_);
+  return legacy_address_results_;
 }
 
-const std::vector<HostResolverEndpointResult>*
+base::span<const HostResolverEndpointResult>
 HostResolverManager::RequestImpl::GetEndpointResults() const {
   DCHECK(complete_);
-  return base::OptionalToPtr(endpoint_results_);
+  return endpoint_results_;
 }
 
-const std::vector<std::string>*
-HostResolverManager::RequestImpl::GetTextResults() const {
+base::span<const std::string> HostResolverManager::RequestImpl::GetTextResults()
+    const {
   DCHECK(complete_);
-  return results_ ? &results_->text_records() : nullptr;
+  return results_ ? results_->text_records() : base::span<const std::string>();
 }
 
-const std::vector<HostPortPair>*
+base::span<const HostPortPair>
 HostResolverManager::RequestImpl::GetHostnameResults() const {
   DCHECK(complete_);
-  return results_ ? &results_->hostnames() : nullptr;
+  return results_ ? results_->hostnames() : base::span<const HostPortPair>();
 }
 
-const std::set<std::string>*
+const std::set<std::string>&
 HostResolverManager::RequestImpl::GetDnsAliasResults() const {
   DCHECK(complete_);
 
   // If `include_canonical_name` param was true, should only ever have at most
   // a single alias, representing the expected "canonical name".
 #if DCHECK_IS_ON()
-  if (parameters().include_canonical_name && fixed_up_dns_alias_results_) {
-    DCHECK_LE(fixed_up_dns_alias_results_->size(), 1u);
-    if (GetAddressResults()) {
-      std::set<std::string> address_list_aliases_set(
-          GetAddressResults()->dns_aliases().begin(),
-          GetAddressResults()->dns_aliases().end());
-      DCHECK(address_list_aliases_set == fixed_up_dns_alias_results_.value());
-    }
+  if (parameters().include_canonical_name) {
+    DCHECK_LE(fixed_up_dns_alias_results_.size(), 1u);
+    std::set<std::string> address_list_aliases_set(
+        GetAddressResults().dns_aliases().begin(),
+        GetAddressResults().dns_aliases().end());
+    DCHECK(address_list_aliases_set == fixed_up_dns_alias_results_);
   }
 #endif  // DCHECK_IS_ON()
 
-  return base::OptionalToPtr(fixed_up_dns_alias_results_);
+  return fixed_up_dns_alias_results_;
 }
 
 net::ResolveErrorInfo HostResolverManager::RequestImpl::GetResolveErrorInfo()
@@ -363,9 +361,9 @@ int HostResolverManager::RequestImpl::DoFinishRequest(int rv) {
 
 void HostResolverManager::RequestImpl::FixUpEndpointAndAliasResults() {
   DCHECK(results_.has_value());
-  DCHECK(!legacy_address_results_.has_value());
-  DCHECK(!endpoint_results_.has_value());
-  DCHECK(!fixed_up_dns_alias_results_.has_value());
+  DCHECK(legacy_address_results_.empty());
+  DCHECK(endpoint_results_.empty());
+  DCHECK(fixed_up_dns_alias_results_.empty());
 
   endpoint_results_ = results_->GetEndpoints();
   fixed_up_dns_alias_results_ = results_->aliases();
@@ -373,14 +371,14 @@ void HostResolverManager::RequestImpl::FixUpEndpointAndAliasResults() {
   // Skip fixups for `include_canonical_name` requests. Just use the
   // canonical name exactly as it was received from the system resolver.
   if (parameters().include_canonical_name) {
-    DCHECK_LE(fixed_up_dns_alias_results_->size(), 1u);
+    DCHECK_LE(fixed_up_dns_alias_results_.size(), 1u);
   } else {
     fixed_up_dns_alias_results_ =
-        dns_alias_utility::FixUpDnsAliases(fixed_up_dns_alias_results_.value());
+        dns_alias_utility::FixUpDnsAliases(fixed_up_dns_alias_results_);
   }
 
   legacy_address_results_ = HostResolver::EndpointResultToAddressList(
-      endpoint_results_.value(), fixed_up_dns_alias_results_.value());
+      endpoint_results_, fixed_up_dns_alias_results_);
 }
 
 void HostResolverManager::RequestImpl::LogStartRequest() {

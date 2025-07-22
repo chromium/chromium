@@ -365,10 +365,9 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalNameComplete(int rv) {
       // Expect at most a single DNS alias representing the canonical name
       // because the `HostResolver` request was made with
       // `include_canonical_name`.
-      DCHECK(resolve_host_request_->GetDnsAliasResults());
-      DCHECK_LE(resolve_host_request_->GetDnsAliasResults()->size(), 1u);
-      if (!resolve_host_request_->GetDnsAliasResults()->empty()) {
-        server = *resolve_host_request_->GetDnsAliasResults()->begin();
+      DCHECK_LE(resolve_host_request_->GetDnsAliasResults().size(), 1u);
+      if (!resolve_host_request_->GetDnsAliasResults().empty()) {
+        server = *resolve_host_request_->GetDnsAliasResults().begin();
         DCHECK(!server.empty());
       }
     } else {

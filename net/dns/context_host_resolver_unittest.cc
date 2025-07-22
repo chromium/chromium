@@ -136,8 +136,7 @@ TEST_F(ContextHostResolverTest, Resolve) {
   int rv = request->Start(callback.callback());
   EXPECT_THAT(callback.GetResult(rv), test::IsOk());
   EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
-  EXPECT_THAT(request->GetAddressResults()->endpoints(),
-              testing::ElementsAre(kEndpoint));
+  EXPECT_THAT(request->GetAddressResults(), testing::ElementsAre(kEndpoint));
 }
 
 TEST_F(ContextHostResolverTest, ResolveWithScheme) {
@@ -167,8 +166,7 @@ TEST_F(ContextHostResolverTest, ResolveWithScheme) {
   int rv = request->Start(callback.callback());
   EXPECT_THAT(callback.GetResult(rv), test::IsOk());
   EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
-  EXPECT_THAT(request->GetAddressResults()->endpoints(),
-              testing::ElementsAre(kEndpoint));
+  EXPECT_THAT(request->GetAddressResults(), testing::ElementsAre(kEndpoint));
 }
 
 TEST_F(ContextHostResolverTest, ResolveWithSchemeAndIpLiteral) {
@@ -190,7 +188,7 @@ TEST_F(ContextHostResolverTest, ResolveWithSchemeAndIpLiteral) {
   int rv = request->Start(callback.callback());
   EXPECT_THAT(callback.GetResult(rv), test::IsOk());
   EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
-  EXPECT_THAT(request->GetAddressResults()->endpoints(),
+  EXPECT_THAT(request->GetAddressResults(),
               testing::ElementsAre(IPEndPoint(expected_address, 100)));
 }
 
@@ -340,8 +338,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver) {
   dns_client_->CompleteDelayedTransactions();
 
   EXPECT_THAT(callback2.GetResult(rv2), test::IsOk());
-  EXPECT_THAT(request2->GetAddressResults()->endpoints(),
-              testing::ElementsAre(kEndpoint));
+  EXPECT_THAT(request2->GetAddressResults(), testing::ElementsAre(kEndpoint));
 
   // Ensure |request1| never completes.
   base::RunLoop().RunUntilIdle();
@@ -378,8 +375,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver_CompletedRequests) {
 
   // Expect completed results are still available.
   EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
-  EXPECT_THAT(request->GetAddressResults()->endpoints(),
-              testing::ElementsAre(kEndpoint));
+  EXPECT_THAT(request->GetAddressResults(), testing::ElementsAre(kEndpoint));
 }
 
 // Test a request created before resolver destruction but not yet started.
@@ -412,7 +408,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartRequest) {
   EXPECT_THAT(callback.GetResult(rv), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(request->GetResolveErrorInfo().error,
               test::IsError(ERR_CONTEXT_SHUT_DOWN));
-  EXPECT_FALSE(request->GetAddressResults());
+  EXPECT_THAT(request->GetAddressResults(), testing::IsEmpty());
 }
 
 TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartDohProbeRequest) {
@@ -501,8 +497,7 @@ TEST_F(ContextHostResolverTest, OnShutdown_CompletedRequests) {
 
   // Expect completed results are still available.
   EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
-  EXPECT_THAT(request->GetAddressResults()->endpoints(),
-              testing::ElementsAre(kEndpoint));
+  EXPECT_THAT(request->GetAddressResults(), testing::ElementsAre(kEndpoint));
 }
 
 TEST_F(ContextHostResolverTest, OnShutdown_SubsequentRequests) {
@@ -530,11 +525,11 @@ TEST_F(ContextHostResolverTest, OnShutdown_SubsequentRequests) {
   EXPECT_THAT(callback1.GetResult(rv1), test::IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_THAT(request1->GetResolveErrorInfo().error,
               test::IsError(ERR_CONTEXT_SHUT_DOWN));
-  EXPECT_FALSE(request1->GetAddressResults());
+  EXPECT_THAT(request1->GetAddressResults(), testing::IsEmpty());
   EXPECT_THAT(callback2.GetResult(rv2), test::IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_THAT(request2->GetResolveErrorInfo().error,
               test::IsError(ERR_CONTEXT_SHUT_DOWN));
-  EXPECT_FALSE(request2->GetAddressResults());
+  EXPECT_THAT(request2->GetAddressResults(), testing::IsEmpty());
 }
 
 TEST_F(ContextHostResolverTest, OnShutdown_SubsequentDohProbeRequest) {
@@ -587,7 +582,7 @@ TEST_F(ContextHostResolverTest, OnShutdown_DelayedStartRequest) {
   EXPECT_THAT(callback.GetResult(rv), test::IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(request->GetResolveErrorInfo().error,
               test::IsError(ERR_CONTEXT_SHUT_DOWN));
-  EXPECT_FALSE(request->GetAddressResults());
+  EXPECT_THAT(request->GetAddressResults(), testing::IsEmpty());
 }
 
 TEST_F(ContextHostResolverTest, OnShutdown_DelayedStartDohProbeRequest) {
@@ -648,8 +643,7 @@ TEST_F(ContextHostResolverTest, ResolveFromCache) {
   int rv = request->Start(callback.callback());
   EXPECT_THAT(callback.GetResult(rv), test::IsOk());
   EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
-  EXPECT_THAT(request->GetAddressResults()->endpoints(),
-              testing::ElementsAre(kEndpoint));
+  EXPECT_THAT(request->GetAddressResults(), testing::ElementsAre(kEndpoint));
   ASSERT_TRUE(request->GetStaleInfo());
   EXPECT_EQ(0, request->GetStaleInfo().value().network_changes);
   EXPECT_FALSE(request->GetStaleInfo().value().is_stale());
@@ -696,7 +690,7 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCache) {
   EXPECT_THAT(callback.GetResult(rv), test::IsOk());
   EXPECT_THAT(cached_request->GetResolveErrorInfo().error,
               test::IsError(net::OK));
-  EXPECT_THAT(cached_request->GetAddressResults()->endpoints(),
+  EXPECT_THAT(cached_request->GetAddressResults(),
               testing::ElementsAre(kEndpoint));
 }
 
@@ -976,8 +970,8 @@ TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
     int rv = request->Start(callback.callback());
     EXPECT_THAT(callback.GetResult(rv), test::IsOk());
     EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
-    ASSERT_EQ(1u, request->GetAddressResults()->endpoints().size());
-    EXPECT_THAT(request->GetAddressResults()->endpoints(),
+    ASSERT_EQ(1u, request->GetAddressResults().size());
+    EXPECT_THAT(request->GetAddressResults(),
                 testing::ElementsAre(
                     NetworkAwareHostResolverProc::ToIPEndPoint(expected_ipv4)));
   }

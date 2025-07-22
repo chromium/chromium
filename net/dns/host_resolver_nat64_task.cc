@@ -106,7 +106,7 @@ int HostResolverNat64Task::DoResolve() {
 int HostResolverNat64Task::DoResolveComplete(int result) {
   // If not under DNS64 and resolving ipv4only.arpa fails, return the original
   // IPv4 address.
-  if (result != OK || request_ipv4onlyarpa_->GetEndpointResults()->empty()) {
+  if (result != OK || request_ipv4onlyarpa_->GetEndpointResults().empty()) {
     IPAddress ipv4_address;
     bool is_ip = ipv4_address.AssignFromIPLiteral(hostname_);
     DCHECK(is_ip);
@@ -130,7 +130,7 @@ int HostResolverNat64Task::DoSynthesizeToIpv6() {
 
   std::vector<IPEndPoint> converted_addresses;
 
-  for (const auto& endpoints : *request_ipv4onlyarpa_->GetEndpointResults()) {
+  for (const auto& endpoints : request_ipv4onlyarpa_->GetEndpointResults()) {
     for (const auto& ip_endpoint : endpoints.ip_endpoints) {
       ipv4onlyarpa_AAAA_address = ip_endpoint.address();
 

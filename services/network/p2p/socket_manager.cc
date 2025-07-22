@@ -132,15 +132,15 @@ class P2PSocketManager::DnsRequest {
  private:
   void OnDone(int result) {
     net::IPAddressList list;
-    const net::AddressList* addresses = request_->GetAddressResults();
-    if (result != net::OK || !addresses) {
+    const net::AddressList& addresses = request_->GetAddressResults();
+    if (result != net::OK) {
       LOG(ERROR) << "Failed to resolve address for " << host_name_
                  << ", errorcode: " << result;
       std::move(done_callback_).Run(list);
       return;
     }
 
-    for (const auto& endpoint : *addresses) {
+    for (const auto& endpoint : addresses) {
       list.push_back(endpoint.address());
     }
     std::move(done_callback_).Run(list);

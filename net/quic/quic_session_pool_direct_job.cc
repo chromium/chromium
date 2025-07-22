@@ -158,17 +158,17 @@ int QuicSessionPool::DirectJob::DoResolveHostComplete(int rv) {
   // Inform the pool of this resolution, which will set up
   // a session alias, if possible.
   const bool svcb_optional =
-      IsSvcbOptional(*resolve_host_request_->GetEndpointResults());
-  for (const auto& endpoint : *resolve_host_request_->GetEndpointResults()) {
+      IsSvcbOptional(resolve_host_request_->GetEndpointResults());
+  for (const auto& endpoint : resolve_host_request_->GetEndpointResults()) {
     // Only consider endpoints that would have been eligible for QUIC.
     quic::ParsedQuicVersion endpoint_quic_version = pool_->SelectQuicVersion(
         quic_version_, endpoint.metadata, svcb_optional);
     if (!endpoint_quic_version.IsKnown()) {
       continue;
     }
-    if (pool_->HasMatchingIpSession(
-            key_, endpoint.ip_endpoints,
-            *resolve_host_request_->GetDnsAliasResults(), use_dns_aliases_)) {
+    if (pool_->HasMatchingIpSession(key_, endpoint.ip_endpoints,
+                                    resolve_host_request_->GetDnsAliasResults(),
+                                    use_dns_aliases_)) {
       LogConnectionIpPooling(true);
       return OK;
     }
@@ -181,12 +181,12 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
   // TODO(crbug.com/40256842): This logic only knows how to try one
   // endpoint result.
   bool svcb_optional =
-      IsSvcbOptional(*resolve_host_request_->GetEndpointResults());
+      IsSvcbOptional(resolve_host_request_->GetEndpointResults());
   bool found = false;
   HostResolverEndpointResult endpoint_result;
   quic::ParsedQuicVersion quic_version_used =
       quic::ParsedQuicVersion::Unsupported();
-  for (const auto& candidate : *resolve_host_request_->GetEndpointResults()) {
+  for (const auto& candidate : resolve_host_request_->GetEndpointResults()) {
     quic::ParsedQuicVersion endpoint_quic_version = pool_->SelectQuicVersion(
         quic_version_, candidate.metadata, svcb_optional);
     if (endpoint_quic_version.IsKnown()) {
@@ -201,9 +201,8 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
   }
 
   std::set<std::string> dns_aliases =
-      use_dns_aliases_ && resolve_host_request_->GetDnsAliasResults()
-          ? *resolve_host_request_->GetDnsAliasResults()
-          : std::set<std::string>();
+      use_dns_aliases_ ? resolve_host_request_->GetDnsAliasResults()
+                       : std::set<std::string>();
   // Passing an empty `crypto_client_config_handle` is safe because this job
   // already owns a handle.
   session_attempt_ = std::make_unique<QuicSessionAttempt>(

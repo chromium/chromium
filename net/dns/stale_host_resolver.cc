@@ -47,11 +47,12 @@ class StaleHostResolver::RequestImpl : public HostResolver::ResolveHostRequest {
 
   // HostResolver::ResolveHostRequest implementation:
   int Start(CompletionOnceCallback result_callback) override;
-  const AddressList* GetAddressResults() const override;
-  const HostResolverEndpointResults* GetEndpointResults() const override;
-  const std::vector<std::string>* GetTextResults() const override;
-  const std::vector<HostPortPair>* GetHostnameResults() const override;
-  const std::set<std::string>* GetDnsAliasResults() const override;
+  const AddressList& GetAddressResults() const override;
+  base::span<const HostResolverEndpointResult> GetEndpointResults()
+      const override;
+  base::span<const std::string> GetTextResults() const override;
+  base::span<const HostPortPair> GetHostnameResults() const override;
+  const std::set<std::string>& GetDnsAliasResults() const override;
   ResolveErrorInfo GetResolveErrorInfo() const override;
   const std::optional<HostCache::EntryStaleness>& GetStaleInfo() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
@@ -177,7 +178,7 @@ int StaleHostResolver::RequestImpl::Start(
   return network_rv;
 }
 
-const AddressList* StaleHostResolver::RequestImpl::GetAddressResults() const {
+const AddressList& StaleHostResolver::RequestImpl::GetAddressResults() const {
   if (network_request_) {
     return network_request_->GetAddressResults();
   }
@@ -186,7 +187,7 @@ const AddressList* StaleHostResolver::RequestImpl::GetAddressResults() const {
   return cache_request_->GetAddressResults();
 }
 
-const HostResolverEndpointResults*
+base::span<const HostResolverEndpointResult>
 StaleHostResolver::RequestImpl::GetEndpointResults() const {
   if (network_request_) {
     return network_request_->GetEndpointResults();
@@ -196,7 +197,7 @@ StaleHostResolver::RequestImpl::GetEndpointResults() const {
   return cache_request_->GetEndpointResults();
 }
 
-const std::vector<std::string>* StaleHostResolver::RequestImpl::GetTextResults()
+base::span<const std::string> StaleHostResolver::RequestImpl::GetTextResults()
     const {
   if (network_request_) {
     return network_request_->GetTextResults();
@@ -206,7 +207,7 @@ const std::vector<std::string>* StaleHostResolver::RequestImpl::GetTextResults()
   return cache_request_->GetTextResults();
 }
 
-const std::vector<HostPortPair>*
+base::span<const HostPortPair>
 StaleHostResolver::RequestImpl::GetHostnameResults() const {
   if (network_request_) {
     return network_request_->GetHostnameResults();
@@ -216,7 +217,7 @@ StaleHostResolver::RequestImpl::GetHostnameResults() const {
   return cache_request_->GetHostnameResults();
 }
 
-const std::set<std::string>*
+const std::set<std::string>&
 StaleHostResolver::RequestImpl::GetDnsAliasResults() const {
   if (network_request_) {
     return network_request_->GetDnsAliasResults();

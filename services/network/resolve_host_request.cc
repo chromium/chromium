@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "net/base/host_port_pair.h"
@@ -153,8 +154,7 @@ net::AddressList ResolveHostRequest::GetAddressResults() const {
   }
 
   DCHECK(internal_request_);
-  const net::AddressList* ret = internal_request_->GetAddressResults();
-  return ret ? *ret : net::AddressList();
+  return internal_request_->GetAddressResults();
 }
 
 net::HostResolverEndpointResults ResolveHostRequest::GetAlternativeEndpoints()
@@ -164,12 +164,7 @@ net::HostResolverEndpointResults ResolveHostRequest::GetAlternativeEndpoints()
   }
 
   DCHECK(internal_request_);
-  const net::HostResolverEndpointResults* endpoints =
-      internal_request_->GetEndpointResults();
-
-  if (!endpoints) {
-    return {};
-  }
+  auto endpoints = internal_request_->GetEndpointResults();
 
   // `endpoints` contains both alternative endpoints (from HTTPS/SVCB) and
   // authority endpoints (from A/AAAA directly). The authority endpoints are
@@ -180,7 +175,7 @@ net::HostResolverEndpointResults ResolveHostRequest::GetAlternativeEndpoints()
   // to `HostResolverEndpointResult`.
   net::HostResolverEndpointResults alternative_endpoints;
   std::ranges::copy_if(
-      *endpoints, std::back_inserter(alternative_endpoints),
+      endpoints, std::back_inserter(alternative_endpoints),
       [](const auto& endpoint) { return endpoint.metadata.IsAlternative(); });
   return alternative_endpoints;
 }
@@ -191,15 +186,14 @@ void ResolveHostRequest::SignalNonAddressResults() {
   }
   DCHECK(internal_request_);
 
-  if (internal_request_->GetTextResults() &&
-      !internal_request_->GetTextResults()->empty()) {
-    response_client_->OnTextResults(*internal_request_->GetTextResults());
+  if (!internal_request_->GetTextResults().empty()) {
+    response_client_->OnTextResults(
+        base::ToVector(internal_request_->GetTextResults()));
   }
 
-  if (internal_request_->GetHostnameResults() &&
-      !internal_request_->GetHostnameResults()->empty()) {
+  if (!internal_request_->GetHostnameResults().empty()) {
     response_client_->OnHostnameResults(
-        *internal_request_->GetHostnameResults());
+        base::ToVector(internal_request_->GetHostnameResults()));
   }
 }
 

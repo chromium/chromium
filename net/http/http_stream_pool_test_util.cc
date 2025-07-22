@@ -158,7 +158,7 @@ int FakeServiceEndpointRequest::Start(Delegate* delegate) {
   return resolution_.start_result();
 }
 
-const std::vector<ServiceEndpoint>&
+base::span<const ServiceEndpoint>
 FakeServiceEndpointRequest::GetEndpointResults() {
   return resolution_.endpoints();
 }

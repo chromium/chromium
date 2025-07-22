@@ -319,7 +319,7 @@ class CronetStaleHostResolverTest : public testing::Test {
   int resolve_error() const { return resolve_error_; }
   const net::AddressList& resolve_addresses() const {
     DCHECK(resolve_complete_);
-    return *request_->GetAddressResults();
+    return request_->GetAddressResults();
   }
 
  private:
