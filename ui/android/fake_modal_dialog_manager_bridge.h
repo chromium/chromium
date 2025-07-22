@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/modal_dialog_manager_bridge.h"
 #include "ui/android/ui_android_export.h"
 
@@ -39,6 +40,8 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
 
   int GetButtonStyles();
   std::vector<std::u16string> GetMessageParagraphs();
+
+  SkBitmap GetTitleIcon();
 
   bool IsSuspend(ModalDialogManagerBridge::ModalDialogType dialog_type);
 

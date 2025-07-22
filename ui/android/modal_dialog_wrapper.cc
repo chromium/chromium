@@ -10,7 +10,12 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/gfx/android/java_bitmap.h"
 #include "ui/strings/grit/ui_strings.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -90,6 +95,17 @@ std::u16string getMessageParagraph(DialogModelField* field) {
   return text;
 }
 
+const SkBitmap* getIconBitmap(const ui::ImageModel& icon_model) {
+  auto key = ui::ColorProviderKey();
+  ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(key);
+  CHECK(color_provider);
+
+  gfx::ImageSkia image_skia = icon_model.Rasterize(color_provider);
+  // Returns the 1x Skia if it exists. See ImageSkia.bitmap() for details.
+  return image_skia.bitmap();
+}
+
 }  // anonymous namespace
 
 ModalDialogWrapper::ModalDialogButtonStyles
@@ -155,6 +171,13 @@ void ModalDialogWrapper::BuildPropertyModel() {
   Java_ModalDialogWrapper_withTitleAndButtons(
       env, java_obj_, title, ok_button_label, cancel_button_label,
       (int)buttonStyles);
+
+  const SkBitmap* bitmap =
+      getIconBitmap(dialog_model_->icon(DialogModelHost::GetPassKey()));
+  if (!bitmap->isNull()) {
+    Java_ModalDialogWrapper_withTitleIcon(env, java_obj_,
+                                          gfx::ConvertToJavaBitmap(*bitmap));
+  }
 
   std::u16string checkbox_text;
   jboolean checked = false;

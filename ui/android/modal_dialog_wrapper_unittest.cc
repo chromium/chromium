@@ -13,10 +13,19 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/fake_modal_dialog_manager_bridge.h"
 #include "ui/android/window_android.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ui {
 
@@ -43,9 +52,14 @@ class ModalDialogWrapperTest : public testing::Test {
       std::optional<mojom::DialogButton> override_button = std::nullopt,
       const std::vector<std::u16string>& paragraphs = {u"paragraph"},
       bool with_checkbox = false,
-      bool checkbox_is_checked = false) {
+      bool checkbox_is_checked = false,
+      std::optional<ui::ImageModel> icon = std::nullopt) {
     ui::DialogModel::Builder dialog_builder;
     dialog_builder.SetTitle(u"title");
+
+    if (icon) {
+      dialog_builder.SetIcon(*icon);
+    }
 
     for (const auto& paragraph_text : paragraphs) {
       dialog_builder.AddParagraph(ui::DialogModelLabel(paragraph_text));
@@ -366,6 +380,90 @@ TEST_F(ModalDialogWrapperTest, Checkbox_StateSynchronizedAfterToggle) {
   EXPECT_FALSE(fake_dialog_manager_->IsCheckboxChecked());
   EXPECT_FALSE(
       dialog_model_ptr->GetCheckboxByUniqueId(kCheckboxId)->is_checked());
+}
+
+TEST_F(ModalDialogWrapperTest, ShowsVectorIcon) {
+  constexpr int kIconDim = 24;
+  const gfx::PathElement kTestIconPath[] = {
+      // A 16x16 canvas.
+      gfx::CANVAS_DIMENSIONS,
+      16,
+      // A square path.
+      gfx::MOVE_TO,
+      0,
+      0,
+      gfx::LINE_TO,
+      16,
+      0,
+      gfx::LINE_TO,
+      16,
+      16,
+      gfx::LINE_TO,
+      0,
+      16,
+      gfx::CLOSE,
+  };
+
+  const gfx::VectorIconRep kTestIconReps[] = {
+      {.path = kTestIconPath},
+  };
+
+  const gfx::VectorIcon kTestIcon(kTestIconReps, std::size(kTestIconReps),
+                                  "test_icon");
+  auto icon =
+      ui::ImageModel::FromVectorIcon(kTestIcon, SK_ColorBLACK, kIconDim);
+
+  // Convert icon to bitmap for comparison.
+  ui::ColorProvider color_provider;
+  color_provider.GenerateColorMapForTesting();
+  const SkBitmap expected_bitmap = *icon.Rasterize(&color_provider).bitmap();
+
+  auto dialog_model =
+      CreateDialogModel(/*ok_callback=*/base::DoNothing(),
+                        /*ok_button_style=*/ui::ButtonStyle::kDefault,
+                        /*cancel_button=*/false,
+                        /*cancel_callback=*/base::DoNothing(),
+                        /*cancel_button_style=*/ui::ButtonStyle::kDefault,
+                        /*close_callback=*/base::DoNothing(),
+                        /*override_button=*/std::nullopt,
+                        /*paragraphs=*/{u"paragraph"},
+                        /*with_checkbox=*/false,
+                        /*checkbox_is_checked=*/false,
+                        /*icon=*/std::move(icon));
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  SkBitmap actual_bitmap = fake_dialog_manager_->GetTitleIcon();
+
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(expected_bitmap, actual_bitmap));
+  EXPECT_FALSE(dialog_destroyed_);
+}
+
+TEST_F(ModalDialogWrapperTest, ShowsGfxImage) {
+  SkBitmap expected_bitmap;
+  expected_bitmap.allocN32Pixels(24, 24);
+  auto gfx_image = gfx::Image::CreateFrom1xBitmap(expected_bitmap);
+  auto icon = ui::ImageModel::FromImage(gfx_image);
+
+  auto dialog_model =
+      CreateDialogModel(/*ok_callback=*/base::DoNothing(),
+                        /*ok_button_style=*/ui::ButtonStyle::kDefault,
+                        /*cancel_button=*/false,
+                        /*cancel_callback=*/base::DoNothing(),
+                        /*cancel_button_style=*/ui::ButtonStyle::kDefault,
+                        /*close_callback=*/base::DoNothing(),
+                        /*override_button=*/std::nullopt,
+                        /*paragraphs=*/{u"paragraph"},
+                        /*with_checkbox=*/false,
+                        /*checkbox_is_checked=*/false,
+                        /*icon=*/std::move(icon));
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  SkBitmap actual_bitmap = fake_dialog_manager_->GetTitleIcon();
+
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(expected_bitmap, actual_bitmap));
+  EXPECT_FALSE(dialog_destroyed_);
 }
 
 }  // namespace ui

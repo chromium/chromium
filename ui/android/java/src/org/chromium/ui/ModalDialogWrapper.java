@@ -6,6 +6,11 @@ package org.chromium.ui;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -31,6 +36,8 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
 
     private final PropertyModel.Builder mPropertyModelBuilder;
 
+    private final @Nullable Context mContext;
+
     @CalledByNative
     private static ModalDialogWrapper create(long nativeDelegatePtr, WindowAndroid window) {
         return new ModalDialogWrapper(nativeDelegatePtr, window);
@@ -39,6 +46,7 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     private ModalDialogWrapper(long nativeDelegatePtr, WindowAndroid window) {
         mNativeDelegatePtr = nativeDelegatePtr;
         mModalDialogManager = window.getModalDialogManager();
+        mContext = window.getContext().get();
         mPropertyModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this);
@@ -56,6 +64,13 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButton)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButton)
                 .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles);
+    }
+
+    @CalledByNative
+    private void withTitleIcon(Bitmap iconBitmap) {
+        if (mContext == null) return;
+        Drawable iconDrawable = new BitmapDrawable(mContext.getResources(), iconBitmap);
+        mPropertyModelBuilder.with(ModalDialogProperties.TITLE_ICON, iconDrawable);
     }
 
     @CalledByNative

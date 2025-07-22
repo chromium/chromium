@@ -7,7 +7,9 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_javatest_jni_headers/FakeModalDialogManager_jni.h"
@@ -66,6 +68,16 @@ FakeModalDialogManagerBridge::GetMessageParagraphs() {
   base::android::AppendJavaStringArrayToStringVector(env, java_paragraphs,
                                                      paragraphs.get());
   return *paragraphs;
+}
+
+SkBitmap FakeModalDialogManagerBridge::GetTitleIcon() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_bitmap =
+      Java_FakeModalDialogManager_getTitleIcon(env, j_fake_manager_);
+  if (java_bitmap.is_null()) {
+    return SkBitmap();
+  }
+  return gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(java_bitmap));
 }
 
 bool FakeModalDialogManagerBridge::IsSuspend(

@@ -4,6 +4,9 @@
 
 package org.chromium.ui.test.util.modaldialog;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.activity.ComponentDialog;
@@ -109,6 +112,15 @@ public class FakeModalDialogManager extends ModalDialogManager {
         return mShownDialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS).stream()
                 .map(String::valueOf)
                 .toArray(String[]::new);
+    }
+
+    @CalledByNativeForTesting
+    public Bitmap getTitleIcon() {
+        Drawable icon = mShownDialogModel.get(ModalDialogProperties.TITLE_ICON);
+        if (icon instanceof BitmapDrawable) {
+            return ((BitmapDrawable) icon).getBitmap();
+        }
+        return null;
     }
 
     public PropertyModel getShownDialogModel() {
