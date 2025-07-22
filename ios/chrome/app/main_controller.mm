@@ -106,6 +106,7 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
+#import "ios/chrome/browser/share_extension/model/share_extension_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -440,6 +441,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 // Schedules the removal of files that were scheduled for automatic deletion and
 // were downloaded more than 30 days ago.
 - (void)scheduleAutoDeletionFileRemoval;
+// Schedules the processing of the share extension files in
+// `app_group::ShareExtensionItemsFolder()`.
+- (void)scheduleProcessingShareExtensionFiles;
 // Crashes the application if requested.
 - (void)crashIfRequested;
 // Initializes the application to the minimum initialization needed in all
@@ -529,6 +533,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // singleton during the shutdown creates.
   BOOL _rlzTrackerInitialized;
 #endif
+
+  // The controller that will process the share extension files.
+  ShareExtensionController* _shareExtensionController;
 }
 
 // Defined by public protocols.
@@ -742,6 +749,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     ProfileController* controller = pair.second;
     [controller applicationWillResignActive:application];
   }
+  if (IsShareExtensionForMultiprofileEnabled()) {
+    [_shareExtensionController applicationWillResignActive];
+  }
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -755,6 +765,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   }
 
   [_appState.appCommandDispatcher prepareForShutdown];
+
+  [_shareExtensionController shutdown];
+  _shareExtensionController = nil;
 
   // Cancel any in-flight distribution notification.
   ios::provider::CancelAppDistributionNotifications();
@@ -835,6 +848,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     // The application has been launched in background and the initialization
     // is not complete.
     [self initializeUIPreSafeMode];
+
     return;
   }
 
@@ -873,6 +887,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
   // This will be a no-op if upload already started.
   crash_helper::UploadCrashReports();
+
+  if (IsShareExtensionForMultiprofileEnabled()) {
+    [_shareExtensionController applicationDidBecomeActive];
+  }
 }
 
 - (void)application:(UIApplication*)application
@@ -1526,6 +1544,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   [self scheduleDumpDocumentsStatistics];
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+
+  if (IsShareExtensionForMultiprofileEnabled()) {
+    [self scheduleProcessingShareExtensionFiles];
+  }
 }
 
 - (void)scheduleDeleteTempDownloadsDirectory {
@@ -1598,6 +1620,12 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   }
 }
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+
+- (void)scheduleProcessingShareExtensionFiles {
+  CHECK(IsShareExtensionForMultiprofileEnabled());
+  _shareExtensionController = [[ShareExtensionController alloc] init];
+  [_shareExtensionController startFilesProcessing];
+}
 
 - (void)expireFirstUserActionRecorder {
   // Clear out any scheduled calls to this method. For example, the app may have

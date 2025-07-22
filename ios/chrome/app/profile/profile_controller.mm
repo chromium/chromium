@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -707,7 +708,9 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   [self sendChromeOpenedEvent];
 
   _spotlightManager = [SpotlightManager spotlightManagerWithProfile:profile];
-  ShareExtensionServiceFactory::GetForProfile(profile)->Initialize();
+  if (!IsShareExtensionForMultiprofileEnabled()) {
+    ShareExtensionServiceFactory::GetForProfile(profile)->Initialize();
+  }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetForProfile(profile);

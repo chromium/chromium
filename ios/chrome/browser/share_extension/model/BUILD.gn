@@ -28,3 +28,29 @@ source_set("model") {
     "//url",
   ]
 }
+
+source_set("controller") {
+  sources = [
+    "share_extension_controller.h",
+    "share_extension_controller.mm",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/common/app_group",
+    "//ios/web",
+    "//ios/web/public/thread",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "share_extension_utils.h",
+    "share_extension_utils.mm",
+  ]
+  deps = [ "//base" ]
+}

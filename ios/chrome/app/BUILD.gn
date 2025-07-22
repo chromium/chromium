@@ -501,6 +501,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/sessions/model:session_util",
+    "//ios/chrome/browser/share_extension/model:controller",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
