@@ -929,6 +929,14 @@ void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
 }
 
 void ReadAnythingAppController::DrawSelection() {
+  // Reset read aloud state if a selection has been made in case the selected
+  // nodes weren't previously distilled. Resetting isn't necessary if the
+  // selection nodes were included in the distilled content.
+  if (IsReadAloudEnabled() && !model_.selection_node_ids().empty() &&
+      !model_.SelectionNodesContainedInDistilledContent()) {
+    read_aloud_model_.ResetReadAloudState();
+  }
+
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
   ExecuteJavaScript("chrome.readingMode.updateSelection();");

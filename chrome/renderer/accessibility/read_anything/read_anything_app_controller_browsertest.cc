@@ -2138,6 +2138,31 @@ TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
+TEST_F(ReadAnythingAppControllerTest, DrawSelection_ResetsReadAloudState) {
+  ui::AXNodeData node1 = test::TextNode(/* id= */ 2, u"Not like you- ");
+  ui::AXNodeData node2 =
+      test::TextNode(/* id= */ 3, u" you lost your nerve, you lost the game.");
+  SendUpdateWithNodes({std::move(node1), std::move(node2)});
+
+  // Initialize read aloud state.
+  controller().InitAXPositionWithNode(2);
+  EXPECT_TRUE(controller().IsSpeechTreeInitialized());
+
+  // Create a selection from node 2-3. This will trigger DrawSelection.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.has_tree_data = true;
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 1;
+  update.tree_data.sel_focus_offset = 3;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({std::move(update)});
+
+  // After a selection, the read aloud state should be reset.
+  EXPECT_FALSE(controller().IsSpeechTreeInitialized());
+}
+
 TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickAfterClickDoesNotUpdateSelection) {
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2);

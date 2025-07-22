@@ -1956,3 +1956,45 @@ TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeDoesNotExistInitially) {
   AccessibilityEventReceived({std::move(update)});
   EXPECT_EQ(model().GetUkmSourceId(), source_id);
 }
+
+TEST_F(ReadAnythingAppModelTest, SelectionNodesContainedInDistilledContent) {
+  // content_node_ids = {3, 4}.
+  // display_node_ids will be computed from this, and will include ancestors,
+  // so {1, 3, 4}.
+  ProcessDisplayNodes({3, 4});
+
+  // Selection is outside content/display nodes: {2}.
+  // This will populate selection_node_ids with {1, 2}.
+  ui::AXTreeUpdate update1;
+  test::SetUpdateTreeID(&update1, tree_id_);
+  update1.tree_data.sel_anchor_object_id = 2;
+  update1.tree_data.sel_focus_object_id = 2;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 1;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({std::move(update1)});
+  model().PostProcessSelection();
+
+  // selection_node_ids_ is {1, 2}. content_node_ids_ is {3, 4}. The new method
+  // should return false.
+  EXPECT_FALSE(model().SelectionNodesContainedInDistilledContent());
+
+  // Now, let's test the true case.
+  // content_node_ids = {1, 2, 3, 4}.
+  model().Reset({1, 2, 3, 4});
+
+  // Selection is {2}.
+  ui::AXTreeUpdate update2;
+  test::SetUpdateTreeID(&update2, tree_id_);
+  update2.tree_data.sel_anchor_object_id = 2;
+  update2.tree_data.sel_focus_object_id = 2;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 1;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({std::move(update2)});
+  model().PostProcessSelection();
+
+  // selection_node_ids_ will be {1, 2}. content_node_ids_ is {1, 2, 3, 4}.
+  // The new method should return true.
+  EXPECT_TRUE(model().SelectionNodesContainedInDistilledContent());
+}

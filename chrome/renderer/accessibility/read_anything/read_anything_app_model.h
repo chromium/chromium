@@ -345,6 +345,8 @@ class ReadAnythingAppModel {
   // if the web content's root AXTree has no distillable content.
   void AllowChildTreeForActiveTree(bool use_child_tree);
 
+  bool SelectionNodesContainedInDistilledContent() const;
+
  private:
   struct SelectionEndpoint {
     enum class Source {

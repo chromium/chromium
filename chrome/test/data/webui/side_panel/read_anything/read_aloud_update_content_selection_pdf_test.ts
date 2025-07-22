@@ -102,8 +102,10 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
   test('inner html of container matches expected html', () => {
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.hasSpeechBeenTriggered());
-    // isSpeechTreeInitialized set in updateContent
-    assertTrue(speechController.isSpeechTreeInitialized());
+    // isSpeechTreeInitialized is set in updateContent but set to false when
+    // ReadAnythingAppController#DrawSelection is called with selection nodes
+    // that don't match the content nodes.
+    assertFalse(speechController.isSpeechTreeInitialized());
     // The expected HTML before any highlights are added.
     const expected = '<div><p>World</p><p>Friend!</p></div>';
     const innerHTML = app.$.container.innerHTML;
@@ -163,6 +165,7 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
 
   suite('While Read Aloud paused', () => {
     setup(() => {
+      speechController.initializeSpeechTree();
       playFromSelectionWithMockTimer(app);
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       return microtasksFinished();

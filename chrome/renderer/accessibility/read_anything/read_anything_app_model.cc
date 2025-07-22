@@ -1161,3 +1161,10 @@ void ReadAnythingAppModel::AllowChildTreeForActiveTree(bool use_child_tree) {
   // tree if they have distillable content.
   child_tree_ids_.insert(child_ids.begin(), child_ids.end());
 }
+
+bool ReadAnythingAppModel::SelectionNodesContainedInDistilledContent() const {
+  std::vector<ui::AXNodeID> sorted_content_ids = content_node_ids_;
+  std::sort(sorted_content_ids.begin(), sorted_content_ids.end());
+  return std::includes(sorted_content_ids.begin(), sorted_content_ids.end(),
+                       selection_node_ids_.begin(), selection_node_ids_.end());
+}
