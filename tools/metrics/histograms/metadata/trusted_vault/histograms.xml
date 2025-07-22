@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.TrustedVaultDegradedRecoverabilityValue"
-    enum="TrustedVaultDegradedRecoverabilityValue" expires_after="2025-11-17">
+    enum="TrustedVaultDegradedRecoverabilityValue" expires_after="2026-01-18">
   <owner>mmrashad@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>

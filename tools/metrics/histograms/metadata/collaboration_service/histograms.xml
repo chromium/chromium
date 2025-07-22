@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CollaborationService.LeaveOrDeleteFlow.EntryPoint"
     enum="CollaborationServiceLeaveOrDeleteEntryPoint"
-    expires_after="2025-10-11">
+    expires_after="2026-01-18">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
