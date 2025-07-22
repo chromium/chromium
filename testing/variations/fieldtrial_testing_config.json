@@ -10603,9 +10603,12 @@
                     "name": "Enabled",
                     "params": {
                         "geolocation_request_max_location_age_millis": "2147483647",
-                        "geolocation_request_min_update_interval_millis": "0"
+                        "geolocation_request_min_update_interval_millis": "0",
+                        "location_request_max_location_age_mills": "2147483647",
+                        "location_request_min_update_interval_millis": "0"
                     },
                     "enable_features": [
+                        "GmsCoreLocationRequestParamOverride",
                         "UseFusedLocationProvider"
                     ]
                 }
