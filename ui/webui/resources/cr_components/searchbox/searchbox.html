@@ -223,6 +223,12 @@
    right: calc(12px + var(--cr-compose-button-width) + var(--cr-searchbox-icon-spacing));
   }
 
+  :host([compose-button-enabled]):host-context([dir='rtl']) .searchbox-icon-button {
+   /* Since there is a 4px padding because of the glow effect, add 12px to left instead of 16px. */
+    left: calc(12px + var(--cr-compose-button-width) + var(--cr-searchbox-icon-spacing));
+    right: unset;
+  }
+
   /* When voice/lens icons are monochrome, they are webkit mask images.
    * Webkit mask images hide borders so container rules are created to
    * show focus borders on these icons. */

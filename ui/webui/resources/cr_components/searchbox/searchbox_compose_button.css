@@ -153,6 +153,11 @@
   z-index: 100;
 }
 
+:host-context([dir='rtl']) .glow-container {
+  left: 8px;
+  right: unset;
+}
+
 /* A wrapper class to hold each gradient and its mask. Don't show unless on page
  * load or on hover. */
 .gradient-and-mask-wrapper {
