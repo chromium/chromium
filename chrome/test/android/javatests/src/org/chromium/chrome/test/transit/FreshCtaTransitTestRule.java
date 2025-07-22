@@ -14,6 +14,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -94,8 +95,8 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
 
     /** Start the ChromeTabbedActivity as if it was started from the launcher. */
     @CheckReturnValue
-    public static TripBuilder startFromLauncherTo(ChromeTabbedActivityTestRule ctaTestRule) {
-        return ChromeTabbedActivityEntryPoints.startFromLauncherTo(ctaTestRule);
+    public TripBuilder startFromLauncherTo() {
+        return ChromeTabbedActivityEntryPoints.startFromLauncherTo(mActivityTestRule);
     }
 
     /**
@@ -115,7 +116,7 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
      * @param url the URL to add to the Intent
      */
     @CheckReturnValue
-    public TripBuilder startWithIntentPlusUrlTo(Intent intent, String url) {
+    public TripBuilder startWithIntentPlusUrlTo(Intent intent, @Nullable String url) {
         return ChromeTabbedActivityEntryPoints.startWithIntentPlusUrlTo(
                 mActivityTestRule, intent, url);
     }

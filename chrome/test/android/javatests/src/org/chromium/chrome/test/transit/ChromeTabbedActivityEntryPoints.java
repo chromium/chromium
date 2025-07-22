@@ -11,6 +11,7 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -102,7 +103,7 @@ public class ChromeTabbedActivityEntryPoints {
     /** Start the ChromeTabbedActivity with an Intent, adding a URL to it. */
     @CheckReturnValue
     public static TripBuilder startWithIntentPlusUrlTo(
-            ChromeTabbedActivityTestRule ctaTestRule, Intent intent, String url) {
+            ChromeTabbedActivityTestRule ctaTestRule, Intent intent, @Nullable String url) {
         disableFirstRunFlow();
 
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
