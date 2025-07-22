@@ -36,7 +36,6 @@
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/hdr_metadata.h"
-#include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
 namespace mojo {
