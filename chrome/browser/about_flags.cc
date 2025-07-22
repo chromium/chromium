@@ -3811,14 +3811,6 @@ const FeatureEntry::FeatureVariation kEdgeToEdgeEverywhereVariations[] = {
      std::size(kEdgeToEdgeEverywhereDebugFeatureParams), nullptr},
 };
 
-const FeatureEntry::FeatureParam kEdgeToEdgeSafeAreaConstraintFeatureParams[] =
-    {{"scrollable_when_stacking", "true"}};
-const FeatureEntry::FeatureVariation kEdgeToEdgeSafeAreaConstraintVariations[] =
-    {
-        {"scrollable variation", kEdgeToEdgeSafeAreaConstraintFeatureParams,
-         std::size(kEdgeToEdgeSafeAreaConstraintFeatureParams), nullptr},
-};
-
 const FeatureEntry::FeatureParam kEdgeToEdgeTabletFeatureParams[] = {
     {"e2e_tablet_invisible_bottom_chin_min_width", "768"}};
 const FeatureEntry::FeatureVariation kEdgeToEdgeTabletVariations[] = {
@@ -5893,13 +5885,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEdgeToEdgeEverywhere,
                                     kEdgeToEdgeEverywhereVariations,
                                     "EdgeToEdgeEverywhere")},
-    {"edge-to-edge-safe-area-constraint",
-     flag_descriptions::kEdgeToEdgeSafeAreaConstraintName,
-     flag_descriptions::kEdgeToEdgeSafeAreaConstraintDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kEdgeToEdgeSafeAreaConstraint,
-         kEdgeToEdgeSafeAreaConstraintVariations,
-         "EdgeToEdgeSafeAreaConstraint")},
     {"edge-to-edge-tablet", flag_descriptions::kEdgeToEdgeTabletName,
      flag_descriptions::kEdgeToEdgeTabletDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEdgeToEdgeTablet,

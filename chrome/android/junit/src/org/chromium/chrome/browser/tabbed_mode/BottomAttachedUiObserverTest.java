@@ -159,7 +159,6 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)
     public void testAdaptsColorToBrowserControls() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -204,10 +203,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinNonScrollable() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -239,10 +235,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToBrowserControls_bottomChinConstraint_multipleNonScrollableLayer() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -274,10 +267,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinScrollable() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
@@ -301,10 +291,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testAdaptsColorToBrowserControls_bottomChinConstraint_bottomChinOnly() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.isLayerNonScrollable(
@@ -923,10 +910,7 @@ public class BottomAttachedUiObserverTest {
         ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
         ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
     })
-    @DisableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT
-    })
+    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testNavBarColorAnimationsBrowserControls() {
         mColorChangeObserver.assertState(null, false, false);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(

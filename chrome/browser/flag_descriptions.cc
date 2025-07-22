@@ -4861,11 +4861,6 @@ const char kEdgeToEdgeEverywhereDescription[] =
     "to facilitate the transition to edge-to-edge being enforced at the system "
     "level.";
 
-const char kEdgeToEdgeSafeAreaConstraintName[] = "EdgeToEdgeSafeAreaConstraint";
-const char kEdgeToEdgeSafeAreaConstraintDescription[] =
-    "Ensure web content is constrained to within the safe area if safe area "
-    "constraint is presents on a given web page.";
-
 const char kEdgeToEdgeTabletName[] = "EdgeToEdgeTablet";
 const char kEdgeToEdgeTabletDescription[] =
     "Enables the Android feature Edge-to-Edge on tablets";

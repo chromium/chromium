@@ -395,7 +395,6 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)
     public void testSafeAreaConstraint() {
         loadSafeAreaConstrainPage();
 

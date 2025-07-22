@@ -426,8 +426,6 @@ public class EdgeToEdgeBottomChinMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(
-            ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT + ":scrollable_when_stacking/true")
     public void testUpdateSafeAreaConstraint_ScrollableWhenStacking_autoPage() {
         mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
         mMediator.onSafeAreaConstraintChanged(true);
@@ -439,8 +437,6 @@ public class EdgeToEdgeBottomChinMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(
-            ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT + ":scrollable_when_stacking/true")
     public void testUpdateSafeAreaConstraint_ScrollableWhenStacking_optInPage() {
         mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ true);
         mMediator.onSafeAreaConstraintChanged(true);

@@ -370,17 +370,12 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
             DisplayCutoutTabHelper.from(mTab).setViewportFit(value);
-            if (ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled()) {
-                DisplayCutoutTabHelper.from(mTab)
-                        .setSafeAreaConstraint(value == ViewportFit.CONTAIN);
-            }
+            DisplayCutoutTabHelper.from(mTab).setSafeAreaConstraint(value == ViewportFit.CONTAIN);
         }
 
         @Override
         public void safeAreaConstraintChanged(boolean hasConstraint) {
-            if (ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled()) {
-                DisplayCutoutTabHelper.from(mTab).setSafeAreaConstraint(hasConstraint);
-            }
+            DisplayCutoutTabHelper.from(mTab).setSafeAreaConstraint(hasConstraint);
         }
 
         @Override

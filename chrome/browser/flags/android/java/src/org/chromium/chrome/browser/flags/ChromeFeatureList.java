@@ -385,7 +385,6 @@ public abstract class ChromeFeatureList {
     public static final String EDGE_TO_EDGE_EVERYWHERE = "EdgeToEdgeEverywhere";
     public static final String EDGE_TO_EDGE_MONITOR_CONFIGURATIONS =
             "EdgeToEdgeMonitorConfigurations";
-    public static final String EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT = "EdgeToEdgeSafeAreaConstraint";
     public static final String EDGE_TO_EDGE_TABLET = "EdgeToEdgeTablet";
     public static final String EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS =
             "EdgeToEdgeUseBackupNavbarInsets";
@@ -1250,8 +1249,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(CONTROLS_VISIBILITY_FROM_NAVIGATIONS, true);
     public static final MutableFlagWithSafeDefault sDynamicSafeAreaInsets =
             newMutableFlagWithSafeDefault(DYNAMIC_SAFE_AREA_INSETS, false);
-    public static final MutableFlagWithSafeDefault sEdgeToEdgeSafeAreaConstraint =
-            newMutableFlagWithSafeDefault(EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT, true);
     // Defaulted to true in native, but since it is being used as a kill switch set the default
     // value pre-native to false as it is safer if the feature needs to be killed via Finch config.
     public static final MutableFlagWithSafeDefault sEmptyTabListAnimationKillSwitch =

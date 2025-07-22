@@ -108,8 +108,7 @@ class EdgeToEdgeBottomChinMediator
         mBottomControlsStacker = bottomControlsStacker;
         mFullscreenManager = fullscreenManager;
         mDefaultVisibility = defaultVisibility;
-        mIsConstraintChinScrollableWhenStacking =
-                EdgeToEdgeUtils.isConstraintBottomChinScrollableWhenStacking();
+        mIsConstraintChinScrollableWhenStacking = true;
 
         // Add observers.
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
