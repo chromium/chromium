@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,9 +25,14 @@ public class ExtensionActionButtonViewBinder {
             button.setContentDescription(title);
         } else if (key == ExtensionActionButtonProperties.ICON) {
             Bitmap bitmap = model.get(ExtensionActionButtonProperties.ICON);
-            // TODO: Investigate the correct resizing method.
-            bitmap.setDensity(120);
-            button.setImageBitmap(bitmap);
+            int toolbarIconWidth =
+                    button.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_default_width);
+            int toolbarIconHeight =
+                    button.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
+            Bitmap scaledBitmap =
+                    Bitmap.createScaledBitmap(bitmap, toolbarIconWidth, toolbarIconHeight, true);
+            scaledBitmap.setDensity(button.getResources().getDisplayMetrics().densityDpi);
+            button.setImageBitmap(scaledBitmap);
         } else if (key == ExtensionActionButtonProperties.ON_CLICK_LISTENER) {
             button.setOnClickListener(model.get(ExtensionActionButtonProperties.ON_CLICK_LISTENER));
         }
