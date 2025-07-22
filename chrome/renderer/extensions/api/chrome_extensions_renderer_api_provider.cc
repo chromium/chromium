@@ -11,6 +11,7 @@
 #include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
+#include "extensions/renderer/lazy_background_page_native_handler.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
@@ -23,7 +24,6 @@
 #include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 #include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
 #include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/lazy_background_page_native_handler.h"
 #include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/script_context.h"
 #include "printing/buildflags/buildflags.h"
@@ -50,6 +50,15 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "notifications_private",
       std::make_unique<NotificationsNativeHandler>(context));
+  // The following are native handlers that are defined in //extensions, but
+  // are only used for APIs defined in Chrome.
+  // TODO(devlin): We should clean this up. If an API is defined in Chrome,
+  // there's no reason to have its native handlers residing and being compiled
+  // in //extensions.
+  module_system->RegisterNativeHandler(
+      "lazy_background_page",
+      std::make_unique<LazyBackgroundPageNativeHandler>(context));
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   module_system->RegisterNativeHandler(
       "sync_file_system",
@@ -70,15 +79,6 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "page_capture", std::make_unique<PageCaptureCustomBindings>(
                           context, bindings_system->GetIPCMessageSender()));
-
-  // The following are native handlers that are defined in //extensions, but
-  // are only used for APIs defined in Chrome.
-  // TODO(devlin): We should clean this up. If an API is defined in Chrome,
-  // there's no reason to have its native handlers residing and being compiled
-  // in //extensions.
-  module_system->RegisterNativeHandler(
-      "lazy_background_page",
-      std::make_unique<LazyBackgroundPageNativeHandler>(context));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 

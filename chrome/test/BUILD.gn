@@ -1622,6 +1622,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/webstore_installer_test.cc",
       "../browser/extensions/webstore_installer_test.h",
       "../browser/extensions/webstore_reinstaller_browsertest.cc",
+      "../browser/speech/extension_api/tts_extension_apitest.cc",
       "../browser/task_manager/providers/web_contents/extension_tag_browsertest.cc",
       "../browser/ui/webui/extensions/extensions_internals_browsertest.cc",
     ]
@@ -1653,7 +1654,10 @@ source_set("platform_browser_tests") {
       deps += [ "//chrome/browser/ui/search:test_support_ui" ]
     }
     if (is_chromeos) {
-      deps += [ "//chrome/browser/ui/webui/ash/parent_access:test_support" ]
+      deps += [
+        "//chrome/browser/ui/webui/ash/parent_access:test_support",
+        "//chromeos/services/tts",
+      ]
     }
     data += [
       "//chrome/test/data/extensions/",
@@ -4054,10 +4058,7 @@ if (!is_android) {
 
     # If this target is used on Android in the future, these browser / speech/*
     # files will probably not be applicable.
-    sources += [
-      "../browser/speech/extension_api/tts_extension_apitest.cc",
-      "../browser/speech/speech_recognition_browsertest.cc",
-    ]
+    sources += [ "../browser/speech/speech_recognition_browsertest.cc" ]
 
     if (enable_click_to_call) {
       sources += [ "../browser/ui/views/sharing/click_to_call_browsertest.cc" ]
@@ -9219,6 +9220,7 @@ test("unit_tests") {
       "../browser/extensions/updater/extension_updater_switches_unittest.cc",
       "../browser/extensions/updater/extension_updater_unittest.cc",
       "../browser/ui/webui/extensions/extensions_internals_unittest.cc",
+      "../common/extensions/api/speech/tts_engine_manifest_handler_unittest.cc",
       "../common/extensions/api/storage/storage_schema_manifest_handler_unittest.cc",
       "../common/extensions/chrome_manifest_url_handlers_unittest.cc",
       "../common/extensions/manifest_handlers/automation_unittest.cc",
@@ -9453,7 +9455,6 @@ test("unit_tests") {
       "../common/apps/platform_apps/media_galleries_permission_unittest.cc",
       "../common/extensions/api/common_extension_api_unittest.cc",
       "../common/extensions/api/extension_action/browser_action_manifest_unittest.cc",
-      "../common/extensions/api/speech/tts_engine_manifest_handler_unittest.cc",
       "../common/extensions/api/url_handlers/url_handlers_parser_unittest.cc",
       "../common/extensions/chrome_extensions_client_unittest.cc",
       "../common/extensions/extension_unittest.cc",
