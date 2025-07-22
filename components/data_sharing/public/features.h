@@ -18,6 +18,10 @@ BASE_DECLARE_FEATURE(kCollaborationEntrepriseV2);
 // implementation of the service is returned.
 BASE_DECLARE_FEATURE(kDataSharingFeature);
 
+// Migration flag of the SharedTabGroupAccountDataSpecifics into
+// //components/data_sharing.
+BASE_DECLARE_FEATURE(kDataSharingAccountDataMigration);
+
 // Join only feature flag for data sharing. Enabled partial data sharing related
 // functionalities.
 BASE_DECLARE_FEATURE(kDataSharingJoinOnly);
