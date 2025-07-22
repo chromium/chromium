@@ -171,6 +171,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kQuietNotificationPrompts,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
     &feature_engagement::kIPHRtlGestureNavigationFeature,
+    &feed::kFeedAudioOverviews,
     &feed::kFeedContainment,
     &feed::kFeedFollowUiUpdate,
     &feed::kFeedHeaderRemoval,

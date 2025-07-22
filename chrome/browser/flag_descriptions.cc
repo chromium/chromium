@@ -4969,6 +4969,10 @@ const char kFeedDiscoFeedEndpointDescription[] =
 const char kFeedHeaderRemovalName[] = "Removing feed header";
 const char kFeedHeaderRemovalDescription[] = "Stops showing the feed header.";
 
+const char kFeedAudioOverviewsName[] = "Feed audio overviews";
+const char kFeedAudioOverviewsDescription[] =
+    "Enables audio overviews in the feed";
+
 const char kWebFeedDeprecationName[] = "Web feed deprecation";
 const char kWebFeedDeprecationDescription[] = "Deprecate the web feed.";
 

@@ -129,6 +129,10 @@ BASE_DECLARE_FEATURE(kFeedStreaming);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedHeaderRemoval);
 
+// Feature that enables feed audio overviews.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedAudioOverviews);
+
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsWebFeedEnabledForLocale(const std::string& country);
 

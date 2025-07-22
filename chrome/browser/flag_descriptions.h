@@ -2866,6 +2866,9 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kFeedHeaderRemovalName[];
 extern const char kFeedHeaderRemovalDescription[];
 
+extern const char kFeedAudioOverviewsName[];
+extern const char kFeedAudioOverviewsDescription[];
+
 extern const char kWebFeedDeprecationName[];
 extern const char kWebFeedDeprecationDescription[];
 

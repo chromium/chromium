@@ -4928,6 +4928,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "feed-audio-overviews",
+    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "feed-background-refresh-ios",
     "owners": [ "adamta@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 140
