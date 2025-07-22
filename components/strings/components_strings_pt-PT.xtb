@@ -1145,6 +1145,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2930531075747147366">Separador do seu outro dispositivo</translation>
 <translation id="2930577230479659665">Cortar no fim de cada cópia</translation>
 <translation id="2933624813161016821">Folha de alumínio</translation>
+<translation id="293796669683825859">Comentários</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Imagem PNG</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 pol.</translation>
@@ -1994,6 +1995,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4298000214066716287">Investimentos</translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4298925811540301889">Os cookies deste site são sincronizados nos seus dispositivos com ChromeOS. Para gerir o que sincroniza, aceda a <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Abrir aplicação</translation>
 <translation id="4300675098767811073">Perfuração múltipla à direita</translation>
 <translation id="4302514097724775343">Toque no dinossauro para jogar.</translation>
 <translation id="4304049446746819918">{0,plural, =1{A política do administrador não recomenda mover este ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda mover estes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>

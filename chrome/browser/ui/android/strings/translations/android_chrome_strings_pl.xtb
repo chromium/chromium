@@ -240,6 +240,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2088833076121753253">Aby dokończyć konfigurowanie autouzupełniania, teraz uruchom ponownie Chrome. Karty zostaną automatycznie ponownie otwarte.</translation>
 <translation id="2091863218454846791">Wyświetlam widok kompaktowy</translation>
 <translation id="2093731487903423814">ostatnich 15 minut</translation>
+<translation id="2096577711562668473">Zmienić usługę autouzupełniania?</translation>
 <translation id="2100273922101894616">Automatyczne logowanie</translation>
 <translation id="2109384632594340939">zdjęcie profilowe</translation>
 <translation id="2111511281910874386">Przejdź do strony</translation>
@@ -325,6 +326,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2496180316473517155">Historia przeglądania</translation>
 <translation id="2497852260688568942">Synchronizację wyłączył administrator</translation>
 <translation id="250020030759455918">Będziesz mieć dostęp do stanu logowania, danych przeglądania oraz danych witryny w Chrome dotyczących Twojej strony <ph name="SITE_NAME" /></translation>
+<translation id="2502798195266898572">Plansza dolna Trybu czytania otwarta na całą wysokość</translation>
 <translation id="2510106555128151389">Instaluję aplikację <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">Wyszukaj opcje zakupu</translation>
 <translation id="2513403576141822879">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Synchronizacja i usługi Google<ph name="END_LINK" /></translation>
@@ -934,6 +936,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Pobieram plik…}few{Pobieram # pliki…}many{Pobieram # plików…}other{Pobieram # pliku…}}</translation>
 <translation id="5210286577605176222">Przejdź do poprzedniej karty</translation>
 <translation id="5210365745912300556">Zamknij kartę</translation>
+<translation id="5212800876504289412">Aby dokończyć tę zmianę, uruchom ponownie Chrome. Po ponownym uruchomieniu karty otworzą się automatycznie.</translation>
 <translation id="5215957675041756913">Zarządzaj swoimi danymi i kontem</translation>
 <translation id="5218324087477576825">Numer karty, wymagany</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="SEPARATOR" /> Przeglądarka Chrome usunęła te uprawnienia, ponieważ od jakiegoś czasu nie odwiedzasz tej witryny</translation>
@@ -1062,6 +1065,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Pokaż powiadomienie}few{Pokaż powiadomienia}many{Pokaż powiadomienia}other{Pokaż powiadomienia}}</translation>
 <translation id="5814749351757353073">Bądź na bieżąco ze swoimi ulubionymi stronami</translation>
 <translation id="5823093032261493462">Czy mimo to chcesz pobrać plik „<ph name="FILE_NAME" />” z <ph name="DOWNLOAD_DOMAIN" />?</translation>
+<translation id="5825135637446025843">Po ponownym uruchomieniu Chrome do autouzupełniania haseł, kluczy dostępu, adresów, form płatności i innych informacji będą używane dane zapisane przez nowego usługodawcę.</translation>
 <translation id="5828921839638612740">Dane możesz usunąć w Ustawieniach Chrome</translation>
 <translation id="5829586821381540080">Zapisano w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Nieznany</translation>
@@ -1178,6 +1182,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6296366034485697675">Wyeksportuj i usuń</translation>
 <translation id="629730747756840877">Konto</translation>
+<translation id="6300697579369314762">Plansza dolna Trybu czytania otwarta do połowy wysokości</translation>
 <translation id="6301526076346731664">Otwarcie narzędzi dla programistów</translation>
 <translation id="6303969859164067831">Wyloguj się i wyłącz synchronizację</translation>
 <translation id="6307241780749477694">Aby pobrać wszystkie swoje hasła na to urządzenie, potwierdź swoją tożsamość</translation>
@@ -1398,6 +1403,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="71503698506017927">Szyfrowanie haseł nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">Plansza dolna Trybu czytania zamknięta</translation>
 <translation id="7165972437814027679">Więcej informacji o tym, dlaczego Chrome blokuje niektóre pliki</translation>
 <translation id="7168323970702333693">Zalogowano jako <ph name="USER_NAME" />. Otwiera ustawienia.</translation>
 <translation id="7173114856073700355">Otwórz Ustawienia</translation>

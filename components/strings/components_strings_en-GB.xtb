@@ -576,6 +576,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1959001866257244765">Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK" />URLs of some pages that you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK" /> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privacy policy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Your text and page content are sent to Google and may be used to improve this feature.
   <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">When you make purchases in Chrome, see non-card payment methods as an option</translation>
 <translation id="196146181975453736">Complete one-time security check to pay faster</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
 <translation id="1973335181906896915">Serialisation error</translation>
@@ -1144,6 +1145,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2930531075747147366">Tab from your other device</translation>
 <translation id="2930577230479659665">Trim after each copy</translation>
 <translation id="2933624813161016821">Embossing foil</translation>
+<translation id="293796669683825859">Comments</translation>
 <translation id="2938225289965773019">Open <ph name="PROTOCOL" /> links</translation>
 <translation id="2940418897281183211">PNG image</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
@@ -1993,6 +1995,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4298000214066716287">Investing</translation>
 <translation id="42981349822642051">Expand</translation>
 <translation id="4298925811540301889">Cookies for this site are synced across your ChromeOS devices. To manage what you sync, go to <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Open app</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
 <translation id="4302514097724775343">Tap the dino to play</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administrator policy doesn’t recommend moving this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend moving these files to <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6101583188322746099">Grocery Delivery Services</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Create site</translation>
+<translation id="6105511947520166941">Pay with Pix directly in Chrome next time</translation>
 <translation id="6106989379647458772">The web page at <ph name="PAGE" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="6107012941649240045">Issued To</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> changed the group name</translation>

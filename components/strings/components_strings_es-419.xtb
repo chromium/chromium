@@ -576,6 +576,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1959001866257244765">Si quieres ayudar a mejorar la seguridad de la Web para todos, envía <ph name="BEGIN_WHITEPAPER_LINK" />las URL de algunas páginas que visitas, información limitada sobre el sistema y determinado contenido de páginas<ph name="END_WHITEPAPER_LINK" /> a Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de Privacidad<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">El texto y el contenido de la página se envían a Google y se pueden usar para mejorar esta función.
   <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Cuando realices compras en Chrome, verás las formas de pago que no son tarjetas como opción</translation>
 <translation id="196146181975453736">Completa la verificación de seguridad única para pagar más rápido</translation>
 <translation id="1962204205936693436">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Error de serialización</translation>
@@ -1144,6 +1145,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2930531075747147366">Pestaña de tu otro dispositivo</translation>
 <translation id="2930577230479659665">Cortar después de cada copia</translation>
 <translation id="2933624813161016821">Lámina con relieve</translation>
+<translation id="293796669683825859">Comentarios</translation>
 <translation id="2938225289965773019">Abrir vínculos de <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Imagen PNG</translation>
 <translation id="2941878205777356567">Sobre de 22.8 × 30.4 cm</translation>
@@ -1994,6 +1996,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4298000214066716287">Inversión</translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4298925811540301889">Las cookies de este sitio se sincronizan en todos tus dispositivos ChromeOS. Para administrar los datos de la sincronización, ve a <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Abrir app</translation>
 <translation id="4300675098767811073">Perforaciones múltiples a la derecha</translation>
 <translation id="4302514097724775343">Presiona el dinosaurio para jugar</translation>
 <translation id="4304049446746819918">{0,plural, =1{La política del administrador no recomienda mover este archivo a <ph name="DESTINATION_NAME" />.}other{La política del administrador no recomienda mover estos archivos a <ph name="DESTINATION_NAME" />.}}</translation>
@@ -3036,6 +3039,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6101583188322746099">Servicios de entrega de comestibles</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Crear sitio</translation>
+<translation id="6105511947520166941">Paga con Pix directamente en Chrome la próxima vez</translation>
 <translation id="6106989379647458772">Es posible que la página web de <ph name="PAGE" /> no funcione temporalmente o se haya trasladado permanentemente a una dirección web nueva.</translation>
 <translation id="6107012941649240045">Emitido a</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> cambió el nombre del grupo</translation>

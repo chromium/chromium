@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">অটোফিল সেট আপ করা সম্পূর্ণ করতে, এখন Chrome রিস্টার্ট করুন। আপনার ট্যাব অটোমেটিক আবার খুলবে।</translation>
 <translation id="2091863218454846791">কম্প্যাক্ট ভিউ দেখানো হচ্ছে</translation>
 <translation id="2093731487903423814">গত ১৫ মিনিটে</translation>
+<translation id="2096577711562668473">অটোফিল পরিষেবা পরিবর্তন করবেন?</translation>
 <translation id="2100273922101894616">অটো সাইন-ইন</translation>
 <translation id="2109384632594340939">প্রোফাইল ছবি</translation>
 <translation id="2111511281910874386">এই পৃষ্ঠাতে যান</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">ব্রাউজিং ইতিহাস</translation>
 <translation id="2497852260688568942">আপনার প্রশাসকের দ্বারা সিঙ্ক অক্ষম করা হয়েছে</translation>
 <translation id="250020030759455918">আপনি Chrome-এ <ph name="SITE_NAME" /> সাইটে নিজের সাইন-ইন স্ট্যাটাস, ব্রাউজিং ডেটা ও সাইট ডেটা দেখতে পাবেন</translation>
+<translation id="2502798195266898572">রিডিং মোডের স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ইনস্টল করা হচ্ছে…</translation>
 <translation id="2512234228327349533">কেনার বিকল্প খুঁজুন</translation>
 <translation id="2513403576141822879">আপনার গোপনীয়তা, নিরাপত্তা এবং ডেটা সংগ্রহের সাথে সম্পর্কযুক্ত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />সিঙ্ক এবং Google পরিষেবাগুলি<ph name="END_LINK" /> দেখুন</translation>
@@ -934,6 +936,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ফাইল ডাউনলোড হচ্ছে…}one{#টি ফাইল ডাউনলোড হচ্ছে…}other{#টি ফাইল ডাউনলোড হচ্ছে…}}</translation>
 <translation id="5210286577605176222">পূর্ববর্তী ট্যাবে চলে যান</translation>
 <translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
+<translation id="5212800876504289412">এই পরিবর্তন সম্পূর্ণ করতে Chrome রিস্টার্ট করুন। আপনি রিস্টার্ট করলে ট্যাব অটোমেটিক আবার খুলে যাবে।</translation>
 <translation id="5215957675041756913">আপনার ডেটা ও অ্যাকাউন্ট কন্ট্রোল করুন</translation>
 <translation id="5218324087477576825">কার্ডের নম্বর, প্রয়োজন</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ আপনি সম্প্রতি দেখেননি</translation>
@@ -1062,6 +1065,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{বিজ্ঞপ্তি দেখুন}one{বিজ্ঞপ্তিগুলি দেখুন}other{বিজ্ঞপ্তিগুলি দেখুন}}</translation>
 <translation id="5814749351757353073">আপনার পছন্দসই সাইটগুলি দেখতে থাকুন</translation>
 <translation id="5823093032261493462">আপনি কি তবুও <ph name="DOWNLOAD_DOMAIN" /> থেকে "<ph name="FILE_NAME" />" ডাউনলোড করতে চান?</translation>
+<translation id="5825135637446025843">Chrome রিস্টার্ট হওয়ার পরে, আপনার নতুন পরিষেবা প্রদানকারীর থেকে সেভ করা তথ্য পাসওয়ার্ড, পাসকী, ঠিকানা, পেমেন্ট পদ্ধতি ও অন্যান্য তথ্য অটোফিল করার জন্য ব্যবহার করা হবে।</translation>
 <translation id="5828921839638612740">Chrome 'সেটিংস'-এ গিয়ে আপনি ডেটা মুছে ফেলতে পারবেন</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />-এ সেভ করা হয়েছে</translation>
 <translation id="583281660410589416">অজানা</translation>
@@ -1178,6 +1182,7 @@
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6296366034485697675">এক্সপোর্ট করুন ও মুছে দিন</translation>
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
+<translation id="6300697579369314762">রিডিং মোডের স্ক্রিনের নিচে অ্যাটাচ করা শিট অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="6301526076346731664">ডেভেলপার টুল খোলে</translation>
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
 <translation id="6307241780749477694">এই ডিভাইসে যাতে আপনার সব পাসওয়ার্ড পেতে পারেন সেই জন্য নিজের পরিচয় যাচাই করুন</translation>
@@ -1398,6 +1403,7 @@
 <translation id="71503698506017927">পাসফ্রেজ এনক্রিপশনে Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।
 
 এই সেটিং পরিবর্তন করতে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
+<translation id="7151332203500147130">রিডিং মোডের স্ক্রিনের নিচে অ্যাটাচ করা শিট বন্ধ আছে</translation>
 <translation id="7165972437814027679">Chrome কিছু ফাইল কেন ব্লক করে, সেই সম্পর্কে জানুন</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> হিসেবে সাইন-ইন করেছেন। সেটিংস খোলে।</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>

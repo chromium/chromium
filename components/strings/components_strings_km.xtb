@@ -1148,6 +1148,7 @@
 <translation id="2930531075747147366">ផ្ទាំង​ពីឧបករណ៍​ផ្សេងទៀត​របស់អ្នក</translation>
 <translation id="2930577230479659665">តម្រឹម​បន្ទាប់ពី​ច្បាប់ចម្លង​នីមួយៗ</translation>
 <translation id="2933624813161016821">សន្លឹកអាលុយមីញ៉ូមសម្រាប់ការបោះពុម្ពផុស</translation>
+<translation id="293796669683825859">មតិ</translation>
 <translation id="2938225289965773019">បើកតំណ <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">រូបភាព PNG</translation>
 <translation id="2941878205777356567">ស្រោមសំបុត្រ 9 x 12 អ៊ីង</translation>
@@ -1997,6 +1998,7 @@
 <translation id="4298000214066716287">ការ​វិនិយោគ</translation>
 <translation id="42981349822642051">ពង្រីក</translation>
 <translation id="4298925811540301889">ខូគី​សម្រាប់​គេហទំព័រនេះ​ត្រូវបាន​ធ្វើ​សមកាលកម្ម​នៅលើ​ឧបករណ៍ ChromeOS របស់អ្នក។ ដើម្បី​គ្រប់គ្រង​អ្វីដែលអ្នក​ធ្វើសម​កាលកម្ម សូមចូល​ទៅកាន់ "<ph name="SYNC_SETTINGS" />"។</translation>
+<translation id="4300272766492248925">បើកកម្មវិធី</translation>
 <translation id="4300675098767811073">ចោះ​ច្រើនរន្ធ​ខាងស្ដាំ</translation>
 <translation id="4302514097724775343">ចុច "ដាយណូស័រ" ដើម្បីលេង</translation>
 <translation id="4304049446746819918">{0,plural, =1{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​ផ្លាស់ទី​ឯកសារ​នេះ​ទៅ​ក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​​ផ្លាស់ទី​ឯកសារ​ទាំង​នេះ​ទៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>

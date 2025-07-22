@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସରୁ ଟାବ</translation>
 <translation id="2930577230479659665">ପ୍ରତ୍ୟେକ କପି ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
 <translation id="2933624813161016821">ଏମ୍ବସିଂ ଫଏଲ</translation>
+<translation id="293796669683825859">ମନ୍ତବ୍ୟଗୁଡ଼ିକ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ଲିଙ୍କ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="2940418897281183211">PNG ଇମେଜ</translation>
 <translation id="2941878205777356567">ଏନଭେଲପ 9 x 12 in</translation>
@@ -1991,6 +1992,7 @@
 <translation id="4298000214066716287">ନିବେଶ</translation>
 <translation id="42981349822642051">ପ୍ରସାରଣ କରନ୍ତୁ</translation>
 <translation id="4298925811540301889">ଏହି ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକ ଆପଣଙ୍କ ସମଗ୍ର ChromeOS ଡିଭାଇସରେ ସିଙ୍କ ହୋଇଛି। ଆପଣ ଯାହା ସିଙ୍କ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ <ph name="SYNC_SETTINGS" />କୁ ଯାଆନ୍ତୁ।</translation>
+<translation id="4300272766492248925">ଆପ ଖୋଲନ୍ତୁ</translation>
 <translation id="4300675098767811073">ଡାହାଣ ପଟରେ ଏକାଧିକ ପଞ୍ଚ୍</translation>
 <translation id="4302514097724775343">ଖେଳିବା ପାଇଁ ଡାଇନୋସରରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="4304049446746819918">{0,plural, =1{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲ ମୁଭ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲଗୁଡ଼ିକ ମୁଭ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>

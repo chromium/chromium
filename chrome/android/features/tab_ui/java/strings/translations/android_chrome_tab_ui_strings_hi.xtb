@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
-<translation id="1036348656032585052">बंद करें</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हफ़्ते पहले बनाया गया}one{<ph name="NUM_WEEKS_MANY" /> हफ़्ते पहले बनाया गया}other{<ph name="NUM_WEEKS_MANY" /> हफ़्ते पहले बनाया गया}}</translation>
 <translation id="1063300264396686489">अन्य डिवाइसों से टैब ग्रुप अपने-आप खुलने की सुविधा</translation>
 <translation id="1075622780330595106">आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल फ़िलहाल में इस्तेमाल नहीं हुआ है. उन्हें बंद करना चाहेंगे?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">इनऐक्टिव सेक्शन में मूव करें</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> टैब को बुकमार्क करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}}</translation>
 <translation id="2055057176188061528">कोई टैब ग्रुप चुनें या एक नया टैब ग्रुप बनाएं</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome, इनऐक्टिव सेक्शन में मौजूद उन आइटम को अपने-आप बंद कर देता है जिन्हें आपने <ph name="AUTO_DELETE_DELAY_ONE" /> महीने से इस्तेमाल नहीं किया है. सेटिंग में जाकर इसे अभी या किसी भी समय बंद किया जा सकता है.}one{Chrome, इनऐक्टिव सेक्शन में मौजूद उन आइटम को अपने-आप बंद कर देता है जिन्हें आपने <ph name="AUTO_DELETE_DELAY_MANY" /> महीने से इस्तेमाल नहीं किया है. सेटिंग में जाकर इसे अभी या किसी भी समय बंद किया जा सकता है.}other{Chrome, इनऐक्टिव सेक्शन में मौजूद उन आइटम को अपने-आप बंद कर देता है जिन्हें आपने <ph name="AUTO_DELETE_DELAY_MANY" /> महीनों से इस्तेमाल नहीं किया है. सेटिंग में जाकर इसे अभी या किसी भी समय बंद किया जा सकता है.}}</translation>
 <translation id="2118649612461486615">स्टोर की जानकारी</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}one{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}other{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेंगे.}}</translation>
 <translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2371084566192454134">टैब और टैब ग्रुप</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}}</translation>
+<translation id="2479148705183875116">सेटिंग पर जाएं</translation>
 <translation id="2498435670446402865">टैब ग्रुप का नाम बदलें</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" और "<ph name="TAB_GROUP_NAME_2" />" टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">अब सभी डुप्लीकेट टैब भी संग्रहित किए जाएंगे. हालांकि, सबसे हाल ही में इस्तेमाल किए गए डुप्लीकेट टैब को संग्रहित नहीं किया जाएगा.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> आइटम बंद करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ग्रुप को दूसरी विंडो पर ले जाएं}one{ग्रुप को दूसरी विंडो पर ले जाएं}other{ग्रुप को दूसरी विंडो पर ले जाएं}}</translation>
-<translation id="6220820548421939212">हां. मैं सहमत हूं</translation>
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{नए ग्रुप में टैब को जोड़ें}one{नए ग्रुप में टैब को जोड़ें}other{नए ग्रुप में टैब जोड़ें}}</translation>
 <translation id="6333260925957816943">इस स्टोर के बारे में जानकारी</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">टैब ग्रुप चुनें</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{टैब को शेयर करें}one{टैब को शेयर करें}other{टैब को शेयर करें}}</translation>
 <translation id="7129458170538955174">इस स्टोर के बारे में जानकारी आधी स्क्रीन पर खुली हुई है</translation>
+<translation id="7151209024774799310">ग्रुप से टैब हटाएं</translation>
 <translation id="7204204600596740190">एक साथ कई टैब चुनने का मोड</translation>
 <translation id="7211038039686180558">टैब ग्रुप, आपके साइन-इन किए हुए सभी डिवाइसों में अपने-आप सेव और अपडेट हो जाते हैं</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> को चुना गया</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं}}</translation>
 <translation id="7885132941432959125">टैब को दाईं ओर ले जाएं</translation>
-<translation id="788914896430720926">क्या आपको अपने इनऐक्टिव आइटम वाले सेक्शन को व्यवस्थित रखना है?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> को नहीं चुना गया</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7961015016161918242">कभी नहीं</translation>

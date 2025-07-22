@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
-<translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> week geleden gemaakt}other{<ph name="NUM_WEEKS_MANY" /> weken geleden gemaakt}}</translation>
 <translation id="1063300264396686489">Tabbladgroepen van andere apparaten automatisch openen</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Naar gedeelte Inactief verplaatsen</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad bookmarken}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen bookmarken}}</translation>
 <translation id="2055057176188061528">Selecteer een tabbladgroep of maak een nieuwe tabbladgroep</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome sluit automatisch items in het gedeelte Inactief die je al <ph name="AUTO_DELETE_DELAY_ONE" /> maand niet hebt gebruikt. Je kunt dit nu of later uitzetten via Instellingen.}other{Chrome sluit automatisch items in het gedeelte Inactief die je al <ph name="AUTO_DELETE_DELAY_MANY" /> maanden niet hebt gebruikt. Je kunt dit nu of later uitzetten via Instellingen.}}</translation>
 <translation id="2118649612461486615">Winkelinformatie</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen. Je incognitotabblad is niet beschikbaar.}other{Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen. Je # incognitotabbladen zijn niet beschikbaar.}}</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2371084566192454134">Tabbladen en tabbladgroepen</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{De tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{De tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
+<translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2498435670446402865">Naam tabbladgr. wijzigen</translation>
 <translation id="2536366509642644298">Tabbladgroepen <ph name="TAB_GROUP_NAME_1" /> en <ph name="TAB_GROUP_NAME_2" /> zijn niet meer beschikbaar</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd item sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde items sluiten}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Groep verplaatsen naar nieuw venster}other{Groep verplaatsen naar ander venster}}</translation>
-<translation id="6220820548421939212">Ja. Nu aanzetten</translation>
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tabblad toevoegen aan nieuwe groep}other{Tabbladen toevoegen aan nieuwe groep}}</translation>
 <translation id="6333260925957816943">Informatie over deze winkel</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Tabbladgroep selecteren</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabblad delen}other{Tabbladen delen}}</translation>
 <translation id="7129458170538955174">Informatie over deze winkel is op halve hoogte geopend</translation>
+<translation id="7151209024774799310">Tabbladen uit groep verwijderen</translation>
 <translation id="7204204600596740190">Optie om meerdere tabbladen te selecteren</translation>
 <translation id="7211038039686180558">Je tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je ingelogde apparaten</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> is geselecteerd</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Activiteit</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
 <translation id="7885132941432959125">Tabblad naar rechts verplaatsen</translation>
-<translation id="788914896430720926">Wil je je inactieve gedeelte netjes houden?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> is niet geselecteerd</translation>
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7961015016161918242">Nooit</translation>

@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">Картичка од другиот ваш уред</translation>
 <translation id="2930577230479659665">Кратење по секој примерок</translation>
 <translation id="2933624813161016821">Фолија за гравирање</translation>
+<translation id="293796669683825859">Коментари</translation>
 <translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
 <translation id="2940418897281183211">PNG‑слика</translation>
 <translation id="2941878205777356567">Плик 9 x 12 in</translation>
@@ -1994,6 +1995,7 @@
 <translation id="4298000214066716287">Инвестирање</translation>
 <translation id="42981349822642051">Прошири</translation>
 <translation id="4298925811540301889">Колачињата за сајтов се синхронизираат на вашите уреди со ChromeOS. За да управувате со тоа што синхронизирате, одете во <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Отвори ја апликацијата</translation>
 <translation id="4300675098767811073">Повеќе дупки десно</translation>
 <translation id="4302514097724775343">Допрете го диносаурусот за да играте</translation>
 <translation id="4304049446746819918">{0,plural, =1{Администраторското правило не препорачува да се премести датотекава во <ph name="DESTINATION_NAME" />}one{Администраторското правило не препорачува да се преместат датотекиве во <ph name="DESTINATION_NAME" />}other{Администраторското правило не препорачува да се преместат датотекиве во <ph name="DESTINATION_NAME" />}}</translation>

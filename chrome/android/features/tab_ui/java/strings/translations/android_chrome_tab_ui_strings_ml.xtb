@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
-<translation id="1036348656032585052">ഓഫാക്കുക</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ആഴ്‌ച മുമ്പ് സൃഷ്‌ടിച്ചത്}other{<ph name="NUM_WEEKS_MANY" /> ആഴ്‌ച മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="1063300264396686489">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബ് ഗ്രൂപ്പുകൾ സ്വയമേവ തുറക്കുക</translation>
 <translation id="1075622780330595106">നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">നിഷ്‌ക്രിയ വിഭാഗത്തിലേക്ക് നീക്കുക</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് ബുക്ക്‌മാർക്ക് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ബുക്ക്‌മാർക്ക് ചെയ്യുക}}</translation>
 <translation id="2055057176188061528">ടാബ് ഗ്രൂപ്പുകൾ തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ പുതിയ ടാബ് ഗ്രൂപ്പ് സൃഷ്ടിക്കുക</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{<ph name="AUTO_DELETE_DELAY_ONE" /> മാസമായി നിങ്ങൾ ഉപയോഗിക്കാത്ത, സജീവമല്ലാത്ത വിഭാഗത്തിലെ ഇനങ്ങൾ Chrome സ്വയമേവ അവസാനിപ്പിക്കും. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇപ്പോൾ അല്ലെങ്കിൽ പിന്നീട് എപ്പോൾ വേണമെങ്കിലും ഇത് ഓഫാക്കാം.}other{<ph name="AUTO_DELETE_DELAY_MANY" /> മാസമായി നിങ്ങൾ ഉപയോഗിക്കാത്ത, സജീവമല്ലാത്ത വിഭാഗത്തിലെ ഇനങ്ങൾ Chrome സ്വയമേവ അവസാനിപ്പിക്കും. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇപ്പോൾ അല്ലെങ്കിൽ പിന്നീട് എപ്പോൾ വേണമെങ്കിലും ഇത് ഓഫാക്കാം.}}</translation>
 <translation id="2118649612461486615">സ്റ്റോർ വിവരങ്ങൾ</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{അടച്ച ടാബുകളും ഗ്രൂപ്പുകളും 'അടുത്തിടെ തുറന്ന ടാബുകൾ' വിഭാഗത്തിൽ നിന്നും 'ടാബ് ഗ്രൂപ്പുകൾ' വിഭാഗത്തിൽ നിന്നും വീണ്ടും തുറക്കാം. നിങ്ങളുടെ അദൃശ്യ ടാബ് ലഭ്യമാകില്ല.}other{അടച്ച ടാബുകളും ഗ്രൂപ്പുകളും 'അടുത്തിടെ തുറന്ന ടാബുകൾ' വിഭാഗത്തിൽ നിന്നും 'ടാബ് ഗ്രൂപ്പുകൾ' വിഭാഗത്തിൽ നിന്നും വീണ്ടും തുറക്കാം. നിങ്ങളുടെ # അദൃശ്യ ടാബുകൾ ലഭ്യമാകില്ല.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> -ൽ ഇപ്പോൾ <ph name="CURRENT_PRICE" />-ന് ലഭ്യം</translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2371084566192454134">ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് ഉള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}}</translation>
+<translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2498435670446402865">ടാബ് ഗ്രൂപ്പിന്റെ പേര് മാറ്റൂ</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />", "<ph name="TAB_GROUP_NAME_2" />" എന്നീ ടാബ് ഗ്രൂപ്പുകൾ ഇനി ലഭ്യമല്ല</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് ചുരുക്കുക.}other{<ph name="TABS_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">ഏറ്റവും അടുത്തിടെ ഉപയോഗിച്ച പകർപ്പ് ഒഴികെ, എല്ലാ ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകളും ഇപ്പോൾ ആർക്കൈവ് ചെയ്യും.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ഇനം അടയ്ക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ഇനങ്ങൾ അടയ്ക്കുക}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ഗ്രൂപ്പിനെ പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}other{ഗ്രൂപ്പിനെ മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}}</translation>
-<translation id="6220820548421939212">ഉവ്വ്. ഞാൻ തയ്യാറാണ്</translation>
 <translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="6333260925957816943">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">ടാബ് ഗ്രൂപ്പ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ടാബ് പങ്കിടുക}other{ടാബുകൾ പങ്കിടുക}}</translation>
 <translation id="7129458170538955174">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങളുടെ പകുതി ഉയരത്തിൽ തുറന്ന ലിസ്റ്റ്</translation>
+<translation id="7151209024774799310">ഗ്രൂപ്പിൽ നിന്ന് ടാബുകൾ നീക്കൂ</translation>
 <translation id="7204204600596740190">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ മോഡ്</translation>
 <translation id="7211038039686180558">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ സ്വയമേവ സംരക്ഷിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> തിരഞ്ഞെടുത്തു</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">പ്രവർത്തനം</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്, <ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്, <ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ}}</translation>
 <translation id="7885132941432959125">ടാബ് വലത്തേക്ക് നീക്കുക</translation>
-<translation id="788914896430720926">സജീവമല്ലാത്ത വിഭാഗം ആകർഷകമായി സൂക്ഷിക്കണോ?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> തിരഞ്ഞെടുത്തില്ല</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>

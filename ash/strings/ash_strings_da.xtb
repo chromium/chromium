@@ -603,7 +603,6 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3026897869154397692">Føjet til kalender</translation>
 <translation id="3033545621352269033">Til</translation>
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
-<translation id="3036649622769666520">Åbn filer</translation>
 <translation id="3039939407102840004">Styluspennens batteriniveau er på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="304097922505898963">Åbn appen Key Shortcuts</translation>
 <translation id="304417730895741346">Dine fastgjorte og åbne apps er på hylden. Du kan fastgøre en app til hylden ved at højreklikke på en app eller trykke på touchpladen med to fingre.</translation>
@@ -1603,7 +1602,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="6166852626429024716">Søg på din enhed, i dine apps, i indstillingerne, på nettet...</translation>
 <translation id="6168318496333165060">Åbn appen Diagnostik</translation>
 <translation id="6168622430237609329">Dine installerede apps</translation>
-<translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
 <translation id="6180193585172850042">Knappen Tilbage</translation>
 <translation id="6180651297859206670">Knappen Frem</translation>
 <translation id="6182592640011875895">Åbn skrivebord</translation>

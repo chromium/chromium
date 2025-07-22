@@ -576,6 +576,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1959001866257244765">Per ajudar a millorar la seguretat al web per a tothom, envia a Google <ph name="BEGIN_WHITEPAPER_LINK" />URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de privadesa<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">El text i el contingut de la pàgina s'envien a Google i es poden utilitzar per millorar aquesta funció.
   <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Quan facis compres a Chrome, veuràs formes de pagament sense targeta com a opció</translation>
 <translation id="196146181975453736">Completa una comprovació de seguretat única per pagar més ràpidament</translation>
 <translation id="1962204205936693436">Adreces d'interès de <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Error de serialització</translation>
@@ -1144,6 +1145,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2930531075747147366">Pestanya del teu altre dispositiu</translation>
 <translation id="2930577230479659665">Retalla després de cada còpia</translation>
 <translation id="2933624813161016821">Làmina de degoteig gofrada</translation>
+<translation id="293796669683825859">Comentaris</translation>
 <translation id="2938225289965773019">Obrir els enllaços del protocol <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Imatge PNG</translation>
 <translation id="2941878205777356567">Sobre de 9 x 12 polzades</translation>
@@ -1993,6 +1995,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4298000214066716287">Inversions</translation>
 <translation id="42981349822642051">Desplega</translation>
 <translation id="4298925811540301889">Les galetes d'aquest lloc web se sincronitzen en tots els teus dispositius ChromeOS. Per gestionar què sincronitzes, ves a <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Obre l'aplicació</translation>
 <translation id="4300675098767811073">Encunyació múltiple a la dreta</translation>
 <translation id="4302514097724775343">Toca el dinosaure per jugar</translation>
 <translation id="4304049446746819918">{0,plural, =1{La política de l'administrador no recomana moure aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana moure aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6101583188322746099">Serveis d'entrega a domicili de queviures</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Crea un lloc web</translation>
+<translation id="6105511947520166941">La propera vegada, paga amb Pix directament a Chrome</translation>
 <translation id="6106989379647458772">És possible que la pàgina web <ph name="PAGE" /> estigui temporalment fora de servei o s'hagi traslladat permanentment a una adreça web nova.</translation>
 <translation id="6107012941649240045">Emès per a</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ha canviat el nom del grup</translation>

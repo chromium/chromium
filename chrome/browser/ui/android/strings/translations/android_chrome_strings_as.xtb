@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাটো সম্পূৰ্ণ কৰিবলৈ, এতিয়াই Chrome ৰিষ্টাৰ্ট কৰক। আপোনাৰ টেবসমূহ স্বয়ংক্ৰিয়ভাৱে পুনৰ খোল খাব।</translation>
 <translation id="2091863218454846791">সংক্ষিপ্ত ভিউ দেখুৱাই থকা হৈছে</translation>
 <translation id="2093731487903423814">যোৱা ১৫ মিনিটৰ</translation>
+<translation id="2096577711562668473">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সেৱাটো সলনি কৰিবনে?</translation>
 <translation id="2100273922101894616">স্বয়ংক্ৰিয়ভাৱে ছাইন ইন কৰক</translation>
 <translation id="2109384632594340939">প্ৰ’ফাইল চিত্ৰ</translation>
 <translation id="2111511281910874386">পৃষ্ঠালৈ যাওক</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">ব্ৰাউজিঙৰ ইতিহাস</translation>
 <translation id="2497852260688568942">আপোনাৰ প্ৰশাসকে ছিংক অক্ষম কৰিছে</translation>
 <translation id="250020030759455918">আপুনি আপোনাৰ <ph name="SITE_NAME" />ৰ ছাইন ইনৰ স্থিতি, ব্ৰাউজ কৰা ডেটা আৰু ছাইটৰ ডেটা Chromeত দেখা পাব</translation>
+<translation id="2502798195266898572">ৰীডিং ম’ডৰ তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ইনষ্টল কৰি থকা হৈছে...</translation>
 <translation id="2512234228327349533">ক্ৰয়ৰ বিকল্পসমূহ সন্ধান কৰক</translation>
 <translation id="2513403576141822879">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহৰ সৈতে জড়িত অধিক ছেটিঙৰ বাবে <ph name="BEGIN_LINK" />ছিংক আৰু Google সেৱা<ph name="END_LINK" /> চাওক</translation>
@@ -934,6 +936,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ফাইল ডাউনল’ড কৰি থকা হৈছে…}one{# টা ফাইল ডাউনল’ড কৰি থকা হৈছে…}other{# টা ফাইল ডাউনল’ড কৰি থকা হৈছে…}}</translation>
 <translation id="5210286577605176222">পূর্বৱর্তী টেবলৈ যাওক</translation>
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
+<translation id="5212800876504289412">এই সালসলনিটো সম্পূৰ্ণ কৰিবলৈ Chrome ৰিষ্টাৰ্ট কৰক। আপুনি ৰিষ্টাৰ্ট কৰিলে টেবসমূহ স্বয়ংক্ৰিয়ভাৱে খোল খায়।</translation>
 <translation id="5215957675041756913">আপোনাৰ ডেটা আৰু একাউণ্ট নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="5218324087477576825">কাৰ্ডৰ নম্বৰ, আৱশ্যকীয়</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, আৰু <ph name="SEPARATOR" /> আপুনি শেহতীয়াকৈ চোৱা নাই বাবে Chromeএ এই অনুমতিসমূহ আঁতৰাইছে</translation>
@@ -1062,6 +1065,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{জাননী দেখুৱাওক}one{জাননী দেখুৱাওক}other{জাননী দেখুৱাওক}}</translation>
 <translation id="5814749351757353073">আপোনাৰ প্ৰিয় ছাইটসমূহৰ জৰিয়তে আপ টু ডেট হৈ থাকক</translation>
 <translation id="5823093032261493462">আপুনি যিহ’লেও <ph name="DOWNLOAD_DOMAIN" />ৰ পৰা "<ph name="FILE_NAME" />" ডাউনল’ড কৰিব বিচাৰে নেকি?</translation>
+<translation id="5825135637446025843">Chrome ৰিষ্টাৰ্ট হোৱাৰ পাছত, আপোনাৰ নতুন প্ৰদানকাৰীৰ পৰা ছেভ কৰা আপোনাৰ তথ্য পাছৱৰ্ড, পাছকী, ঠিকনা, পৰিশোধ পদ্ধতি আৰু অন্য তথ্য স্বয়ংক্ৰিয়ভাৱে পূৰণ কৰিবলৈ ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="5828921839638612740">আাপুনি Chromeৰ ছেটিংসমূহত এই ডেটা মচিব পাৰে</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />ত ছেভ কৰা হ’ল</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
@@ -1178,6 +1182,7 @@
 <translation id="6295158916970320988">সকলো ছাইট</translation>
 <translation id="6296366034485697675">এক্সপ’ৰ্ট কৰক আৰু মচক</translation>
 <translation id="629730747756840877">একাউণ্ট</translation>
+<translation id="6300697579369314762">ৰীডিং ম’ডৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="6301526076346731664">বিকাশকৰ্তাৰ সঁজুলি খোলক</translation>
 <translation id="6303969859164067831">ছাইন আউট কৰি ছিংক অফ কৰক</translation>
 <translation id="6307241780749477694">এই ডিভাইচটোত আপোনাৰ আটাইবোৰ পাছৱৰ্ড পাবলৈ নিজৰ পৰিচয় সত্যাপন কৰক</translation>
@@ -1398,6 +1403,7 @@
 <translation id="71503698506017927">পাছফ্ৰে’জ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনাসমূহ অন্তৰ্ভুক্ত নহয়।
 
 এই ছেটিংটো সলনি কৰিবলৈ, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টত থকা Chromeৰ ডেটা মচক<ph name="END_LINK" />।</translation>
+<translation id="7151332203500147130">ৰীডিং ম’ডৰ তলৰ শ্বীটখন বন্ধ আছে</translation>
 <translation id="7165972437814027679">Chromeএ কিয় কিছুমান ফাইল অৱৰোধ কৰে সেই বিষয়ে অধিক জানক</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰিছে। ছেটিং খোলে।</translation>
 <translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>

@@ -432,7 +432,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1282436639288565079">Dettagli gruppo di schede</translation>
 <translation id="1283126956823499975">Si è verificato un problema durante la configurazione del dispositivo</translation>
 <translation id="1284277788676816155">Non consentire il salvataggio dei dati</translation>
-<translation id="1284912418686719556">Chrome sta creando una password efficace per te. Non devi ricordarla perché è salvata in <ph name="GOOGLE_PASSWORD_MANAGER" /> per <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1285484354230578868">Memorizza dati nel tuo account Google Drive</translation>
 <translation id="1285625592773741684">Impostazione di utilizzo dei dati corrente: Dati mobili</translation>
@@ -691,7 +690,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1474785664565228650">La modifica dell'impostazione del microfono richiede il riavvio di Parallels Desktop. Riavvia Parallels Desktop per continuare.</translation>
 <translation id="1476088332184200792">Copia sul tuo dispositivo</translation>
 <translation id="1476347941828409626">&amp;Gestisci i profili Chrome</translation>
-<translation id="1476595624592550506">Cambia la password</translation>
 <translation id="1476607407192946488">&amp;Impostazioni lingua</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> richiede di lasciare la smart card inserita.</translation>
 <translation id="1477654881618305065">La tua organizzazione non ti consente di condividere questo contenuto. Se hai bisogno di assistenza, contatta l'amministratore.</translation>
@@ -1913,7 +1911,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">I seguenti tasti non sono supportati: Tab, Maiusc, Ctrl, Esc, Bloc maiusc, Volume</translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
-<translation id="2310414604104802967">Verifica dell'accesso in corso…</translation>
 <translation id="2310923358723722542">Display e ingrandimento</translation>
 <translation id="2312219318583366810">URL della pagina</translation>
 <translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
@@ -1944,7 +1941,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2328636661627946415">Quando sei in modalità di navigazione in incognito, i siti possono usare i cookie solo per vedere la tua attività di navigazione su di essi. I cookie vengono eliminati al termine della sessione in incognito.</translation>
 <translation id="2329597144923131178">Accedi per visualizzare i tuoi Preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
 <translation id="2330182457402792918">Seleziona i file che questo sito può leggere</translation>
-<translation id="2331334586452217517">I contenuti di questo sito vengono inviati a Google e potrebbero essere esaminati da revisori. Informazioni sulla <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Impossibile caricare i dispositivi salvati in <ph name="PRIMARY_EMAIL" />. Controlla la connessione a Internet e riprova.</translation>
 <translation id="2332131598580221120">Visualizza nello store</translation>
 <translation id="2332515770639153015">Navigazione sicura avanzata attiva</translation>
@@ -2046,7 +2042,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2410079346590497630">dettagli build</translation>
 <translation id="2410298923485357543">Usa voce naturale quando il dispositivo è online</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
-<translation id="241082044617551207">Plug-in sconosciuto</translation>
 <translation id="2410940059315936967">Un sito visitato può incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. I cookie impostati da questi altri siti vengono chiamati cookie di terze parti.</translation>
 <translation id="2411666601450687801">Nessuna macchina virtuale consentita su questo dispositivo</translation>
 <translation id="2412015533711271895">Uno dei tuoi genitori o il tuo tutore deve autorizzarti a usare questa estensione</translation>
@@ -2222,7 +2217,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2514326558286966059">Sblocca più velocemente il dispositivo con l'impronta</translation>
 <translation id="2514465118223423406">Quando è collegato un mouse</translation>
 <translation id="2514938842036917377">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati da <ph name="SITE_NAME" />, siti correlati e app installate</translation>
-<translation id="2515489088825102986">Scopri di più su questa funzionalità e sulla tua privacy</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Conferma il tuo nome utente</translation>
 <translation id="2517472476991765520">Scansiona</translation>
@@ -2393,7 +2387,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2638662041295312666">Immagine accesso</translation>
 <translation id="2640299212685523844">Usa GTK</translation>
 <translation id="264083724974021997">Collegati al telefono - Finestra di dialogo</translation>
-<translation id="2641098199809442625">La tua password non è stata aggiornata, ma dovresti comunque riuscire ad accedere al sito con la password precedente.</translation>
 <translation id="2642111877055905627">Pallone da calcio</translation>
 <translation id="2642206811783203764">Sempre su <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Puoi eliminare in qualsiasi momento i dati di misurazione degli annunci eliminando i dati di navigazione</translation>
@@ -2716,6 +2709,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2855243985454069333">Consente di eliminare la cronologia da tutti i dispositivi sincronizzati.</translation>
 <translation id="2855812646048059450">Accedi con <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Crea un nuovo container</translation>
+<translation id="2857047802954430547">Accedi per trovare le password, i preferiti e altri dati su tutti i dispositivi</translation>
 <translation id="2859741939921354763">Importa password in <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Sposta la mascella a destra</translation>
 <translation id="2861301611394761800">Aggiornamento del sistema completato. Riavvia il sistema.</translation>
@@ -3865,7 +3859,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3694590407685276748">Evidenzia il cursore di testo</translation>
 <translation id="369489984217678710">Password e altri dati di accesso</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Controlli di sicurezza effettuati. I tuoi dati verranno caricati.}=1{Controlli di sicurezza effettuati. Il tuo file verrà caricato.}other{Controlli di sicurezza effettuati. I tuoi file verranno caricati.}}</translation>
-<translation id="3696309329332791122">Controlla la password</translation>
 <translation id="369736917241079046">Avvio app + Freccia sinistra</translation>
 <translation id="3697716475445175867">ultimi aperti</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Puoi impedire a questo sito di inviare notifiche future.}other{Puoi impedire a questi siti di inviare notifiche future.}}</translation>
@@ -5368,7 +5361,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Scopri come aggiornare le applicazioni<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l'<ph name="LINK_BEGIN" />accesso al microfono del sistema<ph name="LINK_END" />.</translation>
-<translation id="4744172369799559159">I revisori umani esaminano le pagine delle password e le informazioni correlate per migliorare questa funzionalità, anche se la tua password è criptata e non può essere visualizzata da nessuno.</translation>
 <translation id="4744260496658845719">Luminosità della retroilluminazione della tastiera</translation>
 <translation id="4744268813103118742">Vai al sito</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6712,7 +6704,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5713033452812927234">Apertura di finestre dal dispositivo precedente in corso…</translation>
 <translation id="5713158217420111469">Collegato a <ph name="DEVICE" /></translation>
 <translation id="5714100381896040477">Limita il movimento sullo schermo</translation>
-<translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">I siti possono chiedere di connettersi ai dispositivi HID</translation>
 <translation id="572155275267014074">Impostazioni di Android</translation>
 <translation id="5722086096420375088">Verde e bianco</translation>
@@ -7459,7 +7450,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6253801023880399036">Le password vengono salvate in <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Compromesso chiave</translation>
 <translation id="6254892857036829079">Perfetta</translation>
-<translation id="6257131917452817589">modifica automatica delle password</translation>
 <translation id="6257602895346497974">Attiva la sincronizzazione...</translation>
 <translation id="625827534921607067">Questa rete avrà la precedenza se sarà disponibile più di una rete configurata o collegata in passato</translation>
 <translation id="6259776178973198997">Aggiorna informazioni proprietari WiFi Direct</translation>
@@ -8204,7 +8194,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="679845623837196966">Mostra Elenco di lettura</translation>
 <translation id="6798578729981748444">Per terminare l'importazione, chiudi tutte le finestre di Firefox.</translation>
 <translation id="6798780071646309401">bloc maiusc attivo</translation>
-<translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Pulsanti nascosti della barra degli strumenti</translation>
 <translation id="6800893479155997609">Le app più popolari per <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Scegli se questa estensione può leggere o modificare questo sito}other{Scegli se queste estensioni possono leggere o modificare questo sito}}</translation>
@@ -9703,7 +9692,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo ChromeOS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Se l'impostazione Attività web e app è attiva per il tuo Account Google, i tuoi dati Android potrebbero essere salvati nell'account. Puoi vedere ed eliminare i tuoi dati, nonché modificare le impostazioni dell'account, all'indirizzo account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali o all'assistente. Per consumare meno batteria, puoi configurare le impostazioni dell'assistente in modo che "Hey Google" sia attivo solo quando il dispositivo è connesso a una fonte di alimentazione.</translation>
-<translation id="7851196412551419054">Modifica della password…</translation>
 <translation id="7851457902707056880">L'accesso è consentito soltanto all'account del proprietario. Riavvia ed esegui l'accesso con l'account del proprietario. Il computer si riavvierà automaticamente tra 30 secondi.</translation>
 <translation id="7851716364080026749">Impedisci sempre l'accesso a webcam e microfono</translation>
 <translation id="7851720427268294554">Parser IPP</translation>
@@ -10417,7 +10405,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8330617762701840933">L'elenco di siti web che vengono reindirizzati al browser alternativo.</translation>
 <translation id="8330689128072902965">I contatti nelle vicinanze possono condividere contenuti con te. Fai clic per modificare.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Tipo di file supportato: <ph name="FILE_TYPE1" />}=2{Tipi di file supportati: <ph name="FILE_TYPE1" /> e <ph name="FILE_TYPE2" />}=3{Tipi di file supportati: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> e <ph name="FILE_TYPE3" />}=4{Tipi di file supportati: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> e <ph name="FILE_TYPE4" />}other{Tipi di file supportati: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />e altri {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
-<translation id="8331578454993293727">La password è stata compromessa nell'ambito di una violazione dei dati</translation>
 <translation id="8331822764922665615">Assegna un nome al gruppo, scegli un colore, quindi premi Esc</translation>
 <translation id="833256022891467078">Cartelle condivise di Crostini</translation>
 <translation id="833262891116910667">Evidenzia</translation>
@@ -10501,7 +10488,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
     <ph name="BEGIN_PARAGRAPH2" />Per maggiore assistenza, visita il sito g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Riepilogo di benvenuto</translation>
 <translation id="8386091599636877289">Norme non trovate.</translation>
-<translation id="8387087863179559896">Chrome può aggiornare il tuo account per questo sito con una password efficace. Non dovrai ricordare la password perché è salvata in Gestore delle password di Google per <ph name="EMAIL" />. Ulteriori informazioni su <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Non possono accedere alla tua posizione</translation>
 <translation id="8387617938027387193">Verifica la tua identità</translation>
 <translation id="8388770971141403598">I profili secondari non sono supportati</translation>
@@ -10684,7 +10670,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8516472100141530292">Fai clic con il tasto destro del mouse sul gruppo</translation>
 <translation id="8517759303731677493">Modifica…</translation>
 <translation id="8518942514525208851">Nascondi linguaggio volgare</translation>
-<translation id="8519895319663397036">Impossibile importare le password. Le dimensioni file devono essere minori di 150 kB.</translation>
 <translation id="8523493869875972733">Mantieni le modifiche</translation>
 <translation id="8523849605371521713">Aggiunta in base alle norme</translation>
 <translation id="8524594273111932386">Ricerca + Freccia giù</translation>
@@ -11394,10 +11379,10 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9003185744423389627">Connessione al server di gestione dei dispositivi non riuscita. Stato: "<ph name="STATUS_TEXT" />" del giorno <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Cercare automaticamente i profili eSIM disponibili?</translation>
 <translation id="9003647077635673607">Consenti su tutti i siti web</translation>
+<translation id="9005774573776346118">Accedi come <ph name="EMAIL" /> per trovare le password, i preferiti e altri dati su tutti i dispositivi</translation>
 <translation id="9007688236643268728">&amp;Accedi di nuovo</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9008201858626224558">Pulsante Indietro pagina dei dettagli <ph name="SUBPAGE_TITLE" /></translation>
-<translation id="9008425116680857079">Chrome può cambiare la tua password dopo che hai eseguito l'accesso.</translation>
 <translation id="9008828754342192581">In precedenza hai scelto di consentire tutte le estensioni su <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Caricamento in corso (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Importato da Windows</translation>

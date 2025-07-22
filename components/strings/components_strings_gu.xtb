@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">તમારા અન્ય ડિવાઇસમાંનું ટૅબ</translation>
 <translation id="2930577230479659665">પ્રત્યેક કૉપિ પછી ટ્રિમ કરો</translation>
 <translation id="2933624813161016821">એમ્બોસિંગ ફૉઇલ</translation>
+<translation id="293796669683825859">કૉમેન્ટ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
 <translation id="2940418897281183211">PNG છબી</translation>
 <translation id="2941878205777356567">એન્વલપ 9 x 12 ઇંચ</translation>
@@ -1994,6 +1995,7 @@
 <translation id="4298000214066716287">રોકાણ</translation>
 <translation id="42981349822642051">વિસ્તૃત કરો</translation>
 <translation id="4298925811540301889">આ સાઇટની કૂકીને તમારા સમગ્ર ChromeOS ડિવાઇસમાં સિંક કરવામાં આવી છે. તમે શું સિંક કરો છો તેને મેનેજ કરવા માટે, <ph name="SYNC_SETTINGS" /> પર જાઓ.</translation>
+<translation id="4300272766492248925">ઍપ્લિકેશન ખોલો</translation>
 <translation id="4300675098767811073">જમણી બાજુએ એકથી વધુ કાણાં પાડો</translation>
 <translation id="4302514097724775343">રમવા માટે, ડાયનાસોર પર ટૅપ કરો</translation>
 <translation id="4304049446746819918">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર ખસેડવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર ખસેડવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર ખસેડવાનો સુઝાવ આપતી નથી}}</translation>

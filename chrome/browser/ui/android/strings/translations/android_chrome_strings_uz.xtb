@@ -240,6 +240,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2088833076121753253">Avtomatik kiritish sozlamalarini yakunlash uchun Chromeni qayta ishga tushiring. Varaqlar avtomatik tiklanadi.</translation>
 <translation id="2091863218454846791">Ixcham rejimda ochilgan</translation>
 <translation id="2093731487903423814">Oxirgi 15 daqiqa</translation>
+<translation id="2096577711562668473">Avtomatik kiritish xizmati almashtirilsinmi?</translation>
 <translation id="2100273922101894616">Avtomatik kirish</translation>
 <translation id="2109384632594340939">profil rasmi</translation>
 <translation id="2111511281910874386">Sahifaga o‘tish</translation>
@@ -325,6 +326,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2496180316473517155">Kezish tarixi</translation>
 <translation id="2497852260688568942">Sinxronizatsiyani administrator o‘chirib qo‘ygan</translation>
 <translation id="250020030759455918"><ph name="SITE_NAME" /> saytiga kirish holati, brauzer va sayt maʼlumotlari Chromeda chiqadi</translation>
+<translation id="2502798195266898572">Mutolaa rejimi quyi ekrani toʻliq hajmda ochildi</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> o‘rnatilmoqda...</translation>
 <translation id="2512234228327349533">Xarid variantlari qidiruvi</translation>
 <translation id="2513403576141822879">Maxfiylik, xavfsizlik va ma’lumotlar yig‘ilishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Sinxronizatsiya va shaxsiy sozlamalar<ph name="END_LINK" /> bilan tanishing</translation>
@@ -934,6 +936,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Fayl yuklab olinmoqda…}other{# ta fayl yuklab olinmoqda…}}</translation>
 <translation id="5210286577605176222">Avvalgi varaqqa o‘tish</translation>
 <translation id="5210365745912300556">Varaqni yopish</translation>
+<translation id="5212800876504289412">Bu oʻzgarishni tatbiq qilish uchun Chromeni qayta ishga tushiring. Qayta ishga tushganda ochilgan varaqlar qayta tiklanadi.</translation>
 <translation id="5215957675041756913">Hisob va maʼlumotlaringizni boshqaring</translation>
 <translation id="5218324087477576825">Karta raqami, kiritilishi zarur</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va boshqalar <ph name="SEPARATOR" /> Chrome bu ruxsatlarni olib tashladi, chunki saytga uzoq vaqt kirmagansiz</translation>
@@ -1062,6 +1065,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Bildirishnoma chiqarish}other{Bildirishnoma chiqarish}}</translation>
 <translation id="5814749351757353073">Sevimli saytlardan xabar olib turing</translation>
 <translation id="5823093032261493462"><ph name="FILE_NAME" /> fayli <ph name="DOWNLOAD_DOMAIN" /> domenidan baribir yuklab olinsinmi?</translation>
+<translation id="5825135637446025843">Chrome qayta ishga tushganidan keyin parollar, kirish kalitlari, manzillar, toʻlov usullari va boshqa axborotni kiritishda kabi saqlangan axborotlarni avtomatik kiritishda yangi xizmat ishlatiladi.</translation>
 <translation id="5828921839638612740">Maʼlumotlarni Chrome sozlamalari orqali oʻchirish mumkin</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> jildiga saqlandi</translation>
 <translation id="583281660410589416">Noma’lum</translation>
@@ -1178,6 +1182,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6295158916970320988">Barcha saytlar</translation>
 <translation id="6296366034485697675">Eksport qilish va oʻchirish</translation>
 <translation id="629730747756840877">Hisob</translation>
+<translation id="6300697579369314762">Mutolaa rejimi quyi ekrani yarim hajmda ochildi</translation>
 <translation id="6301526076346731664">Dasturchi vositalarini ochish</translation>
 <translation id="6303969859164067831">Hisobdan chiqish va sinxronizatsiyani to‘xtatish</translation>
 <translation id="6307241780749477694">Bu qurilmadagi barcha parollaringizni olish uchun shaxsingizni tasdiqlang</translation>
@@ -1398,6 +1403,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="71503698506017927">Kodli ibora bilan shifrlash ichiga Google Pay xizmatidagi toʻlov usullari va manzillar kirmaydi.
 
 Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">Mutolaa rejimi quyi ekrani yopildi</translation>
 <translation id="7165972437814027679">Chrome ayrim fayllarni nima uchun bloklashi haqida batafsil</translation>
 <translation id="7168323970702333693">Siz <ph name="USER_NAME" /> nomidan kirdingiz. Sozlamalarni ochadi.</translation>
 <translation id="7173114856073700355">Sozlamalarni ochish</translation>

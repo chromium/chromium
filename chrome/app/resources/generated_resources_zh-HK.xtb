@@ -432,7 +432,6 @@
 <translation id="1282436639288565079">「分頁群組」詳情</translation>
 <translation id="1283126956823499975">設定裝置時發生問題</translation>
 <translation id="1284277788676816155">不允許儲存資料</translation>
-<translation id="1284912418686719556">Chrome 正在為你建立安全度高的密碼。你無需記住密碼，因為密碼已儲存在 <ph name="EMAIL" /> 的「<ph name="GOOGLE_PASSWORD_MANAGER" />」。</translation>
 <translation id="1285320974508926690">永不翻譯此網站</translation>
 <translation id="1285484354230578868">將數據儲存在「Google 雲端硬碟」帳戶中</translation>
 <translation id="1285625592773741684">目前嘅數據用量設定係「用流動數據」</translation>
@@ -692,7 +691,6 @@
 <translation id="1474785664565228650">Parallels Desktop 需要重新啟動，麥克風設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
 <translation id="1476088332184200792">複製至您的裝置</translation>
 <translation id="1476347941828409626">管理 Chrome 設定檔(&amp;M)</translation>
-<translation id="1476595624592550506">變更您的密碼</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> 需要您繼續插入智能卡。</translation>
 <translation id="1477654881618305065">您的機構不允許分享此內容。如果您需要協助，請與管理員聯絡。</translation>
@@ -1926,7 +1924,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">不支援自訂以下按鍵：Tab、Shift、Control、Esc、Caps Lock、音量</translation>
 <translation id="2309620859903500144">系統已封鎖此網站存取您的動作或光線感應器。</translation>
-<translation id="2310414604104802967">正在檢查你是否已登入…</translation>
 <translation id="2310923358723722542">顯示和放大功能</translation>
 <translation id="2312219318583366810">網頁網址</translation>
 <translation id="2314165183524574721">目前嘅分享設定係隱藏</translation>
@@ -1957,7 +1954,6 @@
 <translation id="2328636661627946415">在無痕模式時，網站只能使用 Cookie 查看您在該網站的瀏覽活動。系統就會無痕工作階段結束時刪除 Cookie。</translation>
 <translation id="2329597144923131178">登入後可從任何裝置取得自己的書籤、記錄、密碼和其他設定。</translation>
 <translation id="2330182457402792918">選取此網站能讀取的檔案</translation>
-<translation id="2331334586452217517">此網站的內容會傳送給 Google，並可能交由人手審查。關於<ph name="PASSWORD_CHANGE" />。</translation>
 <translation id="2332115969598251205">無法載入已儲存至 <ph name="PRIMARY_EMAIL" /> 的裝置。請檢查您的互聯網連線，然後再試一次。</translation>
 <translation id="2332131598580221120">前往商店檢視</translation>
 <translation id="2332515770639153015">已啟用「強化安全瀏覽」功能</translation>
@@ -2059,7 +2055,6 @@
 <translation id="2410079346590497630">版本詳細資料</translation>
 <translation id="2410298923485357543">在裝置連線後，使用自然語音</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
-<translation id="241082044617551207">不明的外掛程式</translation>
 <translation id="2410940059315936967">您瀏覽的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。其他網站設定的 Cookie 就稱為第三方 Cookie。</translation>
 <translation id="2411666601450687801">此裝置不允許「虛擬機器」</translation>
 <translation id="2412015533711271895">您需要家長或監護人同意才能使用此擴充程式</translation>
@@ -2235,7 +2230,6 @@
 <translation id="2514326558286966059">指紋加快解鎖速度</translation>
 <translation id="2514465118223423406">連接滑鼠後</translation>
 <translation id="2514938842036917377">此操作會刪除 <ph name="SITE_NAME" /> 所儲存的資料 (共 <ph name="TOTAL_USAGE" />)、相關網站及所安裝的應用程式</translation>
-<translation id="2515489088825102986">進一步瞭解此功能和你的私隱權</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">確認您的使用者名稱</translation>
 <translation id="2517472476991765520">掃瞄</translation>
@@ -2406,7 +2400,6 @@
 <translation id="2638662041295312666">登入圖片</translation>
 <translation id="2640299212685523844">使用 GTK</translation>
 <translation id="264083724974021997">連接去你部手機 - 對話框</translation>
-<translation id="2641098199809442625">你的密碼並未更新，但你應該仍能使用舊密碼存取網站。</translation>
 <translation id="2642111877055905627">足球</translation>
 <translation id="2642206811783203764">一律在 <ph name="SITE_NAME" /> 上執行</translation>
 <translation id="2643064289437760082">只要刪除瀏覽資料，即可隨時刪除廣告評估資料</translation>
@@ -3876,7 +3869,6 @@
 <translation id="3694590407685276748">突顯文字游標</translation>
 <translation id="369489984217678710">密碼和其他登入資料</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全檢查。您的資料將會上載。}=1{已完成安全檢查。您的檔案將會上載。}other{已完成安全檢查。您的檔案將會上載。}}</translation>
-<translation id="3696309329332791122">檢查密碼</translation>
 <translation id="369736917241079046">啟動器鍵 + 向左箭咀鍵</translation>
 <translation id="3697716475445175867">上次開啟日期</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{你可禁止此網站在日後傳送通知。}other{你可禁止這些網站在日後傳送通知。}}</translation>
@@ -5376,7 +5368,6 @@
 <translation id="4742970037960872810">移除焦點內容</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">已允許 – <ph name="PERMISSION_DETAILS" />。開啟<ph name="LINK_BEGIN" />系統麥克風存取權<ph name="LINK_END" />。</translation>
-<translation id="4744172369799559159">人手審查員會檢視密碼頁面和相關資料，以改善有關功能。但請放心，你的密碼會加密，不會向任何人顯示。</translation>
 <translation id="4744260496658845719">鍵盤背光亮度</translation>
 <translation id="4744268813103118742">前往網站</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6719,7 +6710,6 @@
 <translation id="5713033452812927234">正在開啟舊裝置中的視窗</translation>
 <translation id="5713158217420111469">連咗線去 <ph name="DEVICE" /></translation>
 <translation id="5714100381896040477">限制螢幕上的動作</translation>
-<translation id="5715711091495208045">外掛程式代理組件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">網站可要求連接 USB 裝置</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">綠色和白色</translation>
@@ -7466,7 +7456,6 @@
 <translation id="6253801023880399036">密碼會儲存至「<ph name="GOOGLE_PASSWORD_MANAGER" />」。</translation>
 <translation id="6254503684448816922">金鑰洩露</translation>
 <translation id="6254892857036829079">完美</translation>
-<translation id="6257131917452817589">自動更改密碼</translation>
 <translation id="6257602895346497974">開啟同步處理功能…</translation>
 <translation id="625827534921607067">如有多個先前曾連線或設定過的網絡，系統會優先使用此網絡</translation>
 <translation id="6259776178973198997">重新整理 Wi-Fi Direct 擁有者資料</translation>
@@ -8211,7 +8200,6 @@
 <translation id="679845623837196966">顯示閱讀清單</translation>
 <translation id="6798578729981748444">如要完成匯入，請關閉所有 Firefox 視窗。</translation>
 <translation id="6798780071646309401">大寫鎖定已開啟</translation>
-<translation id="6798954102094737107">外掛程式：<ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">隱藏的工具列按鈕</translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" /> 的熱門應用程式</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{選擇此擴充程式可否讀取或變更此網站}other{選擇這些擴充程式可否讀取或變更此網站}}</translation>
@@ -9707,7 +9695,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在 Chrome OS 裝置的設定中啟用或停用傳送報告功能。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />如果您為 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您的 Android 資料可能會儲存在您的 Google 帳戶中。您可以前往 account.google.com 查看和刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與您的聲音相似或有您的錄音，便可存取您的個人化結果或「Google 助理」。為節省電量，您可在「Google 助理」設定中選取，讓系統只有在裝置連接到電源時才啟動「Ok Google」。</translation>
-<translation id="7851196412551419054">正在變更密碼…</translation>
 <translation id="7851457902707056880">只有使用擁有者帳戶才能登入。請重新啟動並使用擁有者帳戶登入。電腦會在 30 秒後自動重新啟動。</translation>
 <translation id="7851716364080026749">永遠封鎖存取相機和麥克風</translation>
 <translation id="7851720427268294554">IPP 剖析器</translation>
@@ -10421,7 +10408,6 @@
 <translation id="8330617762701840933">重新導向至替代瀏覽器的網站清單。</translation>
 <translation id="8330689128072902965">附近的聯絡人可以與您分享資料。按一下以變更。</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{支援的檔案類型：<ph name="FILE_TYPE1" />}=2{支援的檔案類型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />}=3{支援的檔案類型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />}=4{支援的檔案類型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" />}other{支援的檔案類型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" /> (<ph name="LINK" />以及其他 {OVERFLOW_COUNT} 種<ph name="END_LINK" />)}}</translation>
-<translation id="8331578454993293727">你的密碼因資料外洩而被洩露</translation>
 <translation id="8331822764922665615">為群組命名、選擇顏色，然後按 Esc 鍵</translation>
 <translation id="833256022891467078">Crostini 共用資料夾</translation>
 <translation id="833262891116910667">突顯嘅內容</translation>
@@ -10505,7 +10491,6 @@
     <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">歡迎回來</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
-<translation id="8387087863179559896">Chrome 可以為你更新此網站的帳戶資料，設定安全度高的密碼。密碼會儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」，因此你無需記住密碼。進一步瞭解如何<ph name="PASSWORD_CHANGE" />。</translation>
 <translation id="8387361103813440603">不允許查看您的位置</translation>
 <translation id="8387617938027387193">驗證你的身分</translation>
 <translation id="8388770971141403598">不支援次要設定檔</translation>
@@ -10688,7 +10673,6 @@
 <translation id="8516472100141530292">在群組上按一下右鍵</translation>
 <translation id="8517759303731677493">編輯…</translation>
 <translation id="8518942514525208851">隱藏不雅用語</translation>
-<translation id="8519895319663397036">無法匯入密碼，檔案大小不得超過 150 KB。</translation>
 <translation id="8523493869875972733">保留變更</translation>
 <translation id="8523849605371521713">由政策新增</translation>
 <translation id="8524594273111932386">搜尋鍵 + 向下箭咀鍵</translation>
@@ -11398,7 +11382,6 @@
 <translation id="9007688236643268728">重新登入(&amp;S)</translation>
 <translation id="9008201768610948239">略過</translation>
 <translation id="9008201858626224558">「<ph name="SUBPAGE_TITLE" />」詳情頁面返回按鈕</translation>
-<translation id="9008425116680857079">當你登入後，Chrome 就可以變更密碼。</translation>
 <translation id="9008828754342192581">您先前已選擇允許 <ph name="ORIGIN" /> 上的所有擴充程式</translation>
 <translation id="9009369504041480176">上載中 (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009707268312089299">從 Windows 匯入</translation>

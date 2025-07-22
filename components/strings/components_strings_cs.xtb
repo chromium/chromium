@@ -576,6 +576,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1959001866257244765">Pomozte se zlepšováním bezpečnosti na webu tím, že do Googlu budete odesílat <ph name="BEGIN_WHITEPAPER_LINK" />adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Zásady ochrany soukromí<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Váš text a obsah stránky se odesílají do Googlu a mohou být použity ke zlepšování této funkce.
   <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Při nákupech v Chromu zobrazovat jako možnost platební metody bez karet</translation>
 <translation id="196146181975453736">Proveďte jednorázovou bezpečnostní kontrolu, abyste mohli platit rychleji</translation>
 <translation id="1962204205936693436">Záložky domény <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Chyba serializace</translation>
@@ -1144,6 +1145,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2930531075747147366">Karta z jiného vašeho zařízení</translation>
 <translation id="2930577230479659665">Oříznout za každou kopií</translation>
 <translation id="2933624813161016821">Razicí fólie</translation>
+<translation id="293796669683825859">Komentáře</translation>
 <translation id="2938225289965773019">Otevírat odkazy <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Obrázek PNG</translation>
 <translation id="2941878205777356567">Obálka 9 × 12 palců</translation>
@@ -1989,6 +1991,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4298000214066716287">Investice</translation>
 <translation id="42981349822642051">Rozbalit</translation>
 <translation id="4298925811540301889">Soubory cookie pro tento web se synchronizují mezi vašimi zařízeními se systémem ChromeOS. Synchronizované položky můžete spravovat v sekci <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Do aplikace</translation>
 <translation id="4300675098767811073">Několik děr vpravo</translation>
 <translation id="4302514097724775343">Klepnutím na dinosaura spustíte hru</translation>
 <translation id="4304049446746819918">{0,plural, =1{Zásady administrátora nedoporučují přesun tohoto souboru do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
@@ -3031,6 +3034,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6101583188322746099">Rozvoz potravin</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Vytvořit web</translation>
+<translation id="6105511947520166941">Příště pomocí služby Pix plaťte přímo v Chromu</translation>
 <translation id="6106989379647458772">Webová stránka <ph name="PAGE" /> může být dočasně nefunkční nebo mohla být trvale přesunuta na novou webovou adresu.</translation>
 <translation id="6107012941649240045">Vydán pro</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> změnil(a) název skupiny</translation>

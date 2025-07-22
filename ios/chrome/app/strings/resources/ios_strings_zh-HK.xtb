@@ -6,7 +6,6 @@
 <translation id="1010225406377140704">聯絡發送者索取新連結</translation>
 <translation id="1013952917065545813">您可回來重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">已更新項目</translation>
-<translation id="1017735584092444011">顯示「閱讀模式」</translation>
 <translation id="102916930470544692">密鑰</translation>
 <translation id="1030376737535466765">開啟「密碼管理工具」</translation>
 <translation id="1035980983510608210">如果關閉所有分頁，系統亦會關閉固定分頁。</translation>
@@ -1106,6 +1105,7 @@
 <translation id="5439618055789623719">已使用 <ph name="USER_EMAIL" /> 的身分登入</translation>
 <translation id="5443636120437209490">設定為預預設瀏覽器，提升瀏覽體驗</translation>
 <translation id="5444892875087332195">書籤</translation>
+<translation id="5447973833955560753">復原密碼</translation>
 <translation id="5452354193031718372">使用安全度高的密碼：</translation>
 <translation id="5454211924362324495">如要防止其他人使用你的密碼，請<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 變更密碼<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">加入更多搜尋字詞</translation>
@@ -1126,6 +1126,7 @@
 <translation id="5524590039848017563">收合咗主要工具列按鈕</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} 個安全度低的密碼}other{{COUNT} 個安全度低的密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話框</translation>
+<translation id="5547868626772433490">問 Gemini</translation>
 <translation id="5548760955356983418">「Handoff」讓您可在此裝置上開始瀏覽網站，然後輕易在 Mac 上繼續瀏覽。目前開啟的網站將會在 Mac 的 Dock 中顯示。
 
 您必須先在「設定」的「一般」部分啟用 Handoff，且裝置須使用相同的 iCloud 帳戶。</translation>
@@ -1179,7 +1180,6 @@
 <translation id="5684761169742812828">此密碼已在互聯網的資料外洩中洩露。如果無法立即變更密碼，Google 建議您保留此警告，以便稍後提醒自己。</translation>
 <translation id="5688739340234490129">{count,plural, =1{{count} 張卡}other{{count} 張卡}}</translation>
 <translation id="5694848685995373177">已儲存至 <ph name="USER_EMAIL" /> 的「雲端硬碟」。</translation>
-<translation id="5701749750962143173">使用精確位置 (而非根據 IP 位址估計的位置) 可讓 Gemini 提供最準確的結果。瞭解詳情</translation>
 <translation id="570209299585559496">要將預設嘅網站檢視模式轉成桌面模式，請前往設定，然後前往內容設定</translation>
 <translation id="5702108177581350218">當你分享使用者名稱和密碼副本後，家庭成員就能使用「Google 密碼管理工具」填寫這類資訊。</translation>
 <translation id="5704908597376970822">無法登入。</translation>
@@ -1660,6 +1660,7 @@
 <translation id="75362970626182391">新分頁群組</translation>
 <translation id="7537586195939242955">抱歉，目前無法將您的票證安裝至 Passbook。</translation>
 <translation id="754655535278952384">已在 <ph name="TIME" />檢查</translation>
+<translation id="7554791636758816595">新分頁</translation>
 <translation id="7557508262441527045">已登出</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7561982940498449837">關閉選單</translation>
@@ -1743,13 +1744,11 @@
 <translation id="7863211248337747225">下載應用程式</translation>
 <translation id="7865127013871431856">翻譯選項</translation>
 <translation id="7866872729285243843">如要將閱讀清單同步到所有裝置，請在設定中開啟「閱讀清單」。</translation>
-<translation id="787364769771947486">隱藏「閱讀模式」</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> 自動填寫表格</translation>
 <translation id="7883882164760409935">你有重用密碼。</translation>
 <translation id="7887174313503389866">導覽重要的私隱和安全控制項。如要查看更多選項，請前往個別設定。</translation>
 <translation id="7887198238286927132">為保障您的私隱，Chrome 不會自動填入此欄位。</translation>
 <translation id="7887552845761062935">㩒兩下然後㩒住就可以打開多啲選項</translation>
-<translation id="7889049308054594504">與 Gemini 分享頁面內容以取得更相關的答案。當你與 Gemini 分享頁面，頁面的所有內容和網址都會傳送到 Google。瞭解詳情</translation>
 <translation id="7889910613639381518">「Google 密碼管理工具」小工具，資料存取輕鬆又安全。</translation>
 <translation id="7899199123054742721">全部標示為未讀</translation>
 <translation id="7908957400505794782">輕按 [完成]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
@@ -2060,6 +2059,7 @@
 <translation id="8984627322964256190">隱藏「追蹤 <ph name="DOMAIN_NAME" />」</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
 <translation id="9000089900434778519">您的搜尋引擎是「<ph name="DSE_NAME" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
+<translation id="9000532564152265066">所有分頁</translation>
 <translation id="9003677638446136377">再次檢查</translation>
 <translation id="9006453925669499173">選單 → 新無痕式分頁</translation>
 <translation id="9008201768610948239">略過</translation>

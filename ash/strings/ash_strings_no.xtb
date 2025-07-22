@@ -603,7 +603,6 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3026897869154397692">Lagt til i kalenderen</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
-<translation id="3036649622769666520">Åpne filer</translation>
 <translation id="3039939407102840004">Pekepennen har <ph name="PERCENTAGE" /> prosent batteri.</translation>
 <translation id="304097922505898963">Åpne Hurtigtaster-appen</translation>
 <translation id="304417730895741346">De festede og åpne appene dine er på hyllen. For å feste en app på hyllen, høyreklikk på appen eller trykk på styreflaten med to fingre.</translation>
@@ -1603,7 +1602,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6166852626429024716">Søk på enheten, i apper, i innstillinger og på nettet.</translation>
 <translation id="6168318496333165060">Åpne Diagnostikk-appen</translation>
 <translation id="6168622430237609329">Installerte apper</translation>
-<translation id="6179832488876878285">Du kan feste viktige filer her. Åpne Filer-appen for å komme i gang.</translation>
 <translation id="6180193585172850042">Tilbakeknapp</translation>
 <translation id="6180651297859206670">Fremoverknapp</translation>
 <translation id="6182592640011875895">Åpne skrivebordet</translation>

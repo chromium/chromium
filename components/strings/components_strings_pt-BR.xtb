@@ -576,6 +576,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1959001866257244765">Ajude a melhorar a segurança na Web para todos, enviando ao Google <ph name="BEGIN_WHITEPAPER_LINK" />URLs de algumas das páginas que você acessou, informações limitadas do sistema e parte do conteúdo da página<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de Privacidade<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">O texto e o conteúdo da sua página são enviados ao Google e podem ser usados para melhorar esse recurso.
   <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Ao fazer compras no Chrome, veja outras formas de pagamento além dos cartões</translation>
 <translation id="196146181975453736">Faça uma verificação de segurança única para pagar mais rápido</translation>
 <translation id="1962204205936693436">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Erro de serialização</translation>
@@ -1144,6 +1145,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2930531075747147366">Guia no seu outro dispositivo</translation>
 <translation id="2930577230479659665">Cortar depois de cada cópia</translation>
 <translation id="2933624813161016821">Laminado em relevo</translation>
+<translation id="293796669683825859">Comentários</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Imagem PNG</translation>
 <translation id="2941878205777356567">Envelope de 23 cm x 30 cm</translation>
@@ -1993,6 +1995,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4298000214066716287">Investimentos</translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4298925811540301889">Os cookies deste site são sincronizados em todos os seus dispositivos ChromeOS. Para gerenciar o que é sincronizado, acesse <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Abrir app</translation>
 <translation id="4300675098767811073">Perfuração múltipla do lado direito</translation>
 <translation id="4302514097724775343">Toque no dinossauro para jogar</translation>
 <translation id="4304049446746819918">{0,plural, =1{A política do administrador não recomenda mover o arquivo para: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda mover o arquivo para: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda mover os arquivos para: <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6101583188322746099">Serviços de entrega de produtos de mercearia</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Criar site</translation>
+<translation id="6105511947520166941">Pague com Pix diretamente no Chrome na próxima vez</translation>
 <translation id="6106989379647458772">A página da Web no endereço <ph name="PAGE" /> pode estar temporariamente inativa ou pode ter sido transferida para um novo endereço.</translation>
 <translation id="6107012941649240045">Emitido para</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> mudou o nome do grupo</translation>

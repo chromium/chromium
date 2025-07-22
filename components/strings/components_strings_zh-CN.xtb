@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">向 Google 发送<ph name="BEGIN_WHITEPAPER_LINK" />您访问的部分网页的网址、有限的系统信息以及部分网页内容<ph name="END_WHITEPAPER_LINK" />，帮助我们为所有人改善网络安全环境。<ph name="BEGIN_PRIVACY_PAGE_LINK" />隐私权政策<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">您的文字和网页内容会发送给 Google，并可能会用于改进此功能。
   <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">当您在 Chrome 中购物时，可看到非银行卡支付方式选项</translation>
 <translation id="196146181975453736">完成一次性安全检查，即可更快地付款</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />书签</translation>
 <translation id="1973335181906896915">序列化错误</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">来自您的其他设备的标签页</translation>
 <translation id="2930577230479659665">完成每个副本后裁切</translation>
 <translation id="2933624813161016821">压纹箔</translation>
+<translation id="293796669683825859">评注</translation>
 <translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2940418897281183211">PNG 图片</translation>
 <translation id="2941878205777356567">9 x 12 英寸信封</translation>
@@ -1989,6 +1991,7 @@
 <translation id="4298000214066716287">投资</translation>
 <translation id="42981349822642051">展开</translation>
 <translation id="4298925811540301889">此网站的 Cookie 会在您的 ChromeOS 设备之间同步。如需管理同步内容，请前往<ph name="SYNC_SETTINGS" />。</translation>
+<translation id="4300272766492248925">打开应用</translation>
 <translation id="4300675098767811073">多孔（右侧）</translation>
 <translation id="4302514097724775343">点按恐龙图标即可开始玩这款游戏</translation>
 <translation id="4304049446746819918">{0,plural, =1{管理员政策不建议将这个文件移至<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件移至<ph name="DESTINATION_NAME" />}}</translation>
@@ -3031,6 +3034,7 @@
 <translation id="6101583188322746099">杂货配送服务</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">创建网站</translation>
+<translation id="6105511947520166941">下次直接在 Chrome 中使用 Pix 付款</translation>
 <translation id="6106989379647458772">位于 <ph name="PAGE" /> 的网页可能暂时无法打开或已永久移至新网址。</translation>
 <translation id="6107012941649240045">颁发对象</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />更改了分组名称</translation>

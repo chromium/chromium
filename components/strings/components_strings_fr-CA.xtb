@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">Aidez-nous à améliorer la sécurité pour tout le monde sur Internet en envoyant <ph name="BEGIN_WHITEPAPER_LINK" />les URL de certaines pages que vous visitez, certaines données système et certains contenus des pages en question<ph name="END_WHITEPAPER_LINK" /> à Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politique de confidentialité<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Votre texte et le contenu de vos pages sont envoyés à Google et peuvent être utilisés pour améliorer cette fonctionnalité.
   <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Lorsque vous effectuerez des achats dans Chrome, vous verrez les modes de paiement autres que les cartes comme option</translation>
 <translation id="196146181975453736">Effectuez une vérification de sécurité unique pour payer plus rapidement</translation>
 <translation id="1962204205936693436">Favoris <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Erreur de sérialisation.</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">Onglet à partir de votre autre appareil</translation>
 <translation id="2930577230479659665">Couper après chaque copie</translation>
 <translation id="2933624813161016821">Feuille de gaufrage</translation>
+<translation id="293796669683825859">Commentaires</translation>
 <translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Image PNG</translation>
 <translation id="2941878205777356567">Enveloppe 9 x 12 po</translation>
@@ -1993,6 +1995,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4298000214066716287">Investissement</translation>
 <translation id="42981349822642051">Développer</translation>
 <translation id="4298925811540301889">Les témoins de ce site sont synchronisés sur vos appareils ChromeOS. Pour gérer ce que vous synchronisez, accédez à <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Ouvrir l'application</translation>
 <translation id="4300675098767811073">Multiple perforation à droite</translation>
 <translation id="4302514097724775343">Touchez le dinosaure pour jouer</translation>
 <translation id="4304049446746819918">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6101583188322746099">Services de livraison d'épicerie</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Créer un site</translation>
+<translation id="6105511947520166941">Payez avec Pix directement dans Chrome la prochaine fois</translation>
 <translation id="6106989379647458772">Il se peut que la page Web à l'adresse <ph name="PAGE" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une autre adresse Web.</translation>
 <translation id="6107012941649240045">Délivré à</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> a modifié le nom du groupe</translation>

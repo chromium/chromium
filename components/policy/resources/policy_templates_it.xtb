@@ -1824,31 +1824,6 @@ Se questa policy non viene configurata o se viene disattivata, il trasferimento 
 <translation id="225830954785359083">Impedisci alle pagine di mostrare popup durante l'unload</translation>
 <translation id="2261648512244797294">Disattiva stampa Privet deprecata</translation>
 <translation id="2263881357524831360">Consenti l'utilizzo di gestori delle password di terze parti in <ph name="PRODUCT_NAME" /> su <ph name="ANDROID_NAME" /></translation>
-<translation id="2264286153777425328">Elenco di azioni da eseguire quando viene raggiunto il timeout della policy <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-Avviso: l'impostazione di questa policy può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
-
-Se la policy <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurata, questa policy non ha alcun effetto.
-
-Quando viene raggiunto il timeout della policy <ph name="IDLE_TIMEOUT_POLICY_NAME" />, il browser esegue le azioni configurate in questa policy.
-
-Se questa policy è vuota o se non viene configurata, la policy <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
-
-Le azioni supportate sono:
-
-"<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo. Azione non supportata su Android e iOS.
-
-"<ph name="CLOSE_TABS_ACTION" />": vengono chiuse tutte le schede nelle finestre aperte. Azione supportata solo su iOS.
-
-"<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo. Azione non supportata su Android e iOS.
-
-"<ph name="SIGN_OUT_ACTION" />": l'utente che ha attualmente eseguito l'accesso viene disconnesso. Azione supportata solo su iOS.
-
-"<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": vengono cancellati i dati di navigazione corrispondenti. Per maggiori informazioni, vedi la policy <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />. I tipi di azione supportati su iOS sono: "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />" e "<ph name="CLEAR_AUTOFILL_ACTION" />"
-
-"<ph name="RELOAD_PAGES_ACTION" />": vengono ricaricate tutte le pagine web. Per alcune pagine, all'utente potrebbe essere chiesto di confermare prima. Azione non supportata su iOS.
-
-La configurazione delle azioni "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" e "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" comporta la disattivazione della sincronizzazione per i rispettivi tipi di dati se né la policy "<ph name="CHROME_SYNC_NAME" />" viene disattivata impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> né la policy <ph name="BROWSER_SIGNIN_POLICY_NAME" /> viene disattivata.</translation>
 <translation id="2266422599396179941">Consenti agli utenti di inviare feedback</translation>
 <translation id="2268891553068901979">Se la policy viene attivata, verrà disattivata la sincronizzazione di <ph name="GOOGLE_DRIVE_NAME" /> nell'app File di <ph name="PRODUCT_OS_NAME" /> quando si è connessi a una rete cellulare. I dati verranno sincronizzati con Drive solo se si è connessi a una rete Wi-Fi o Ethernet.
 
@@ -2258,6 +2233,7 @@ Se questa policy non viene configurata o se viene impostata su True, la funziona
 Se questa policy viene impostata su False, la funzionalità di insiemi di siti web correlati viene disattivata.</translation>
 <translation id="2555244983262829274">Nascondi il pulsante Pagina iniziale dalla barra degli strumenti</translation>
 <translation id="2558154810835597313">Attiva il provisioning dei certificati client per un utente o un profilo gestito</translation>
+<translation id="2559274305158103883">Disattiva l'accordo chiave post-quantistico per WebRTC</translation>
 <translation id="2562213287271514629">Consenti l'utilizzo del plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto come il normale plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">Consente di specificare l'URL del motore di ricerca utilizzato per fornire risultati immediati. L'URL deve contenere la stringa <ph name="SEARCH_TERM_MARKER" />, che verrà sostituita in fase di query dal testo inserito dall'utente fino a quel momento.
 
@@ -2812,6 +2788,14 @@ Se il valore viene impostato su false, non potranno accedere alla funzionalità.
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
+<translation id="2988299727303303535">Questa policy fornisce un'esenzione temporanea per i domini specificati dal nuovo comportamento dei cookie associati all'origine.
+
+L'aggiunta di un dominio all'elenco consentirà l'utilizzo dei cookie di quel dominio da parte di uno schema o di una porta diversi.
+Puoi trovare ulteriori informazioni con <ph name="LEGACY_COOKIE_SCOPE_ENABLED_POLICY_NAME" />.
+
+Per i cookie sui domini non previsti dai pattern specificati qui oppure per tutti i cookie se questa policy non viene impostata, verrà utilizzato il comportamento dei cookie associati all'origine.
+
+Questa policy verrà rimossa in futuro.</translation>
 <translation id="2989404644164421834">Ricarica pagine</translation>
 <translation id="299127280603727143">Un gruppo di policy relative alle impostazioni di accesso alla rete locale.  Visita la pagina https://developer.chrome.com/blog/local-network-access</translation>
 <translation id="299446489108785864">Elenco di URL che specifica a quali URL verrà applicata la policy <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Questa policy non influisce sui valori di apertura automatica impostati dagli utenti.
@@ -3822,17 +3806,6 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
       Se viene impostata su Disattivata, l'utilizzo dell'API Translator non è consentito.</translation>
 <translation id="366494444808132420">Consenti le integrazioni di Gemini.</translation>
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
-<translation id="3667467644216039144">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente.
-
-Avviso: l'impostazione di questa policy può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
-
-Tra i tipi di dati disponibili ci sono: cronologia di navigazione (<ph name="DATA_TYPE_BROWSING_HISTORY" />), cronologia dei download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, compilazione automatica (<ph name="DATA_TYPE_AUTOFILL" />), password (<ph name="DATA_TYPE_PASSWORD" />), impostazioni sito (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dati di app ospitate (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Questa policy non ha la precedenza su <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questa policy disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivata impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivata <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
-
-Se per qualche motivo l'eliminazione dei dati è stata avviata ma non è stata completata, i dati di navigazione verranno cancellati al successivo caricamento del profilo.
-
-Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso di arresto anomalo del browser o del sistema operativo), i dati di navigazione non verranno cancellati poiché la chiusura del browser non è stata causata dalla chiusura di tutte le finestre del browser da parte dell'utente.</translation>
 <translation id="3671773704245936868">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="3674010627788940405">Le intestazioni delle richieste CORS senza caratteri jolly non sono supportate.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) viene comunemente utilizzato per suddividere le attività JavaScript di lunga durata.
@@ -8308,10 +8281,12 @@ Le modifiche alla policy vengono applicate solo mentre ARC non è in esecuzione,
 <translation id="6614648642325603511">L'algoritmo per la generazione di coppie di chiavi. L'opzione EC è supportata a partire dalla versione 132.</translation>
 <translation id="661610294649586421">Non consentire le richieste API WebAuthn su siti con certificati TLS inaccessibili.</translation>
 <translation id="6617589895942747919">Ora di inizio dell'intervallo (valore inserito incluso).</translation>
+<translation id="6620966939519407082">Impostazioni dell'ambito cookie precedente</translation>
 <translation id="6621830999036927230">Se questa policy viene configurata, l'host di accesso remoto usa l'URL indicato per convalidare i token di autenticazione dei client di accesso remoto allo scopo di accettare connessioni. Questa funzionalità viene disattivata se la policy viene lasciata vuota o se non viene configurata.
 
       Nota: usa questa policy insieme alla policy <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Un flag booleano che indica se la tastiera sullo schermo può offrire il controllo ortografico.</translation>
+<translation id="6625716212597516929">Ripristina il comportamento precedente per l'ambito dei cookie</translation>
 <translation id="6626319579493977784">Impostazioni codice dinamico</translation>
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
@@ -8361,6 +8336,18 @@ Su <ph name="MS_WIN_NAME" />, la policy KDC viene sempre rispettata.</translatio
 <translation id="6665670272107384733">Imposta la frequenza di inserimento della password per poter usare lo sblocco rapido</translation>
 <translation id="6667586534922258705">Mostra il pulsante di visualizzazione della password nella schermata di accesso e di blocco</translation>
 <translation id="6667636336079341367">Consenti la funzionalità di scansione senza migliorare i modelli di AI.</translation>
+<translation id="6668559639284945695">Questa policy consente di ripristinare il comportamento precedente per l'ambito dei cookie.
+
+Ciò significa che i cookie impostati su un protocollo (ad es. HTTPS) o una porta in particolare possono essere accessibili da un altro protocollo o da un'altra porta.
+
+Se la policy viene attivata, i cookie non verranno associati allo schema e alla porta di origine.
+
+Se la policy viene disattivata o se non viene configurata, i cookie si comportano con un ambito limitato all'origine.
+
+Questa configurazione verrà applicata solo ai domini di primo livello (ad es. example.com) e non ai
+sottodomini (ad es. sub.example.com).
+
+Questa policy verrà rimossa in futuro.</translation>
 <translation id="6669244130218275293">Scegli se attivare la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito.</translation>
 <translation id="6669691206059842248">Configurare URL di reindirizzamento OAuth aggiuntivi per estensione</translation>
 <translation id="6669700740683748046">Questa funzionalità consente la visualizzazione dell'URL completo nella barra degli indirizzi.
@@ -8523,17 +8510,6 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite e agli utenti
 la configurazione.</translation>
 <translation id="6757613329154374267">Backup e ripristino attivato</translation>
 <translation id="6758659208493449452">Questa policy consente di stabilire se gli utenti registrati al programma di protezione avanzata ricevono o meno ulteriori livelli di protezione. Alcune di queste funzionalità potrebbero prevedere la condivisione di dati con Google (ad esempio, gli utenti che usano la protezione avanzata potranno inviare i propri download a Google per verificare l'eventuale presenza di malware). Se questa policy viene impostata su True o non viene impostata, gli utenti registrati al programma riceveranno ulteriori livelli di protezione. Se viene impostata su False, gli utenti che usano la protezione avanzata riceveranno soltanto le funzionalità standard per i consumatori.</translation>
-<translation id="6759078816721385015">Consente di configurare le impostazioni del periodo di validità dei dati di navigazione per <ph name="PRODUCT_NAME" />. Questa policy consente agli amministratori di configurare (per tipo di dati) quando il browser dovrà eliminare i dati. Questa funzionalità è utile per i clienti che gestiscono dati cliente sensibili.
-
-Avviso: l'impostazione di questa policy può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
-
-I tipi di dati disponibili sono i seguenti: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" /> non sono supportati su Android.
-
-Il browser rimuoverà automaticamente i dati dei tipi selezionati che sono antecedenti al periodo indicato (<ph name="TIME_TO_LIVE_IN_HOURS" />). Il valore minimo impostabile è 1 ora.
-
-I dati scaduti vengono eliminati 15 secondi dopo l'avvio del browser, dopodiché ogni 30 minuti mentre il browser è in esecuzione.
-
-Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questa policy disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivato impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivata <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="6763023079133439068">Consenti i certificati privi di un'estensione subjectAlternativeName se sono stati emessi da trust anchor locali</translation>
 <translation id="6766216162565713893">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo Bluetooth nelle vicinanze.</translation>
 <translation id="6770454900105963262">Segnala informazioni sulle sessioni kiosk attive</translation>
@@ -8890,6 +8866,7 @@ Se questa policy viene impostata su <ph name="PROVISION_MANAGED_CLIENT_CERTIFICA
 <translation id="7016587686120059767">Disattiva la modalità ospite</translation>
 <translation id="7019805045859631636">Veloce</translation>
 <translation id="7021590945154530517">Attiva il monitoraggio dello stato di integrità del dispositivo</translation>
+<translation id="7025153290982655996">Ripristina il comportamento precedente per l'ambito dei cookie</translation>
 <translation id="7025332601572838001">Configurazione del comportamento dei TdS alla prima esecuzione di CCT</translation>
 <translation id="7026351325994257733">Consenti la sincronizzazione delle configurazioni di reti Wi-Fi tra i dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android collegato</translation>
 <translation id="7027057540229843762">Usa il tema chiaro</translation>
@@ -9005,6 +8982,7 @@ Se la policy viene impostata, l'elenco dei valori predefiniti viene esteso con i
 
       Se la policy è impostata su False o non è configurata, le informazioni non vengono segnalate.
       Se è impostata su True, le informazioni sulla ventola del dispositivo vengono segnalate.</translation>
+<translation id="7097146706461004834">I cookie hanno un ambito limitato all'origine</translation>
 <translation id="710003290625031750">Descrizione estesa dello schema:</translation>
 <translation id="7101550508196914704">Non mostrare la scorciatoia applicazioni nella barra dei Preferiti</translation>
 <translation id="7105084505972468353">Se questa policy viene impostata, consente di controllare il tipo di lente d'ingrandimento che viene attivato.
@@ -9439,6 +9417,7 @@ Se questa policy viene impostata su False, viene attivato il comportamento prece
 
       Se la norma non viene impostata, o viene impostata su false, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene attivata. Se viene impostata su true, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene disattivata.</translation>
 <translation id="7427607504279694910">I log eventi di installazione di app per Android non vengono condivisi con Google</translation>
+<translation id="7428523340768505080">Attiva l'accordo chiave post-quantistico per WebRTC</translation>
 <translation id="7431456748240652287">Questa policy a livello di dispositivo consente di configurare se <ph name="PRODUCT_OS_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS utilizzando lo standard ML-KEM NIST. Prima di <ph name="PRODUCT_OS_NAME" /> versione 131, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
 
 Se questa policy viene attivata o non viene impostata, <ph name="PRODUCT_OS_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
@@ -9751,6 +9730,7 @@ Se viene impostata su 2, le origini delle app web isolate non potranno connetter
 <translation id="7696534428021833264">Attiva la scheda File di SharePoint e OneDrive nella pagina Nuova scheda</translation>
 <translation id="7699644797467448158">Cancella window.name quando la navigazione è di primo livello, cross-site e scambia BrowsingContextGroup.</translation>
 <translation id="7701341006446125684">Imposta le dimensioni della cache di app ed estensioni (in byte)</translation>
+<translation id="7701825382808690457">Utilizza il valore predefinito per l'accordo chiave post-quantistico per WebRTC</translation>
 <translation id="7703041979684393741">Non consentire la raccolta di log eventi WebRTC dai servizi Google</translation>
 <translation id="770339941914297201">Nuovo comportamento: le app di Chrome Kiosk verranno aggiornate solo utilizzando l'URL di aggiornamento dalla policy</translation>
 <translation id="7703737669292992839">Blocca finestre di dialogo per la selezione di file</translation>
@@ -10025,6 +10005,7 @@ Se la policy viene impostata su Disattivata o se non viene configurata, non vien
 <translation id="7906983682927840536">Recupera la durata del keepalive alla chiusura</translation>
 <translation id="7908384265697653397">Il periodo di tempo, in giorni, trascorso il quale l'utente viene disconnesso dall'account se la versione di <ph name="PRODUCT_OS_NAME" /> è precedente a quella specificata nella policy <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="7909751052609510518">Processi di stampa (supportati dalla versione 129)</translation>
+<translation id="7909839744818798105">Abilita il comportamento precedente per l'ambito dei cookie per un elenco di domini</translation>
 <translation id="7911685775490889216">Consente di configurare il tempo di visualizzazione in secondi di un'immagine quando il salvaschermo per la schermata di blocco ha diverse immagini da visualizzare.
 
 I valori validi sono compresi tra 1 secondo e 9999 secondi. Se la policy non viene configurata, <ph name="PRODUCT_OS_NAME" /> usa il valore predefinito di 60 secondi.
@@ -11156,6 +11137,28 @@ Se le ottimizzazioni di JavaScript vengono disattivate (impostando il valore di 
 È possibile eseguire l'override della policy per pattern URL specifici utilizzando le policy <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> e <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Se questa policy non viene configurata, le ottimizzazioni di JavaScript vengono attivate.</translation>
+<translation id="8669238010996709070">Questa policy consente di controllare l'accordo chiave post-quantistico per WebRTC.
+
+Se questa policy viene attivata, l'accordo chiave post-quantistico verrà offerto per
+WebRTC.
+
+Se questa policy viene disattivata, l'accordo chiave post-quantistico non verrà offerto per
+WebRTC.
+
+Se questa policy non viene configurata, il valore verrà impostato dalla procedura di implementazione predefinita
+per l'accordo chiave post-quantistico offerto per WebRTC.
+
+L'offerta di un accordo chiave post-quantistico è compatibile con le versioni precedenti. I peer DTLS
+e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e
+continuare a selezionare le opzioni precedenti.
+
+Tuttavia, i dispositivi che non implementano correttamente DTLS potrebbero non funzionare correttamente se
+viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a
+opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono
+adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di
+un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
+
+Questa policy è una misura temporanea e verrà rimossa dopo il lancio di alcune nuove versioni.</translation>
 <translation id="8671119576957984818">Attiva hub di condivisione desktop</translation>
 <translation id="8671193325113134911">Attiva il controllo rigoroso del tipo MIME per gli script worker</translation>
 <translation id="8671303329680827168">Questa policy è deprecata. Utilizza la policy "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
-<translation id="1036348656032585052">Անջատել</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ստեղծվել է <ph name="NUM_WEEKS_ONE" /> շաբաթ առաջ}one{Ստեղծվել է <ph name="NUM_WEEKS_MANY" /> շաբաթ առաջ}other{Ստեղծվել է <ph name="NUM_WEEKS_MANY" /> շաբաթ առաջ}}</translation>
 <translation id="1063300264396686489">Ավտոմատ բացում է ներդիրների խմբերն այլ սարքերից</translation>
 <translation id="1075622780330595106">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վերջերս չեն օգտագործվել։ Փակե՞լ դրանք։</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Տեղափոխում ոչ ակտիվ ներդիրների բաժին</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Էջանշել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="2055057176188061528">Ընտրեք ներդիրների խումբ կամ ստեղծեք նոր ներդիրների խումբ</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome-ն ավտոմատ փակում է ներդիրները, որոնք չեք օգտագործել <ph name="AUTO_DELETE_DELAY_ONE" /> ամսվա ընթացքում։ Այս գործառույթը ցանկացած ժամանակ կարող եք անջատել Կարգավորումներում։}one{Chrome-ն ավտոմատ փակում է ներդիրները, որոնք չեք օգտագործել <ph name="AUTO_DELETE_DELAY_MANY" /> ամսվա ընթացքում։ Այս գործառույթը ցանկացած ժամանակ կարող եք անջատել Կարգավորումներում։}other{Chrome-ն ավտոմատ փակում է ներդիրները, որոնք չեք օգտագործել <ph name="AUTO_DELETE_DELAY_MANY" /> ամսվա ընթացքում։ Այս գործառույթը ցանկացած ժամանակ կարող եք անջատել Կարգավորումներում։}}</translation>
 <translation id="2118649612461486615">Տեղեկություններ խանութի մասին</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր ինկոգնիտո ներդիրը հասանելի չի լինի։}one{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր # ինկոգնիտո ներդիր հասանելի չի լինի։}other{Ձեր փակված ներդիրները և խմբերը կարող եք նորից բացել «Վերջին ներդիրները» և «Ներդիրների խմբեր» բաժիններում։ Ձեր # ինկոգնիտո ներդիր հասանելի չի լինի։}}</translation>
 <translation id="2162620598375156287">Այժմ <ph name="CURRENT_PRICE" />՝ <ph name="SOURCE_WEBSITE" /> կայքում</translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2371084566192454134">Ներդիրներ և ներդիրների խմբեր</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
+<translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2498435670446402865">Վերանվանեք ներդիրների խումբը</translation>
 <translation id="2536366509642644298">«<ph name="TAB_GROUP_NAME_1" />» և «<ph name="TAB_GROUP_NAME_2" />» ներդիրների խմբերն այլևս հասանելի չեն</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Բոլոր կրկնօրինակ ներդիրները նույնպես կարխիվացվեն՝ բացառությամբ ամենավերջին կրկնօրինակից։</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> տարր}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> տարր}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> տարր}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Խումբը տեղափոխել նոր պատուհան}one{Խումբը տեղափոխել այլ պատուհան}other{Խումբը տեղափոխել այլ պատուհան}}</translation>
-<translation id="6220820548421939212">Այո</translation>
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիր նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
 <translation id="6333260925957816943">Տեղեկություններ այս խանութի մասին</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Ընտրեք ներդիրների խումբը</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Կիսվել ներդիրով}one{Կիսվել ներդիրով}other{Կիսվել ներդիրներով}}</translation>
 <translation id="7129458170538955174">Այս խանութի մասին տեղեկությունները բացված են կիսով չափ</translation>
+<translation id="7151209024774799310">Հեռացնել ներդիները խմբից</translation>
 <translation id="7204204600596740190">Մի քանի ներդիրի ընտրության ռեժիմ</translation>
 <translation id="7211038039686180558">Ձեր ներդիրների խմբերն ավտոմատ պահվում և թարմացվում են ձեր բոլոր սարքերում, որոնցում մտել եք հաշիվ</translation>
 <translation id="731648547091221002">Ընտրված է <ph name="COLOR_NAME" /> գույնը</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Գործողություններ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> կարծիք}one{Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> կարծիք}other{Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> կարծիք}}</translation>
 <translation id="7885132941432959125">Տեղափոխել ներդիրն աջ</translation>
-<translation id="788914896430720926">Ավտոմատ փակե՞լ չօգտագործվող ներդիրները</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> գույնն ընտրված չէ</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
 <translation id="7961015016161918242">Երբեք</translation>

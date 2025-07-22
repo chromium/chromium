@@ -575,6 +575,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Ochilgan sahifalar manzillari, tizim va sahifalar<ph name="END_WHITEPAPER_LINK" /> haqidagi ayrim maʼlumotlarni Google serverlariga yuborish orqali internetdagi xavfsizlik tizimini hamma uchun yaxshilashga yordam berasiz. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Maxfiylik siyosati<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Matn va sahifa kontenti Googlega yuboriladi va bu funksiyani yaxshilash maqsadida ishlatilishi mumkin.
   <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Chrome orqali kartasiz xarid qilish vaqtida Pix tanlovi chiqsin</translation>
 <translation id="196146181975453736">Tezroq toʻlash uchun bir martalik xavfsizlik tekshiruvini bajaring</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> xatcho‘plari</translation>
 <translation id="1973335181906896915">Seriyalashtirish amali bajarilmadi</translation>
@@ -1143,6 +1144,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2930531075747147366">Boshqa qurilma yuborgan varaq</translation>
 <translation id="2930577230479659665">Har bir nusxa chekkasini qirqish</translation>
 <translation id="2933624813161016821">Naqshli folga</translation>
+<translation id="293796669683825859">Fikrlar</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> havolalarini ochish</translation>
 <translation id="2940418897281183211">PNG tasvir</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
@@ -1988,6 +1990,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4298000214066716287">Investitsiya</translation>
 <translation id="42981349822642051">Kengaytirish</translation>
 <translation id="4298925811540301889">Bu sayt cookie fayllari barcha ChromeOS qurilmalarida sinxronlanadi. Sinxronlanadigan maʼlumotlarni boshqarish uchun <ph name="SYNC_SETTINGS" /> sahifasini oching.</translation>
+<translation id="4300272766492248925">Ilovani ochish</translation>
 <translation id="4300675098767811073">Oʻngdan bir necha teshik ochish</translation>
 <translation id="4302514097724775343">Boshlash uchun dinozavrni bosing</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />ga koʻchirishni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />ga koʻchirishni tavsiya qilmaydi}}</translation>
@@ -3030,6 +3033,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6101583188322746099">Oziq-ovqat yetkazib berish xizmatlari</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Sayt yaratish</translation>
+<translation id="6105511947520166941">Keyingi safar Chromeda bevosita Pix orqali toʻlash</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> veb-sahifasi vaqtincha ishlamayotgan yoki yangi veb-manzilga o‘tkazilgan bo‘lishi mumkin.</translation>
 <translation id="6107012941649240045">Berilgan:</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> guruh nomini oʻzgartirdi</translation>

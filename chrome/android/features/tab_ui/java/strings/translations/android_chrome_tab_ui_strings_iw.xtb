@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1036348656032585052">כיבוי</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{נוצרה לפני שבוע (<ph name="NUM_WEEKS_ONE" />)}one{נוצרה לפני <ph name="NUM_WEEKS_MANY" /> שבועות}two{נוצרה לפני שבועיים (<ph name="NUM_WEEKS_MANY" />)}other{נוצרה לפני <ph name="NUM_WEEKS_MANY" /> שבועות}}</translation>
 <translation id="1063300264396686489">פתיחה אוטומטית של קבוצות כרטיסיות ממכשירים אחרים</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">העברה לקטע הלא פעיל</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{הוספת הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה לסימניות}one{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}two{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}other{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}}</translation>
 <translation id="2055057176188061528">צריך לבחור קבוצת כרטיסיות או ליצור קבוצת כרטיסיות חדשה</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך חודש אחד (<ph name="AUTO_DELETE_DELAY_ONE" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}one{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך <ph name="AUTO_DELETE_DELAY_MANY" /> חודשים. אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}two{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך חודשיים (<ph name="AUTO_DELETE_DELAY_MANY" />). אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}other{‏‫Chrome סוגר באופן אוטומטי פריטים בקטע הלא פעיל שלא השתמשת בהם במשך <ph name="AUTO_DELETE_DELAY_MANY" /> חודשים. אפשר להשבית את התכונה הזו עכשיו או בכל שלב בהגדרות.}}</translation>
 <translation id="2118649612461486615">פרטי החנות</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. הכרטיסייה הפרטית לא תהיה זמינה.}one{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}two{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}other{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}}</translation>
 <translation id="2162620598375156287">עכשיו במחיר <ph name="CURRENT_PRICE" /> ב-<ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
+<translation id="2479148705183875116">למעבר אל ההגדרות</translation>
 <translation id="2498435670446402865">שינוי שם קבוצת הכרטיסיות</translation>
 <translation id="2536366509642644298">קבוצות הכרטיסיות "<ph name="TAB_GROUP_NAME_1" />" ו"<ph name="TAB_GROUP_NAME_2" />" לא זמינות יותר</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">עכשיו גם כל הכרטיסיות הכפולות יועברו לארכיון, חוץ מהעותק האחרון שנעשה בו שימוש.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{סגירת הפריט שנבחר (<ph name="TABS_COUNT_ONE" />)}one{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> הפריטים שנבחרו}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{העברת קבוצת הכרטיסיות לחלון חדש}one{העברת קבוצת הכרטיסיות לחלון אחר}two{העברת קבוצת הכרטיסיות לחלון אחר}other{העברת קבוצת הכרטיסיות לחלון אחר}}</translation>
-<translation id="6220820548421939212">כן. אני בעניין</translation>
 <translation id="6228793724645064692">(דירוג החנות)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{הוספת כרטיסייה לקבוצה חדשה}one{הוספת כרטיסיות לקבוצה חדשה}two{הוספת כרטיסיות לקבוצה חדשה}other{הוספת כרטיסיות לקבוצה חדשה}}</translation>
 <translation id="6333260925957816943">מידע על החנות הזו</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">בחירת קבוצת כרטיסיות</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{שיתוף הכרטיסייה}one{שיתוף הכרטיסיות}two{שיתוף הכרטיסיות}other{שיתוף הכרטיסיות}}</translation>
 <translation id="7129458170538955174">המידע על החנות הזו פתוח בחצי הגובה</translation>
+<translation id="7151209024774799310">הסרת כרטיסיות מהקבוצה</translation>
 <translation id="7204204600596740190">מצב בחירה מרובה</translation>
 <translation id="7211038039686180558">קבוצות הכרטיסיות נשמרות באופן אוטומטי ומתעדכנות בכל המכשירים שמחוברים לחשבון</translation>
 <translation id="731648547091221002">הפריט שנבחר: <ph name="COLOR_NAME" /></translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">פעילות</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />)}one{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}two{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}other{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}}</translation>
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
-<translation id="788914896430720926">לשמור על סדר בקטגוריה הלא פעילה?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />, לא נבחר</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7961015016161918242">אף פעם</translation>

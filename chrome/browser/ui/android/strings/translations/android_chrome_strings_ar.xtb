@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">‏لإنهاء عملية إعداد ميزة "الملء التلقائي"، يُرجى إعادة تشغيل Chrome الآن. وستتم إعادة فتح علامات التبويب تلقائيًا.</translation>
 <translation id="2091863218454846791">يتمّ إظهار العرض المكثّف</translation>
 <translation id="2093731487903423814">آخر 15 دقيقة</translation>
+<translation id="2096577711562668473">هل أردت تغيير خدمة الملء التلقائي؟</translation>
 <translation id="2100273922101894616">تسجيل الدخول تلقائيًا</translation>
 <translation id="2109384632594340939">صورة الملف الشخصي</translation>
 <translation id="2111511281910874386">الانتقال إلى الصفحة</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2497852260688568942">تم إيقاف المزامنة من قِبل المشرف</translation>
 <translation id="250020030759455918">‏ستظهر لك حالة تسجيل الدخول على <ph name="SITE_NAME" />، وبيانات التصفُّح وبيانات الموقع الإلكتروني في Chrome.</translation>
+<translation id="2502798195266898572">تم فتح البطاقة السفلية لـ "وضع القراءة" بطول الشاشة</translation>
 <translation id="2510106555128151389">جارٍ تثبيت "<ph name="WEBAPK_NAME" />"...</translation>
 <translation id="2512234228327349533">البحث عن خيارات الشراء</translation>
 <translation id="2513403576141822879">‏لعرض مزيد من الإعدادات المتعلِّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطِّلاع على <ph name="BEGIN_LINK" />خدمات Google والمزامنة<ph name="END_LINK" /></translation>
@@ -936,6 +938,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{جارٍ تنزيل ملف واحد…}zero{جارٍ تنزيل # ملف…}two{جارٍ تنزيل ملفين…}few{جارٍ تنزيل # ملفات…}many{جارٍ تنزيل # ملفًا…}other{جارٍ تنزيل # ملف…}}</translation>
 <translation id="5210286577605176222">الانتقال السريع إلى علامة التبويب السابقة</translation>
 <translation id="5210365745912300556">إغلاق علامة التبويب</translation>
+<translation id="5212800876504289412">‏يجب إعادة تشغيل Chrome لإكمال هذا التغيير. وتتم إعادة فتح علامات التبويب تلقائيًا عند إعادة التشغيل.</translation>
 <translation id="5215957675041756913">التحكّم في بياناتك وحسابك</translation>
 <translation id="5218324087477576825">رقم البطاقة، مطلوب إدخاله</translation>
 <translation id="5221437554987713282">‏<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وأذونات أخرى <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنك لم تزُر هذا الموقع الإلكتروني مؤخرًا</translation>
@@ -1064,6 +1067,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{عرض الإشعار}zero{عرض الإشعارات}two{عرض الإشعارَين}few{عرض الإشعارات}many{عرض الإشعارات}other{عرض الإشعارات}}</translation>
 <translation id="5814749351757353073">متابعة المواقع الإلكترونية المفضّلة</translation>
 <translation id="5823093032261493462">هل المطلوب تنزيل "<ph name="FILE_NAME" />" من <ph name="DOWNLOAD_DOMAIN" /> على أي حال؟</translation>
+<translation id="5825135637446025843">‏بعد إعادة تشغيل Chrome، سيتم استخدام المعلومات المحفوظة من مقدّم الخدمة الجديد لملء كلمات المرور ومفاتيح المرور والعناوين وطرق الدفع وغيرها من المعلومات تلقائيًا.</translation>
 <translation id="5828921839638612740">‏يمكنك حذف البيانات من خلال إعدادات Chrome</translation>
 <translation id="5829586821381540080">تم الحفظ في "<ph name="FOLDER_NAME" />"</translation>
 <translation id="583281660410589416">غير معروف</translation>
@@ -1180,6 +1184,7 @@
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6296366034485697675">التصدير والحذف</translation>
 <translation id="629730747756840877">الحساب</translation>
+<translation id="6300697579369314762">تم فتح البطاقة السفلية لـ "وضع القراءة" في نصف الشاشة</translation>
 <translation id="6301526076346731664">فتح "أدوات المطوّرين"</translation>
 <translation id="6303969859164067831">تسجيل الخروج وإيقاف المزامنة</translation>
 <translation id="6307241780749477694">يُرجى إثبات هويتك للحصول على جميع كلمات المرور على هذا الجهاز</translation>
@@ -1400,6 +1405,7 @@
 <translation id="71503698506017927">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين من Google Pay.
 
 لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">تم إغلاق البطاقة السفلية لـ "وضع القراءة"</translation>
 <translation id="7165972437814027679">‏مزيد من المعلومات حول سبب حظر Chrome لبعض الملفات</translation>
 <translation id="7168323970702333693">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>

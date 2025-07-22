@@ -432,7 +432,6 @@
 <translation id="1282436639288565079">รายละเอียดกลุ่มแท็บ</translation>
 <translation id="1283126956823499975">เกิดข้อผิดพลาดในการตั้งค่าอุปกรณ์</translation>
 <translation id="1284277788676816155">ไม่อนุญาตให้บันทึกข้อมูล</translation>
-<translation id="1284912418686719556">Chrome กำลังสร้างรหัสผ่านที่รัดกุมให้คุณ คุณไม่ต้องจดจำรหัสผ่านนี้เนื่องจากระบบจะบันทึกไว้ให้คุณใน<ph name="GOOGLE_PASSWORD_MANAGER" /> สำหรับ <ph name="EMAIL" /></translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1285484354230578868">จัดเก็บข้อมูลในบัญชี Google ไดรฟ์</translation>
 <translation id="1285625592773741684">การตั้งค่าการใช้อินเทอร์เน็ตในปัจจุบันคือ "อินเทอร์เน็ตมือถือ"</translation>
@@ -691,7 +690,6 @@
 <translation id="1474785664565228650">ต้องเปิด Parallels Desktop อีกครั้งเพื่อให้การเปลี่ยนแปลงการตั้งค่าไมโครโฟนมีผล เปิด Parallels Desktop อีกครั้งเพื่อดำเนินการต่อ</translation>
 <translation id="1476088332184200792">คัดลอกไปยังอุปกรณ์ของคุณ</translation>
 <translation id="1476347941828409626">&amp;จัดการโปรไฟล์ Chrome</translation>
-<translation id="1476595624592550506">เปลี่ยนรหัสผ่าน</translation>
 <translation id="1476607407192946488">&amp;การตั้งค่าภาษา</translation>
 <translation id="1477446329585670721">คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ได้</translation>
 <translation id="1477654881618305065">องค์กรของคุณไม่อนุญาตให้แชร์เนื้อหานี้ หากต้องการความช่วยเหลือ โปรดติดต่อผู้ดูแลระบบ</translation>
@@ -1913,7 +1911,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">ไม่รองรับแป้นต่อไปนี้: Tab, Shift, Control, Escape, Caps Lock, Volume</translation>
 <translation id="2309620859903500144">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวหรือแสง</translation>
-<translation id="2310414604104802967">กำลังตรวจสอบว่าคุณลงชื่อเข้าใช้อยู่หรือไม่...</translation>
 <translation id="2310923358723722542">การแสดงผลและการขยาย</translation>
 <translation id="2312219318583366810">URL ของหน้าเว็บ</translation>
 <translation id="2314165183524574721">การตั้งค่าระดับการเข้าถึงปัจจุบันซ่อนอยู่</translation>
@@ -1944,7 +1941,6 @@
 <translation id="2328636661627946415">เมื่อใช้โหมดไม่ระบุตัวตน เว็บไซต์จะสามารถใช้คุกกี้ดูกิจกรรมการท่องเว็บของคุณได้เฉพาะในเว็บไซต์ของตน โดยคุกกี้จะถูกลบเมื่อสิ้นสุดเซสชันไม่ระบุตัวตน</translation>
 <translation id="2329597144923131178">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์ก ประวัติ รหัสผ่าน และการตั้งค่าอื่นๆ ในอุปกรณ์ทั้งหมด</translation>
 <translation id="2330182457402792918">เลือกไฟล์ที่เว็บไซต์นี้อ่านได้</translation>
-<translation id="2331334586452217517">ระบบจะส่งเนื้อหาจากเว็บไซต์นี้ไปยัง Google และเจ้าหน้าที่ตรวจสอบอาจเห็นเนื้อหาดังกล่าว เกี่ยวกับ <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="2332115969598251205">โหลดอุปกรณ์ที่บันทึกไว้ใน <ph name="PRIMARY_EMAIL" /> ไม่ได้ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="2332131598580221120">ดูในสโตร์</translation>
 <translation id="2332515770639153015">Google Safe Browsing เวอร์ชันปรับปรุงเปิดอยู่</translation>
@@ -2046,7 +2042,6 @@
 <translation id="2410079346590497630">รายละเอียดบิลด์</translation>
 <translation id="2410298923485357543">ใช้เสียงที่เป็นธรรมชาติเมื่ออุปกรณ์ออนไลน์</translation>
 <translation id="2410754283952462441">เลือกบัญชี</translation>
-<translation id="241082044617551207">ปลั๊กอินที่ไม่รู้จัก</translation>
 <translation id="2410940059315936967">เว็บไซต์ที่คุณเข้าชมสามารถฝังเนื้อหาจากเว็บไซต์อื่นๆ เช่น รูปภาพ โฆษณา และข้อความ เราเรียกคุกกี้ที่เว็บไซต์อื่นๆ ตั้งค่าไว้ว่าคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2411666601450687801">ไม่อนุญาตให้ใช้เครื่องเสมือนในอุปกรณ์นี้</translation>
 <translation id="2412015533711271895">พ่อแม่หรือผู้ปกครองต้องตอบตกลงก่อน คุณจึงจะใช้ส่วนขยายนี้ได้</translation>
@@ -2222,7 +2217,6 @@
 <translation id="2514326558286966059">ปลดล็อกได้เร็วขึ้นด้วยลายนิ้วมือ</translation>
 <translation id="2514465118223423406">เมื่อเชื่อมต่อเมาส์</translation>
 <translation id="2514938842036917377">การดำเนินการนี้จะลบข้อมูลที่ <ph name="SITE_NAME" />, เว็บไซต์ที่เกี่ยวข้อง และแอปที่ติดตั้งไว้จัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
-<translation id="2515489088825102986">ข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์นี้และความเป็นส่วนตัวของคุณ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ยืนยันชื่อผู้ใช้ของคุณ</translation>
 <translation id="2517472476991765520">สแกน</translation>
@@ -2393,7 +2387,6 @@
 <translation id="2638662041295312666">รูปภาพการลงชื่อเข้าใช้</translation>
 <translation id="2640299212685523844">ใช้ GTK</translation>
 <translation id="264083724974021997">เชื่อมต่อโทรศัพท์ของคุณ - กล่องโต้ตอบ</translation>
-<translation id="2641098199809442625">รหัสผ่านของคุณยังไม่ได้รับการอัปเดต แต่คุณยังคงเข้าถึงเว็บไซต์ด้วยรหัสผ่านเดิมได้</translation>
 <translation id="2642111877055905627">ลูกฟุตบอล</translation>
 <translation id="2642206811783203764">ตลอดเวลาใน <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">คุณลบข้อมูลการวัดผลโฆษณาได้ทุกเมื่อโดยการลบข้อมูลการท่องเว็บ</translation>
@@ -3864,7 +3857,6 @@
 <translation id="3694590407685276748">ไฮไลต์เคอร์เซอร์ข้อความ</translation>
 <translation id="369489984217678710">รหัสผ่านและข้อมูลอื่นๆ ในการลงชื่อเข้าใช้</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{ตรวจสอบความปลอดภัยเสร็จแล้ว ระบบจะอัปโหลดข้อมูลของคุณ}=1{ตรวจสอบความปลอดภัยเสร็จแล้ว ระบบจะอัปโหลดไฟล์ของคุณ}other{ตรวจสอบความปลอดภัยเสร็จแล้ว ระบบจะอัปโหลดไฟล์ของคุณ}}</translation>
-<translation id="3696309329332791122">ตรวจสอบรหัสผ่าน</translation>
 <translation id="369736917241079046">Launcher + ลูกศรซ้าย</translation>
 <translation id="3697716475445175867">เปิดล่าสุด</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{คุณป้องกันไม่ให้เว็บไซต์นี้ส่งการแจ้งเตือนในอนาคตได้}other{คุณป้องกันไม่ให้เว็บไซต์เหล่านี้ส่งการแจ้งเตือนในอนาคตได้}}</translation>
@@ -5367,7 +5359,6 @@
 <translation id="4742970037960872810">นำไฮไลต์ออก</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ดูวิธีอัปเดตแอปพลิเคชัน<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิด<ph name="LINK_BEGIN" />การเข้าถึงไมโครโฟนของระบบ<ph name="LINK_END" /></translation>
-<translation id="4744172369799559159">เจ้าหน้าที่ตรวจสอบหน้ารหัสผ่านและข้อมูลที่เกี่ยวข้องเพื่อปรับปรุงฟีเจอร์นี้ แม้ว่ารหัสผ่านของคุณจะได้รับการเข้ารหัสและไม่มีใครเห็นเลยก็ตาม</translation>
 <translation id="4744260496658845719">ความสว่างไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="4744268813103118742">ไปที่เว็บไซต์</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6710,7 +6701,6 @@
 <translation id="5713033452812927234">กำลังเปิดหน้าต่างจากอุปกรณ์ก่อนหน้า</translation>
 <translation id="5713158217420111469">เชื่อมต่อกับ <ph name="DEVICE" /> แล้ว</translation>
 <translation id="5714100381896040477">จำกัดการเคลื่อนไหวบนหน้าจอ</translation>
-<translation id="5715711091495208045">โบรกเกอร์ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
 <translation id="572155275267014074">การตั้งค่า Android</translation>
 <translation id="5722086096420375088">สีเขียวและสีขาว</translation>
@@ -7457,7 +7447,6 @@
 <translation id="6253801023880399036">รหัสผ่านจะบันทึกไว้ใน <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="6254503684448816922">คีย์ไม่สมบูรณ์</translation>
 <translation id="6254892857036829079">ยอดเยี่ยม</translation>
-<translation id="6257131917452817589">การเปลี่ยนรหัสผ่านอัตโนมัติ</translation>
 <translation id="6257602895346497974">เปิดการซิงค์...</translation>
 <translation id="625827534921607067">ระบบจะเลือกเครือข่ายนี้หากมีมากกว่า 1 เครือข่ายที่เชื่อมต่อหรือกำหนดค่าไว้ก่อนหน้านี้</translation>
 <translation id="6259776178973198997">รีเฟรชข้อมูลเจ้าของ Wi-Fi Direct</translation>
@@ -8202,7 +8191,6 @@
 <translation id="679845623837196966">แสดงเรื่องรออ่าน</translation>
 <translation id="6798578729981748444">ปิดหน้าต่างทั้งหมดของ Firefox เพื่อทำการนำเข้าให้เสร็จเรียบร้อย</translation>
 <translation id="6798780071646309401">เปิด Caps Lock</translation>
-<translation id="6798954102094737107">ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">ปุ่มแถบเครื่องมือที่ซ่อนอยู่</translation>
 <translation id="6800893479155997609">แอปยอดนิยมสำหรับ <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{เลือกว่าส่วนขยายนี้จะอ่านหรือเปลี่ยนแปลงเว็บไซต์นี้ได้หรือไม่}other{เลือกว่าส่วนขยายเหล่านี้จะอ่านหรือเปลี่ยนแปลงเว็บไซต์นี้ได้ไหม}}</translation>
@@ -9700,7 +9688,6 @@
     <ph name="BEGIN_PARAGRAPH2" />คุณเริ่มหรือหยุดการอนุญาตรายงานเหล่านี้ได้ทุกเมื่อในการตั้งค่าอุปกรณ์ Chrome OS หากเป็นผู้ดูแลระบบโดเมน คุณเปลี่ยนการตั้งค่านี้ได้ในคอนโซลผู้ดูแลระบบ<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />หากเปิดการตั้งค่ากิจกรรมบนเว็บและแอปไว้สำหรับบัญชี Google ของคุณ ระบบอาจบันทึกข้อมูล Android ไว้ในบัญชีนั้น คุณดูและลบข้อมูล รวมถึงเปลี่ยนแปลงการตั้งค่าบัญชีได้ที่ account.google.com<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />หมายเหตุ:<ph name="END_BOLD" /> เสียงหรือเสียงที่บันทึกไว้ซึ่งคล้ายกับเสียงของคุณอาจเข้าถึงผลการค้นหาเฉพาะบุคคลหรือ Assistant ของคุณได้ หากต้องการประหยัดแบตเตอรี่ ในการตั้งค่า Assistant คุณสามารถเลือกให้ "Ok Google" ใช้งานได้เฉพาะเมื่ออุปกรณ์นี้เชื่อมต่อกับแหล่งพลังงานเท่านั้น</translation>
-<translation id="7851196412551419054">กำลังเปลี่ยนรหัสผ่าน...</translation>
 <translation id="7851457902707056880">จำกัดการลงชื่อเข้าใช้เฉพาะบัญชีผู้ใช้เท่านั้น โปรดรีบูตและลงชื่อเข้าใช้ด้วยบัญชีของเจ้าของ คอมพิวเตอร์จะรีบูตอัตโนมัติใน 30 วินาที</translation>
 <translation id="7851716364080026749">บล็อกการเข้าถึงกล้องถ่ายรูปและไมโครโฟนทุกครั้ง</translation>
 <translation id="7851720427268294554">โปรแกรมแยกวิเคราะห์ IPP</translation>
@@ -10414,7 +10401,6 @@
 <translation id="8330617762701840933">รายการเว็บไซต์ที่เปลี่ยนเส้นทางไปยังเบราว์เซอร์สำรองได้</translation>
 <translation id="8330689128072902965">ผู้ติดต่อใกล้เคียงจะแชร์กับคุณได้ คลิกเพื่อเปลี่ยน</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />}=2{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{ประเภทไฟล์ที่รองรับ ได้แก่ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />และอีก {OVERFLOW_COUNT} ประเภท<ph name="END_LINK" />)}}</translation>
-<translation id="8331578454993293727">ระบบพบว่ารหัสผ่านของคุณมีการรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="8331822764922665615">ตั้งชื่อกลุ่ม เลือกสี แล้วกด Esc</translation>
 <translation id="833256022891467078">โฟลเดอร์ที่แชร์ใน Crostini</translation>
 <translation id="833262891116910667">ไฮไลต์</translation>
@@ -10498,7 +10484,6 @@
     <ph name="BEGIN_PARAGRAPH2" />ดูความช่วยเหลือเพิ่มเติมได้ที่ g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">สรุปจากการใช้ครั้งล่าสุด</translation>
 <translation id="8386091599636877289">ไม่พบนโยบาย</translation>
-<translation id="8387087863179559896">Chrome สามารถอัปเดตรหัสผ่านของบัญชีคุณให้รัดกุมยิ่งขึ้นสำหรับเว็บไซต์นี้ได้ โดยคุณไม่ต้องจำรหัสผ่านเนื่องจากระบบจะบันทึกไว้ให้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /> ดูเพิ่มเติมเกี่ยวกับ<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="8387617938027387193">ยืนยันว่าเป็นคุณ</translation>
 <translation id="8388770971141403598">ไม่รองรับโปรไฟล์รอง</translation>
@@ -10681,7 +10666,6 @@
 <translation id="8516472100141530292">คลิกขวาที่กลุ่ม</translation>
 <translation id="8517759303731677493">แก้ไข…</translation>
 <translation id="8518942514525208851">ซ่อนคำหยาบคาย</translation>
-<translation id="8519895319663397036">นำเข้ารหัสผ่านไม่ได้ ไฟล์ต้องมีขนาดเล็กกว่า 150 KB</translation>
 <translation id="8523493869875972733">เก็บการเปลี่ยนแปลงไว้</translation>
 <translation id="8523849605371521713">เพิ่มตามนโยบาย</translation>
 <translation id="8524594273111932386">ค้นหา + ลูกศรลง</translation>
@@ -11395,7 +11379,6 @@
 <translation id="9007688236643268728">&amp;ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
 <translation id="9008201858626224558">ปุ่มย้อนกลับในหน้ารายละเอียด <ph name="SUBPAGE_TITLE" /></translation>
-<translation id="9008425116680857079">Chrome จะเปลี่ยนรหัสผ่านให้คุณได้เมื่อคุณลงชื่อเข้าใช้</translation>
 <translation id="9008828754342192581">คุณเคยเลือกที่จะอนุญาตให้ใช้งานส่วนขยายทั้งหมดบน <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">กำลังอัปโหลด (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">นำเข้าจาก Windows</translation>

@@ -603,7 +603,6 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3026897869154397692">Engadiuse ao calendario</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
-<translation id="3036649622769666520">Abrir ficheiros</translation>
 <translation id="3039939407102840004">Batería do lapis óptico ao <ph name="PERCENTAGE" /> %.</translation>
 <translation id="304097922505898963">Abrir aplicación Atallos de teclado</translation>
 <translation id="304417730895741346">As túas aplicacións fixadas e abertas están no andel. Para fixar unha aplicación no andel, fai clic nela co botón dereito ou toca o panel táctil con dous dedos.</translation>
@@ -1604,7 +1603,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6166852626429024716">Realiza buscas no teu dispositivo, nas aplicacións, nas opcións de configuración, na Web…</translation>
 <translation id="6168318496333165060">Abrir aplicación Diagnostics</translation>
 <translation id="6168622430237609329">As túas aplicacións instaladas</translation>
-<translation id="6179832488876878285">Podes fixar aquí os ficheiros importantes. Para comezar a utilizar esta función, abre a aplicación Ficheiros.</translation>
 <translation id="6180193585172850042">Botón de retroceso</translation>
 <translation id="6180651297859206670">Botón de avance</translation>
 <translation id="6182592640011875895">Abrir escritorio</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
-<translation id="1036348656032585052">Исклучи</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Создадено пред <ph name="NUM_WEEKS_ONE" /> седмица}one{Создадено пред <ph name="NUM_WEEKS_MANY" /> седмица}other{Создадено пред <ph name="NUM_WEEKS_MANY" /> седмици}}</translation>
 <translation id="1063300264396686489">Автоматски отворај групи картички од други уреди</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Преместете во делот со неактивни ставки</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Обележи <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Обележи <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Обележи <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="2055057176188061528">Изберете група картички или создајте нова група картички</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome ги затвора автоматски ставките во делот со неактивни ставки што не сте ги користеле <ph name="AUTO_DELETE_DELAY_ONE" /> месец. Ова може да го исклучите во „Поставки“ сега или кога сакате.}one{Chrome ги затвора автоматски ставките во делот со неактивни ставки што не сте ги користеле <ph name="AUTO_DELETE_DELAY_MANY" /> месец. Ова може да го исклучите во „Поставки“ сега или кога сакате.}other{Chrome ги затвора автоматски ставките во делот со неактивни ставки што не сте ги користеле <ph name="AUTO_DELETE_DELAY_MANY" /> месеци. Ова може да го исклучите во „Поставки“ сега или кога сакате.}}</translation>
 <translation id="2118649612461486615">Информации за продавницата</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Картичката „Инкогнито“ нема да биде достапна.}one{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Вашите # картичка „Инкогнито“ нема да бидат достапни.}other{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Вашите # картички „Инкогнито“ нема да бидат достапни.}}</translation>
 <translation id="2162620598375156287">Сега <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2371084566192454134">Картички и групи картички</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Собери ја групата картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картичкa.}other{Собери ја групата картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
+<translation id="2479148705183875116">Отворете „Поставки“</translation>
 <translation id="2498435670446402865">Преимен. група картички</translation>
 <translation id="2536366509642644298">Групите картички „<ph name="TAB_GROUP_NAME_1" />“ и „<ph name="TAB_GROUP_NAME_2" />“ веќе не се достапни</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Собери <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата со <ph name="TABS_COUNT_MANY" /> картичка.}other{Собери ја групата со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Отсега ќе се архивираат сите дупликат картички, со исклучок на последната копија што се користела.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана ставка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана ставка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани ставки}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Преместете ја групата во нов прозорец}one{Преместете ја групата во друг прозорец}other{Преместете ја групата во друг прозорец}}</translation>
-<translation id="6220820548421939212">Да. Прифаќам</translation>
 <translation id="6228793724645064692">(оцена за продавницата)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додајте картичка во нова група}one{Додајте картички во нова група}other{Додајте картички во нова група}}</translation>
 <translation id="6333260925957816943">Информации за продавницава</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Изберете група картички</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Сподели ја картичката}one{Сподели ги картичките}other{Сподели ги картичките}}</translation>
 <translation id="7129458170538955174">Информациите за продавницава се отворени на половина екран</translation>
+<translation id="7151209024774799310">Отстранете картички од групата</translation>
 <translation id="7204204600596740190">Режим на повеќекратен избор</translation>
 <translation id="7211038039686180558">Вашите групи картички автоматски се зачувуваат и ажурираат на сите ваши најавени уреди</translation>
 <translation id="731648547091221002">Избрано: <ph name="COLOR_NAME" /></translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_ONE" /> рецензија}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_MANY" /> рецензија}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> оцени, <ph name="REVIEWS_COUNT_MANY" /> рецензии}}</translation>
 <translation id="7885132941432959125">Премести ја картичката надесно</translation>
-<translation id="788914896430720926">Да се чува делот со неактивни картички уреден?</translation>
 <translation id="7939917283308035850">Не е избрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7961015016161918242">Никогаш</translation>

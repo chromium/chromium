@@ -240,6 +240,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2088833076121753253">I orffen gosod awtolenwi, ailgychwynnwch Chrome nawr. Bydd eich tabiau'n ailagor yn awtomatig.</translation>
 <translation id="2091863218454846791">Wrthi'n dangos gwedd gryno</translation>
 <translation id="2093731487903423814">15 munud diwethaf</translation>
+<translation id="2096577711562668473">Newid y gwasanaeth awtolenwi?</translation>
 <translation id="2100273922101894616">Mewngofnodi'n Awtomatig</translation>
 <translation id="2109384632594340939">llun proffil</translation>
 <translation id="2111511281910874386">Mynd i dudalen</translation>
@@ -325,6 +326,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2496180316473517155">Hanes pori</translation>
 <translation id="2497852260688568942">Mae Cysoni wedi'i analluogi gan eich gweinyddwr</translation>
 <translation id="250020030759455918">Byddwch yn gweld eich statws mewngofnodi, pori data, a data gwefan <ph name="SITE_NAME" /> yn Chrome</translation>
+<translation id="2502798195266898572">Dalen waelod modd darllen wedi'i hagor ar ei huchder llawn</translation>
 <translation id="2510106555128151389">Wrthi'n gosod <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Chwilio opsiynau prynu</translation>
 <translation id="2513403576141822879">Am ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch a chasglu data, gweler <ph name="BEGIN_LINK" />Cysoni a gwasanaethau Google<ph name="END_LINK" /></translation>
@@ -935,6 +937,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Wrthi'n lawrlwytho'r ffeil…}zero{Wrthi'n lawrlwytho # ffeil…}two{Wrthi'n lawrlwytho # ffeil…}few{Wrthi'n lawrlwytho # ffeil…}many{Wrthi'n lawrlwytho # ffeil…}other{Wrthi'n lawrlwytho # ffeil…}}</translation>
 <translation id="5210286577605176222">Neidio i'r tab blaenorol</translation>
 <translation id="5210365745912300556">Cau'r tab</translation>
+<translation id="5212800876504289412">Ailgychwynwch Chrome i orffen y newid hwn. Mae tabiau'n ailagor yn awtomatig pan fyddwch yn ailgychwyn.</translation>
 <translation id="5215957675041756913">Rheoli'ch data a'ch cyfrif</translation>
 <translation id="5218324087477576825">Rhif y cerdyn, gofynnol</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a rhagor <ph name="SEPARATOR" /> Tynnodd Chrome y caniatadau hyn oherwydd nad ydych chi wedi ymweld â nhw yn ddiweddar</translation>
@@ -1063,6 +1066,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Dangos hysbysiad}zero{Dangos hysbysiadau}two{Dangos hysbysiadau}few{Dangos hysbysiadau}many{Dangos hysbysiadau}other{Dangos hysbysiadau}}</translation>
 <translation id="5814749351757353073">Cadwch i fyny â'ch hoff wefannau</translation>
 <translation id="5823093032261493462">Ydych chi am lawrlwytho "<ph name="FILE_NAME" />" o <ph name="DOWNLOAD_DOMAIN" /> beth bynnag?</translation>
+<translation id="5825135637446025843">Ar ôl i Chrome ailgychwyn, bydd eich gwybodaeth a gedwir gan eich darparwr newydd yn cael ei defnyddio i awtolenwi cyfrineiriau, codau pas, cyfeiriadau, dulliau talu a gwybodaeth arall.</translation>
 <translation id="5828921839638612740">Gallwch ddileu'r data yng Ngosodiadau Chrome</translation>
 <translation id="5829586821381540080">Wedi'i gadw yn <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Anhysbys</translation>
@@ -1179,6 +1183,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6296366034485697675">Allforio a dileu</translation>
 <translation id="629730747756840877">Cyfrif</translation>
+<translation id="6300697579369314762">Dalen waelod modd darllen wedi'i hagor ar hanner uchder</translation>
 <translation id="6301526076346731664">Agor Offer Datblygwr</translation>
 <translation id="6303969859164067831">Allgofnodi a diffodd cysoni</translation>
 <translation id="6307241780749477694">Cadarnhewch mai chi sydd yno i gael eich holl gyfrineiriau ar y ddyfais hon</translation>
@@ -1399,6 +1404,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="71503698506017927">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau gan Google Pay.
 
 I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">Modd darllen, dalen waelod wedi cau</translation>
 <translation id="7165972437814027679">Dysgu rhagor am pam mae Chrome yn rhwystro rhai ffeiliau</translation>
 <translation id="7168323970702333693">Wedi mewngofnodi fel <ph name="USER_NAME" />. Yn agor gosodiadau.</translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>

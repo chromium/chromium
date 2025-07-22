@@ -603,7 +603,6 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3026897869154397692">Lisätty Kalenteriin</translation>
 <translation id="3033545621352269033">Päällä</translation>
 <translation id="3033912566804961911">Yhdistä <ph name="DESK_NAME" /></translation>
-<translation id="3036649622769666520">Avaa tiedostot</translation>
 <translation id="3039939407102840004">Näyttökynän akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
 <translation id="304097922505898963">Avaa Key Shortcuts ‑sovellus</translation>
 <translation id="304417730895741346">Kiinnitetyt ja avoimet sovellukset näkyvät hyllyssä. Voit kiinnittää sovelluksen hyllyyn klikkaamalla sovellusta kakkospainikkeella tai napauttamalla sitä kosketuslevyllä kahdella sormella.</translation>
@@ -1603,7 +1602,6 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6166852626429024716">Hae laitteelta, sovelluksista, asetuksista, verkosta…</translation>
 <translation id="6168318496333165060">Avaa Diagnostiikka-sovellus</translation>
 <translation id="6168622430237609329">Asentamasi sovellukset</translation>
-<translation id="6179832488876878285">Voit kiinnittää tärkeitä tiedostoja tähän. Aloita avaamalla Files-sovellus.</translation>
 <translation id="6180193585172850042">Takaisin-painike</translation>
 <translation id="6180651297859206670">Seuraava-painike</translation>
 <translation id="6182592640011875895">Avaa työpöytä</translation>

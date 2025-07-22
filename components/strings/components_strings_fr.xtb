@@ -576,6 +576,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1959001866257244765">Contribuez à renforcer la sécurité sur le Web pour tous en envoyant à Google les <ph name="BEGIN_WHITEPAPER_LINK" />URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Règles de confidentialité<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Votre texte et le contenu de vos pages sont envoyés à Google, et peuvent être utilisés pour améliorer cette fonctionnalité.
   <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Lorsque vous effectuez des achats sur Chrome, les modes de paiement autres que les cartes s'affichent</translation>
 <translation id="196146181975453736">Effectuez un contrôle de sécurité ponctuel pour payer plus rapidement</translation>
 <translation id="1962204205936693436">Favoris du domaine <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Erreur de sérialisation.</translation>
@@ -1144,6 +1145,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2930531075747147366">Onglets d'un autre appareil</translation>
 <translation id="2930577230479659665">Couper après chaque copie</translation>
 <translation id="2933624813161016821">Feuille gaufrée</translation>
+<translation id="293796669683825859">Commentaires</translation>
 <translation id="2938225289965773019">Ouvrir les liens "<ph name="PROTOCOL" />"</translation>
 <translation id="2940418897281183211">Image PNG</translation>
 <translation id="2941878205777356567">Enveloppe 230x305</translation>
@@ -1993,6 +1995,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4298000214066716287">Investissement</translation>
 <translation id="42981349822642051">Développer</translation>
 <translation id="4298925811540301889">Les cookies de ce site sont synchronisés sur tous vos appareils ChromeOS. Pour gérer ce que vous synchronisez, accédez aux <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Ouvrir l'application</translation>
 <translation id="4300675098767811073">Multiple perforation à droite</translation>
 <translation id="4302514097724775343">Appuyez sur le dinosaure pour jouer</translation>
 <translation id="4304049446746819918">{0,plural, =1{Une règle de l'administrateur déconseille d'importer ce fichier vers <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille d'importer ce fichier vers <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille d'importer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6101583188322746099">Services de livraison de courses</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Créer un site</translation>
+<translation id="6105511947520166941">Payez avec Pix directement dans Chrome la prochaine fois</translation>
 <translation id="6106989379647458772">Il est possible que la page Web située à l'adresse <ph name="PAGE" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une nouvelle adresse Web.</translation>
 <translation id="6107012941649240045">Émis pour</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> a modifié le nom du groupe</translation>

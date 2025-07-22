@@ -580,6 +580,7 @@
 <translation id="1959001866257244765">Օգնեք բարձրացնել անվտանգության մակարդակը համացանցում՝ Google-ին ուղարկելով <ph name="BEGIN_WHITEPAPER_LINK" />ձեր այցելած որոշ էջերի հասցեներն ու բովանդակությունը և որոշակի տեղեկություններ համակարգի մասին<ph name="END_WHITEPAPER_LINK" />։ <ph name="BEGIN_PRIVACY_PAGE_LINK" />Գաղտնիության քաղաքականություն<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Ձեր տեքստը և էջի բովանդակությունը ուղարկվում են Google-ին և կարող են օգտագործվել այս գործառույթը բարելավելու համար։
   <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք առանց քարտի վճարման եղանակները</translation>
 <translation id="196146181975453736">Անցեք անվտանգության մեկանգամյա ստուգում՝ ավելի արագ վճարելու համար</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> տիրույթի էջանիշներ</translation>
 <translation id="1973335181906896915">Serialization error</translation>
@@ -1150,6 +1151,7 @@
 <translation id="2930531075747147366">Ներդիր ձեր մյուս սարքից</translation>
 <translation id="2930577230479659665">Կտրել յուրաքանչյուր օրինակից հետո</translation>
 <translation id="2933624813161016821">Դաջման թաղանթ</translation>
+<translation id="293796669683825859">Մեկնաբանություններ</translation>
 <translation id="2938225289965773019">Բացել <ph name="PROTOCOL" /> հղումները</translation>
 <translation id="2940418897281183211">PNG պատկեր</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 դյմ</translation>
@@ -1999,6 +2001,7 @@
 <translation id="4298000214066716287">Ներդ­րումներ</translation>
 <translation id="42981349822642051">Ընդարձակել</translation>
 <translation id="4298925811540301889">Այս կայքի համար քուքիները համաժամացվում են ChromeOS սարքերում։ Անցեք <ph name="SYNC_SETTINGS" />՝ տվյալների համաժամացումը կառավարելու համար։</translation>
+<translation id="4300272766492248925">Բացել հավելվածը</translation>
 <translation id="4300675098767811073">Մի քանի անցք աջ կողմում</translation>
 <translation id="4302514097724775343">Խաղալու համար սեղմեք դինոզավրի վրա</translation>
 <translation id="4304049446746819918">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը տեղափոխել <ph name="DESTINATION_NAME" />}}</translation>
@@ -3044,6 +3047,7 @@
 <translation id="6101583188322746099">Մթերքի առաքման ծառայություններ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Ստեղծել կայք</translation>
+<translation id="6105511947520166941">Հաջորդ անգամ վճարեք Pix-ով անմիջապես Chrome-ում</translation>
 <translation id="6106989379647458772">Հնարավոր է, որ <ph name="PAGE" /> կայքէջը ժամանակավորապես անհասանելի է կամ մշտապես տեղափոխվել է նոր հասցե:</translation>
 <translation id="6107012941649240045">Տրված`</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> օգտատերը փոխել է խմբի անվանումը</translation>

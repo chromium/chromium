@@ -432,7 +432,6 @@
 <translation id="1282436639288565079">ٹیب گروپ کی تفصیلات</translation>
 <translation id="1283126956823499975">آلے کو سیٹ اپ کرنے کے ساتھ کچھ غلط ہو گیا</translation>
 <translation id="1284277788676816155">ڈیٹا محفوظ کرنے کی اجازت نہ دیں</translation>
-<translation id="1284912418686719556">‏‫Chrome آپ کے لیے ایک مضبوط پاس ورڈ تخلیق کر رہا ہے۔ آپ کو اسے یاد رکھنے کی ضرورت نہیں ہے کیونکہ یہ آپ کے لیے <ph name="EMAIL" /> کی خاطر <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہے۔</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1285484354230578868">‏اپنے Google اکاؤنٹ میں ڈیٹا اسٹور کریں</translation>
 <translation id="1285625592773741684">موجودہ ڈیٹا کے استعمال کی ترتیب موبائل ڈیٹا ہے</translation>
@@ -691,7 +690,6 @@
 <translation id="1474785664565228650">‏مائیکروفون کی ترتیب میں تبدیلی کے لیے، Parallels ڈیسک ٹاپ کو بند کر کے دوبارہ چلانے کی ضرورت ہے۔ آگے بڑھنے کے لیے Parallels ڈیسک ٹاپ کو بند کر کے دوبارہ چلائیں۔</translation>
 <translation id="1476088332184200792">اپنے آلہ پر کاپی کریں</translation>
 <translation id="1476347941828409626">‏Chrome پروفائلز کا &amp;نظم کریں</translation>
-<translation id="1476595624592550506">اپنا پاس ورڈ تبدیل کریں</translation>
 <translation id="1476607407192946488">&amp;زبان کی ترتیبات</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> آپ سے اپنا اسمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔</translation>
 <translation id="1477654881618305065">آپ کی تنظیم آپ کو اس مواد کا اشتراک کرنے کی اجازت نہیں دیتی ہے۔ اگر آپ کو مدد درکار ہے تو اپنے منتظم سے رابطہ کریں۔</translation>
@@ -1915,7 +1913,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">‏درج ذیل کلیدیں تعاون یافتہ نہیں ہیں: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">اس سائٹ کو آپ کے موشن اور لائٹ سینسرز تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
-<translation id="2310414604104802967">چیک کیا جا رہا ہے کہ آیا آپ سائن ان ہیں...</translation>
 <translation id="2310923358723722542">ڈسپلے اور میگنیفیکیشن</translation>
 <translation id="2312219318583366810">‏صفحہ کا URL</translation>
 <translation id="2314165183524574721">موجودہ نظر آنے کی ترتیب پوشیدہ ہے</translation>
@@ -1946,7 +1943,6 @@
 <translation id="2328636661627946415">آپ کے پوشیدگی وضع میں ہونے پر سائٹس کوکیز کو صرف اپنی خود کی سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں۔ پوشیدگی سیشن ختم ہونے پر کوکیز کو حذف کر دیا جاتا ہے۔</translation>
 <translation id="2329597144923131178">اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="2330182457402792918">وہ فائلز منتخب کریں جنہیں یہ سائٹ پڑھ سکتی ہے</translation>
-<translation id="2331334586452217517">‏اس سائٹ کے مواد کو Google کو بھیجا جاتا ہے اور اسے انسانی جائزہ کاران دیکھ سکتے ہیں۔ <ph name="PASSWORD_CHANGE" /> کے بارے میں۔</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" /> میں محفوظ کردہ آلات کو لوڈ نہیں کیا جا سکا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2332131598580221120">اسٹور میں دیکھیں</translation>
 <translation id="2332515770639153015">بہتر کردہ محفوظ براؤزنگ آن ہے</translation>
@@ -2048,7 +2044,6 @@
 <translation id="2410079346590497630">بلڈ کی تفصیلات</translation>
 <translation id="2410298923485357543">جب آلہ آن لائن ہو تو قدرتی آواز کا استعمال کریں</translation>
 <translation id="2410754283952462441">اکاؤنٹ منتخب کریں</translation>
-<translation id="241082044617551207">نامعلوم پلگ ان</translation>
 <translation id="2410940059315936967">آپ کی ملاحظہ کی جانے والی سائٹ دوسری سائٹس سے مواد کو سرایت کر سکتی ہے، مثال کے طور پر تصاویر، اشتہارات اور ٹیکسٹ۔ ان دیگر سائٹس کے ذریعے سیٹ کردہ کوکیز کو فریق ثالث کوکیز کہا جاتا ہے۔</translation>
 <translation id="2411666601450687801">اس آلے پر کسی بھی ورچوئل مشین کی اجازت نہیں ہے</translation>
 <translation id="2412015533711271895">آپ کے والدین یا سرپرست کو یہ کہنا ہوگا کہ آپ کے لیے اس ایکسٹینشن کا استعمال ٹھیک ہے</translation>
@@ -2224,7 +2219,6 @@
 <translation id="2514326558286966059">اپنے فنگر پرنٹ سے تیزی سے غیر مقفل کریں</translation>
 <translation id="2514465118223423406">ماؤس کے منسلک ہونے پر</translation>
 <translation id="2514938842036917377">اس سے <ph name="SITE_NAME" />، متعلقہ سائٹس اور انسٹال شدہ ایپس کا اسٹور کردہ <ph name="TOTAL_USAGE" /> ڈیٹا حذف ہو جائے گا</translation>
-<translation id="2515489088825102986">اس خصوصیت اور آپ کی رازداری کے بارے میں مزید</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">اپنے صارف نام کی توثیق کریں</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
@@ -2395,7 +2389,6 @@
 <translation id="2638662041295312666">سائن ان کی تصویر</translation>
 <translation id="2640299212685523844">‏GTK کا استعمال کریں</translation>
 <translation id="264083724974021997">اپنے فون سے منسلک کریں - ڈائیلاگ</translation>
-<translation id="2641098199809442625">آپ کا پاس ورڈ اپ ڈیٹ نہیں کیا گیا لیکن پھر بھی آپ کو اپنے پرانے پاس ورڈ سے سائٹ تک رسائی حاصل ہونی چاہیے۔</translation>
 <translation id="2642111877055905627">ساکر بال</translation>
 <translation id="2642206811783203764"><ph name="SITE_NAME" /> ہمیشہ آن</translation>
 <translation id="2643064289437760082">آپ اپنے براؤزنگ ڈیٹا کو حذف کر کے کبھی بھی اشتہار کی اثرپذیری کی پیمائش کے ڈیٹا کو حذف کر سکتے ہیں</translation>
@@ -3865,7 +3858,6 @@
 <translation id="3694590407685276748">ٹیکسٹ کرسر کو نمایاں کریں</translation>
 <translation id="369489984217678710">پاس ورڈز اور دیگر سائن ان ڈیٹا</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{سیکیورٹی چیکس مکمل ہو چکے ہیں۔ آپ کا ڈیٹا اپ لوڈ کر دیا جائے گا۔}=1{سیکیورٹی چیکس مکمل ہو چکے ہیں۔ آپ کی فائل اپ لوڈ کر دی جائے گی۔}other{سیکیورٹی چیکس مکمل ہو چکے ہیں۔ آپ کی فائلز اپ لوڈ کر دی جائیں گی۔}}</translation>
-<translation id="3696309329332791122">اپنا پاس ورڈ چیک کریں</translation>
 <translation id="369736917241079046">‏launcher + بائیں تیر کا نشان</translation>
 <translation id="3697716475445175867">آخری بار کھولا ہوا</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{آپ اس سائٹ کو مستقبل میں اطلاعات بھیجنے سے روک سکتے ہیں۔}other{آپ ان سائٹس کو مستقبل میں اطلاعات بھیجنے سے روک سکتے ہیں۔}}</translation>
@@ -5368,7 +5360,6 @@
 <translation id="4742970037960872810">ہائی لائٹ کو ہٹائیں</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ایپلیکیشنز کو اپ ڈیٹ کرنے کا طریقہ جانیں<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">اجازت دی گئی – <ph name="PERMISSION_DETAILS" />۔ <ph name="LINK_BEGIN" />سسٹم مائیکروفون تک رسائی<ph name="LINK_END" /> کو آن کریں۔</translation>
-<translation id="4744172369799559159">انسان اس خصوصیت کو بہتر بنانے کے لیے پاس ورڈ کے صفحات اور متعلقہ معلومات کا جائزہ لیتے ہیں، حالانکہ آپ کا پاس ورڈ مرموز کردہ ہے اور کسی نے کبھی نہیں دیکھا۔</translation>
 <translation id="4744260496658845719">کی بورڈ بیک لائٹ کی چمک</translation>
 <translation id="4744268813103118742">سائٹ پر جائیں</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6712,7 +6703,6 @@
 <translation id="5713033452812927234">آپ کے پچھلے آلے سے ونڈوز کھل رہی ہیں</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> سے منسلک ہے</translation>
 <translation id="5714100381896040477">اسکرین پر حرکت کو محدود کریں</translation>
-<translation id="5715711091495208045">پلگ ان بروکر: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">‏سائٹس HID آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="572155275267014074">‏Android کی ترتیبات</translation>
 <translation id="5722086096420375088">سبز اور سفید</translation>
@@ -7460,7 +7450,6 @@
 <translation id="6253801023880399036">پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہیں۔</translation>
 <translation id="6254503684448816922">کلید سے سمجھوتہ</translation>
 <translation id="6254892857036829079">کامل</translation>
-<translation id="6257131917452817589">خودکار پاس ورڈ کی تبدیلی</translation>
 <translation id="6257602895346497974">مطابقت پذیری آن کریں…</translation>
 <translation id="625827534921607067">اس نیٹ ورک کو ترجیح دی جائے گی اگر پہلے سے منسلک یا کنفیگر شدہ ایک سے زیادہ نیٹ ورکس دستیاب ہوں</translation>
 <translation id="6259776178973198997">‏WiFi ڈائریکٹ کے مالکان کی معلومات کو ریفریش کریں</translation>
@@ -8205,7 +8194,6 @@
 <translation id="679845623837196966">پڑھنے کی فہرست دکھائیں</translation>
 <translation id="6798578729981748444">‏درآمد ختم کرنے کے لئے، تمام Firefox ونڈوز کو بند کریں۔</translation>
 <translation id="6798780071646309401">‏caps lock آن ہے</translation>
-<translation id="6798954102094737107">پلگ ان: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">پوشیدہ ٹول بار بٹنز</translation>
 <translation id="6800893479155997609">آپ کے <ph name="DEVICE_TYPE" /> کیلئے سرفہرست ایپس</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{منتخب کریں کہ آیا یہ ایکسٹینشن اس سائٹ کو پڑھ سکتی ہے یا اس میں تبدیلی کر سکتی ہے}other{منتخب کریں کہ آیا یہ ایکسٹینشنز اس سائٹ کو پڑھ سکتی ہیں یا اس میں تبدیلی کر سکتی ہیں}}</translation>
@@ -9703,7 +9691,6 @@
     <ph name="BEGIN_PARAGRAPH2" />آپ اپنے ChromeOS آلے کی ترتیبات میں کسی بھی وقت ان رپورٹس کی اجازت کو شروع یا بند کر سکتے ہیں۔ اگر آپ ڈومین کے منتظم ہیں تو آپ منتظم کونسول میں اس ترتیب کو تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />اگر آپ کے Google اکاؤنٹ کے لیے ویب اور ایپ کی سرگرمی کی ترتیب آن ہے تو آپ کا Android ڈیٹا آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ آپ account.google.com پر اپنا ڈیٹا دیکھ سکتے ہیں، اسے حذف کر سکتے ہیں اور اپنے اکاؤنٹ کی ترتیبات تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355">‏<ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> ایک ملتی جلتی آواز یا ریکارڈنگ سے آپ کے ذاتی نتائج یا آپ کی اسسٹنٹ تک رسائی حاصل کی جا سکتی ہے۔ بیٹری بچانے کے لیے، آپ اپنی اسسٹنٹ کی ترتیبات میں صرف اس آلے کے پاور کے ماخذ سے منسلک ہونے پر ہی "Ok Google" کے آن ہونے کا انتخاب کر سکتے ہیں۔</translation>
-<translation id="7851196412551419054">اپنا پاس ورڈ تبدیل کرنا...</translation>
 <translation id="7851457902707056880">سائن ان کو صرف مالک کے اکاؤنٹ تک محدود کر دیا گیا ہے۔ براہ کرم ریبوٹ کریں اور مالک کے اکاؤنٹ کے ساتھ سائن ان کریں۔ مشین 30 سیکنڈ میں خودکار طور پر ریبوٹ ہو جائے گی۔</translation>
 <translation id="7851716364080026749">کیمرا اور مائیکروفون رسائی کو ہمیشہ مسدود کریں</translation>
 <translation id="7851720427268294554">‏IPP پارسر</translation>
@@ -10416,7 +10403,6 @@
 <translation id="8330617762701840933">ان ویب سائٹس کی فہرست جو متبادل براؤزر پر ری ڈائریکٹ ہوتی ہیں۔</translation>
 <translation id="8330689128072902965">قریبی رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ تبدیل کرنے کے لیے کلک کریں۔</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{تعاون یافتہ فائل کی قسم: <ph name="FILE_TYPE1" />}=2{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />}=3{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />}=4{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" />}other{تعاون یافتہ فائل کی قسمیں: <ph name="FILE_TYPE1" />، <ph name="FILE_TYPE2" />، <ph name="FILE_TYPE3" />، <ph name="FILE_TYPE4" /> (<ph name="LINK" />اور {OVERFLOW_COUNT} مزید<ph name="END_LINK" />)}}</translation>
-<translation id="8331578454993293727">آپ کا پاس ورڈ ڈیٹا کی خلاف ورزی میں ملا</translation>
 <translation id="8331822764922665615">‏اپنے گروپ کو نام دیں، ایک رنگ منتخب کریں پھر Esc دبائیں</translation>
 <translation id="833256022891467078">‏Crostini کے اشتراک کردہ فولڈرز</translation>
 <translation id="833262891116910667">ہائی لائٹ کریں</translation>
@@ -10500,7 +10486,6 @@
     <ph name="BEGIN_PARAGRAPH2" />مزید مدد کیلئے، ملاحظہ کریں: g.co/flex/InstallErrors۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">استقبالی خلاصہ</translation>
 <translation id="8386091599636877289">پالیسی نہیں ملی۔</translation>
-<translation id="8387087863179559896">‏‫Chrome ایک مضبوط پاس ورڈ کے ساتھ اس سائٹ کے لیے آپ کے اکاؤنٹ کو اپ ڈیٹ کر سکتا ہے۔ آپ کو پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی کیونکہ یہ آپ کی خاطر <ph name="EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ ہے۔ <ph name="PASSWORD_CHANGE" /> کے متعلق مزید معلومات۔</translation>
 <translation id="8387361103813440603">آپ کا مقام دیکھنے کی اجازت نہیں ہے</translation>
 <translation id="8387617938027387193">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="8388770971141403598">ثانوی پروفائلز تعاون یافتہ نہیں ہیں</translation>
@@ -10683,7 +10668,6 @@
 <translation id="8516472100141530292">گروپ پر دائیں کلک کریں</translation>
 <translation id="8517759303731677493">ترمیم کریں…</translation>
 <translation id="8518942514525208851">بے حُرمتی چھپائيں</translation>
-<translation id="8519895319663397036">‏پاس ورڈز درآمد نہیں کر سکتے۔ فائل کا سائز ‎150 KB سے کم ہونا چاہیے۔</translation>
 <translation id="8523493869875972733">تبدیلیاں برقرار رکھیں</translation>
 <translation id="8523849605371521713">پالیسی کے ذریعے شامل کیا گیا</translation>
 <translation id="8524594273111932386">‏search + نیچے تیر کا نشان</translation>
@@ -11396,7 +11380,6 @@
 <translation id="9007688236643268728">دوبارہ &amp;سائن ان کریں</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> کی تفصیلات کے صفحے پر موجود پیچھے جانے کا بٹن</translation>
-<translation id="9008425116680857079">‏آپ کے سائن ان ہونے کے بعد Chrome آپ کا پاس ورڈ تبدیل کر سکتا ہے۔</translation>
 <translation id="9008828754342192581">آپ نے پہلے <ph name="ORIGIN" /> پر تمام ایکسٹینشنز کو اجازت دینے کا انتخاب کیا</translation>
 <translation id="9009369504041480176">‏اپ لوڈ کیا جا رہا ہے (‎<ph name="PROGRESS_PERCENT" />%‎)…</translation>
 <translation id="9009707268312089299">‏‫Windows سے درآمد شدہ</translation>

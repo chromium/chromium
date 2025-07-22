@@ -132,6 +132,7 @@
 <translation id="2711502716910134313">Karta Chromium</translation>
 <translation id="2718390899429598676">Dla większego bezpieczeństwa Chromium szyfruje dane.</translation>
 <translation id="2721354645805494590">Aby usunąć konto Google z Chromium, wyloguj się</translation>
+<translation id="2722636413143664436">Aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chromium</translation>
 <translation id="2738871930057338499">Nie można połączyć się z internetem. Kod HTTP 403 (Zabroniony). Sprawdź konfigurację proxy.</translation>
 <translation id="2753623023919742414">Kliknij, aby wyszukać</translation>
 <translation id="2768103863314748511">Ustaw Chromium jako domyślną przeglądarkę plików PDF</translation>
@@ -400,6 +401,7 @@
 <translation id="6366160072964553914">Pobieranie zostało zablokowane przez Chromium, ponieważ ten plik nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="6373523479360886564">Czy na pewno chcesz odinstalować Chromium?</translation>
 <translation id="6375219077595103062">Dodaj skrót do Menedżera haseł</translation>
+<translation id="6388799252195623474">pomóż mi w tym</translation>
 <translation id="6390800440335263989">Aby przejść dalej, zaloguj się w Chromium jako <ph name="EMAIL" />. Dzięki temu zachowasz zgodność z zasadami organizacji.</translation>
 <translation id="6400112897226594999">Logo Chromium na ekranie komputera.</translation>
 <translation id="6403826409255603130">Chromium to przeglądarka obsługująca strony i aplikacje z szybkością błyskawicy. Jest szybka, stabilna i łatwa w użyciu. Bezpiecznie przeglądaj internet dzięki wbudowanej w Chromium ochronie przed złośliwym oprogramowaniem i phishingiem.</translation>

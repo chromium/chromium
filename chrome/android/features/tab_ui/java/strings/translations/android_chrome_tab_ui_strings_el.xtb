@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
-<translation id="1036348656032585052">Απενεργοποίηση</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_WEEKS_ONE" /> εβδομάδα}other{Δημιουργήθηκε πριν από <ph name="NUM_WEEKS_MANY" /> εβδομάδες}}</translation>
 <translation id="1063300264396686489">Αυτόματο άνοιγμα ομάδων καρτελών από άλλες συσκευές</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Μετακίνηση στην ενότητα ανενεργών</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Δημιουργία σελιδοδείκτη για <ph name="TABS_COUNT_ONE" /> επιλεγμένη καρτέλα}other{Δημιουργία σελιδοδείκτη για <ph name="TABS_COUNT_MANY" /> επιλεγμένες καρτέλες}}</translation>
 <translation id="2055057176188061528">Επιλέξτε μια ομάδα καρτελών ή δημιουργήστε μια νέα ομάδα καρτελών</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Το Chrome κλείνει αυτόματα στοιχεία στην ενότητα ανενεργών τα οποία δεν έχετε χρησιμοποιήσει εδώ και <ph name="AUTO_DELETE_DELAY_ONE" /> μήνα. Μπορείτε να απενεργοποιήσετε αυτή την επιλογή τώρα ή ανά πάσα στιγμή από τις Ρυθμίσεις.}other{Το Chrome κλείνει αυτόματα στοιχεία στην ενότητα ανενεργών τα οποία δεν έχετε χρησιμοποιήσει εδώ και <ph name="AUTO_DELETE_DELAY_MANY" /> μήνες. Μπορείτε να απενεργοποιήσετε αυτή την επιλογή τώρα ή ανά πάσα στιγμή από τις Ρυθμίσεις.}}</translation>
 <translation id="2118649612461486615">Πληροφορίες καταστήματος</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Μπορείτε να ανοίξετε ξανά τις καρτέλες και τις ομάδες που κλείσατε από την ενότητα Πρόσφατες καρτέλες και την ενότητα Ομάδες καρτελών. Η καρτέλα ανώνυμης περιήγησης δεν θα είναι διαθέσιμη.}other{Μπορείτε να ανοίξετε ξανά τις καρτέλες και τις ομάδες που κλείσατε από την ενότητα Πρόσφατες καρτέλες και την ενότητα Ομάδες καρτελών. Οι # καρτέλες ανώνυμης περιήγησης δεν θα είναι διαθέσιμες.}}</translation>
 <translation id="2162620598375156287">Τώρα <ph name="CURRENT_PRICE" /> στο <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2371084566192454134">Καρτέλες και ομάδες καρτελών</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με την καρτέλα <ph name="TABS_COUNT_ONE" />.}other{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με τις καρτέλες <ph name="TABS_COUNT_MANY" />.}}</translation>
+<translation id="2479148705183875116">Μετάβαση στις Ρυθμίσεις</translation>
 <translation id="2498435670446402865">Μετονομ. ομάδας καρτελών</translation>
 <translation id="2536366509642644298">Οι ομάδες καρτελών <ph name="TAB_GROUP_NAME_1" /> και <ph name="TAB_GROUP_NAME_2" /> δεν διατίθενται πλέον</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Από εδώ και στο εξής, όλες οι διπλότυπες καρτέλες θα αρχειοθετούνται, με εξαίρεση το αντίγραφο που χρησιμοποιήθηκε πιο πρόσφατα.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένου στοιχείου}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων στοιχείων}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Μετακίνηση ομάδας σε νέο παράθυρο}other{Μετακίνηση ομάδας σε άλλα παράθυρα}}</translation>
-<translation id="6220820548421939212">Ναι. Συμφωνώ</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Προσθήκη καρτέλας σε νέα ομάδα}other{Προσθήκη καρτελών σε νέα ομάδα}}</translation>
 <translation id="6333260925957816943">Πληροφορίες για αυτό το κατάστημα</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Επιλογή ομάδας καρτελών</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Κοινοποίηση καρτέλας}other{Κοινοποίηση καρτελών}}</translation>
 <translation id="7129458170538955174">Άνοιγμα στο μισό ύψος των πληροφοριών σχετικά με αυτό το κατάστημα</translation>
+<translation id="7151209024774799310">Κατάργηση καρτελών από την ομάδα</translation>
 <translation id="7204204600596740190">Λειτουργία πολλαπλής επιλογής</translation>
 <translation id="7211038039686180558">Οι ομάδες καρτελών αποθηκεύονται και ενημερώνονται αυτόματα σε όλες τις συνδεδεμένες συσκευές σας</translation>
 <translation id="731648547091221002">Επιλέχθηκε το <ph name="COLOR_NAME" /></translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> κριτική}other{Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> κριτικές}}</translation>
 <translation id="7885132941432959125">Μετακίνηση καρτέλας δεξιά</translation>
-<translation id="788914896430720926">Να διατηρείται τακτοποιημένη η ενότητα ανενεργών στοιχείων;</translation>
 <translation id="7939917283308035850">Επιλέχθηκε το <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7961015016161918242">Ποτέ</translation>

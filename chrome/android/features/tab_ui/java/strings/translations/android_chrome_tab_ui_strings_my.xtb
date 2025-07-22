@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
-<translation id="1036348656032585052">ပိတ်ရန်</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ပြီးခဲ့သော <ph name="NUM_WEEKS_ONE" /> ပတ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_WEEKS_MANY" /> ပတ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="1063300264396686489">အခြားစက်များမှ တဘ်အုပ်စုများကို အလိုအလျောက်ဖွင့်ရန်</translation>
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">အသုံးမပြုသည်များကဏ္ဍသို့ ရွှေ့ခြင်း</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို လိပ်စာမှတ်ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို လိပ်စာမှတ်ရန်}}</translation>
 <translation id="2055057176188061528">တဘ်အုပ်စု ရွေးနိုင်သည် (သို့) တဘ်အုပ်စုအသစ် ပြုလုပ်နိုင်သည်</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome သည် <ph name="AUTO_DELETE_DELAY_ONE" /> လအတွင်း သင်သုံးမထားသည့် အသုံးမပြုသည်များကဏ္ဍရှိ တဘ်များကို အလိုအလျောက်ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ယခု (သို့) အချိန်မရွေး ပိတ်နိုင်သည်။}other{Chrome သည် <ph name="AUTO_DELETE_DELAY_MANY" /> လအတွင်း သင်သုံးမထားသည့် အသုံးပြုသည်များကဏ္ဍရှိ တဘ်များကို အလိုအလျောက်ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ယခု (သို့) အချိန်မရွေး ပိတ်နိုင်သည်။}}</translation>
 <translation id="2118649612461486615">ဆိုင်အချက်အလက်</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ ကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}other{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ # ခုကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> တွင်ယခု <ph name="CURRENT_PRICE" /> ဖြစ်သည်</translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2371084566192454134">တဘ်နှင့် တဘ်အုပ်စုများ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုပါသည့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုပါသည့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ခေါက်ပါ။}}</translation>
+<translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
 <translation id="2498435670446402865">တဘ်အုပ်စု အမည်ပြောင်းခြင်း</translation>
 <translation id="2536366509642644298">“<ph name="TAB_GROUP_NAME_1" />” နှင့် “<ph name="TAB_GROUP_NAME_2" />” တဘ်အုပ်စုများကို မရတော့ပါ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် တဘ်အုပ်စု လျှော့ပြပါ။}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">နောက်ဆုံးသုံးထားသည့် မိတ္တူမှလွဲ၍ မိတ္တူပွားတဘ်အားလုံးကိုလည်း ယခုသိမ်းဆည်းပါမည်။</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ရွေးထားသော တဘ် <ph name="TABS_COUNT_ONE" /> ခု ပိတ်ရန်}other{ရွေးထားသော တဘ် <ph name="TABS_COUNT_MANY" /> ခု ပိတ်ရန်}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{အုပ်စုကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{အုပ်စုကို ဝင်းဒိုးနောက်တစ်ခုသို့ ရွှေ့ရန်}}</translation>
-<translation id="6220820548421939212">ဟုတ်ပါသည်။ ကျွန်ုပ်ပါဝင်ပါမည်</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{တဘ်ကို အုပ်စုအသစ်တွင် ထည့်ရန်}other{တဘ်ကို အုပ်စုအသစ်တွင် ထည့်ရန်}}</translation>
 <translation id="6333260925957816943">ဤဆိုင်အကြောင်း</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">တဘ်အုပ်စု ရွေးရန်</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{တဘ် မျှဝေရန်}other{တဘ်များ မျှဝေရန်}}</translation>
 <translation id="7129458170538955174">ဤဆိုင် တစ်ဝက်ဖွင့်သည့်အကြောင်း</translation>
+<translation id="7151209024774799310">အုပ်စုမှ တဘ်များကို ဖယ်ရှားရန်</translation>
 <translation id="7204204600596740190">မျိုးစုံရွေးမုဒ်</translation>
 <translation id="7211038039686180558">တဘ်အုပ်စုများကို လက်မှတ်ထိုးဝင်ထားသည့် သင့်စက်အားလုံးတွင် အလိုအလျောက်သိမ်းပြီး အပ်ဒိတ်လုပ်ပါသည်</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> ရွေးထားသည်</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">လုပ်ဆောင်ချက်</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု}}</translation>
 <translation id="7885132941432959125">တဘ်ကို ညာဘက်သို့ ရွှေ့ရန်</translation>
-<translation id="788914896430720926">အသုံးမပြုသောအပိုင်းကို သပ်ရပ်အောင်ထားမလား။</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> ရွေးမထားပါ</translation>
 <translation id="7942349550061667556">အနီရောင်</translation>
 <translation id="7961015016161918242">ဘယ်သောအခါမှ</translation>

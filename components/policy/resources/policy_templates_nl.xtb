@@ -1763,31 +1763,6 @@ Als je dit beleid niet instelt of niet toepast, is bestandsoverdracht niet toege
 <translation id="225830954785359083">Voorkomen dat pagina's pop-ups tonen tijdens het unloaden</translation>
 <translation id="2261648512244797294">Verouderde Privet-afdrukken uitzetten</translation>
 <translation id="2263881357524831360">Toestaan dat wachtwoordmanagers van derden worden gebruikt in <ph name="PRODUCT_NAME" /> op <ph name="ANDROID_NAME" /></translation>
-<translation id="2264286153777425328">Lijst met acties die moeten worden uitgevoerd als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt.
-
-Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
-
-Als je het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> niet instelt, heeft dit beleid geen effect.
-
-Als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt, voert de browser de acties uit die in dit beleid zijn ingesteld.
-
-Als je dit beleid leeg laat of niet instelt, heeft het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> geen effect.
-
-Deze acties worden ondersteund:
-
-<ph name="CLOSE_BROWSERS_ACTION" />: Alle browservensters en PWA's voor dit profiel worden gesloten. Niet ondersteund op Android en iOS.
-
-<ph name="CLOSE_TABS_ACTION" />: Alle geopende tabbladen in geopende vensters worden gesloten. Alleen ondersteund op iOS.
-
-<ph name="SHOW_PROFILE_PICKER_ACTION" />: Het profielkiezervenster wordt getoond. Niet ondersteund op Android en iOS.
-
-<ph name="SIGN_OUT_ACTION" />: De huidige ingelogde gebruiker wordt uitgelogd. Alleen ondersteund op iOS.
-
-<ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: De bijbehorende browsegegevens worden gewist. Zie het beleid <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> voor meer informatie. De ondersteunde typen op iOS zijn <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> en <ph name="CLEAR_AUTOFILL_ACTION" />.
-
-<ph name="RELOAD_PAGES_ACTION" />: Alle webpagina's worden opnieuw geladen. Voor sommige pagina's kan de gebruiker eerst om bevestiging worden gevraagd. Niet ondersteund op iOS.
-
-Als je <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> en <ph name="CLEAR_SITE_SETTINGS_ACTION" /> instelt, wordt synchronisatie voor de betreffende gegevenstypen uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="2266422599396179941">Toestaan dat gebruikers feedback indienen</translation>
 <translation id="2268891553068901979">Als je het beleid toepast, wordt <ph name="GOOGLE_DRIVE_NAME" />-synchronisatie uitgezet in de Bestanden-app van <ph name="PRODUCT_OS_NAME" /> als de gebruiker een mobiele verbinding gebruikt. Gegevens worden alleen naar Drive gesynchroniseerd bij een verbinding met wifi of ethernet.
 
@@ -2193,6 +2168,7 @@ Als je dit beleid niet instelt of instelt op True, staat de functie Gerelateerde
 Als je dit beleid instelt op False, staat de functie Gerelateerde websitesets uit.</translation>
 <translation id="2555244983262829274">De startknop verbergen op de werkbalk</translation>
 <translation id="2558154810835597313">Hiermee wordt de registratie van clientcertificaten voor een beheerde gebruiker of een beheerd profiel aangezet</translation>
+<translation id="2559274305158103883">Post-quantum sleutelovereenkomst van WebRTC uitzetten</translation>
 <translation id="2562213287271514629">Toestaan dat verouderde <ph name="FLASH_PLUGIN_NAME" /> wordt gebruikt als normale <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">Hiermee kun je de URL opgeven van de zoekmachine die wordt gebruikt om instantresultaten te leveren. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt op het moment van de zoekopdracht vervangen door de tekst die de gebruiker tot op dat moment heeft getypt.
 
@@ -2740,6 +2716,14 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
 <translation id="2987155890997901449">ARC aanzetten</translation>
 <translation id="2987227569419001736">Gebruik van de Web Bluetooth API beheren</translation>
+<translation id="2988299727303303535">Dit beleid biedt een tijdelijke vrijstelling voor bepaalde domeinen voor het nieuwe gedrag van cookies die aan de oorsprong zijn gebonden.
+
+Als je een domein aan de lijst toevoegt, kunnen cookies van dat domein worden gebruikt door een ander schema of een andere poort.
+Meer informatie vind je bij <ph name="LEGACY_COOKIE_SCOPE_ENABLED_POLICY_NAME" />.
+
+Voor cookies op domeinen die niet overeenkomen met de hier genoemde patronen, of voor alle cookies als dit beleid niet is ingesteld, geldt het gedrag van cookies die aan de oorsprong zijn gebonden.
+
+Dit beleid wordt in de toekomst verwijderd.</translation>
 <translation id="2989404644164421834">Pagina's opnieuw laden</translation>
 <translation id="299127280603727143">Een groep beleidsregels voor instellingen voor toegang tot lokaal netwerk.  Zie https://developer.chrome.com/blog/local-network-access</translation>
 <translation id="299446489108785864">Lijst met URL's waarin wordt aangegeven op welke URL's <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> van toepassing is. Dit beleid is niet van invloed op waarden voor automatisch openen die zijn ingesteld door gebruikers.
@@ -3730,17 +3714,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Als je het beleid niet toepast, mag de Translator API niet worden gebruikt.</translation>
 <translation id="366494444808132420">Gemini-integraties toestaan</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
-<translation id="3667467644216039144">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit.
-
-Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
-
-De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.
-
-Als de gegevensverwijdering om een of andere reden is gestart maar niet is afgerond, worden de browsegegevens gewist als het profiel weer wordt geladen.
-
-Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het OS crasht), worden de browsegegevens niet gewist, omdat het sluiten van de browser niet het gevolg was van het sluiten van alle browservensters door de gebruiker.</translation>
 <translation id="3671773704245936868">Markering toetsenbordfocus uitzetten</translation>
 <translation id="3674010627788940405">CORS-verzoekheaders zonder jokertekens niet ondersteunen.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) wordt vaak gebruikt om lange JavaScript-taken uit te splitsen.
@@ -8119,10 +8092,12 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
 <translation id="6614648642325603511">Het algoritme om sleutelparen te genereren. De EC-optie wordt ondersteund vanaf versie 132.</translation>
 <translation id="661610294649586421">WebAuthn API-verzoeken niet toestaan op sites met niet-werkende TLS-certificaten.</translation>
 <translation id="6617589895942747919">Begintijd van het interval (inclusief).</translation>
+<translation id="6620966939519407082">Verouderde instellingen voor cookiebereik</translation>
 <translation id="6621830999036927230">Als je dit beleid instelt, gebruikt de host voor externe toegang deze URL om verificatietokens van clients voor externe toegang te valideren om zo verbindingen te accepteren. De functie wordt uitgezet als je deze leeg laat of niet instelt.
 
       Opmerking: Gebruik dit beleid met <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor spellingcontrole heeft.</translation>
+<translation id="6625716212597516929">Verouderd gedrag voor cookiebereik herstellen</translation>
 <translation id="6626319579493977784">Instellingen voor dynamische code</translation>
 <translation id="66265932317331474">CPU-info melden</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
@@ -8172,6 +8147,17 @@ Op <ph name="MS_WIN_NAME" /> wordt het KDC-beleid altijd gerespecteerd.</transla
 <translation id="6665670272107384733">Instellen hoe vaak een gebruiker het wachtwoord moet opgeven om de functie voor snel ontgrendelen te kunnen gebruiken</translation>
 <translation id="6667586534922258705">Knop 'Wachtwoord tonen' tonen op het inlog- en vergrendelscherm.</translation>
 <translation id="6667636336079341367">Scanner toestaan zonder AI-modellen te verbeteren.</translation>
+<translation id="6668559639284945695">Met dit beleid kun je het verouderde gedrag voor cookiebereik herstellen.
+
+Dit betekent dat cookies die zijn ingesteld op een specifiek protocol (bijv. HTTPS) of een specifieke poort, toegankelijk zijn vanaf een ander protocol of een andere poort.
+
+Als je het beleid toepast, zijn cookies niet gebonden aan het oorspronkelijke schema en de oorspronkelijke poort.
+
+Als je het beleid niet toepast of niet instelt, gedragen cookies zich met een aan de oorsprong gebonden bereik.
+
+Deze configuratie is alleen van toepassing op top-level domeinen (bijv. example.com) en niet op subdomeinen (bijv. sub.example.com).
+
+Dit beleid wordt in de toekomst verwijderd.</translation>
 <translation id="6669244130218275293">Kies of de functie voor vingerafdrukbeveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet in de incognitomodus.</translation>
 <translation id="6669691206059842248">Extra OAuth-omleidingen per extensie instellen</translation>
 <translation id="6669700740683748046">Met deze functie is de volledige URL in de adresbalk zichtbaar.
@@ -8328,17 +8314,6 @@ Als je het beleid instelt op Onwaar of niet instelt, wordt het standaardgedrag g
 <translation id="6757413365906304125">Dit beleid bepaalt het gedrag voor het opnieuw toewijzen van de PageUp-/PageDown-toetsen binnen de subpagina voor het opnieuw toewijzen van toetsen. Op de subpagina voor het opnieuw toewijzen van toetsen kunnen gebruikers toetsenbordtoetsen aanpassen. Als je dit beleid aanzet, kunnen gebruikers deze specifieke toewijzingen niet aanpassen. Als je het beleid niet instelt, zijn op zoekopdrachten gebaseerde sneltoetsen de standaardinstelling en kunnen gebruikers de sneltoetsen configureren.</translation>
 <translation id="6757613329154374267">Back-up en herstel is aangezet</translation>
 <translation id="6758659208493449452">Met dit beleid wordt bepaald of gebruikers die bij 'Geavanceerde beveiliging' zijn ingeschreven, extra beveiligingsmaatregelen ontvangen. Voor sommige van deze functies kunnen gegevens worden gedeeld met Google (gebruikers van 'Geavanceerde beveiliging' kunnen bijvoorbeeld hun downloads naar Google sturen om ze te scannen op malware). Als dit beleid is ingesteld op True of niet is ingesteld, ontvangen ingeschreven gebruikers extra beveiligingsmaatregelen. Als dit beleid is ingesteld op False, ontvangen gebruikers van 'Geavanceerde beveiliging' alleen de standaardfuncties voor consumenten.</translation>
-<translation id="6759078816721385015">Hiermee configureer je de instellingen voor de levensduur van browsergegevens voor <ph name="PRODUCT_NAME" />. Met dit beleid kunnen beheerders instellen (per gegevenstype) wanneer gegevens door de browser moeten worden verwijderd. Dit is handig voor klanten die met gevoelige klantgegevens werken.
-
-Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
-
-De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" /> worden niet ondersteund op Android.
-
-De browser verwijdert automatisch gegevens van de geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. De minimumwaarde die kan worden ingesteld is 1 uur.
-
-De verwijdering van verlopen gegevens vindt plaats 15 seconden nadat de browser is gestart en daarna elke 30 minuten terwijl de browser actief is.
-
-Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="6763023079133439068">Certificaten zonder de extensie subjectAlternativeName toestaan als deze worden uitgegeven door lokale vertrouwensankers</translation>
 <translation id="6766216162565713893">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een Bluetooth-apparaat in de buurt</translation>
 <translation id="6770454900105963262">Informatie over actieve kiosk-sessies melden</translation>
@@ -8692,6 +8667,7 @@ Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
 <translation id="7016587686120059767">Gastmodus uitzetten</translation>
 <translation id="7019805045859631636">Snel</translation>
 <translation id="7021590945154530517">Controle van apparaatstatus aanzetten</translation>
+<translation id="7025153290982655996">Verouderd gedrag voor cookiebereik herstellen</translation>
 <translation id="7025332601572838001">Het gedrag voor de servicevoorwaarden configureren voor de eerste uitvoering van CCT</translation>
 <translation id="7026351325994257733">Toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon.</translation>
 <translation id="7027057540229843762">Licht thema gebruiken</translation>
@@ -8805,6 +8781,7 @@ Als je dit beleid instelt, wordt de standaardwaardelijst uitgebreid met de nieuw
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de ventilatorgegevens van het apparaat gerapporteerd.</translation>
+<translation id="7097146706461004834">Cookies hebben een aan de oorsprong gebonden bereik</translation>
 <translation id="710003290625031750">Uitgebreide schemabeschrijving:</translation>
 <translation id="7101550508196914704">De snelkoppeling voor apps niet tonen op de bookmarkbalk</translation>
 <translation id="7105084505972468353">Als je dit beleid instelt, bepaalt dit het type vergrootglas dat wordt aangezet.
@@ -9230,6 +9207,7 @@ Als je dit beleid instelt op Onwaar, wordt het oude gedrag toegepast.</translati
 
       Als dit beleid niet is ingesteld of is ingesteld op False, wordt <ph name="TLS_FALSE_START" /> aangezet. Als dit beleid is ingesteld op True, wordt <ph name="TLS_FALSE_START" /> uitgezet.</translation>
 <translation id="7427607504279694910">Gebeurtenislogboeken van Android-app-installaties worden niet gedeeld met Google</translation>
+<translation id="7428523340768505080">Post-quantum sleutelovereenkomst voor WebRTC aanzetten</translation>
 <translation id="7431456748240652287">Met dit beleid op apparaatniveau stel je in of <ph name="PRODUCT_OS_NAME" /> een algoritme voor de post-quantum sleutelovereenkomst in TLS aanbiedt met de ML-KEM NIST-standaard. Vóór <ph name="PRODUCT_OS_NAME" /> 131 was het algoritme Kyber, een eerder concept van de standaard. Hierdoor kunnen ondersteunende servers voorkomen dat gebruikersverkeer later wordt ontsleuteld door quantumcomputers.
 
 Als je dit beleid toepast of niet instelt, biedt <ph name="PRODUCT_OS_NAME" /> een post-quantum sleutelovereenkomst aan in TLS-verbindingen. Gebruikersverkeer wordt dan beschermd tegen quantumcomputers als er wordt gecommuniceerd met compatibele servers.
@@ -9541,6 +9519,7 @@ Dit beleid kan worden overschreven voor specifieke geïsoleerde web-app-oorspron
 <translation id="7696534428021833264">Kaart SharePoint- en OneDrive-bestand aanzetten op de pagina Nieuw tabblad</translation>
 <translation id="7699644797467448158">window.name wissen als de navigatie op het hoogste niveau is, cross-site is en van BrowsingContextGroup wisselt.</translation>
 <translation id="7701341006446125684">Formaat van cache voor apps en extensies instellen (in bytes)</translation>
+<translation id="7701825382808690457">Standaardwaarde gebruiken voor post-quantum sleutelovereenkomst voor WebRTC</translation>
 <translation id="7703041979684393741">Verzamelen van WebRTC-gebeurtenislogboeken van Google-services niet toestaan</translation>
 <translation id="770339941914297201">Nieuw gedrag: Chrome-kiosk-apps worden alleen geüpdatet via de update-URL uit het beleid</translation>
 <translation id="7703737669292992839">Dialoogvensters voor bestandsselectie niet toestaan</translation>
@@ -9815,6 +9794,7 @@ Als je het beleid niet toepast of niet instelt, wordt er geen certificaat gemaak
 <translation id="7906983682927840536">Keepalive-duur bij afsluiten ophalen</translation>
 <translation id="7908384265697653397">Tijd in dagen waarna de gebruiker wordt uitgelogd als de <ph name="PRODUCT_OS_NAME" />-versie lager is dan de opgegeven <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /></translation>
 <translation id="7909751052609510518">Afdruktaken (ondersteund vanaf versie 129)</translation>
+<translation id="7909839744818798105">Verouderd gedrag voor cookiebereik aanzetten voor een lijst met domeinen</translation>
 <translation id="7911685775490889216">Hiermee stel je in met welk interval in seconden een afbeelding wordt getoond als de screensaver voor het vergrendelscherm uit meerdere afbeeldingen bestaat.
 
 Geldige waarden liggen tussen 1 en 9999 seconden. Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardwaarde van 60 seconden.
@@ -10912,6 +10892,19 @@ Als je JavaScript-optimalisaties uitzet (door de waarde van dit beleid in te ste
 Dit beleid kan voor specifieke URL-patronen worden overschreven met de beleidsregels <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> en <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Als je dit beleid niet instelt, worden JavaScript-optimalisaties aangezet.</translation>
+<translation id="8669238010996709070">Met dit beleid kun je de post-quantum sleutelovereenkomst voor WebRTC beheren.
+
+Als je dit beleid toepast, wordt een post-quantum sleutelovereenkomst aangeboden voor WebRTC.
+
+Als je dit beleid niet toepast, wordt er geen post-quantum sleutelovereenkomst aangeboden voor WebRTC.
+
+Als je dit beleid niet instelt, wordt de waarde ingesteld door het standaard uitrolproces voor post-quantum sleutelovereenkomsten dat wordt aangeboden voor WebRTC.
+
+Een post-quantum sleutelovereenkomst aanbieden is compatibel met eerdere versies. Van bestaande DTLS-peers en netwerkmiddleware wordt verwacht dat ze de nieuwe optie negeren en eerdere opties blijven selecteren.
+
+Apparaten waarop DTLS niet correct wordt geïmplementeerd, werken misschien niet goed als de nieuwe optie wordt aangeboden. Ze kunnen bijvoorbeeld de verbinding verbreken als reactie op niet-herkende opties of de resulterende langere berichten. Zulke apparaten zijn niet klaar voor post-quantum verwerking en kunnen de post-quantum overgang van een onderneming verstoren. Als dit gebeurt, moeten beheerders contact opnemen met de leverancier voor een oplossing.
+
+Dit beleid is een tijdelijke maatregel en wordt na een aantal mijlpalen verwijderd.</translation>
 <translation id="8671119576957984818">Hub voor delen van bureaublad aanzetten</translation>
 <translation id="8671193325113134911">Strenge MIME-typecontrole voor workerscripts aanzetten</translation>
 <translation id="8671303329680827168">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.</translation>

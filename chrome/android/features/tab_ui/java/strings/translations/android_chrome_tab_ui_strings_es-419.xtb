@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
-<translation id="1036348656032585052">Desactivar</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Se creó hace <ph name="NUM_WEEKS_ONE" /> semana}other{Se creó hace <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abrir automáticamente grupos de pestañas de otros dispositivos</translation>
 <translation id="1075622780330595106">Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Mover a la sección de pestañas inactivas</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Agregar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada a favoritos}other{Agregar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas a favoritos}}</translation>
 <translation id="2055057176188061528">Selecciona un grupo de pestañas o crea uno nuevo.</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome cierra automáticamente los elementos de la sección de pestañas inactivas que no usaste en <ph name="AUTO_DELETE_DELAY_ONE" /> mes. Puedes desactivar esta opción ahora o en cualquier momento en Configuración.}other{Chrome cierra automáticamente los elementos de la sección de pestañas inactivas que no usaste en que no usaste en <ph name="AUTO_DELETE_DELAY_MANY" /> meses. Puedes desactivar esta opción ahora o en cualquier momento en Configuración.}}</translation>
 <translation id="2118649612461486615">Información sobre la tienda</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas. Tu pestaña de incógnito no estará disponible.}other{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas. Tus # pestañas de incógnito no estarán disponibles.}}</translation>
 <translation id="2162620598375156287">Ahora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2371084566192454134">Pestañas y grupos de pestañas</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Contraer el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestaña.}other{Contraer el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
+<translation id="2479148705183875116">Configurar</translation>
 <translation id="2498435670446402865">Cambiar nombre</translation>
 <translation id="2536366509642644298">Los grupos de pestañas "<ph name="TAB_GROUP_NAME_1" />" y "<ph name="TAB_GROUP_NAME_2" />" ya no están disponibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestaña}other{Contraer el grupo de pestañas, el cual tiene <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Cerrar <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Cerrar <ph name="TABS_COUNT_MANY" /> elementos seleccionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo a ventana nueva}other{Mover grupo a otra ventana}}</translation>
-<translation id="6220820548421939212">Sí. Acepto</translation>
 <translation id="6228793724645064692">(calificación de la tienda)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
 <translation id="6333260925957816943">Hoja de información sobre esta tienda</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Selecciona un grupo de pestañas.</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartir pestaña}other{Compartir pestañas}}</translation>
 <translation id="7129458170538955174">La hoja de información sobre esta tienda está abierta a media altura</translation>
+<translation id="7151209024774799310">Quitar pestañas del grupo</translation>
 <translation id="7204204600596740190">Modo de selección múltiple</translation>
 <translation id="7211038039686180558">Los grupos de pestañas se guardan y actualizan automáticamente en todos los dispositivos en los que accediste a tu cuenta</translation>
 <translation id="731648547091221002">Se seleccionó <ph name="COLOR_NAME" /></translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> opinión}other{Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> opiniones}}</translation>
 <translation id="7885132941432959125">Mover la pestaña a la derecha</translation>
-<translation id="788914896430720926">¿Quieres mantener tu sección inactiva ordenada?</translation>
 <translation id="7939917283308035850">No se seleccionó <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7961015016161918242">Nunca</translation>

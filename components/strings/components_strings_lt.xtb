@@ -576,6 +576,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1959001866257244765">Padėkite gerinti visų naudotojų saugumą žiniatinklyje – atsiųskite <ph name="BEGIN_WHITEPAPER_LINK" />lankomų puslapių URL, ribotos sistemos informacijos ir puslapių turinio<ph name="END_WHITEPAPER_LINK" /> į „Google“. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privatumo politika<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Jūsų teksto ir puslapio turinys siunčiami „Google“ ir gali būti naudojami siekiant patobulinti šią funkciją.
   <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Kai perkate naršyklėje „Chrome“, pateikiami ne kortelių mokėjimo metodai kaip parinktis</translation>
 <translation id="196146181975453736">Atlikite vienkartinę saugos patikrą, kad galėtumėte greičiau mokėti</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> žymės</translation>
 <translation id="1973335181906896915">Serijinio rengimo klaida</translation>
@@ -1144,6 +1145,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2930531075747147366">Skirtukas iš kito jūsų įrenginio</translation>
 <translation id="2930577230479659665">Apkarpymas po kiekvienos kopijos</translation>
 <translation id="2933624813161016821">Įspausta folija</translation>
+<translation id="293796669683825859">Komentarai</translation>
 <translation id="2938225289965773019">Atidaryti „<ph name="PROTOCOL" />“ nuorodas</translation>
 <translation id="2940418897281183211">PNG vaizdas</translation>
 <translation id="2941878205777356567">9 x 12 col. vokas</translation>
@@ -1994,6 +1996,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4298000214066716287">Investavimas</translation>
 <translation id="42981349822642051">Išskleisti</translation>
 <translation id="4298925811540301889">Šios svetainės slapukai sinchronizuojami „ChromeOS“ įrenginiuose. Jei norite tvarkyti sinchronizuojamą turinį, eikite į skiltį „<ph name="SYNC_SETTINGS" />“.</translation>
+<translation id="4300272766492248925">Atidaryti programą</translation>
 <translation id="4300675098767811073">Kelios skylės dešinėje</translation>
 <translation id="4302514097724775343">Palieskite dinozaurą, kad paleistumėte</translation>
 <translation id="4304049446746819918">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šio failo į <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama perkelti šių failų į <ph name="DESTINATION_NAME" />}}</translation>
@@ -3036,6 +3039,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6101583188322746099">Maisto prekių pristatymas</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Sukurti svetainę</translation>
+<translation id="6105511947520166941">Kitą kartą mokėkite naudodami „Pix“ tiesiogiai naršyklėje „Chrome“</translation>
 <translation id="6106989379647458772">Gali būti, kad tinklalapis adresu <ph name="PAGE" /> laikinai neveikia arba yra visam laikui perkeltas nauju žiniatinklio adresu.</translation>
 <translation id="6107012941649240045">Išduotas</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> pakeitė grupės pavadinimą</translation>

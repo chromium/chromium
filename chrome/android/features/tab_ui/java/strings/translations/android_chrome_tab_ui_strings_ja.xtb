@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
-<translation id="1036348656032585052">オフにする</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週間前に作成}other{<ph name="NUM_WEEKS_MANY" /> 週間前に作成}}</translation>
 <translation id="1063300264396686489">他のデバイスで作成されたタブグループを自動的に開く</translation>
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">アクティブでないセクションに移動</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをブックマークに追加}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをブックマークに追加}}</translation>
 <translation id="2055057176188061528">タブグループを選択するか、新しいタブグループを作成します</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{<ph name="AUTO_DELETE_DELAY_ONE" /> か月間使用されていないセクションのタブを自動的に閉じます。この動作は [設定] でいつでもオフにできます。}other{<ph name="AUTO_DELETE_DELAY_MANY" /> か月間使用されていないセクションのタブを自動的に閉じます。この動作は [設定] でいつでもオフにできます。}}</translation>
 <translation id="2118649612461486615">ストア情報</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。シークレット タブは使用できなくなります。}other{閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。# 個のシークレット タブは使用できなくなります。}}</translation>
 <translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">続行</translation>
 <translation id="2371084566192454134">タブとタブグループ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
+<translation id="2479148705183875116">設定に移動</translation>
 <translation id="2498435670446402865">タブグループの名前を変更</translation>
 <translation id="2536366509642644298">「<ph name="TAB_GROUP_NAME_1" />」と「<ph name="TAB_GROUP_NAME_2" />」のタブグループは使用できなくなりました</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のアイテムを閉じる}other{選択した <ph name="TABS_COUNT_MANY" /> 個のアイテムを閉じる}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{グループを新しいウィンドウに移動}other{グループを別のウィンドウに移動}}</translation>
-<translation id="6220820548421939212">はい。オンにします。</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
 <translation id="6333260925957816943">このショップに関する情報</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">タブグループを選択します</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{タブを共有する}other{タブを共有する}}</translation>
 <translation id="7129458170538955174">このショップに関する情報が画面の下半分に表示されています</translation>
+<translation id="7151209024774799310">グループからタブを削除</translation>
 <translation id="7204204600596740190">複数選択モード</translation>
 <translation id="7211038039686180558">タブグループは自動的に保存され、ログインしているすべてのデバイスで更新されます</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> が選択されています</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ}other{<ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ}}</translation>
 <translation id="7885132941432959125">タブを右に移動</translation>
-<translation id="788914896430720926">アクティブでないセクションを整理しますか？</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> は選択されていません</translation>
 <translation id="7942349550061667556">赤</translation>
 <translation id="7961015016161918242">使用しない</translation>

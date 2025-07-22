@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">ຊ່ວຍປັບປຸງຄວາມປອດໄພຂອງເວັບໄຊສຳລັບທຸກຄົນໂດຍການສົ່ງ <ph name="BEGIN_WHITEPAPER_LINK" />URL ຂອງບາງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບແບບຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າເວັບ<ph name="END_WHITEPAPER_LINK" /> ໄປໃຫ້ Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">ຂໍ້ຄວາມ ແລະ ເນື້ອຫາໜ້າເວັບຂອງທ່ານຈະຖືກສົ່ງໄປຫາ Google ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄຸນສົມບັດນີ້.
   <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">ເມື່ອທ່ານດຳເນີນການຊື້ໃນ Chrome, ທ່ານຈະເຫັນວິທີການຈ່າຍເງິນທີ່ບໍ່ແມ່ນບັດເປັນຕົວເລືອກ</translation>
 <translation id="196146181975453736">ກວດສອບຄວາມປອດໄພແບບເທື່ອດຽວໃຫ້ສຳເລັດເພື່ອຈ່າຍເງິນໄດ້ໄວຂຶ້ນ</translation>
 <translation id="1962204205936693436">ບຸກມາກສ໌ ່<ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">ຄວາມ​ຜິດ​ພາດການສ້າງລໍາດັບ</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">ແຖບຈາກອຸປະກອນອື່ນຂອງທ່ານ</translation>
 <translation id="2930577230479659665">ຕັດອອກຫຼັງຈາກສຳເນົາແຕ່ລະສະບັບ</translation>
 <translation id="2933624813161016821">ຟອຍລ໌ລາຍນູນ</translation>
+<translation id="293796669683825859">ຄຳເຫັນ</translation>
 <translation id="2938225289965773019">ເປີດ​ລິ້ງ <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">ຮູບ PNG</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 ນິ້ວ</translation>
@@ -1993,6 +1995,7 @@
 <translation id="4298000214066716287">ການລົງທຶນ</translation>
 <translation id="42981349822642051">ຂະ​ຫຍາຍ</translation>
 <translation id="4298925811540301889">ຄຸກກີ້ສຳລັບເວັບໄຊນີ້ຈະຊິ້ງໃນທົ່ວທຸກອຸປະກອນ ChromeOS ຂອງທ່ານ. ເພື່ອຈັດການສິ່ງທີ່ທ່ານຊິ້ງ, ໃຫ້ເຂົ້າໄປ <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">ເປີດແອັບ</translation>
 <translation id="4300675098767811073">ເຈາະຮູເບື້ອງຂວາຫຼາຍຮູ</translation>
 <translation id="4302514097724775343">ແຕະ dino ເພື່ອຫຼິ້ນ</translation>
 <translation id="4304049446746819918">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ຍ້າຍໄຟລ໌ນີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ຍ້າຍໄຟລ໌ເຫຼົ່ານີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@
 <translation id="6101583188322746099">ບໍລິການຈັດສົ່ງສິນຄ້າ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">ສ້າງເວັບໄຊ</translation>
+<translation id="6105511947520166941">ຈ່າຍດ້ວຍ Pix ໃນ Chrome ໂດຍກົງໃນເທື່ອຕໍ່ໄປ</translation>
 <translation id="6106989379647458772">ໜ້າ​ເວັບ​ຢູ່​ທີ່ <ph name="PAGE" /> ອາດ​ຈະ​ໃຊ້​ງານ​ບໍ່​ໄດ້​ຊົ່ວ​ຄາວ ຫຼື ມັນ​ອາດ​ຈະ​ຍ້າຍ​ໄປ​ຫາ​ທີ່​ຢູ່​ເວັບ​ໃໝ່​ຖາ​ວອນ​ແລ້ວ.</translation>
 <translation id="6107012941649240045">ອອກໃຫ້ກັບ</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ປ່ຽນຊື່ກຸ່ມແລ້ວ</translation>

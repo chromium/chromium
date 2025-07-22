@@ -571,6 +571,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />మీరు సందర్శించిన కొన్ని పేజీల URLలను, పరిమితంగా సిస్టమ్ సమాచారాన్ని, కొంత పేజీ కంటెంట్<ph name="END_WHITEPAPER_LINK" />ను Googleకు పంపడం ద్వారా వెబ్‌లో ప్రతి ఒక్కరికీ భద్రతను మెరుగుపరచడంలో సహాయం చేయండి. <ph name="BEGIN_PRIVACY_PAGE_LINK" />గోప్యతా పాలసీ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">మీ టెక్స్ట్, పేజీ కంటెంట్ Googleకు పంపబడ్డాయి, ఈ ఫీచర్‌ను మెరుగుపరచడంలో ఉపయోగించబడవచ్చు.
   <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">మీరు Chromeలో కొనుగోళ్లు చేసేటప్పుడు, కార్డ్-ఫ్రీ పేమెంట్ ఆప్షన్‌లు ఒక ఆప్షన్‌గా కనిపిస్తాయి</translation>
 <translation id="196146181975453736">మరింత వేగంగా పేమెంట్ చేయడానికి ఒకే విడతలో సెక్యూరిటీ చెక్‌ను పూర్తి చేయండి</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="1973335181906896915">శ్రేణిగా రూపొందించడంలో ఎర్రర్</translation>
@@ -1139,6 +1140,7 @@
 <translation id="2930531075747147366">మీ ఇతర పరికరం నుండి పొందిన ట్యాబ్</translation>
 <translation id="2930577230479659665">ప్రతి కాపీ తర్వాత కత్తిరించండి</translation>
 <translation id="2933624813161016821">ఎంబాసింగ్ ఫాయిల్</translation>
+<translation id="293796669683825859">కామెంట్‌లు</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> లింక్‌లను తెరవండి</translation>
 <translation id="2940418897281183211">PNG ఇమేజ్</translation>
 <translation id="2941878205777356567">9 x 12 అంగుళాల ఎన్వలప్</translation>
@@ -1988,6 +1990,7 @@
 <translation id="4298000214066716287">పెట్టుబడి</translation>
 <translation id="42981349822642051">విస్తరించు</translation>
 <translation id="4298925811540301889">ఈ సైట్‌కు సంబంధించిన కుక్కీలు మీ Chrome OS డివైజ్‌లన్నింటిలో సింక్ అయి ఉంటాయి. మీరు సింక్ చేసిన వాటిని మేనేజ్ చేయడానికి, <ph name="SYNC_SETTINGS" />‌కు వెళ్లండి.</translation>
+<translation id="4300272766492248925">యాప్‌ను తెరువు</translation>
 <translation id="4300675098767811073">కుడివైపు అనేక రంధ్రాలు</translation>
 <translation id="4302514097724775343">ఆడటానికి డైనోసార్‌ను ట్యాప్ చేయండి</translation>
 <translation id="4304049446746819918">{0,plural, =1{ఈ ఫైల్‌ను <ph name="DESTINATION_NAME" />‌కు తరలించవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{ఈ ఫైల్స్‌ను <ph name="DESTINATION_NAME" />‌కు తరలించవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
@@ -3030,6 +3033,7 @@
 <translation id="6101583188322746099">కిరాణా డెలివరీ సర్వీస్‌లు</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">సైట్‌ను క్రియేట్ చేయండి</translation>
+<translation id="6105511947520166941">తదుపరి సారి Chromeలో నేరుగా Pixతో పేమెంట్ చేయండి</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />లోని వెబ్‌పేజీ తాత్కాలికంగా నిలిపివేయబడి ఉండవచ్చు లేదా ఇది శాశ్వతంగా కొత్త వెబ్ అడ్రస్‌కు తరలించబడి ఉండవచ్చు.</translation>
 <translation id="6107012941649240045">వీరికి జారీ చేయబడింది</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> గ్రూప్ పేరు మార్చారు</translation>

@@ -576,6 +576,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />アクセスしたページの URL、システム情報、およびページのコンテンツの一部<ph name="END_WHITEPAPER_LINK" />を Google に送信して、ウェブ全体のセキュリティ強化にご協力ください。<ph name="BEGIN_PRIVACY_PAGE_LINK" />プライバシー ポリシー<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">テキストとページのコンテンツが Google に送信され、この機能の改善に使用されることがあります。
   <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Chrome での購入手続きの際、オプションとしてカード以外のお支払い方法が表示されます</translation>
 <translation id="196146181975453736">1 回限りのセキュリティ チェックを行ってすばやくお支払いいただけます</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="1973335181906896915">シリアル化エラーです</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">他のデバイスのタブ</translation>
 <translation id="2930577230479659665">トリミング（コピー単位）</translation>
 <translation id="2933624813161016821">ホイル（エンボス）</translation>
+<translation id="293796669683825859">コメント</translation>
 <translation id="2938225289965773019">「<ph name="PROTOCOL" />」リンクを開く</translation>
 <translation id="2940418897281183211">PNG 画像</translation>
 <translation id="2941878205777356567">9x12 インチ封筒</translation>
@@ -1993,6 +1995,7 @@
 <translation id="4298000214066716287">投資</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4298925811540301889">このサイトの Cookie は ChromeOS デバイス間で同期されます。同期する内容を管理するには、<ph name="SYNC_SETTINGS" /> にアクセスしてください。</translation>
+<translation id="4300272766492248925">アプリを開く</translation>
 <translation id="4300675098767811073">多穴パンチ（右）</translation>
 <translation id="4302514097724775343">プレイするには恐竜をタップしてください</translation>
 <translation id="4304049446746819918">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> に移動することは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> に移動することは推奨されていません}}</translation>
@@ -3035,6 +3038,7 @@
 <translation id="6101583188322746099">食料品宅配サービス</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">サイトを作成</translation>
+<translation id="6105511947520166941">次回以降 Chrome から直接 Pix でお支払い</translation>
 <translation id="6106989379647458772">ウェブページ（<ph name="PAGE" />）は一時的に利用できなくなっているか、新しいウェブアドレスに移動した可能性があります。</translation>
 <translation id="6107012941649240045">発行先</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> さんがグループ名を変更しました</translation>

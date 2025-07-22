@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">നിങ്ങളുടെ ഇതര ഉപകരണത്തിൽ നിന്നുള്ള ടാബ്</translation>
 <translation id="2930577230479659665">ഓരോ പകർപ്പിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
 <translation id="2933624813161016821">എംബോയിസിംഗ് ഫോയിൽ</translation>
+<translation id="293796669683825859">കമന്റുകൾ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ലിങ്കുകൾ തുറക്കുക</translation>
 <translation id="2940418897281183211">PNG ചിത്രം</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 ഇഞ്ച്</translation>
@@ -1993,6 +1994,7 @@
 <translation id="4298000214066716287">ഇൻവെസ്റ്റിംഗ്</translation>
 <translation id="42981349822642051">വികസിപ്പിക്കുക</translation>
 <translation id="4298925811540301889">ഈ സൈറ്റിനുള്ള കുക്കികൾ നിങ്ങളുടെ ChromeOS ഉപകരണങ്ങളിൽ ഉടനീളം സമന്വയിപ്പിക്കുന്നു. നിങ്ങൾ എന്താണ് സമന്വയിപ്പിക്കുന്നതെന്നത് മാനേജ് ചെയ്യാൻ, <ph name="SYNC_SETTINGS" /> എന്നതിലേക്ക് പോകുക.</translation>
+<translation id="4300272766492248925">ആപ്പ് തുറക്കുക</translation>
 <translation id="4300675098767811073">വലതുവശത്ത് ഒന്നിലധികം പഞ്ചുകൾ ചെയ്യുക</translation>
 <translation id="4302514097724775343">കളിക്കാൻ ദിനോസറിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="4304049446746819918">{0,plural, =1{ഈ ഫയൽ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് നീക്കാൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}other{ഈ ഫയലുകൾ <ph name="DESTINATION_NAME" /> എന്നതിലേക്ക് നീക്കാൻ അഡ്‌മിൻ നയം നിർദ്ദേശിക്കുന്നില്ല}}</translation>

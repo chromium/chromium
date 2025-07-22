@@ -936,7 +936,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Preuzimanje fajla…}one{Preuzimanje # fajla…}few{Preuzimanje # fajla…}other{Preuzimanje # fajlova…}}</translation>
 <translation id="5210286577605176222">Pređi na prethodnu karticu</translation>
 <translation id="5210365745912300556">Zatvorite karticu.</translation>
-<translation id="5212800876504289412">Ponovo pokrenite Chrome da završite ovu promjenu. Kartice se automatski ponovo otvaraju kada ponovo pokrenete.</translation>
+<translation id="5212800876504289412">Ponovo pokrenite Chrome da završite ovu promjenu. Kartice se automatski ponovo otvaraju kada ponovo pokrenete Chrome.</translation>
 <translation id="5215957675041756913">Upravljajte podacima i računom</translation>
 <translation id="5218324087477576825">Broj kartice; obavezno</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i druga odobrenja <ph name="SEPARATOR" /> Chrome je uklonio odobrenja jer web lokaciju u posljednje vrijeme niste posjetili</translation>

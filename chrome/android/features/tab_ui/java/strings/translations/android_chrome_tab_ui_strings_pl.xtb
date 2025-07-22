@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
-<translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Utworzono <ph name="NUM_WEEKS_ONE" /> tydzień temu}few{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodnie temu}many{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodni temu}other{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodnia temu}}</translation>
 <translation id="1063300264396686489">Automatycznie otwieraj grupy kart z innych urządzeń</translation>
 <translation id="1075622780330595106">Karty, które ostatnio nie były używane: <ph name="NUMBER_OF_TABS" />. Zamknąć je?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Przenieś do sekcji nieaktywnych</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Dodaj do zakładek <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="2055057176188061528">Wybierz grupę kart lub utwórz nową</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome automatycznie zamyka w sekcji nieaktywnych elementy, których nie używasz od <ph name="AUTO_DELETE_DELAY_ONE" /> miesiąca. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.}few{Chrome automatycznie zamyka w sekcji nieaktywnych elementy, których nie używasz od <ph name="AUTO_DELETE_DELAY_MANY" /> miesięcy. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.}many{Chrome automatycznie zamyka w sekcji nieaktywnych elementy, których nie używasz od <ph name="AUTO_DELETE_DELAY_MANY" /> miesięcy. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.}other{Chrome automatycznie zamyka w sekcji nieaktywnych elementy, których nie używasz od <ph name="AUTO_DELETE_DELAY_MANY" /> miesiąca. Możesz wyłączyć tę funkcję teraz lub w dowolnym momencie w Ustawieniach.}}</translation>
 <translation id="2118649612461486615">Informacje o sklepie</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. Karta incognito nie będzie dostępna.}few{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będą dostępne.}many{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # kart incognito nie będzie dostępnych.}other{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będzie dostępne.}}</translation>
 <translation id="2162620598375156287">Teraz za <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2371084566192454134">Karty i grupy kart</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą.}few{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
+<translation id="2479148705183875116">Otwórz Ustawienia</translation>
 <translation id="2498435670446402865">Zmień nazwę grupy kart</translation>
 <translation id="2536366509642644298">Grupy kart „<ph name="TAB_GROUP_NAME_1" />” i „<ph name="TAB_GROUP_NAME_2" />” nie są już dostępne</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zwiń <ph name="TABS_COUNT_ONE" /> kartę.}few{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Wszystkie zduplikowane karty będą teraz również archiwizowane, z wyjątkiem ostatnio używanej kopii.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybrany element}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane elementy}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych elementów}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranego elementu}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Przenieś grupę do nowego okna}few{Przenieś grupę do innego okna}many{Przenieś grupę do innego okna}other{Przenieś grupę do innego okna}}</translation>
-<translation id="6220820548421939212">Tak. Chętnie</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj kartę do nowej grupy}few{Dodaj karty do nowej grupy}many{Dodaj karty do nowej grupy}other{Dodaj karty do nowej grupy}}</translation>
 <translation id="6333260925957816943">Informacje o tym sklepie</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Wybierz grupę kart</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Udostępnij kartę}few{Udostępnij karty}many{Udostępnij karty}other{Udostępnij karty}}</translation>
 <translation id="7129458170538955174">Informacje o tym sklepie zostały otwarte na połowę wysokości</translation>
+<translation id="7151209024774799310">Usuń karty z grupy</translation>
 <translation id="7204204600596740190">Tryb wielokrotnego wyboru</translation>
 <translation id="7211038039686180558">Grupy kart automatycznie zapisują się i aktualizują na wszystkich urządzeniach, na których się logujesz</translation>
 <translation id="731648547091221002">Wybrano <ph name="COLOR_NAME" /></translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Aktywność</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> opinia}few{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> opinie}many{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> opinii}other{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> opinii}}</translation>
 <translation id="7885132941432959125">Przenieś kartę w prawo</translation>
-<translation id="788914896430720926">Uporządkować nieaktywną sekcję?</translation>
 <translation id="7939917283308035850">Nie wybrano: <ph name="COLOR_NAME" />.</translation>
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7961015016161918242">Nigdy</translation>

@@ -576,6 +576,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1959001866257244765">Bidra til å gjøre sikkerheten på nettet bedre for alle ved å sende <ph name="BEGIN_WHITEPAPER_LINK" />nettadressene til noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold<ph name="END_WHITEPAPER_LINK" /> til Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Personvernregler<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Tekst- og sideinnholdet ditt sendes til Google og kan bli brukt til å forbedre denne funksjonen.
   <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Når du kjøper noe i Chrome, kan du se betalingsmåter som ikke er kort, som et alternativ</translation>
 <translation id="196146181975453736">Gjennomfør en engangs-sikkerhetssjekk for å betale raskere</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />-bokmerker</translation>
 <translation id="1973335181906896915">Serialiseringsfeil</translation>
@@ -1144,6 +1145,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2930531075747147366">Fane fra den andre enheten din</translation>
 <translation id="2930577230479659665">Beskjær etter hver kopi</translation>
 <translation id="2933624813161016821">Pregfolie</translation>
+<translation id="293796669683825859">Kommentarer</translation>
 <translation id="2938225289965773019">åpne linker til <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">PNG-bilde</translation>
 <translation id="2941878205777356567">Konvolutt 9 x 12 tommer</translation>
@@ -1993,6 +1995,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4298000214066716287">Investering</translation>
 <translation id="42981349822642051">Vis</translation>
 <translation id="4298925811540301889">Informasjonskapsler for dette nettstedet synkroniseres mellom ChromeOS-enhetene dine. For å administrere hva du synkroniserer, gå til <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Åpne appen</translation>
 <translation id="4300675098767811073">Flere hull høyre</translation>
 <translation id="4302514097724775343">Trykk på dinosauren for å spille</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administratorreglene anbefaler ikke at du flytter denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du flytter disse filene til <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6101583188322746099">Levering av dagligvarer</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Opprett nettsted</translation>
+<translation id="6105511947520166941">Betal med Pix direkte i Chrome neste gang</translation>
 <translation id="6106989379647458772">Det kan hende at nettsiden på <ph name="PAGE" /> er midlertidig nede eller flyttet permanent til en ny nettadresse.</translation>
 <translation id="6107012941649240045">Utstedt til</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> endret gruppenavnet</translation>

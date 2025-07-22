@@ -1145,6 +1145,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2930531075747147366">Scheda dall'altro dispositivo</translation>
 <translation id="2930577230479659665">Taglia dopo la stampa di ciascuna copia</translation>
 <translation id="2933624813161016821">Alluminio goffrato</translation>
+<translation id="293796669683825859">Commenti</translation>
 <translation id="2938225289965773019">Aprire i link <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Immagine PNG</translation>
 <translation id="2941878205777356567">Busta 9 x 12 pollici</translation>
@@ -1991,6 +1992,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4298000214066716287">Investimenti</translation>
 <translation id="42981349822642051">Espandi</translation>
 <translation id="4298925811540301889">I cookie di questo sito sono sincronizzati su tutti i tuoi dispositivi ChromeOS. Per gestire i dati da sincronizzare, vai a <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Apri app</translation>
 <translation id="4300675098767811073">Perforatura multipla a destra</translation>
 <translation id="4302514097724775343">Tocca il dinosauro per giocare</translation>
 <translation id="4304049446746819918">{0,plural, =1{La policy dell'amministratore sconsiglia di spostare questo file su <ph name="DESTINATION_NAME" />}other{La policy dell'amministratore sconsiglia di spostare questi file su <ph name="DESTINATION_NAME" />}}</translation>

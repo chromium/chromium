@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">Google ला <ph name="BEGIN_WHITEPAPER_LINK" />तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टीम माहिती आणि पेजवरील काही आशय<ph name="END_WHITEPAPER_LINK" /> पाठवून वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा. <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता धोरण<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">तुमचा मजकूर आणि पेजवरील आशय हे Google कडे पाठवले जातात आणि ते या वैशिष्‍ट्यामध्ये सुधारणा करण्यासाठी वापरले जाऊ शकतात.
   <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">तुम्ही Chrome मध्ये खरेदी करता, तेव्हा पर्याय म्हणून कार्डचा समावेश नसलेल्या पेमेंट पद्धती पहा</translation>
 <translation id="196146181975453736">आणखी जलद पेमेंट करण्यासाठी एक वेळ सुरक्षा तपासणी पूर्ण करा</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="1973335181906896915">क्रमीकरण एरर</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">तुमच्या इतर डिव्हाइसवरील टॅब</translation>
 <translation id="2930577230479659665">प्रत्येक प्रतीनंतर ट्रिम करा</translation>
 <translation id="2933624813161016821">एम्बॉसिंग फॉइल</translation>
+<translation id="293796669683825859">टिप्पण्या</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="2940418897281183211">PNG इमेज</translation>
 <translation id="2941878205777356567">एन्व्हलप ९ x १२ इंच</translation>
@@ -1992,6 +1994,7 @@
 <translation id="4298000214066716287">गुंतवणूक करणे</translation>
 <translation id="42981349822642051">विस्तृत करा</translation>
 <translation id="4298925811540301889">या साइटसाठीच्या कुकी तुमच्या ChromeOS डिव्हाइसवर सिंक केल्या जातात. तुम्ही काय सिंक करता हे व्यवस्थापित करण्यासाठी, <ph name="SYNC_SETTINGS" /> वर जा.</translation>
+<translation id="4300272766492248925">अ‍ॅप उघडा</translation>
 <translation id="4300675098767811073">मल्टिपल पंच राइट</translation>
 <translation id="4302514097724775343">खेळण्यासाठी डायनासोरवर टॅप करा</translation>
 <translation id="4304049446746819918">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर हलवण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> वर हलवण्याची शिफारस करत नाही}}</translation>
@@ -3034,6 +3037,7 @@
 <translation id="6101583188322746099">किराणामाल डिलिव्हरी सेवा</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">साइट तयार करा</translation>
+<translation id="6105511947520166941">पुढील वेळी थेट Chrome मध्ये Pix वापरून पेमेंट करा</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> वरील वेबपेज कदाचित तात्पुरते बंद आहे किंवा ते कदाचित कायमचे नवीन वेब पत्त्यावर हलवले आहे.</translation>
 <translation id="6107012941649240045">यांना जारी केलेले</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> यांनी गटाचे नाव बदलले आहे</translation>

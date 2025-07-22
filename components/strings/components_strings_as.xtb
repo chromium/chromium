@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">আপোনাৰ অন্য ডিভাইচৰ পৰা টেব</translation>
 <translation id="2930577230479659665">প্ৰতিখন প্ৰতিলিপিৰ পাছত ট্ৰিম কৰক</translation>
 <translation id="2933624813161016821">এম্ব’ছিং ফইল</translation>
+<translation id="293796669683825859">মন্তব্যসমূহ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> লিংকবোৰ খোলক</translation>
 <translation id="2940418897281183211">PNG প্ৰতিচ্ছবি</translation>
 <translation id="2941878205777356567">এনভেল’প ৯ x ১২ ইঞ্চি</translation>
@@ -1990,6 +1991,7 @@
 <translation id="4298000214066716287">বিনিয়োগ কৰা</translation>
 <translation id="42981349822642051">বিস্তাৰ কৰক</translation>
 <translation id="4298925811540301889">এই ছাইটটোৰ কুকিসমূহ আপোনাৰ সমগ্ৰ ChromeOS ডিভাইচত ছিংক কৰা হৈছে। আপুনি কি ছিংক কৰে সেয়া পৰিচালনা কৰিবলৈ, <ph name="SYNC_SETTINGS" />লৈ যাওক।</translation>
+<translation id="4300272766492248925">এপ্ খোলক</translation>
 <translation id="4300675098767811073">সোঁফালে একাধিক পাঞ্চ কৰক</translation>
 <translation id="4302514097724775343">খেলিবলৈ ডাইন’ছৰত টিপক</translation>
 <translation id="4304049446746819918">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ নিয়াটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ নিয়াটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ নিয়াটো চুপাৰিছ নকৰে}}</translation>

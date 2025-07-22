@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">ჩანართი თქვენი სხვა მოწყობილობიდან</translation>
 <translation id="2930577230479659665">შემოჭრა თითოეული ასლის შემდეგ</translation>
 <translation id="2933624813161016821">აფსკი ცხელი ტვიფვრისთვის</translation>
+<translation id="293796669683825859">კომენტარები</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-ის ბმულების გახსნა</translation>
 <translation id="2940418897281183211">PNG სურათი</translation>
 <translation id="2941878205777356567">კონვერტი 9 x 12 დუიმი</translation>
@@ -1994,6 +1995,7 @@
 <translation id="4298000214066716287">ინვესტირება</translation>
 <translation id="42981349822642051">გაშლა</translation>
 <translation id="4298925811540301889">ქუქი-ჩანაწერები ამ საიტისთვის სინქრონიზდება თქვენს ChromeOS მოწყობილობებში. სინქრონიზებული კონტენტის სამართავად გახსენით <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">აპის გახსნა</translation>
 <translation id="4300675098767811073">მრავლად გახვრეტა მარჯვნივ</translation>
 <translation id="4302514097724775343">სათამაშოდ შეეხეთ დინოზავრს</translation>
 <translation id="4304049446746819918">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ში გადატანა რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ში გადატანა რეკომენდებული არ არის}}</translation>

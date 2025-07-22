@@ -576,6 +576,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1959001866257244765">Palīdzēt uzlabot drošību tīmeklī visiem, nosūtot Google serveriem <ph name="BEGIN_WHITEPAPER_LINK" />dažu apmeklēto lapu vietrāžus URL, ierobežotu sistēmas informāciju un daļu lapu satura<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Konfidencialitātes politika<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Jūsu teksts un lapas saturs tiek nosūtīts uzņēmumam Google un var tikt izmantots šīs funkcijas uzlabošanai.
   <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="1960664692890490165">Kad veicat pirkumus pārlūkā Chrome, kā vienu no iespējām varat atlasīt maksājumu veidu, kas nav karte</translation>
 <translation id="196146181975453736">Veiciet vienreizēju drošības pārbaudi, lai varētu maksāt ātrāk.</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> grāmatzīmes</translation>
 <translation id="1973335181906896915">Radās serializēšanas kļūda.</translation>
@@ -1144,6 +1145,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2930531075747147366">Cilne no citas jūsu ierīces</translation>
 <translation id="2930577230479659665">Apgriešana pēc katras kopijas</translation>
 <translation id="2933624813161016821">Folijspieduma folija</translation>
+<translation id="293796669683825859">Komentāri</translation>
 <translation id="2938225289965773019">atvērt <ph name="PROTOCOL" /> saites</translation>
 <translation id="2940418897281183211">PNG formāta attēls</translation>
 <translation id="2941878205777356567">Aploksne (9 x 12 collas)</translation>
@@ -1991,6 +1993,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4298000214066716287">Ieguldījumi</translation>
 <translation id="42981349822642051">Izvērst</translation>
 <translation id="4298925811540301889">Šīs vietnes sīkfaili tiek sinhronizēti visās jūsu Chrome OS ierīcēs. Lai pārvaldītu sinhronizētos datus, pārejiet uz vietni <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Atvērt lietotni</translation>
 <translation id="4300675098767811073">Vairāki caurumi labajā pusē</translation>
 <translation id="4302514097724775343">Lai spēlētu, pieskarieties dinozauram</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administratora politika nosaka, ka nav ieteicams pārvietot šo failu šeit: <ph name="DESTINATION_NAME" />}zero{Administratora politika nosaka, ka nav ieteicams pārvietot šos failus šeit: <ph name="DESTINATION_NAME" />}one{Administratora politika nosaka, ka nav ieteicams pārvietot šos failus šeit: <ph name="DESTINATION_NAME" />}other{Administratora politika nosaka, ka nav ieteicams pārvietot šos failus šeit: <ph name="DESTINATION_NAME" />}}</translation>
@@ -3033,6 +3036,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6101583188322746099">Pārtikas piegādes pakalpojumi</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Izveidot vietni</translation>
+<translation id="6105511947520166941">Nākamreiz maksājiet ar Pix tieši pārlūkā Chrome</translation>
 <translation id="6106989379647458772">Tīmekļa lapa <ph name="PAGE" /> var būt īslaicīgi nepieejama, vai tā var būt pārvietota uz jaunu tīmekļa adresi.</translation>
 <translation id="6107012941649240045">Izsniegts</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> mainīja grupas nosaukumu</translation>

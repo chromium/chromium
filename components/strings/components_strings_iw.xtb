@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">‏כדי לעזור לנו לשפר את האבטחה באינטרנט לטובת כולם, המערכת תשלח אל Google <ph name="BEGIN_WHITEPAPER_LINK" />כתובות URL של כמה מהדפים שנכנסת אליהם, מידע מוגבל על המערכת וחלק מהתוכן של הדפים<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />מדיניות פרטיות<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">‏הטקסט ותוכן הדפים יישלחו אל Google ועשויים לשמש לשיפור התכונה הזו.
   <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">‏כשמבצעים רכישות ב-Chrome, אמצעי תשלום שהם לא כרטיסים יופיעו כאפשרות</translation>
 <translation id="196146181975453736">כדי לשלם מהר יותר, צריך להשלים בדיקת אבטחה חד-פעמית</translation>
 <translation id="1962204205936693436">סימניות של <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">שגיאה בעריכה בסידרה</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">כרטיסייה מהמכשיר הנוסף</translation>
 <translation id="2930577230479659665">חיתוך אחרי כל עותק</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
+<translation id="293796669683825859">תגובות</translation>
 <translation id="2938225289965773019">לפתוח קישורי <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">‏תמונת PNG</translation>
 <translation id="2941878205777356567">‏מעטפה – 9x12 אינץ'</translation>
@@ -1993,6 +1995,7 @@
 <translation id="4298000214066716287">השקעות</translation>
 <translation id="42981349822642051">הרחבה</translation>
 <translation id="4298925811540301889">‏קובצי ה-Cookie של האתר הזה מסונכרנים בכל מכשירי ChromeOS. כדי לנהל את הסנכרון, צריך לעבור אל <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">פתיחת האפליקציה</translation>
 <translation id="4300675098767811073">ניקובים מרובים בצד ימין</translation>
 <translation id="4302514097724775343">יש ללחוץ על הדינוזאור כדי לשחק</translation>
 <translation id="4304049446746819918">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
@@ -3040,6 +3043,7 @@ Del</translation>
 <translation id="6101583188322746099">שירותי משלוחים של מוצרי מזון</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">יצירת אתר</translation>
+<translation id="6105511947520166941">‏בפעם הבאה אפשר יהיה לשלם דרך Pix ישירות ב-Chrome</translation>
 <translation id="6106989379647458772">ייתכן שדף האינטרנט בכתובת <ph name="PAGE" /> אינו פעיל זמנית, או שהוא הועבר לכתובת אינטרנט קבועה אחרת.</translation>
 <translation id="6107012941649240045">מונפק ל</translation>
 <translation id="6107864469867367783">שם הקבוצה שונה על ידי <ph name="USER_DISPLAY_NAME" /></translation>

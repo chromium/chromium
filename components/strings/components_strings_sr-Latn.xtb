@@ -1145,6 +1145,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2930531075747147366">Kartica sa drugog uređaja</translation>
 <translation id="2930577230479659665">Skrati posle svakog kopiranja</translation>
 <translation id="2933624813161016821">Reljefna folija</translation>
+<translation id="293796669683825859">Komentari</translation>
 <translation id="2938225289965773019">otvori linkove za <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">PNG slika</translation>
 <translation id="2941878205777356567">Koverta 23×30 cm</translation>
@@ -1994,6 +1995,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4298000214066716287">Investiranje</translation>
 <translation id="42981349822642051">Proširite</translation>
 <translation id="4298925811540301889">Kolačići za ovaj sajt se sinhronizuju na ChromeOS uređajima. Da biste upravljali sadržajem koji sinhronizujete, posetite <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Otvori aplikaciju</translation>
 <translation id="4300675098767811073">Višestruko bušenje na desnoj strani</translation>
 <translation id="4302514097724775343">Dodirnite dinosaurusa da biste igrali</translation>
 <translation id="4304049446746819918">{0,plural, =1{Smernice administratora ne preporučuju premeštanje ovog fajla na <ph name="DESTINATION_NAME" />}one{Smernice administratora ne preporučuju premeštanje ovih fajlova na <ph name="DESTINATION_NAME" />}few{Smernice administratora ne preporučuju premeštanje ovih fajlova na <ph name="DESTINATION_NAME" />}other{Smernice administratora ne preporučuju premeštanje ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>

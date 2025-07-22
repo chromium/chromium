@@ -576,6 +576,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1959001866257244765">Aidake turvalisust veebis kõigi jaoks suurendada, saates Google'ile <ph name="BEGIN_WHITEPAPER_LINK" />mõne teie külastatud lehe URL-i, piiratud süsteemiteabe ja lehe teatud sisu<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privaatsuseeskirjad<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Teie tekst ja lehe sisu saadetakse Google'ile ning neid võidakse kasutada selle funktsiooni täiustamiseks.
   <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Kui teete Chrome'is oste, näete valikus ka kaardita makseviise</translation>
 <translation id="196146181975453736">Kiiremaks maksmiseks täitke ühekordne turvakontroll</translation>
 <translation id="1962204205936693436">Domeeni <ph name="DOMAIN" /> järjehoidjad</translation>
 <translation id="1973335181906896915">Viga jadaks teisendamisel</translation>
@@ -1144,6 +1145,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2930531075747147366">Vaheleht teie muust seadmest</translation>
 <translation id="2930577230479659665">Kärbi pärast iga koopiat</translation>
 <translation id="2933624813161016821">Reljeefne trükk fooliumlehega</translation>
+<translation id="293796669683825859">Kommentaarid</translation>
 <translation id="2938225289965773019">Avada protokolli <ph name="PROTOCOL" /> lingid</translation>
 <translation id="2940418897281183211">PNG-kujutis</translation>
 <translation id="2941878205777356567">9 × 12-tolline ümbrik</translation>
@@ -1993,6 +1995,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4298000214066716287">Investeerimine</translation>
 <translation id="42981349822642051">Laienda</translation>
 <translation id="4298925811540301889">Selle saidi küpsiseid sünkroonitakse teie ChromeOS-i seadmetes. Avage <ph name="SYNC_SETTINGS" /> sünkroonimise haldamiseks.</translation>
+<translation id="4300272766492248925">Ava rakendus</translation>
 <translation id="4300675098767811073">Mitu auku paremal</translation>
 <translation id="4302514097724775343">Mängimiseks puudutage dinosaurust</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> teisaldada}other{Administraatori reegel ei soovita neid faile sihtkohta <ph name="DESTINATION_NAME" /> teisaldada}}</translation>
@@ -3035,6 +3038,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6101583188322746099">Toidukaupade kohaletoimetamine</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Loo sait</translation>
+<translation id="6105511947520166941">Makske järgmine kord Pixiga otse Chrome'is</translation>
 <translation id="6106989379647458772">Veebileht <ph name="PAGE" /> võib olla ajutiselt maas või see viidi jäädavalt üle uuele veebiaadressile.</translation>
 <translation id="6107012941649240045">Väljastatud subjektile:</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> muutis grupi nime</translation>

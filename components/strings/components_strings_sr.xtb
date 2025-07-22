@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">Картица са другог уређаја</translation>
 <translation id="2930577230479659665">Скрати после сваког копирања</translation>
 <translation id="2933624813161016821">Рељефна фолија</translation>
+<translation id="293796669683825859">Коментари</translation>
 <translation id="2938225289965773019">отвори линкове за <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">PNG слика</translation>
 <translation id="2941878205777356567">Коверта 23×30 cm</translation>
@@ -1994,6 +1995,7 @@
 <translation id="4298000214066716287">Инвестирање</translation>
 <translation id="42981349822642051">Проширите</translation>
 <translation id="4298925811540301889">Колачићи за овај сајт се синхронизују на ChromeOS уређајима. Да бисте управљали садржајем који синхронизујете, посетите <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Отвори апликацију</translation>
 <translation id="4300675098767811073">Вишеструко бушење на десној страни</translation>
 <translation id="4302514097724775343">Додирните диносауруса да бисте играли</translation>
 <translation id="4304049446746819918">{0,plural, =1{Смернице администратора не препоручују премештање овог фајла на <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују премештање ових фајлова на <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују премештање ових фајлова на <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују премештање ових фајлова на <ph name="DESTINATION_NAME" />}}</translation>

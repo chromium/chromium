@@ -314,6 +314,7 @@ Sin embargo, los patrones de esta política que coinciden con el origen no puede
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
+<translation id="1238150413700645698">Contenido protegido</translation>
 <translation id="1238868319430505522">Configura el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para<ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Controla si se permite que los sitios web envíen solicitudes a puntos finales de red más privados de una manera no segura.
 
@@ -603,6 +604,7 @@ La reautenticación online puede solicitarse por varios motivos, como cuando se 
       Si se le asigna el valor "fast", <ph name="PRODUCT_NAME" /> evita la rasterización si es posible. Reducir la cantidad de rasterización puede ayudar a reducir los tamaños de los trabajos de impresión y aumentar la velocidad de impresión.
 
       Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo "full".</translation>
+<translation id="1453707129684226879">Controla las políticas de contenido protegido.</translation>
 <translation id="1455351936334569779">Las impresoras de los tipos incluidos en la lista de denegación no serán visibles, y sus funciones no se podrán utilizar.
 
       Si se incluyen todos los tipos de impresora en la lista de denegación, en la práctica se inhabilitará la impresión, ya que no habrá ninguna impresora disponible a la que enviar los documentos para imprimirlos.
@@ -1763,30 +1765,6 @@ Si no se establece esta política o se inhabilita, no se permitirá la transfere
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante la descarga</translation>
 <translation id="2261648512244797294">Inhabilitar el protocolo Privet de impresión obsoleto</translation>
 <translation id="2263881357524831360">Permitir el uso de gestores de contraseñas de terceros en <ph name="PRODUCT_NAME" /> para <ph name="ANDROID_NAME" /></translation>
-<translation id="2264286153777425328">Lista de acciones que se ejecutarán cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-Advertencia: Si se establece esta política, los datos personales locales pueden verse afectados y eliminarse de forma permanente. Te recomendamos probar la configuración antes de implementarla para evitar la eliminación accidental de datos personales.
-
-Esta política no tendrá efecto si no se define la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-Cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, el navegador ejecutará las acciones configuradas en esta política.
-
-Si esta política se deja vacía o no se establece, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
-
-Estas son las acciones que se pueden realizar:
-<ph name="CLOSE_BROWSERS_ACTION" />: cierra todas las ventanas del navegador y PWAs de este perfil. No se admite en Android ni en iOS.
-
-<ph name="CLOSE_TABS_ACTION" />: cierra todas las pestañas abiertas en las ventanas abiertas. Solo se admite en iOS.
-
-<ph name="SHOW_PROFILE_PICKER_ACTION" />: muestra la ventana del selector de perfil. No se admite en Android ni en iOS.
-
-<ph name="SIGN_OUT_ACTION" />: cierra la sesión del usuario que tiene la sesión iniciada. Solo se admite en iOS.
-
-<ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" /> y <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: borran los datos de navegación correspondientes. Consulta la política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> para obtener más información. Los tipos admitidos en iOS son <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" /> y <ph name="CLEAR_AUTOFILL_ACTION" />
-
-<ph name="RELOAD_PAGES_ACTION" />: vuelve a cargar todas las páginas web. En algunas páginas, es posible que primero se solicite la confirmación del usuario. No se admite en iOS.
-
-Si se definen <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> y <ph name="CLEAR_SITE_SETTINGS_ACTION" />, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="2266422599396179941">Permitir que los usuarios envíen sugerencias
 </translation>
 <translation id="2268891553068901979">Si se habilita esta política, se desactivará la sincronización de <ph name="GOOGLE_DRIVE_NAME" /> en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /> cuando se utilice una conexión de datos móviles. Los datos solos se sincronizan con Drive si hay una conexión a una red Wi-Fi o Ethernet.
@@ -3744,17 +3722,6 @@ Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KE
       Si se inhabilita esta política, no se permitirá el uso de la API Translator.</translation>
 <translation id="366494444808132420">Permitir integraciones de Gemini.</translation>
 <translation id="3665437376055221832">Pedirle al usuario que realice una acción solo si no hay ningún certificado que coincida con la selección automática.</translation>
-<translation id="3667467644216039144">Configura una lista de los tipos de datos de navegación que se deben eliminar cuando el usuario cierra todas las ventanas del navegador.
-
-Advertencia: Si se establece esta política, los datos personales locales pueden verse afectados y eliminarse de forma permanente. Te recomendamos probar la configuración antes de implementarla para evitar la eliminación accidental de datos personales.
-
-Los tipos de datos disponibles son los siguientes: historial de navegación (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historial de descargas (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), caché <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, Autocompletar (<ph name="DATA_TYPE_AUTOFILL" />), contraseñas (<ph name="DATA_TYPE_PASSWORD" />), configuración de sitios (<ph name="DATA_TYPE_SITE_SETTINGS" />) y datos de aplicaciones alojadas (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política no prevalece sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Hasta Chrome 114, esta política requería que se asignara el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. A partir de Chrome 115, si se define esta política, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
-
-Si por algún motivo se ha iniciado la eliminación de datos y no se ha completado, los datos de navegación se borrarán la próxima vez que se cargue el perfil.
-
-Si <ph name="PRODUCT_NAME" /> no se cierra correctamente (por ejemplo, si el navegador o el SO fallan), los datos de navegación no se borrarán, ya que el navegador no se ha cerrado porque el usuario haya cerrado todas las ventanas del navegador.</translation>
 <translation id="3671773704245936868">Inhabilitar el resaltado del foco del teclado</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitud CORS sin comodín.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) se suele usar para dividir tareas largas de JavaScript.
@@ -4881,6 +4848,27 @@ Esta política no tendrá efecto si se habilita, se deja vacía o no se define.<
       Esta política solo afecta a los usuarios que se hayan autenticado mediante GAIA sin SAML.
 
       El valor de esta política debe especificarse en número de días.</translation>
+<translation id="4523997900743255417">Una política para controlar si debe habilitarse la función <ph name="IP_PROTECTION_NAME" /> de <ph name="PRIVACY_SANDBOX_NAME" />.
+
+<ph name="IP_PROTECTION_NAME" /> es una función que limita la disponibilidad de la dirección IP original de un usuario para ciertas solicitudes de red de terceros realizadas mientras navega en modo Incógnito, lo que mejora las protecciones contra el seguimiento entre sitios durante las sesiones de navegación en este modo.
+
+Si se inhabilita esta política, se inhabilitará <ph name="IP_PROTECTION_NAME" /> y los usuarios no podrán habilitar la función mediante la configuración de UI.
+Si se habilita esta política, se habilitará <ph name="IP_PROTECTION_NAME" /> y los usuarios no podrán inhabilitar la función mediante la configuración de UI.
+Si no se define esta política, <ph name="IP_PROTECTION_NAME" /> se habilitará de forma predeterminada y los usuarios podrán controlar la función en su dispositivo mediante la configuración de UI.
+
+Algunas consideraciones sobre si las empresas deberían inhabilitar <ph name="IP_PROTECTION_NAME" />:
+
+- No se realizarán peticiones de DNS para las solicitudes con proxy, lo que puede afectar a la monitorización o al filtrado basados en DNS.
+
+- Es posible que las aplicaciones empresariales no funcionen correctamente cuando se usan en modo Incógnito si dependen de solicitudes a dominios (o subdominios de esos dominios) de la lista de dominios enmascarados (<ph name="MASKED_DOMAIN_LIST_URL" />) y requieren que esas solicitudes procedan de intervalos de direcciones IP específicos.
+
+- Es posible que el tráfico no se redirija a través de un proxy en el modo Incógnito en determinadas condiciones; por ejemplo, cuando los usuarios abren el modo Incógnito desde un perfil de Chrome en el que no han iniciado sesión. En general, esta función requiere que el usuario haya iniciado sesión en Chrome con una cuenta de Google personal al abrir el modo Incógnito.
+
+- La lista de dominios enmascarados puede cambiar con el tiempo. Las nuevas versiones se enviarán a los usuarios automáticamente. Para obtener más información sobre la lista de dominios enmascarados, consulta <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
+
+Para obtener más información sobre <ph name="IP_PROTECTION_NAME" />, consulta <ph name="IP_PROTECTION_README_URL" />.
+
+<ph name="IP_PROTECTION_NAME" /> se lanzará a partir de la versión M139.</translation>
 <translation id="4525328580251166229">Controla las políticas relacionadas con el subsistema Bruschetta.</translation>
 <translation id="4528981768990874684">Inhabilita la función <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Esta política está obsoleta.</translation>
@@ -5121,6 +5109,7 @@ Esta política es temporal y se eliminará más adelante.</translation>
 
       Nota: Esta opción anula la política <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> (si está presente).</translation>
 <translation id="4658380868451934335">Habilitar el dictado en la pantalla de inicio de sesión</translation>
+<translation id="4658420696622830453">Controles de contenido protegido</translation>
 <translation id="4660356908994631271">Mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="4661885151480410620">Los cambios de comportamiento pueden aplicarse en función del proceso de lanzamiento de funciones.</translation>
 <translation id="4661889655253181651">La configuración de contenido permite especificar la gestión de un tipo específico de contenido (por ejemplo, cookies, imágenes o JavaScript).</translation>
@@ -6391,6 +6380,9 @@ Para <ph name="PRODUCT_OS_NAME" />, consulta <ph name="DEVICE_METRICS_REPORTING_
 <translation id="5488268615614906498">Esta política controla si el usuario tiene permiso para guardar archivos en <ph name="GOOGLE_DRIVE_NAME" /> directamente desde el administrador de descargas.
 Si se habilita esta política o no se define, el usuario podrá guardar archivos en <ph name="GOOGLE_DRIVE_NAME" /> desde el administrador de descargas. Si se inhabilita esta política, los usuarios no podrán ver esa opción en el administrador de descargas.
 Esta política no impide que los usuarios puedan guardar archivos en <ph name="GOOGLE_DRIVE_NAME" /> de otras formas distintas al administrador de descargas.</translation>
+<translation id="5490462588616309068">Si se le asigna el valor true a esta política o no se define, se permitirá el uso de identificadores de contenido protegido, lo que puede ayudar a ofrecer una mayor calidad de reproducción de contenido protegido.
+
+Si se le asigna el valor false, no se podrán usar identificadores de contenido protegido.</translation>
 <translation id="5494322570831642650">Especifica si el usuario podrá abrir páginas en modo Incógnito en <ph name="PRODUCT_NAME" />.
 
       Si se habilita esta política o no se le asigna ningún valor, se podrán abrir páginas en modo Incógnito.
@@ -6677,6 +6669,7 @@ Si no se define o si no se puede determinar la antigüedad de lanzamiento, se us
       Esta política se puede anular para patrones de URL específicos usando las políticas <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Esta política solo afecta a las operaciones de portapapeles controladas por el permiso de portapapeles de sitios. No afecta a las operaciones de copiar y pegar depuradas o de confianza.</translation>
+<translation id="5649788773465136073">No permite que los sitios usen identificadores de contenido protegido, lo que puede provocar una menor calidad de reproducción de contenido protegido.</translation>
 <translation id="5650256117857913687">Inhabilitar que los usuarios con acceso remoto abran URLs del host en su navegador de cliente local</translation>
 <translation id="5650716720715977549">Aplicar restricciones a las solicitudes a puntos finales más privados de la red</translation>
 <translation id="5651538748810288218">Si se le asigna el valor 1 a esta política, los sitios web podrán usar y acceder a los sensores, como los de luz o movimiento. Si se le asigna el valor 2 a esta política, se denegará el acceso a los sensores.
@@ -6979,6 +6972,7 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se le permitirá recoger datos a <ph name="PLUGIN_VM_NAME" />.
       Si se le asigna el valor "true", <ph name="PLUGIN_VM_NAME" /> podrá recoger datos de uso de <ph name="PLUGIN_VM_NAME" /> que posteriormente se combinarán y se analizarán de forma exhaustiva para mejorar la experiencia de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="5872738620659477303">Vincular las credenciales de Google a un dispositivo.</translation>
+<translation id="5873333871812203119">Permite que las páginas web usen identificadores para reproducir contenido protegido</translation>
 <translation id="5875873062228321803">Configura el requisito de la versión mínima permitida de <ph name="PRODUCT_OS_NAME" />.
 
       Cuando a esta política se le asigna una lista que no esté vacía:
@@ -8389,17 +8383,6 @@ Si se asigna el valor False a esta política o no se define, se usará el compor
 <translation id="6757413365906304125">Esta política determina cómo funcionará la reasignación de las teclas Re Pág y Av Pág en la subpágina de reasignación de teclas. La subpágina de reasignación de teclas permite que los usuarios personalicen las teclas. Si se habilita, esta política impedirá que los usuarios personalicen estas reasignaciones específicas. Si no se define esta política, las combinaciones de teclas basadas en búsquedas serán las predeterminadas y los usuarios podrán configurarlas.</translation>
 <translation id="6757613329154374267">Copia de seguridad y restauración habilitada</translation>
 <translation id="6758659208493449452">Esta política controla si los usuarios registrados en el Programa de Protección Avanzada tienen acceso a funciones de protección adicionales. Puede que algunas de estas funciones requieran compartir datos con Google (por ejemplo, los usuarios de Protección Avanzada podrán enviar sus descargas a Google para que realice un análisis de malware). Si se asigna el valor "True" a esta política o no se le asigna ningún valor, los usuarios registrados tendrán acceso a funciones de protección adicionales. Si se le asigna el valor "False", los usuarios de Protección Avanzada solo tendrán acceso a las funciones estándar.</translation>
-<translation id="6759078816721385015">Configura los ajustes del periodo de vida de los datos de navegación de <ph name="PRODUCT_NAME" />. Esta política permite a los administradores configurar (por tipo de dato) cuándo eliminará el navegador los datos. Es útil para las personas que trabajan con datos sensibles de clientes.
-
-Advertencia: Si se establece esta política, los datos personales locales pueden verse afectados y eliminarse de forma permanente. Te recomendamos probar la configuración antes de implementarla para evitar la eliminación accidental de datos personales.
-
-Los tipos de datos disponibles son <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> y <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> y <ph name="DATA_TYPE_HOSTED_APP_DATA" /> no se admiten en Android.
-
-El navegador eliminará automáticamente los datos de los tipos seleccionados que tengan una antigüedad superior a <ph name="TIME_TO_LIVE_IN_HOURS" />. El valor mínimo que se puede definir es 1 hora.
-
-Los datos caducados se eliminarán 15 segundos después de iniciarse el navegador y, después, cada 30 minutos mientras se esté ejecutando el navegador.
-
-Hasta Chrome 114, esta política requería que se asignara el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. A partir de Chrome 115, si se define esta política, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="6763023079133439068">Permitir certificados que no tengan una extensión subjectAlternativeName cuando los emitan anclas de confianza locales</translation>
 <translation id="6766216162565713893">Permitir que los sitios le pidan permiso al usuario para acceder a dispositivos Bluetooth cercanos</translation>
 <translation id="6770454900105963262">Informar sobre sesiones del kiosco activas</translation>
@@ -11776,6 +11759,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="9197740283131855199">Porcentaje que permite ajustar el tiempo de espera de inactividad de la pantalla si el usuario vuelve a ser activo después de la inactividad</translation>
 <translation id="9200828125069750521">Parámetros para URL de imagen que utiliza POST</translation>
 <translation id="9202520409249547230">No permitir Autocompletar con IA.</translation>
+<translation id="9204520300236345497">Permite que los sitios usen identificadores de contenido protegido, lo que puede ayudar a ofrecer una mayor calidad de reproducción de contenido protegido.</translation>
 <translation id="9204863016826119209">Las aplicaciones Android que estén instaladas y aparezcan en esta política pueden usar claves corporativas.</translation>
 <translation id="9206472508136116830">No permitir la detección de sistemas de archivos compartidos de NetBIOS</translation>
 <translation id="9207596996305971030">No informar de eventos de inicio o cierre de sesión</translation>

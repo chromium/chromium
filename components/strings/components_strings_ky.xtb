@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">Өтмөк башка түзмөгүңүздөн жөнөтүлдү</translation>
 <translation id="2930577230479659665">Ар бир көчүрүүдөн кийин кыркуу</translation>
 <translation id="2933624813161016821">Эмбоссовка фольгасы</translation>
+<translation id="293796669683825859">Жорумдар</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> шилтемелерин ачуу</translation>
 <translation id="2940418897281183211">PNG сүрөтү</translation>
 <translation id="2941878205777356567">Конверт 9 x 12 дюйм</translation>
@@ -1993,6 +1994,7 @@
 <translation id="4298000214066716287">Инвестиция</translation>
 <translation id="42981349822642051">Жайып көрсөтүү</translation>
 <translation id="4298925811540301889">Бул сайттын cookie файлдары ChromeOS түзмөктөрүңүздө шайкештирилет. Шайкештириле турган нерселерди тескөө үчүн <ph name="SYNC_SETTINGS" /> бөлүмүнө өтүңүз.</translation>
+<translation id="4300272766492248925">Колдонмону ачуу</translation>
 <translation id="4300675098767811073">Оң жагын бир нече жолу тешүү</translation>
 <translation id="4302514097724775343">Ойноп баштоо үчүн динозаврды таптап коюңуз</translation>
 <translation id="4304049446746819918">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө жылдырууну сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө жылдырууну сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>

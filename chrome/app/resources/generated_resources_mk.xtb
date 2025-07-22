@@ -433,7 +433,6 @@
 <translation id="1282436639288565079">Детали за групата картички</translation>
 <translation id="1283126956823499975">Нешто тргна наопаку со поставувањето на уредот</translation>
 <translation id="1284277788676816155">Не дозволувај да се зачувуваат податоци</translation>
-<translation id="1284912418686719556">Chrome создава силна лозинка за вас. Не треба да ја памтите бидејќи ќе се зачува за вас во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Никогаш не преведувај ја оваа локација</translation>
 <translation id="1285484354230578868">Складирајте податоци на вашата сметка на Google Диск</translation>
 <translation id="1285625592773741684">Моменталната поставка за користење интернет е „Мобилен интернет“</translation>
@@ -693,7 +692,6 @@
 <translation id="1474785664565228650">Промената во поставката за микрофонот бара рестартирање на Parallels Desktop. Рестартирајте ја Parallels Desktop за да продолжите.</translation>
 <translation id="1476088332184200792">Копирај на уредот</translation>
 <translation id="1476347941828409626">Управувајте со профилите на Chrome</translation>
-<translation id="1476595624592550506">Променете ја лозинката</translation>
 <translation id="1476607407192946488">&amp;Поставки за јазик</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.</translation>
 <translation id="1477654881618305065">Вашата организација не ви дозволува да ги споделувате овие содржини. Ако ви треба помош, контактирајте со администраторот.</translation>
@@ -1927,7 +1925,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Следните копчиња не се поддржани: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">Пристапот на сајтов до сензорите за движење или светлина е блокиран.</translation>
-<translation id="2310414604104802967">Се проверува дали сте најавени…</translation>
 <translation id="2310923358723722542">Екран и зголемување</translation>
 <translation id="2312219318583366810">URL на страницата</translation>
 <translation id="2314165183524574721">Тековната поставка за видливост е „Скриен“</translation>
@@ -1958,7 +1955,6 @@
 <translation id="2328636661627946415">Кога сте во режимот „Инкогнито“, сајтовите може да користат колачиња само за да ја гледаат вашата активност од прелистувањето на нивниот сајт. Колачињата се бришат на крајот на сесијата во „Инкогнито“.</translation>
 <translation id="2329597144923131178">Најавете се за да ги добиете обележувачите, историјата, лозинките и другите поставки на сите ваши уреди.</translation>
 <translation id="2330182457402792918">Изберете датотеки што сајтов може да ги прочита</translation>
-<translation id="2331334586452217517">Содржините од сајтов се испраќаат до Google и може да ги гледаат прегледувачи. Информации за <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Не може да се вчитаат уредите зачувани на <ph name="PRIMARY_EMAIL" />. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="2332131598580221120">Прикажи во продавница</translation>
 <translation id="2332515770639153015">„Подобреното безбедно прелистување“ е вклучено</translation>
@@ -2060,7 +2056,6 @@
 <translation id="2410079346590497630">Детали за верзијата</translation>
 <translation id="2410298923485357543">Користи природен глас кога уредот е онлајн</translation>
 <translation id="2410754283952462441">Изберете сметка</translation>
-<translation id="241082044617551207">Непознат приклучок</translation>
 <translation id="2410940059315936967">Сајтот што го посетувате може да вметне содржини од други сајтови, на пример, слики, реклами и текст. Колачињата поставени од овие други сајтови се нарекуваат колачиња од трети страни.</translation>
 <translation id="2411666601450687801">Не се дозволени виртуелни машини на уредов</translation>
 <translation id="2412015533711271895">Твојот родител или старател мора да каже дека е во ред да ја користиш екстензијава</translation>
@@ -2236,7 +2231,6 @@
 <translation id="2514326558286966059">Отклучувајте побрзо со вашиот отпечаток</translation>
 <translation id="2514465118223423406">Кога има поврзано глувче</translation>
 <translation id="2514938842036917377">Ова ќе ги избрише податоците (<ph name="TOTAL_USAGE" />) што ги складирале <ph name="SITE_NAME" />, поврзаните сајтови и инсталираните апликации</translation>
-<translation id="2515489088825102986">Повеќе за функцијава и вашата приватност</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Потврдете го вашето корисничко име</translation>
 <translation id="2517472476991765520">Скенирај</translation>
@@ -2407,7 +2401,6 @@
 <translation id="2638662041295312666">Слика при најавување</translation>
 <translation id="2640299212685523844">Користи GTK</translation>
 <translation id="264083724974021997">Поврзете се со телефонот - дијалог</translation>
-<translation id="2641098199809442625">Вашата лозинка не е ажурирана, но сѐ уште би требало да може да пристапите до сајтот со вашата стара лозинка.</translation>
 <translation id="2642111877055905627">Фудбалска топка</translation>
 <translation id="2642206811783203764">Секогаш вклучено: <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">Секогаш може да ги избришете податоците за мерење на рекламите со бришење на податоците од прелистувањето</translation>
@@ -3879,7 +3872,6 @@
 <translation id="3694590407685276748">Нагласување на курсорот за текст</translation>
 <translation id="369489984217678710">Лозинки и други податоци за најавување</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Безбедносните проверки се извршени. Податоците ќе се прикачат.}=1{Безбедносните проверки се извршени. Датотеката ќе се прикачи.}one{Безбедносните проверки се извршени. Датотеките ќе се прикачат.}other{Безбедносните проверки се извршени. Датотеките ќе се прикачат.}}</translation>
-<translation id="3696309329332791122">Проверете ја лозинката</translation>
 <translation id="369736917241079046">стартер + стрелка налево</translation>
 <translation id="3697716475445175867">последно отворен</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Може да сопрете сајтов да испраќа известувања во иднина.}one{Може да сопрете сајтовиве да испраќаат известувања во иднина.}other{Може да сопрете сајтовиве да испраќаат известувања во иднина.}}</translation>
@@ -5382,7 +5374,6 @@
 <translation id="4742970037960872810">Отстрани нагласување</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Дознајте како да ги ажурирате апликациите<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Дозволено – <ph name="PERMISSION_DETAILS" />. Вклучете <ph name="LINK_BEGIN" />пристап до микрофонот за оперативниот систем<ph name="LINK_END" />.</translation>
-<translation id="4744172369799559159">Луѓето ги прегледуваат страниците со лозинки и поврзаните детали за да ја подобруваат функцијава, но вашата лозинка е шифрирана и никогаш не може да ја види никој.</translation>
 <translation id="4744260496658845719">Осветленост на осветлувањето на тастатурата</translation>
 <translation id="4744268813103118742">Оди на сајтот</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6729,7 +6720,6 @@
 <translation id="5713033452812927234">Се отвораат прозорци од вашиот претходен уред</translation>
 <translation id="5713158217420111469">Поврзан со <ph name="DEVICE" /></translation>
 <translation id="5714100381896040477">Ограничи го движењето на екранот</translation>
-<translation id="5715711091495208045">Посредник со приклучоци: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">Сајтовите може да прашуваат за да се поврзат со HID-уреди</translation>
 <translation id="572155275267014074">Поставки за Android</translation>
 <translation id="5722086096420375088">Зелена и бела</translation>
@@ -7477,7 +7467,6 @@
 <translation id="6253801023880399036">Лозинките се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Клучот е доведен во опасност</translation>
 <translation id="6254892857036829079">Совршено</translation>
-<translation id="6257131917452817589">автоматизираната промена на лозинката</translation>
 <translation id="6257602895346497974">Вклучете синхронизација…</translation>
 <translation id="625827534921607067">Оваа мрежа ќе има предност ако е достапна повеќе од една претходно поврзана или конфигурирана мрежа</translation>
 <translation id="6259776178973198997">Освежи ги информациите за сопствениците на Wi-Fi Direct:</translation>
@@ -8224,7 +8213,6 @@
 <translation id="679845623837196966">Прикажи го списокот за читање</translation>
 <translation id="6798578729981748444">За да го завршите увезувањето, затворете ги сите прозорци на Firefox.</translation>
 <translation id="6798780071646309401">Caps Lock е вклучено</translation>
-<translation id="6798954102094737107">Приклучок: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Скриени копчиња на алатникот</translation>
 <translation id="6800893479155997609">Најпопуларни апликации за вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Изберете дали екстензијава ќе може да го чита или променува сајтов}one{Изберете дали екстензииве ќе може да го читаат или променуваат сајтов}other{Изберете дали екстензииве ќе може да го читаат или променуваат сајтов}}</translation>
@@ -9722,7 +9710,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот со ChromeOS. Ако сте администратор на доменот, поставкава може да ја промените во администрациската конзола.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google, податоците на Android може да ви се зачувуваат во сметката на Google. Може да ги гледате и бришете податоците, како и да ги менувате поставките за сметката на account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до вашите лични резултати или до вашиот „Помошник“. За да заштедите батерија, во поставките за „Помошникот“ може да изберете „Ok Google“ да биде вклучено само кога уредов е поврзан со извор на напојување.</translation>
-<translation id="7851196412551419054">Се променува лозинката…</translation>
 <translation id="7851457902707056880">Најавувањето беше ограничено само на сопственикот на сметката. Рестартирајте и најавете се со сметката на корисникот. Машината автоматски ќе се рестартира за 30 секунди.</translation>
 <translation id="7851716364080026749">Секогаш блокирај пристап за камера и микрофон</translation>
 <translation id="7851720427268294554">IPP-анализатор</translation>
@@ -10438,7 +10425,6 @@
 <translation id="8330617762701840933">Списокот на веб-сајтови кои пренасочуваат кон алтернативен прелистувач.</translation>
 <translation id="8330689128072902965">Контактите во близина може да споделуваат со вас. Кликнете за промена.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Поддржан тип датотека: <ph name="FILE_TYPE1" />}=2{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и уште {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и уште {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
-<translation id="8331578454993293727">Вашата лозинка е најдена при упад во податоци</translation>
 <translation id="8331822764922665615">Именувајте ја групата, изберете ја бојата, а потоа притиснете Esc</translation>
 <translation id="833256022891467078">Споделени папки на Crostini</translation>
 <translation id="833262891116910667">Нагласување</translation>
@@ -10522,7 +10508,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Ако ви треба уште помош, одете на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Резиме за добредојде</translation>
 <translation id="8386091599636877289">Правилото не е пронајдено.</translation>
-<translation id="8387087863179559896">Chrome може да ја ажурира вашата сметка за сајтов со силна лозинка. Не треба да ја памтите лозинката бидејќи е зачувана за вас во Google Password Manager за <ph name="EMAIL" />. Повеќе за <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="8387361103813440603">Не им е дозволено да ја гледаат локацијата</translation>
 <translation id="8387617938027387193">Потврдете дека сте вие</translation>
 <translation id="8388770971141403598">Секундарните профили не се поддржани</translation>
@@ -10705,7 +10690,6 @@
 <translation id="8516472100141530292">Кликнете ја групата со десното копче</translation>
 <translation id="8517759303731677493">Изменете…</translation>
 <translation id="8518942514525208851">Kриј ги вулгарностите</translation>
-<translation id="8519895319663397036">Не може да се увезат лозинките. Големината на датотеката треба да биде помала од 150 KB.</translation>
 <translation id="8523493869875972733">Откажи</translation>
 <translation id="8523849605371521713">Додадено од правилото</translation>
 <translation id="8524594273111932386">search + стрелка надолу</translation>
@@ -11419,7 +11403,6 @@
 <translation id="9007688236643268728">Најавете се повторно</translation>
 <translation id="9008201768610948239">Игнорирај</translation>
 <translation id="9008201858626224558">Копче за назад до страницата со детали за <ph name="SUBPAGE_TITLE" /></translation>
-<translation id="9008425116680857079">Chrome може да ја промени вашата лозинка штом ќе се најавите.</translation>
 <translation id="9008828754342192581">Претходно одбравте да ги дозволите сите екстензии на <ph name="ORIGIN" /></translation>
 <translation id="9009369504041480176">Се поставува (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Увезено од Windows</translation>

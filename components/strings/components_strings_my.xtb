@@ -577,6 +577,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />သင်ဝင်ကြည့်သည့် စာမျက်နှာအချို့၏ URL များ၊ ကန့်သတ်ထားသည့် စနစ်အချက်အလက်များနှင့် အချို့သောစာမျက်နှာပါ အကြောင်းအရာများ<ph name="END_WHITEPAPER_LINK" /> ကို Google သို့ ပို့ပေးခြင်းဖြင့် လူတိုင်းအတွက် ဝဘ်ပေါ်တွင် လုံခြုံရေး ကောင်းမွန်လာအောင် ကူညီပါ။ <ph name="BEGIN_PRIVACY_PAGE_LINK" />ကိုယ်ရေးအချက်အလက် မူဝါဒ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">သင့်စာသားနှင့် စာမျက်နှာအကြောင်းအရာကို Google သို့ ပို့ပြီး ဤဝန်ဆောင်မှု ပိုကောင်းစေရန် သုံးနိုင်သည်။
   <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ ကတ်မပါသော ငွေပေးချေနည်းလမ်းများကို ရွေးစရာများအနေနှင့် ကြည့်နိုင်သည်</translation>
 <translation id="196146181975453736">ပိုမိုမြန်ဆန်စွာ ငွေပေးချေရန် တစ်ကြိမ် လုံခြုံရေးစစ်ဆေးခြင်းကို အပြီးသတ်ပါ</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> စာညှပ်များ</translation>
 <translation id="1973335181906896915">နံပါတ်စဉ်စီမှု အမှား</translation>
@@ -1149,6 +1150,7 @@
 <translation id="2930531075747147366">အခြားစက်မှ တဘ်</translation>
 <translation id="2930577230479659665">မိတ္တူတစ်ခုပြီးလျှင် ဖြတ်ထုတ်ရန်</translation>
 <translation id="2933624813161016821">ဖောင်းကြွသတ္တုလွှာပါး</translation>
+<translation id="293796669683825859">မှတ်ချက်များ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> လင့်များ ဖွင့်ရန်</translation>
 <translation id="2940418897281183211">PNG ပုံ</translation>
 <translation id="2941878205777356567">၉ x ၁၂ လက်မ စာအိတ်</translation>
@@ -1994,6 +1996,7 @@
 <translation id="4298000214066716287">ရင်းနှီးမြှုပ်နှံခြင်း</translation>
 <translation id="42981349822642051">တိုးချဲ့</translation>
 <translation id="4298925811540301889">သင့် ChromeOS စက်ပစ္စည်းများတွင် စင့်ခ်လုပ်ထားသော ဤဝဘ်ဆိုက်အတွက် ကွတ်ကီးများ။ သင်စင့်ခ်လုပ်သည်များကို စီမံရန် <ph name="SYNC_SETTINGS" /> သို့ သွားပါ။</translation>
+<translation id="4300272766492248925">အက်ပ်ကို ဖွင့်ရန်</translation>
 <translation id="4300675098767811073">ညာဘက်တွင် အများအပြားဖောက်ရန်</translation>
 <translation id="4302514097724775343">ကစားရန် ဒိုင်နိုကိုတို့ပါ</translation>
 <translation id="4304049446746819918">{0,plural, =1{ဤဖိုင်အား <ph name="DESTINATION_NAME" /> သို့ ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}other{ဤဖိုင်များအား <ph name="DESTINATION_NAME" /> သို့ ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}}</translation>
@@ -3036,6 +3039,7 @@
 <translation id="6101583188322746099">စားသောက်ကုန် ပို့ဆောင်ရေးဝန်ဆောင်မှု</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">ဝဘ်ဆိုက် ပြုလုပ်ရန်</translation>
+<translation id="6105511947520166941">နောက်တစ်ကြိမ်တွင် Chrome ၌ Pix ဖြင့် တိုက်ရိုက်ပေးပါ</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> ပေါ်က ဝဘ်စာမျက်နှာမှာ ယာယီ ဒေါင်းနေတာ ဖြစ်နိုင်သည် သို့မဟုတ် ၎င်းသည် ဝဘ် လိပ်စာ သစ်ဆီသို့ ထာဝရ ရွှေ့ပြောင်းသွားတာ ဖြစ်နိုင်သည်။</translation>
 <translation id="6107012941649240045">...အား ထုတ်ပေးခဲ့သည်</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> က အုပ်စုအမည်ကို ပြောင်းလိုက်သည်</translation>

@@ -240,6 +240,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2088833076121753253">Herbegin Chrome nou om outovul klaar op te stel. Jou oortjies sal outomaties weer oopmaak.</translation>
 <translation id="2091863218454846791">Wys tans kompakte aansig</translation>
 <translation id="2093731487903423814">afgelope 15 minute</translation>
+<translation id="2096577711562668473">Verander outovuldiens?</translation>
 <translation id="2100273922101894616">Outomatiese aanmelding</translation>
 <translation id="2109384632594340939">profielfoto</translation>
 <translation id="2111511281910874386">Gaan na bladsy</translation>
@@ -325,6 +326,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2496180316473517155">Blaaigeskiedenis</translation>
 <translation id="2497852260688568942">Jou administrateur het sinkronisering gedeaktiveer</translation>
 <translation id="250020030759455918">Jy sal jou <ph name="SITE_NAME" />-aanmeldingstatus, -blaaierdata en -werfdata in Chrome sien</translation>
+<translation id="2502798195266898572">Leesmodus se onderste blad is teen volle hoogte oopgemaak</translation>
 <translation id="2510106555128151389">Installeer tans <ph name="WEBAPK_NAME" /> …</translation>
 <translation id="2512234228327349533">Soek koopopsies</translation>
 <translation id="2513403576141822879">Sien <ph name="BEGIN_LINK" />Sinkornisering en Google-dienste<ph name="END_LINK" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling</translation>
@@ -934,6 +936,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Laai tans lêer af …}other{Laai tans # lêers af …}}</translation>
 <translation id="5210286577605176222">Spring na die vorige oortjie</translation>
 <translation id="5210365745912300556">Maak oortjie toe</translation>
+<translation id="5212800876504289412">Herbegin Chrome om hierdie verandering te voltooi. Oortjies maak outomaties weer oop wanneer jy herbegin.</translation>
 <translation id="5215957675041756913">Beheer jou data en rekening</translation>
 <translation id="5218324087477576825">Kaartnommer word vereis</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en meer <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder want jy het nie onlangs die werf besoek nie</translation>
@@ -1062,6 +1065,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Wys kennisgewing}other{Wys kennisgewings}}</translation>
 <translation id="5814749351757353073">Bly op hoogte van jou gunstelingwerwe</translation>
 <translation id="5823093032261493462">Wil jy in elk geval “<ph name="FILE_NAME" />” van <ph name="DOWNLOAD_DOMAIN" /> aflaai?</translation>
+<translation id="5825135637446025843">Nadat Chrome herbegin het, sal jou inligting wat van jou nuwe verskaffer gestoor is, gebruik word om wagwoorde, toegangsleutels, adresse, betaalmetodes en ander inligting outomaties in te vul.</translation>
 <translation id="5828921839638612740">Jy kan die data in Chrome-instellings uitvee</translation>
 <translation id="5829586821381540080">Gestoor in <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Onbekend</translation>
@@ -1178,6 +1182,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6295158916970320988">Alle werwe</translation>
 <translation id="6296366034485697675">Voer uit en vee uit</translation>
 <translation id="629730747756840877">Rekening</translation>
+<translation id="6300697579369314762">Leesmodus se onderste blad is teen halwe hoogte oopgemaak</translation>
 <translation id="6301526076346731664">Maak Ontwikkelaarnutsgoed oop</translation>
 <translation id="6303969859164067831">Meld af en skakel sinkronisering af</translation>
 <translation id="6307241780749477694">Verifieer dat dit jy is om al jou wagwoorde op hierdie toestel te kry</translation>
@@ -1398,6 +1403,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="71503698506017927">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie.
 
 <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> om hierdie instelling te verander.</translation>
+<translation id="7151332203500147130">Leesmodus se onderste blad is toegemaak</translation>
 <translation id="7165972437814027679">Kry meer inligting oor waarom Chrome sekere lêers blokkeer</translation>
 <translation id="7168323970702333693">Aangemeld as <ph name="USER_NAME" />. Maak instellings oop.</translation>
 <translation id="7173114856073700355">Maak Instellings oop</translation>

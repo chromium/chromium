@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
-<translation id="1036348656032585052">I-off</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ginawa <ph name="NUM_WEEKS_ONE" /> linggo ang nakalipas}one{Ginawa <ph name="NUM_WEEKS_MANY" /> linggo ang nakalipas}other{Ginawa <ph name="NUM_WEEKS_MANY" /> na linggo ang nakalipas}}</translation>
 <translation id="1063300264396686489">Awtomatikong buksan ang mga grupo ng tab mula sa iba pang device</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Ilipat sa seksyon ng mga hindi aktibong item</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{I-bookmark ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{I-bookmark ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{I-bookmark ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="2055057176188061528">Pumili ng grupo ng tab o gumawa ng bagong grupo ng tab</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Awtomatikong isinasara ng Chrome ang mga item sa seksyon ng mga hindi aktibong item na hindi mo nagamit sa loob ng <ph name="AUTO_DELETE_DELAY_ONE" /> buwan. Puwede mo itong i-off ngayon o anumang oras sa Mga Setting.}one{Awtomatikong isinasara ng Chrome ang mga item sa seksyon ng mga hindi aktibong item na hindi mo nagamit sa loob ng <ph name="AUTO_DELETE_DELAY_MANY" /> buwan. Puwede mo itong i-off ngayon o anumang oras sa Mga Setting.}other{Awtomatikong isinasara ng Chrome ang mga item sa seksyon ng mga hindi aktibong item na hindi mo nagamit sa loob ng <ph name="AUTO_DELETE_DELAY_MANY" /> na buwan. Puwede mo itong i-off ngayon o anumang oras sa Mga Setting.}}</translation>
 <translation id="2118649612461486615">Impormasyon ng store</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong tab na Incognito.}one{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # tab na Incognito.}other{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # na tab na Incognito.}}</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> ngayon sa <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2371084566192454134">Mga tab at grupo ng tab</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
+<translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2498435670446402865">I-rename: grupo ng tab</translation>
 <translation id="2536366509642644298">Hindi na available ang mga grupo ng tab na "<ph name="TAB_GROUP_NAME_1" />" at "<ph name="TAB_GROUP_NAME_2" />"</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling item}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling item}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling item}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Ilipat ang grupo sa bagong window}one{Ilipat ang grupo sa ibang window}other{Ilipat ang grupo sa ibang window}}</translation>
-<translation id="6220820548421939212">Oo. Sige</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Magdagdag ng tab sa bagong grupo}one{Magdagdag ng mga tab sa bagong grupo}other{Magdagdag ng mga tab sa bagong grupo}}</translation>
 <translation id="6333260925957816943">Impormasyon tungkol sa store na ito</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Piliin ang grupo ng tab</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{I-share ang tab}one{I-share ang mga tab}other{I-share ang mga tab}}</translation>
 <translation id="7129458170538955174">Binuksan ang impormasyon tungkol sa store na to nang kalahati ang taas</translation>
+<translation id="7151209024774799310">Mag-alis ng mga tab sa grupo</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
 <translation id="7211038039686180558">Awtomatikong nase-save at naa-update ang mga grupo ng tab mo sa lahat ng iyong naka-sign in na device</translation>
 <translation id="731648547091221002">Pinili ang <ph name="COLOR_NAME" /></translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> na review}}</translation>
 <translation id="7885132941432959125">Ilipat ang tab sa kanan</translation>
-<translation id="788914896430720926">Panatilihing maayos ang iyong seksyon ng mga hindi aktibong item?</translation>
 <translation id="7939917283308035850">Hindi pinili ang <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>

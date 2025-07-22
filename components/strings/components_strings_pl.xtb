@@ -1145,6 +1145,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2930531075747147366">Karta z innego urządzenia</translation>
 <translation id="2930577230479659665">Przycięcie po każdej kopii</translation>
 <translation id="2933624813161016821">Folia do wytłaczania</translation>
+<translation id="293796669683825859">Komentarze</translation>
 <translation id="2938225289965773019">Otwieranie linków protokołu <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Obraz PNG</translation>
 <translation id="2941878205777356567">Koperta 9 x 12 cali</translation>
@@ -1994,6 +1995,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4298000214066716287">Inwestowanie</translation>
 <translation id="42981349822642051">Rozwiń</translation>
 <translation id="4298925811540301889">Pliki cookie tej witryny są synchronizowane na Twoich urządzeniach z ChromeOS. Aby zarządzać synchronizacją, otwórz <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Otwórz aplikację</translation>
 <translation id="4300675098767811073">Wiele otworów z prawej strony</translation>
 <translation id="4302514097724775343">Kliknij dinozaura, by zacząć grać</translation>
 <translation id="4304049446746819918">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się przenoszenia tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się przenoszenia tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>

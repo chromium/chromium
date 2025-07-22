@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">Дапамагаць павысіць бяспеку ў інтэрнэце для ўсіх карыстальнікаў, адпраўляючы <ph name="BEGIN_WHITEPAPER_LINK" />URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і змесціва старонак<ph name="END_WHITEPAPER_LINK" /> у Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Палітыка прыватнасці<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Ваш тэкст і змесціва старонкі адпраўляюцца ў Google і могуць выкарыстоўвацца для паляпшэння гэтай функцыі.
   <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Пры ажыццяўленні купляў у Chrome вы можаце скарыстаць спосабы аплаты, адрозныя ад картак</translation>
 <translation id="196146181975453736">Прайдзіце аднаразовую праверку бяспекі, каб плаціць хутчэй</translation>
 <translation id="1962204205936693436">Закладкі з дамена <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Памылка серыялізацыі</translation>
@@ -1145,6 +1146,7 @@
 <translation id="2930531075747147366">Укладка з іншай прылады</translation>
 <translation id="2930577230479659665">Абрэзка пасля кожнай копіі</translation>
 <translation id="2933624813161016821">Фольга для ціснення</translation>
+<translation id="293796669683825859">Каментарыі</translation>
 <translation id="2938225289965773019">Адкрыць спасылкі <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Відарыс у фармаце PNG</translation>
 <translation id="2941878205777356567">Канверт 9 x 12 цаляў</translation>
@@ -1993,6 +1995,7 @@
 <translation id="4298000214066716287">Інвеставанне</translation>
 <translation id="42981349822642051">Разгарнуць</translation>
 <translation id="4298925811540301889">Файлы cookie для гэтага сайта сінхранізуюцца з усімі вашымі прыладамі з ChromeOS. Каб кіраваць наладамі сінхранізацыі, перайдзіце ў раздзел "<ph name="SYNC_SETTINGS" />".</translation>
+<translation id="4300272766492248925">Адкрыць праграму</translation>
 <translation id="4300675098767811073">Некалькі дзірак справа</translation>
 <translation id="4302514097724775343">Каб пачаць гульню, дакраніцеся да дыназаўра</translation>
 <translation id="4304049446746819918">{0,plural, =1{Палітыка адміністратара не рэкамендуе перамяшчаць гэты файл сюды: <ph name="DESTINATION_NAME" />}one{Палітыка адміністратара не рэкамендуе перамяшчаць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}few{Палітыка адміністратара не рэкамендуе перамяшчаць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}many{Палітыка адміністратара не рэкамендуе перамяшчаць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}other{Палітыка адміністратара не рэкамендуе перамяшчаць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}}</translation>
@@ -3034,6 +3037,7 @@
 <translation id="6101583188322746099">Дастаўка прадуктаў харчавання</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Стварыць сайт</translation>
+<translation id="6105511947520166941">Наступны раз плаціце праз Pix непасрэдна ў браўзеры Chrome</translation>
 <translation id="6106989379647458772">Магчыма, вэб-старонка па адрасе <ph name="PAGE" /> часова недаступная або была перамешчана на новы вэб-адрас.</translation>
 <translation id="6107012941649240045">Каму выдадзена</translation>
 <translation id="6107864469867367783">Карыстальнік <ph name="USER_DISPLAY_NAME" /> змяніў назву групы</translation>

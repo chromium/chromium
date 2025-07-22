@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
-<translation id="1036348656032585052">Desactiva</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creat fa <ph name="NUM_WEEKS_ONE" /> setmana}other{Creat fa <ph name="NUM_WEEKS_MANY" /> setmanes}}</translation>
 <translation id="1063300264396686489">Obre automàticament grups de pestanyes d'altres dispositius</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Mou a la secció inactiva</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Afegeix <ph name="TABS_COUNT_ONE" /> pestanya seleccionada a les adreces d'interès}other{Afegeix <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades a les adreces d'interès}}</translation>
 <translation id="2055057176188061528">Selecciona un grup de pestanyes o crea'n un de nou</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome tanca automàticament els elements de la secció inactiva que no hagis utilitzat durant <ph name="AUTO_DELETE_DELAY_ONE" /> mes. Pots desactivar aquesta opció ara o en qualsevol moment a Configuració.}other{Chrome tanca automàticament els elements de la secció inactiva que no hagis utilitzat durant <ph name="AUTO_DELETE_DELAY_MANY" /> mesos. Pots desactivar aquesta opció ara o en qualsevol moment a Configuració.}}</translation>
 <translation id="2118649612461486615">Informació de la botiga</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Pots tornar a obrir la pestanya i el grup tancats des de les seccions Pestanyes recents i Grups de pestanyes. La pestanya d'incògnit no estarà disponible.}other{Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes. # pestanyes d'incògnit no estaran disponibles.}}</translation>
 <translation id="2162620598375156287">Ara costa <ph name="CURRENT_PRICE" /> a <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2371084566192454134">Pestanyes i grups de pestanyes</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Replega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
+<translation id="2479148705183875116">Ves a Configuració</translation>
 <translation id="2498435670446402865">Canvia nom grup pestanyes</translation>
 <translation id="2536366509642644298">Els grups de pestanyes "<ph name="TAB_GROUP_NAME_1" />" i "<ph name="TAB_GROUP_NAME_2" />" ja no estan disponibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Ara també s'arxivaran totes les pestanyes duplicades, a excepció de la còpia que s'hagi utilitzat més recentment.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> element seleccionat}other{Tanca els <ph name="TABS_COUNT_MANY" /> elements seleccionats}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mou el grup a una finestra nova}other{Mou el grup a una altra finestra}}</translation>
-<translation id="6220820548421939212">Sí, d’acord</translation>
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Afegeix una pestanya al grup nou}other{Afegeix pestanyes al grup nou}}</translation>
 <translation id="6333260925957816943">Informació sobre aquesta botiga</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Selecciona un grup de pestanyes</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Comparteix la pestanya}other{Comparteix les pestanyes}}</translation>
 <translation id="7129458170538955174">S'ha obert a mitja alçada la informació sobre aquesta botiga</translation>
+<translation id="7151209024774799310">Suprimeix les pestanyes</translation>
 <translation id="7204204600596740190">Mode de multiselecció</translation>
 <translation id="7211038039686180558">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els dispositius en què tens la sessió iniciada</translation>
 <translation id="731648547091221002">S'ha seleccionat <ph name="COLOR_NAME" /></translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ressenya}other{Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ressenyes}}</translation>
 <translation id="7885132941432959125">Mou la pestanya cap a la dreta</translation>
-<translation id="788914896430720926">Vols mantenir endreçada la secció inactiva?</translation>
 <translation id="7939917283308035850">No s'ha seleccionat <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7961015016161918242">Mai</translation>

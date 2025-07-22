@@ -577,6 +577,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1959001866257244765">Bantu sempurnakan keamanan di web untuk semua orang dengan mengirimkan <ph name="BEGIN_WHITEPAPER_LINK" />URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman<ph name="END_WHITEPAPER_LINK" /> ke Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Kebijakan privasi<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Teks dan konten halaman Anda dikirim ke Google dan dapat digunakan untuk meningkatkan fitur ini.
   <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Saat Anda melakukan pembelian di Chrome, lihat metode pembayaran non-kartu sebagai opsi</translation>
 <translation id="196146181975453736">Selesaikan pemeriksaan keamanan satu kali untuk membayar lebih cepat</translation>
 <translation id="1962204205936693436">Bookmark <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Kesalahan serialisasi</translation>
@@ -1145,6 +1146,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2930531075747147366">Tab dari Perangkat Anda yang Lain</translation>
 <translation id="2930577230479659665">Trim setelah setiap set tercetak</translation>
 <translation id="2933624813161016821">Foil Emboss</translation>
+<translation id="293796669683825859">Komentar</translation>
 <translation id="2938225289965773019">Membuka link <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Gambar PNG</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 inci</translation>
@@ -1993,6 +1995,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4298000214066716287">Investasi</translation>
 <translation id="42981349822642051">Luaskan</translation>
 <translation id="4298925811540301889">Cookie untuk situs ini disinkronkan di seluruh perangkat ChromeOS Anda. Untuk mengelola apa saja yang Anda sinkronkan, buka <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Buka aplikasi</translation>
 <translation id="4300675098767811073">Beberapa lubang di kanan</translation>
 <translation id="4302514097724775343">Ketuk dinosaurus untuk bermain</translation>
 <translation id="4304049446746819918">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk memindahkan file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk memindahkan file ini ke <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6101583188322746099">Layanan Pesan Antar Bahan Makanan</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Buat situs</translation>
+<translation id="6105511947520166941">Bayar dengan Pix langsung di Chrome lain kali</translation>
 <translation id="6106989379647458772">Halaman web di <ph name="PAGE" /> mungkin tidak aktif untuk sementara atau dipindahkan secara permanen ke alamat web baru.</translation>
 <translation id="6107012941649240045">Diterbitkan Untuk</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> mengubah nama grup</translation>

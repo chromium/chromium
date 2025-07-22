@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
-<translation id="1036348656032585052">Kapat</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta önce oluşturuldu}other{<ph name="NUM_WEEKS_MANY" /> hafta önce oluşturuldu}}</translation>
 <translation id="1063300264396686489">Diğer cihazlardaki sekme gruplarını otomatik olarak aç</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Etkin olmayanlar bölümüne taşıyın</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeye yer işareti koy}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeye yer işareti koy}}</translation>
 <translation id="2055057176188061528">Sekme grubu seçin veya yeni sekme grubu oluşturun</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome, etkin olmayanlar bölümünde bulunan ve <ph name="AUTO_DELETE_DELAY_ONE" /> aydır kullanmadığınız öğeleri otomatik olarak kapatır. Bu özelliği şimdi veya dilediğiniz zaman Ayarlar'dan kapatabilirsiniz.}other{Chrome, etkin olmayan bölümdeki ve <ph name="AUTO_DELETE_DELAY_MANY" /> aydır kullanmadığınız öğeleri otomatik olarak kapatır. Bu özelliği şimdi veya dilediğiniz zaman Ayarlar'dan kapatabilirsiniz.}}</translation>
 <translation id="2118649612461486615">Mağaza bilgileri</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Kapattığınız sekmeleri ve grupları, "Son sekmeler" bölümünden ve "Sekme grupları" bölümünden yeniden açabilirsiniz. Gizli sekmeniz kullanılamaz.}other{Kapattığınız sekmeleri ve grupları, "Son sekmeler" bölümünden ve "Sekme grupları" bölümünden yeniden açabilirsiniz. # gizli sekmeniz kullanılamaz.}}</translation>
 <translation id="2162620598375156287">Şimdi <ph name="SOURCE_WEBSITE" /> sitesinde <ph name="CURRENT_PRICE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2371084566192454134">Sekmeler ve sekme grupları</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}}</translation>
+<translation id="2479148705183875116">Ayarlar'a git</translation>
 <translation id="2498435670446402865">Sekme grubunu yeniden adlandırın</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ve "<ph name="TAB_GROUP_NAME_2" />" sekme grupları artık kullanılamıyor</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu daralt.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">En son kullanılan kopya hariç tüm kopya sekmeler artık arşivlenecek.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> öğeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> öğeyi kapat}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Grubu yeni pencereye taşı}other{Grubu başka bir pencereye taşı}}</translation>
-<translation id="6220820548421939212">Evet. İstiyorum</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Sekmeyi yeni gruba ekle}other{Sekmeleri yeni gruba ekle}}</translation>
 <translation id="6333260925957816943">Bu mağazayla ilgili bilgiler</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Sekme grubu seçin</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Sekmeyi paylaş}other{Sekmeleri paylaş}}</translation>
 <translation id="7129458170538955174">Bu mağazayla ilgili bilgiler ekranın yarısına kadar açıldı</translation>
+<translation id="7151209024774799310">Sekmeleri gruptan kaldır</translation>
 <translation id="7204204600596740190">Çoklu seçim modu</translation>
 <translation id="7211038039686180558">Sekme gruplarınız, oturum açılmış tüm cihazlarınızda otomatik olarak kaydedilip güncellenir</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> seçili</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Etkinlik</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_ONE" /> yorum}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_MANY" /> yorum}}</translation>
 <translation id="7885132941432959125">Sekmeyi sağa taşı</translation>
-<translation id="788914896430720926">Etkin olmayan bölümünüz düzenli tutulsun mu?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> seçili değil</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>

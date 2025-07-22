@@ -1145,6 +1145,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2930531075747147366">Zavihek iz druge naprave</translation>
 <translation id="2930577230479659665">Obrezovanje po vsakem izvodu</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
+<translation id="293796669683825859">Komentarji</translation>
 <translation id="2938225289965773019">Odpiranje povezav za <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Slika PNG</translation>
 <translation id="2941878205777356567">Kuverta 9 x 12 palcev</translation>
@@ -1994,6 +1995,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4298000214066716287">Naložbe</translation>
 <translation id="42981349822642051">Razširi</translation>
 <translation id="4298925811540301889">Piškotki za to spletno mesto so sinhronizirani v napravah ChromeOS. Če želite upravljati, kaj se sinhronizira, odprite <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Odpri aplikacijo</translation>
 <translation id="4300675098767811073">Večkratno luknjanje na desni</translation>
 <translation id="4302514097724775343">Če želite igrati, se dotaknite dinozavra.</translation>
 <translation id="4304049446746819918">{0,plural, =1{Pravilnik skrbnika ne priporoča premika te datoteke sem: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča premika teh datotek sem: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča premika teh datotek sem: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča premika teh datotek sem: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča premika teh datotek sem: <ph name="DESTINATION_NAME" />.}}</translation>

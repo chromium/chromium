@@ -576,6 +576,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1959001866257244765">Helpwch i wella diogelwch ar y we i bawb drwy anfon <ph name="BEGIN_WHITEPAPER_LINK" />cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalennau<ph name="END_WHITEPAPER_LINK" /> at Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Polisi preifatrwydd<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Anfonir eich testun a chynnwys eich tudalen i Google a gellir eu defnyddio i wella'r nodwedd hon.
   <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Pan fyddwch yn prynu yn Chrome, gwelwch ddulliau talu heb gerdyn fel opsiwn</translation>
 <translation id="196146181975453736">Cwblhewch wiriad diogelwch untro i dalu'n gyflymach</translation>
 <translation id="1962204205936693436">Nodau tudalen <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Gwall cyfresoli</translation>
@@ -1993,6 +1994,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4298000214066716287">Buddsoddi</translation>
 <translation id="42981349822642051">Ehangu</translation>
 <translation id="4298925811540301889">Mae cwcis ar gyfer y wefan hon yn cael eu cysoni ar draws eich dyfeisiau ChromeOS. I reoli'r hyn rydych yn ei gysoni, ewch i <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Agor yr ap</translation>
 <translation id="4300675098767811073">Mwy nag un twll ar y dde</translation>
 <translation id="4302514097724775343">Tapiwch y deino i chwarae</translation>
 <translation id="4304049446746819918">{0,plural, =1{Nid yw'r polisi gweinyddwr yn argymell symud y ffeil hon i <ph name="DESTINATION_NAME" />}zero{Nid yw'r polisi gweinyddwr yn argymell symud y ffeiliau hyn i <ph name="DESTINATION_NAME" />}two{Nid yw'r polisi gweinyddwr yn argymell symud y ffeiliau hyn i <ph name="DESTINATION_NAME" />}few{Nid yw'r polisi gweinyddwr yn argymell symud y ffeiliau hyn i <ph name="DESTINATION_NAME" />}many{Nid yw'r polisi gweinyddwr yn argymell symud y ffeiliau hyn i <ph name="DESTINATION_NAME" />}other{Nid yw'r polisi gweinyddwr yn argymell symud y ffeiliau hyn i <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3037,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6101583188322746099">Gwasanaethau Cyflenwi Bwydydd</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Creu gwefan</translation>
+<translation id="6105511947520166941">Talu gyda Pix yn uniongyrchol yn Chrome tro nesaf</translation>
 <translation id="6106989379647458772">Mae'n bosib bod y dudalen we yn <ph name="PAGE" /> wedi torri dros dro neu mae'n bosib ei bod wedi symud yn barhaol i gyfeiriad gwe newydd.</translation>
 <translation id="6107012941649240045">Cyhoeddwyd I</translation>
 <translation id="6107864469867367783">Mae <ph name="USER_DISPLAY_NAME" /> wedi newid enw'r grŵp</translation>

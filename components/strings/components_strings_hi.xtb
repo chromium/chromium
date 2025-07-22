@@ -577,6 +577,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />जिन पेजों को ब्राउज़ किया जाता है उनमें से कुछ के यूआरएल, सिस्टम की थोड़ी जानकारी, और पेज का कुछ कॉन्टेंट<ph name="END_WHITEPAPER_LINK" /> Google को भेजकर, वेब पर सभी के लिए सुरक्षा को बेहतर बनाने में मदद करें. <ph name="BEGIN_PRIVACY_PAGE_LINK" />निजता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">आपका टेक्स्ट और पेज का कॉन्टेंट, Google को भेजा जाता है. इसका इस्तेमाल, इस सुविधा को बेहतर बनाने के लिए किया जा सकता है.
   <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Chrome पर खरीदारी करते समय, कार्ड के अलावा पेमेंट के अन्य तरीके देखें</translation>
 <translation id="196146181975453736">तेज़ी से पेमेंट करने के लिए, एक बार की जाने वाली सुरक्षा जांच की प्रोसेस पूरी करें</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="1973335181906896915">क्रमबद्ध करने में गड़बड़ी</translation>
@@ -1145,6 +1146,7 @@
 <translation id="2930531075747147366">आपके दूसरे डिवाइस से टैब भेजा गया है</translation>
 <translation id="2930577230479659665">हर कॉपी के बाद ट्रिम करें</translation>
 <translation id="2933624813161016821">एंबॉसिंग फ़ॉयल</translation>
+<translation id="293796669683825859">टिप्पणियां</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक खोलें</translation>
 <translation id="2940418897281183211">PNG इमेज</translation>
 <translation id="2941878205777356567">9 x 12 इंच का लिफ़ाफ़ा</translation>
@@ -1993,6 +1995,7 @@
 <translation id="4298000214066716287">निवेश से जुड़े प्रॉडक्ट, जानकारी, और सेवाएं</translation>
 <translation id="42981349822642051">विस्तृत करें</translation>
 <translation id="4298925811540301889">इस साइट की कुकी, आपके ChromeOS डिवाइसों पर सिंक की जाती हैं. सिंक किए गए डेटा को मैनेज करने के लिए, <ph name="SYNC_SETTINGS" /> पर जाएं.</translation>
+<translation id="4300272766492248925">ऐप्लिकेशन खोलें</translation>
 <translation id="4300675098767811073">दाईं ओर एक से ज़्यादा पंच</translation>
 <translation id="4302514097724775343">डायनो को चलाने के लिए, उस पर टैप करें</translation>
 <translation id="4304049446746819918">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती}}</translation>
@@ -3035,6 +3038,7 @@
 <translation id="6101583188322746099">किराने का सामान डिलीवर करने वाली सेवाएं</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">साइट बनाएं</translation>
+<translation id="6105511947520166941">अगली बार, Chrome पर सीधे Pix से पेमेंट करें</translation>
 <translation id="6106989379647458772">हो सकता है कि <ph name="PAGE" /> पर मौजूद वेबपेज अस्थायी रूप से काम नहीं कर रहा हो या उसे स्थायी रूप से किसी नए वेब पते पर ले जाया गया हो.</translation>
 <translation id="6107012941649240045">इसको जारी</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> ने ग्रुप का नाम बदल दिया</translation>

@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">Συμβάλετε στη βελτίωση της ασφάλειας στον ιστό για όλους με την αποστολή <ph name="BEGIN_WHITEPAPER_LINK" />URL από ορισμένες σελίδες που επισκέπτεστε, περιορισμένων πληροφοριών συστήματος και ορισμένου περιεχομένου σελίδας<ph name="END_WHITEPAPER_LINK" /> στην Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Πολιτική απορρήτου<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Το κείμενο και το περιεχόμενο των σελίδων σας αποστέλλονται στην Google και ενδέχεται να χρησιμοποιηθούν για τη βελτίωση αυτής της λειτουργίας.
   <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Όταν κάνετε αγορές στο Chrome, να εμφανίζονται ως επιλογή οι τρόποι πληρωμής χωρίς κάρτα</translation>
 <translation id="196146181975453736">Ολοκληρώστε έναν εφάπαξ έλεγχο ασφαλείας, για να πληρώνετε πιο γρήγορα</translation>
 <translation id="1962204205936693436">Σελιδοδείκτες <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Σφάλμα σειριοποίησης</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">Καρτέλα από την άλλη συσκευή σας</translation>
 <translation id="2930577230479659665">Περικοπή μετά από κάθε αντίγραφο</translation>
 <translation id="2933624813161016821">Ανάγλυφο φύλλο αλουμινίου</translation>
+<translation id="293796669683825859">Σχόλια</translation>
 <translation id="2938225289965773019">Άνοιγμα συνδέσμων <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Εικόνα PNG</translation>
 <translation id="2941878205777356567">Φάκελος 9 x 12 ίντσες</translation>
@@ -1994,6 +1996,7 @@
 <translation id="4298000214066716287">Επενδύσεις</translation>
 <translation id="42981349822642051">Επέκταση</translation>
 <translation id="4298925811540301889">Τα cookie για αυτόν τον ιστότοπο συγχρονίζονται στις συσκευές σας ChromeOS. Για τη διαχείριση του περιεχομένου που θα συγχρονίζεται, μεταβείτε στο μενού <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Άνοιγμα εφαρμογής</translation>
 <translation id="4300675098767811073">Πολλαπλό τρύπημα στα δεξιά</translation>
 <translation id="4302514097724775343">Πατήστε τον δεινόσαυρο για να παίξετε.</translation>
 <translation id="4304049446746819918">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά τη μετακίνηση αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά τη μετακίνηση αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
@@ -3037,6 +3040,7 @@
 <translation id="6101583188322746099">Παράδοση ειδών παντοπωλείου</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Δημιουργία ιστοτόπου</translation>
+<translation id="6105511947520166941">Πληρώστε με το Pix απευθείας στο Chrome την επόμενη φορά</translation>
 <translation id="6106989379647458772">Η ιστοσελίδα στη διεύθυνση <ph name="PAGE" /> μπορεί να βρίσκεται προσωρινά εκτός λειτουργίας ή ίσως έχει μεταφερθεί μόνιμα σε μια νέα διεύθυνση ιστού.</translation>
 <translation id="6107012941649240045">Εκδόθηκε σε</translation>
 <translation id="6107864469867367783">Ο χρήστης <ph name="USER_DISPLAY_NAME" /> άλλαξε το όνομα της ομάδας</translation>

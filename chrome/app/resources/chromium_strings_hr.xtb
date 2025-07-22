@@ -133,6 +133,7 @@
 <translation id="2711502716910134313">Chromiumova kartica</translation>
 <translation id="2718390899429598676">Radi dodatne sigurnosti Chromium će šifrirati vaše podatke.</translation>
 <translation id="2721354645805494590">Odjavite se da biste uklonili Google račun iz Chromiuma</translation>
+<translation id="2722636413143664436">Da biste mogli pristupati svojim zaporkama, oznakama i drugim podacima na svim svojim uređajima, prijavite se na Chromium</translation>
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2753623023919742414">Kliknite za pretraživanje</translation>
 <translation id="2768103863314748511">Postavite Chromium kao zadani preglednik za PDF</translation>
@@ -403,6 +404,7 @@
 <translation id="6366160072964553914">Chromium je blokirao ovo preuzimanje jer se ova datoteka obično ne preuzima i mogla bi biti opasna</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>
 <translation id="6375219077595103062">Dodajte prečac Upravitelju zaporki</translation>
+<translation id="6388799252195623474">trebam pomoć</translation>
 <translation id="6390800440335263989">Da biste nastavili, prijavite se u Chromium kao <ph name="EMAIL" />. Time se omogućuje primjena pravila vaše organizacije.</translation>
 <translation id="6400112897226594999">Logotip Chromiuma na zaslonu računala.</translation>
 <translation id="6403826409255603130">Chromium je web-preglednik koji munjevitom brzinom prikazuje web-stranice i aplikacije. Brz je, stabilan i jednostavan za upotrebu. Pregledavajte web sigurnije jer je zaštita od zlonamjernog softvera i krađe identiteta ugrađena u Chromium.</translation>

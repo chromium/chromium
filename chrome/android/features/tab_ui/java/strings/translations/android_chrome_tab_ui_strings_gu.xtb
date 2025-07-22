@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
-<translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> અઠવાડિયા પહેલાં બનાવ્યું}one{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}other{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}}</translation>
 <translation id="1063300264396686489">અન્ય ડિવાઇસમાંથી ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે ખોલો</translation>
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">નિષ્ક્રિય વિભાગમાં ખસેડો</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બુકમાર્ક કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}}</translation>
 <translation id="2055057176188061528">ટૅબનું ગ્રૂપ પસંદ કરો અથવા ટૅબનું નવું ગ્રૂપ બનાવો</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{નિષ્ક્રિય વિભાગમાંની જે આઇટમનો તમે <ph name="AUTO_DELETE_DELAY_ONE" /> મહિનામાં ઉપયોગ ન કર્યો હોય, તેને Chrome ઑટોમૅટિક રીતે બંધ કરે છે. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}one{Chrome નિષ્ક્રિય વિભાગમાંની આઇટમને ઑટોમૅટિક રીતે બંધ કરે છે, જેનો તમારા <ph name="AUTO_DELETE_DELAY_MANY" /> મહિનામાં ઉપયોગ ન કર્યો હોય. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}other{Chrome નિષ્ક્રિય વિભાગમાંની આઇટમને ઑટોમૅટિક રીતે બંધ કરે છે, જેનો તમારા <ph name="AUTO_DELETE_DELAY_MANY" /> મહિનામાં ઉપયોગ ન કર્યો હોય. તમે સેટિંગમાં જઈને આને અત્યારે અથવા કોઈપણ સમયે બંધ કરી શકો છો.}}</translation>
 <translation id="2118649612461486615">સ્ટોરની માહિતી</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}one{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું # છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}other{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારા # છૂપા ટૅબ ઉપલબ્ધ રહેશે નહીં.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2371084566192454134">ટૅબ અને ટૅબના ગ્રૂપ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
+<translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2498435670446402865">ટૅબ ગ્રૂપનું નામ બદલો</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" અને "<ph name="TAB_GROUP_NAME_2" />" ટૅબના ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> આઇટમ બંધ કરો}one{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> આઇટમ બંધ કરો}other{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> આઇટમ બંધ કરો}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ગ્રૂપને નવી વિન્ડોમાં ખસેડો}one{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}other{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}}</translation>
-<translation id="6220820548421939212">હા. હું સંમત છું</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{નવા ગ્રૂપમાં ટૅબ ઉમેરો}one{નવા ગ્રૂપમાં ટૅબ ઉમેરો}other{નવા ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="6333260925957816943">આ સ્ટોર વિશેની માહિતી</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">ટૅબનું ગ્રૂપ પસંદ કરો</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ટૅબ શેર કરો}one{ટૅબ શેર કરો}other{ટૅબ શેર કરો}}</translation>
 <translation id="7129458170538955174">આ સ્ટોર વિશેની માહિતી અડધી સ્ક્રીન પર ખુલી છે</translation>
+<translation id="7151209024774799310">ગ્રૂપમાંથી ટૅબ કાઢી નાખો</translation>
 <translation id="7204204600596740190">એક કરતાં વધુ પસંદગી કરવાનો મોડ</translation>
 <translation id="7211038039686180558">તમારા ટૅબના ગ્રૂપ તમારા સાઇન ઇન કરેલા બધા ડિવાઇસ પર ઑટોમૅટિક રીતે સાચવવામાં અને અપડેટ કરવામાં આવે છે</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> પસંદ કરેલો છે</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7885132941432959125">ટૅબને જમણે ખસેડો</translation>
-<translation id="788914896430720926">તમારા નિષ્ક્રિય વિભાગને સુઘડ રાખીએ?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> પસંદ કરેલો નથી</translation>
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>

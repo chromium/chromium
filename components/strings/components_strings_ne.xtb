@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">तपाईंको अर्को डिभाइसबाट पठाइएको ट्याब</translation>
 <translation id="2930577230479659665">हरेक प्रतिपछि छाँटकाँट गर्नुहोस्</translation>
 <translation id="2933624813161016821">इम्बोसिङ फोइल</translation>
+<translation id="293796669683825859">टिप्पणीहरू</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंकहरू खोल्नुहोस्</translation>
 <translation id="2940418897281183211">PNG फोटो</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
@@ -1992,6 +1993,7 @@
 <translation id="4298000214066716287">लगानी</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4298925811540301889">यो साइटका कुकीहरू तपाईंका सबै ChromeOS डिभाइसहरूमा सिंक गरिन्छन्। के के सिंक गर्ने भन्ने कुरा व्यवस्थापन गर्न <ph name="SYNC_SETTINGS" /> मा जानुहोस्।</translation>
+<translation id="4300272766492248925">एप खोल्नुहोस्</translation>
 <translation id="4300675098767811073">दायाँपट्टि एकभन्दा बढी प्वाल</translation>
 <translation id="4302514097724775343">प्ले गर्न dino मा ट्याप गर्नुहोस्</translation>
 <translation id="4304049446746819918">{0,plural, =1{एड्मिनले तोकेको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा सार्न सिफारिस गरिँदैन}other{एड्मिनले तोकेको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा सार्न सिफारिस गरिँदैन}}</translation>

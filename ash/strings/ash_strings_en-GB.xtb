@@ -603,7 +603,6 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3026897869154397692">Added to Calendar</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3033912566804961911">Combine with <ph name="DESK_NAME" /></translation>
-<translation id="3036649622769666520">Open Files</translation>
 <translation id="3039939407102840004">Stylus battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="304097922505898963">Open Key Shortcuts app</translation>
 <translation id="304417730895741346">Your pinned and open apps are on the shelf. To pin an app to the shelf, right-click an app or tap your touchpad with two fingers.</translation>
@@ -1603,7 +1602,6 @@ No devices connected.</translation>
 <translation id="6166852626429024716">Search your device, apps, settings, web…</translation>
 <translation id="6168318496333165060">Open Diagnostics app</translation>
 <translation id="6168622430237609329">Your installed apps</translation>
-<translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
 <translation id="6180193585172850042">Back button</translation>
 <translation id="6180651297859206670">Forward button</translation>
 <translation id="6182592640011875895">Open desk</translation>

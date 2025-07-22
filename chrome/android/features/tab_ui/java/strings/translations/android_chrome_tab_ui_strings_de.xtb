@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vor <ph name="NUM_WEEKS_ONE" /> Woche erstellt}other{Vor <ph name="NUM_WEEKS_MANY" /> Wochen erstellt}}</translation>
 <translation id="1063300264396686489">Tabgruppen von anderen Geräten automatisch öffnen</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">In Bereich „Inaktiv“ verschieben</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab als Lesezeichen speichern}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs als Lesezeichen speichern}}</translation>
 <translation id="2055057176188061528">Tabgruppe auswählen oder neue erstellen</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome schließt automatisch Elemente im Bereich „Inaktiv“, die du seit <ph name="AUTO_DELETE_DELAY_ONE" /> Monat nicht verwendet hast. Du kannst diese Funktion jederzeit in den Einstellungen deaktivieren.}other{Chrome schließt automatisch Elemente im Bereich „Inaktiv“, die du seit <ph name="AUTO_DELETE_DELAY_MANY" /> Monaten nicht verwendet hast. Du kannst diese Funktion jederzeit in den Einstellungen deaktivieren.}}</translation>
 <translation id="2118649612461486615">Händlerinfo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deinen Inkognitotab findest du dort jedoch nicht.}other{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deine # Inkognitotabs findest du dort jedoch nicht.}}</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2371084566192454134">Tabs und Tabgruppen</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab minimieren.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren.}}</translation>
+<translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2498435670446402865">Tabgruppe umbenennen</translation>
 <translation id="2536366509642644298">Die Tabgruppen „<ph name="TAB_GROUP_NAME_1" />“ und „<ph name="TAB_GROUP_NAME_2" />“ sind nicht mehr verfügbar</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme der zuletzt verwendeten Kopie.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewähltes Element schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Elemente schließen}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Gruppe in ein neues Fenster verschieben}other{Gruppe in ein anderes Fenster verschieben}}</translation>
-<translation id="6220820548421939212">Ok</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
 <translation id="6333260925957816943">Informationen zu diesem Händler</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Tabgruppe auswählen</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tab teilen}other{Tabs teilen}}</translation>
 <translation id="7129458170538955174">Informationen zu diesem Händler sind halb geöffnet</translation>
+<translation id="7151209024774799310">Tabs aus der Gruppe verschieben</translation>
 <translation id="7204204600596740190">Mehrfachauswahl</translation>
 <translation id="7211038039686180558">Deine Tabgruppen werden automatisch auf allen deinen angemeldeten Geräten gespeichert und aktualisiert</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> ausgewählt</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> Rezension}other{Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> Rezensionen}}</translation>
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>
-<translation id="788914896430720926">Im Bereich „Inaktiv“ für Ordnung sorgen?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> nicht ausgewählt</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7961015016161918242">Nie</translation>

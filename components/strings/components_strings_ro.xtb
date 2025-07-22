@@ -576,6 +576,7 @@
 <translation id="1959001866257244765">Contribuie la îmbunătățirea securității pe web pentru toată lumea trimițând la Google <ph name="BEGIN_WHITEPAPER_LINK" />adresele URL ale unor pagini pe care le accesezi, informații de sistem limitate și părți din conținutul paginilor<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politică de confidențialitate<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Textul și conținutul paginii se trimit la Google și se pot folosi pentru a îmbunătăți această funcție.
   <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Când faci achiziții în Chrome, vezi metodele de plată fără card ca opțiune</translation>
 <translation id="196146181975453736">Finalizează o verificare de siguranță unică pentru a plăti mai rapid</translation>
 <translation id="1962204205936693436">Marcaje <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Eroare de serializare</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">Apasă pe Tab de pe celălalt dispozitiv</translation>
 <translation id="2930577230479659665">Decupare după fiecare exemplar</translation>
 <translation id="2933624813161016821">Folie pentru embosare</translation>
+<translation id="293796669683825859">Comentarii</translation>
 <translation id="2938225289965773019">Deschide linkurile <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Imagine PNG</translation>
 <translation id="2941878205777356567">Plic de 9 x 12 inchi</translation>
@@ -1993,6 +1995,7 @@
 <translation id="4298000214066716287">Investiții</translation>
 <translation id="42981349822642051">Extinde</translation>
 <translation id="4298925811540301889">Cookie-urile pentru acest site se sincronizează pe dispozitivele tale ChromeOS. Pentru a gestiona ce sincronizezi, accesează <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Deschide aplicația</translation>
 <translation id="4300675098767811073">Perforare multiplă în dreapta</translation>
 <translation id="4302514097724775343">Atinge dinozaurul ca să joci</translation>
 <translation id="4304049446746819918">{0,plural, =1{Politica implementată de administrator nu recomandă să muți acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să muți aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să muți aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@
 <translation id="6101583188322746099">Servicii de livrare de alimente</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Creează un site</translation>
+<translation id="6105511947520166941">Data viitoare, plătește cu Pix direct în Chrome</translation>
 <translation id="6106989379647458772">Este posibil ca pagina web de la <ph name="PAGE" /> să fie blocată temporar sau să fi fost mutată definitiv la o nouă adresă web.</translation>
 <translation id="6107012941649240045">Emis către</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> a schimbat numele grupului</translation>

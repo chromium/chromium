@@ -576,6 +576,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1959001866257244765">Segítsen az internet biztonságosabbá tételében mindenki számára azzal, hogy továbbítja <ph name="BEGIN_WHITEPAPER_LINK" />egyes felkeresett oldalak URL-jét, valamint korlátozott rendszer-információkat és bizonyos oldaltartalmakat<ph name="END_WHITEPAPER_LINK" /> a Google-nak. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Adatvédelmi irányelvek<ph name="END_PRIVACY_PAGE_LINK" />.</translation>
 <translation id="1959445535228047762">A rendszer elküldi a Google-nak a szöveges és oldaltartalmakat, amelyeket a funkció továbbfejlesztésére használhatunk fel.
   <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="1960664692890490165">Amikor a Chrome-ban vásárol, megjelennek lehetőségként a nem kártyás fizetési módok</translation>
 <translation id="196146181975453736">Végezzen el egy egyszeri biztonsági ellenőrzést a gyorsabb fizetés érdekében</translation>
 <translation id="1962204205936693436">A(z) <ph name="DOMAIN" /> könyvjelzői</translation>
 <translation id="1973335181906896915">Szerializálási hiba</translation>
@@ -1144,6 +1145,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2930531075747147366">A másik eszközéről küldött lap</translation>
 <translation id="2930577230479659665">Vágás minden példány után</translation>
 <translation id="2933624813161016821">Dombornyomó fólia</translation>
+<translation id="293796669683825859">Megjegyzések</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> linkek megnyitása</translation>
 <translation id="2940418897281183211">PNG-kép</translation>
 <translation id="2941878205777356567">9 × 12 hüvelykes boríték</translation>
@@ -1990,6 +1992,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4298000214066716287">Befektetések</translation>
 <translation id="42981349822642051">Kibontás</translation>
 <translation id="4298925811540301889">A webhely cookie-jai szinkronizálódnak az Ön ChromeOS-eszközein. A szinkronizálandó adatok kezeléséhez lépjen ide: <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Alkalmazás megnyitása</translation>
 <translation id="4300675098767811073">Több lyuk a jobb oldalon</translation>
 <translation id="4302514097724775343">A játékhoz koppintson a dinóra</translation>
 <translation id="4304049446746819918">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak az áthelyezését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak az áthelyezését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
@@ -3032,6 +3035,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6101583188322746099">Élelmiszer-házhozszállítás</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Webhely létrehozása</translation>
+<translation id="6105511947520166941">Legközelebb fizethet a Pix szolgáltatással közvetlenül a Chrome-ban</translation>
 <translation id="6106989379647458772">Előfordulhat, hogy a(z) <ph name="PAGE" /> webhelyen található oldal ideiglenesen nem érhető el, vagy véglegesen új címre költözött.</translation>
 <translation id="6107012941649240045">Tulajdonos</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> módosította a csoport nevét</translation>

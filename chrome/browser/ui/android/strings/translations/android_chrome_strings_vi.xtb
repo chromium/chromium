@@ -240,6 +240,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2088833076121753253">Để hoàn tất quy trình thiết lập tính năng tự động điền, hãy khởi động lại Chrome ngay. Các thẻ của bạn sẽ tự động mở lại.</translation>
 <translation id="2091863218454846791">Đang hiển thị chế độ xem thu gọn</translation>
 <translation id="2093731487903423814">15 phút qua</translation>
+<translation id="2096577711562668473">Thay đổi dịch vụ tự động điền?</translation>
 <translation id="2100273922101894616">Tự động đăng nhập</translation>
 <translation id="2109384632594340939">ảnh hồ sơ</translation>
 <translation id="2111511281910874386">Chuyển đến trang</translation>
@@ -325,6 +326,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2496180316473517155">Nhật ký duyệt web</translation>
 <translation id="2497852260688568942">Quản trị viên của bạn đã tắt tính năng đồng bộ hóa</translation>
 <translation id="250020030759455918">Trong Chrome, bạn sẽ thấy trạng thái đăng nhập, dữ liệu duyệt web và dữ liệu trang web trên <ph name="SITE_NAME" /></translation>
+<translation id="2502798195266898572">Bảng chế độ đọc ở dưới cùng đã mở toàn bộ</translation>
 <translation id="2510106555128151389">Đang cài đặt <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Tìm các lựa chọn mua sản phẩm</translation>
 <translation id="2513403576141822879">Bạn có thể xem thêm tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Đồng bộ hóa và dịch vụ của Google<ph name="END_LINK" /></translation>
@@ -934,6 +936,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Đang tải tệp xuống…}other{Đang tải # tệp xuống…}}</translation>
 <translation id="5210286577605176222">Quay về thẻ trước</translation>
 <translation id="5210365745912300556">Đóng thẻ</translation>
+<translation id="5212800876504289412">Hãy khởi động lại Chrome để hoàn tất thay đổi này. Các thẻ sẽ tự động mở lại khi bạn khởi động lại.</translation>
 <translation id="5215957675041756913">Kiểm soát dữ liệu và tài khoản của bạn</translation>
 <translation id="5218324087477576825">Bạn cần điền số thẻ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và các quyền khác <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì gần đây bạn không truy cập</translation>
@@ -1062,6 +1065,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Hiện thông báo}other{Hiện thông báo}}</translation>
 <translation id="5814749351757353073">Cập nhật thông tin với các trang web yêu thích của bạn</translation>
 <translation id="5823093032261493462">Bạn vẫn muốn tải "<ph name="FILE_NAME" />" xuống từ <ph name="DOWNLOAD_DOMAIN" />?</translation>
+<translation id="5825135637446025843">Sau khi Chrome khởi động lại, thông tin bạn đã lưu từ nhà cung cấp mới sẽ được dùng để tự động điền mật khẩu, khoá truy cập, địa chỉ, phương thức thanh toán và các thông tin khác.</translation>
 <translation id="5828921839638612740">Bạn có thể xoá dữ liệu trong phần Cài đặt của Chrome</translation>
 <translation id="5829586821381540080">Đã lưu vào <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Không xác định</translation>
@@ -1178,6 +1182,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6296366034485697675">Xuất và xoá</translation>
 <translation id="629730747756840877">Tài khoản</translation>
+<translation id="6300697579369314762">Bảng chế độ đọc ở dưới cùng đã mở một nửa</translation>
 <translation id="6301526076346731664">Mở Công cụ cho nhà phát triển</translation>
 <translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
 <translation id="6307241780749477694">Xác minh danh tính của bạn để dùng tất cả mật khẩu trên thiết bị này</translation>
@@ -1398,6 +1403,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="71503698506017927">Quy trình mã hoá bằng cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán trên Google Pay.
 
 Để thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">Bảng chế độ đọc ở dưới cùng đã đóng</translation>
 <translation id="7165972437814027679">Tìm hiểu thêm về lý do Chrome chặn một số tệp</translation>
 <translation id="7168323970702333693">Đã đăng nhập bằng <ph name="USER_NAME" />. Mở phần cài đặt.</translation>
 <translation id="7173114856073700355">Mở phần Cài đặt</translation>

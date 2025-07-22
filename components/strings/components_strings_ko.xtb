@@ -576,6 +576,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠<ph name="END_WHITEPAPER_LINK" />를 Google에 전송하여 모든 웹 사용자를 위해 보안을 강화하는 데 참여해 주세요. <ph name="BEGIN_PRIVACY_PAGE_LINK" />개인정보처리방침<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">텍스트 및 페이지 콘텐츠가 Google로 전송되며, 이 기능을 개선하는 데 사용될 수 있습니다.
   <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Chrome에서 구매할 때 카드 이외의 결제 수단이 옵션으로 표시됩니다.</translation>
 <translation id="196146181975453736">일회성 보안 확인을 완료하여 더 빠르게 결제하세요</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 북마크</translation>
 <translation id="1973335181906896915">일련화 오류</translation>
@@ -1144,6 +1145,7 @@
 <translation id="2930531075747147366">다른 기기의 탭</translation>
 <translation id="2930577230479659665">각 사본 뒤에 트림</translation>
 <translation id="2933624813161016821">엠보싱 호일</translation>
+<translation id="293796669683825859">댓글</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> 링크 열기</translation>
 <translation id="2940418897281183211">PNG 이미지</translation>
 <translation id="2941878205777356567">봉투 9 x 12 in</translation>
@@ -1993,6 +1995,7 @@
 <translation id="4298000214066716287">투자</translation>
 <translation id="42981349822642051">펼치기</translation>
 <translation id="4298925811540301889">이 사이트의 쿠키가 ChromeOS 기기 간에 동기화됩니다. 동기화 항목을 관리하려면 <ph name="SYNC_SETTINGS" /> 설정으로 이동하세요.</translation>
+<translation id="4300272766492248925">앱 열기</translation>
 <translation id="4300675098767811073">오른쪽 다공 펀칭</translation>
 <translation id="4302514097724775343">플레이하려면 공룡을 탭하세요.</translation>
 <translation id="4304049446746819918">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />(으)로 이동하지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />(으)로 이동하지 않는 것이 좋습니다.}}</translation>
@@ -3035,6 +3038,7 @@
 <translation id="6101583188322746099">식료품 배달 서비스</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">사이트 만들기</translation>
+<translation id="6105511947520166941">다음번에는 Chrome에서 바로 Pix로 결제하세요</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />의 웹페이지가 일시적으로 다운되었거나 새 웹 주소로 완전히 이동했을 수 있습니다.</translation>
 <translation id="6107012941649240045">발급 대상</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" />님이 그룹 이름을 변경했습니다.</translation>

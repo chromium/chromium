@@ -6,7 +6,6 @@
 <translation id="1010225406377140704">Ponte en contacto con quen cha enviou para pedirlle que che mande outra</translation>
 <translation id="1013952917065545813">Podes volver aquí para abrir de novo as pestanas que pechaches recentemente</translation>
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
-<translation id="1017735584092444011">Mostrar modo de lectura</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030376737535466765">Abrir xestor de contrasinais</translation>
 <translation id="1035980983510608210">Ao pechar todas as pestanas, tamén se cerrarán as fixadas.</translation>
@@ -885,6 +884,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="461440297010471931">Realizando buscas con Google</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4619615317237390068">Pestanas doutros dispositivos</translation>
+<translation id="4621768135601674446">Abrir opcións do modo de lectura</translation>
 <translation id="4624080227980645783">Nova ventá do modo de incógnito</translation>
 <translation id="4627107755957573804">Permite que os sitios e as aplicacións actualicen as contas para poder usar claves de acceso</translation>
 <translation id="4630212057753624203">Globo de mostra</translation>
@@ -1005,6 +1005,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5024511550058813796">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5050810143224996149">Compartir o contrasinal</translation>
+<translation id="5055015094595227120">Localización precisa</translation>
 <translation id="5056446788882570708">Atopáronse problemas <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
@@ -1098,6 +1099,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5439618055789623719">Tes a sesión iniciada como <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Mellor navegación de forma predeterminada</translation>
 <translation id="5444892875087332195">Marcadores</translation>
+<translation id="5447973833955560753">Contrasinal de recuperación</translation>
 <translation id="5452354193031718372">Usa este contrasinal seguro:</translation>
 <translation id="5454211924362324495">Para evitar que outras persoas usen o teu contrasinal, <ph name="BEGIN_LINK" />cámbiao en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Engade unha consulta á busca</translation>
@@ -1117,6 +1119,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5524590039848017563">Botón contraído da barra de ferramentas principal</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasinal pouco seguro}other{{COUNT} contrasinais pouco seguros}}</translation>
 <translation id="5532545557415295622">Cadro de diálogo do tempo de espera de inactividade</translation>
+<translation id="5547868626772433490">Preguntar a Gemini</translation>
 <translation id="5548760955356983418">Handoff permíteche comezar a navegar nun sitio web neste dispositivo e despois continuar facilmente no teu Mac. O sitio web aberto actualmente aparecerá no Dock do teu Mac.
 
 Handoff tamén debe estar activado na sección Xeral da configuración e os teus dispositivos deben utilizar a mesma conta iCloud.</translation>
@@ -1646,6 +1649,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="75362970626182391">Novo grupo de pestanas</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
 <translation id="754655535278952384">Última comprobación: <ph name="TIME" /></translation>
+<translation id="7554791636758816595">Nova pestana</translation>
 <translation id="7557508262441527045">Pechouse a sesión</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
@@ -1690,6 +1694,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7711440461521638739">Non estás reutilizando ningún contrasinal</translation>
 <translation id="7712361583414030698">Mostrando versión sen conexión</translation>
 <translation id="7719038820139380048">Inicia sesión para desfrutar de contido en función dos teus intereses.</translation>
+<translation id="7720901330179380635">Buscando con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7724085059277147439">{count,plural, =1{O elemento gardouse na túa Conta de Google, {email}}other{Os elementos gardáronse na túa Conta de Google, {email}}}</translation>
 <translation id="7729458878441927652">Para ver as pestanas doutros dispositivos, sincroniza as pestanas e o historial.</translation>
 <translation id="7730020510075123961">Non, combinar datos</translation>
@@ -1728,7 +1733,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7863211248337747225">Descargar aplicación</translation>
 <translation id="7865127013871431856">Opcións do Tradutor</translation>
 <translation id="7866872729285243843">Para desfrutar da lista de lectura en todos os teus dispositivos, activa Lista de lectura na configuración.</translation>
-<translation id="787364769771947486">Ocultar modo de lectura</translation>
 <translation id="7874107544081154809">Autocompletar formulario con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Tes contrasinais reutilizados.</translation>
 <translation id="7887174313503389866">Realiza un percorrido guiado polos controis clave de privacidade e seguranza. Para obter máis opcións, vai á configuración individual.</translation>
@@ -1766,6 +1770,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="7993170188789685695">Toca dúas veces para pechar esta notificación.</translation>
 <translation id="7993619969781047893">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="7996239959906074962">Configurar…</translation>
+<translation id="8001561107130904792">Uso compartido do contido da páxina</translation>
 <translation id="800361585186029508">Abre os URL introducidos en Google Chrome.</translation>
 <translation id="8005666035647241369">No xestor de contrasinais de Google neste dispositivo</translation>
 <translation id="8010488806779226127">Explora funcións que che poden axudar a facer máis cousas mentres navegas</translation>
@@ -2041,6 +2046,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8984627322964256190">Ocultar opción de seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
 <translation id="9000089900434778519">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
+<translation id="9000532564152265066">Todas as pestanas</translation>
 <translation id="9003677638446136377">Comprobar de novo</translation>
 <translation id="9006453925669499173">Menú → Nova pestana do modo de incógnito</translation>
 <translation id="9008201768610948239">Ignorar</translation>

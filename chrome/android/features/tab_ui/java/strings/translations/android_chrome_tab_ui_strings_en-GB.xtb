@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
-<translation id="1036348656032585052">Turn off</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Created <ph name="NUM_WEEKS_ONE" /> week ago}other{Created <ph name="NUM_WEEKS_MANY" /> weeks ago}}</translation>
 <translation id="1063300264396686489">Automatically open tab groups from other devices</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Move to inactive section</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> selected tab}other{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="2055057176188061528">Select tab group or create new tab group</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome automatically closes items in the inactive section that you haven't used in <ph name="AUTO_DELETE_DELAY_ONE" /> month. You can turn this off now or at any time in Settings.}other{Chrome automatically closes items in the inactive section that you haven't used in <ph name="AUTO_DELETE_DELAY_MANY" /> months. You can turn this off now or at any time in Settings.}}</translation>
 <translation id="2118649612461486615">Shop info</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your Incognito tab won't be available.}other{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}}</translation>
 <translation id="2162620598375156287">Now <ph name="CURRENT_PRICE" /> on <ph name="SOURCE_WEBSITE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2371084566192454134">Tabs and tab groups</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
+<translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2498435670446402865">Rename tab group</translation>
 <translation id="2536366509642644298">'<ph name="TAB_GROUP_NAME_1" />' and '<ph name="TAB_GROUP_NAME_2" />' tab groups no longer available</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Close <ph name="TABS_COUNT_ONE" /> selected item}other{Close <ph name="TABS_COUNT_MANY" /> selected items}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Move group to new window}other{Move group to another window}}</translation>
-<translation id="6220820548421939212">Yes. I'm in</translation>
 <translation id="6228793724645064692">(store rating)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="6333260925957816943">Information about this shop</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Select tab group</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Share tab}other{Share tabs}}</translation>
 <translation id="7129458170538955174">Information about this shop opened at half height</translation>
+<translation id="7151209024774799310">Remove tabs from group</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
 <translation id="7211038039686180558">Your tab groups automatically save and update across all your signed-in devices</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> selected</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
 <translation id="7885132941432959125">Move tab right</translation>
-<translation id="788914896430720926">Keep your inactive section tidy?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> not selected</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7961015016161918242">Never</translation>

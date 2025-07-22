@@ -576,6 +576,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1959001866257244765">Hjælp med at forbedre sikkerheden på nettet for alle brugere ved at sende <ph name="BEGIN_WHITEPAPER_LINK" />webadresserne for nogle af de sider, du besøger, begrænsede systemoplysninger og noget sideindhold<ph name="END_WHITEPAPER_LINK" /> til Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privatlivspolitik<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Dit tekst- og sideindhold sendes til Google og anvendes muligvis til at forbedre denne funktion.
   <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Når du foretager køb i Chrome, kan du se betalingsmetoder, der ikke er kort, som en valgmulighed</translation>
 <translation id="196146181975453736">Gennemfør et engangssikkerhedstjek for at betale hurtigere</translation>
 <translation id="1962204205936693436">Bogmærker fra <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Serialiseringsfejl</translation>
@@ -1144,6 +1145,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2930531075747147366">Fane fra din anden enhed</translation>
 <translation id="2930577230479659665">Beskær efter hver kopi</translation>
 <translation id="2933624813161016821">Prægefolie</translation>
+<translation id="293796669683825859">Kommentarer</translation>
 <translation id="2938225289965773019">Åbne <ph name="PROTOCOL" />-links</translation>
 <translation id="2940418897281183211">PNG-billede</translation>
 <translation id="2941878205777356567">Konvolut 9 x 12 tommer</translation>
@@ -1993,6 +1995,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4298000214066716287">Investering</translation>
 <translation id="42981349822642051">Udvid</translation>
 <translation id="4298925811540301889">Cookies for dette website synkroniseres på tværs af dine ChromeOS-enheder. Gå til <ph name="SYNC_SETTINGS" /> for at administrere, hvad du synkroniserer.</translation>
+<translation id="4300272766492248925">Åbn app</translation>
 <translation id="4300675098767811073">Flere huller i højre side</translation>
 <translation id="4302514097724775343">Tryk på dinoen for at spille</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at flytte disse filer til <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6101583188322746099">Udbringning af dagligvarer</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Opret website</translation>
+<translation id="6105511947520166941">Betal med Pix direkte i Chrome næste gang</translation>
 <translation id="6106989379647458772">Websiden på <ph name="PAGE" /> kan være midlertidigt nede, eller også er den permanent flyttet til en ny webadresse.</translation>
 <translation id="6107012941649240045">Udstedt til</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> har ændret gruppenavnet</translation>

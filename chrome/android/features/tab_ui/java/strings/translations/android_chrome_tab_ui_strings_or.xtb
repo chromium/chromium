@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
-<translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ସପ୍ତାହ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_WEEKS_MANY" /> ସପ୍ତାହ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="1063300264396686489">ଅନ୍ୟ ଡିଭାଇସରୁ ସ୍ୱତଃ ଟାବ ଗ୍ରୁପକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="1075622780330595106">ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">ନିଷ୍କ୍ରିୟ ବିଭାଗକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}}</translation>
 <translation id="2055057176188061528">ଟାବ ଗ୍ରୁପ ଚୟନ କରନ୍ତୁ କିମ୍ବା ଏକ ନୂଆ ଟାବ ଗ୍ରୁପ ତିଆରି କରନ୍ତୁ</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{ଆପଣ <ph name="AUTO_DELETE_DELAY_ONE" /> ମାସ ଧରି ବ୍ୟବହାର କରିନଥିବା ନିଷ୍କ୍ରିୟ ବିଭାଗର ଆଇଟମଗୁଡ଼ିକୁ Chrome ସ୍ୱତଃ ବନ୍ଦ କରିଦିଏ। ଆପଣ ଏହାକୁ ବର୍ତ୍ତମାନ କିମ୍ବା ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ବନ୍ଦ କରିପାରିବେ।}other{ଆପଣ <ph name="AUTO_DELETE_DELAY_MANY" /> ମାସ ଧରି ବ୍ୟବହାର କରିନଥିବା ନିଷ୍କ୍ରିୟ ବିଭାଗର ଆଇଟମଗୁଡ଼ିକୁ Chrome ସ୍ୱତଃ ବନ୍ଦ କରିଦିଏ। ଆପଣ ଏହାକୁ ବର୍ତ୍ତମାନ କିମ୍ବା ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ବନ୍ଦ କରିପାରିବେ।}}</translation>
 <translation id="2118649612461486615">ଷ୍ଟୋର୍ ସୂଚନା</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ବନ୍ଦ କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଓ ଗ୍ରୁପଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନର ଟାବ ବିଭାଗ ଓ ଟାବ ଗ୍ରୁପ ବିଭାଗରୁ ପୁଣି ଖୋଲାଯାଇପାରିବ। ଆପଣଙ୍କର ଇନକଗ୍ନିଟୋ ଟାବ ଉପଲବ୍ଧ ହେବ ନାହିଁ।}other{ବନ୍ଦ କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଓ ଗ୍ରୁପଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନର ଟାବ ବିଭାଗ ଓ ଟାବ ଗ୍ରୁପ ବିଭାଗରୁ ପୁଣି ଖୋଲାଯାଇପାରିବ। ଆପଣଙ୍କର #ଟି ଇନକଗ୍ନିଟୋ ଟାବ ଉପଲବ୍ଧ ହେବ ନାହିଁ।}}</translation>
 <translation id="2162620598375156287">ବର୍ତ୍ତମାନ <ph name="SOURCE_WEBSITE" />ରେ <ph name="CURRENT_PRICE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2371084566192454134">ଟାବ ଏବଂ ଟାବ ଗ୍ରୁପ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> ଟାବ ଥିବା <ph name="TABS_COUNT_ONE" /> ଟାବ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TITLE_OF_GROUP" />ଟି ଟାବ୍ ଥିବା <ph name="TABS_COUNT_MANY" /> ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
+<translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2498435670446402865">ଟାବ ଗ୍ରୁପକୁ ରିନେମ କରନ୍ତୁ</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ଏବଂ "<ph name="TAB_GROUP_NAME_2" />" ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">ନିକଟରେ ବ୍ୟବହାର କରାଯାଇଥିବା କପି ବ୍ୟତୀତ ସମସ୍ତ ନକଲି ଟାବ ମଧ୍ୟ ବର୍ତ୍ତମାନ ଆର୍କାଇଭ ହେବ।</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ଗ୍ରୁପକୁ ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}other{ଗ୍ରୁପକୁ ଅନ୍ୟ ଏକ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}}</translation>
-<translation id="6220820548421939212">ହଁ। ମୁଁ ରାଜି ଅଛି</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ନୂଆ ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ନୂଆ ଗ୍ରୁପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="6333260925957816943">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">ଟାବ ଗ୍ରୁପକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ଟାବକୁ ସେୟାର କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ସେୟାର କରନ୍ତୁ}}</translation>
 <translation id="7129458170538955174">ଅଧା ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
+<translation id="7151209024774799310">ଗୋଷ୍ଠୀରୁ ଟାବ୍‍ଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7204204600596740190">ଏକାଧିକ-ଚୟନ ମୋଡ୍</translation>
 <translation id="7211038039686180558">ଆପଣଙ୍କର ସମସ୍ତ ସାଇନ-ଇନ ହୋଇଥିବା ଡିଭାଇସରେ ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପ ସ୍ୱତଃ ସେଭ ଓ ଅପଡେଟ ହୁଏ</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> ଚୟନ କରାଯାଇଛି</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ, <ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ, <ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା}}</translation>
 <translation id="7885132941432959125">ଟାବ୍‍କୁ ଡାହାଣକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
-<translation id="788914896430720926">ଆପଣଙ୍କର ନିଷ୍କ୍ରିୟ ବିଭାଗକୁ ବ୍ୟବସ୍ଥିତ ରଖିବେ?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> ଚୟନ କରାଯାଇନାହିଁ</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
 <translation id="7961015016161918242">ଆଦୌ ନୁହେଁ</translation>

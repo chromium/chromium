@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">แท็บจากอุปกรณ์เครื่องอื่น</translation>
 <translation id="2930577230479659665">ตัดออกหลังสำเนาแต่ละฉบับ</translation>
 <translation id="2933624813161016821">ฟอยล์ลายนูน</translation>
+<translation id="293796669683825859">ความคิดเห็น</translation>
 <translation id="2938225289965773019">เปิดลิงก์ <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">ภาพ PNG</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 นิ้ว</translation>
@@ -1993,6 +1994,7 @@
 <translation id="4298000214066716287">การลงทุน</translation>
 <translation id="42981349822642051">ขยาย</translation>
 <translation id="4298925811540301889">คุกกี้สำหรับเว็บไซต์นี้จะซิงค์ในอุปกรณ์ ChromeOS ของคุณ หากต้องการจัดการสิ่งที่ซิงค์ ให้ไปที่<ph name="SYNC_SETTINGS" /></translation>
+<translation id="4300272766492248925">เปิดแอป</translation>
 <translation id="4300675098767811073">เจาะรูด้านขวาหลายรู</translation>
 <translation id="4302514097724775343">แตะไดโนเสาร์เพื่อเล่น</translation>
 <translation id="4304049446746819918">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้ย้ายไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้ย้ายไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>

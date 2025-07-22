@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">‏برای تمام کردن راه‌اندازی «تکمیل خودکار»، اکنون Chrome را بازراه‌اندازی کنید. برگه‌هایتان به‌طور خودکار دوباره باز خواهند شد.</translation>
 <translation id="2091863218454846791">نمای فشرده نشان داده می‌شود</translation>
 <translation id="2093731487903423814">۱۵ دقیقه گذشته</translation>
+<translation id="2096577711562668473">سرویس تکمیل خودکار را تغییر می‌دهید؟</translation>
 <translation id="2100273922101894616">ورود به سیستم خودکار</translation>
 <translation id="2109384632594340939">عکس نمایه</translation>
 <translation id="2111511281910874386">رفتن به صفحه</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2497852260688568942">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="250020030759455918">‏وضعیت ورود به سیستم <ph name="SITE_NAME" />، داده‌های محصول مرور، و داده‌های سایت را در Chrome خواهید دید</translation>
+<translation id="2502798195266898572">برگ زیرین «حالت خواندن» به‌صورت کامل باز شده است</translation>
 <translation id="2510106555128151389">درحال نصب <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">جستجوی گزینه‌های خرید</translation>
 <translation id="2513403576141822879">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت و جمع‌آوری داده‌ها، <ph name="BEGIN_LINK" />همگام‌سازی و سرویس‌های Google<ph name="END_LINK" /> را ببینید</translation>
@@ -934,6 +936,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{درحال بارگیری فایل…}one{درحال بارگیری # فایل…}other{درحال بارگیری # فایل…}}</translation>
 <translation id="5210286577605176222">رفتن به برگه قبلی</translation>
 <translation id="5210365745912300556">بستن برگه</translation>
+<translation id="5212800876504289412">‏برای تکمیل این تغییر، Chrome را بازراه‌اندازی کنید. پس‌از بازراه‌اندازی، زبانه‌ها به‌طور خودکار دوباره باز می‌شوند.</translation>
 <translation id="5215957675041756913">کنترل داده‌ها و حساب</translation>
 <translation id="5218324087477576825">شماره کارت الزامی است</translation>
 <translation id="5221437554987713282">‏<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و اجازه‌های دیگر <ph name="SEPARATOR" /> Chrome این اجازه‌ها را برداشت زیرا اخیراً بازدیدی نداشته‌اید</translation>
@@ -1062,6 +1065,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{نمایش اعلان}one{نمایش اعلان}other{نمایش اعلان‌ها}}</translation>
 <translation id="5814749351757353073">از سایت‌های محبوبتان باخبر باشید</translation>
 <translation id="5823093032261493462">آیا می‌خواهید «<ph name="FILE_NAME" />» را درهرصورت از <ph name="DOWNLOAD_DOMAIN" /> بارگیری کنید؟</translation>
+<translation id="5825135637446025843">‏پس‌از راه‌اندازی مجدد Chrome، اطلاعات ذخیره‌شده شما از ارائه‌دهنده جدیدتان برای تکمیل خودکار گذرواژه‌ها، گذرکلیدها، نشانی‌ها، روش‌های پرداخت، و اطلاعات دیگر استفاده می‌شود.</translation>
 <translation id="5828921839638612740">‏می‌توانید داده‌ها را در «تنظیمات» Chrome حذف کنید</translation>
 <translation id="5829586821381540080">در <ph name="FOLDER_NAME" /> ذخیره شد</translation>
 <translation id="583281660410589416">ناشناس</translation>
@@ -1178,6 +1182,7 @@
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="6296366034485697675">صادر و حذف کردن</translation>
 <translation id="629730747756840877">حساب</translation>
+<translation id="6300697579369314762">برگ زیرین «حالت خواندن» به‌صورت نیمه باز شده است</translation>
 <translation id="6301526076346731664">باز کردن ابزارهای توسعه‌دهندگان</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
 <translation id="6307241780749477694">هویت خود را به‌تأیید برسانید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
@@ -1398,6 +1403,7 @@
 <translation id="71503698506017927">‏رمزگذاری گذرعبارت شامل روش‌های پرداخت و نشانی‌های ذخیره‌شده در Google Pay نمی‌شود.
 
 برای تغییر این تنظیم، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">برگ زیرین «حالت خواندن» بسته شده است</translation>
 <translation id="7165972437814027679">‏اطلاعات بیشتر درباره اینکه چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند</translation>
 <translation id="7168323970702333693">با <ph name="USER_NAME" /> به سیستم وارد شده‌اید. تنظیمات را باز می‌کند.</translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>

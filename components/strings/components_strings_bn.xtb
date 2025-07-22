@@ -577,6 +577,7 @@
 <translation id="1959001866257244765">Google-এ <ph name="BEGIN_WHITEPAPER_LINK" />আপনার দেখা পৃষ্ঠাগুলির ইউআরএল, সিস্টেমের কিছু সীমিত তথ্য এবং পৃষ্ঠার কিছু কন্টেন্ট<ph name="END_WHITEPAPER_LINK" /> পাঠিয়ে ওয়েবে সকলের জন্য নিরাপত্তা উন্নত করতে সাহায্য করুন। <ph name="BEGIN_PRIVACY_PAGE_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">আপনার টেক্সট ও পৃষ্ঠার কন্টেন্ট Google-এ পাঠানো হয় এবং এই ফিচার উন্নত করার জন্য তা ব্যবহার করা হতে পারে।
   <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Chrome-এ কেনাকাটা করার সময়, বিকল্প হিসেবে নন-কার্ড পেমেন্ট পদ্ধতিগুলি দেখুন</translation>
 <translation id="196146181975453736">আরও ঝটপট পেমেন্ট করতে, নিরাপত্তা সংক্রান্ত এককালীন চেকিংয়ের প্রসেস সম্পূর্ণ করুন</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> বুকমার্ক</translation>
 <translation id="1973335181906896915">ধারাবাহিকতাতে ত্রুটি</translation>
@@ -1145,6 +1146,7 @@
 <translation id="2930531075747147366">আপনার অন্যান্য ডিভাইস থেকে ট্যাব</translation>
 <translation id="2930577230479659665">প্রতিটি কপির পর ট্রিম করুন</translation>
 <translation id="2933624813161016821">এমবসিং ফয়েল</translation>
+<translation id="293796669683825859">মন্তব্য</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> লিঙ্কগুলি খুলুন</translation>
 <translation id="2940418897281183211">PNG ছবি</translation>
 <translation id="2941878205777356567">এনভেলপ ৯ x ১২ ইঞ্চি</translation>
@@ -1994,6 +1996,7 @@
 <translation id="4298000214066716287">লগ্নিকরণ</translation>
 <translation id="42981349822642051">প্রসারিত করুন</translation>
 <translation id="4298925811540301889">আপনার ChromeOS ডিভাইস জুড়ে এই সাইটের কুকি সিঙ্ক করা হয়েছে। আপনি কী সিঙ্ক করবেন, তা ম্যানেজ করার জন্য <ph name="SYNC_SETTINGS" />-এ যান।</translation>
+<translation id="4300272766492248925">অ্যাপ্লিকেশান খুলুন</translation>
 <translation id="4300675098767811073">ডানদিকে মাল্টিপল পাঞ্চ</translation>
 <translation id="4302514097724775343">ডাইনোসর গেম খেলতে, ট্যাপ করুন</translation>
 <translation id="4304049446746819918">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল সরানো যাবে না}}</translation>
@@ -3036,6 +3039,7 @@
 <translation id="6101583188322746099">মুদিখানার জিনিসপত্র ডেলিভারি সংক্রান্ত পরিষেবা</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">সাইট তৈরি করুন</translation>
+<translation id="6105511947520166941">Chrome-এ পরের বার সরাসরি Pix-এর মাধ্যমে পেমেন্ট করুন</translation>
 <translation id="6106989379647458772"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি অস্থায়ীভাবে ডাউন হয়ে থাকতে পারে অথবা এটি হয়ত একটি নতুন ওয়েব ঠিকানায় স্থায়ীভাবে সরানো হয়েছে।</translation>
 <translation id="6107012941649240045">একে ইস্যু করা হয়েছিল</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> গ্রুপের নাম পরিবর্তন করেছেন</translation>

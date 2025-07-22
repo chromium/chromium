@@ -6,7 +6,6 @@
 <translation id="1010225406377140704">નવી લિંક માટે પૂછવા માટે મોકલનારનો સંપર્ક કરો</translation>
 <translation id="1013952917065545813">તમે તાજેતરમાં બંધ કરેલા ટૅબ ફરીથી ખોલવા માટે, તમે અહીં પાછા આવી શકો છો</translation>
 <translation id="1016495303386450659">આઇટમ અપડેટ કરી</translation>
-<translation id="1017735584092444011">વાંચન મોડ બતાવો</translation>
 <translation id="102916930470544692">પાસકી</translation>
 <translation id="1030376737535466765">Password Manager ખોલો</translation>
 <translation id="1035980983510608210">બધી ટૅબ બંધ કરવાથી પિન કરેલી ટૅબ પણ બંધ થઈ જશે.</translation>
@@ -1100,6 +1099,7 @@
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયા</translation>
 <translation id="5443636120437209490">ડિફૉલ્ટ તરીકે બહેતર બ્રાઉઝિંગ</translation>
 <translation id="5444892875087332195">બુકમાર્ક</translation>
+<translation id="5447973833955560753">રિકવરી પાસવર્ડ</translation>
 <translation id="5452354193031718372">સશક્ત પાસવર્ડનો ઉપયોગ કરો:</translation>
 <translation id="5454211924362324495">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતા રોકવા માટે, તેને <ph name="BEGIN_LINK" /><ph name="WEBSITE" />પર બદલો<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">તમારી શોધમાં ઉમેરો</translation>
@@ -1119,6 +1119,7 @@
 <translation id="5524590039848017563">પ્રાથમિક ટૂલબાર બટનને નાનું કર્યું</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} નબળો પાસવર્ડ}one{{COUNT} નબળો પાસવર્ડ}other{{COUNT} નબળા પાસવર્ડ}}</translation>
 <translation id="5532545557415295622">નિષ્ક્રિય સમયસમાપ્તિનો સંવાદ</translation>
+<translation id="5547868626772433490">Geminiને પૂછો</translation>
 <translation id="5548760955356983418">હેન્ડઓફ તમને આ ડિવાઇસ પર વેબસાઇટ બ્રાઉઝ કરવાનું શરૂ કરવા અને પછી તમારા Mac પર સરળતાથી ચાલુ રાખવા દે છે. વર્તમાનમાં ખુલ્લી છે તે વેબસાઇટ તમારા Mac ના ડૉક પર દેખાશે.
 
 સેટિંગના સામાન્ય વિભાગમાં હેન્ડઓફ ચાલુ હોવું પણ જરૂરી છે અને તમારા ડિવાઇસ, સમાન iCloud એકાઉન્ટનો ઉપયોગ કરતાં હોવા જરૂરી છે.</translation>
@@ -1171,7 +1172,6 @@
 <translation id="5683499062697987550">તમારા Google એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો.</translation>
 <translation id="5684761169742812828">આ પાસવર્ડ ઇન્ટરનેટ પર ડેટા ઉલ્લંઘનમાં જાહેર થઈ ગયો હતો. જો તમારી પાસે તેને અત્યારે જ બદલવાનો સમય નથી, તો Google તમારી જાતને ફરીથી યાદ અપાવવા માટે આ ચેતવણીને રાખી મૂકવાનો સુઝાવ આપે છે.</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> માટે Driveમાં સાચવી.</translation>
-<translation id="5701749750962143173">તમારા IP ઍડ્રેસના આધારે અંદાજિત લોકેશનને બદલે, Geminiના સૌથી સચોટ પરિણામો માટે તમારા સચોટ લોકેશનનો ઉપયોગ કરો. વધુ જાણો</translation>
 <translation id="570209299585559496">તમે સેટિંગ પછી કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
 <translation id="5702108177581350218">તમે તમારું વપરાશકર્તાનું નામ અને પાસવર્ડની એક કૉપિ શેર કરો ત્યારે, તમારા કુટુંબનો સભ્ય તેમને Google Password Managerનો ઉપયોગ કરીને ભરી શકે છે.</translation>
 <translation id="5704908597376970822">સાઇન ઇન કરી શકાતું નથી.</translation>
@@ -1649,6 +1649,7 @@
 <translation id="75362970626182391">ટૅબનું નવું ગ્રૂપ</translation>
 <translation id="7537586195939242955">માફ કરશો, તમારો પાસ આ સમયે પાસબુક પર ઇન્સ્ટોલ કરી શકાતો નથી.</translation>
 <translation id="754655535278952384">છેલ્લે ચેક કર્યાનો સમય <ph name="TIME" /></translation>
+<translation id="7554791636758816595">નવું ટૅબ</translation>
 <translation id="7557508262441527045">સાઇન આઉટ કર્યું</translation>
 <translation id="7561196759112975576">હંમેશાં</translation>
 <translation id="7561982940498449837">મેનૂ બંધ કરો</translation>
@@ -1732,13 +1733,11 @@
 <translation id="7863211248337747225">ઍપ મેળવો</translation>
 <translation id="7865127013871431856">Google Translateના વિકલ્પો</translation>
 <translation id="7866872729285243843">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ મેળવવા માટે, સેટિંગમાં "વાંચન સૂચિ" ચાલુ કરો.</translation>
-<translation id="787364769771947486">વાંચન મોડ છુપાવો</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> વડે ફોર્મને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="7883882164760409935">તમારી પાસે એવા પાસવર્ડ છે જેનો તમે વારંવાર ઉપયોગ કરો છો.</translation>
 <translation id="7887174313503389866">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોની મુલાકાત લો. વધુ વિકલ્પો માટે, વ્યક્તિગત સેટિંગ પર જાઓ.</translation>
 <translation id="7887198238286927132">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડ સ્વતઃ નહીં ભરે.</translation>
 <translation id="7887552845761062935">વધુ વિકલ્પો ખોલવા માટે ટૅપ કરીને દબાવી રાખો</translation>
-<translation id="7889049308054594504">વધુ સંબંધિત જવાબો મેળવવા માટે Gemini સાથે પેજનું કન્ટેન્ટ શેર કરો. જ્યારે તમે Gemini સાથે કોઈ પેજ શેર કરો છો, ત્યારે પેજનું સંપૂર્ણ કન્ટેન્ટ અને URL Googleને મોકલવામાં આવે છે. વધુ જાણો</translation>
 <translation id="7889910613639381518">Google Password Manager વિજેટ વડે સરળ અને સુરક્ષિત ઍક્સેસ.</translation>
 <translation id="7899199123054742721">બધી વાંચ્યા વગરની તરીકે માર્ક કરો</translation>
 <translation id="7908957400505794782"><ph name="BEGIN_BOLD" />થઈ ગયું<ph name="END_BOLD" /> પર ટૅપ કરો</translation>
@@ -2047,6 +2046,7 @@
 <translation id="8984627322964256190">'<ph name="DOMAIN_NAME" /> ફૉલો કરો' છુપાવો</translation>
 <translation id="8998289560386111590">તમારા ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="9000089900434778519">તમારું શોધ એન્જિન <ph name="DSE_NAME" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>
+<translation id="9000532564152265066">તમામ ટૅબ</translation>
 <translation id="9003677638446136377">ફરી તપાસો</translation>
 <translation id="9006453925669499173">મેનૂ → નવું છૂપું ટૅબ</translation>
 <translation id="9008201768610948239">અવગણો</translation>

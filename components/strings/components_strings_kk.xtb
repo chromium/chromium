@@ -1145,6 +1145,7 @@
 <translation id="2930531075747147366">Қойынды басқа құрылғыдан жіберілді</translation>
 <translation id="2930577230479659665">Әр көшірмеден кейін кесу</translation>
 <translation id="2933624813161016821">Бедерлі фольга</translation>
+<translation id="293796669683825859">Пікірлер</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> сілтемелерін ашу</translation>
 <translation id="2940418897281183211">PNG суреті</translation>
 <translation id="2941878205777356567">229 x 305 мм хатқалта</translation>
@@ -1993,6 +1994,7 @@
 <translation id="4298000214066716287">Инвестиция</translation>
 <translation id="42981349822642051">Жаю</translation>
 <translation id="4298925811540301889">Бұл сайттағы cookie файлдары ChromeOS құрылғыларымен синхрондалады. Синхрондалатын ақпаратты реттеу үшін <ph name="SYNC_SETTINGS" /> бөліміне өтіңіз.</translation>
+<translation id="4300272766492248925">Қолданбаны ашу</translation>
 <translation id="4300675098767811073">Оң жақтан бірнеше рет тесу</translation>
 <translation id="4302514097724775343">Ойнау үшін динозаврды басыңыз.</translation>
 <translation id="4304049446746819918">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына ауыстырмаған жөн.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына ауыстырмаған жөн.}}</translation>

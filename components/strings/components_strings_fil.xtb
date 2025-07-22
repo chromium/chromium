@@ -576,6 +576,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1959001866257244765">Tumulong na pahusayin ang seguridad sa web para sa lahat sa pamamagitan ng pagpapadala ng <ph name="BEGIN_WHITEPAPER_LINK" />mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page<ph name="END_WHITEPAPER_LINK" /> sa Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Patakaran sa privacy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Ipinapadala sa Google ang iyong text at content ng page at posibleng gamitin ang mga ito para pahusayin ang feature na ito.
   <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="1960664692890490165">Kapag bumili ka sa Chrome, tingnan ang mga non-card na paraan ng pagbabayad bilang opsyon</translation>
 <translation id="196146181975453736">Kumpletuhin ang one-time na pagsusuri sa seguridad para mas mabilis na makapagbayad</translation>
 <translation id="1962204205936693436">Mga Bookmark ng <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Error sa serialization</translation>
@@ -1144,6 +1145,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2930531075747147366">Tab mula sa Iba Mo Pang Device</translation>
 <translation id="2930577230479659665">Paikliin pagkatapos ng bawat pagkopya</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
+<translation id="293796669683825859">Mga Komento</translation>
 <translation id="2938225289965773019">Buksan ang mga link ng <ph name="PROTOCOL" /></translation>
 <translation id="2940418897281183211">Larawang PNG</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
@@ -1993,6 +1995,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4298000214066716287">Pamumuhunan</translation>
 <translation id="42981349822642051">Palawakin</translation>
 <translation id="4298925811540301889">Naka-sync ang cookies para sa site na ito sa iyong mga ChromeOS device. Para pamahalaan kung ano ang sini-sync mo, pumunta sa <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4300272766492248925">Buksan ang app</translation>
 <translation id="4300675098767811073">Multiple punch right</translation>
 <translation id="4302514097724775343">I-tap ang dino para maglaro</translation>
 <translation id="4304049446746819918">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na ilipat ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
@@ -3035,6 +3038,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6101583188322746099">Mga Serbisyo sa Pag-deliver ng Grocery</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Gumawa ng site</translation>
+<translation id="6105511947520166941">Magbayad gamit ang Pix nang direkta sa Chrome sa susunod</translation>
 <translation id="6106989379647458772">Maaaring pansamantalang hindi gumagana ang webpage sa <ph name="PAGE" />, o kaya, maaaring permanente na itong lumipat sa isang bagong address sa web.</translation>
 <translation id="6107012941649240045">Ibinigay Kay</translation>
 <translation id="6107864469867367783">Binago ni <ph name="USER_DISPLAY_NAME" /> ang pangalan ng grupo</translation>

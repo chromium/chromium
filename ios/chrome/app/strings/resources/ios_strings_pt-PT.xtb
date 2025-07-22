@@ -6,7 +6,6 @@
 <translation id="1010225406377140704">Contacte o remetente para pedir um novo link</translation>
 <translation id="1013952917065545813">Pode voltar aqui para reabrir separadores que tenha fechado recentemente.</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
-<translation id="1017735584092444011">Mostrar modo de leitura</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abrir Gestor de Palavras-passe</translation>
 <translation id="1035980983510608210">Se fechar todos os separadores, os separadores fixos também são fechados.</translation>
@@ -1106,6 +1105,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5439618055789623719">Sessão iniciada como <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Melhor navegação por predefinição</translation>
 <translation id="5444892875087332195">Marcadores</translation>
+<translation id="5447973833955560753">Palavra-passe de recuperação</translation>
 <translation id="5452354193031718372">Use uma palavra-passe forte:</translation>
 <translation id="5454211924362324495">Para impedir que outras pessoas usem a sua palavra-passe, <ph name="BEGIN_LINK" />altere-a em <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Adicione à sua pesquisa</translation>
@@ -1126,6 +1126,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5524590039848017563">Botão da barra de ferramentas principal reduzido</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} palavra-passe fraca}other{{COUNT} palavras-passe fracas}}</translation>
 <translation id="5532545557415295622">Caixa de diálogo de limite de tempo de inatividade</translation>
+<translation id="5547868626772433490">Pedir ao Gemini</translation>
 <translation id="5548760955356983418">A Entrega permite-lhe começar a navegar num Website neste dispositivo e, em seguida, continuar facilmente no seu Mac. O Website atualmente aberto aparece na Dock do seu Mac.
 
 A Entrega também tem de estar ativada na secção Geral das Definições e os seus dispositivos têm de utilizar a mesma conta iCloud.</translation>
@@ -1179,7 +1180,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5684761169742812828">Esta palavra-passe foi exposta numa violação de dados na Internet. Se não tiver tempo para a alterar neste momento, a Google recomenda que mantenha este aviso para se lembrar mais tarde.</translation>
 <translation id="5688739340234490129">{count,plural, =1{{count} cartão}other{{count} cartões}}</translation>
 <translation id="5694848685995373177">Guardado no Drive de <ph name="USER_EMAIL" />.</translation>
-<translation id="5701749750962143173">Use a sua localização exata para ver os resultados do Gemini mais precisos, em vez de uma localização estimada com base no seu endereço IP. Saiba mais</translation>
 <translation id="570209299585559496">Pode alterar a vista do site predefinida para o computador em Definições e, em seguida, Definições de conteúdo</translation>
 <translation id="5702108177581350218">Quando partilha uma cópia do seu nome de utilizador e palavra-passe, o membro da família pode preenchê-los através do Gestor de Palavras-passe da Google.</translation>
 <translation id="5704908597376970822">Não é possível iniciar sessão.</translation>
@@ -1660,6 +1660,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="75362970626182391">Novo grupo de separadores</translation>
 <translation id="7537586195939242955">De momento não é possível instalar a sua Palavra-passe no Passbook.</translation>
 <translation id="754655535278952384">Última verificação: <ph name="TIME" /></translation>
+<translation id="7554791636758816595">Novo separador</translation>
 <translation id="7557508262441527045">Sessão terminada</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
@@ -1743,13 +1744,11 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7863211248337747225">Obter a app</translation>
 <translation id="7865127013871431856">Opções de tradução</translation>
 <translation id="7866872729285243843">Para obter a sua Lista de leitura em todos os dispositivos, ative a "Lista de leitura" nas definições.</translation>
-<translation id="787364769771947486">Ocultar modo de leitura</translation>
 <translation id="7874107544081154809">Preencher automaticamente o formulário com <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Tem palavras-passe reutilizadas.</translation>
 <translation id="7887174313503389866">Inicie uma visita guiada dos principais controlos de privacidade e segurança. Para obter mais opções, aceda às definições individuais.</translation>
 <translation id="7887198238286927132">Para proteger a sua privacidade, o Chrome não irá preencher automaticamente este campo.</translation>
 <translation id="7887552845761062935">Toque duas vezes sem soltar para abrir mais opções</translation>
-<translation id="7889049308054594504">Partilhe o conteúdo da página com o Gemini para receber respostas mais relevantes. Quando partilha uma página com o Gemini, o conteúdo completo e o URL da página são enviados para a Google. Saiba mais</translation>
 <translation id="7889910613639381518">Acesso fácil e seguro com o widget do Gestor de Palavras-passe da Google.</translation>
 <translation id="7899199123054742721">Marcar tudo como não lido</translation>
 <translation id="7908957400505794782">Toque em <ph name="BEGIN_BOLD" />Concluir<ph name="END_BOLD" /></translation>
@@ -2060,6 +2059,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8984627322964256190">Ocultar Seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="8998289560386111590">Não disponível no seu dispositivo</translation>
 <translation id="9000089900434778519">O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>
+<translation id="9000532564152265066">Todos os separadores</translation>
 <translation id="9003677638446136377">Rever novamente</translation>
 <translation id="9006453925669499173">Menu → Novo separador de navegação anónima</translation>
 <translation id="9008201768610948239">Ignorar</translation>

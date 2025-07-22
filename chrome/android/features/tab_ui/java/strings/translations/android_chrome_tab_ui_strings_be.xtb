@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
-<translation id="1036348656032585052">Выключыць</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Створана <ph name="NUM_WEEKS_ONE" /> тыдзень таму}one{Створана <ph name="NUM_WEEKS_MANY" /> тыдзень таму}few{Створана <ph name="NUM_WEEKS_MANY" /> тыдні таму}many{Створана <ph name="NUM_WEEKS_MANY" /> тыдняў таму}other{Створана <ph name="NUM_WEEKS_MANY" /> тыдня таму}}</translation>
 <translation id="1063300264396686489">Аўтаматычна адкрываць групы ўкладак з іншых прылад</translation>
 <translation id="1075622780330595106">Некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">Перамяшчаць у раздзел "Неактыўныя"</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Дадаць у закладкі <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="2055057176188061528">Выберыце групу ўкладак або стварыце новую</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome аўтаматычна закрывае элементы з раздзела "Неактыўныя", якімі вы не карысталіся на працягу <ph name="AUTO_DELETE_DELAY_ONE" /> месяца. Выключыць гэту функцыю можна ў наладах.}one{Chrome аўтаматычна закрывае элементы з раздзела "Неактыўныя", якімі вы не карысталіся на працягу <ph name="AUTO_DELETE_DELAY_MANY" /> месяца. Выключыць гэту функцыю можна ў наладах.}few{Chrome аўтаматычна закрывае элементы з раздзела "Неактыўныя", якімі вы не карысталіся на працягу <ph name="AUTO_DELETE_DELAY_MANY" /> месяцаў. Выключыць гэту функцыю можна ў наладах.}many{Chrome аўтаматычна закрывае элементы з раздзела "Неактыўныя", якімі вы не карысталіся на працягу <ph name="AUTO_DELETE_DELAY_MANY" /> месяцаў. Выключыць гэту функцыю можна ў наладах.}other{Chrome аўтаматычна закрывае элементы з раздзела "Неактыўныя", якімі вы не карысталіся на працягу <ph name="AUTO_DELETE_DELAY_MANY" /> месяца. Выключыць гэту функцыю можна ў наладах.}}</translation>
 <translation id="2118649612461486615">Звесткі пра краму</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – укладка ў рэжыме інкогніта.}one{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладка ў рэжыме інкогніта.}few{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладкі ў рэжыме інкогніта.}many{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладак у рэжыме інкогніта.}other{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладкі ў рэжыме інкогніта.}}</translation>
 <translation id="2162620598375156287">Цяперашняя цана на сайце <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2371084566192454134">Укладкі і групы ўкладак</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкай.}one{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкай.}few{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}many{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}other{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
+<translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2498435670446402865">Назва групы ўкладак</translation>
 <translation id="2536366509642644298">Групы ўкладак "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" больш не даступныя</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">Цяпер усе паўторныя ўкладкі будуць таксама адпраўляцца ў архіў, за выключэннем той, якая выкарыстоўвалася апошняй.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрыць <ph name="TABS_COUNT_ONE" /> выбраны элемент}one{Закрыць <ph name="TABS_COUNT_MANY" /> выбраны элемент}few{Закрыць <ph name="TABS_COUNT_MANY" /> выбраныя элементы}many{Закрыць <ph name="TABS_COUNT_MANY" /> выбраных элементаў}other{Закрыць <ph name="TABS_COUNT_MANY" /> выбранага элемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перамясціць групу ўкладак у новае акно}one{Перамясціць групу ўкладак у яшчэ адно акно}few{Перамясціць групу ўкладак у яшчэ адно акно}many{Перамясціць групу ўкладак у яшчэ адно акно}other{Перамясціць групу ўкладак у яшчэ адно акно}}</translation>
-<translation id="6220820548421939212">Так. Згаджаюся</translation>
 <translation id="6228793724645064692">(ацэнка крамы)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Дадаць укладку ў новую групу}one{Дадаць укладкі ў новую групу}few{Дадаць укладкі ў новую групу}many{Дадаць укладкі ў новую групу}other{Дадаць укладкі ў новую групу}}</translation>
 <translation id="6333260925957816943">Інфармацыя пра гэту краму</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">Выберыце групу ўкладак</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Абагуліць укладку}one{Абагуліць укладкі}few{Абагуліць укладкі}many{Абагуліць укладкі}other{Абагуліць укладкі}}</translation>
 <translation id="7129458170538955174">Інфармацыя пра гэту краму разгорнута на палову экрана</translation>
+<translation id="7151209024774799310">Выдаліць укладкі з групы</translation>
 <translation id="7204204600596740190">Рэжым множнага выбару</translation>
 <translation id="7211038039686180558">Групы ўкладак аўтаматычна захоўваюцца і абнаўляюцца на ўсіх вашых прыладах, на якіх выкананы ўваход</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> колер выбраны</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> водгук}one{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгук}few{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукі}many{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукаў}other{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгуку}}</translation>
 <translation id="7885132941432959125">Перамясціць укладку ўправа</translation>
-<translation id="788914896430720926">Выдаляць неактыўныя элементы з раздзела?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> колер не выбраны</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
 <translation id="7961015016161918242">Ніколі</translation>

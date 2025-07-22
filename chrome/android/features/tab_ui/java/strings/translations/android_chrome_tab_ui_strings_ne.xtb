@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हप्ताअघि बनाइएको}other{<ph name="NUM_WEEKS_MANY" /> हप्ताअघि बनाइएको}}</translation>
 <translation id="1063300264396686489">अन्य डिभाइसहरूमा भएका ट्याब समूह स्वतः खोल्नुहोस्</translation>
 <translation id="1075622780330595106">तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
@@ -34,7 +33,6 @@
 <translation id="1982637982196732906">निष्क्रिय ट्याबहरूको खण्डमा लैजानुहोस्</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब बुकमार्क गर्नुहोस्}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब बुकमार्क गर्नुहोस्}}</translation>
 <translation id="2055057176188061528">ट्याब समूह चयन गर्नुहोस् वा नयाँ ट्याब समूह बनाउनुहोस्</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome ले तपाईंले <ph name="AUTO_DELETE_DELAY_ONE" /> महिनादेखि प्रयोग नगरेका निष्क्रिय ट्याबहरूको खण्डमा रहेका वस्तुहरू स्वतः बन्द गर्छ। तपाईं अहिले वा जुनसुकै बेला सेटिङमा गई यसलाई अफ गर्न सक्नुहुन्छ।}other{Chrome ले तपाईंले <ph name="AUTO_DELETE_DELAY_MANY" /> महिनादेखि प्रयोग नगरेका निष्क्रिय ट्याबहरूको खण्डमा रहेका वस्तुहरू स्वतः बन्द गर्छ। तपाईं अहिले वा जुनसुकै बेला सेटिङमा गई यसलाई अफ गर्न सक्नुहुन्छ।}}</translation>
 <translation id="2118649612461486615">स्टोरसम्बन्धी जानकारी</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ। तपाईंको इन्कोग्निटो ट्याब उपलब्ध हुने छैन।}other{तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ। तपाईंका # वटा इन्कोग्निटो ट्याब उपलब्ध हुने छैनन्।}}</translation>
 <translation id="2162620598375156287">अहिले <ph name="SOURCE_WEBSITE" /> मा <ph name="CURRENT_PRICE" /> मा उपलब्ध छ</translation>
@@ -45,6 +43,7 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2371084566192454134">ट्याब र ट्याब समूहहरू</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="TITLE_OF_GROUP" /> ट्याब समूह कोल्याप्स गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> ट्याब समूह कोल्याप्स गर्नुहोस्।}}</translation>
+<translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2498435670446402865">ट्याब समूहको नाम बदल्नुहोस्</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" र "<ph name="TAB_GROUP_NAME_2" />" ट्याब समूहहरू अब उपलब्ध छैनन्</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>
@@ -133,7 +132,6 @@
 <translation id="6109251075362363230">सबैभन्दा हालसालै प्रयोग गरिएको दोहोरिएको ट्याबबाहेक दोहोरिएका सबै ट्याबहरू अब अभिलेखमा राखिने छन्।</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब बन्द गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब बन्द गर्नुहोस्}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{समूह सारेर नयाँ विन्डोमा लैजानुहोस्}other{समूह सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
-<translation id="6220820548421939212">अँ। म चाहन्छु</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{नयाँ समूहमा ट्याब हाल्नुहोस्}other{नयाँ समूहमा ट्याबहरू हाल्नुहोस्}}</translation>
 <translation id="6333260925957816943">यो स्टोरसम्बन्धी जानकारी</translation>
@@ -157,6 +155,7 @@
 <translation id="709473454666962555">ट्याब समूह चयन गर्नुहोस्</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ट्याब सेयर गर्नुहोस्}other{ट्याबहरू सेयर गर्नुहोस्}}</translation>
 <translation id="7129458170538955174">यो स्टोरसम्बन्धी जानकारी स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
+<translation id="7151209024774799310">समूहबाट ट्याबहरू हटाउनुहोस्</translation>
 <translation id="7204204600596740190">एकभन्दा बढी ट्याब चयन गर्ने मोड</translation>
 <translation id="7211038039686180558">तपाईंका ट्याब समूहहरू स्वतः सेभ गरिन्छ र तपाईंले साइन इन गरेका सबै डिभाइसहरूमा अपडेट गरिन्छ</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> चयन गरिएको छ</translation>
@@ -183,7 +182,6 @@
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा}}</translation>
 <translation id="7885132941432959125">ट्याब सारेर दायाँतिर लैजानुहोस्</translation>
-<translation id="788914896430720926">तपाईं आफ्नो निष्क्रिय ट्याबहरूको खण्ड व्यवस्थित राख्न चाहनुहुन्छ?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> चयन गरिएको छैन</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>

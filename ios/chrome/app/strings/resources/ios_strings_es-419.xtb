@@ -6,7 +6,6 @@
 <translation id="1010225406377140704">Comunícate con el remitente para solicitar un nuevo vínculo</translation>
 <translation id="1013952917065545813">Puedes volver aquí para abrir las pestañas que cerraste recientemente</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
-<translation id="1017735584092444011">Mostrar el Modo de lectura</translation>
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1030376737535466765">Abrir el Administrador de contraseñas</translation>
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
@@ -885,6 +884,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="461440297010471931">Búsqueda con Google</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
+<translation id="4621768135601674446">Abrir las opciones del Modo de lectura</translation>
 <translation id="4624080227980645783">Nueva ventana de incógnito</translation>
 <translation id="4627107755957573804">Permite que los sitios y las apps actualicen las cuentas existentes para usar llaves de acceso</translation>
 <translation id="4630212057753624203">Cuadro de ejemplo</translation>
@@ -1005,6 +1005,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5024511550058813796">Verás tu historial en todos los dispositivos sincronizados para que puedas retomar la navegación</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5050810143224996149">Compartir contraseña</translation>
+<translation id="5055015094595227120">Ubicación precisa</translation>
 <translation id="5056446788882570708">Se encontraron problemas <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
@@ -1098,6 +1099,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5439618055789623719">Accediste como <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Navegación mejorada de forma predeterminada</translation>
 <translation id="5444892875087332195">Favoritos</translation>
+<translation id="5447973833955560753">Contraseña de recuperación</translation>
 <translation id="5452354193031718372">Usa una contraseña segura:</translation>
 <translation id="5454211924362324495">Para evitar que otras personas usen tu contraseña, <ph name="BEGIN_LINK" />cámbiala en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Agregar a la búsqueda</translation>
@@ -1117,6 +1119,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5524590039848017563">Botón principal de la barra de herramientas contraído</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5532545557415295622">Diálogo de tiempo de espera de inactividad</translation>
+<translation id="5547868626772433490">Preguntarle a Gemini</translation>
 <translation id="5548760955356983418">Handoff te permite comenzar a navegar en un sitio web en este dispositivo y, luego, continuar fácilmente en tu Mac. El sitio web que está abierto ahora aparecerá en el Dock de tu Mac.
 
 Handoff también debe estar habilitado en la sección General de la configuración, y los dispositivos deben utilizar la misma cuenta de iCloud.</translation>
@@ -1646,6 +1649,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="75362970626182391">Nuevo grupo de pestañas</translation>
 <translation id="7537586195939242955">Tu pase no se puede instalar en Passbook en este momento.</translation>
 <translation id="754655535278952384">Se revisó <ph name="TIME" /></translation>
+<translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7557508262441527045">Saliste de la cuenta</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
@@ -1690,6 +1694,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7711440461521638739">No reutilizas ninguna contraseña</translation>
 <translation id="7712361583414030698">Vista de la versión sin conexión</translation>
 <translation id="7719038820139380048">Accede para obtener contenido según tus intereses.</translation>
+<translation id="7720901330179380635">Buscando con <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7724085059277147439">{count,plural, =1{Elemento guardado en tu Cuenta de Google ({email})}other{Elementos guardados en tu Cuenta de Google ({email})}}</translation>
 <translation id="7729458878441927652">Para ver las pestañas de tus otros dispositivos, sincroniza las pestañas y el historial.</translation>
 <translation id="7730020510075123961">No, combinar datos</translation>
@@ -1728,7 +1733,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7863211248337747225">Obtener la app</translation>
 <translation id="7865127013871431856">Opciones de traducción</translation>
 <translation id="7866872729285243843">Para obtener tu Lista de lectura en todos tus dispositivos, activa "Lista de lectura" en la configuración.</translation>
-<translation id="787364769771947486">Ocultar el Modo de lectura</translation>
 <translation id="7874107544081154809">Autocompletar formulario con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7883882164760409935">Tienes contraseñas reutilizadas.</translation>
 <translation id="7887174313503389866">Realiza una visita guiada de los controles de seguridad y privacidad más importantes. Para ver más opciones, ve a la configuración individual.</translation>
@@ -1766,6 +1770,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="7993170188789685695">Presiona dos veces para cerrar esta notificación.</translation>
 <translation id="7993619969781047893">Es posible que las características de algunos sitios no funcionen de forma correcta</translation>
 <translation id="7996239959906074962">Configuración…</translation>
+<translation id="8001561107130904792">Uso compartido de contenido de la página</translation>
 <translation id="800361585186029508">Abre las URL ingresadas en Google Chrome.</translation>
 <translation id="8005666035647241369">En el Administrador de contraseñas de Google en este dispositivo</translation>
 <translation id="8010488806779226127">Explora funciones que pueden ayudarte a hacer más mientras navegas</translation>
@@ -2041,6 +2046,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8984627322964256190">Ocultar la opción Seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="9000089900434778519">Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
+<translation id="9000532564152265066">Todas las pestañas</translation>
 <translation id="9003677638446136377">Volver a comprobar</translation>
 <translation id="9006453925669499173">Menú → Nueva pestaña de incógnito</translation>
 <translation id="9008201768610948239">Ignorar</translation>

@@ -603,7 +603,6 @@
 <translation id="3026897869154397692">เพิ่มลงในปฏิทินแล้ว</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
-<translation id="3036649622769666520">เปิดไฟล์</translation>
 <translation id="3039939407102840004">สไตลัสเหลือแบตเตอรี่ <ph name="PERCENTAGE" /> เปอร์เซ็นต์</translation>
 <translation id="304097922505898963">เปิดแอปแป้นพิมพ์ลัด</translation>
 <translation id="304417730895741346">แอปที่ปักหมุดและเปิดไว้จะอยู่ในแถบ หากต้องการปักหมุดแอปในแถบ ให้คลิกขวาที่แอปหรือใช้ 2 นิ้วแตะทัชแพด</translation>
@@ -1598,7 +1597,6 @@
 <translation id="6166852626429024716">ค้นหาอุปกรณ์ แอป การตั้งค่า เว็บ...</translation>
 <translation id="6168318496333165060">เปิดแอปการวินิจฉัย</translation>
 <translation id="6168622430237609329">แอปที่ติดตั้งของคุณ</translation>
-<translation id="6179832488876878285">คุณปักหมุดไฟล์สำคัญๆ ไว้ที่นี่ได้ เปิดแอป Files เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="6180193585172850042">ปุ่มย้อนกลับ</translation>
 <translation id="6180651297859206670">ปุ่มไปข้างหน้า</translation>
 <translation id="6182592640011875895">เปิดเดสก์</translation>

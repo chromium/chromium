@@ -6,7 +6,6 @@
 <translation id="1010225406377140704">Bitte den Absender um einen neuen Link</translation>
 <translation id="1013952917065545813">Hier kannst du kürzlich geschlossene Tabs wieder öffnen</translation>
 <translation id="1016495303386450659">Element aktualisiert</translation>
-<translation id="1017735584092444011">Lesemodus anzeigen</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Passwortmanager öffnen</translation>
 <translation id="1035980983510608210">Wenn du alle Tabs schließt, werden auch angepinnte Tabs geschlossen.</translation>
@@ -885,6 +884,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="461440297010471931">Mit Google suchen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4619615317237390068">Tabs von anderen Geräten</translation>
+<translation id="4621768135601674446">Optionen für den Lesemodus öffnen</translation>
 <translation id="4624080227980645783">Neues Inkognitofenster</translation>
 <translation id="4627107755957573804">Websites und Apps können vorhandene Konten automatisch auf die Verwendung von Passkeys umstellen.</translation>
 <translation id="4630212057753624203">Beispiel-Bubble</translation>
@@ -1005,6 +1005,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5024511550058813796">Du siehst den Verlauf auf allen synchronisierten Geräten und kannst dort weitermachen, wo du vorher aufgehört hast</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5050810143224996149">Passwort teilen</translation>
+<translation id="5055015094595227120">Genauer Standort</translation>
 <translation id="5056446788882570708">Probleme <ph name="TIME" /> gefunden.</translation>
 <translation id="5059136629401106827">Ok</translation>
 <translation id="5062321486222145940">Google Drive installieren</translation>
@@ -1098,6 +1099,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5439618055789623719">Angemeldet als <ph name="USER_EMAIL" /></translation>
 <translation id="5443636120437209490">Standardmäßig besseres Surfen</translation>
 <translation id="5444892875087332195">Lesezeichen</translation>
+<translation id="5447973833955560753">Wiederherstellungspasswort</translation>
 <translation id="5452354193031718372">Starkes Passwort verwenden:</translation>
 <translation id="5454211924362324495">Wenn du verhindern möchtest, dass andere dein Passwort verwenden, <ph name="BEGIN_LINK" />ändere es auf <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Suchanfrage ergänzen</translation>
@@ -1117,6 +1119,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5524590039848017563">Schaltfläche für die minimierte Toolbar in der primären Toolbar</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
 <translation id="5532545557415295622">Dialogfeld für Zeitüberschreitung bei Inaktivität</translation>
+<translation id="5547868626772433490">Gemini fragen</translation>
 <translation id="5548760955356983418">Mit Handoff kannst du auf diesem Gerät auf einer Website stöbern und dann einfach auf deinem Mac an derselben Stelle weitermachen. Die aktuell geöffnete Website wird im Dock deines Macs angezeigt.
 
 Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert sein und deine Geräte müssen dasselbe iCloud-Konto verwenden.</translation>
@@ -1646,6 +1649,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="75362970626182391">Neue Tabgruppe</translation>
 <translation id="7537586195939242955">Dein Pass kann derzeit nicht in Passbook installiert werden.</translation>
 <translation id="754655535278952384">Zuletzt geprüft: <ph name="TIME" /></translation>
+<translation id="7554791636758816595">Neuer Tab</translation>
 <translation id="7557508262441527045">Abgemeldet</translation>
 <translation id="7561196759112975576">Immer</translation>
 <translation id="7561982940498449837">Menü schließen</translation>
@@ -1690,6 +1694,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7711440461521638739">Du verwendest keine Passwörter mehrfach</translation>
 <translation id="7712361583414030698">Offlineversion wird angezeigt</translation>
 <translation id="7719038820139380048">Melde dich an, um Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
+<translation id="7720901330179380635">Suche mit <ph name="SEARCH_ENGINE" /> läuft</translation>
 <translation id="7724085059277147439">{count,plural, =1{Element im Google-Konto {email} gespeichert}other{Elemente im Google-Konto {email} gespeichert}}</translation>
 <translation id="7729458878441927652">Wenn du Tabs von deinen anderen Geräten sehen möchtest, synchronisiere deine Tabs und den Verlauf.</translation>
 <translation id="7730020510075123961">Nein, Daten zusammenführen</translation>
@@ -1728,7 +1733,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7863211248337747225">App herunterladen</translation>
 <translation id="7865127013871431856">Übersetzungsoptionen</translation>
 <translation id="7866872729285243843">Wenn du deine Leseliste auf allen deinen Geräten sehen möchtest, aktiviere in den Einstellungen die Option „Leseliste“.</translation>
-<translation id="787364769771947486">Lesemodus ausblenden</translation>
 <translation id="7874107544081154809">Formular mit <ph name="CELL_ACCESSIBILITY_LABEL" /> automatisch ausfüllen</translation>
 <translation id="7883882164760409935">Du nutzt wiederverwendete Passwörter.</translation>
 <translation id="7887174313503389866">Sieh dir eine Demo der wichtigsten Datenschutz- und Sicherheitseinstellungen an. Weitere Optionen findest du in den jeweiligen Einstellungen.</translation>
@@ -1766,6 +1770,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="7993170188789685695">Zum Schließen der Benachrichtigung doppeltippen.</translation>
 <translation id="7993619969781047893">Funktionen auf manchen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="7996239959906074962">Einrichten…</translation>
+<translation id="8001561107130904792">Freigabe von Seiteninhalten</translation>
 <translation id="800361585186029508">Öffnet die eingegebenen URLs in Google Chrome.</translation>
 <translation id="8005666035647241369">Im Google Passwortmanager auf diesem Gerät</translation>
 <translation id="8010488806779226127">Entdecke Funktionen, die dich beim Surfen unterstützen</translation>
@@ -2041,6 +2046,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8984627322964256190">„<ph name="DOMAIN_NAME" /> folgen“ ausblenden</translation>
 <translation id="8998289560386111590">Auf deinem Gerät nicht verfügbar</translation>
 <translation id="9000089900434778519">Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
+<translation id="9000532564152265066">Alle Tabs</translation>
 <translation id="9003677638446136377">Erneut prüfen</translation>
 <translation id="9006453925669499173">„Menü“ → „Neuer Inkognitotab“</translation>
 <translation id="9008201768610948239">Ignorieren</translation>

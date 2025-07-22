@@ -603,7 +603,6 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3026897869154397692">Har lagts till i kalendern</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3033912566804961911">Kombinera med <ph name="DESK_NAME" /></translation>
-<translation id="3036649622769666520">Öppna filer</translation>
 <translation id="3039939407102840004">E-pennan har <ph name="PERCENTAGE" /> procent batteri.</translation>
 <translation id="304097922505898963">Öppna appen Kortkommandon</translation>
 <translation id="304417730895741346">Dina fästa och öppna appar finns på hyllan. Om du vill fästa en app på hyllan kan du högerklicka på appen eller trycka på styrplattan med två fingrar.</translation>
@@ -1603,7 +1602,6 @@ Inga enheter är anslutna.</translation>
 <translation id="6166852626429024716">Sök på enheten, i appar, inställningar och på webben …</translation>
 <translation id="6168318496333165060">Öppna appen Diagnostik</translation>
 <translation id="6168622430237609329">Dina installerade appar</translation>
-<translation id="6179832488876878285">Du kan fästa viktiga filer här. Börja med att öppna appen Filer.</translation>
 <translation id="6180193585172850042">Bakåtknapp</translation>
 <translation id="6180651297859206670">Framåtknapp</translation>
 <translation id="6182592640011875895">Öppna skrivbordet</translation>

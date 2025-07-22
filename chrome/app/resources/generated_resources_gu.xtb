@@ -433,7 +433,6 @@
 <translation id="1282436639288565079">ટૅબના ગ્રૂપની વિગતો</translation>
 <translation id="1283126956823499975">ડિવાઇસનું સેટઅપ કરવામાં કંઈક ખોટું થયું</translation>
 <translation id="1284277788676816155">ડેટા સાચવવાની મંજૂરી આપશો નહીં</translation>
-<translation id="1284912418686719556">Chrome તમારા માટે કોઈ સશક્ત પાસવર્ડ બનાવી રહ્યું છે. તમારે તેને યાદ રાખવાની જરૂર નથી કારણ કે તમારા માટે, તેને <ph name="GOOGLE_PASSWORD_MANAGER" />માં <ph name="EMAIL" /> માટે સાચવવામાં આવે છે.</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="1285484354230578868">તમારા Google ડ્રાઇવ એકાઉન્ટમાં ડેટા સ્ટોર કરો</translation>
 <translation id="1285625592773741684">ડેટા વપરાશના હાલના સેટિંગ મોબાઇલ ડેટા માટે સેટ છે</translation>
@@ -692,7 +691,6 @@
 <translation id="1474785664565228650">માઇક્રોફોનના સેટિંગમાં ફેરફાર કરવા માટે, Parallelsનું ડેસ્કટૉપ ફરીથી લૉન્ચ કરવાની આવશ્યકતા રહેશે. આગળ વધવા માટે, Parallelsનું ડેસ્કટૉપ ફરીથી લૉન્ચ કરો.</translation>
 <translation id="1476088332184200792">તમારા ડિવાઇસ પર કૉપિ કરો</translation>
 <translation id="1476347941828409626">Chrome પ્રોફાઇલ &amp;મેનેજ કરો</translation>
-<translation id="1476595624592550506">તમારો પાસવર્ડ બદલો</translation>
 <translation id="1476607407192946488">&amp;ભાષા સેટિંગ</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.</translation>
 <translation id="1477654881618305065">તમારી સંસ્થા તમને આ કન્ટેન્ટ શેર કરવાની મંજૂરી આપતી નથી. જો તમને સહાયની જરૂર હોય, તો તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
@@ -1911,7 +1909,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">નીચે જણાવેલી કી સપોર્ટ કરતી નથી: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">આ સાઇટને તમારા મોશન અથવા લાઇટ સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
-<translation id="2310414604104802967">તમે સાઇન ઇન કરેલું છે કે નહીં તે ચેક કરી રહ્યાં છીએ...</translation>
 <translation id="2310923358723722542">ડિસ્પ્લે મોટું કરવાની સુવિધા</translation>
 <translation id="2312219318583366810">પેજનું URL</translation>
 <translation id="2314165183524574721">હાલના સેટિંગ અનુસાર કોઈ જોઈ શકતું નથી</translation>
@@ -1942,7 +1939,6 @@
 <translation id="2328636661627946415">જ્યારે તમે છૂપા મોડમાં હો, ત્યારે કોઈ સાઇટ તેમની પોતાની સાઇટ પર તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે, માત્ર કુકીનો ઉપયોગ કરી શકે છે. છૂપા મોડના સત્રના અંતે કુકી ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="2329597144923131178">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવવા માટે સાઇન ઇન કરો.</translation>
 <translation id="2330182457402792918">આ સાઇટ વાંચી શકે એવી ફાઇલો ખોલો</translation>
-<translation id="2331334586452217517">આ સાઇટનું કન્ટેન્ટ Googleને મોકલવામાં આવે છે અને તેને કદાચ માનવ રિવ્યૂઅર દ્વારા જોવામાં આવી શકે. <ph name="PASSWORD_CHANGE" /> વિશે.</translation>
 <translation id="2332115969598251205"><ph name="PRIMARY_EMAIL" />માં સાચવેલા ડિવાઇસ લોડ કરી શકાતા નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="2332131598580221120">સ્ટોરમાં જુઓ</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
@@ -2044,7 +2040,6 @@
 <translation id="2410079346590497630">બિલ્ડની વિગતો</translation>
 <translation id="2410298923485357543">જ્યારે ડિવાઇસ ઑનલાઇન હોય, ત્યારે સાહજિક અવાજનો ઉપયોગ કરો</translation>
 <translation id="2410754283952462441">એકાઉન્ટ પસંદ કરો</translation>
-<translation id="241082044617551207">અજ્ઞાત પ્લગિન</translation>
 <translation id="2410940059315936967">તમે મુલાકાત લેતા હો એવી કોઈ સાઇટ અન્ય સાઇટમાંનું કન્ટેન્ટ શામેલ કરી શકે છે, ઉદાહરણ તરીકે છબીઓ, જાહેરાતો અને ટેક્સ્ટ. આવી અન્ય સાઇટ દ્વારા સેટ કરવામાં આવતી કુકીને ત્રીજા પક્ષની કુકી તરીકે ઓળખવામાં આવે છે.</translation>
 <translation id="2411666601450687801">આ ડિવાઇસ પર કોઈ વર્ચ્યુઅલ મશીનને મંજૂરી નથી</translation>
 <translation id="2412015533711271895">તમારા માતાપિતા અથવા વાલીએ કહેવાનું રહેશે કે તમે આ એક્સ્ટેન્શનનો ઉપયોગ કરો તે બરાબર છે</translation>
@@ -2220,7 +2215,6 @@
 <translation id="2514326558286966059">તમારી ફિંગરપ્રિન્ટ વડે ઝડપથી અનલૉક કરો</translation>
 <translation id="2514465118223423406">જ્યારે માઉસ કનેક્ટ કરેલું છે</translation>
 <translation id="2514938842036917377">આમ કરવાથી <ph name="SITE_NAME" />, સંબંધિત સાઇટ અને ઇન્સ્ટૉલ કરવામાં આવેલી ઍપ દ્વારા સ્ટોર કરવામાં આવેલો <ph name="TOTAL_USAGE" /> ડેટા ડિલીટ કરવામાં આવશે</translation>
-<translation id="2515489088825102986">આ સુવિધા અને તમારી પ્રાઇવસી વિશે વધુ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">તમારું વપરાશકર્તા નામ કન્ફર્મ કરો</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
@@ -2391,7 +2385,6 @@
 <translation id="2638662041295312666">સાઇન ઇન છબી</translation>
 <translation id="2640299212685523844">GTKનો ઉપયોગ કરો</translation>
 <translation id="264083724974021997">તમારા ફોન સાથે કનેક્ટ કરો - સંવાદ</translation>
-<translation id="2641098199809442625">તમારો પાસવર્ડ અપડેટ કરવામાં આવ્યો ન હતો, પરંતુ તમારા જૂના પાસવર્ડ વડે તમે હજી પણ સાઇટ ઍક્સેસ કરી શકશો.</translation>
 <translation id="2642111877055905627">સૉકર બૉલ</translation>
 <translation id="2642206811783203764">હંમેશાં ચાલુ <ph name="SITE_NAME" /></translation>
 <translation id="2643064289437760082">તમારા બ્રાઉઝિંગ ડેટાને ડિલીટ કરીને, તમે હંમેશાં જાહેરાત-માપણીનો ડેટા ડિલીટ કરી શકો છો</translation>
@@ -3863,7 +3856,6 @@
 <translation id="3694590407685276748">ટેક્સ્ટ કર્સર હાઇલાઇટ કરો</translation>
 <translation id="369489984217678710">પાસવર્ડ અને બીજા સાઇન ઇન ડેટા</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{સુરક્ષા તપાસ પૂરી થઈ. તમારો ડેટા અપલોડ કરવામાં આવશે.}=1{સુરક્ષા તપાસ પૂરી થઈ. તમારી ફાઇલ અપલોડ કરવામાં આવશે.}one{સુરક્ષા તપાસ પૂરી થઈ. તમારી ફાઇલો અપલોડ કરવામાં આવશે.}other{સુરક્ષા તપાસ પૂરી થઈ. તમારી ફાઇલો અપલોડ કરવામાં આવશે.}}</translation>
-<translation id="3696309329332791122">તમારો પાસવર્ડ ચેક કરો.</translation>
 <translation id="369736917241079046">લૉન્ચર + ડાબી ઍરો કી</translation>
 <translation id="3697716475445175867">છેલ્લે ખોલેલું</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{તમે આ સાઇટને ભવિષ્યમાં નોટિફિકેશન મોકલતા રોકી શકો છો.}one{તમે આ સાઇટને ભવિષ્યમાં નોટિફિકેશન મોકલતા રોકી શકો છો.}other{તમે આ સાઇટને ભવિષ્યમાં નોટિફિકેશન મોકલતા રોકી શકો છો.}}</translation>
@@ -5366,7 +5358,6 @@
 <translation id="4742970037960872810">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ઍપ્લિકેશનો કેવી રીતે અપલોડ કરવી તે જાણો<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">મંજૂરી છે – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />સિસ્ટમનો માઇક્રોફોનનો ઍક્સેસ<ph name="LINK_END" /> ચાલુ કરો.</translation>
-<translation id="4744172369799559159">આ સુવિધાને બહેતર બનાવવા માટે પાસવર્ડ પેજ અને સંબંધિત માહિતીનો માનવ દ્વારા રિવ્યૂ કરવામાં આવે છે, જોકે તમારો પાસવર્ડ એન્ક્રિપ્ટેડ છે અને કોઈપણ વ્યક્તિ તેને ક્યારેય જોઈ શકતું નથી.</translation>
 <translation id="4744260496658845719">કીબોર્ડની બૅકલાઇટની બ્રાઇટનેસ</translation>
 <translation id="4744268813103118742">સાઇટ પર જાઓ</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6714,7 +6705,6 @@
 <translation id="5713033452812927234">તમારા અગાઉના ડિવાઇસમાંથી વિન્ડો ખોલી રહ્યાં છીએ</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" />થી કનેક્ટેડ છે</translation>
 <translation id="5714100381896040477">સ્ક્રીન પરની હિલચાલ મર્યાદિત કરો</translation>
-<translation id="5715711091495208045">પ્લગિન બ્રોકર: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">સાઇટ HID ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="572155275267014074">Android સેટિંગ</translation>
 <translation id="5722086096420375088">લીલો અને સફેદ</translation>
@@ -7463,7 +7453,6 @@ USB ડિવાઇસ</translation>
 <translation id="6253801023880399036">પાસવર્ડને <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવે છે.</translation>
 <translation id="6254503684448816922">કી સમાધાન</translation>
 <translation id="6254892857036829079">ઉત્તમ</translation>
-<translation id="6257131917452817589">ઑટોમૅટિક રીતે પાસવર્ડ બદલવાની સુવિધા</translation>
 <translation id="6257602895346497974">સિંક કરવાનું ચાલુ કરો…</translation>
 <translation id="625827534921607067">જો અગાઉ કનેક્ટ કરેલા કે કન્ફિગર કરેલા એક કરતાં વધારે નેટવર્ક ઉપલબ્ધ હશે, તો આ નેટવર્કની પસંદગી કરવામાં આવશે</translation>
 <translation id="6259776178973198997">WiFi Directના માલિકોની માહિતી રિફ્રેશ કરો</translation>
@@ -8210,7 +8199,6 @@ USB ડિવાઇસ</translation>
 <translation id="679845623837196966">વાંચન સૂચિ બતાવો</translation>
 <translation id="6798578729981748444">આયાત કરવાનું સમાપ્ત કરવા માટે, બધી Firefox વિંડો બંધ કરો.</translation>
 <translation id="6798780071646309401">caps lock ચાલુ છે</translation>
-<translation id="6798954102094737107">પ્લગિન: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">ટૂલબાર પર છુપાવેલા બટન</translation>
 <translation id="6800893479155997609">તમારી <ph name="DEVICE_TYPE" /> માટે શ્રેષ્ઠ ઍપ</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શન આ સાઇટને વાંચી શકે કે તેમાં ફેરફાર કરી શકે, તો તેને પસંદ કરો}one{આ એક્સ્ટેન્શન આ સાઇટને વાંચી શકે કે તેમાં ફેરફાર કરી શકે, તો તેને પસંદ કરો}other{આ એક્સ્ટેન્શન આ સાઇટને વાંચી શકે કે તેમાં ફેરફાર કરી શકે, તો તેને પસંદ કરો}}</translation>
@@ -9708,7 +9696,6 @@ USB ડિવાઇસ</translation>
     <ph name="BEGIN_PARAGRAPH2" />તમે તમારા ChromeOS ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />જો તમારા Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા Google એકાઉન્ટમાં તમારો Android ડેટા સાચવવામાં આવી શકે છે. તમે account.google.com પર તમારો ડેટા જોઈ શકો છો, તેને ડિલીટ કરી શકો છો અને તમારા એકાઉન્ટ સેટિંગમાં ફેરફાર કરી શકો છો.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />નોંધ<ph name="END_BOLD" />: સમાન વૉઇસ અથવા રેકોર્ડિંગ કદાચ તમારા વ્યક્તિગત પરિણામો અથવા તમારા Assistantને ઍક્સેસ કરી શકે છે. બૅટરીની બચત કરવા માટે, આ ડિવાઇસ પાવર સૉર્સ સાથે કનેક્ટ કરેલું હોય, માત્ર ત્યારે જ તમે તમારા Assistantના સેટિંગમાં “Ok Google”ની સુવિધા ચાલુ રાખવાનું પસંદ કરી શકો છો.</translation>
-<translation id="7851196412551419054">તમારા પાસવર્ડ બદલી રહ્યાં છીએ...</translation>
 <translation id="7851457902707056880">સાઇન ઇન માત્ર માલિકનાં એકાઉન્ટ માટે જ પ્રતિબંધિત છે. કૃપા કરીને રીબૂટ કરો અને માલિકનાં એકાઉન્ટથી સાઇન ઇન કરો. મશીન 30 સેકન્ડમાં સ્વતઃ રીબૂટ થશે.</translation>
 <translation id="7851716364080026749">હંમેશા કૅમેરા અને માઇક્રોફોનના ઍક્સેસને બ્લૉક કરો</translation>
 <translation id="7851720427268294554">IPP વિશ્લેષક</translation>
@@ -10417,7 +10404,6 @@ USB ડિવાઇસ</translation>
 <translation id="8330617762701840933">એવી વેબસાઇટની સૂચિ કે જે વૈકલ્પિક બ્રાઉઝરમાં રીડાયરેક્ટ કરે છે.</translation>
 <translation id="8330689128072902965">નજીકના સંપર્કો તમારી સાથે શેર કરી શકે છે. બદલવા માટે ક્લિક કરો.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{સપોર્ટ કરતી ફાઇલનો પ્રકાર: <ph name="FILE_TYPE1" />}=2{સપોર્ટ કરતી ફાઇલના પ્રકાર: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{સપોર્ટ કરતી ફાઇલના પ્રકાર: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{સપોર્ટ કરતી ફાઇલના પ્રકાર: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{સપોર્ટ કરતી ફાઇલના પ્રકાર: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />અને વધુ {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{સપોર્ટ કરતી ફાઇલના પ્રકાર: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />અને વધુ {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
-<translation id="8331578454993293727">તમારો પાસવર્ડ કોઈ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો હતો</translation>
 <translation id="8331822764922665615">તમારા ગ્રૂપને નામ આપો, કોઈ રંગ પસંદ કરો, પછી Esc દબાવો</translation>
 <translation id="833256022891467078">Crostiniએ શેર કરેલા ફોલ્ડરો</translation>
 <translation id="833262891116910667">હાઇલાઇટ</translation>
@@ -10501,7 +10487,6 @@ USB ડિવાઇસ</translation>
     <ph name="BEGIN_PARAGRAPH2" />વધુ સહાય માટે, આની મુલાકાત લો: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">Recapમાં સ્વાગત છે</translation>
 <translation id="8386091599636877289">પૉલિસી મળી નથી.</translation>
-<translation id="8387087863179559896">Chrome આ સાઇટ માટે તમારા એકાઉન્ટને સશક્ત પાસવર્ડ વડે અપડેટ કરી શકે છે. તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં કારણ કે તમારા માટે તેને <ph name="EMAIL" /> માટેના Google Password Managerમાં સાચવવામાં આવ્યો છે. <ph name="PASSWORD_CHANGE" /> વિશે વધુ.</translation>
 <translation id="8387361103813440603">તમારું સ્થાન જોવાની મંજૂરી નથી</translation>
 <translation id="8387617938027387193">આ તમે જ છો તેનો પુરાવો આપો</translation>
 <translation id="8388770971141403598">ગૌણ પ્રોફાઇલને સપોર્ટ આપવામાં આવતો નથી</translation>
@@ -10684,7 +10669,6 @@ USB ડિવાઇસ</translation>
 <translation id="8516472100141530292">ગ્રૂપ પર રાઇટ ક્લિક કરો</translation>
 <translation id="8517759303731677493">ફેરફાર કરો…</translation>
 <translation id="8518942514525208851">અપશબ્દો છુપાવો</translation>
-<translation id="8519895319663397036">પાસવર્ડ આયાત કરી શકતા નથી. ફાઇલનું કદ 150 KB કરતાં ઓછું હોવું જોઈએ.</translation>
 <translation id="8523493869875972733">ફેરફારો રાખો</translation>
 <translation id="8523849605371521713">પૉલિસી દ્વારા ઉમેરાયેલું</translation>
 <translation id="8524594273111932386">search + નીચેની ઍરો કી</translation>
@@ -11398,7 +11382,6 @@ USB ડિવાઇસ</translation>
 <translation id="9007688236643268728">ફરીથી &amp;સાઇન ઇન કરો</translation>
 <translation id="9008201768610948239">અવગણો</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />ની વિગતો ધરાવતા પેજનું પાછળ જવા માટેનું બટન</translation>
-<translation id="9008425116680857079">એકવાર તમે સાઇન ઇન કરી લો તે પછી Chrome તમારો પાસવર્ડ બદલી શકે છે.</translation>
 <translation id="9008828754342192581">અગાઉ તમે <ph name="ORIGIN" /> પર તમામ એક્સ્ટેન્શનને મંજૂરી આપવાનું પસંદ કર્યું હતું</translation>
 <translation id="9009369504041480176">અપલોડ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009707268312089299">Windowsમાંથી આયાત કરેલા</translation>
