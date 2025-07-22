@@ -91,6 +91,7 @@ class FakeLanguageModelAsset {
   ~FakeLanguageModelAsset();
 
   const ModelInfo& model_info() { return *model_info_; }
+  base::FilePath model_path() const;
 
  private:
   base::ScopedTempDir temp_dir_;

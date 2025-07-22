@@ -49,10 +49,6 @@
 
 class OptimizationGuideLogger;
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace optimization_guide {
 enum class OnDeviceModelEligibilityReason;
 class OnDeviceModelAccessController;
@@ -79,7 +75,7 @@ class ModelController {
 // As all OnDeviceModelServiceController's share the same model, and we do not
 // want to load duplicate models (would consume excessive amounts of memory), at
 // most one instance of OnDeviceModelServiceController is created.
-class OnDeviceModelServiceController
+class OnDeviceModelServiceController final
     : public base::RefCounted<OnDeviceModelServiceController>,
       public mojom::ModelBroker {
  public:
@@ -113,8 +109,7 @@ class OnDeviceModelServiceController
 
   // Updates safety model if the model path provided by `model_info` differs
   // from what is already loaded. Virtual for testing.
-  virtual void MaybeUpdateSafetyModel(
-      base::optional_ref<const ModelInfo> model_info);
+  void MaybeUpdateSafetyModel(base::optional_ref<const ModelInfo> model_info);
 
   // Updates the main execution model.
   void UpdateModel(std::unique_ptr<OnDeviceModelMetadata> model_metadata);
@@ -161,14 +156,13 @@ class OnDeviceModelServiceController
   // available.
   bool ListenForPerformanceClassAvailable(base::OnceClosure available);
 
- protected:
-  ~OnDeviceModelServiceController() override;
-
-  std::optional<base::FilePath> language_detection_model_path() const {
-    return safety_client_.language_detection_model_path();
+  const SafetyClient& GetSafetyClientForTesting() const {
+    return safety_client_;
   }
 
  private:
+  ~OnDeviceModelServiceController() override;
+
   // A set of (references to) compatible, versioned dependencies that implement
   // a ModelBasedCapability.
   // e.g. "You can summarize with this model by building the prompt this way."

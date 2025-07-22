@@ -88,7 +88,7 @@ void FakeAdaptationAsset::SendTo(
 
 FakeLanguageModelAsset::FakeLanguageModelAsset() {
   CHECK(temp_dir_.CreateUniqueTempDir());
-  auto model_path = temp_dir_.GetPath().Append(kWeightsFile);
+  auto model_path = this->model_path();
   CHECK(base::WriteFile(model_path, on_device_model::FakeLanguageModel()));
   model_info_ = TestModelInfoBuilder()
                     .SetModelFilePath(model_path)
@@ -96,6 +96,10 @@ FakeLanguageModelAsset::FakeLanguageModelAsset() {
                     .Build();
 }
 FakeLanguageModelAsset::~FakeLanguageModelAsset() = default;
+
+base::FilePath FakeLanguageModelAsset::model_path() const {
+  return temp_dir_.GetPath().Append(kWeightsFile);
+}
 
 FakeSafetyModelAsset::FakeSafetyModelAsset(
     proto::FeatureTextSafetyConfiguration&& config)

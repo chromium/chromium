@@ -22,6 +22,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
+#include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -33,28 +34,6 @@
 namespace optimization_guide {
 
 namespace {
-
-class FakeServiceController : public OnDeviceModelServiceController {
- public:
-  FakeServiceController()
-      : OnDeviceModelServiceController(nullptr, nullptr, base::DoNothing()) {}
-
-  void MaybeUpdateSafetyModel(
-      base::optional_ref<const ModelInfo> model_info) override {
-    received_safety_info_ = true;
-  }
-
-  bool received_safety_info() const { return received_safety_info_; }
-
-  std::optional<base::FilePath> language_detection_model_path() {
-    return OnDeviceModelServiceController::language_detection_model_path();
-  }
-
- private:
-  ~FakeServiceController() override = default;
-
-  bool received_safety_info_ = false;
-};
 
 class FakeModelProvider : public TestOptimizationGuideModelProvider {
  public:
@@ -98,7 +77,8 @@ class OnDeviceAssetManagerTest : public testing::Test {
     model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
     UpdatePerformanceClassPref(&local_state_,
                                OnDeviceModelPerformanceClass::kHigh);
-    service_controller_ = base::MakeRefCounted<FakeServiceController>();
+    service_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+        nullptr, nullptr, base::DoNothing());
   }
 
   void CreateComponentManager() {
@@ -122,7 +102,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
 
   FakeModelProvider* model_provider() { return &model_provider_; }
 
-  FakeServiceController* service_controller() {
+  OnDeviceModelServiceController* service_controller() {
     return service_controller_.get();
   }
 
@@ -134,7 +114,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple local_state_;
   FakeBaseModelAsset base_model_asset_;
-  scoped_refptr<FakeServiceController> service_controller_;
+  scoped_refptr<OnDeviceModelServiceController> service_controller_;
   TestOnDeviceModelComponentStateManager component_manager_{&local_state_};
   FakeModelProvider model_provider_;
   std::unique_ptr<OnDeviceAssetManager> asset_manager_;
@@ -176,34 +156,32 @@ TEST_F(OnDeviceAssetManagerTest, DoesNotRegisterTextSafetyIfNotEnabled) {
 
 TEST_F(OnDeviceAssetManagerTest, DoesNotNotifyServiceControllerWrongTarget) {
   CreateAssetManager();
-  std::unique_ptr<ModelInfo> model_info =
-      TestModelInfoBuilder().SetVersion(123).Build();
+  FakeSafetyModelAsset fake_safety(ComposeSafetyConfig());
   asset_manager()->OnModelUpdated(proto::OPTIMIZATION_TARGET_PAGE_ENTITIES,
-                                  *model_info);
+                                  fake_safety.model_info());
 
-  EXPECT_FALSE(service_controller()->received_safety_info());
+  EXPECT_FALSE(
+      service_controller()->GetSafetyClientForTesting().safety_model_info());
 }
 
 TEST_F(OnDeviceAssetManagerTest, NotifiesServiceController) {
   CreateAssetManager();
-  std::unique_ptr<ModelInfo> model_info =
-      TestModelInfoBuilder().SetVersion(123).Build();
+  FakeSafetyModelAsset fake_safety(ComposeSafetyConfig());
   asset_manager()->OnModelUpdated(proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
-                                  *model_info);
-
-  EXPECT_TRUE(service_controller()->received_safety_info());
+                                  fake_safety.model_info());
+  ASSERT_TRUE(
+      service_controller()->GetSafetyClientForTesting().safety_model_info());
 }
 
 TEST_F(OnDeviceAssetManagerTest, UpdateLanguageDetection) {
   CreateAssetManager();
-  const base::FilePath kTestPath{FILE_PATH_LITERAL("foo")};
-  std::unique_ptr<ModelInfo> model_info = TestModelInfoBuilder()
-                                              .SetVersion(123)
-                                              .SetModelFilePath(kTestPath)
-                                              .Build();
+  FakeLanguageModelAsset fake_language;
   asset_manager()->OnModelUpdated(proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-                                  *model_info);
-  EXPECT_EQ(kTestPath, service_controller()->language_detection_model_path());
+                                  fake_language.model_info());
+
+  EXPECT_EQ(fake_language.model_path(), service_controller()
+                                            ->GetSafetyClientForTesting()
+                                            .language_detection_model_path());
 }
 
 TEST_F(OnDeviceAssetManagerTest, NotRegisteredWhenDisabledByEnterprisePolicy) {
