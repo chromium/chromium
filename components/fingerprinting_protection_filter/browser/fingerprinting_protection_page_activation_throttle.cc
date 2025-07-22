@@ -215,6 +215,12 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
     return activation_based_on_flags;
   }
 
+  // Ensures activation is disabled on top-level URLs that are localhost.
+  if (net::IsLocalhost(navigation_handle()->GetURL())) {
+    return {.level = ActivationLevel::kDisabled,
+            .decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET};
+  }
+
   if (DoesUrlHaveRefreshHeuristicException()) {
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::URL_ALLOWLISTED};

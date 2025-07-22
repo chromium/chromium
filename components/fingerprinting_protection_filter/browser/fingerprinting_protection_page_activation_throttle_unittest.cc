@@ -750,6 +750,7 @@ struct FPFGetActivationTestCase {
   bool site_has_tp_exception;
   bool site_has_refresh_heuristic_breakage_exception;
   bool only_if_3pc_blocked_param;
+  bool is_localhost;
   content_settings::CookieControlsMode cookie_controls_mode =
       content_settings::CookieControlsMode::kBlockThirdParty;
 
@@ -765,6 +766,7 @@ class FPFPageActivationThrottleTestGetActivationTest
   FPFPageActivationThrottleTestGetActivationTest() = default;
 
   GURL GetTestUrl() { return GURL("http://cool.things.com"); }
+  GURL GetLocalhostUrl() { return GURL("http://localhost:8000"); }
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -825,6 +827,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kEnabled,
      .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
 
      .expected_level = ActivationLevel::kEnabled,
      .expected_decision = ActivationDecision::ACTIVATED},
@@ -834,6 +837,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kEnabled,
      .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = true,
+     .is_localhost = false,
      .cookie_controls_mode =
          content_settings::CookieControlsMode::kBlockThirdParty,
 
@@ -845,6 +849,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kEnabled,
      .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = true,
+     .is_localhost = false,
      .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
 
      .expected_level = ActivationLevel::kDisabled,
@@ -854,6 +859,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kEnabled,
      .site_has_tp_exception = true,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
 
      .expected_level = ActivationLevel::kDisabled,
      .expected_decision = ActivationDecision::URL_ALLOWLISTED},
@@ -862,6 +868,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kEnabled,
      .site_has_tp_exception = true,
      .only_if_3pc_blocked_param = true,
+     .is_localhost = false,
      .cookie_controls_mode =
          content_settings::CookieControlsMode::kBlockThirdParty,
 
@@ -873,6 +880,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kEnabled,
      .site_has_tp_exception = true,
      .only_if_3pc_blocked_param = true,
+     .is_localhost = false,
      .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
 
      .expected_level = ActivationLevel::kDisabled,
@@ -885,6 +893,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .site_has_tp_exception = false,
      .site_has_refresh_heuristic_breakage_exception = true,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
      .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
 
      .expected_level = ActivationLevel::kEnabled,
@@ -897,6 +906,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .site_has_tp_exception = false,
      .site_has_refresh_heuristic_breakage_exception = true,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
      .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
 
      .expected_level = ActivationLevel::kDisabled,
@@ -909,6 +919,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .site_has_tp_exception = false,
      .site_has_refresh_heuristic_breakage_exception = false,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
      .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
 
      .expected_level = ActivationLevel::kEnabled,
@@ -921,6 +932,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kDisabled,
      .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
 
      .expected_level = ActivationLevel::kDisabled,
      .expected_decision = ActivationDecision::UNKNOWN},
@@ -929,9 +941,19 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kDisabled,
      .site_has_tp_exception = true,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
 
      .expected_level = ActivationLevel::kDisabled,
      .expected_decision = ActivationDecision::UNKNOWN},
+    {.test_name = "FPFDisabled_Localhost",
+     .is_fp_feature_enabled = true,
+     .activation_level_param = ActivationLevel::kEnabled,
+     .site_has_tp_exception = false,
+     .only_if_3pc_blocked_param = false,
+     .is_localhost = true,
+
+     .expected_level = ActivationLevel::kDisabled,
+     .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET},
     // Not testing all permutations with dry_run because the expected return
     // value is the same.
     {.test_name = "FPFEnabled_ActivationDryRun_NoException",
@@ -939,6 +961,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kDryRun,
      .site_has_tp_exception = false,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
 
      .expected_level = ActivationLevel::kDryRun,
      .expected_decision = ActivationDecision::ACTIVATED},
@@ -947,6 +970,7 @@ const FPFGetActivationTestCase kGetActivationTestCases[] = {
      .activation_level_param = ActivationLevel::kDryRun,
      .site_has_tp_exception = true,
      .only_if_3pc_blocked_param = false,
+     .is_localhost = false,
 
      .expected_level = ActivationLevel::kDryRun,
      .expected_decision = ActivationDecision::ACTIVATED},
@@ -983,8 +1007,9 @@ TEST_P(FPFPageActivationThrottleTestGetActivationTest,
         ->AddTrackingProtectionException(GetTestUrl());
   }
 
-  // Navigate to the test url.
-  mock_nav_handle_->set_url(GetTestUrl());
+  // Navigate to the test url, use localhost url when testing localhost.
+  mock_nav_handle_->set_url(test_case.is_localhost ? GetLocalhostUrl()
+                                                   : GetTestUrl());
 
   // Prepare the manager under test and input with initial_decision param.
   auto test_throttle = FingerprintingProtectionPageActivationThrottle(
