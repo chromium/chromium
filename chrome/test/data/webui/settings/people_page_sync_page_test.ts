@@ -143,12 +143,12 @@ suite('SyncSettings', function() {
     const otherItems =
         syncPage.shadowRoot!.querySelector<HTMLElement>('#other-sync-items')!;
 
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SYNCING,
       disabled: false,
       hasError: false,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertFalse(syncSection.hidden);
     assertTrue(
@@ -166,24 +166,24 @@ suite('SyncSettings', function() {
     assertTrue(isChildVisible(syncPage, '#syncDashboardLink'));
 
     // Test sync paused state.
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SYNCING,
       disabled: false,
       hasError: true,
       statusAction: StatusAction.REAUTHENTICATE,
-    };
+    });
     assertTrue(syncSection.hidden);
     assertFalse(
         syncPage.shadowRoot!.querySelector<HTMLElement>(
                                 '#sync-separator')!.hidden);
 
     // Test passphrase error state.
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SYNCING,
       disabled: false,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
-    };
+    });
     assertFalse(syncSection.hidden);
     assertTrue(
         syncPage.shadowRoot!.querySelector<HTMLElement>(
@@ -194,12 +194,12 @@ suite('SyncSettings', function() {
     const syncSection =
         syncPage.shadowRoot!.querySelector<HTMLElement>('#sync-section')!;
 
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SIGNED_OUT,
       disabled: false,
       hasError: false,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertTrue(syncSection.hidden);
     assertFalse(
@@ -211,12 +211,12 @@ suite('SyncSettings', function() {
     const syncSection =
         syncPage.shadowRoot!.querySelector<HTMLElement>('#sync-section')!;
 
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SIGNED_IN,
       disabled: true,
       hasError: false,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertTrue(syncSection.hidden);
   });
@@ -610,12 +610,12 @@ suite('SyncSettings', function() {
   });
 
   test('EnterExistingPassphraseDoesNotExistIfSignedOut', function() {
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SIGNED_IN,
       disabled: false,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
-    };
+    });
 
     const prefs = getSyncAllPrefs();
     prefs.encryptAllData = true;
@@ -653,10 +653,10 @@ suite('SyncSettings', function() {
     const prefs1 = getSyncAllPrefs();
     prefs1.customPassphraseAllowed = true;
     webUIListenerCallback('sync-prefs-changed', prefs1);
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     await microtasksFinished();
 
     assertFalse(encryptionRadioGroup.disabled);
@@ -670,10 +670,10 @@ suite('SyncSettings', function() {
     const prefs2 = getSyncAllPrefs();
     prefs2.customPassphraseAllowed = false;
     webUIListenerCallback('sync-prefs-changed', prefs2);
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     await microtasksFinished();
     assertTrue(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
@@ -684,10 +684,10 @@ suite('SyncSettings', function() {
     const prefs3 = getSyncAllPrefs();
     prefs3.customPassphraseAllowed = false;
     webUIListenerCallback('sync-prefs-changed', prefs3);
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       supervisedUser: true,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     await microtasksFinished();
     assertTrue(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
@@ -699,10 +699,10 @@ suite('SyncSettings', function() {
     const prefs4 = getSyncAllPrefs();
     prefs4.customPassphraseAllowed = true;
     webUIListenerCallback('sync-prefs-changed', prefs4);
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       supervisedUser: true,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     await microtasksFinished();
     assertTrue(encryptionRadioGroup.disabled);
     assertEquals(encryptWithGoogle.getAttribute('aria-disabled'), 'true');
@@ -719,18 +719,18 @@ suite('SyncSettings', function() {
     webUIListenerCallback('sync-prefs-changed', prefs);
 
     // Normal user
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertFalse(dashboardLink.hidden);
 
     // Supervised user
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       supervisedUser: true,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertTrue(dashboardLink.hidden);
   });
@@ -742,12 +742,12 @@ suite('SyncSettings', function() {
 
   // <if expr="not is_chromeos">
   test('SyncSetupCancel', async function() {
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
 
@@ -765,12 +765,12 @@ suite('SyncSettings', function() {
   });
 
   test('SyncSetupConfirm', async function() {
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
 
@@ -787,12 +787,12 @@ suite('SyncSettings', function() {
   });
 
   test('SyncSetupLeavePage', async function() {
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
 
     // Navigating away while setup is in progress opens the 'Cancel sync?'
@@ -835,12 +835,12 @@ suite('SyncSettings', function() {
   // Regression test for https://crbug.com/1279483.
   test('SyncSetupEnterExistingCorrectPassphrase', async function() {
     // Simulate sync setup in progress.
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
 
@@ -883,12 +883,12 @@ suite('SyncSettings', function() {
   // Regression test for https://crbug.com/1279483.
   test('SyncSetupCreatingValidPassphrase', async function() {
     // Simulate sync setup in progress.
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
 
@@ -929,12 +929,12 @@ suite('SyncSettings', function() {
   });
 
   test('SyncSetupSearchSettings', async function() {
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
 
     // Searching settings while setup is in progress cancels sync.
@@ -949,19 +949,19 @@ suite('SyncSettings', function() {
   test('ShowAccountRow', function() {
     assertFalse(
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: false,
       signedInState: SignedInState.SIGNED_IN,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertFalse(
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: true,
       signedInState: SignedInState.SIGNED_IN,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertTrue(
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
@@ -973,17 +973,17 @@ suite('SyncSettings', function() {
 
     assertFalse(
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: false,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertFalse(
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       syncSystemEnabled: true,
       statusAction: StatusAction.NO_ACTION,
-    };
+    });
     flush();
     assertFalse(
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));

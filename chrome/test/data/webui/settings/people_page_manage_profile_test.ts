@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ManageProfileBrowserProxy, SettingsManageProfileElement} from 'chrome://settings/lazy_load.js';
 import {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from 'chrome://settings/lazy_load.js';
@@ -108,12 +109,13 @@ suite('ManageProfileTests', function() {
 
   function createManageProfileElement(): SettingsManageProfileElement {
     const element = document.createElement('settings-manage-profile');
-    element.profileName = 'Initial Fake Name';
-    element.syncStatus = {
+    document.body.appendChild(element);
+    webUIListenerCallback('sync-status-changed', {
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
-    };
-    document.body.appendChild(element);
+    });
+    webUIListenerCallback(
+        'profile-info-changed', {name: 'Initial Fake Name', iconUrl: ''});
     return element;
   }
 
@@ -146,19 +148,19 @@ suite('ManageProfileTests', function() {
   });
 
   test('ManageProfileChangeName', async function() {
-    const nameField = manageProfile.$.name;
-    assertTrue(!!nameField);
-    assertFalse(!!nameField.disabled);
-    assertEquals('.*\\S.*', nameField.pattern);
+    const nameInput = manageProfile.$.nameInput;
+    assertTrue(!!nameInput);
+    assertFalse(!!nameInput.disabled);
+    assertEquals('.*\\S.*', nameInput.pattern);
 
-    assertEquals('Initial Fake Name', nameField.value);
+    assertEquals('Initial Fake Name', nameInput.value);
     // No policy indicator is shown.
     const policyIndicator =
-        nameField.shadowRoot.querySelector<HTMLElement>('#policyIcon');
+        nameInput.shadowRoot.querySelector<HTMLElement>('#policyIcon');
     assertEquals(policyIndicator, null);
 
-    nameField.value = 'New Name';
-    nameField.dispatchEvent(
+    nameInput.value = 'New Name';
+    nameInput.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
 
     const args = await browserProxy.whenCalled('setProfileName');
@@ -167,15 +169,11 @@ suite('ManageProfileTests', function() {
 
   // Tests profile name updates pushed from the browser.
   test('ManageProfileNameUpdated', async function() {
-    const nameField = manageProfile.$.name;
-    assertTrue(!!nameField);
-
     await browserProxy.whenCalled('getAvailableIcons');
-    manageProfile.profileName = 'New Name From Browser';
-
+    webUIListenerCallback(
+        'profile-info-changed', {name: 'New Name From Browser', iconUrl: ''});
     flush();
-
-    assertEquals('New Name From Browser', nameField.value);
+    assertEquals('New Name From Browser', manageProfile.$.nameInput.value);
   });
 
   // Tests profile name is not editable for work profile.
@@ -183,13 +181,13 @@ suite('ManageProfileTests', function() {
     loadTimeData.overrideValues({hasEnterpriseLabel: true});
     manageProfile = createManageProfileElement();
     flush();
-    const nameField = manageProfile.$.name;
-    assertTrue(nameField.disabled);
-    assertEquals('Initial Fake Name', nameField.value);
+    const nameInput = manageProfile.$.nameInput;
+    assertTrue(nameInput.disabled);
+    assertEquals('Initial Fake Name', nameInput.value);
 
     // The policy indicator is shown.
     const policyIndicator =
-        nameField.shadowRoot.querySelector<HTMLElement>('#policyIcon');
+        nameInput.shadowRoot.querySelector<HTMLElement>('#policyIcon');
     assertFalse(!!policyIndicator && policyIndicator.hidden);
   });
 

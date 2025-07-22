@@ -71,9 +71,9 @@
 
 <if expr="not is_chromeos">
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
-        syncStatus.syncSystemEnabled)]]">
+        syncStatus_.syncSystemEnabled)]]">
       <settings-sync-account-control embedded-in-subpage
-          sync-status="[[syncStatus]]" prefs="{{prefs}}"
+          sync-status="[[syncStatus_]]" prefs="{{prefs}}"
           promo-label-with-account=
               "$i18n{peopleSignInSyncPagePromptSecondaryWithAccount}"
           promo-label-with-no-account=
@@ -179,7 +179,7 @@
           <cr-link-row id="syncDashboardLink" class="hr"
               label="$i18n{manageSyncedDataTitle}"
               on-click="onSyncDashboardLinkClick_"
-              hidden="[[syncStatus.supervisedUser]]" external>
+              hidden="[[syncStatus_.supervisedUser]]" external>
           </cr-link-row>
 
           <cr-expand-button id="encryptionDescription"
@@ -202,7 +202,7 @@
           <cr-collapse id="encryptionCollapse"
               opened="[[encryptionExpanded_]]">
             <settings-sync-encryption-options
-                sync-status="[[syncStatus]]" sync-prefs="{{syncPrefs}}"
+                sync-status="[[syncStatus_]]" sync-prefs="{{syncPrefs}}"
                 existing-passphrase-label="[[existingPassphraseLabel_]]"
                 on-passphrase-changed="onPassphraseChanged_">
             </settings-sync-encryption-options>
@@ -218,7 +218,7 @@
       </h2>
     </div>
     <settings-personalization-options class="list-frame" prefs="{{prefs}}"
-        sync-status="[[syncStatus]]">
+        sync-status="[[syncStatus_]]">
     </settings-personalization-options>
 
 <if expr="not is_chromeos">

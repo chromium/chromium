@@ -164,9 +164,7 @@ shown on non-ChromeOS platforms -->
             associated-control="[[$$('#sync-setup')]]"
             page-title="$i18n{syncPageTitle}"
             learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-          <settings-sync-page
-              sync-status="[[syncStatus]]" prefs="{{prefs}}"
-              focus-config="[[focusConfig_]]">
+          <settings-sync-page prefs="{{prefs}}" focus-config="[[focusConfig_]]">
           </settings-sync-page>
         </settings-subpage>
       </template>
@@ -186,9 +184,7 @@ shown on non-ChromeOS platforms -->
             associated-control=
                 "[[getEditPersonAssocControl_(signinAllowed_)]]"
             page-title="$i18n{editPerson}">
-          <settings-manage-profile profile-name="[[profileName_]]"
-              sync-status="[[syncStatus]]">
-          </settings-manage-profile>
+          <settings-manage-profile></settings-manage-profile>
         </settings-subpage>
       </template>
 

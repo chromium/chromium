@@ -14,7 +14,8 @@ import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.j
 import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 
-import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -33,7 +34,7 @@ const SettingsManageProfileElementBase =
 
 export interface SettingsManageProfileElement {
   $: {
-    name: CrInputElement,
+    nameInput: CrInputElement,
   };
 }
 
@@ -62,7 +63,7 @@ export class SettingsManageProfileElement extends
       /**
        * The current profile name.
        */
-      profileName: String,
+      profileName_: String,
 
       /**
        * True if the current profile has a shortcut.
@@ -78,11 +79,6 @@ export class SettingsManageProfileElement extends
           return [];
         },
       },
-
-      /**
-       * The current sync status.
-       */
-      syncStatus: Object,
 
       /**
        * True if the profile shortcuts feature is enabled.
@@ -111,10 +107,9 @@ export class SettingsManageProfileElement extends
   }
 
   declare private profileAvatar_: AvatarIcon;
-  declare profileName: string;
+  declare private profileName_: string;
   declare private hasProfileShortcut_: boolean;
   declare availableIcons: AvatarIcon[];
-  declare syncStatus: SyncStatus|null;
   declare private isProfileShortcutSettingVisible_: boolean;
   declare private hasEnterpriseLabel_: boolean;
   declare private pattern_: string;
@@ -130,15 +125,17 @@ export class SettingsManageProfileElement extends
 
     this.addWebUiListener('available-icons-changed', setIcons);
     this.browserProxy_.getAvailableIcons().then(setIcons);
+
+    ProfileInfoBrowserProxyImpl.getInstance().getProfileInfo().then(
+        this.onProfileInfoChanged_.bind(this));
+    this.addWebUiListener(
+        'profile-info-changed', this.onProfileInfoChanged_.bind(this));
   }
 
   override currentRouteChanged() {
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
-      if (this.profileName) {
-        const profileNameInput = this.$.name;
-        if (profileNameInput) {
-          profileNameInput.value = this.profileName;
-        }
+      if (this.profileName_) {
+        this.$.nameInput.value = this.profileName_;
       }
       if (loadTimeData.getBoolean('profileShortcutsEnabled')) {
         this.browserProxy_.getProfileShortcutStatus().then(status => {
@@ -156,10 +153,14 @@ export class SettingsManageProfileElement extends
     }
   }
 
+  private onProfileInfoChanged_(info: ProfileInfo) {
+    this.profileName_ = info.name;
+  }
+
   /**
    * Handler for when the profile name field is changed, then blurred.
    */
-  private onProfileNameChanged_(event: Event) {
+  private onNameInputChange_(event: Event) {
     const target = event.target as CrInputElement;
     if (target.invalid) {
       return;
@@ -171,10 +172,10 @@ export class SettingsManageProfileElement extends
   /**
    * Handler for profile name keydowns.
    */
-  private onProfileNameKeydown_(event: KeyboardEvent) {
+  private onNameInputKeydown_(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       const target = event.target as CrInputElement;
-      target.value = this.profileName;
+      target.value = this.profileName_;
       target.blur();
     }
   }

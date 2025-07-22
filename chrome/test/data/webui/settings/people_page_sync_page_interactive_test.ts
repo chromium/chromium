@@ -29,12 +29,12 @@ suite('sync-page-test', function() {
   });
 
   test('autofocus passphrase input', function() {
-    syncPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SYNCING,
       disabled: false,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
-    };
+    });
     webUIListenerCallback('sync-prefs-changed', {passphraseRequired: false});
     flush();
     // Passphrase input is not available when no passphrase is required.
