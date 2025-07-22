@@ -267,9 +267,16 @@ AddressComponent* BuildSubTree(
         return it->second.get();
       };
 
+  const bool is_leaf_node =
+      !tree_def.contains(root) ||
+      // ADDRESS_HOME_ZIP is leaf node if split zip code feature is disabled.
+      // TODO(crbug.com/369503318): Remove once launched.
+      (root == ADDRESS_HOME_ZIP &&
+       !base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode));
+
   // Leaf nodes do not have an entry in the `tree_def`. By definition
   // they cannot have children nor be synthesized nodes.
-  if (!tree_def.contains(root)) {
+  if (is_leaf_node) {
     return RegisterNode(BuildTreeNode(root, /*children=*/{}));
   }
 
@@ -405,6 +412,13 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
 
 bool IsTypeEnabledForCountry(FieldType field_type,
                              AddressCountryCode country_code) {
+  // TODO(crbug.com/369503318): Remove once launched.
+  if (!base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode) &&
+      (field_type == ADDRESS_HOME_ZIP_PREFIX ||
+       field_type == ADDRESS_HOME_ZIP_SUFFIX)) {
+    return false;
+  }
+
   if (!IsCustomHierarchyAvailableForCountry(country_code)) {
     country_code = kLegacyHierarchyCountryCode;
   }

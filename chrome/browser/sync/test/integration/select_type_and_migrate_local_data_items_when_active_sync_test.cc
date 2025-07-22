@@ -67,7 +67,8 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kSyncEnableBookmarksInTransportMode,
-         autofill::features::kAutofillSupportLastNamePrefix},
+         autofill::features::kAutofillSupportLastNamePrefix,
+         autofill::features::kAutofillSupportSplitZipCode},
         /*disabled_features=*/{
             syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers});
 
