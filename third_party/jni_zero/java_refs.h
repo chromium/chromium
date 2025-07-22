@@ -9,6 +9,7 @@
 
 #include <jni.h>
 
+#include <concepts>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -17,6 +18,12 @@
 #include "third_party/jni_zero/logging.h"
 
 namespace jni_zero {
+
+namespace internal {
+template <typename T>
+concept IsJobject =
+    std::derived_from<std::remove_pointer_t<T>, std::remove_pointer_t<jobject>>;
+}
 
 // Creates a new local reference frame, in which at least a given number of
 // local references can be created. Note that local references already created
@@ -38,7 +45,8 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalFrame {
 };
 
 // Forward declare the generic java reference template class.
-template <typename T>
+template <typename T = jobject>
+  requires internal::IsJobject<T>
 class JavaRef;
 
 // Template specialization of JavaRef, which acts as the base class for all
@@ -112,6 +120,7 @@ class JavaObjectArrayReader;
 // for allowing functions to accept a reference without having to mandate
 // whether it is a local or global type.
 template <typename T>
+  requires internal::IsJobject<T>
 class JavaRef : public JavaRef<jobject> {
  public:
   constexpr JavaRef() {}
@@ -174,7 +183,7 @@ class JavaParamRef : public JavaRef<T> {
 // single thread. If you wish to have the reference outlive the current
 // callstack (e.g. as a class member) or you wish to pass it across threads,
 // use a ScopedJavaGlobalRef instead.
-template <typename T>
+template <typename T = jobject>
 class ScopedJavaLocalRef : public JavaRef<T> {
  public:
   // Take ownership of a bare jobject. This does not create a new reference.
@@ -305,7 +314,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
 // to the lifetime of this object. This class does not hold onto any JNIEnv*
 // passed to it, hence it is safe to use across threads (within the constraints
 // imposed by the underlying Java object that it references).
-template <typename T>
+template <typename T = jobject>
 class ScopedJavaGlobalRef : public JavaRef<T> {
  public:
   constexpr ScopedJavaGlobalRef() {}
@@ -445,7 +454,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaGlobalWeakRef {
 };
 
 // A global JavaRef that will never be released.
-template <typename T>
+template <typename T = jobject>
 class JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef : public JavaRef<T> {
  public:
   constexpr LeakedJavaGlobalRef() = default;
