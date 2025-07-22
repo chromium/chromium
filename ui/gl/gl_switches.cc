@@ -276,11 +276,6 @@ BASE_FEATURE(kIntelVpSuperResolution,
              "IntelVpSuperResolution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow overlay swapchain to use NVIDIA video processor for trueHDR.
-BASE_FEATURE(kNvidiaVpTrueHDR,
-             "NvidiaVpTrueHDR",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Default to using ANGLE's Metal backend.
 BASE_FEATURE(kDefaultANGLEMetal,
              "DefaultANGLEMetal",

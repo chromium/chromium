@@ -620,8 +620,7 @@ void QueryVideoProcessorCustomExtForHDR() {
 
   // Check for NVIDIA Auto HDR support.
   if (adapter_desc.VendorId == 0x10de) {
-    if (!GetGlWorkarounds().disable_vp_auto_hdr &&
-        base::FeatureList::IsEnabled(features::kNvidiaVpTrueHDR)) {
+    if (!GetGlWorkarounds().disable_vp_auto_hdr) {
       constexpr GUID kNvidiaTrueHDRInterfaceGUID = {
           0xfdd62bb4,
           0x620b,

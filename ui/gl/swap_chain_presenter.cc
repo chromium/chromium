@@ -366,12 +366,7 @@ HRESULT ToggleVpAutoHDR(UINT gpu_vendor_id,
 }
 
 bool IsVpAutoHDREnabled(UINT gpu_vendor_id) {
-  if (gpu_vendor_id == 0x10de &&
-      base::FeatureList::IsEnabled(features::kNvidiaVpTrueHDR)) {
-    return true;
-  }
-
-  return false;
+  return gpu_vendor_id == 0x10de;
 }
 
 bool IsWithinMargin(float i, float j) {
