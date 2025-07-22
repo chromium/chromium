@@ -20,7 +20,8 @@ mojom::URLResponseHeadDevToolsInfoPtr ExtractDevToolsInfo(
       head.alternate_protocol_usage, head.was_fetched_via_spdy,
       head.service_worker_response_source,
       head.service_worker_router_info.Clone(), head.ssl_info,
-      head.remote_endpoint, head.emitted_extra_info);
+      head.remote_endpoint, head.emitted_extra_info,
+      head.proxy_chain.is_for_ip_protection());
 }
 
 mojom::URLRequestDevToolsInfoPtr ExtractDevToolsInfo(

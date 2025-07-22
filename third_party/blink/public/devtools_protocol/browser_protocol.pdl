@@ -6508,6 +6508,9 @@ domain Network
       Security.SecurityState securityState
       # Security details for the request.
       optional SecurityDetails securityDetails
+      # Indicates whether the request was sent through IP Protection proxies. If
+      # set to true, the request used the IP Protection privacy feature.
+      experimental optional boolean isIpProtectionUsed
 
   # WebSocket request data.
   type WebSocketRequest extends object

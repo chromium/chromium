@@ -64,6 +64,14 @@ struct URLResponseHeadDevToolsInfo {
   SSLInfo? ssl_info;
   IPEndPoint remote_endpoint;
   bool emitted_extra_info;
+  // Set to true if the response was proxied through IP Protection proxies. Set
+  // to false otherwise.
+
+  // This will allow DevTools to know if a request
+  // was subject to IP Protection, so that the Network Panel can filter by those
+  // requests. This value can be true for cached responses when the original
+  // request was proxied. Tracked at crbug.com/425645896.
+  bool is_for_ip_protection;
 };
 
 // This is sent with OnRawRequest to indicate if the site has any partitioned

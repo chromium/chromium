@@ -64,6 +64,7 @@
 #include "content/public/test/btm_service_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/base/ip_address.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
@@ -71,7 +72,9 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_server_config.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -1947,5 +1950,249 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class DevToolsProtocolTest_IPProtection : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolTest_IPProtection() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{net::features::kEnableIpProtectionProxy,
+          {{"IpPrivacyEnableIppInDevTools", "true"}}},
+         {network::features::kMaskedDomainList,
+          {{"MaskedDomainListExperimentalVersion", "2025-05.dog.01"}}}},
+        {});
+  }
+
+  base::Value::Dict WaitForResponseNotificationWithUrl(GURL url) {
+    base::Value::Dict params = WaitForMatchingNotification(
+        "Network.responseReceived",
+        base::BindLambdaForTesting([url](const base::Value::Dict& params) {
+          return *(params.FindDict("response")->FindString("url")) ==
+                 url.spec();
+        }));
+
+    return std::move(*(params.FindDict("response")));
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->SetCertHostnames({"a.test", "b.test"});
+
+    DevToolsProtocolTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+bool MockIppRequests(bool cached,
+                     std::optional<std::string_view> host_to_intercept,
+                     content::URLLoaderInterceptor::RequestParams* params) {
+  if (host_to_intercept.has_value() &&
+      host_to_intercept.value() != params->url_request.url.host_piece()) {
+    return false;
+  }
+  // Create the mocked URLResponseHead to represent a proxied request.
+  network::mojom::URLResponseHeadPtr response =
+      network::mojom::URLResponseHead::New();
+  response->mime_type = "text/html";
+  response->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\n\n");
+  CHECK_NE(response->headers.get(), nullptr);
+
+  // Mark the response as proxied. Cached responses may contain proxy_chain
+  // information of the original request, including if it was sent through an IP
+  // Protection proxy.
+  response->proxy_chain = net::ProxyChain::ForIpProtection({});
+
+  // Set cache state if needed.
+  if (cached) {
+    response->load_timing.request_start_time = base::Time::Now();
+  }
+
+  // Write the response back to the client.
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+
+  EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+
+  params->client->OnReceiveResponse(std::move(response),
+                                    std::move(consumer_handle), std::nullopt);
+  params->client->OnComplete(network::URLLoaderCompletionStatus());
+
+  return true;
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_IPProtection,
+                       IsIpProtectionUsedSetInProtocol) {
+  // Start the test server
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Attach();
+
+  const content::URLLoaderInterceptor interceptor(
+      base::BindRepeating(&MockIppRequests, /*cached=*/false, "a.test"));
+
+  SendCommandSync("Network.enable");
+
+  GURL url = embedded_test_server()->GetURL("a.test", "/empty.html");
+
+  // Navigate to the test site.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Set observer for Network.responseReceived and store the response.
+  base::Value::Dict response = WaitForResponseNotificationWithUrl(url);
+
+  // Then, check that "isIpProtectionUsed" is set to true within
+  // Network.Response.isIpProtectionUsed.
+  EXPECT_THAT(response.FindBool("isIpProtectionUsed"), testing::Optional(true));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_IPProtection,
+                       CachedResponseSetsIsIpProtectionUsedToFalse) {
+  // Start the test server
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Attach();
+
+  const content::URLLoaderInterceptor interceptor(
+      base::BindRepeating(&MockIppRequests, /*cached=*/true, "a.test"));
+
+  SendCommandSync("Network.enable");
+
+  GURL url = embedded_test_server()->GetURL("a.test", "/empty.html");
+
+  // Navigate to the test site.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Set observer for Network.responseReceived and store the response.
+  base::Value::Dict response = WaitForResponseNotificationWithUrl(url);
+
+  // Since this is a cached response, we expect that "isIpProtectionUsed" is
+  // set to false.
+  EXPECT_THAT(response.FindBool("isIpProtectionUsed"),
+              testing::Optional(false));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_IPProtection,
+                       ProxiedThirdPartyRequestsMarkedInProtocol) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Attach();
+
+  SendCommandSync("Network.enable");
+
+  const content::URLLoaderInterceptor interceptor(
+      base::BindRepeating(&MockIppRequests, /*cached=*/false, "b.test"));
+
+  GURL first_party_url =
+      embedded_test_server()->GetURL("a.test", "/empty.html");
+
+  // // Navigate to the test site.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), first_party_url));
+
+  // Set observer for Network.responseReceived and store the response.
+  base::Value::Dict first_party_response =
+      WaitForResponseNotificationWithUrl(first_party_url);
+
+  // Ensure that the first party request is not marked as proxied.
+  EXPECT_THAT(first_party_response.FindBool("isIpProtectionUsed"),
+              testing::Optional(false));
+
+  GURL third_party_url =
+      embedded_test_server()->GetURL("b.test", "/empty.html");
+
+  std::string fetch_script = content::JsReplace(
+      "(fetch($1, { mode: 'no-cors' }).then(resp => resp.ok))",
+      third_party_url.spec());
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(), fetch_script));
+
+  // Do the same for the third party request, but this time it should be
+  // marked as proxied.
+  base::Value::Dict third_party_response =
+      WaitForResponseNotificationWithUrl(third_party_url);
+
+  EXPECT_THAT(third_party_response.FindBool("isIpProtectionUsed"),
+              testing::Optional(true));
+}
+
+class DevToolsProtocolTest_IPProtectionDisabled
+    : public DevToolsProtocolTest_IPProtection {
+ public:
+  DevToolsProtocolTest_IPProtectionDisabled() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{net::features::kEnableIpProtectionProxy,
+          {{"IpPrivacyEnableIppInDevTools", "false"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsProtocolTest_IPProtectionDisabled,
+    DevToolsIPPIntegrationNotEnabled_BrowserInitiatedRequest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Attach();
+
+  SendCommandSync("Network.enable");
+
+  GURL url = embedded_test_server()->GetURL("a.test", "/empty.html");
+
+  // Navigate to the test site.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Set observer for Network.responseReceived and store the response.
+  base::Value::Dict network_params =
+      WaitForNotification("Network.responseReceived", true);
+
+  base::Value::Dict* network_response = network_params.FindDict("response");
+  ASSERT_TRUE(network_response);
+
+  // Ensure that this request doesn't set isIpProtectionUsed.
+  EXPECT_THAT(network_response->FindBool("isIpProtectionUsed"), std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsProtocolTest_IPProtectionDisabled,
+    DevToolsIPPIntegrationNotEnabled_RendererInitiatedRequest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  Attach();
+
+  SendCommandSync("Network.enable");
+
+  content::URLLoaderInterceptor interceptor(
+      base::BindRepeating(&MockIppRequests, /*cached=*/false, "b.test"));
+
+  GURL first_party_url =
+      embedded_test_server()->GetURL("a.test", "/empty.html");
+
+  // Navigate to the test site.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), first_party_url));
+
+  // Set observer for Network.responseReceived and store the response.
+  base::Value::Dict first_party_response =
+      WaitForResponseNotificationWithUrl(first_party_url);
+
+  // Ensure that the first party request is not marked as proxied.
+  EXPECT_THAT(first_party_response.FindBool("isIpProtectionUsed"),
+              std::nullopt);
+
+  GURL third_party_url =
+      embedded_test_server()->GetURL("b.test", "/empty.html");
+
+  std::string fetch_script = content::JsReplace(
+      "(fetch($1, { mode: 'no-cors' }).then(resp => resp.ok))",
+      third_party_url.spec());
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(), fetch_script));
+
+  // Do the same for the third party request, which should also not be set.
+  base::Value::Dict third_party_response =
+      WaitForResponseNotificationWithUrl(third_party_url);
+
+  EXPECT_THAT(third_party_response.FindBool("isIpProtectionUsed"),
+              std::nullopt);
+}
 
 }  // namespace

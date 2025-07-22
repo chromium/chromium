@@ -45,6 +45,7 @@ TEST(DevToolsObserverUtilTest, ExtractURLResponseHead) {
       base::TimeDelta::Min(), mojom::ServiceWorkerStatus::kRunning);
   head.ssl_info = net::SSLInfo();
   head.remote_endpoint = net::IPEndPoint(net::IPAddress(1, 2, 3, 4), 99);
+  head.proxy_chain = net::ProxyChain();
 
   mojom::URLResponseHeadDevToolsInfoPtr head_info = ExtractDevToolsInfo(head);
 
@@ -68,6 +69,8 @@ TEST(DevToolsObserverUtilTest, ExtractURLResponseHead) {
             *head.service_worker_router_info);
   EXPECT_EQ(head_info->ssl_info.has_value(), head.ssl_info.has_value());
   EXPECT_EQ(head_info->remote_endpoint, head.remote_endpoint);
+  EXPECT_EQ(head_info->is_for_ip_protection,
+            head.proxy_chain.is_for_ip_protection());
 }
 
 TEST(DevToolsObserverUtilTest, ExtractResourceRequest) {

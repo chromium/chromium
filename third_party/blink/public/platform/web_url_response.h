@@ -308,6 +308,9 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetWasDeferredByDeviceBoundSession(bool);
   bool WasDeferredByDeviceBoundSession() const;
 
+  void SetIsIpProtectionUsed(bool);
+  bool IsIpProtectionUsed() const;
+
 #if INSIDE_BLINK
  protected:
   // Permit subclasses to set arbitrary ResourceResponse pointer as

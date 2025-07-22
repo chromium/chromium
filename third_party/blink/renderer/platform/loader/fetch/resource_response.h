@@ -493,6 +493,13 @@ class PLATFORM_EXPORT ResourceResponse final {
     return device_bound_session_usage_;
   }
 
+  // Returns true if the request was routed through an IP Protection proxy.
+  bool IsIpProtectionUsed() const { return is_ip_protection_used_; }
+  // Sets the flag indicating IP Protection usage.
+  void SetIsIpProtectionUsed(bool is_ip_protection_used) {
+    is_ip_protection_used_ = is_ip_protection_used;
+  }
+
  private:
   void UpdateHeaderParsedState(const AtomicString& name);
 
@@ -711,6 +718,14 @@ class PLATFORM_EXPORT ResourceResponse final {
   std::optional<net::AuthChallengeInfo> auth_challenge_info_;
 
   bool emitted_extra_info_ = false;
+
+  // Flag indicating if the request used IP Protection proxies.
+  // This differs from the `is_for_ip_protection` used in the network proxy
+  // chain, but uses `is_for_ip_protection`, along with whether the response was
+  // cached, to determine if the request was actively sent through an IP
+  // Protection proxy. This value is currently only set if
+  // kIpPrivacyEnableIppInDevTools is enabled.
+  bool is_ip_protection_used_ = false;
 };
 
 }  // namespace blink
