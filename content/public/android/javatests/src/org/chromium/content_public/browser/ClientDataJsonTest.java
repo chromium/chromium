@@ -181,6 +181,33 @@ public class ClientDataJsonTest {
 
     @Test
     @SmallTest
+    public void testBuildClientDataJsonWithAnEmptyLogo() {
+        // An empty logo indicates that a logo was specified but could not be downloaded. See
+        // https://w3c.github.io/secure-payment-confirmation/#sctn-steps-to-check-if-a-payment-can-be-made
+        PaymentOptions payment = createSamplePaymentOptions();
+        payment.paymentEntitiesLogos =
+                new ShownPaymentEntityLogo[] {
+                    shownPaymentEntityLogo(/* urlString= */ "", "logo_one_label")
+                };
+        String output =
+                ClientDataJson.buildClientDataJson(
+                        ClientDataRequestType.PAYMENT_GET,
+                        ORIGIN,
+                        CHALLENGE_BYTES,
+                        /* isCrossOrigin= */ true,
+                        payment,
+                        RELYING_PARTY_ID,
+                        TOP_ORIGIN);
+
+        assertParsesJson(output);
+        assertThat(
+                output,
+                containsString(
+                        "\"paymentEntitiesLogos\":[{\"url\":\"\",\"label\":\"logo_one_label\"}]"));
+    }
+
+    @Test
+    @SmallTest
     public void testBuildClientDataJsonWithTwoLogos() {
         PaymentOptions payment = createSamplePaymentOptions();
         payment.paymentEntitiesLogos =

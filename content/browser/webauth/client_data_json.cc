@@ -136,7 +136,11 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
       for (auto logo_iterator = logos.begin(); logo_iterator != logos.end();
            ++logo_iterator) {
         ret.append(R"({"url":)");
-        ret.append(ToJSONString((*logo_iterator)->url.spec()));
+        if ((*logo_iterator)->url.is_empty()) {
+          ret.append(R"("")");
+        } else {
+          ret.append(ToJSONString((*logo_iterator)->url.spec()));
+        }
         ret.append(R"(,"label":)");
         ret.append(ToJSONString((*logo_iterator)->label));
         ret.append("}");

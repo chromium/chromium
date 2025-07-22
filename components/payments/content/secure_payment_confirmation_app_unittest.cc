@@ -537,7 +537,7 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
 }
 
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
-       IgnoresPaymentEntitiesLogosWithoutBitmapsWhenAddingToPaymentOptions) {
+       PaymentEntitiesLogosWithoutBitmapsAreEmptyUrlsInPaymentOptions) {
   web_contents_ = web_contents_factory_.CreateWebContents(&context_);
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
@@ -570,10 +570,13 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
   // The first logo is not included because its bitmap is not set.
   EXPECT_THAT(
       payment_options,
-      Pointer(Field("payment_entities_logos",
-                    &blink::mojom::PaymentOptions::payment_entities_logos,
-                    Optional(ElementsAre(IsShownPaymentEntityLogo(
-                        kPaymentEntity2LogoUrl, "PaymentEntity #2"))))));
+      Pointer(Field(
+          "payment_entities_logos",
+          &blink::mojom::PaymentOptions::payment_entities_logos,
+          Optional(ElementsAre(
+              IsShownPaymentEntityLogo(GURL::EmptyGURL(), "PaymentEntity #1"),
+              IsShownPaymentEntityLogo(kPaymentEntity2LogoUrl,
+                                       "PaymentEntity #2"))))));
 }
 
 class SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest

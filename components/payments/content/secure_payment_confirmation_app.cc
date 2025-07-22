@@ -362,11 +362,13 @@ void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
           blink::features::kSecurePaymentConfirmationUxRefresh)) {
     payment_entities_logos.emplace();
     for (const PaymentApp::PaymentEntityLogo& logo : payment_entities_logos_) {
-      if (logo.icon) {
-        payment_entities_logos->push_back(
-            blink::mojom::ShownPaymentEntityLogo::New(
-                logo.url, base::UTF16ToUTF8(logo.label)));
-      }
+      // When the logo could not be download or decoded, then logo.icon is null.
+      // In this case a ShownPaymentEntityLogo with an empty url is added, so
+      // that clientData includes a placeholder when images failed to download.
+      payment_entities_logos->push_back(
+          blink::mojom::ShownPaymentEntityLogo::New(
+              logo.icon ? logo.url : GURL::EmptyGURL(),
+              base::UTF16ToUTF8(logo.label)));
     }
   } else {
     // If kSecurePaymentConfirmationUxRefresh is not enabled, then we did not
