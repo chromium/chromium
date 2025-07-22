@@ -1759,10 +1759,17 @@ TEST_P(PNGTests, VerifyFrameCompleteBehavior) {
 }
 
 TEST_P(PNGTests, sizeMayOverflow) {
-  auto decoder =
-      CreatePNGDecoderWithPngData("/images/resources/crbug702934.png");
-  EXPECT_FALSE(decoder->IsSizeAvailable());
-  EXPECT_TRUE(decoder->Failed());
+  const char* kTests[] = {
+      "/images/resources/crbug702934.png",
+      "/images/resources/crbug432516335-big-height.png",
+      "/images/resources/crbug432516335-i32-overflow.png",
+  };
+  for (const char* test : kTests) {
+    SCOPED_TRACE(testing::Message() << "Testing: " << test);
+    auto decoder = CreatePNGDecoderWithPngData(test);
+    EXPECT_FALSE(decoder->IsSizeAvailable());
+    EXPECT_TRUE(decoder->Failed());
+  }
 }
 
 TEST_P(PNGTests, truncated) {
