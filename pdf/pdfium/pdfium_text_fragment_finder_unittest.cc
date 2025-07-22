@@ -17,8 +17,6 @@ namespace chrome_pdf {
 
 namespace {
 
-using ::testing::NiceMock;
-
 class SearchStringTestClient : public TestClient {
  public:
   std::vector<SearchStringResult> SearchString(const std::u16string& needle,
@@ -35,7 +33,7 @@ class SearchStringTestClient : public TestClient {
 using PDFiumTextFragmentFinderTest = PDFiumTestBase;
 
 TEST_P(PDFiumTextFragmentFinderTest, OnlyTextStart) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -53,7 +51,7 @@ TEST_P(PDFiumTextFragmentFinderTest, OnlyTextStart) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartAndEnd) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -72,7 +70,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartAndEnd) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartAndTextSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -90,7 +88,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartAndTextSuffix) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartEndAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -111,7 +109,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartEndAndSuffix) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixAndTextStart) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -129,7 +127,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixAndTextStart) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -147,7 +145,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndSuffix) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndEnd) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -168,7 +166,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndEnd) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartEndAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -188,7 +186,7 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartEndAndSuffix) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, MultipleTextFragments) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -228,7 +226,7 @@ TEST_P(PDFiumTextFragmentFinderTest, MultipleTextFragments) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, MultiPage) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
@@ -275,7 +273,7 @@ TEST_P(PDFiumTextFragmentFinderTest, MultiPage) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, FragmentNotInPDF) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -315,7 +313,7 @@ TEST_P(PDFiumTextFragmentFinderTest, FragmentNotInPDF) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, EmptyList) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -327,7 +325,7 @@ TEST_P(PDFiumTextFragmentFinderTest, EmptyList) {
 
 TEST_P(PDFiumTextFragmentFinderTest,
        TextStartAndEnd_FindsCorrectInstanceOfStart) {
-  NiceMock<SearchStringTestClient> client;
+  SearchStringTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
