@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -39,6 +40,8 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
   /// The "select" and "deselect" buttons.
   UIBarButtonItem* _selectButton;
   UIBarButtonItem* _deselectButton;
+  /// Module for reauthentication when user wants to see unmasked passwords.
+  ReauthenticationModule* _reauthModule;
 }
 
 #pragma mark - ChromeTableViewController
@@ -143,6 +146,14 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
 
 #pragma mark - Private
 
+/// Lazy-loader of the reauthentication module.
+- (ReauthenticationModule*)reauthenticationModule {
+  if (!_reauthModule) {
+    _reauthModule = [[ReauthenticationModule alloc] init];
+  }
+  return _reauthModule;
+}
+
 /// Helper method that returns the number of selected items.
 - (NSUInteger)selectedItemsCount {
   NSArray<NSIndexPath*>* selectedRows =
@@ -182,7 +193,6 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
                                          : NSLineBreakByTruncatingTail;
   cell.editingAccessoryView = [self accessoryViewForItemIdentifier:identifier];
   [cell configureUILayout];
-  [cell.editingAccessoryView invalidateIntrinsicContentSize];
   UIView* selectedBackgroundView = [[UIView alloc] init];
   selectedBackgroundView.backgroundColor = [UIColor clearColor];
   cell.selectedBackgroundView = selectedBackgroundView;
@@ -278,6 +288,9 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
 
 /// Helper method to set up the accessory view.
 - (UIView*)accessoryViewForItemIdentifier:(NSNumber*)identifier {
+  if (![[self reauthenticationModule] canAttemptReauth]) {
+    return nil;
+  }
   BOOL forUnmaskAction =
       !(_shouldUnmaskPasswordAtIndex[identifier.intValue].boolValue);
   UIButtonConfiguration* configuration =
@@ -293,7 +306,8 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
   UIAction* updatePasswordField =
       [UIAction actionWithHandler:^(UIAction* action) {
         [weakSelf maybeUpdatePasswordMasking:forUnmaskAction
-                       forItemWithIdentifier:identifier];
+                       forItemWithIdentifier:identifier
+                               authenticated:NO];
       }];
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:updatePasswordField];
@@ -305,19 +319,32 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
   return button;
 }
 
-/// Reveal password if `shouldUnmask` is YES and user has passed authentication;
-/// mask password if otherwise.
+/// Reveal password if `shouldUnmask` is YES and user is authenticated to view
+/// passwords; mask password if otherwise.
 - (void)maybeUpdatePasswordMasking:(BOOL)shouldUnmask
-             forItemWithIdentifier:(NSNumber*)identifier {
-  /// TODO(crbug.com/420703283): Integrate with reauthentication module to
-  /// authenticate users.
-  BOOL authenticationSuccess = YES;
-  if (authenticationSuccess || !shouldUnmask) {
+             forItemWithIdentifier:(NSNumber*)identifier
+                     authenticated:(BOOL)authenticated {
+  if (!shouldUnmask || authenticated ||
+      ![[self reauthenticationModule] canAttemptReauth]) {
     _shouldUnmaskPasswordAtIndex[identifier.intValue] = @(shouldUnmask);
     [self updateItemWithIdentifier:identifier];
-  } else {
-    /// TODO(crbug.com/420703283): Authenticate.
+    return;
   }
+  /// Show reauthentication.
+  __weak __typeof(self) weakSelf = self;
+  auto handler = ^(ReauthenticationResult result) {
+    if (result == ReauthenticationResult::kFailure) {
+      return;
+    }
+    [weakSelf maybeUpdatePasswordMasking:shouldUnmask
+                   forItemWithIdentifier:identifier
+                           authenticated:YES];
+  };
+  NSString* reason = l10n_util::GetNSString(
+      IDS_IOS_SAFARI_IMPORT_PASSWORD_UNMASK_REAUTH_REASON);
+  [[self reauthenticationModule] attemptReauthWithLocalizedReason:reason
+                                             canReusePreviousAuth:YES
+                                                          handler:handler];
 }
 
 @end
