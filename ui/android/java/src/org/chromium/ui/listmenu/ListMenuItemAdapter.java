@@ -81,7 +81,7 @@ public class ListMenuItemAdapter extends ModelListAdapter {
             // this case, we need to let the ListView handle the click.
             view.setOnClickListener(
                     (v) -> {
-                        long id = item.model.get(ListMenuItemProperties.MENU_ITEM_ID);
+                        long id = getItemId(position);
                         ((ListView) parent).performItemClick(v, position, id);
                     });
         }
