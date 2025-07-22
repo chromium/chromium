@@ -3277,7 +3277,10 @@ def create_cc_defaults_module():
       # Stops warning about unknown options. This usually happens when
       # Chromium uses a newer version of Clang that supports a flag which
       # Android's clang does not know about.
-      '-Wno-unknown-warning-option'
+      '-Wno-unknown-warning-option',
+      # Required to correctly compile quiche tests.
+      # TODO(crbug.com/433273929): Remove once fixed.
+      "-Wno-nonnull",
   ]
   defaults.build_file_path = ""
   defaults.include_build_directory = False
