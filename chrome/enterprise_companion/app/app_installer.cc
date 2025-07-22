@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
@@ -57,6 +58,15 @@ class AppInstaller : public App {
     }
     VLOG(1) << "Installation/Uninstallation completed successfully.";
     Shutdown(EnterpriseCompanionStatus::Success());
+  }
+
+  void Shutdown(const EnterpriseCompanionStatus& status) override {
+    if (!status.ok()) {
+      // Create crash reports to improve observability of installer errors.
+      // Reports contain CECA logs which are helpful for debugging.
+      base::debug::DumpWithoutCrashing();
+    }
+    App::Shutdown(status);
   }
 
   SEQUENCE_CHECKER(sequence_checker_);

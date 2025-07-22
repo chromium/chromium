@@ -32,7 +32,7 @@ class App {
   virtual void FirstTaskRun() = 0;
 
   // Triggers app shutdown. Must be called on the main sequence.
-  void Shutdown(const EnterpriseCompanionStatus& status);
+  virtual void Shutdown(const EnterpriseCompanionStatus& status);
 
  private:
   // A callback that allows `Run` to complete.
