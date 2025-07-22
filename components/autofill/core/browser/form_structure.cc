@@ -870,10 +870,10 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
   DenseSet<FormType> form_types;
   for (const auto& field : fields_) {
     if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      // When `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
-      // types are predicted for fields with unrecognized autocomplete
-      // attribute. They are excluded from the form types, to keep the baseline
-      // for key and quality metrics.
+      // Types are predicted for fields with unrecognized autocomplete
+      // attribute, but suggestions are suppressed. So we don't want such fields
+      // to affect the key and quality metrics. We therefore exclude them from
+      // the form types.
       form_types.insert(FormType::kUnknownFormType);
     } else {
       form_types.insert(FieldTypeGroupToFormType(field->Type().group()));

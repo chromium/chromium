@@ -1051,15 +1051,10 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
   if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
       got_autofillable_form &&
       autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-    // Pre-`AutofillPredictionsForAutocompleteUnrecognized`, autocomplete
-    // suggestions were shown if all types of the form were suppressed or
-    // unknown. If at least a single field had predictions (and the form was
-    // thus considered autofillable), autocomplete suggestions were suppressed
-    // for fields with a suppressed prediction.
-    // To retain this behavior, the `suppress_reason` is only set if the form
-    // contains a field that triggers (non-fallback) suggestions.
-    // By not setting it, the autocomplete suggestion logic downstream is
-    // triggered, since no Autofill `suggestions` are available.
+    // If non-Autocomplete suggestions may be shown on some other field of the
+    // form, we want to suppress Autocomplete suggestions on this field. Setting
+    // `SuggestionsContext::suppress_reason` to `kAutocompleteUnrecognized`
+    // achieves that.
     if (!std::ranges::all_of(*form_structure, [](const auto& field) {
           return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
                  field->Type().GetStorableType() == UNKNOWN_TYPE;

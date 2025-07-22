@@ -284,12 +284,10 @@ class AutofillField : public FormFieldData {
 
   // Address Autofill is disabled for fields with unrecognized autocomplete
   // attribute - except if the field has a server overwrite.
-  // Without `kAutofillPredictionsForAutocompleteUnrecognized`, this happens
-  // implicitly, since ac=unrecognized suppresses the predicted type. As of
-  // `kAutofillPredictionsForAutocompleteUnrecognized`, ac=unrecognized fields
-  // receive a predictions, but suggestions and filling are still suppressed.
-  // This function can be used to determine whether suggestions and filling
-  // should be suppressed for this field (independently of the predicted type).
+  // Fields with `autocomplete=unrecognized` receive a predictions, but
+  // suggestions and filling are suppressed on Desktop. This function can be
+  // used to determine whether suggestions and filling should be suppressed for
+  // this field (independently of the predicted type).
   bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
   // Returns the current value, formatted as desired for import:
