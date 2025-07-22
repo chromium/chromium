@@ -130,13 +130,18 @@ namespace {
 BASE_FEATURE(kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext,
              "SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// A feature flag for the crash issue in crbug.com/424476776.
+BASE_FEATURE(kSpeculativeFixForNoExtensionInDidStartServiceWorkerContext,
+             "SpeculativeFixForNoExtensionInDidStartServiceWorkerContext",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
 
-// TODO(crbug.com/389971360) Remove this enum class and
+// TODO(crbug.com/389971360, crbug.com/424476776) Remove this enum class and
 // `service_worker_context_state` once the issue is fixed. This is completely
-// for the debugging purpose.
+// for debugging purpose in crbug.com/389971360. If crbug.com/424476776 relies
+// on this enum, see if it can be simplified if the fix is proven.
 enum class ServiceWorkerContextState {
   kDefault = 0,
   kInitializing = 1,
@@ -146,7 +151,9 @@ enum class ServiceWorkerContextState {
   kExtensionAPIIsNotEnabledForServiceWorkerScript = 5,
   kDestroying = 6,
   kDestroyed = 7,
-  kMaxValue = kDestroyed,
+  kUnloadedExtension = 8,
+  kDestroyedWithoutWorkerData = 9,
+  kMaxValue = kDestroyedWithoutWorkerData,
 };
 
 constinit thread_local ServiceWorkerContextState service_worker_context_state =
@@ -652,6 +659,14 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
       load_status);
 
   if (!extension) {
+    // Set the context state based on the extension load status.
+    if (load_status == ExtensionRendererLoadStatus::kExtensionUnloaded) {
+      service_worker_context_state =
+          ServiceWorkerContextState::kUnloadedExtension;
+    } else {
+      service_worker_context_state = ServiceWorkerContextState::kNoExtension;
+    }
+
     // TODO(kalman): This is no good. Instead we need to either:
     //
     // - Hold onto the v8::Context and create the ScriptContext and install
@@ -671,7 +686,6 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // Perhaps this could be solved with our own event on the service worker
     // saying that an extension is ready, and documenting that extension APIs
     // won't work before that event has fired?
-    service_worker_context_state = ServiceWorkerContextState::kNoExtension;
     return;
   }
 
@@ -771,6 +785,23 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
     return;
   }
 
+  // Even if the extension appears in the registry there's a timing issue where
+  // an extension that is reloaded could race with this (stale) async task being
+  // posted for a previously evaluated worker script.
+  // In that case we'd see this start notification for the previous worker
+  // instance that was quickly terminated (for example: a JS syntax error on
+  // script evaluation, but not limited to that) and we wouldn't have a
+  // ServiceWorkerData/ScriptContext to use later in this function.
+  // We'll get another DidStartServiceWorkerContextOnWorkerThread() when the
+  // next worker instance starts so returning early here shouldn't cause any
+  // issues.
+  if (base::FeatureList::IsEnabled(
+          kSpeculativeFixForNoExtensionInDidStartServiceWorkerContext) &&
+      service_worker_context_state ==
+          ServiceWorkerContextState::kUnloadedExtension) {
+    return;
+  }
+
   // TODO(crbug.com/389971360) Remove this once the bug is fixed.
   SCOPED_CRASH_KEY_NUMBER("extensions", "worker_context_state",
                           static_cast<int>(service_worker_context_state));
@@ -848,6 +879,9 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
     // If extension APIs in service workers aren't enabled, we just need to
     // remove the context.
     g_worker_script_context_set.Get().Remove(v8_context, script_url);
+    // TODO(crbug.com/424476776) Remove this after the fix.
+    service_worker_context_state =
+        ServiceWorkerContextState::kDestroyedWithoutWorkerData;
   }
 
   ExtensionId extension_id =
