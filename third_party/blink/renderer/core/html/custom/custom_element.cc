@@ -22,24 +22,6 @@
 
 namespace blink {
 
-CustomElementRegistry* CustomElement::Registry(const Element& element) {
-  return Registry(element.GetTreeScope());
-}
-
-CustomElementRegistry* CustomElement::Registry(const TreeScope& tree_scope) {
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    if (const ShadowRoot* shadow = DynamicTo<ShadowRoot>(tree_scope)) {
-      if (CustomElementRegistry* registry = shadow->registry()) {
-        return registry;
-      }
-    }
-  }
-  if (LocalDOMWindow* window = tree_scope.GetDocument().domWindow()) {
-    return window->customElements();
-  }
-  return nullptr;
-}
-
 static CustomElementDefinition* DefinitionForElementWithoutCheck(
     const Element& element) {
   DCHECK_EQ(element.GetCustomElementState(), CustomElementState::kCustom);
@@ -128,7 +110,7 @@ bool CustomElement::ShouldCreateCustomizedBuiltinElement(
 static CustomElementDefinition* DefinitionFor(
     const Document& document,
     const CustomElementDescriptor desc) {
-  if (CustomElementRegistry* registry = CustomElement::Registry(document)) {
+  if (CustomElementRegistry* registry = document.customElementRegistry()) {
     return registry->DefinitionFor(desc);
   }
   return nullptr;
@@ -313,7 +295,8 @@ void CustomElement::TryToUpgrade(Element& element) {
 
   DCHECK_EQ(element.GetCustomElementState(), CustomElementState::kUndefined);
 
-  CustomElementRegistry* registry = CustomElement::Registry(element);
+  CustomElementRegistry* registry =
+      element.GetTreeScope().customElementRegistry();
   if (!registry)
     return;
   const AtomicString& is_value = element.IsValue();

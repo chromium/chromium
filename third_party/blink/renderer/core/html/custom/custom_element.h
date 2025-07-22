@@ -26,18 +26,11 @@ class HTMLFormElement;
 class QualifiedName;
 class CustomElementDefinition;
 class CustomElementReaction;
-class CustomElementRegistry;
 
 class CORE_EXPORT CustomElement {
   STATIC_ONLY(CustomElement);
 
  public:
-  // Retrieves the CustomElementRegistry for Element, if any. This
-  // may be a different object for a given element over its lifetime
-  // as it moves between documents.
-  static CustomElementRegistry* Registry(const Element&);
-  static CustomElementRegistry* Registry(const TreeScope&);
-
   static CustomElementDefinition* DefinitionForElement(const Element*);
 
   static void AddEmbedderCustomElementName(const AtomicString& name);

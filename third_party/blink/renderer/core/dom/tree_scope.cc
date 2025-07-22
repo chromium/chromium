@@ -283,13 +283,16 @@ Element* TreeScope::ElementForHitTest(Node* node, HitTestPointType type) const {
 }
 
 CustomElementRegistry* TreeScope::customElementRegistry() const {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-  if (!custom_element_registry_) {
-    if (LocalDOMWindow* window = GetDocument().domWindow()) {
-      return window ? window->customElements() : nullptr;
-    }
+  if (custom_element_registry_) {
+    CHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+    return custom_element_registry_;
   }
-  return custom_element_registry_;
+
+  if (LocalDOMWindow* window = GetDocument().domWindow()) {
+    return window->customElements();
+  }
+
+  return nullptr;
 }
 
 static bool ShouldAcceptNonElementNode(const Node& node) {

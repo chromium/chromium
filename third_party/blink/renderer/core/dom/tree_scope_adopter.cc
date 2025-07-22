@@ -113,8 +113,8 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
 
   shadow_root.SetDocument(new_document);
 
-  if (shadow_root.registry()) {
-    shadow_root.registry()->AssociatedWith(new_document);
+  if (shadow_root.customElementRegistry()) {
+    shadow_root.customElementRegistry()->AssociatedWith(new_document);
   }
 
   MoveTreeToNewDocument(shadow_root, old_document, new_document,

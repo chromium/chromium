@@ -371,7 +371,7 @@ void CustomElementRegistry::CollectCandidates(
     if (!element || !desc.Matches(*element))
       continue;
     if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-      if (CustomElement::Registry(*element) != this) {
+      if ((*element).customElementRegistry() != this) {
         // The element has been moved away from the original tree scope and no
         // longer uses this registry.
         continue;

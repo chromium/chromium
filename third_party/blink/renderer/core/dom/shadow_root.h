@@ -181,7 +181,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   }
 
   void SetRegistry(CustomElementRegistry*);
-  CustomElementRegistry* registry() const { return registry_.Get(); }
 
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
