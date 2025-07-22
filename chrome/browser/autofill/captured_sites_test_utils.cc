@@ -30,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -64,6 +65,8 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/address_list.h"
+#include "net/socket/tcp_client_socket.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -695,12 +698,46 @@ bool WebPageReplayServerWrapper::Start(
   if (!RunWebPageReplayCmd(args))
     return false;
 
-  // Sleep 5 seconds to wait for the web page replay server to start.
-  // TODO(crbug.com/40578543): create a process std stream reader class to use
-  // the process output to determine when the server is ready
   base::RunLoop wpr_launch_waiter;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
+  // This socket is created and destroyed on the IO thread, but it's simplest to
+  // declare it here, since its deleted by a callback that may be invoked
+  // asynchronously by its connect method, or calls its Connect method,
+  // depending on whether the connection attempt completes synchronously. Having
+  // two deletion paths makes BindOnce() not work well with it.
+  std::unique_ptr<net::TCPClientSocket> client_socket;
+
+  size_t connect_attempts = 0;
+  base::RepeatingCallback<void(int)> on_connect_complete;
+  auto bind_new_socket = base::BindLambdaForTesting([&]() {
+    net::AddressList addr(
+        net::IPEndPoint(net::IPAddress(127, 0, 0, 1), host_http_port_));
+    ++connect_attempts;
+    client_socket = std::make_unique<net::TCPClientSocket>(
+        addr, nullptr, nullptr, nullptr, net::NetLogSource());
+    int connect_result = client_socket->Connect(on_connect_complete);
+    // On ERR_IO_PENDING, `on_connect_complete` will be invoked
+    // asynchronously, so need to let the message loop spin until that
+    // happens.
+    if (connect_result == net::ERR_IO_PENDING) {
+      return;
+    }
+    // Otherwise, run `on_connect_complete` immediately.
+    on_connect_complete.Run(connect_result);
+  });
+
+  // Called on the IO thread once connection has completed. Destroys the
+  // `client_socket`, which may or may not be the object invoking the callback.
+  on_connect_complete = base::BindLambdaForTesting([&](int connect_result) {
+    client_socket.reset();
+    if (connect_result == net::OK || connect_attempts > 30) {
+      wpr_launch_waiter.Quit();
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, bind_new_socket, base::Seconds(1));
+    }
+  });
+
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, bind_new_socket);
   wpr_launch_waiter.Run();
 
   if (!web_page_replay_server_.IsValid()) {
