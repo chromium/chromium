@@ -102,16 +102,9 @@ webnn::PaddingMode MojoPaddingModeToComponent(const mojom::PaddingMode& mode) {
   }
 }
 
-bool ValidateClampAttributes(const mojom::Clamp& clamp) {
-  if (std::isnan(clamp.min_value) || std::isnan(clamp.max_value)) {
-    // The min or max value are nan.
-    return false;
-  }
-  if (clamp.min_value >= clamp.max_value) {
-    // The min value must be below the max value.
-    return false;
-  }
-  return true;
+inline bool ValidateClampAttributes(const mojom::Clamp& clamp,
+                                    webnn::OperandDataType data_type) {
+  return !clamp.min_value.IsGreaterThan(clamp.max_value, data_type);
 }
 
 bool ValidateEluAttributes(const mojom::Elu& elu) {
@@ -959,7 +952,8 @@ bool OperationValidationContext::ValidateClamp(const mojom::Clamp& clamp,
                               operation_id)) {
     return false;
   }
-  if (!ValidateClampAttributes(clamp)) {
+  const auto* input = GetMojoOperand(clamp.input_operand_id);
+  if (!ValidateClampAttributes(clamp, input->descriptor.data_type())) {
     return false;
   }
 

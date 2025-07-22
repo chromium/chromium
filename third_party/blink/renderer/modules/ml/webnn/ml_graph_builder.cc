@@ -17,6 +17,7 @@
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "services/webnn/public/cpp/ml_number.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
@@ -29,6 +30,7 @@
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_bigint_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
@@ -882,25 +884,6 @@ webnn::LstmCellAttributes ConvertToLstmCellAttributes(
   attributes.activation_count = options->activations().size();
   attributes.label = options->label().Utf8();
   return attributes;
-}
-
-bool ValidateClampOptions(const MLClampOptions* options,
-                          ExceptionState& exception_state) {
-  // The generated code of MLClampOptions uses blink::ToRestrictedFloat to
-  // convert the min/max value to a single precision float. It will throw on
-  // non-finite values.
-  const std::string label = options->label().Utf8();
-  if (options->hasMinValue() && options->hasMaxValue()) {
-    if (options->minValue() > options->maxValue()) {
-      exception_state.ThrowTypeError(
-          String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-          String::Format("The min value (%f) should be less than or equal to "
-                         "the max value (%f).",
-                         options->minValue(), options->maxValue()));
-      return false;
-    }
-  }
-  return true;
 }
 
 MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
@@ -1862,17 +1845,51 @@ MLOperand* MLGraphBuilder::clamp(MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  if (!ValidateClampOptions(options, exception_state)) {
+  const webnn::SupportedTensors& tensor_constraint =
+      ml_context_->GetProperties().data_type_limits.clamp_input;
+  if (!tensor_constraint.Supports(input->Descriptor())) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
+        String(NotSupportedInputArgumentError(input->Descriptor(),
+                                              tensor_constraint)));
     return nullptr;
   }
 
-  // According to WebNN spec
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, the output tensor of
-  // clamp has the same data type and dimensions as its input.
-  return BuildUnaryOperator(
-      this, exception_state, blink_mojom::Operation::Tag::kClamp,
-      ml_context_->GetProperties().data_type_limits.clamp_input, input,
-      options);
+  base::expected<webnn::MLNumber, String> min_value =
+      options->hasMinValue()
+          ? ToMLNumberAsType(*options->minValue(), input->DataType())
+          : webnn::MLNumber::NegativeInfinity();
+  if (!min_value.has_value()) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
+        min_value.error());
+    return nullptr;
+  }
+  base::expected<webnn::MLNumber, String> max_value =
+      options->hasMaxValue()
+          ? ToMLNumberAsType(*options->maxValue(), input->DataType())
+          : webnn::MLNumber::Infinity();
+  if (!max_value.has_value()) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
+        max_value.error());
+    return nullptr;
+  }
+
+  if (min_value->IsGreaterThan(*max_value, input->DataType())) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
+        "The min value should be less than or equal to "
+        "the max value.");
+    return nullptr;
+  }
+
+  auto* clamp = MakeGarbageCollected<MLClampOperator>(
+      this, options->label(), std::move(*min_value), std::move(*max_value));
+  MLOperand* output = MLOperand::CreateOutput(this, input->Descriptor(), clamp);
+
+  clamp->Connect({input}, {output});
+  return output;
 }
 
 MLOperand* MLGraphBuilder::conv2d(MLOperand* input,

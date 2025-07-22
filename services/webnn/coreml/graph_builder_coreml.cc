@@ -47,6 +47,7 @@
 #include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/ml_number.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
@@ -676,6 +677,16 @@ CoreML::Specification::MILSpec::Value CreateFloatValue(
              ? CreateScalarImmediateValue(value)
              : CreateScalarImmediateValue(
                    static_cast<Float16>(fp16_ieee_from_fp32_value(value)));
+}
+
+CoreML::Specification::MILSpec::Value CreateFloatValue(
+    CoreML::Specification::MILSpec::DataType mil_data_type,
+    MLNumber value) {
+  CHECK(kFloatDataTypes.contains(mil_data_type));
+  return mil_data_type == CoreML::Specification::MILSpec::DataType::FLOAT32
+             ? CreateScalarImmediateValue(value.AsFloat32())
+             : CreateScalarImmediateValue(
+                   static_cast<Float16>(value.AsFloat16()));
 }
 
 // Activation param name used in lstm.
@@ -2154,13 +2165,15 @@ GraphBuilderCoreml::AddOperationForCast(
 GraphBuilderCoreml::AddOperationForClamp(
     OperandId input_operand_id,
     OperandId output_operand_id,
-    float min_value,
-    float max_value,
+    MLNumber min_value,
+    MLNumber max_value,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   CHECK(context_properties_.data_type_limits.clamp_input.data_types.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
+  // TODO(crbug.com/421927615): Emulate with min() and max() when
+  // min_value == max_value.
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpClipTypeName);
 
@@ -4915,27 +4928,35 @@ GraphBuilderCoreml::AddOperationForQuantizeLinearEmulate(
   ASSIGN_OR_RETURN(OperandId result_clamped,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
-  float min_value;
-  float max_value;
+  MLNumber min_value = webnn::MLNumber::NegativeInfinity();
+  MLNumber max_value = webnn::MLNumber::Infinity();
   switch (MILDataTypeToOperandType(zero_point_operand_info.mil_data_type)) {
     case OperandDataType::kInt8: {
-      min_value = -128.0f;
-      max_value = 127.0f;
+      min_value =
+          webnn::MLNumber::FromInt64(std::numeric_limits<int8_t>::min());
+      max_value =
+          webnn::MLNumber::FromInt64(std::numeric_limits<int8_t>::max());
       break;
     }
     case OperandDataType::kUint8: {
-      min_value = 0.0f;
-      max_value = 255.0f;
+      min_value =
+          webnn::MLNumber::FromUint64(std::numeric_limits<uint8_t>::min());
+      max_value =
+          webnn::MLNumber::FromUint64(std::numeric_limits<uint8_t>::max());
       break;
     }
     case OperandDataType::kInt32: {
-      min_value = -2147483648.0f;
-      max_value = 2147483647.0f;
+      min_value =
+          webnn::MLNumber::FromInt64(std::numeric_limits<int32_t>::min());
+      max_value =
+          webnn::MLNumber::FromInt64(std::numeric_limits<int32_t>::max());
       break;
     }
     case OperandDataType::kUint32: {
-      min_value = 0.0f;
-      max_value = 4294967295.0f;
+      min_value =
+          webnn::MLNumber::FromUint64(std::numeric_limits<uint32_t>::min());
+      max_value =
+          webnn::MLNumber::FromUint64(std::numeric_limits<uint32_t>::max());
       break;
     }
     default:

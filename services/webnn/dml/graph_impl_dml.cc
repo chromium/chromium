@@ -82,30 +82,29 @@ static constexpr auto kDmlFloatDataTypes =
     base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
         {DML_TENSOR_DATA_TYPE_FLOAT32, DML_TENSOR_DATA_TYPE_FLOAT16});
 
-// TODO(crbug.com/335909582): Take an MLNumber rather than a float, and replace
-// all these saturated_casts with conversions handled by MLNumber.
-DML_SCALAR_UNION ToScalarUnion(float value, DML_TENSOR_DATA_TYPE type) {
+DML_SCALAR_UNION ToScalarUnion(const MLNumber& value,
+                               DML_TENSOR_DATA_TYPE type) {
   switch (type) {
     case DML_TENSOR_DATA_TYPE_FLOAT32:
-      return DML_SCALAR_UNION{.Float32 = value};
+      return DML_SCALAR_UNION{.Float32 = value.AsFloat32()};
     case DML_TENSOR_DATA_TYPE_FLOAT16:
       // Use UInt16 since DML_SCALAR_UNION does not have a float16 variant. The
       // bits in this value will correctly be interpreted as float16 by
       // functions which allow passing a DML_SCALAR_UNION paired with a
       // corresponding DML_TENSOR_DATA_TYPE of DML_TENSOR_DATA_TYPE_FLOAT16.
-      return DML_SCALAR_UNION{.UInt16 = fp16_ieee_from_fp32_value(value)};
+      return DML_SCALAR_UNION{.UInt16 = value.AsFloat16()};
     case DML_TENSOR_DATA_TYPE_INT8:
-      return DML_SCALAR_UNION{.Int8 = base::saturated_cast<int8_t>(value)};
+      return DML_SCALAR_UNION{.Int8 = value.AsInt8()};
     case DML_TENSOR_DATA_TYPE_UINT8:
-      return DML_SCALAR_UNION{.UInt8 = base::saturated_cast<uint8_t>(value)};
+      return DML_SCALAR_UNION{.UInt8 = value.AsUint8()};
     case DML_TENSOR_DATA_TYPE_INT64:
-      return DML_SCALAR_UNION{.Int64 = base::saturated_cast<int64_t>(value)};
+      return DML_SCALAR_UNION{.Int64 = value.AsInt64()};
     case DML_TENSOR_DATA_TYPE_UINT64:
-      return DML_SCALAR_UNION{.UInt64 = base::saturated_cast<uint64_t>(value)};
+      return DML_SCALAR_UNION{.UInt64 = value.AsUint64()};
     case DML_TENSOR_DATA_TYPE_INT32:
-      return DML_SCALAR_UNION{.Int32 = base::saturated_cast<int32_t>(value)};
+      return DML_SCALAR_UNION{.Int32 = value.AsInt32()};
     case DML_TENSOR_DATA_TYPE_UINT32:
-      return DML_SCALAR_UNION{.UInt32 = base::saturated_cast<uint32_t>(value)};
+      return DML_SCALAR_UNION{.UInt32 = value.AsUint32()};
     default:
       NOTREACHED() << "[WebNN] This data type is not supported.";
   }
@@ -1663,13 +1662,38 @@ void CreateOperatorNodeForClamp(Adapter* adapter,
         DML_OPERATOR_ELEMENT_WISE_CLIP1, &clamp_operator_desc, inputs,
         clamp->label);
   } else {
-    DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
-        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-        // No scale or bias applies to the input.
-        .ScaleBias = nullptr,
-        .Min = clamp->min_value,
-        .Max = clamp->max_value};
+    DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc = {};
+    clamp_operator_desc.InputTensor = &input_tensor_desc.GetDMLTensorDesc();
+    clamp_operator_desc.OutputTensor = &output_tensor_desc.GetDMLTensorDesc();
+    clamp_operator_desc.ScaleBias = nullptr;
+    switch (output_tensor_desc.GetDataType()) {
+      case DML_TENSOR_DATA_TYPE_FLOAT32:
+        clamp_operator_desc.Min = clamp->min_value.AsFloat32();
+        clamp_operator_desc.Max = clamp->max_value.AsFloat32();
+        break;
+      case DML_TENSOR_DATA_TYPE_FLOAT16:
+        clamp_operator_desc.Min = clamp->min_value.AsFloat16();
+        clamp_operator_desc.Max = clamp->max_value.AsFloat16();
+        break;
+      case DML_TENSOR_DATA_TYPE_INT8:
+        clamp_operator_desc.Min = clamp->min_value.AsInt8();
+        clamp_operator_desc.Max = clamp->max_value.AsInt8();
+        break;
+      case DML_TENSOR_DATA_TYPE_UINT8:
+        clamp_operator_desc.Min = clamp->min_value.AsUint8();
+        clamp_operator_desc.Max = clamp->max_value.AsUint8();
+        break;
+      case DML_TENSOR_DATA_TYPE_INT32:
+        clamp_operator_desc.Min = clamp->min_value.AsInt32();
+        clamp_operator_desc.Max = clamp->max_value.AsInt32();
+        break;
+      case DML_TENSOR_DATA_TYPE_UINT32:
+        clamp_operator_desc.Min = clamp->min_value.AsUint32();
+        clamp_operator_desc.Max = clamp->max_value.AsUint32();
+        break;
+      default:
+        NOTREACHED() << "[WebNN] This data type is not supported.";
+    }
     clamp_node = graph_builder.CreateOperatorNode(
         DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc, inputs,
         clamp->label);

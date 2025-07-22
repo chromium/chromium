@@ -446,10 +446,30 @@ std::string GraphBuilderOrt::CreateInitializerForFloat(
   }
 }
 
-std::string GraphBuilderOrt::CreateScalarInitializerForFloat(
-    OperandDataType data_type,
-    float value) {
-  return CreateInitializerForFloat(data_type, /*shape=*/{}, value);
+std::string GraphBuilderOrt::CreateScalarInitializer(OperandDataType data_type,
+                                                     const MLNumber& value) {
+  switch (data_type) {
+    case OperandDataType::kFloat32:
+      return CreateScalarInitializer(value.AsFloat32());
+    case OperandDataType::kFloat16:
+      return CreateScalarInitializer(value.AsFloat16());
+    case OperandDataType::kInt32:
+      return CreateScalarInitializer(value.AsInt32());
+    case OperandDataType::kUint32:
+      return CreateScalarInitializer(value.AsUint32());
+    case OperandDataType::kInt64:
+      return CreateScalarInitializer(value.AsInt64());
+    case OperandDataType::kUint64:
+      return CreateScalarInitializer(value.AsUint64());
+    case OperandDataType::kInt8:
+      return CreateScalarInitializer(value.AsInt8());
+    case OperandDataType::kUint8:
+      return CreateScalarInitializer(value.AsUint8());
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4: {
+      NOTREACHED();
+    }
+  }
 }
 
 std::string GraphBuilderOrt::CreateOneInitializer(
@@ -1224,9 +1244,9 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
 
   // Min and max are 0-D operands with the same data type of input.
   const std::string min =
-      CreateScalarInitializerForFloat(input_data_type, clamp.min_value);
+      CreateScalarInitializer(input_data_type, clamp.min_value);
   const std::string max =
-      CreateScalarInitializerForFloat(input_data_type, clamp.max_value);
+      CreateScalarInitializer(input_data_type, clamp.max_value);
 
   std::array<const char*, 3> inputs = {input.c_str(), min.c_str(), max.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
@@ -1462,10 +1482,10 @@ void GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
   // Emulate a linear operation using two ONNX nodes for expression `alpha * x +
   // beta`.
   const OperandDataType input_data_type = input_descriptor.data_type();
-  std::string alpha =
-      CreateScalarInitializerForFloat(input_data_type, linear.alpha);
-  std::string beta =
-      CreateScalarInitializerForFloat(input_data_type, linear.beta);
+  std::string alpha = CreateScalarInitializer(
+      input_data_type, MLNumber::FromFloat64(linear.alpha));
+  std::string beta = CreateScalarInitializer(
+      input_data_type, MLNumber::FromFloat64(linear.beta));
 
   // Step 1: Create 'Mul' node (alpha * x)
   const std::string mul_node_label = base::JoinString(
@@ -1895,8 +1915,9 @@ void GraphBuilderOrt::AddPadOperation(const mojom::Pad& pad) {
   switch (pad.mode->which()) {
     case mojom::PaddingMode::Tag::kConstant: {
       mode = "constant";
-      constant = CreateScalarInitializerForFloat(
-          input_descriptor.data_type(), pad.mode->get_constant()->value);
+      constant = CreateScalarInitializer(
+          input_descriptor.data_type(),
+          MLNumber::FromFloat64(pad.mode->get_constant()->value));
       inputs.push_back(constant.c_str());
       break;
     }

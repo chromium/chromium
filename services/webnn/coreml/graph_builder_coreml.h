@@ -293,8 +293,8 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
       OperandId input_operand_id,
       OperandId output_operand_id,
-      float min_value,
-      float max_value,
+      MLNumber min_value,
+      MLNumber max_value,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
       const mojom::Clamp& operation,

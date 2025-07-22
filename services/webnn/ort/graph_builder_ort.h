@@ -129,9 +129,12 @@ class GraphBuilderOrt {
                                         base::span<const int64_t> shape,
                                         float value);
 
-  // A helper method creating a scalar initializer with the given float value.
-  std::string CreateScalarInitializerForFloat(OperandDataType data_type,
-                                              float value);
+  // A helper method wrapping the `CreateScalarInitializer` method above. It
+  // adds a scalar initializer with the given MLNumber value to the graph,
+  // returning the name of the initializer. The data type of the initializer is
+  // determined by the `data_type` parameter.
+  std::string CreateScalarInitializer(OperandDataType data_type,
+                                      const MLNumber& value);
 
   // A helper method creating an initializer with all elements set to 1.
   std::string CreateOneInitializer(OperandDataType data_type,

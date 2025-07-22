@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <numeric>
 #include <optional>
 
@@ -14,10 +15,10 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
-#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_bigint_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/platform/bindings/bigint.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink_mojom = webnn::mojom::blink;
@@ -224,17 +226,11 @@ webnn::OperandId GetOperatorOutputId(const MLOperator* op,
 }
 
 blink_mojom::ClampPtr CreateClamp(const OperandToIdMap& operand_to_id_map,
-                                  const MLOperator* clamp) {
-  const auto* options = static_cast<const MLClampOptions*>(clamp->Options());
-  CHECK(options);
-
-  auto clamp_mojo = blink_mojom::Clamp::New(
-      GetOperatorInputId(clamp, operand_to_id_map),
-      GetOperatorOutputId(clamp, operand_to_id_map),
-      options->getMinValueOr(-std::numeric_limits<float>::infinity()),
-      options->getMaxValueOr(+std::numeric_limits<float>::infinity()),
-      options->label());
-  return clamp_mojo;
+                                  const MLClampOperator* clamp) {
+  return blink_mojom::Clamp::New(GetOperatorInputId(clamp, operand_to_id_map),
+                                 GetOperatorOutputId(clamp, operand_to_id_map),
+                                 clamp->min_value(), clamp->max_value(),
+                                 clamp->label());
 }
 
 blink_mojom::EluPtr CreateElu(const OperandToIdMap& operand_to_id_map,
@@ -1314,7 +1310,8 @@ void SerializeMojoOperation(
       break;
     case blink_mojom::Operation::Tag::kClamp:
       graph_info->operations.push_back(
-          blink_mojom::Operation::NewClamp(CreateClamp(operand_to_id_map, op)));
+          blink_mojom::Operation::NewClamp(CreateClamp(
+              operand_to_id_map, static_cast<const MLClampOperator*>(op))));
       break;
     case blink_mojom::Operation::Tag::kConcat:
       graph_info->operations.push_back(
@@ -1515,6 +1512,63 @@ void SerializeMojoOperation(
       graph_info->operations.push_back(
           CreateWhereOperation(operand_to_id_map, op));
       break;
+  }
+}
+
+base::expected<webnn::MLNumber, String> ToMLNumberAsType(
+    const V8UnionBigintOrUnrestrictedDouble& number,
+    webnn::OperandDataType type) {
+  switch (number.GetContentType()) {
+    case V8UnionBigintOrUnrestrictedDouble::ContentType::kBigint: {
+      const BigInt& bigint = number.GetAsBigint();
+      switch (type) {
+        case webnn::OperandDataType::kInt64: {
+          if (auto int64 = bigint.ToInt64()) {
+            return webnn::MLNumber::FromInt64(*int64);
+          } else {
+            return webnn::MLNumber::FromInt64(
+                bigint.IsNegative() ? std::numeric_limits<int64_t>::min()
+                                    : std::numeric_limits<int64_t>::max());
+          }
+        }
+        case webnn::OperandDataType::kUint64: {
+          if (auto uint64 = bigint.ToUInt64()) {
+            return webnn::MLNumber::FromUint64(*uint64);
+          } else {
+            return webnn::MLNumber::FromUint64(
+                bigint.IsNegative() ? std::numeric_limits<uint64_t>::min()
+                                    : std::numeric_limits<uint64_t>::max());
+          }
+        }
+        case webnn::OperandDataType::kFloat32:
+        case webnn::OperandDataType::kFloat16:
+        case webnn::OperandDataType::kInt32:
+        case webnn::OperandDataType::kUint32:
+        case webnn::OperandDataType::kInt8:
+        case webnn::OperandDataType::kUint8:
+        case webnn::OperandDataType::kInt4:
+        case webnn::OperandDataType::kUint4:
+          return base::unexpected(
+              "BigInt should only be used for int64 and uint64.");
+      }
+    }
+
+    case V8UnionBigintOrUnrestrictedDouble::ContentType::kUnrestrictedDouble: {
+      switch (type) {
+        case webnn::OperandDataType::kFloat32:
+        case webnn::OperandDataType::kFloat16:
+        case webnn::OperandDataType::kInt32:
+        case webnn::OperandDataType::kUint32:
+        case webnn::OperandDataType::kInt64:
+        case webnn::OperandDataType::kUint64:
+        case webnn::OperandDataType::kInt8:
+        case webnn::OperandDataType::kUint8:
+          return webnn::MLNumber::FromFloat64(number.GetAsUnrestrictedDouble());
+        case webnn::OperandDataType::kInt4:
+        case webnn::OperandDataType::kUint4:
+          return base::unexpected("MLNumber does not support int4 or uint4.");
+      }
+    }
   }
 }
 

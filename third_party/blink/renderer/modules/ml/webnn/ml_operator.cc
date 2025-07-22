@@ -345,6 +345,19 @@ MLArgMinMaxOperator::MLArgMinMaxOperator(MLGraphBuilder* builder,
 
 MLArgMinMaxOperator::~MLArgMinMaxOperator() = default;
 
+MLClampOperator::MLClampOperator(MLGraphBuilder* builder,
+                                 String label,
+                                 webnn::MLNumber min_value,
+                                 webnn::MLNumber max_value)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kClamp,
+                 /*options=*/nullptr),
+      label_(std::move(label)),
+      min_value_(std::move(min_value)),
+      max_value_(std::move(max_value)) {}
+
+MLClampOperator::~MLClampOperator() = default;
+
 MLConcatOperator::MLConcatOperator(MLGraphBuilder* builder,
                                    const uint32_t axis,
                                    MLOperatorOptions* options)

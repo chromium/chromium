@@ -58,6 +58,11 @@ mojom_component("mojom") {
           default_constructible = false
         },
         {
+          mojom = "webnn.mojom.Number"
+          cpp = "::webnn::MLNumber"
+          default_constructible = false
+        },
+        {
           mojom = "webnn.mojom.OperandDescriptor"
           cpp = "::webnn::OperandDescriptor"
           default_constructible = false
@@ -91,6 +96,7 @@ mojom_component("mojom") {
       traits_headers = [
         "context_properties_mojom_traits.h",
         "data_type_limits_mojom_traits.h",
+        "number_mojom_traits.h",
         "operand_descriptor_mojom_traits.h",
         "operand_id_mojom_traits.h",
         "range_traits.h",

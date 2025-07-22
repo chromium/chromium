@@ -178,11 +178,9 @@ void GraphInfoBuilder::BuildClamp(OperandId input_operand_id,
                                   OperandId output_operand_id,
                                   float min_value,
                                   float max_value) {
-  mojom::ClampPtr clamp = mojom::Clamp::New();
-  clamp->input_operand_id = input_operand_id;
-  clamp->output_operand_id = output_operand_id;
-  clamp->min_value = min_value;
-  clamp->max_value = max_value;
+  mojom::ClampPtr clamp = mojom::Clamp::New(
+      input_operand_id, output_operand_id, MLNumber::FromFloat64(min_value),
+      MLNumber::FromFloat64(max_value), /*label=*/"");
   graph_info_->operations.push_back(
       mojom::Operation::NewClamp(std::move(clamp)));
 }

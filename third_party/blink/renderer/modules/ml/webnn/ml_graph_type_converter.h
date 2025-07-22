@@ -7,7 +7,10 @@
 
 #include <optional>
 
+#include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "services/webnn/public/cpp/ml_number.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
@@ -18,6 +21,7 @@ namespace blink {
 
 class MLOperand;
 class MLOperator;
+class V8UnionBigintOrUnrestrictedDouble;
 
 // Add operand to `graph_info` and return its operand id.
 webnn::OperandId AddOperand(webnn::mojom::blink::GraphInfo& graph_info,
@@ -29,6 +33,10 @@ void SerializeMojoOperation(
     const webnn::ContextProperties& context_properties,
     const MLOperator* op,
     webnn::mojom::blink::GraphInfo* graph_info);
+
+base::expected<webnn::MLNumber, String> ToMLNumberAsType(
+    const V8UnionBigintOrUnrestrictedDouble& number,
+    webnn::OperandDataType type);
 
 }  // namespace blink
 

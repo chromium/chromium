@@ -1433,7 +1433,8 @@ GraphBuilderTflite::CanFuseActivationAndGetOutput(OperandId output_operand_id) {
   const mojom::Operation& next_op = *graph_info_->operations[*next_op_id];
   if (next_op.is_clamp()) {
     const mojom::Clamp& clamp = *next_op.get_clamp();
-    activation_type = GetActivationType(clamp.min_value, clamp.max_value);
+    activation_type = GetActivationType(clamp.min_value.AsFloat32(),
+                                        clamp.max_value.AsFloat32());
     if (!activation_type) {
       return std::nullopt;
     }
@@ -3683,8 +3684,8 @@ auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
   CHECK(context_properties_.data_type_limits.clamp_input.Supports(
       GetOperand(clamp.input_operand_id).descriptor));
 
-  const float min_value = clamp.min_value;
-  const float max_value = clamp.max_value;
+  const float min_value = clamp.min_value.AsFloat32();
+  const float max_value = clamp.max_value.AsFloat32();
   std::optional<::tflite::BuiltinOperator> operator_code =
       GetClampOperatorCode(min_value, max_value);
   const bool is_emulated = !operator_code.has_value();
@@ -3702,6 +3703,8 @@ auto GraphBuilderTflite::SerializeClamp(const mojom::Clamp& clamp)
 
   if (is_emulated) {
     // Emulate clamp operation with min and max.
+    // TODO(crbug.com/422204191): Support more integers because tfl.minimum
+    // supports u/int32 and u/int64.
     return SerializeSubGraphMaxMin<float>(
         input_tensor_info, output_tensor_index, std::array<float, 1>{min_value},
         std::array<float, 1>{max_value});
