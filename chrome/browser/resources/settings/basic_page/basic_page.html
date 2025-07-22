@@ -12,10 +12,6 @@
     <template is="dom-if" if="[[showBasicPage_(currentRoute_, inSearchMode)]]"
         restamp>
       <div id="basicPage">
-        <template is="dom-if" if="[[showResetProfileBanner_]]" restamp>
-          <settings-reset-profile-banner on-close="onResetProfileBannerClosed_">
-          </settings-reset-profile-banner>
-        </template>
         <template is="dom-if" if="[[showPage_(pageVisibility_.people)]]" restamp>
           <settings-section page-title="$i18n{peoplePageTitle}"
               section="people">

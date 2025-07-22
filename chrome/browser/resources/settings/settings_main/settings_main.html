@@ -49,6 +49,11 @@
   </template>
 </if>
 
+<template is="dom-if" if="[[showResetProfileBanner_]]" restamp>
+  <settings-reset-profile-banner on-close="onResetProfileBannerClose_">
+  </settings-reset-profile-banner>
+</template>
+
 <cr-view-manager id="switcher"
     show-all$="[[shouldShowAll_(inSearchMode_, lastRoute_)]]">
   <div slot="view" id="old">

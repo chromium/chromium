@@ -15,7 +15,6 @@ import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_hub/safety_hub_entry_point.js';
 import '../people_page/people_page.js';
-import '../reset_page/reset_profile_banner.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
 
@@ -82,17 +81,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
       },
 
       /**
-       * True if the basic page should currently display the reset profile
-       * banner.
-       */
-      showResetProfileBanner_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showResetProfileBanner');
-        },
-      },
-
-      /**
        * True if the basic page should currently display the privacy guide
        * promo.
        */
@@ -122,7 +110,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
 
   declare private pageVisibility_: PageVisibility;
   declare inSearchMode: boolean;
-  declare private showResetProfileBanner_: boolean;
 
   declare private currentRoute_: Route;
   declare private advancedTogglingInProgress_: boolean;
@@ -201,10 +188,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
   }
   // </if>
 
-  private onResetProfileBannerClosed_() {
-    this.showResetProfileBanner_ = false;
-  }
-
   private fire_(eventName: string, detail: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
@@ -214,9 +197,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase
    * @return Whether to show #basicPage. This is an optimization to lazy render
    *     #basicPage only when a section/subpage within it is being shown, or
    *     when in search mode.
-   * TODO(crbug.com/424223101): Move <settings-reset-profile-banner> to
-   * settings-main, and make <settincgs-basic-page> as a whole lazy rendered,
-   * then remove showBasicPage_()
+   * TODO(crbug.com/424223101): Make <settings-basic-page> as a whole lazy
+   * rendered and remove showBasicPage_()
    */
   private showBasicPage_(): boolean {
     if (this.currentRoute_ === undefined) {

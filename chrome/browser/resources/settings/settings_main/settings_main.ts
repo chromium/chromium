@@ -17,6 +17,7 @@ import '../autofill_page/autofill_page_index.js';
 import '../basic_page/basic_page.js';
 import '../on_startup_page/on_startup_page.js';
 import '../performance_page/performance_page_index.js';
+import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page_index.js';
 // <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
@@ -114,6 +115,13 @@ export class SettingsMainElement extends SettingsMainElementBase {
         value: false,
       },
 
+      showResetProfileBanner_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showResetProfileBanner');
+        },
+      },
+
       toolbarSpinnerActive: {
         type: Boolean,
         value: false,
@@ -132,6 +140,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private routes_: SettingsRoutes;
   declare private inSearchMode_: boolean;
   declare private showNoResultsFound_: boolean;
+  declare private showResetProfileBanner_: boolean;
   declare toolbarSpinnerActive: boolean;
 
   // <if expr="not is_chromeos">
@@ -275,6 +284,10 @@ export class SettingsMainElement extends SettingsMainElementBase {
   private shouldShowAll_(): boolean {
     return this.inSearchMode_ && !!this.lastRoute_ &&
         !this.lastRoute_.isSubpage();
+  }
+
+  private onResetProfileBannerClose_() {
+    this.showResetProfileBanner_ = false;
   }
 }
 

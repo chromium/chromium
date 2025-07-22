@@ -38,6 +38,7 @@ suite('SettingsMain', function() {
     loadTimeData.overrideValues({
       isGuest: false,
       showAiPage: false,
+      showResetProfileBanner: false,
     });
     createSettingsMain();
   });
@@ -197,5 +198,14 @@ suite('SettingsMain', function() {
     // <if expr="is_chromeos">
     assertEquals('old', active.id);
     // </if>
+  });
+
+  test('ResetProfileBannerShown', function() {
+    assertFalse(!!settingsMain.shadowRoot!.querySelector(
+        'settings-reset-profile-banner'));
+    loadTimeData.overrideValues({showResetProfileBanner: true});
+    createSettingsMain();
+    assertTrue(!!settingsMain.shadowRoot!.querySelector(
+        'settings-reset-profile-banner'));
   });
 });
