@@ -121,8 +121,6 @@ public class TopToolbarCoordinator implements Toolbar {
     /**
      * Creates a new {@link TopToolbarCoordinator}.
      *
-     * @param reloadButtonCoordinator Component that encapsulates interactions with a reload button.
-     *     It only presents on tablet.
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
      * @param toolbarLayout The {@link ToolbarLayout}.
      * @param toolbarDataProvider The provider for toolbar data.

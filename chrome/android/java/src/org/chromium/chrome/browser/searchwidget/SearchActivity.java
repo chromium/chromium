@@ -321,7 +321,6 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* backKeyBehavior= */ this,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
                         this::bringTabToFront,
-                        /* saveOfflineButtonState= */ (tab) -> false,
                         /*omniboxUma*/ (url, transition, isNtp) -> {},
                         TabWindowManagerSingleton::getInstance,
                         /* bookmarkState= */ (url) -> false,
@@ -370,8 +369,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* bottomWindowPaddingSupplier */ () -> 0,
                         /* onLongClickListener= */ null,
                         /* browserControlsStateProvider= */ null,
-                        /* isToolbarPositionCustomizationEnabled= */ false,
-                        (context, tab, fromAppMenu) -> {});
+                        /* isToolbarPositionCustomizationEnabled= */ false);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

@@ -73,7 +73,6 @@ public class ToolbarTablet extends ToolbarLayout {
     private ChromeImageButton mForwardButton;
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
-    private ImageButton mSaveOfflineButton;
     private @Nullable View mIncognitoIndicator;
 
     private boolean mIsInTabSwitcherMode;
@@ -121,7 +120,6 @@ public class ToolbarTablet extends ToolbarLayout {
         mReloadButton = findViewById(R.id.refresh_button);
 
         mBookmarkButton = findViewById(R.id.bookmark_button);
-        mSaveOfflineButton = findViewById(R.id.save_offline_button);
         setIncognitoIndicatorVisibility();
 
         // Initialize values needed for showing/hiding toolbar buttons when the activity size
@@ -272,8 +270,6 @@ public class ToolbarTablet extends ToolbarLayout {
             @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mHomeButton, activityFocusTint);
         ImageViewCompat.setImageTintList(mForwardButton, activityFocusTint);
-        // The tint of the |mSaveOfflineButton| should not be affected by an activity focus change.
-        ImageViewCompat.setImageTintList(mSaveOfflineButton, tint);
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
             ImageViewCompat.setImageTintList(mOptionalButton, activityFocusTint);
@@ -323,7 +319,6 @@ public class ToolbarTablet extends ToolbarLayout {
         getMenuButtonCoordinator().updateButtonBackground(toolbarIconRippleId);
 
         mBookmarkButton.setBackgroundResource(omniboxIconRippleId);
-        mSaveOfflineButton.setBackgroundResource(omniboxIconRippleId);
         mLocationBar.updateButtonBackground(omniboxIconRippleId);
 
         if (mExtensionToolbarCoordinator != null) {

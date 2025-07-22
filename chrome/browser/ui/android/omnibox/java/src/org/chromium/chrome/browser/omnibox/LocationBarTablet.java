@@ -27,7 +27,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
     private View mLocationBarIcon;
     private View mBookmarkButton;
-    private View mSaveOfflineButton;
     private View[] mTargets;
     private final Rect mCachedTargetBounds = new Rect();
 
@@ -61,7 +60,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
         mLocationBarIcon = findViewById(R.id.location_bar_status_icon);
         mBookmarkButton = findViewById(R.id.bookmark_button);
-        mSaveOfflineButton = findViewById(R.id.save_offline_button);
         mUrlBar = findViewById(R.id.url_bar);
 
         mUrlBar.setOnHoverListener(
@@ -161,7 +159,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mLensButton.setTranslationX(0);
         mDeleteButton.setTranslationX(0);
         mBookmarkButton.setTranslationX(0);
-        mSaveOfflineButton.setTranslationX(0);
         mLocationBarIcon.setTranslationX(0);
         mUrlBar.setTranslationX(0);
 
@@ -169,7 +166,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mLensButton.setAlpha(1.f);
         mDeleteButton.setAlpha(1.f);
         mBookmarkButton.setAlpha(1.f);
-        mSaveOfflineButton.setAlpha(1.f);
     }
 
     /**
@@ -227,11 +223,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         if (getLayoutDirection() != LAYOUT_DIRECTION_RTL) {
             // When the location bar layout direction is LTR, the buttons at the end (left side)
             // of the location bar need to stick to the left edge.
-            if (mSaveOfflineButton.getVisibility() == View.VISIBLE) {
-                mSaveOfflineButton.setTranslationX(offset);
-            } else {
-                mMicButton.setTranslationX(offset);
-            }
+            mMicButton.setTranslationX(offset);
 
             if (mDeleteButton.getVisibility() == View.VISIBLE) {
                 mDeleteButton.setTranslationX(offset + deleteOffset);
@@ -253,16 +245,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
     /* package */ void setBookmarkButtonVisibility(boolean showBookmarkButton) {
         mBookmarkButton.setVisibility(showBookmarkButton ? View.VISIBLE : View.GONE);
-    }
-
-    /* package */ void setSaveOfflineButtonVisibility(
-            boolean showSaveOfflineButton, boolean isSaveOfflineButtonEnabled) {
-        mSaveOfflineButton.setVisibility(showSaveOfflineButton ? View.VISIBLE : View.GONE);
-        if (showSaveOfflineButton) mSaveOfflineButton.setEnabled(isSaveOfflineButtonEnabled);
-    }
-
-    /* package */ boolean isSaveOfflineButtonVisible() {
-        return mSaveOfflineButton.getVisibility() == VISIBLE;
     }
 
     /* package */ boolean isDeleteButtonVisible() {
@@ -292,15 +274,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     @Deprecated
     /* package */ View getBookmarkButtonForAnimation() {
         return mBookmarkButton;
-    }
-
-    /**
-     * Gets the save offline button view for the purposes of creating an animator that targets it.
-     * Don't use this for any other reason, e.g. to access or modify the view's properties directly.
-     */
-    @Deprecated
-    /* package */ View getSaveOfflineButtonForAnimation() {
-        return mSaveOfflineButton;
     }
 
     /**
@@ -339,8 +312,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
         if (v == mBookmarkButton) {
             description = resources.getString(R.string.menu_bookmark);
-        } else if (v == mSaveOfflineButton) {
-            description = resources.getString(R.string.menu_download);
         }
         return Toast.showAnchoredToast(context, v, description);
     }

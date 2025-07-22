@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
-import org.chromium.chrome.browser.omnibox.LocationBarMediator.SaveOfflineButtonState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
@@ -93,18 +92,6 @@ public class LocationBarCoordinator
         void destroy();
     }
 
-    /** Downloads page for offline access. */
-    public interface OfflineDownloader {
-        /**
-         * Trigger the download of a page.
-         *
-         * @param context Context to pull resources from.
-         * @param tab Tab containing the page to download.
-         * @param fromAppMenu Whether the download is started from the app menu.
-         */
-        void downloadPage(Context context, @Nullable Tab tab, boolean fromAppMenu);
-    }
-
     private LocationBarLayout mLocationBarLayout;
     private @Nullable SubCoordinator mSubCoordinator;
     private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -121,7 +108,6 @@ public class LocationBarCoordinator
     private @Nullable View mLensButton;
     private @Nullable View mComposeplateButton;
     private @Nullable View mBookmarksButton;
-    private @Nullable View mSaveOfflineButton;
     private CallbackController mCallbackController = new CallbackController();
     private boolean mDestroyed;
 
@@ -151,7 +137,6 @@ public class LocationBarCoordinator
      * @param backKeyBehavior Delegate that allows customization of back key behavior.
      * @param pageInfoAction Displays page info popup.
      * @param bringTabToFrontCallback Callback to bring the browser foreground and switch to a tab.
-     * @param saveOfflineButtonState Whether the 'save offline' button should be enabled.
      * @param omniboxUma Interface for logging UMA histogram.
      * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
@@ -173,8 +158,6 @@ public class LocationBarCoordinator
      *     suggestions list draws edge to edge when appropriate. This should only be used when the
      *     soft keyboard is not visible.
      * @param onLongClickListener for the url bar.
-     * @param offlineDownloader Used to initiate download when saveOffline button in url action
-     *     container is clicked.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -192,7 +175,6 @@ public class LocationBarCoordinator
             BackKeyBehaviorDelegate backKeyBehavior,
             PageInfoAction pageInfoAction,
             Callback<Tab> bringTabToFrontCallback,
-            SaveOfflineButtonState saveOfflineButtonState,
             OmniboxUma omniboxUma,
             Supplier<TabWindowManager> tabWindowManagerSupplier,
             BookmarkState bookmarkState,
@@ -210,8 +192,7 @@ public class LocationBarCoordinator
             Supplier<Integer> bottomWindowPaddingSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
-            boolean isToolbarPositionCustomizationEnabled,
-            OfflineDownloader offlineDownloader) {
+            boolean isToolbarPositionCustomizationEnabled) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -251,13 +232,11 @@ public class LocationBarCoordinator
                         windowAndroid,
                         isTabletWindow() && isTabletLayout(),
                         LensController.getInstance(),
-                        saveOfflineButtonState,
                         omniboxUma,
                         isToolbarMicEnabledSupplier,
                         mOmniboxDropdownEmbedderImpl,
                         tabModelSelectorSupplier,
-                        browserControlsStateProvider,
-                        offlineDownloader);
+                        browserControlsStateProvider);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
@@ -325,11 +304,6 @@ public class LocationBarCoordinator
         mComposeplateButton = mLocationBarLayout.findViewById(R.id.composeplate_button);
         if (ChromeFeatureList.sAndroidComposeplate.isEnabled()) {
             mComposeplateButton.setOnClickListener(mLocationBarMediator::composeplateButtonClicked);
-        }
-
-        mSaveOfflineButton = mLocationBarLayout.findViewById(R.id.save_offline_button);
-        if (mSaveOfflineButton != null) {
-            mSaveOfflineButton.setOnClickListener(mLocationBarMediator::saveOfflineButtonClicked);
         }
 
         mUrlCoordinator.setTextChangeListener(mAutocompleteCoordinator::onTextChanged);
@@ -407,11 +381,6 @@ public class LocationBarCoordinator
         if (mBookmarksButton != null) {
             mBookmarksButton.setOnClickListener(null);
             mBookmarksButton = null;
-        }
-
-        if (mSaveOfflineButton != null) {
-            mSaveOfflineButton.setOnClickListener(null);
-            mSaveOfflineButton = null;
         }
 
         mLocationBarMediator.removeUrlFocusChangeListener(mUrlCoordinator);

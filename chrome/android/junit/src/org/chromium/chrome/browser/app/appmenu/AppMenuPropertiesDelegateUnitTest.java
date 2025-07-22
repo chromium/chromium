@@ -38,7 +38,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
@@ -254,7 +253,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
     @Config(qualifiers = "sw600dp")
     public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndEnabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
@@ -265,18 +263,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
-    @Config(qualifiers = "sw600dp")
-    public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOffAndEnabledDownloadPage() {
-        when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
-        when(mActivityTabProvider.get()).thenReturn(mTab);
-        assertFalse(
-                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
-                        mActivityTabProvider.get()));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
     @Config(qualifiers = "sw600dp")
     public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndDisabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(false);
@@ -287,7 +273,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON})
     @Config(qualifiers = "sw320dp")
     public void testShouldShowDownloadPageMenuItem_Phone_WithFeatureOnAndEnabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);

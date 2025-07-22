@@ -678,15 +678,6 @@ public class LocationBarTest {
         onView(withId(R.id.bookmark_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
-        // TODO(crbug.com/393394998): Remove all instances of this view after launching the feature.
-        if (ChromeFeatureList.sHideTabletToolbarDownloadButton.isEnabled()) {
-            onView(withId(R.id.save_offline_button))
-                    .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        } else {
-            onView(withId(R.id.save_offline_button))
-                    .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-        }
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.requestFocus();
@@ -721,8 +712,6 @@ public class LocationBarTest {
                 });
 
         onView(withId(R.id.bookmark_button))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-        onView(withId(R.id.save_offline_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
 

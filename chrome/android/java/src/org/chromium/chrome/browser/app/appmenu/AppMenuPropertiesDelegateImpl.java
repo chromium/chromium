@@ -611,13 +611,12 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     /**
-     * @param currentTab Current tab being displayed. Returns whether the "Download page" menu item
-     *     should be displayed.
+     * Returns whether the "Download page" menu item should be displayed.
+     *
+     * @param currentTab Current tab being displayed.
      */
     protected boolean shouldShowDownloadPageMenuItem(Tab currentTab) {
-        return ChromeFeatureList.sHideTabletToolbarDownloadButton.isEnabled()
-                && isTabletSizeScreen()
-                && shouldEnableDownloadPage(currentTab);
+        return isTabletSizeScreen() && shouldEnableDownloadPage(currentTab);
     }
 
     /** Build the PropertyModel for the forward navigation action. */
