@@ -110,6 +110,9 @@ static_library("hunspell") {
       "-Wno-null-conversion",
     ]
   }
+
+  # TODO(https://github.com/hunspell/hunspell/pull/1054): Remove this when the PR is merged.
+  use_libcxx_modules = false
 }
 
 fuzzer_test("hunspell_spell_fuzzer") {
