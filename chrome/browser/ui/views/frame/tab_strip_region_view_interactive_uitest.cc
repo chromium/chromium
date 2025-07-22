@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_combo_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -62,15 +61,11 @@ class TabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class TabStripRegionViewBrowserTest : public TabStripRegionViewBrowserBaseTest,
-                                      public testing::WithParamInterface<bool> {
+class TabStripRegionViewBrowserTest : public TabStripRegionViewBrowserBaseTest {
  public:
   TabStripRegionViewBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/GetParam()
-            ? std::vector<
-                  base::test::FeatureRef>{features::kTabstripComboButton}
-            : std::vector<base::test::FeatureRef>{},
+        /*enabled_features=*/{},
         /*disabled_features=*/{});
   }
   TabStripRegionViewBrowserTest(const TabStripRegionViewBrowserTest&) = delete;
@@ -79,7 +74,7 @@ class TabStripRegionViewBrowserTest : public TabStripRegionViewBrowserBaseTest,
   ~TabStripRegionViewBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestForwardFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -113,16 +108,10 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
   EXPECT_TRUE(tab_2->HasFocus());
 
   move_forward_over_tab(tab_2);
-  if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
-    EXPECT_TRUE(tab_search_button()->HasFocus());
-  } else {
-    EXPECT_TRUE(new_tab_button()->HasFocus());
-  }
+  EXPECT_TRUE(new_tab_button()->HasFocus());
 
   press_right();
-  if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
-    EXPECT_TRUE(new_tab_button()->HasFocus());
-  } else if (!features::HasTabSearchToolbarButton()) {
+  if (!features::HasTabSearchToolbarButton()) {
     EXPECT_TRUE(tab_search_button()->HasFocus());
   } else {
     EXPECT_TRUE(tab_0->HasFocus());
@@ -137,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestReverseFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -166,17 +155,14 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
 
   // Pressing left should immediately cycle back around to the last button.
   press_left();
-  if (features::HasTabstripComboButtonWithReverseButtonOrder() ||
-      features::HasTabSearchToolbarButton()) {
+  if (features::HasTabSearchToolbarButton()) {
     EXPECT_TRUE(new_tab_button()->HasFocus());
   } else {
     EXPECT_TRUE(tab_search_button()->HasFocus());
   }
 
   press_left();
-  if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
-    EXPECT_TRUE(tab_search_button()->HasFocus());
-  } else if (!features::HasTabSearchToolbarButton()) {
+  if (!features::HasTabSearchToolbarButton()) {
     EXPECT_TRUE(new_tab_button()->HasFocus());
   } else {
     EXPECT_TRUE(tab_2->HasFocus());
@@ -194,7 +180,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
   EXPECT_TRUE(tab_0->HasFocus());
 }
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -212,17 +198,12 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 #if !BUILDFLAG(IS_WIN)
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
         tab_strip_region_view()->end_key()));
-    if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
-      EXPECT_TRUE(tab_search_button()->HasFocus());
-    } else {
-      EXPECT_TRUE(new_tab_button()->HasFocus());
-    }
+    EXPECT_TRUE(new_tab_button()->HasFocus());
 #endif  // !BUILDFLAG(IS_WIN)
 
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
         tab_strip_region_view()->home_key()));
-    if (features::HasTabstripComboButtonWithReverseButtonOrder() ||
-        features::HasTabSearchToolbarButton()) {
+    if (features::HasTabSearchToolbarButton()) {
       EXPECT_TRUE(new_tab_button()->HasFocus());
     } else {
       EXPECT_TRUE(tab_search_button()->HasFocus());
@@ -235,8 +216,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 #if !BUILDFLAG(IS_WIN)
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
         tab_strip_region_view()->end_key()));
-    if (features::HasTabstripComboButtonWithReverseButtonOrder() ||
-        features::HasTabSearchToolbarButton()) {
+    if (features::HasTabSearchToolbarButton()) {
       EXPECT_TRUE(new_tab_button()->HasFocus());
     } else {
       EXPECT_TRUE(tab_search_button()->HasFocus());
@@ -249,23 +229,10 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
                        DefaultTestSearchContainerIsEndAligned) {
-  if (features::IsTabSearchMoving() && !features::HasTabSearchToolbarButton()) {
-    const int last_tab_start =
-        tab_strip()->tab_at(tab_strip()->GetTabCount() - 1)->x();
-    const int tab_strip_region_view_end =
-        tab_strip_region_view()->GetLocalBounds().right();
-    const int tab_search_combobutton_start =
-        tab_strip_region_view()->tab_strip_combo_button()->bounds().x();
-    const int tab_search_combobutton_end =
-        tab_strip_region_view()->tab_strip_combo_button()->bounds().right();
-
-    EXPECT_GT(tab_search_combobutton_start, last_tab_start);
-    EXPECT_LT(tab_search_combobutton_end, tab_strip_region_view_end);
-
-  } else if (!features::IsTabSearchMoving() &&
-             !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
+  if (!features::IsTabSearchMoving() &&
+      !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
     const int tab_search_container_expected_end =
@@ -284,20 +251,14 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
   }
 }
 
-class TabSearchForcedPositionTest
-    : public TabStripRegionViewBrowserBaseTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class TabSearchForcedPositionTest : public TabStripRegionViewBrowserBaseTest,
+                                    public testing::WithParamInterface<bool> {
  public:
   TabSearchForcedPositionTest() {
-    const bool combo_button_enabled = std::get<0>(GetParam());
-    const bool is_right_aligned = std::get<1>(GetParam());
+    const bool is_right_aligned = GetParam();
 
     std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(tabs::kTabSearchPositionSetting);
-
-    if (combo_button_enabled) {
-      enabled_features.push_back(features::kTabstripComboButton);
-    }
 
     scoped_feature_list_.InitWithFeatures(
         enabled_features, std::vector<base::test::FeatureRef>{});
@@ -312,22 +273,8 @@ class TabSearchForcedPositionTest
 
 IN_PROC_BROWSER_TEST_P(TabSearchForcedPositionTest,
                        DefaultTestSearchContainerIsEndAligned) {
-  // When the combobutton is enabled, the combobutton bounds should be after the
-  // start of the last tab.
-  if (features::IsTabSearchMoving() && !features::HasTabSearchToolbarButton()) {
-    const int last_tab_start =
-        tab_strip()->tab_at(tab_strip()->GetTabCount() - 1)->x();
-    const int tab_strip_region_view_end =
-        tab_strip_region_view()->GetLocalBounds().right();
-    const int tab_search_combobutton_start =
-        tab_strip_region_view()->tab_strip_combo_button()->bounds().x();
-    const int tab_search_combobutton_end =
-        tab_strip_region_view()->tab_strip_combo_button()->bounds().right();
-
-    EXPECT_GT(tab_search_combobutton_start, last_tab_start);
-    EXPECT_LT(tab_search_combobutton_end, tab_strip_region_view_end);
-  } else if (!features::IsTabSearchMoving() &&
-             !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
+  if (!features::IsTabSearchMoving() &&
+      !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
     const int tab_search_container_expected_end =
@@ -348,9 +295,4 @@ IN_PROC_BROWSER_TEST_P(TabSearchForcedPositionTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          TabSearchForcedPositionTest,
-                         ::testing::Combine(::testing::Values(true, false),
-                                            ::testing::Values(true, false)));
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TabStripRegionViewBrowserTest,
                          ::testing::Values(true, false));

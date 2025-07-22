@@ -546,6 +546,8 @@ BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This serves as a "kill-switch" for migrating the Tab Search feature to be a
+// toolbar button for non-ChromeOS users in the US.
 BASE_FEATURE(kLaunchedTabSearchToolbarButton,
              "LaunchedTabSearchToolbarButton",
 #if BUILDFLAG(IS_CHROMEOS)
@@ -556,22 +558,10 @@ BASE_FEATURE(kLaunchedTabSearchToolbarButton,
 );
 
 BASE_FEATURE_PARAM(bool,
-                   kTabstripComboButtonHasBackground,
-                   &kTabstripComboButton,
-                   "has_background",
-                   false);
-
-BASE_FEATURE_PARAM(bool,
-                   kTabstripComboButtonHasReverseButtonOrder,
-                   &kTabstripComboButton,
-                   "reverse_button_order",
-                   false);
-
-BASE_FEATURE_PARAM(bool,
                    kTabSearchToolbarButton,
                    &kTabstripComboButton,
                    "tab_search_toolbar_button",
-                   false);
+                   true);
 
 static std::string GetCountryCode() {
   if (!g_browser_process || !g_browser_process->variations_service()) {
@@ -592,40 +582,16 @@ bool IsTabSearchMoving() {
             features::kLaunchedTabSearchToolbarButton)) {
       return true;
     }
-    return base::FeatureList::IsEnabled(features::kTabstripComboButton);
+    return base::FeatureList::IsEnabled(features::kTabstripComboButton) &&
+           features::kTabSearchToolbarButton.Get();
   }();
 
   return is_tab_search_moving;
 }
 
-bool HasTabstripComboButtonWithBackground() {
-  return IsTabSearchMoving() &&
-         features::kTabstripComboButtonHasBackground.Get() &&
-         !features::kTabSearchToolbarButton.Get();
-}
-
-bool HasTabstripComboButtonWithReverseButtonOrder() {
-  return IsTabSearchMoving() &&
-         features::kTabstripComboButtonHasReverseButtonOrder.Get() &&
-         !features::kTabSearchToolbarButton.Get();
-}
-
+// TODO(crbug.com/432765417): Delete redundant function.
 bool HasTabSearchToolbarButton() {
-  static const bool has_tab_search_toolbar_button = [] {
-    if (!IsTabSearchMoving()) {
-      return false;
-    }
-    if (GetCountryCode() == "us" &&
-        base::FeatureList::IsEnabled(
-            features::kLaunchedTabSearchToolbarButton)) {
-      return true;
-    }
-    // Gate on server-side Finch config for all other countries
-    // as well as ChromeOS.
-    return features::kTabSearchToolbarButton.Get();
-  }();
-
-  return has_tab_search_toolbar_button;
+  return IsTabSearchMoving();
 }
 
 }  // namespace features

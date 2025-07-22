@@ -789,9 +789,7 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
   // combo button with a non-transparent background in place of the new tab
   // button, we should not show the trailing separator.
   if (!adjacent_tab) {
-    return (leading || features::HasTabstripComboButtonWithBackground())
-               ? 0.0f
-               : shown_separator_opacity;
+    return leading ? 0.0f : shown_separator_opacity;
   }
 
   // Do not show when the adjacent tab is displaying a visible shape.

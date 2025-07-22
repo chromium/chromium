@@ -2255,28 +2255,10 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kTabstripComboButtonBackground[] = {
-    {"has_background", "true"}};
-
-const FeatureEntry::FeatureParam kTabstripComboButtonReverseButtonOrder[] = {
-    {"reverse_button_order", "true"}};
-
-const FeatureEntry::FeatureParam
-    kTabstripComboButtonReverseButtonOrderBackground[] = {
-        {"has_background", "true"},
-        {"reverse_button_order", "true"}};
-
 const FeatureEntry::FeatureParam kTabSearchToolbarButton[] = {
     {"tab_search_toolbar_button", "true"}};
 
 const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
-    {" - with background", kTabstripComboButtonBackground,
-     std::size(kTabstripComboButtonBackground)},
-    {" - reverse button order", kTabstripComboButtonReverseButtonOrder,
-     std::size(kTabstripComboButtonReverseButtonOrder)},
-    {" - reverse button order & with background",
-     kTabstripComboButtonReverseButtonOrderBackground,
-     std::size(kTabstripComboButtonReverseButtonOrderBackground)},
     {" - toolbar button", kTabSearchToolbarButton,
      std::size(kTabSearchToolbarButton)},
 };

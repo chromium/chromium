@@ -22,7 +22,6 @@ class NewTabButton;
 class TabStripActionContainer;
 class TabSearchButton;
 class TabStrip;
-class TabStripComboButton;
 class TabStripScrollContainer;
 class ProductSpecificationsButton;
 class TabSearchPositionMetricsLogger;
@@ -65,19 +64,12 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   TabStripActionContainer* GetTabStripActionContainer();
 
-  TabStripComboButton* tab_strip_combo_button() {
-    return tab_strip_combo_button_;
-  }
-
   ProductSpecificationsButton* GetProductSpecificationsButton();
 
   glic::GlicButton* GetGlicButton();
 
-  // May be nullptr if combo button is enabled. |Use GetNewTabButton()| to
-  // access the new tab button inside the combo button.
   views::Button* new_tab_button_for_testing() { return new_tab_button_; }
 
-  // May be nullptr if combo button is enabled.
   TabSearchContainer* tab_search_container_for_testing() {
     return tab_search_container_;
   }
@@ -142,7 +134,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
-  raw_ptr<TabStripComboButton> tab_strip_combo_button_ = nullptr;
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be

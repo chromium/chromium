@@ -81,11 +81,7 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LOCATION_BAR_TRAILING_ICON_SIZE:
       return 20;
     case NEW_TAB_BUTTON_LEADING_MARGIN:
-      return features::IsTabSearchMoving() &&
-                     !features::HasTabstripComboButtonWithBackground() &&
-                     !features::HasTabSearchToolbarButton()
-                 ? 4
-                 : 0;
+      return 0;
     case STAR_RATING_ICON_SIZE:
       return 14;
     case TAB_AFTER_TITLE_PADDING:
