@@ -68,7 +68,8 @@ void CheckThrottleWillNotCauseCorsPreflight(
       cors_exempt_header_list);
   for (auto& header : headers.GetHeaderVector()) {
     if (!base::Contains(initial_headers, header.key) &&
-        !network::cors::IsCorsSafelistedHeader(header.key, header.value)) {
+        !network::cors::IsCorsSafelistedHeader(header.key, header.value) &&
+        net::HttpUtil::IsSafeHeader(header.key, header.value)) {
       bool is_cors_exempt = cors_exempt_header_flat_set.count(header.key);
       NOTREACHED()
           << "Throttle added cors unsafe header " << header.key

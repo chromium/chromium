@@ -65,6 +65,12 @@ void NoStatePrefetchURLLoaderThrottle::WillStartRequest(
         blink::kPurposeHeaderName, blink::kSecPurposePrefetchHeaderValue);
   }
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecPurposePrefetchHeaderNoStatePrefetch)) {
+    request->headers.SetHeader(blink::kSecPurposeHeaderName,
+                               blink::kSecPurposePrefetchHeaderValue);
+  }
+
   request_destination_ = request->destination;
   // Abort any prerenders that spawn requests that use unsupported HTTP
   // methods or schemes.

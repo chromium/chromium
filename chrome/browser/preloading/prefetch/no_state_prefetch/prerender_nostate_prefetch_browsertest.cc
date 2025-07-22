@@ -1107,6 +1107,30 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PurposeHeaderIsSet) {
   }
 }
 
+// Check that prefetched resources and subresources set the 'Sec-Purpose:
+// prefetch' header.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, SecPurposeHeaderIsSet) {
+  GURL prefetch_page = src_server()->GetURL(kPrefetchPage);
+  GURL prefetch_script = src_server()->GetURL(kPrefetchScript);
+
+  content::URLLoaderMonitor monitor({prefetch_page, prefetch_script});
+
+  std::unique_ptr<TestPrerender> test_prerender =
+      PrefetchFromFile(kPrefetchPage, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+  WaitForRequestCount(prefetch_page, 1);
+  WaitForRequestCount(prefetch_script, 1);
+  monitor.WaitForUrls();
+  for (const GURL& url : {prefetch_page, prefetch_script}) {
+    std::optional<network::ResourceRequest> request =
+        monitor.GetRequestInfo(url);
+    EXPECT_TRUE(request->load_flags & net::LOAD_PREFETCH);
+    EXPECT_TRUE(request->headers.HasHeader(blink::kSecPurposeHeaderName));
+    EXPECT_EQ(blink::kSecPurposePrefetchHeaderValue,
+              request->headers.GetHeader(blink::kSecPurposeHeaderName)
+                  .value_or(std::string()));
+  }
+}
+
 // Check that on normal navigations the 'Purpose: prefetch' header is not set.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
                        PurposeHeaderNotSetWhenNotPrefetching) {

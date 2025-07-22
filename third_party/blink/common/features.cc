@@ -2355,6 +2355,12 @@ BASE_FEATURE(kScriptStreamingForNonHTTP,
 #endif
 );
 
+// Enables sending Sec-Purpose: "prefetch" header for
+// NoStatePrefetchURLLoaderThrottle.
+BASE_FEATURE(kSecPurposePrefetchHeaderNoStatePrefetch,
+             "SecPurposePrefetchHeaderNoStatePrefetch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables sending Sec-Purpose: "prefetch" header for rel="prefetch".
 BASE_FEATURE(kSecPurposePrefetchHeaderRelPrefetch,
              "SecPurposePrefetchHeaderRelPrefetch",
