@@ -16,9 +16,6 @@
 // Can be used with `ChromeRenderViewHostTestHarness` based tests.
 class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
  public:
-  static void InitializeWithExistingTestLocalState();
-  static void ResetForTesting();
-
   MockOptimizationGuideKeyedService();
   ~MockOptimizationGuideKeyedService() override;
 

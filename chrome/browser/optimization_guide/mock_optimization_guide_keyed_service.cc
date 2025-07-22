@@ -10,14 +10,6 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
-// static
-void MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState() {
-}
-
-// static
-void MockOptimizationGuideKeyedService::ResetForTesting() {
-}
-
 MockOptimizationGuideKeyedService::MockOptimizationGuideKeyedService()
     : OptimizationGuideKeyedService(nullptr) {}
 

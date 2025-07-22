@@ -135,7 +135,6 @@ class MockWallpaperSearchStringMap : public WallpaperSearchStringMap {
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactory(
       OptimizationGuideKeyedServiceFactory::GetInstance(),
@@ -189,7 +188,6 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    MockOptimizationGuideKeyedService::ResetForTesting();
     test_url_loader_factory_.ClearResponses();
   }
 

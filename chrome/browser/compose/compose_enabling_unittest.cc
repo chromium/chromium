@@ -94,7 +94,6 @@ class CustomMockOptimizationGuideKeyedService
 
 void RegisterMockOptimizationGuideKeyedServiceFactory(
     content::BrowserContext* context) {
-  MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
   OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating([](content::BrowserContext* context)
                                        -> std::unique_ptr<KeyedService> {
@@ -190,7 +189,6 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     scoped_feature_list_.Reset();
     compose::ResetConfigForTesting();
     BrowserWithTestWindowTest::TearDown();
-    MockOptimizationGuideKeyedService::ResetForTesting();
   }
 
   void SetProactiveNudgePref(bool pref_value) {
