@@ -467,7 +467,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool disposing_ = false;
   bool canvas_is_clear_ = true;
 
-  bool ignore_reset_ = false;
+  bool within_set_size_ = false;
   gfx::Rect dirty_rect_;
 
   scoped_refptr<cc::TextureLayer> cc_layer_;

@@ -329,7 +329,6 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
           CanvasRenderingContextHost::HostType::kCanvasHost,
           gfx::Size(kDefaultCanvasWidth, kDefaultCanvasHeight)),
       context_creation_was_blocked_(false),
-      ignore_reset_(false),
       origin_clean_(true),
       surface_layer_bridge_(nullptr),
       externally_allocated_memory_(0) {
@@ -460,8 +459,12 @@ void HTMLCanvasElement::ColorSchemeMayHaveChanged() {
 
 void HTMLCanvasElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kWidthAttr ||
-      params.name == html_names::kHeightAttr) {
+  // Force a reset if the width or height is being assigned *unless* the
+  // assignment is happening from within SetSize(), in which case the Reset()
+  // call will be made from SetSize() after both attributes are assigned.
+  if ((params.name == html_names::kWidthAttr ||
+       params.name == html_names::kHeightAttr) &&
+      !within_set_size_) {
     Reset();
   }
   HTMLElement::ParseAttribute(params);
@@ -544,11 +547,11 @@ bool HTMLCanvasElement::layoutSubtree() const {
 void HTMLCanvasElement::SetSize(gfx::Size new_size) {
   if (new_size == Size())
     return;
-  ignore_reset_ = true;
+  within_set_size_ = true;
   SetIntegralAttribute(html_names::kWidthAttr, new_size.width());
   SetIntegralAttribute(html_names::kHeightAttr, new_size.height());
-  ignore_reset_ = false;
   Reset();
+  within_set_size_ = false;
 }
 
 HTMLCanvasElement::ContextFactoryVector&
@@ -966,9 +969,6 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
 }
 
 void HTMLCanvasElement::Reset() {
-  if (ignore_reset_)
-    return;
-
   dirty_rect_ = gfx::Rect();
 
   unsigned w = 0;
