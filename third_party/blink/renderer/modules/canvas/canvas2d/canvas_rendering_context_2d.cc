@@ -664,6 +664,15 @@ bool CanvasRenderingContext2D::IsCanvas2DResourceValid() {
   return !!GetOrCreateCanvas2DResourceProvider();
 }
 
+const std::optional<cc::PaintRecord>&
+CanvasRenderingContext2D::GetLastRecordingForCanvas2D() {
+  auto* provider = GetResourceProviderForCanvas2D();
+  if (!provider) {
+    return empty_recording_;
+  }
+  return provider->LastRecording();
+}
+
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() {
   return GetOrCreateCanvas2DResourceProvider();
 }

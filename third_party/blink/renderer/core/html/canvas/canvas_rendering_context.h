@@ -288,6 +288,9 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void DropAndRecreateExistingCanvas2DResourceProvider() {
     NOTREACHED();
   }
+  virtual const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() {
+    return empty_recording_;
+  }
 
   virtual void setFontForTesting(const String&) { NOTREACHED(); }
 
@@ -366,6 +369,8 @@ class CORE_EXPORT CanvasRenderingContext
       VectorOf<ElementHitTestRegion>& result,
       const String& func_name,
       ExceptionState& exception_state);
+
+  std::optional<cc::PaintRecord> empty_recording_;
 
  private:
   Member<CanvasRenderingContextHost> host_;

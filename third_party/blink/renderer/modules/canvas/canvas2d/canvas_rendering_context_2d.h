@@ -181,6 +181,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   // CanvasRenderingContext implementation
   bool IsCanvas2DResourceValid() override;
+  const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() override;
   int AllocatedBufferCountPerPixel() override {
     if (!Host()) {
       return 0;

@@ -73,11 +73,10 @@ TEST_P(HTMLCanvasElementTest, CleanCanvasResizeDoesntClearFrameBuffer) {
 
   auto* canvas =
       To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
-  CanvasResourceProvider* provider = canvas->GetResourceProviderForCanvas2D();
 
   cc::PaintFlags fill_flags = FillFlags();
   fill_flags.setColor(SkColors::kBlue);
-  EXPECT_THAT(provider->LastRecording(),
+  EXPECT_THAT(canvas->RenderingContext()->GetLastRecordingForCanvas2D(),
               Optional(RecordedOpsAre(PaintOpEq<DrawRectOp>(
                   SkRect::MakeXYWH(0, 0, 5, 5), fill_flags))));
 }
@@ -106,12 +105,11 @@ TEST_P(HTMLCanvasElementTest, CanvasResizeClearsFrameBuffer) {
 
   auto* canvas =
       To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
-  CanvasResourceProvider* provider = canvas->GetResourceProviderForCanvas2D();
 
   cc::PaintFlags fill_flags = FillFlags();
   fill_flags.setColor(SkColors::kBlue);
   EXPECT_THAT(
-      provider->LastRecording(),
+      canvas->RenderingContext()->GetLastRecordingForCanvas2D(),
       Optional(RecordedOpsAre(
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 20),
                                 ClearRectFlags()),
