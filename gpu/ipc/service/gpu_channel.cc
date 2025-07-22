@@ -46,6 +46,7 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -459,7 +460,7 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage) &&
         gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(
             size, buffer_format)) {
-      handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+      handle = SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
           size, buffer_format, buffer_usage);
     }
   }
