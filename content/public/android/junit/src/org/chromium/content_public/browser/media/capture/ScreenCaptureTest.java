@@ -639,4 +639,59 @@ public class ScreenCaptureTest {
         verify(image1).close();
         verify(image2).close();
     }
+
+    @Test
+    public void testImageHandlerFrameReleaseAfterDestroy() {
+        final Queue<Runnable> pendingReleases = new ArrayDeque<>();
+        doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
+                .when(mNativeMock)
+                .onRgbaFrameAvailable(
+                        anyLong(),
+                        any(Runnable.class),
+                        anyLong(),
+                        any(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt());
+
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+
+        final ImageHandler handler = mImageHandlerStates.get(0).imageHandler;
+        final ImageReader reader = mImageHandlerStates.get(0).imageReader;
+
+        // Push two frames to fill up the ImageReader.
+        final Image image0 = createMockImage();
+        when(reader.acquireLatestImage()).thenReturn(image0).thenReturn(null);
+        handler.onImageAvailable(reader);
+        final Runnable releaseCb0 = pendingReleases.remove();
+
+        final Image image1 = createMockImage();
+        when(reader.acquireLatestImage()).thenReturn(image1).thenReturn(null);
+        handler.onImageAvailable(reader);
+        pendingReleases.remove();
+        assertEquals(2, handler.getAcquiredImageCountForTesting());
+        verify(reader, times(2)).acquireLatestImage();
+
+        // Push a third frame, which will be pending since the ImageReader is full.
+        handler.onImageAvailable(reader);
+        verify(reader, times(2)).acquireLatestImage();
+
+        // Destroy ScreenCapture. This should close the ImageReader.
+        mScreenCapture.destroy();
+        verify(reader).close();
+        assertEquals(0, handler.getAcquiredImageCountForTesting());
+
+        // The reader is already closed, so throw.
+        when(reader.acquireLatestImage()).thenThrow(new IllegalStateException());
+
+        // The release callback would normally signal to acquire a new frame, but everything
+        // is already closed. This should be able to run without crashing.
+        releaseCb0.run();
+    }
 }
