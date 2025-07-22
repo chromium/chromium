@@ -59,7 +59,7 @@ void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker() {
 void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
     ScrollMarkerPseudoElement* scroll_marker,
     bool apply_snap_alignment) {
-  if (!scroll_marker || scroll_marker == Selected()) {
+  if (!scroll_marker) {
     return;
   }
   // parentElement is ::column for column scroll marker and
