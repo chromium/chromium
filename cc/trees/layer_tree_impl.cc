@@ -151,8 +151,7 @@ LayerTreeImpl::LayerTreeImpl(
     viz::BeginFrameArgs begin_frame_args,
     scoped_refptr<SyncedScale> page_scale_factor,
     scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
-    scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
-    scoped_refptr<SyncedElasticOverscroll> elastic_overscroll)
+    scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio)
     : host_impl_(&host_impl),
       created_begin_frame_args_(begin_frame_args),
       source_frame_number_(-1),
@@ -167,7 +166,6 @@ LayerTreeImpl::LayerTreeImpl(
       painted_device_scale_factor_(1.f),
       always_push_properties_on_picture_layers_(!base::FeatureList::IsEnabled(
           features::kDontAlwaysPushPictureLayerImpls)),
-      elastic_overscroll_(elastic_overscroll),
       event_listener_properties_(),
       top_controls_shown_ratio_(std::move(top_controls_shown_ratio)),
       bottom_controls_shown_ratio_(std::move(bottom_controls_shown_ratio)) {
@@ -832,9 +830,6 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
   set_overscroll_behavior(commit_state.overscroll_behavior);
   PushBrowserControlsFromMainThread(commit_state.top_controls_shown_ratio,
                                     commit_state.bottom_controls_shown_ratio);
-  elastic_overscroll()->PushMainToPending(commit_state.elastic_overscroll);
-  if (IsActiveTree())
-    elastic_overscroll()->PushPendingToActive();
 
   SetDisplayColorSpaces(commit_state.display_color_spaces);
   SetExternalPageScaleFactor(commit_state.external_page_scale_factor);
@@ -946,7 +941,6 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   target_tree->set_overscroll_behavior(overscroll_behavior_);
 
   target_tree->SetDisplayColorSpaces(display_color_spaces_);
-  target_tree->elastic_overscroll()->PushPendingToActive();
 
   target_tree->set_painted_device_scale_factor(painted_device_scale_factor());
   target_tree->SetDeviceScaleFactor(device_scale_factor());
@@ -1625,7 +1619,6 @@ void LayerTreeImpl::ApplySentScrollAndScaleDeltasFromAbortedCommit(
   top_controls_shown_ratio()->AbortCommit(next_bmf, main_frame_applied_deltas);
   bottom_controls_shown_ratio()->AbortCommit(next_bmf,
                                              main_frame_applied_deltas);
-  elastic_overscroll()->AbortCommit(next_bmf, main_frame_applied_deltas);
 
   if (layer_list_.empty())
     return;

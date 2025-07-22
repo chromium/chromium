@@ -1782,10 +1782,15 @@ void CalculateDrawProperties(
   UpdatePageScaleFactor(property_trees,
                         layer_tree_impl->PageScaleTransformNode(),
                         layer_tree_impl->current_page_scale_factor());
+  const ScrollNode* scroll_node = layer_tree_impl->InnerViewportScrollNode();
+  gfx::Vector2dF elastic_overscroll;
+  if (scroll_node) {
+    elastic_overscroll =
+        property_trees->scroll_tree().GetElasticOverscroll(*scroll_node);
+  }
   UpdateElasticOverscroll(property_trees,
                           layer_tree_impl->OverscrollElasticityTransformNode(),
-                          layer_tree_impl->current_elastic_overscroll(),
-                          layer_tree_impl->InnerViewportScrollNode());
+                          elastic_overscroll, scroll_node);
   // Similarly, the device viewport and device transform are shared
   // by both trees.
   property_trees->clip_tree_mutable().SetViewportClip(
