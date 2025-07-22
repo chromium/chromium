@@ -140,7 +140,7 @@ void InitializeNewDatabase(sql::Database* db,
   // the previous row and inserting a new one (see `PutRecord()`).
   TRANSIENT_CHECK(
       db->Execute("CREATE TABLE records "
-                  "(row_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                  "(row_id INTEGER PRIMARY KEY,"
                   " object_store_id INTEGER NOT NULL,"
                   " key BLOB NOT NULL,"
                   " value BLOB NOT NULL,"
@@ -156,6 +156,9 @@ void InitializeNewDatabase(sql::Database* db,
                   " record_row_id INTEGER NOT NULL,"
                   " PRIMARY KEY (object_store_id, index_id, key, record_row_id)"
                   ") WITHOUT ROWID"));
+  TRANSIENT_CHECK(
+      db->Execute("CREATE INDEX index_references_by_record "
+                  "ON index_references (record_row_id)"));
 
   // This table stores blob metadata and its actual bytes. A blob should only
   // appear once, regardless of how many records point to it. The columns in
@@ -169,7 +172,7 @@ void InitializeNewDatabase(sql::Database* db,
   TRANSIENT_CHECK(db->Execute(
       "CREATE TABLE blobs "
       // This row id will be used as the IndexedDBExternalObject::blob_number_.
-      "(row_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+      "(row_id INTEGER PRIMARY KEY,"
       // Corresponds to `IndexedDBExternalObject::ObjectType`.
       " object_type INTEGER NOT NULL,"
       " mime_type TEXT NOT NULL,"
@@ -183,15 +186,24 @@ void InitializeNewDatabase(sql::Database* db,
 
   // Blobs may be referenced by rows in `records` or by active connections to
   // clients.
+  // TODO(crbug.com/419208485): Consider making this a WITHOUT ROWID table.
+  // Since NULL values are not allowed in the primary key of such a table, a
+  // specific value of record_row_id will be needed to represent active blobs.
   TRANSIENT_CHECK(
       db->Execute("CREATE TABLE blob_references "
-                  "(row_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                  "(row_id INTEGER PRIMARY KEY,"
                   " blob_row_id INTEGER NOT NULL,"
                   // record_row_id will be null when the reference corresponds
                   // to an active blob reference (represented in the browser by
                   // ActiveBlobStreamer). Otherwise it will be the id of the
                   // record row that holds the reference.
                   " record_row_id INTEGER)"));
+  TRANSIENT_CHECK(
+      db->Execute("CREATE INDEX blob_references_by_blob "
+                  "ON blob_references (blob_row_id)"));
+  TRANSIENT_CHECK(
+      db->Execute("CREATE INDEX blob_references_by_record "
+                  "ON blob_references (record_row_id)"));
 
   // Create deletion triggers. Deletion triggers are not used for the
   // object_stores and indexes tables since their deletion occurs only through
