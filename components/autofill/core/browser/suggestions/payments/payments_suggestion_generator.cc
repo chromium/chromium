@@ -971,17 +971,23 @@ Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers,
       l10n_util::GetStringFUTF16(IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL,
                                  GetBnplPriceLowerBound(bnpl_issuers)))}};
 
-  // TODO(crbug.com/425745330): Check that the appropriate issuers are present
-  // in `bnpl_issuers` for each IPH bubble variant once Klarna enum is added to
-  // `BnplIssuer::IssuerId`.
-  if (base::FeatureList::IsEnabled(
+  using IssuerId = BnplIssuer::IssuerId;
+  auto issuer_present = [&bnpl_issuers](IssuerId issuer_id) {
+    return base::Contains(bnpl_issuers, issuer_id, &BnplIssuer::issuer_id);
+  };
+  bool affirm_present = issuer_present(IssuerId::kBnplAffirm);
+  bool zip_present = issuer_present(IssuerId::kBnplZip);
+  bool klarna_present = issuer_present(IssuerId::kBnplKlarna);
+
+  if (affirm_present && zip_present && klarna_present &&
+      base::FeatureList::IsEnabled(
           features::kAutofillEnableBuyNowPayLaterSyncingForKlarna) &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableBuyNowPayLaterForKlarna)) {
     bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::
             kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature);
-  } else {
+  } else if (affirm_present && zip_present) {
     bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature);
   }
