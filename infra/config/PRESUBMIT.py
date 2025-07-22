@@ -11,6 +11,20 @@ for more details on the presubmit API built into depot_tools.
 PRESUBMIT_VERSION = '2.0.0'
 
 
+# TODO: crbug.com/407065680 - Remove this once the project is using the
+# libraries in the separate repo
+def CheckNoLibFilesModified(input_api, output_api):
+  if any(p.startswith('infra/config/lib') for p in input_api.LocalPaths()):
+    return [
+        output_api.PresubmitError(
+            'Starlark library code (//infra/config/lib) is being migrated to a '
+            'separate repo and should not be modified presently. See '
+            'https://crbug.com/407065680 for more information. Contact '
+            'gbeaty@google.com for information on how to proceed.')
+    ]
+  return []
+
+
 def CheckFreeze(input_api, output_api):
   return input_api.canned_checks.CheckInfraFreeze(input_api, output_api)
 
