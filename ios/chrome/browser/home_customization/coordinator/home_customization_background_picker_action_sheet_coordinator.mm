@@ -113,7 +113,9 @@ CGFloat const kSheetCornerRadius = 30;
           l10n_util::GetNSStringWithFixup(
               IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PHOTO_LIBRARY_TITLE)
                 action:^{
-                  [weakSelf presentPhotoLibraryPicker];
+                  [weakSelf
+                      presentPickerWithStyle:HomeCustomizationBackgroundStyle::
+                                                 kUserUploaded];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -194,6 +196,15 @@ CGFloat const kSheetCornerRadius = 30;
       _backgroundPresetGalleryPickerMediator.consumer = (id)_mainViewController;
       [_backgroundPresetGalleryPickerMediator loadBackgroundConfigurations];
       break;
+    case HomeCustomizationBackgroundStyle::kUserUploaded:
+      // Create and start the photo picker coordinator.
+      _photoPickerCoordinator =
+          [[HomeCustomizationBackgroundPhotoPickerCoordinator alloc]
+              initWithBaseViewController:self.baseViewController
+                                 browser:self.browser];
+      _photoPickerCoordinator.delegate = self;
+      [_photoPickerCoordinator start];
+      return;
   }
 
   _mainViewController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -265,19 +276,6 @@ CGFloat const kSheetCornerRadius = 30;
   mainViewController.presentationDelegate = self;
   mainViewController.mutator = _backgroundPresetGalleryPickerMediator;
   return mainViewController;
-}
-
-// Presents the view controller for selecting a background photo
-// from the device's photo library.
-- (void)presentPhotoLibraryPicker {
-  // Create and start the photo picker coordinator
-  _photoPickerCoordinator =
-      [[HomeCustomizationBackgroundPhotoPickerCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser];
-
-  _photoPickerCoordinator.delegate = self;
-  [_photoPickerCoordinator start];
 }
 
 // Dismisses the customization menu.

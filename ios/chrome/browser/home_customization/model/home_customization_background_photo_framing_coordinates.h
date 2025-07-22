@@ -10,6 +10,8 @@
 
 #import "base/values.h"
 
+struct FramingCoordinates;
+
 // Represents the framing coordinates for the home customization background
 // image.
 @interface HomeCustomizationFramingCoordinates : NSObject <NSCopying>
@@ -27,6 +29,10 @@
 // Methods for serialization.
 - (base::Value::Dict)toValue;
 + (instancetype)fromValue:(const base::Value::Dict&)dict;
+
+// C++ framing coordinates conversion methods.
++ (instancetype)fromFramingCoordinates:(const FramingCoordinates&)coordinates;
+- (FramingCoordinates)toFramingCoordinates;
 
 @end
 

@@ -35,6 +35,9 @@
       static_cast<BackgroundCustomizationConfigurationItem*>(
           backgroundConfiguration);
   switch (configurationItem.backgroundStyle) {
+    case HomeCustomizationBackgroundStyle::kUserUploaded:
+      [self applyUserUploadedBackground:configurationItem];
+      break;
     case HomeCustomizationBackgroundStyle::kPreset:
       [self
           applyPresetGalleryBackgroundForCollectionImage:configurationItem
@@ -57,6 +60,12 @@
 }
 
 #pragma mark - Private
+
+// Applies the user-uploaded photo background to the NTP.
+- (void)applyUserUploadedBackground:
+    (BackgroundCustomizationConfigurationItem*)configurationItem {
+  // TODO(crbug.com/427973907): Add applyUserUploadedBackground Implementation.
+}
 
 // Applies the preset gallery background for the given collection image.
 - (void)applyPresetGalleryBackgroundForCollectionImage:

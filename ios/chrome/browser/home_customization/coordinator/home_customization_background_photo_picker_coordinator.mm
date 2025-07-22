@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/values.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mediator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -93,8 +94,11 @@
 // Handles the selected image and presents the framing view.
 - (void)handleSelectedImage:(UIImage*)image {
   if (!_mediator) {
+    HomeBackgroundCustomizationService* backgroundService =
+        HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
     _mediator = [[HomeCustomizationBackgroundPhotoFramingMediator alloc]
-        initWithFilePath:self.profile->GetStatePath()];
+         initWithFilePath:self.profile->GetStatePath()
+        backgroundService:backgroundService];
   }
 
   __weak __typeof(self) weakSelf = self;

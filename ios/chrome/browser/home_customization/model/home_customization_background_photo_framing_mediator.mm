@@ -15,6 +15,8 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/browser/home_customization/model/framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mutator.h"
 
@@ -24,12 +26,16 @@
   // File path for profile-specific storage.
   base::FilePath _imageSavePath;
   PhotoSelectionFinishedCommand _completionCommand;
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundService;
 }
 
-- (instancetype)initWithFilePath:(const base::FilePath&)filePath {
+- (instancetype)initWithFilePath:(const base::FilePath&)filePath
+               backgroundService:
+                   (HomeBackgroundCustomizationService*)backgroundService {
   self = [super init];
   if (self) {
     _imageSavePath = filePath;
+    _backgroundService = backgroundService;
     _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -89,10 +95,18 @@
                             (HomeCustomizationFramingCoordinates*)coordinates
                   completionCommand:(PhotoSelectionFinishedCommand)command {
   // Save image to profile directory.
-  [self saveImageToProfileDirectory:image];
+  NSString* imagePath = [self saveImageToProfileDirectory:image];
+
+  // Convert coordinates to C++ struct.
+  FramingCoordinates cppCoordinates = [coordinates toFramingCoordinates];
 
   // Return to main thread with results.
   dispatch_async(dispatch_get_main_queue(), ^{
+    if (imagePath && self->_backgroundService) {
+      self->_backgroundService->SetCurrentUserUploadedBackground(
+          base::SysNSStringToUTF8(imagePath), cppCoordinates);
+    }
+
     command();
   });
 }

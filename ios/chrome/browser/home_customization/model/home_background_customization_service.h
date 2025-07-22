@@ -12,6 +12,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/sync/protocol/theme_specifics_ios.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
+#include "ios/chrome/browser/home_customization/model/framing_coordinates.h"
 #import "third_party/skia/include/core/SkColor.h"
 
 class GURL;
@@ -40,6 +41,10 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // Returns the current New Tab Page color theme, if there is one.
   std::optional<sync_pb::UserColorTheme> GetCurrentColorTheme();
 
+  // Gets the current user-uploaded background data, if there is one.
+  std::optional<std::pair<std::string, FramingCoordinates>>
+  GetCurrentUserUploadedBackground();
+
   /// Sets the background to the given parameters. This represents a background
   /// image url from the NtpBackgroundService.
   /// - `background_url` is the URL of the background itself.
@@ -67,8 +72,9 @@ class HomeBackgroundCustomizationService : public KeyedService {
   /// directory.
   /// - `framing_data` contains the coordinates for how the image should be
   /// framed.
-  void SetCurrentUserUploadedBackground(const std::string& image_path,
-                                        const base::Value::Dict& framing_data);
+  void SetCurrentUserUploadedBackground(
+      const std::string& image_path,
+      const FramingCoordinates& framing_coordinates);
 
   // Adds/Removes HomeBackgroundCustomizationServiceObserver observers.
   void AddObserver(HomeBackgroundCustomizationServiceObserver* observer);

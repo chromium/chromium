@@ -121,6 +121,9 @@ enum class HomeCustomizationBackgroundStyle : NSInteger {
 
   // Background chosen from preset gallery.
   kPreset,
+
+  // User-uploaded background image.
+  kUserUploaded,
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_CONSTANTS_H_

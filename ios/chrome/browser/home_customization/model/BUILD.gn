@@ -9,6 +9,8 @@ source_set("model") {
     "background_customization_configuration.h",
     "background_customization_configuration_item.h",
     "background_customization_configuration_item.mm",
+    "framing_coordinates.cc",
+    "framing_coordinates.h",
     "home_background_customization_service.h",
     "home_background_customization_service.mm",
     "home_background_customization_service_factory.h",
