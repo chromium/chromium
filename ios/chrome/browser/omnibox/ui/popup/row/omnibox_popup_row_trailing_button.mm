@@ -17,6 +17,9 @@ namespace {
 /// Size of the trailing button.
 const CGFloat kTrailingButtonIconPointSize = 17.0f;
 
+/// Size of the aim button icon.
+const CGFloat kAimButtonIconPointSize = 18.0f;
+
 /// The animation view size.
 const CGSize kAimAnimationViewSize = {40.0f, 40.0f};
 
@@ -68,7 +71,7 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
       return;
     case TrailingIconType::kSearchWithAim:
       icon = MakeSymbolMonochrome(CustomSymbolWithPointSize(
-          kMagnifyingglassSparkSymbol, kTrailingButtonIconPointSize));
+          kMagnifyingglassSparkSymbol, kAimButtonIconPointSize));
       self.accessibilityIdentifier =
           kOmniboxPopupRowSearchWithAimAccessibilityIdentifier;
       [self setupSearchWithAimAnimationView];
