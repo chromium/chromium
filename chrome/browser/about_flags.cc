@@ -7839,7 +7839,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(speech::kCrosExpandSodaLanguages)},
     {"enable-chromeos-soda-conch",
      flag_descriptions::kEnableCrOSSodaConchLanguagesName,
-     flag_descriptions::kEnableCrOSSodaLanguagesDescription, kOsCrOS,
+     flag_descriptions::kEnableCrOSSodaConchLanguagesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(speech::kCrosSodaConchLanguages)},
 #endif
 
