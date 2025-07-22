@@ -43,6 +43,7 @@ void AndroidPaymentsWindowManager::WebContentsDestroyed() {
       TriggerCompletionCallbackAndLogMetricsForBnpl(
           std::move(flow_state_.value()));
       break;
+    case FlowType::kVcn3ds:
     case FlowType::kNoFlow:
       NOTREACHED();
   }

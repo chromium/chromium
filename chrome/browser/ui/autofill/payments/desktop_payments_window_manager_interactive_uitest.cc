@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       /*navigation_handle_callback=*/{});
 
   WaitForPopupClose();
-  EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_TRUE(test_api(window_manager()).GetFlowState().has_value());
 
   // Check that the flow was successful and an UnmaskCardRequest was triggered
   // with the correct fields set, and the progress dialog was shown.
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
             CreditCard::RecordType::kVirtualCard);
   EXPECT_FALSE(
       client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
 }
 
 // Tests that the VCN 3DS flow succeeded histogram bucket is logged to when a
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       /*navigation_handle_callback=*/{});
 
   WaitForPopupClose();
-  EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_TRUE(test_api(window_manager()).GetFlowState().has_value());
 
   // Check that the flow was successful and an UnmaskCardRequest was triggered
   // with the correct fields set, and the progress dialog was shown.
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       /*navigation_handle_callback=*/{});
 
   WaitForPopupClose();
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
   const std::optional<payments::UnmaskRequestDetails>& unmask_request =
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   ClosePopupAndWait();
 
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
   const std::optional<payments::UnmaskRequestDetails>& unmask_request =
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   ClosePopupAndWait();
 
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
   const std::optional<payments::UnmaskRequestDetails>& unmask_request =
@@ -726,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       /*navigation_handle_callback=*/{});
 
   WaitForPopupClose();
-  EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_TRUE(test_api(window_manager()).GetFlowState().has_value());
 
   EXPECT_TRUE(
       client()->GetPaymentsAutofillClient()->autofill_progress_dialog_shown());
@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   // if the user cancels the progress dialog.
   EXPECT_TRUE(test_api(window_manager()).GetVcn3dsContext().has_value());
   test_api(window_manager()).OnVcn3dsAuthenticationProgressDialogCancelled();
-  EXPECT_FALSE(test_api(window_manager()).GetVcn3dsContext().has_value());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
   ASSERT_TRUE(response.has_value());
@@ -743,7 +743,6 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   EXPECT_EQ(response->result,
             PaymentsWindowManager::Vcn3dsAuthenticationResult::
                 kAuthenticationNotCompleted);
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 }
 
 // Tests that the VCN 3DS progress dialog cancelled histogram bucket is logged
@@ -819,10 +818,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   WaitForPopupClose();
 
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
-  EXPECT_TRUE(
-      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
-  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
 }
 
 // Test that the PopupWindowShown histogram is logged if the BNPL pop-up is
@@ -903,10 +899,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   WaitForPopupClose();
 
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
-  EXPECT_TRUE(
-      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
-  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
 }
 
 // Test that the BNPL PopupWindowResult histogram logs a failure result if the
@@ -967,10 +960,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   ClosePopupAndWait();
 
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
-  EXPECT_TRUE(
-      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
-  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
 }
 
 // Test that the PopupWindowResult histogram logs a "user closed" result if the
@@ -1021,10 +1011,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   ClosePopupAndWait();
 
-  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
-  EXPECT_TRUE(
-      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
-  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+  EXPECT_FALSE(test_api(window_manager()).GetFlowState().has_value());
 }
 
 // Integration test using Kombucha to ensure that the consent dialog creates a
@@ -1178,8 +1165,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
           PressButton(views::DialogClientView::kCancelButtonElementId),
           AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId, [this]() {
             EXPECT_FALSE(
-                test_api(GetWindowManager()).GetVcn3dsContext().has_value());
-            EXPECT_TRUE(test_api(GetWindowManager()).NoOngoingFlow());
+                test_api(GetWindowManager()).GetFlowState().has_value());
             std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse>
                 response = authentication_response();
             ASSERT_TRUE(response.has_value());

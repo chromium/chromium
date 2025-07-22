@@ -156,10 +156,7 @@ class PaymentsWindowManager {
   // Contains the possible flows that this class can support.
   enum class FlowType {
     kNoFlow = 0,
-
-    // TODO(crbug.com/429272687): Add `kVcn3ds = 1` once
-    // DesktopPaymentsWindowManager is migrated.
-
+    kVcn3ds = 1,
     kBnpl = 2,
     kMaxValue = kBnpl,
   };
@@ -171,8 +168,16 @@ class PaymentsWindowManager {
     FlowState& operator=(FlowState&&);
     ~FlowState();
 
+    // Only present if `flow_type` is `kVcn3ds`.
+    std::optional<Vcn3dsContext> vcn_3ds_context;
+
     // Only present if `flow_type` is `kBnpl`.
     std::optional<BnplContext> bnpl_context;
+
+    // The timestamp for when the VCN 3DS pop-up was shown to the user. Used for
+    // logging purposes. Present if `flow_type` is `kVcn3ds` and a
+    // popup was created for the flow.
+    std::optional<base::TimeTicks> vcn_3ds_popup_shown_timestamp;
 
     // The timestamp for when the BNPL payments window popup was shown to the
     // user. Used for logging purposes. Present if `flow_type` is `kBnpl` and a
