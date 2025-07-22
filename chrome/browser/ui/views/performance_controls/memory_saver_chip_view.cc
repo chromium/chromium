@@ -85,6 +85,7 @@ void MemorySaverChipView::UpdateImpl() {
 
   if (chip_state != memory_saver::ChipState::HIDDEN) {
     if (!tab_helper->ShouldChipAnimate()) {
+      SetVisible(true);
       return;
     }
 
