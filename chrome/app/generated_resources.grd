@@ -8517,12 +8517,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL" desc="The accessibility label for the delete button shown on hover for uploaded files." translateable="false">
         <ph name="FILE_NAME">$1<ex>recipe.pdf</ex></ph> press enter to delete file
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_STARTED_A11Y_TEXT" desc="Text for a screenreader to read aloud when the user starts uploading a file." translateable="false">
-        Uploading file
-      </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_COMPLETE_A11Y_TEXT" desc="Text for a screenreader to read aloud when the user's file upload completes successfully." translateable="false">>
-        File upload complete
-      </message>
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_EMPTY_SIZE" desc="The text to display when a file upload is empty." translateable="false">
         Can't upload. File appears to be empty.
       </message>

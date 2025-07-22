@@ -170,48 +170,6 @@ suite('NewTabPageComposeboxTest', () => {
     assertStyle(composeboxElement.$.submitIcon, 'cursor', 'pointer');
   });
 
-  [new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),
-   new File(['foo'], 'foo.pdf', {type: 'application/pdf'})]
-      .forEach((file) => {
-        test(
-            `announce file upload started and completed: ${file.type}`,
-            async () => {
-              createComposeboxElement();
-
-              let announcementCount = 0;
-              const updateAnnouncementCount = () => {
-                announcementCount += 1;
-              };
-              document.body.addEventListener(
-                  'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
-              let announcementPromise = eventToPromise(
-                  'cr-a11y-announcer-messages-sent', document.body);
-
-              const id = generateZeroId();
-              await uploadFileAndVerify(id, file);
-
-              let announcement = await announcementPromise;
-              assertEquals(announcementCount, 1);
-              assertTrue(!!announcement);
-              assertEquals(announcement.detail.messages.length, 1);
-
-              callbackRouterRemote.onFileUploadStatusChanged(
-                  id, FileUploadStatus.kUploadSuccessful, null);
-              await callbackRouterRemote.$.flushForTesting();
-
-              announcementPromise = eventToPromise(
-                  'cr-a11y-announcer-messages-sent', document.body);
-              announcement = await announcementPromise;
-              assertEquals(announcementCount, 2);
-              assertTrue(!!announcement);
-              assertEquals(announcement.detail.messages.length, 1);
-
-              // Cleanup event listener.
-              document.body.removeEventListener(
-                  'cr-a11y-announcer-messages-sent', updateAnnouncementCount);
-            });
-      });
-
   test('upload empty file fails', async () => {
     createComposeboxElement();
     const file = new File([''], 'foo.jpg', {type: 'image/jpeg'});
@@ -274,6 +232,7 @@ suite('NewTabPageComposeboxTest', () => {
           const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
           await uploadFileAndVerify(id, file);
 
+          // These statuses
           callbackRouterRemote.onFileUploadStatusChanged(
               id, fileUploadStatus as FileUploadStatus,
               fileUploadErrorType as FileUploadErrorType | null);
