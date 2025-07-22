@@ -42,6 +42,10 @@ void RecordOutcomeSample(TopLevelStorageAccessRequestOutcome outcome) {
                                 outcome);
 }
 
+bool IsNonAllowSetting(const ContentSettingPatternSource& setting) {
+  return setting.GetContentSetting() != CONTENT_SETTING_ALLOW;
+}
+
 }  // namespace
 
 TopLevelStorageAccessPermissionContext::TopLevelStorageAccessPermissionContext(
@@ -253,6 +257,10 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
   ContentSettingsForOneType storage_access_grants =
       settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
+  // The network service only cares about "granted" settings, so we don't bother
+  // to send any others.
+  std::erase_if(top_level_grants, IsNonAllowSetting);
+  std::erase_if(storage_access_grants, IsNonAllowSetting);
 
   // TODO(crbug.com/40638427): Ensure that this update of settings doesn't
   // cause a double update with

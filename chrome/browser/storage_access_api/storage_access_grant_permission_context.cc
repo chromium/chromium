@@ -704,6 +704,11 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
 
   ContentSettingsForOneType grants =
       settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
+  // The network service only cares about "granted" settings, so we don't bother
+  // to send any others.
+  std::erase_if(grants, [](const ContentSettingPatternSource& setting) {
+    return setting.GetContentSetting() != CONTENT_SETTING_ALLOW;
+  });
 
   // TODO(crbug.com/40638427): Ensure that this update of settings doesn't
   // cause a double update with

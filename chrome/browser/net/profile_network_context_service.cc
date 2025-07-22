@@ -269,6 +269,14 @@ void UpdateCookieSettings(Profile* profile, ContentSettingsType type) {
   } else {
     settings = HostContentSettingsMapFactory::GetForProfile(profile)
                    ->GetSettingsForOneType(type);
+    if (type == ContentSettingsType::STORAGE_ACCESS ||
+        type == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) {
+      // The network service only cares about "granted" settings, so we don't
+      // bother to send any others.
+      std::erase_if(settings, [](const auto& setting) {
+        return setting.GetContentSetting() != CONTENT_SETTING_ALLOW;
+      });
+    }
   }
   profile->ForEachLoadedStoragePartition(
       [&](content::StoragePartition* storage_partition) {
