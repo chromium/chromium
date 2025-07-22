@@ -17,6 +17,15 @@
 #include "net/socket/socket_descriptor.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
+#if BUILDFLAG(IS_MAC)
+#define DEBUG_CRBUG_40064248_STATISTICS 1
+#include <stdint.h>
+#include <sys/types.h>
+#include <time.h>
+
+#include <string>
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace net {
 
 class IOBuffer;
@@ -107,6 +116,51 @@ class NET_EXPORT_PRIVATE SocketPosix
   SocketDescriptor socket_fd() const { return socket_fd_; }
 
  private:
+#if defined(DEBUG_CRBUG_40064248_STATISTICS)
+  // TODO(crbug.com/40064248): Remove this once the crash is resolved.
+  class Statistics {
+   public:
+    Statistics();
+
+    // Update statistics with the result of a send.
+    void Update(int socket_fd,
+                ssize_t send_rv,
+                int send_errno,
+                const timespec& now);
+
+    // Return a string form of the collected statistics. Times are represented
+    // relative to start_time, if possible.
+    std::string DebugInfo(const timespec& start_time) const;
+
+   private:
+    // *_errno_ and other *_error_* members track `send` reporting an error by
+    // returning -1. They don’t track the occurrence of
+    // https://crbug.com/40064248. *_suspicious_* tracks possible occurrences of
+    // that bug, and a CHECK failure records a definite occurrence.
+    int first_send_errno_ = 0;
+    int last_send_errno_ = 0;
+
+    uint64_t sends_ok_ = 0;
+    uint64_t sends_suspicious_ = 0;
+    uint64_t sends_suspicious_consecutive_ = 0;
+    uint64_t sends_error_ = 0;
+    uint64_t sends_error_consecutive_ = 0;
+    uint64_t send_bytes_ok_ = 0;
+    uint64_t send_bytes_suspicious_ = 0;
+    uint64_t send_bytes_suspicious_consecutive_ = 0;
+
+    // Times are recorded relative to CLOCK_MONOTONIC_RAW.
+    timespec first_send_ok_time_ = {};
+    timespec last_send_ok_time_ = {};
+    timespec first_send_suspicious_time_ = {};
+    timespec last_send_suspicious_time_ = {};
+    timespec first_send_suspicious_consecutive_time_ = {};
+    timespec first_send_error_time_ = {};
+    timespec last_send_error_time_ = {};
+    timespec first_send_error_consecutive_time_ = {};
+  };
+#endif  // DEBUG_CRBUG_40064248_STATISTICS
+
   // base::MessagePumpForIO::FdWatcher methods.
   void OnFileCanReadWithoutBlocking(int fd) override;
   void OnFileCanWriteWithoutBlocking(int fd) override;
@@ -156,6 +210,10 @@ class NET_EXPORT_PRIVATE SocketPosix
   std::unique_ptr<SockaddrStorage> peer_address_;
 
   base::ThreadChecker thread_checker_;
+
+#if defined(DEBUG_CRBUG_40064248_STATISTICS)
+  Statistics statistics_;
+#endif  // DEBUG_CRBUG_40064248_STATISTICS
 };
 
 }  // namespace net
