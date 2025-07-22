@@ -2578,7 +2578,7 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
       operator_(op),
       type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
-  has_nested_intermediate_result_ = type.IsIntermediateResult();
+  has_nested_intermediate_result_ = type_.IsIntermediateResult();
 }
 
 std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
