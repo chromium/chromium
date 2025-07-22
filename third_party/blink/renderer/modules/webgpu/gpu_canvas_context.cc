@@ -129,9 +129,8 @@ gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
 }
 
 bool GPUCanvasContext::IsAccelerated() const {
-  auto* resource_provider = resource_provider_.get();
-  return resource_provider ? resource_provider->IsAccelerated()
-                           : Host()->ShouldTryToUseGpuRaster();
+  // This method is not supported for WebGPU and should not be called.
+  NOTREACHED();
 }
 
 void GPUCanvasContext::Stop() {
