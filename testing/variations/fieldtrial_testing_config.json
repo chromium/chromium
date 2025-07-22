@@ -16143,22 +16143,6 @@
             ]
         }
     ],
-    "OmniboxMlUrlScoringIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxMobileParityUpdate": [
         {
             "platforms": [

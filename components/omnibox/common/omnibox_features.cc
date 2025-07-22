@@ -252,7 +252,7 @@ BASE_FEATURE(kMlUrlScoreCaching,
 
 // If enabled, runs the ML scoring model to assign new relevance scores to the
 // URL suggestions and reranks them.
-BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", enable_if(!IS_ANDROID && !IS_IOS));
+BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", enable_if(!IS_ANDROID));
 
 // If enabled, specifies how URL model scores integrate with search traditional
 // scores.
@@ -260,9 +260,7 @@ BASE_FEATURE(kMlUrlSearchBlending, "MlUrlSearchBlending", DISABLED);
 
 // If enabled, creates Omnibox autocomplete URL scoring model. Prerequisite for
 // `kMlUrlScoring` & `kMlUrlSearchBlending`.
-BASE_FEATURE(kUrlScoringModel,
-             "UrlScoringModel",
-             enable_if(!IS_ANDROID && !IS_IOS));
+BASE_FEATURE(kUrlScoringModel, "UrlScoringModel", enable_if(!IS_ANDROID));
 
 BASE_FEATURE(kAnimateSuggestionsListAppearance,
              "AnimateSuggestionsListAppearance",
