@@ -177,7 +177,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   // to rely on sending a synchronous message first on initialization. So
   // with an abundance of caution, keep that behavior until we are sure this
   // isn't required.
-  bool allow_async_draw_ = false;
+  bool allow_async_draw_;
 
   // Indicates begin frames are paused from the browser.
   bool begin_frame_paused_ = false;
