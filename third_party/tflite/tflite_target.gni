@@ -74,6 +74,12 @@ template("tflite_target_gen") {
         # Disable libc++ modules when compiling with Objective-C++ support, as
         # it is incompatible with the libc++ modules build on macOS.
         use_libcxx_modules = false
+
+        # TODO(crbug.com/433386027): Remove this after rolling mediapipe.
+        not_needed(invoker, [ "use_libcxx_modules" ])
+      } else if (defined(invoker.use_libcxx_modules)) {
+        # TODO(crbug.com/433386027): Remove this after rolling mediapipe.
+        use_libcxx_modules = invoker.use_libcxx_modules
       }
 
       if (defined(invoker.conditional_deps)) {
@@ -132,7 +138,11 @@ vars_to_forward = minimal_vars_to_forward_to_target + [
 template("tflite_static_library") {
   tflite_target_gen(target_name) {
     target_type = "static_library"
-    forward_variables_from(invoker, vars_to_forward)
+    forward_variables_from(
+        invoker,
+        vars_to_forward +
+            # TODO(crbug.com/433386027): Remove this after rolling mediapipe.
+            [ "use_libcxx_modules" ])
   }
 }
 

@@ -570,6 +570,9 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/util/tflite/error_reporter.h",
   ]
 
+  # TODO(crbug.com/433386027): Remove this after rolling mediapipe.
+  use_libcxx_modules = false
+
   if (!is_win) {
     sources += [
       "src/mediapipe/framework/formats/shared_fd.h",
