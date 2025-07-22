@@ -29,7 +29,7 @@ enum WebStoreLinkClicked {
 const string kDiscoverExtensionWebStoreUrl = "https://chromewebstore.google.com/";
 const string kCouponWebStoreUrl = "https://chromewebstore.google.com/category/extensions/lifestyle/shopping";
 const string kWritingWebStoreUrl = "https://chromewebstore.google.com/collection/writing_essentials";
-const string kProductivityWebStoreUrl = "https://chromewebstore.google.com/category/extensions/productivity/workflow";
+const string kProductivityWebStoreUrl = "https://chromewebstore.google.com/collection/productivity";
 const string kAiWebStoreUrl = "https://chromewebstore.google.com/collection/ai_productivity";
 
 // Used by the WebUI page to bootstrap bidirectional communication.

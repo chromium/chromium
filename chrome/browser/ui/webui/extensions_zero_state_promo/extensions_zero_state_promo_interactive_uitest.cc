@@ -216,9 +216,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
       WaitForTabOpenedTo(
-          1, GURL("https://chromewebstore.google.com/category/extensions/"
-                  "productivity/"
-                  "workflow?utm_source=ext_zero_state_promo_chips_iph")),
+          1, GURL("https://chromewebstore.google.com/collection/"
+                  "productivity?utm_source=ext_zero_state_promo_chips_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
 }
@@ -378,9 +377,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiPlainLinkIphTest,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
       WaitForTabOpenedTo(
-          1, GURL("https://chromewebstore.google.com/category/extensions/"
-                  "productivity/"
-                  "workflow?utm_source=ext_zero_state_promo_links_iph")),
+          1, GURL("https://chromewebstore.google.com/collection/"
+                  "productivity?utm_source=ext_zero_state_promo_links_iph")),
       CheckZeroStatePromoLinkClickCount(
           zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
 }
