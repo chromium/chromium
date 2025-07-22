@@ -93,10 +93,8 @@ void OneDeviceTrainNeuralStylusPalmDetectionFilterModel::Initialize() {
     config_.output_threshold = 0.90271f;
     expected_feature_size_ = 173;
 
-    if (base::FeatureList::IsEnabled(kEnableNeuralPalmAdaptiveHold)) {
-      config_.nn_delay_start_if_palm = true;
-      config_.early_stage_sample_counts = std::unordered_set<uint32_t>({2});
-    }
+    config_.nn_delay_start_if_palm = true;
+    config_.early_stage_sample_counts = std::unordered_set<uint32_t>({2});
   }
 }
 
