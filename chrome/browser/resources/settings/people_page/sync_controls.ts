@@ -99,7 +99,7 @@ export class SettingsSyncControlsElement extends
 
   declare hidden: boolean;
   declare syncPrefs?: SyncPrefs;
-  declare syncStatus: SyncStatus;
+  declare syncStatus: SyncStatus|null;
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
   private cachedSyncPrefs_: {[key: string]: any}|null;
   declare showSyncDisabledInformation: boolean;
@@ -175,6 +175,40 @@ export class SettingsSyncControlsElement extends
     // </if>
   }
 
+  // <if expr="not is_chromeos">
+  private mergedHistoryTabsToggleDisabled_(
+      syncStatus: SyncStatus, tabsManaged: boolean,
+      historyManaged: boolean): boolean {
+    return !syncStatus || syncStatus.disabled || !this.syncPrefs ||
+        (tabsManaged && historyManaged);
+  }
+
+  private mergedHistoryTabsTogglePolicyIndicatorShown_(
+      syncStatus: SyncStatus, tabsManaged: boolean,
+      historyManaged: boolean): boolean {
+    return !!syncStatus && !syncStatus.disabled && tabsManaged &&
+        historyManaged;
+  }
+
+  private mergedHistoryTabsToggleChecked_(syncPrefs: SyncPrefs): boolean {
+    return syncPrefs.typedUrlsSynced || syncPrefs.tabsSynced ||
+        syncPrefs.savedTabGroupsSynced;
+  }
+
+  private onMergedHistoryTabsToggleChanged_(_event?: Event) {
+    assert(this.isAccountSettingsPage_());
+    assert(_event);
+
+    const toggle = _event?.target as CrToggleElement;
+
+    this.browserProxy_.setSyncDatatype(
+        UserSelectableType.HISTORY, toggle.checked);
+    this.browserProxy_.setSyncDatatype(UserSelectableType.TABS, toggle.checked);
+    this.browserProxy_.setSyncDatatype(
+        UserSelectableType.SAVED_TAB_GROUPS, toggle.checked);
+  }
+  // </if>
+
   private handleSyncAllDataTypesChanged_(syncAllDataTypes: boolean) {
     if (syncAllDataTypes) {
       this.set('syncPrefs.syncAllDataTypes', true);
@@ -227,7 +261,8 @@ export class SettingsSyncControlsElement extends
     // disabled, or if the sync prefs are undefined, which is the case e.g.
     // right after startup.
     if (this.isAccountSettingsPage_()) {
-      return syncStatus.disabled || !this.syncPrefs || dataTypeManaged;
+      return !syncStatus || syncStatus.disabled || !this.syncPrefs ||
+          dataTypeManaged;
     }
 
     return syncAllDataTypes || dataTypeManaged;
@@ -241,7 +276,7 @@ export class SettingsSyncControlsElement extends
     // sync is disabled (see `syncControlsHidden_()`), so we do not need to
     // specify whether we show the indicator or not.
     if (this.isAccountSettingsPage_()) {
-      return !syncStatus.disabled && dataTypeManaged;
+      return !!syncStatus && !syncStatus.disabled && dataTypeManaged;
     }
 
     return dataTypeManaged;

@@ -18,7 +18,7 @@ import {getSyncAllPrefs, getSyncAllPrefsManaged} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // <if expr="not is_chromeos">
-import {routes, UserSelectableType} from 'chrome://settings/settings.js';
+import {PageStatus, routes, UserSelectableType} from 'chrome://settings/settings.js';
 import {waitAfterNextRender, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // </if>
 
@@ -312,13 +312,13 @@ suite('SyncControlsAccountSettingsTest', function() {
     await waitAfterNextRender(syncControls);
   }
 
-  function assertControlsDisabled() {
+  function assertControlsEnabled(enabled: boolean) {
     const datatypeControls =
         syncControls.shadowRoot!.querySelectorAll<CrToggleElement>(
             '.list-item:not([hidden]) > cr-toggle');
     assertTrue(datatypeControls.length > 0);
     for (const control of datatypeControls) {
-      assertTrue(control.disabled, 'Control is not disabled.');
+      assertEquals(!enabled, control.disabled);
     }
   }
 
@@ -332,9 +332,18 @@ suite('SyncControlsAccountSettingsTest', function() {
     const policyIndicators = syncControls.shadowRoot!.querySelectorAll(
         'cr-policy-indicator:not(#syncDisabledIndicator)');
     assertTrue(policyIndicators.length > 0);
+
+    // We expect the indicators of the toggles for history, tabs, and saved tab
+    // groups to be always hidden since they are merged into one toggle.
+    const hiddenIndicators = shown ? 3 : policyIndicators.length;
+    let countHiddenIndicators = 0;
     for (const indicator of policyIndicators) {
-      assertEquals(shown, isVisible(indicator));
+      if (!isVisible(indicator)) {
+        countHiddenIndicators++;
+      }
     }
+
+    assertEquals(hiddenIndicators, countHiddenIndicators);
   }
 
   test('SyncEverythingControlsAreHidden', function() {
@@ -356,13 +365,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertFalse(syncControls.hidden);
 
     // Controls are also not disabled.
-    const datatypeControls =
-        syncControls.shadowRoot!.querySelectorAll<CrToggleElement>(
-            '.list-item:not([hidden]) > cr-toggle');
-    assertTrue(datatypeControls.length > 0);
-    for (const control of datatypeControls) {
-      assertFalse(control.disabled);
-    }
+    assertControlsEnabled(true);
   });
 
   test('SignedInError', function() {
@@ -396,32 +399,32 @@ suite('SyncControlsAccountSettingsTest', function() {
   test('ChangeDataTypeToggle', async function() {
     setupPrefs();
 
-    // Make sure that the history toggle is present and can be interacted with.
-    const historyToggle =
+    // Make sure that the autofill toggle is present and can be interacted with.
+    const autofillToggle =
         syncControls.shadowRoot!.querySelector<CrToggleElement>(
-            '#historyToggle');
-    assertTrue(!!historyToggle);
-    assertFalse(historyToggle.disabled);
-    assertTrue(historyToggle.checked);
+            '#autofillCheckbox');
+    assertTrue(!!autofillToggle);
+    assertFalse(autofillToggle.disabled);
+    assertTrue(autofillToggle.checked);
 
-    // Click to disable history sync.
-    historyToggle.click();
-    await historyToggle.updateComplete;
+    // Click to disable autofill sync.
+    autofillToggle.click();
+    await autofillToggle.updateComplete;
 
     let [pref, value] = await browserProxy.whenCalled('setSyncDatatype');
-    assertEquals(pref, UserSelectableType.HISTORY);
+    assertEquals(pref, UserSelectableType.AUTOFILL);
     assertFalse(value);
-    assertFalse(historyToggle.checked);
+    assertFalse(autofillToggle.checked);
 
-    // Re-enable history sync.
+    // Re-enable autofill sync.
     browserProxy.resetResolver('setSyncDatatype');
-    historyToggle.click();
-    await historyToggle.updateComplete;
+    autofillToggle.click();
+    await autofillToggle.updateComplete;
 
     [pref, value] = await browserProxy.whenCalled('setSyncDatatype');
-    assertEquals(pref, UserSelectableType.HISTORY);
+    assertEquals(pref, UserSelectableType.AUTOFILL);
     assertTrue(value);
-    assertTrue(historyToggle.checked);
+    assertTrue(autofillToggle.checked);
   });
 
   test(
@@ -434,7 +437,7 @@ suite('SyncControlsAccountSettingsTest', function() {
         assertFalse(syncControls.hidden);
 
         // However, they are disabled.
-        assertControlsDisabled();
+        assertControlsEnabled(false);
 
         // Assert that all policy indicators are hidden.
         assertSyncDisabledPolicyIndicatorShown(false);
@@ -456,7 +459,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertFalse(syncControls.hidden);
 
     // However, they are disabled.
-    assertControlsDisabled();
+    assertControlsEnabled(false);
 
     // Assert that only the sync disabled policy indicator is shown.
     assertSyncDisabledPolicyIndicatorShown(true);
@@ -473,7 +476,184 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertFalse(syncControls.hidden);
 
     // However, they are disabled.
-    assertControlsDisabled();
+    assertControlsEnabled(false);
+
+    // Assert that only individual items' policy indicators are shown.
+    assertSyncDisabledPolicyIndicatorShown(false);
+    assertIndividualItemPolicyIndicatorsShown(true);
+  });
+
+  test(
+      'DisableMergedToggleAndShowPolicyIndicatorWhenHistoryAndTabsManaged',
+      async () => {
+        // Set history and tabs to managed.
+        const syncPrefs = getSyncAllPrefs();
+        syncPrefs.typedUrlsManaged = true;
+        syncPrefs.tabsManaged = true;
+        webUIListenerCallback('sync-prefs-changed', syncPrefs);
+        await flushTasks();
+        await waitAfterNextRender(syncControls);
+
+        // The merged toggle is disabled, but checked because the types are
+        // enabled.
+        const mergedHistoryTabsToggle =
+            syncControls.shadowRoot!.querySelector<CrToggleElement>(
+                '#mergedHistoryTabsToggle');
+        assertTrue(!!mergedHistoryTabsToggle);
+        assertTrue(mergedHistoryTabsToggle.disabled);
+        assertTrue(mergedHistoryTabsToggle.checked);
+
+        // Assert that the merged toggle's policy indicator is shown.
+        const policyIndicator = syncControls.shadowRoot!.querySelector<Element>(
+            '#mergedHistoryTabsToggleIndicator');
+        assertTrue(isVisible(policyIndicator));
+      });
+
+  test(
+      'EnableMergedToggleAndHidePolicyIndicatorWhenOnlyOneDataTypeManaged',
+      async () => {
+        // Set only history to managed. Tabs remain not managed.
+        const syncPrefs = getSyncAllPrefs();
+        syncPrefs.typedUrlsManaged = true;
+        webUIListenerCallback('sync-prefs-changed', syncPrefs);
+        await flushTasks();
+        await waitAfterNextRender(syncControls);
+
+        // The merged toggle is not disabled, and checked because the types are
+        // enabled.
+        const mergedHistoryTabsToggle =
+            syncControls.shadowRoot!.querySelector<CrToggleElement>(
+                '#mergedHistoryTabsToggle');
+        assertTrue(!!mergedHistoryTabsToggle);
+        assertFalse(mergedHistoryTabsToggle.disabled);
+        assertTrue(mergedHistoryTabsToggle.checked);
+
+        // Assert that the merged toggle's policy indicator is not shown.
+        const policyIndicator = syncControls.shadowRoot!.querySelector<Element>(
+            '#mergedHistoryTabsToggleIndicator');
+        assertFalse(isVisible(policyIndicator));
+      });
+
+  test('ChangeMergedHistoryTabsToggle', async function() {
+    // Initially, only history is enabled. Tabs and saved tab groups are not.
+    const syncPrefs = getSyncAllPrefs();
+    syncPrefs.tabsSynced = false;
+    syncPrefs.savedTabGroupsSynced = false;
+    webUIListenerCallback('sync-prefs-changed', syncPrefs);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    // Override `setSyncDatatype()` in order to collect calls.
+    const originalSetSyncDatatype = browserProxy.setSyncDatatype;
+    type SyncDatatypeCallArgs = [UserSelectableType, boolean];
+    let callsMade: SyncDatatypeCallArgs[] = [];
+    browserProxy.setSyncDatatype = function(
+        pref: UserSelectableType, value: boolean): Promise<PageStatus> {
+      callsMade.push([pref, value]);
+      return Promise.resolve(PageStatus.DONE);
+    };
+
+    // Make sure that the merged history and tabs toggle is present and can  be
+    // interacted with. The toggle is checked, since at least one of the data
+    // types is enabled.
+    const mergedHistoryTabsToggle =
+        syncControls.shadowRoot!.querySelector<CrToggleElement>(
+            '#mergedHistoryTabsToggle');
+    assertTrue(!!mergedHistoryTabsToggle);
+    assertFalse(mergedHistoryTabsToggle.disabled);
+    assertTrue(mergedHistoryTabsToggle.checked);
+
+    assertTrue(syncControls.syncPrefs!.typedUrlsSynced);
+    assertFalse(syncControls.syncPrefs!.tabsSynced);
+    assertFalse(syncControls.syncPrefs!.savedTabGroupsSynced);
+
+    // Click to disable history and tabs.
+    mergedHistoryTabsToggle.click();
+    await mergedHistoryTabsToggle.updateComplete;
+
+    assertEquals(3, callsMade.length);
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.HISTORY && value === false));
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.TABS && value === false));
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.SAVED_TAB_GROUPS && value === false));
+
+    assertFalse(mergedHistoryTabsToggle.checked);
+    callsMade = [];
+
+    // Re-enable history and tabs.
+    mergedHistoryTabsToggle.click();
+    await mergedHistoryTabsToggle.updateComplete;
+
+    assertEquals(3, callsMade.length);
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.HISTORY && value === true));
+    assertTrue(!!callsMade.find(
+        ([pref, value]) => pref === UserSelectableType.TABS && value === true));
+    assertTrue(!!callsMade.find(
+        ([pref, value]) =>
+            pref === UserSelectableType.SAVED_TAB_GROUPS && value === true));
+
+    assertTrue(mergedHistoryTabsToggle.checked);
+
+    browserProxy.setSyncDatatype = originalSetSyncDatatype;
+  });
+
+  test(
+      'DisableToggleAndHidePolicyIndicatorWhenSyncPrefsNotLoaded', async () => {
+        webUIListenerCallback('sync-prefs-changed', undefined);
+        await flushTasks();
+        await waitAfterNextRender(syncControls);
+
+        // Controls are still available when prefs are not loaded.
+        assertFalse(syncControls.hidden);
+
+        // However, they are disabled.
+        assertControlsEnabled(false);
+
+        // Assert that all policy indicators are hidden.
+        assertSyncDisabledPolicyIndicatorShown(false);
+        assertIndividualItemPolicyIndicatorsShown(false);
+      });
+
+  test('DisableToggleAndHidePolicyIndicatorWhenSyncIsDisabled', async () => {
+    setupPrefs();
+
+    syncControls.syncStatus = {
+      disabled: true,
+      hasError: false,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await waitAfterNextRender(syncControls);
+
+    // Controls are still available when sync is disabled.
+    assertFalse(syncControls.hidden);
+
+    // However, they are disabled.
+    assertControlsEnabled(false);
+
+    // Assert that only the sync disabled policy indicator is shown.
+    assertSyncDisabledPolicyIndicatorShown(true);
+    assertIndividualItemPolicyIndicatorsShown(false);
+  });
+
+  test('DisableToggleAndShowPolicyIndicatorWhenDataTypeIsManaged', async () => {
+    // Set all prefs to managed.
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefsManaged());
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    // Controls are still available when data types are managed.
+    assertFalse(syncControls.hidden);
+
+    // However, they are disabled.
+    assertControlsEnabled(false);
 
     // Assert that only individual items' policy indicators are shown.
     assertSyncDisabledPolicyIndicatorShown(false);
@@ -539,7 +719,8 @@ suite('SyncControlsManagedTest', function() {
     // Assert that all toggles have the policy indicator icon visible when they
     // are all managed.
     const policyIndicators = syncControls.shadowRoot!.querySelectorAll(
-        'cr-policy-indicator:not(#syncDisabledIndicator)');
+        'cr-policy-indicator:not(#syncDisabledIndicator):' +
+        'not(#mergedHistoryTabsToggleIndicator)');
     assertTrue(policyIndicators.length > 0);
     for (const indicator of policyIndicators) {
       assertTrue(isVisible(indicator));
