@@ -71,6 +71,7 @@ dependencies {
     compileLatest 'androidx.customview:customview:+'
     compileLatest 'androidx.datastore:datastore-android:+'
     compileLatest 'androidx.datastore:datastore-core:+'
+    compileLatest 'androidx.datastore:datastore-preferences:+'
     compileLatest 'androidx.drawerlayout:drawerlayout:+'
     compileLatest 'androidx.dynamicanimation:dynamicanimation:+'
     compileLatest 'androidx.exifinterface:exifinterface:+'
