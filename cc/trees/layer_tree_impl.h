@@ -69,6 +69,7 @@ struct PendingPageScaleAnimation;
 using UIResourceRequestQueue = std::vector<UIResourceRequest>;
 using SyncedScale = SyncedProperty<ScaleGroup>;
 using SyncedBrowserControls = SyncedProperty<AdditionGroup<float>>;
+using SyncedElasticOverscroll = SyncedProperty<AdditionGroup<gfx::Vector2dF>>;
 
 class LayerTreeLifecycle {
  public:
@@ -106,7 +107,8 @@ class CC_EXPORT LayerTreeImpl {
       viz::BeginFrameArgs begin_frame_args,
       scoped_refptr<SyncedScale> page_scale_factor,
       scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
-      scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio);
+      scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
+      scoped_refptr<SyncedElasticOverscroll> elastic_overscroll);
   LayerTreeImpl(const LayerTreeImpl&) = delete;
   virtual ~LayerTreeImpl();
 
@@ -467,6 +469,13 @@ class CC_EXPORT LayerTreeImpl {
     return viewport_property_ids_;
   }
 
+  SyncedElasticOverscroll* elastic_overscroll() {
+    return elastic_overscroll_.get();
+  }
+  const SyncedElasticOverscroll* elastic_overscroll() const {
+    return elastic_overscroll_.get();
+  }
+
   SyncedBrowserControls* top_controls_shown_ratio() {
     return top_controls_shown_ratio_.get();
   }
@@ -478,6 +487,9 @@ class CC_EXPORT LayerTreeImpl {
   }
   const SyncedBrowserControls* bottom_controls_shown_ratio() const {
     return bottom_controls_shown_ratio_.get();
+  }
+  gfx::Vector2dF current_elastic_overscroll() const {
+    return elastic_overscroll()->Current(IsActiveTree());
   }
 
   void SetElementIdsForTesting();
@@ -953,6 +965,8 @@ class CC_EXPORT LayerTreeImpl {
   // browser for the display cutout. It has been scaled to the size of physical
   // pixels.
   float max_safe_area_inset_bottom_ = 0;
+
+  scoped_refptr<SyncedElasticOverscroll> elastic_overscroll_;
 
   // TODO(wangxianzhu): Combine layers_ and layer_list_ when we remove
   // support of mask layers.

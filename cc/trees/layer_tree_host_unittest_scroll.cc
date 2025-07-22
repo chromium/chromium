@@ -2383,39 +2383,43 @@ class LayerTreeHostScrollTestElasticOverscroll
         elastic_overscroll_test_cases_[num_begin_main_frames_impl_thread_];
     EXPECT_EQ(expected_elastic_overscroll,
               scroll_elasticity_helper_->StretchAmount());
+    if (!begin_main_frame_aborted)
+      EXPECT_EQ(
+          expected_elastic_overscroll,
+          host_impl->pending_tree()->elastic_overscroll()->Current(false));
 
     ++num_begin_main_frames_impl_thread_;
     gfx::Vector2dF next_test_case;
-    if (num_begin_main_frames_impl_thread_ < 6) {
+    if (num_begin_main_frames_impl_thread_ < 5)
       next_test_case =
           elastic_overscroll_test_cases_[num_begin_main_frames_impl_thread_];
-      PostSetNeedsCommitToMainThread();
-    }
 
     switch (num_begin_main_frames_impl_thread_) {
       case 1:
-        // The first BeginMainFrame hasn't been committed yet so we don't
-        // have a viewport node to scroll.
-        break;
-      case 2:
         // The first BeginMainFrame is never aborted.
         EXPECT_FALSE(begin_main_frame_aborted);
         scroll_elasticity_helper_->SetStretchAmount(next_test_case);
         break;
+      case 2:
+        EXPECT_TRUE(begin_main_frame_aborted);
+        scroll_elasticity_helper_->SetStretchAmount(next_test_case);
+
+        // Since the elastic overscroll is never mutated on the main thread, the
+        // BeginMainFrame which reports the delta is aborted. Post a commit
+        // request to the main thread to make sure it goes through.
+        PostSetNeedsCommitToMainThread();
+        break;
       case 3:
         EXPECT_FALSE(begin_main_frame_aborted);
         scroll_elasticity_helper_->SetStretchAmount(next_test_case);
+        PostSetNeedsCommitToMainThread();
         break;
       case 4:
         EXPECT_FALSE(begin_main_frame_aborted);
         scroll_elasticity_helper_->SetStretchAmount(next_test_case);
         break;
       case 5:
-        EXPECT_FALSE(begin_main_frame_aborted);
-        scroll_elasticity_helper_->SetStretchAmount(next_test_case);
-        break;
-      case 6:
-        EXPECT_FALSE(begin_main_frame_aborted);
+        EXPECT_TRUE(begin_main_frame_aborted);
         EndTest();
         break;
       default:
@@ -2424,9 +2428,8 @@ class LayerTreeHostScrollTestElasticOverscroll
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
-    if (num_begin_main_frames_impl_thread_ == 6) {
+    if (num_begin_main_frames_impl_thread_ == 5)
       return;
-    }
 
     // Ensure that the elastic overscroll value on the active tree remains
     // unmodified after activation.
@@ -2452,10 +2455,10 @@ class LayerTreeHostScrollTestElasticOverscroll
   }
 
   void AfterTest() override {
-    EXPECT_EQ(num_begin_main_frames_impl_thread_, 6);
-    EXPECT_EQ(num_begin_main_frames_main_thread_, 6);
+    EXPECT_EQ(num_begin_main_frames_impl_thread_, 5);
+    EXPECT_EQ(num_begin_main_frames_main_thread_, 5);
     gfx::Vector2dF expected_elastic_overscroll =
-        elastic_overscroll_test_cases_[5];
+        elastic_overscroll_test_cases_[4];
     EXPECT_EQ(expected_elastic_overscroll, current_elastic_overscroll_);
 
     // Reset before LayerTreeHost destruction to avoid dangling pointer, since
@@ -2474,15 +2477,12 @@ class LayerTreeHostScrollTestElasticOverscroll
   int num_begin_main_frames_main_thread_;
   gfx::Vector2dF current_elastic_overscroll_;
 
-  const std::array<gfx::Vector2dF, 6> elastic_overscroll_test_cases_ = {
-      gfx::Vector2dF(0, 0), gfx::Vector2dF(0, 0),   gfx::Vector2dF(5, 10),
-      gfx::Vector2dF(5, 5), gfx::Vector2dF(-4, -5), gfx::Vector2dF(0, 0)};
+  const std::array<gfx::Vector2dF, 5> elastic_overscroll_test_cases_ = {
+      gfx::Vector2dF(0, 0), gfx::Vector2dF(5, 10), gfx::Vector2dF(5, 5),
+      gfx::Vector2dF(-4, -5), gfx::Vector2dF(0, 0)};
 };
 
-// TODO(crbug.com/433308634): Crashes on fuchsia-x64-cast-receiver-rel
-#if !BUILDFLAG(IS_FUCHSIA)
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestElasticOverscroll);
-#endif
 
 class LayerTreeHostScrollTestPropertyTreeUpdate
     : public LayerTreeHostScrollTest {

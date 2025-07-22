@@ -206,12 +206,7 @@ void LayerContextImplTest::AddFirstTimeDefaultProperties(
 
   // Root & Secondary scroll nodes are always expected
   AddScrollNode(update, cc::kInvalidPropertyNodeId);
-  viewport_property_ids.outer_scroll =
-      AddScrollNode(update, cc::kRootPropertyNodeId);
-  update->scroll_nodes.back()->element_id = cc::ElementId(1ULL);
-  viewport_property_ids.inner_scroll =
-      AddScrollNode(update, viewport_property_ids.outer_scroll);
-  update->scroll_nodes.back()->element_id = cc::ElementId(1ULL);
+  AddScrollNode(update, cc::kRootPropertyNodeId);
 
   // Root layer
   AddDefaultLayerToUpdate(update);

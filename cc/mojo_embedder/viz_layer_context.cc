@@ -432,8 +432,7 @@ viz::mojom::ScrollTreeUpdatePtr ComputeScrollTreePropertiesUpdate(
   if (old_tree.synced_scroll_offset_map() ==
           new_tree.synced_scroll_offset_map() &&
       old_tree.scrolling_contents_cull_rects() ==
-          new_tree.scrolling_contents_cull_rects() &&
-      old_tree.elastic_overscroll() == new_tree.elastic_overscroll()) {
+          new_tree.scrolling_contents_cull_rects()) {
     return nullptr;
   }
 
@@ -441,7 +440,6 @@ viz::mojom::ScrollTreeUpdatePtr ComputeScrollTreePropertiesUpdate(
   wire->synced_scroll_offsets = new_tree.synced_scroll_offset_map();
   wire->scrolling_contents_cull_rects =
       new_tree.scrolling_contents_cull_rects();
-  wire->elastic_overscroll = new_tree.elastic_overscroll();
 
   return wire;
 }
@@ -1276,6 +1274,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->background_color = tree.background_color();
 
   const ViewportPropertyIds& property_ids = tree.viewport_property_ids();
+  update->elastic_overscroll = tree.elastic_overscroll()->Current(true);
   update->overscroll_elasticity_transform =
       property_ids.overscroll_elasticity_transform;
   update->page_scale_transform = property_ids.page_scale_transform;
@@ -1353,15 +1352,6 @@ void VizLayerContext::UpdateDisplayTreeFrom(
       old_trees.scroll_tree(), property_trees.scroll_tree());
 
   last_committed_property_trees_ = property_trees;
-
-  // Some deltas are normally not copied when adopting a new pending tree.
-  // See details in ScrollTree::operator=(const ScrollTree& from).
-  // However, we want to remember the last updates committed to viz.
-  last_committed_property_trees_.scroll_tree_mutable()
-      .synced_scroll_offset_map() =
-      property_trees.scroll_tree().synced_scroll_offset_map();
-  last_committed_property_trees_.scroll_tree_mutable().elastic_overscroll() =
-      property_trees.scroll_tree().elastic_overscroll();
 
   if (tree.needs_surface_ranges_sync() || needs_full_sync_) {
     update->surface_ranges.emplace();

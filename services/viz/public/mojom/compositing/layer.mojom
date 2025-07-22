@@ -563,7 +563,6 @@ struct EffectNode {
 struct ScrollTreeUpdate {
   map<cc.mojom.ElementId, cc.mojom.SyncedScrollOffset> synced_scroll_offsets;
   map<cc.mojom.ElementId, gfx.mojom.Rect> scrolling_contents_cull_rects;
-  map<cc.mojom.ElementId, gfx.mojom.Vector2dF> elastic_overscroll;
 };
 
 // Details about a new or updated node within a scroll property tree.

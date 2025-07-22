@@ -520,16 +520,13 @@ base::expected<void, std::string> UpdateTransformTreeProperties(
   return base::ok();
 }
 
-base::expected<bool, std::string> UpdateScrollTreeProperties(
+base::expected<void, std::string> UpdateScrollTreeProperties(
     cc::PropertyTrees& trees,
     cc::ScrollTree& tree,
     const mojom::ScrollTreeUpdate& update) {
   tree.synced_scroll_offset_map() = update.synced_scroll_offsets;
   tree.scrolling_contents_cull_rects() = update.scrolling_contents_cull_rects;
-  bool elastic_overscroll_changed =
-      tree.elastic_overscroll() != update.elastic_overscroll;
-  tree.elastic_overscroll() = update.elastic_overscroll;
-  return elastic_overscroll_changed;
+  return base::ok();
 }
 
 void UpdateMirrorLayerExtra(const mojom::MirrorLayerExtraPtr& extra,
@@ -1674,13 +1671,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   }
 
   if (update->scroll_tree_update) {
-    ASSIGN_OR_RETURN(const bool scroll_properties_changed,
-                     UpdateScrollTreeProperties(
-                         property_trees, property_trees.scroll_tree_mutable(),
-                         *update->scroll_tree_update));
-    if (scroll_properties_changed) {
-      layers.set_needs_update_draw_properties();
-    }
+    RETURN_IF_ERROR(UpdateScrollTreeProperties(
+        property_trees, property_trees.scroll_tree_mutable(),
+        *update->scroll_tree_update));
   }
 
   ASSIGN_OR_RETURN(const bool transform_nodes_changed,
@@ -1790,6 +1783,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   if (update->max_safe_area_inset_bottom < 0 ||
       !std::isfinite(update->max_safe_area_inset_bottom)) {
     return base::unexpected("Invalid max safe area inset bottom");
+  }
+  if (layers.elastic_overscroll()->SetCurrent(update->elastic_overscroll)) {
+    layers.set_needs_update_draw_properties();
   }
   layers.SetBrowserControlsParams(update->browser_controls_params);
   host_impl_->browser_controls_manager()->SetOffsetTagModifications(
