@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "components/dbus/utils/variant.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,6 +39,7 @@ TEST(DBusSignatureTest, GetSignature) {
   EXPECT_EQ(GetSignature<uint8_t>(), "y");
   EXPECT_EQ(GetSignature<std::string>(), "s");
   EXPECT_EQ(GetSignature<dbus::ObjectPath>(), "o");
+  EXPECT_EQ(GetSignature<Variant>(), "v");
   EXPECT_EQ(GetSignature<base::ScopedFD>(), "h");
 
   EXPECT_EQ(GetSignature<std::vector<int32_t>>(), "ai");

@@ -117,6 +117,16 @@ constexpr const char* GetDBusTypeSignature() {
   return DBusSignature<T>::kValue.data();
 }
 
+template <size_t N>
+struct StringLiteral {
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr StringLiteral(const char (&str)[N]) {
+    std::copy_n(str, N, value.data());
+  }
+
+  std::array<char, N> value;
+};
+
 }  // namespace internal
 }  // namespace dbus_utils
 

@@ -12,6 +12,8 @@ source_set("utils") {
     "read_value.h",
     "signature.h",
     "types.h",
+    "variant.cc",
+    "variant.h",
     "write_value.h",
   ]
   defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
@@ -29,6 +31,7 @@ source_set("unit_tests") {
     "read_write_value_unittest.cc",
     "signature_unittest.cc",
     "types_unittest.cc",
+    "variant_unittest.cc",
   ]
   deps = [
     ":utils",

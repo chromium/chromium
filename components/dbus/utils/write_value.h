@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "components/dbus/utils/types.h"
+#include "components/dbus/utils/variant.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 
@@ -91,6 +92,8 @@ void WriteValue(dbus::MessageWriter& writer, const T& value) {
     WriteMap(writer, value);
   } else if constexpr (IsSupportedStruct<T>::value) {
     WriteStruct(writer, value);
+  } else if constexpr (std::is_same_v<T, Variant>) {
+    value.Write(writer);
   } else {
     static_assert(false, "Unsupported type for D-Bus writing");
   }

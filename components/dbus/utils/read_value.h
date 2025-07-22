@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_file.h"
 #include "components/dbus/utils/types.h"
+#include "components/dbus/utils/variant.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 
@@ -129,6 +130,12 @@ std::optional<T> ReadValue(dbus::MessageReader& reader) {
     return ReadMap<typename T::key_type, typename T::mapped_type>(reader);
   } else if constexpr (IsSupportedStruct<T>::value) {
     return ReadStruct<T>(reader);
+  } else if constexpr (std::is_same_v<T, Variant>) {
+    Variant variant;
+    if (!variant.Read(reader)) {
+      return std::nullopt;
+    }
+    return std::move(variant);
   } else {
     static_assert(false, "Unsupported type for D-Bus reading");
   }
