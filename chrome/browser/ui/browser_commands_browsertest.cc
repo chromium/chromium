@@ -55,7 +55,9 @@ class BrowserCommandsTest : public InProcessBrowserTest {
             toast_features::kReadingListToast,
             toast_features::kLinkCopiedToast,
         },
-        {});
+        {
+            features::kReloadSelectionModel,
+        });
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -163,6 +165,51 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabs) {
     load_sum += watcher.load_count();
   }
   EXPECT_EQ(kTabCount, load_sum);
+}
+
+class BrowserCommandsWithReloadSelectionModelTest : public BrowserCommandsTest {
+ public:
+  BrowserCommandsWithReloadSelectionModelTest() {
+    feature_list_.InitWithFeatures(
+        {
+            features::kReloadSelectionModel,
+        },
+        {});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// With kReloadSelectionModel enabled, only the active tab is reloaded.
+IN_PROC_BROWSER_TEST_F(BrowserCommandsWithReloadSelectionModelTest,
+                       ReloadSelectedTabs) {
+  // Add feature
+  constexpr int kTabCount = 3;
+  std::vector<ReloadObserver> watcher_vec(kTabCount);
+  for (int i = 0; i < kTabCount; i++) {
+    ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), i + 1, GURL(kUrl),
+                                       ui::PAGE_TRANSITION_LINK, false));
+    content::WebContents* tab =
+        browser()->tab_strip_model()->GetWebContentsAt(i + 1);
+    watcher_vec[i].SetWebContents(tab);
+  }
+
+  for (ReloadObserver& watcher : watcher_vec) {
+    EXPECT_EQ(0, watcher.load_count());
+  }
+
+  // Add two tabs to the selection (the last one created remains selected) and
+  // trigger a reload command on the active tab.
+  for (int i = 0; i < kTabCount - 1; i++) {
+    browser()->tab_strip_model()->SelectTabAt(i + 1);
+  }
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
+
+  int load_sum = 0;
+  for (ReloadObserver& watcher : watcher_vec) {
+    load_sum += watcher.load_count();
+  }
+  EXPECT_EQ(1, load_sum);
 }
 
 // Check that the ThirdPartyCookieBreakageIndicator UKM is sent on Reload.

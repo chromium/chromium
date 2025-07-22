@@ -20059,6 +20059,24 @@
             ]
         }
     ],
+    "ReloadSelectionModel": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReloadSelectionModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReloadTabUiResourcesIfChanged": [
         {
             "platforms": [
