@@ -737,6 +737,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopPasswordDetailsCoordinator];
   [self stopAutofillProfileEditCoordinator];
   [self stopNotificationsCoordinator];
+  [self stopBWGSettingsCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
@@ -772,6 +773,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showBWGSettingsPage {
   CHECK(IsPageActionMenuEnabled());
+  [self stopBWGSettingsCoordinator];
   self.BWGSettingsCoordinator = [[BWGSettingsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
