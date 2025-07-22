@@ -11627,6 +11627,7 @@ from previous Chrome versions.
   <int value="-909905655" label="AllowAllSitesToInitiateMirroring:disabled"/>
   <int value="-909351661" label="OmniboxOnFocusSuggestions:disabled"/>
   <int value="-908421850" label="PointerEvent:enabled"/>
+  <int value="-907968198" label="MediaIndicatorsAndroid:enabled"/>
   <int value="-907481658" label="ArcMouseWheelSmoothScroll:enabled"/>
   <int value="-907234795" label="NewAudioRenderingMixingStrategy:disabled"/>
   <int value="-906173229" label="AutofillEnableCardBenefitsSync:disabled"/>
@@ -16770,6 +16771,7 @@ from previous Chrome versions.
   <int value="1003419905" label="AutofillImprovedLabels:disabled"/>
   <int value="1003612981"
       label="AutofillAutoTriggerManualFallbackForCards:enabled"/>
+  <int value="1003673062" label="MediaIndicatorsAndroid:disabled"/>
   <int value="1004141182" label="SurfaceSyncThrottling:enabled"/>
   <int value="1004263091"
       label="AdaptiveButtonInTopToolbarCustomizationV2:enabled"/>

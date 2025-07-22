@@ -5010,6 +5010,10 @@ const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[] =
     "url given to it. This is an experimental feature and may reduce "
     "performance.";
 
+const char kMediaIndicatorsAndroidName[] = "Media Indicators Android";
+const char kMediaIndicatorsAndroidDescription[] =
+    "Enables media indicators on tablets.";
+
 const char kMiniOriginBarName[] = "Mini Origin Bar";
 const char kMiniOriginBarDescription[] =
     "Show a mini origin bar above the keyboard when focusing a form field. "

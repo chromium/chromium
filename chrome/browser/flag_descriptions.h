@@ -2894,6 +2894,9 @@ extern const char kMaliciousApkDownloadCheckDescription[];
 extern const char kMayLaunchUrlUsesSeparateStoragePartitionName[];
 extern const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[];
 
+extern const char kMediaIndicatorsAndroidName[];
+extern const char kMediaIndicatorsAndroidDescription[];
+
 extern const char kMiniOriginBarName[];
 extern const char kMiniOriginBarDescription[];
 

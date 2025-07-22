@@ -12853,6 +12853,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAndroidDataImporterService)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"media-indicators-android",
+     flag_descriptions::kMediaIndicatorsAndroidName,
+     flag_descriptions::kMediaIndicatorsAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kMediaIndicatorsAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-straight-to-srp",
      flag_descriptions::kLensOverlayStraightToSrpName,

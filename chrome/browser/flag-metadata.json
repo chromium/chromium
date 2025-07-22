@@ -6514,6 +6514,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "media-indicators-android",
+    "owners": ["polardz@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "media-picker-adoption",
     "owners": [ "finnur@google.com", "beverloo@google.com" ],
     "expiry_milestone": 140
