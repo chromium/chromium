@@ -57,15 +57,6 @@ found in the LICENSE file.
 
     <!-- Insertion point of the SiteSectionView, see NewTabPageLayout#insertSiteSection() -->
 
-    <!-- Site suggestion tile grid placeholder -->
-    <ViewStub
-        android:id="@+id/tile_grid_placeholder_stub"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inflatedId="@+id/tile_grid_placeholder"
-        android:layout="@layout/new_tab_page_tile_grid_placeholder" />
-
     <ViewStub
         android:id="@+id/home_modules_recycler_view_stub"
         android:layout_width="match_parent"

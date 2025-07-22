@@ -27,12 +27,4 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout="@layout/mv_tiles_layout" />
-
-  <!-- Site suggestion tile grid placeholder -->
-  <ViewStub
-      android:id="@+id/mv_tiles_placeholder_stub"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:inflatedId="@+id/tile_grid_placeholder"
-      android:layout="@layout/new_tab_page_tile_grid_placeholder" />
 </FrameLayout>

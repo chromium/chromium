@@ -19,14 +19,10 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.ViewStub;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,7 +47,6 @@ import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
@@ -61,7 +56,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -77,8 +71,6 @@ public class MostVisitedMediatorUnitTest {
     @Mock UiConfig mUiConfig;
     @Mock DisplayMetrics mDisplayMetrics;
     @Mock MostVisitedTilesLayout mMvTilesLayout;
-    @Mock ViewStub mNoMvPlaceholderStub;
-    @Mock View mNoMvPlaceholder;
     @Mock Tile mTile;
     @Mock SuggestionsTileView mTileView;
     @Mock SiteSuggestion mData;
@@ -89,7 +81,6 @@ public class MostVisitedMediatorUnitTest {
     @Mock TileGroup.Delegate mTileGroupDelegate;
     @Mock OfflinePageBridge mOfflinePageBridge;
     @Mock private Profile mProfile;
-    @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Runnable mSnapshotTileGridChangedRunnable;
     @Mock private Runnable mTileCountChangedRunnable;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
@@ -131,9 +122,6 @@ public class MostVisitedMediatorUnitTest {
                 .when(mTileGroupDelegate)
                 .setMostVisitedSitesObserver(any(MostVisitedSites.Observer.class), anyInt());
 
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
     }
 
@@ -149,36 +137,19 @@ public class MostVisitedMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)
     public void testOnTileCountChanged() {
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
-        ArrayList<SiteSuggestion> array = new ArrayList<>();
-        array.add(mData);
-        mMostVisitedSites.setTileSuggestions(array);
-
+        // When the there's no mv tile, the mvt section shouldn't be shown.
+        mMostVisitedSites.setTileSuggestions(new ArrayList<>());
         createMediator();
 
-        Assert.assertFalse(mMediator.isMVTilesCleanedUp());
-        Assert.assertTrue(mModel.get(IS_MVT_LAYOUT_VISIBLE));
-        Assert.assertNull(mModel.get(PLACEHOLDER_VIEW));
+        Assert.assertFalse(mModel.get(IS_CONTAINER_VISIBLE));
 
-        // When there's no mv tile and the default search engine doesn't have logo, the placeholder
-        // should be shown and the mv tiles layout should be hidden.
-        mMostVisitedSites.setTileSuggestions(new ArrayList<>());
-
-        mMediator.onTileCountChanged();
-
-        Assert.assertFalse(mModel.get(IS_MVT_LAYOUT_VISIBLE));
-        Assert.assertNotNull(mModel.get(PLACEHOLDER_VIEW));
-        verify(mTileCountChangedRunnable, atLeastOnce()).run();
-
-        // When there is mv tile and the default search engine doesn't have logo, the placeholder
-        // should be hidden and the mv tiles layout should be shown.
+        // When the there's mv tile, the mvt section should be shown.
         mMostVisitedSites.setTileSuggestions(JUnitTestGURLs.HTTP_URL.getSpec());
+        createMediator();
 
-        mMediator.onTileCountChanged();
-
-        Assert.assertTrue(mModel.get(IS_MVT_LAYOUT_VISIBLE));
-        Assert.assertNotNull(mModel.get(PLACEHOLDER_VIEW));
+        Assert.assertTrue(mModel.get(IS_CONTAINER_VISIBLE));
     }
 
     @Test
@@ -234,33 +205,6 @@ public class MostVisitedMediatorUnitTest {
 
         verify(mTileView).renderOfflineBadge(mTile);
         verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
-    }
-
-    @Test
-    public void testOnTemplateURLServiceChanged() {
-        mMostVisitedSites.setTileSuggestions(new ArrayList<>());
-        createMediator();
-
-        Assert.assertTrue(mModel.get(IS_MVT_LAYOUT_VISIBLE));
-        Assert.assertNull(mModel.get(PLACEHOLDER_VIEW));
-
-        // When the default search engine has logo and there's no mv tile, the placeholder
-        // should be hidden and the mv tiles layout should be shown.
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
-
-        mMediator.onTemplateURLServiceChanged();
-
-        Assert.assertFalse(mModel.get(IS_MVT_LAYOUT_VISIBLE));
-        Assert.assertNotNull(mModel.get(PLACEHOLDER_VIEW));
-
-        // When the default search engine doesn't have logo and there's no mv tile, the placeholder
-        // should be shown and the mv tiles layout should be hidden.
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-
-        mMediator.onTemplateURLServiceChanged();
-
-        Assert.assertTrue(mModel.get(IS_MVT_LAYOUT_VISIBLE));
-        Assert.assertNotNull(mModel.get(PLACEHOLDER_VIEW));
     }
 
     @Test
@@ -327,7 +271,6 @@ public class MostVisitedMediatorUnitTest {
         mMediator.destroy();
 
         verify(mMvTilesLayout).destroy();
-        verify(mTemplateUrlService).removeObserver(mMediator);
     }
 
     @Test
@@ -449,14 +392,11 @@ public class MostVisitedMediatorUnitTest {
         when(mMvTilesLayout.getTileAt(0)).thenReturn(mTileView);
         mMvTilesLayout.addTile(mTileView);
 
-        when(mNoMvPlaceholderStub.inflate()).thenReturn(mNoMvPlaceholder);
-
         mMediator =
                 new MostVisitedTilesMediator(
                         mResources,
                         mUiConfig,
                         mMvTilesLayout,
-                        mNoMvPlaceholderStub,
                         mTileRenderer,
                         mModel,
                         isTablet,

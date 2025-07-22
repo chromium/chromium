@@ -4021,12 +4021,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_RECENT_TABS" desc="Text for button to show 'Recent tabs', i.e. recently closed tabs and tabs that are open on other devices [CHAR_LIMIT=20]">
         Recent tabs
       </message>
-      <message name="IDS_MOST_VISITED_PLACEHOLDER_TITLE" desc="Header text shown on the new tab page when there are no most visited tiles yet.">
-        Nothing to see here… yet
-      </message>
-      <message name="IDS_MOST_VISITED_PLACEHOLDER_SUMMARY" desc="Explanation text shown on the new tab page when there are no most visited tiles yet.">
-        Your most visited pages will appear here
-      </message>
       <message name="IDS_MOST_VISITED_ITEM_REMOVED" desc="Text shown when the user removes one of the most visited websites on the new tab page.">
         Item removed
       </message>

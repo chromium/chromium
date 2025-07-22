@@ -86,7 +86,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                         activity.getResources(),
                         mUiConfig,
                         tilesLayout,
-                        mvTilesContainerLayout.findViewById(R.id.mv_tiles_placeholder_stub),
                         mRenderer,
                         propertyModel,
                         isTablet,
@@ -174,9 +173,5 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     public void onConfigurationChanged(Configuration newConfig) {
         mMediator.onConfigurationChanged();
         mUiConfig.updateDisplayStyle();
-    }
-
-    public void onTemplateURLServiceChangedForTesting() {
-        mMediator.onTemplateURLServiceChanged();
     }
 }
