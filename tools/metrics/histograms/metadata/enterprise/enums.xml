@@ -2253,6 +2253,7 @@ chromium-metrics-reviews@google.com.
   <int value="1382" label="LegacyCookieScopeEnabled"/>
   <int value="1383" label="LegacyCookieScopeEnabledForDomainList"/>
   <int value="1384" label="WebRtcPostQuantumKeyAgreement"/>
+  <int value="1385" label="DeviceLoginScreenSecurityKeyPermitAttestation"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

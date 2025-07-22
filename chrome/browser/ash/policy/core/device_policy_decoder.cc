@@ -666,6 +666,22 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       }
     }
   }
+
+  if (policy.has_deviceloginscreensecuritykeypermitattestation()) {
+    const em::StringListPolicyProto& container(
+        policy.deviceloginscreensecuritykeypermitattestation());
+
+    base::Value::List list;
+    if (container.has_value()) {
+      for (const auto& entry : container.value().entries()) {
+        list.Append(entry);
+      }
+    }
+
+    policies->Set(key::kDeviceLoginScreenSecurityKeyPermitAttestation,
+                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_CLOUD, base::Value(std::move(list)), nullptr);
+  }
 }
 
 base::Value::Dict DecodeDeviceLocalAccountInfoProto(

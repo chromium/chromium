@@ -99,6 +99,8 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
      key::kScreensaverLockScreenImageDisplayIntervalSeconds},
     {key::kDeviceScreensaverLoginScreenImages,
      key::kScreensaverLockScreenImages},
+    {key::kDeviceLoginScreenSecurityKeyPermitAttestation,
+     key::kSecurityKeyPermitAttestation},
 };
 
 const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {
