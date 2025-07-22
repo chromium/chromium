@@ -430,8 +430,6 @@ public abstract class ChromeFeatureList {
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
     public static final String HEADLESS_TAB_MODEL = "HeadlessTabModel";
-    public static final String HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON =
-            "HideTabletToolbarDownloadButton";
     public static final String HISTORY_JOURNEYS = "Journeys";
     public static final String HISTORY_PANE_ANDROID = "HistoryPaneAndroid";
     public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID =
@@ -894,8 +892,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sGridTabSwitcherUpdate =
             newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false, /* defaultValueInTests= */ true);
-    public static final CachedFlag sHideTabletToolbarDownloadButton =
-            newCachedFlag(HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON, true);
     public static final CachedFlag sHistoryPaneAndroid =
             newCachedFlag(
                     HISTORY_PANE_ANDROID,
@@ -1140,7 +1136,6 @@ public abstract class ChromeFeatureList {
                     sFullscreenInsetsApiMigrationOnAutomotive,
                     sGridTabSwitcherSurfaceColorUpdate,
                     sGridTabSwitcherUpdate,
-                    sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
                     sHomepageIsNewTabPagePolicyAndroid,
                     sHubSlideAnimation,

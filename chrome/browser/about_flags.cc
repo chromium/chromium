@@ -7757,11 +7757,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMostVisitedTilesReselectVariations,
                                     "kMostVisitedTilesReselect")},
 
-    {"hide-tablet-toolbar-download-button",
-     flag_descriptions::kHideTabletToolbarDownloadButtonName,
-     flag_descriptions::kHideTabletToolbarDownloadButtonDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kHideTabletToolbarDownloadButton)},
-
     {"show-new-tab-animations", flag_descriptions::kShowNewTabAnimationsName,
      flag_descriptions::kShowNewTabAnimationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShowNewTabAnimations)},

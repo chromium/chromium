@@ -7920,12 +7920,6 @@ const char kTaskManagerClankName[] = "Task Manager on Clank";
 const char kTaskManagerClankDescription[] =
     "Enables the Task Manager for Clank (Chrome on Android).";
 
-const char kHideTabletToolbarDownloadButtonName[] =
-    "Hide Tablet Toolbar Download Button";
-const char kHideTabletToolbarDownloadButtonDescription[] =
-    "Hides the Omnibox download button and shows it as a menu item for "
-    "tablets.";
-
 const char kShowNewTabAnimationsName[] = "Show New Tab Animations";
 const char kShowNewTabAnimationsDescription[] =
     "Shows new animations for creating tabs.";

@@ -5491,11 +5491,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "hide-tablet-toolbar-download-button",
-    "owners": [ "polardz@google.com", "pnoland@chromium.org"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "history-embeddings",
     "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "manukh@chromium.org", "johntlee@chromium.org" ],
     "expiry_milestone": 145

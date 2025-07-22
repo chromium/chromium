@@ -322,7 +322,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGridTabSwitcherUpdate,
     &kGroupNewTabWithParent,
     &kHeadlessTabModel,
-    &kHideTabletToolbarDownloadButton,
     &kHistoryPaneAndroid,
     &kHomepageIsNewTabPagePolicyAndroid,
     &kHubSlideAnimation,
@@ -1161,10 +1160,6 @@ BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPwaRestoreUiAtStartup,
              "PwaRestoreUiAtStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kHideTabletToolbarDownloadButton,
-             "HideTabletToolbarDownloadButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmahaMinSdkVersionAndroid,
              "OmahaMinSdkVersionAndroid",
