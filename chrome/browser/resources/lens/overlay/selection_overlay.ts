@@ -28,7 +28,7 @@ import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {ContextMenuOption, recordContextMenuOptionShown, recordLensOverlayInteraction} from './metrics_utils.js';
+import {ContextMenuOption, recordContextMenuOptionShown, recordLensOverlayInteraction, recordLensOverlaySelectionCloseButtonShown, recordLensOverlaySelectionCloseButtonUsed} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
 import type {OverlayBorderGlowElement} from './overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
@@ -350,6 +350,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private updateCursorPositionRequestId?: number;
   private onPointerMoveRequestId?: number;
   private handleResizeRequestId?: number;
+
+  // Whether the close button used metric was recorded in this session.
+  private closeButtonUsedRecorded = false;
 
   declare private theme: OverlayTheme;
 
@@ -1420,10 +1423,24 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private onNotifyResultsPanelOpened() {
+    assert(!this.sidePanelOpened);
+    // If back to page is enabled, the close button should be showing on the
+    // selection overlay. Record this as a close button impression if the side
+    // panel was not already opened.
+    if (this.isBackToPageEnabled) {
+      recordLensOverlaySelectionCloseButtonShown(INVOCATION_SOURCE);
+    }
     this.sidePanelOpened = true;
   }
 
   private onCloseButtonClick() {
+    // If the user manages to click the close button multiple times, only
+    // record the first click. This is to avoid overcounting the number of
+    // times the close button is used.
+    if (!this.closeButtonUsedRecorded) {
+      recordLensOverlaySelectionCloseButtonUsed(INVOCATION_SOURCE);
+      this.closeButtonUsedRecorded = true;
+    }
     this.browserProxy.handler.closeRequestedByOverlayCloseButton();
   }
 
