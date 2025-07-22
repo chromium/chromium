@@ -93,7 +93,7 @@ defaults.set(
     cpu = cpu.X86_64,
     build_numbers = True,
     contact_team_email = "webrtc-infra@google.com",
-    execution_timeout = 2 * time.hour,
+    execution_timeout = 3 * time.hour,
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,

@@ -61,7 +61,7 @@ defaults.set(
     cpu = cpu.X86_64,
     build_numbers = True,
     contact_team_email = "webrtc-infra@google.com",
-    execution_timeout = 2 * time.hour,
+    execution_timeout = 3 * time.hour,
     properties = {
         "perf_dashboard_machine_group": "ChromiumWebRTC",
     },
