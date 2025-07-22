@@ -517,7 +517,6 @@ void EventTarget::SetDefaultAddEventListenerOptions(
 
 Observable* EventTarget::when(const AtomicString& event_type,
                               const ObservableEventListenerOptions* options) {
-  DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled());
   return MakeGarbageCollected<Observable>(
       GetExecutionContext(), MakeGarbageCollected<ObservableSubscribeDelegate>(
                                  this, event_type, options));

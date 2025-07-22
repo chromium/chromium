@@ -10578,10 +10578,6 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootCrOSSOUL")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"observable-api", flag_descriptions::kObservableAPIName,
-     flag_descriptions::kObservableAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kObservableAPI)},
-
     {"menu-elements", flag_descriptions::kMenuElementsName,
      flag_descriptions::kMenuElementsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kMenuElements)},

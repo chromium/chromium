@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -2587,7 +2586,6 @@ Observable::Observable(ExecutionContext* execution_context,
       subscribe_callback_(subscribe_callback) {
   DCHECK(subscribe_callback_);
   DCHECK(!subscribe_delegate_);
-  DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled(execution_context));
 }
 
 Observable::Observable(ExecutionContext* execution_context,
@@ -2596,7 +2594,6 @@ Observable::Observable(ExecutionContext* execution_context,
       subscribe_delegate_(subscribe_delegate) {
   DCHECK(!subscribe_callback_);
   DCHECK(subscribe_delegate_);
-  DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled(execution_context));
 }
 
 void Observable::subscribe(ScriptState* script_state,

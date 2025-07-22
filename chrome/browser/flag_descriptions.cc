@@ -2144,11 +2144,6 @@ const char kGoogleOneOfferFilesBannerName[] = "Google One offer Files banner";
 const char kGoogleOneOfferFilesBannerDescription[] =
     "Shows a Files banner about Google One offer.";
 
-const char kObservableAPIName[] = "Observable API";
-const char kObservableAPIDescription[] =
-    "A reactive programming primitive for ergonomically handling streams of "
-    "async data. See https://github.com/WICG/observable.";
-
 const char kMenuElementsName[] = "Menu Elements";
 const char kMenuElementsDescription[] =
     "A suite of new HTML elements that support customizable, accessible menus. "

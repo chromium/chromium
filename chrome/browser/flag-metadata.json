@@ -7042,11 +7042,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "observable-api",
-    "owners": [ "dom@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "offer-migration-to-dice-users",
     "owners": [ "ankushkush@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 145

@@ -3309,11 +3309,6 @@
       status: "stable",
     },
     {
-      name: "ObservableAPI",
-      status: "stable",
-      public: true,
-    },
-    {
       name: "OffMainThreadCSSPaint",
       status: "stable",
     },
