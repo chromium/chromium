@@ -8,6 +8,7 @@
 
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/dom_distiller/core/url_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
@@ -149,7 +150,7 @@ void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
         dse->ExtractSearchTermsFromURL(match.destination_url,
                                        url_service->search_terms_data(),
                                        &match.contents);
-        // Upgrade Verbatim Match to a SEARCH_WHAY_YOU_TYPED.
+        // Upgrade Verbatim Match to a SEARCH_WHAT_YOU_TYPED.
         match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
         match.keyword = dse->keyword();
         match.fill_into_edit = match.contents;
@@ -161,6 +162,22 @@ void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
             match.description_class.push_back({0, ACMatchClassification::NONE});
           }
         }
+      }
+    } else {
+      // URL suggestion here does not come from the default search engine.
+      // Ensure that distilled URL is transformed to original URL for
+      // fill_into_edit and contents fields of the suggestion.
+      if (dom_distiller::url_utils::IsDistilledPage(match.destination_url)) {
+        GURL original_url =
+            dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
+                match.destination_url);
+        match.fill_into_edit = base::UTF8ToUTF16(original_url.spec());
+        match.contents = url_formatter::FormatUrl(
+            original_url,
+            url_formatter::kFormatUrlOmitDefaults |
+                url_formatter::kFormatUrlOmitHTTPS |
+                url_formatter::kFormatUrlOmitTrivialSubdomains,
+            base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
       }
     }
   }

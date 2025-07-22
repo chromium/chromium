@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -35,6 +36,7 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -196,7 +198,8 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Copy");
         Tab tab = assumeNonNull(mTabSupplier.get());
         HistoryClustersTabHelper.onCurrentTabUrlCopied(tab.getWebContents());
-        Clipboard.getInstance().copyUrlToClipboard(suggestion.getUrl());
+        GURL cleanUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(suggestion.getUrl());
+        Clipboard.getInstance().copyUrlToClipboard(cleanUrl);
     }
 
     /** Invoked when user interacts with Edit action button. */
