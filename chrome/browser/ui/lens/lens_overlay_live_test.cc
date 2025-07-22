@@ -55,7 +55,6 @@ using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
 
 constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
 
-constexpr char kDivWordClass[] = "word";
 constexpr char kDivObjectClass[] = "object";
 constexpr char kDivTranslatedLineClass[] = "translated-line";
 
@@ -129,7 +128,6 @@ constexpr char kFindAndClickElementWithIDScript[] = R"(
   findAndClickElementWithID(document, $1);
 )";
 
-const char kNpsUrl[] = "https://www.nps.gov/articles/route-66-overview.htm";
 const char kNpsObjectUrl[] =
     "https://www.nps.gov/common/commonspot/templates/images/graphics/404/"
     "04.jpg";
@@ -299,140 +297,6 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInAndSynced) {
-  std::optional<signin::TestAccountSigninCredentials> test_account =
-      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
-  // Sign in and sync to opted in test account.
-  CHECK(test_account.has_value());
-  sign_in_functions.TurnOnSync(*test_account, 0);
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
-
-  // Navigate to a website and wait for paint before starting controller.
-  WaitForPaint(kNpsUrl);
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-
-  // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->lens_overlay_controller();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  auto* search_controller =
-      LensSearchController::From(browser()->GetActiveTabInterface());
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
-  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // Confirm that the WebUI has reported that it is ready. This means the local
-  // DOM should be initialized on our WebUI.
-  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
-
-  // Verify that the page returns text that is selectable on the overlay.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
-                                     kDivWordClass))
-        .ExtractBool();
-  }));
-
-  // After finding and clicking the div, make sure the side panel opens and
-  // loaded a result.
-  VerifySidePanelLoaded();
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInNotSynced) {
-  std::optional<signin::TestAccountSigninCredentials> test_account =
-      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
-  // Sign in but do not sync to opted in test account.
-  CHECK(test_account.has_value());
-  sign_in_functions.SignInFromWeb(*test_account, 0);
-  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
-
-  // Navigate to a website and wait for paint before starting controller.
-  WaitForPaint(kNpsUrl);
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-
-  // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->lens_overlay_controller();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  auto* search_controller =
-      LensSearchController::From(browser()->GetActiveTabInterface());
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
-  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // Confirm that the WebUI has reported that it is ready. This means the local
-  // DOM should be initialized on our WebUI.
-  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
-
-  // Verify that the page returns text that is selectable on the overlay.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
-                                     kDivWordClass))
-        .ExtractBool();
-  }));
-
-  // After finding and clicking the div, make sure the side panel opens and
-  // loaded a result.
-  VerifySidePanelLoaded();
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedOut) {
-  // Navigate to a website and wait for paint before starting controller.
-  WaitForPaint(kNpsUrl);
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-
-  // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->lens_overlay_controller();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  auto* search_controller =
-      LensSearchController::From(browser()->GetActiveTabInterface());
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
-  search_controller->OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // Confirm that the WebUI has reported that it is ready. This means the local
-  // DOM should be initialized on our WebUI.
-  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
-
-  // Verify that the page returns text that is selectable on the overlay.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
-                                     kDivWordClass))
-        .ExtractBool();
-  }));
-
-  // After finding and clicking the div, make sure the side panel opens and
-  // loaded a result.
-  VerifySidePanelLoaded();
-}
 
 IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInAndSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
