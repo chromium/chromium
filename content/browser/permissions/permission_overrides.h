@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
@@ -32,37 +33,42 @@ class CONTENT_EXPORT PermissionOverrides {
   PermissionOverrides(const PermissionOverrides&) = delete;
   PermissionOverrides& operator=(const PermissionOverrides&) = delete;
 
-  // Set permission override for |permission| at |origin| to |status|.
-  // Null |origin| specifies global overrides.
-  void Set(base::optional_ref<const url::Origin> origin,
+  // Set permission override for |permission| at |requesting_origin| and
+  // |embedding_origin| to |status|. Null |requesting_origin| and
+  // |embedding_origin| specifies global overrides.
+  // |requesting_origin| and |embedding_origin| must either both be null or both
+  // be non-null.
+  void Set(base::optional_ref<const url::Origin> requesting_origin,
+           base::optional_ref<const url::Origin> embedding_origin,
            blink::PermissionType permission,
            const blink::mojom::PermissionStatus& status);
 
-  // Get override for |origin| set for |permission|, if specified.
+  // Get override for |requesting_origin| and |embedding_origin| set for
+  // |permission|, if specified.
   std::optional<blink::mojom::PermissionStatus> Get(
-      const url::Origin& origin,
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin,
       blink::PermissionType permission) const;
 
-  // Sets status for |permissions| to GRANTED in |origin|, and DENIED
-  // for all others.
-  // Null |origin| grants permissions globally for context.
-  void GrantPermissions(base::optional_ref<const url::Origin> origin,
+  // Sets status for |permissions| to GRANTED in |requesting_origin| and
+  // |embedding_origin|, and DENIED for all others. Null |requesting_origin| and
+  // |embedding_origin| grants permissions globally for context.
+  // |requesting_origin| and |embedding_origin| must either both be null or both
+  // be non-null.
+  void GrantPermissions(base::optional_ref<const url::Origin> requesting_origin,
+                        base::optional_ref<const url::Origin> embedding_origin,
                         const std::vector<blink::PermissionType>& permissions);
 
  private:
   // Represents a canonical key for permission overrides.
-  // TODO(crbug.com/421149173): Update PermissionKey to also store both an
-  // embedding and requesting site tuple.
   class PermissionKey {
    public:
-    // Constructor for specific origin scopes and permission types.
-    // Null |origin| means the key's scope is considered global for |type|.
-    PermissionKey(base::optional_ref<const url::Origin> origin,
+    PermissionKey(base::optional_ref<const url::Origin> requesting_origin,
+                  base::optional_ref<const url::Origin> embedding_origin,
                   blink::PermissionType type);
 
-    // Constructor for a global key specific to a permission type.
-    // Delegates to the primary constructor, signaling a global scope with null
-    // origin.
+    // Constructor for a global key specific to a permission type. Delegates to
+    // the primary constructor, signaling a global scope.
     explicit PermissionKey(blink::PermissionType);
 
     PermissionKey();
@@ -83,7 +89,18 @@ class CONTENT_EXPORT PermissionOverrides {
     struct GlobalKey {
       friend auto operator<=>(const GlobalKey&, const GlobalKey&) = default;
     };
-    std::variant<GlobalKey, url::Origin> scope_;
+    using PermissionScope =
+        std::variant<GlobalKey,
+                     url::Origin,
+                     std::pair<net::SchemefulSite, net::SchemefulSite>,
+                     std::pair<url::Origin, net::SchemefulSite>>;
+
+    static PermissionScope MakeScopeData(
+        base::optional_ref<const url::Origin> requesting_origin,
+        base::optional_ref<const url::Origin> embedding_origin,
+        blink::PermissionType type);
+
+    PermissionScope scope_;
     blink::PermissionType type_;
   };
 

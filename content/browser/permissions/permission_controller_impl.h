@@ -54,6 +54,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   // For the given |origin|, grant permissions in |overrides| and reject all
   // others. If no |origin| is specified, grant permissions to all origins in
   // the browser context.
+  // TODO(crbug.com/427175363): Update SetOverrideForDevTools and
+  // GrantOverridesForDevTools to accept a requesting and embedding origin.
   OverrideStatus GrantOverridesForDevTools(
       const std::optional<url::Origin>& origin,
       const std::vector<PermissionType>& permissions);
