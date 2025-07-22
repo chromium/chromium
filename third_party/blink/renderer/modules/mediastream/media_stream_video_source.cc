@@ -559,7 +559,6 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
   return false;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamVideoSource::ApplySubCaptureTarget(
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,
@@ -574,7 +573,6 @@ std::optional<uint32_t>
 MediaStreamVideoSource::GetNextSubCaptureTargetVersion() {
   return std::nullopt;
 }
-#endif
 
 uint32_t MediaStreamVideoSource::GetSubCaptureTargetVersion() const {
   return 0;

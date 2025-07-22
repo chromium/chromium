@@ -31,7 +31,6 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 
   ~BrowserCaptureMediaStreamTrack() override = default;
 
-#if !BUILDFLAG(IS_ANDROID)
   void Trace(Visitor*) const override;
 
   // Allows tests to invoke OnSubCaptureTargetVersionObserved() directly, since
@@ -40,7 +39,6 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
       uint32_t sub_capture_target_version) {
     OnSubCaptureTargetVersionObserved(sub_capture_target_version);
   }
-#endif
 
   ScriptPromise<IDLUndefined> cropTo(ScriptState*,
                                      CropTarget*,
@@ -76,7 +74,6 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
                                                     SubCaptureTarget*,
                                                     ExceptionState&);
 
-#if !BUILDFLAG(IS_ANDROID)
   struct PromiseInfo : GarbageCollected<PromiseInfo> {
     explicit PromiseInfo(
         ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult,
@@ -139,7 +136,6 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   // Note that frames before the first call to cropTo() will be associated
   // with a version of 0, both here and in Viz.
   HeapHashMap<uint32_t, Member<PromiseInfo>> pending_promises_;
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace blink

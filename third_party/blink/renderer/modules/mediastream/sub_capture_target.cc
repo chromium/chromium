@@ -18,11 +18,6 @@ MediaDevices* SubCaptureTarget::GetMediaDevices(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-#if BUILDFLAG(IS_ANDROID)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return nullptr;
-#else
   if (!script_state || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid state.");
@@ -66,7 +61,6 @@ MediaDevices* SubCaptureTarget::GetMediaDevices(
   }
 
   return media_devices;
-#endif
 }
 
 SubCaptureTarget::SubCaptureTarget(Type type, String id)

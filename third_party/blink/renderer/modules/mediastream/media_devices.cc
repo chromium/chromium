@@ -191,7 +191,7 @@ enum class DisplayCapturePolicyResult {
   kMaxValue = kAllowed
 };
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ProduceTargetFunctionResult {
@@ -237,7 +237,7 @@ void RecordUma(SubCaptureTarget::Type type, ProduceTargetPromiseResult result) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 // When `blink::features::kGetDisplayMediaRequiresUserActivation` is enabled,
 // calls to `getDisplayMedia()` will require a transient user activation. This
@@ -321,7 +321,7 @@ bool IsExtensionScreenSharingFunctionCall(const MediaStreamConstraints* options,
 
   return !exception_state.HadException() && map.Contains("chromeMediaSourceId");
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 MediaStreamConstraints* ToMediaStreamConstraints(
     const UserMediaStreamConstraints* source) {
@@ -379,7 +379,7 @@ bool EqualDeviceForDeviceChange(const WebMediaDeviceInfo& lhs,
          lhs.group_id == rhs.group_id && lhs.IsAvailable() == rhs.IsAvailable();
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 base::Token SubCaptureTargetIdToToken(const WTF::String& id) {
   if (id.empty()) {
     return base::Token();
@@ -392,7 +392,7 @@ base::Token SubCaptureTargetIdToToken(const WTF::String& id) {
   DCHECK(!token.is_zero());
   return token;
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 media::MediaPermission::Type ToMediaPermissionType(
     mojom::blink::MediaDeviceType media_device_type) {
@@ -557,7 +557,7 @@ ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
     resolver->RecordAndDetach(UserMediaRequestResult::kInvalidConstraints);
     return promise;
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   auto* callbacks =
       MakeGarbageCollected<PromiseResolverCallbacks<IDLResolvedType>>(
@@ -595,7 +595,7 @@ ScriptPromise<IDLResolvedType> MediaDevices::SendUserMediaRequest(
   if (media_type == UserMediaRequestType::kDisplayMedia) {
     window->ConsumeDisplayCaptureRequestToken();
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   request->Start();
   return promise;
@@ -1008,7 +1008,7 @@ ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
   RecordUma(SubCaptureTarget::Type::kCropTarget,
             ProduceTargetFunctionResult::kPromiseProduced);
   return promise;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
@@ -1074,7 +1074,7 @@ ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
   RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
             ProduceTargetFunctionResult::kPromiseProduced);
   return promise;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 const AtomicString& MediaDevices::InterfaceName() const {
@@ -1414,10 +1414,15 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(scheduled_events_);
   visitor->Trace(enumerate_device_requests_);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_IOS)
   visitor->Trace(crop_target_resolvers_);
+#endif  // !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   visitor->Trace(restriction_target_resolvers_);
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   Supplement<Navigator>::Trace(visitor);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
@@ -1459,6 +1464,32 @@ void MediaDevices::CloseFocusWindowOfOpportunity(
   GetDispatcherHost(window->GetFrame()).CloseFocusWindowOfOpportunity(id);
 }
 
+void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
+                                                   const WTF::String& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(element);  // Persistent.
+
+  const auto it = restriction_target_resolvers_.find(element);
+  CHECK_NE(it, restriction_target_resolvers_.end());
+  ScriptPromiseResolver<RestrictionTarget>* const resolver = it->value;
+  restriction_target_resolvers_.erase(it);
+
+  const base::Token token = SubCaptureTargetIdToToken(id);
+  if (token.is_zero()) {
+    resolver->Reject();
+    RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
+              ProduceTargetPromiseResult::kPromiseRejected);
+    return;
+  }
+
+  element->SetRestrictionTargetId(std::make_unique<RestrictionTargetId>(token));
+  resolver->Resolve(MakeGarbageCollected<RestrictionTarget>(id));
+  RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
+            ProduceTargetPromiseResult::kPromiseResolved);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_IOS)
 // Checks whether the production of a SubCaptureTarget of the given type is
 // allowed. Throw an appropriate exception if not.
 bool MediaDevices::MayProduceSubCaptureTarget(ScriptState* script_state,
@@ -1525,29 +1556,6 @@ void MediaDevices::ResolveCropTargetPromise(Element* element,
             ProduceTargetPromiseResult::kPromiseResolved);
 }
 
-void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
-                                                   const WTF::String& id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(element);  // Persistent.
-
-  const auto it = restriction_target_resolvers_.find(element);
-  CHECK_NE(it, restriction_target_resolvers_.end());
-  ScriptPromiseResolver<RestrictionTarget>* const resolver = it->value;
-  restriction_target_resolvers_.erase(it);
-
-  const base::Token token = SubCaptureTargetIdToToken(id);
-  if (token.is_zero()) {
-    resolver->Reject();
-    RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
-              ProduceTargetPromiseResult::kPromiseRejected);
-    return;
-  }
-
-  element->SetRestrictionTargetId(std::make_unique<RestrictionTargetId>(token));
-  resolver->Resolve(MakeGarbageCollected<RestrictionTarget>(id));
-  RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
-            ProduceTargetPromiseResult::kPromiseResolved);
-}
-#endif
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace blink

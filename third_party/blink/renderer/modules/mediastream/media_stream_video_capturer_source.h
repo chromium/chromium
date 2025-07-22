@@ -97,7 +97,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback) override;
   std::optional<uint32_t> GetNextSubCaptureTargetVersion() override;
-#endif
+#endif  // #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   uint32_t GetSubCaptureTargetVersion() const override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
 

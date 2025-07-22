@@ -27,8 +27,6 @@ namespace blink {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
-
 using ApplySubCaptureTargetResult =
     BrowserCaptureMediaStreamTrack::ApplySubCaptureTargetResult;
 
@@ -112,8 +110,6 @@ void ResolveApplySubCaptureTargetPromiseHelper(
   NOTREACHED();
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 
 BrowserCaptureMediaStreamTrack::BrowserCaptureMediaStreamTrack(
@@ -135,12 +131,10 @@ BrowserCaptureMediaStreamTrack::BrowserCaptureMediaStreamTrack(
                            ready_state,
                            std::move(callback)) {}
 
-#if !BUILDFLAG(IS_ANDROID)
 void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(pending_promises_);
   MediaStreamTrackImpl::Trace(visitor);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 ScriptPromise<IDLUndefined> BrowserCaptureMediaStreamTrack::cropTo(
     ScriptState* script_state,
@@ -202,14 +196,6 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
     resolver->SetResultSuffix("Result2");
   }
   auto promise = resolver->Promise();
-
-#if BUILDFLAG(IS_ANDROID)
-  resolver->Reject<DOMException>(
-      MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
-                                         "Not supported on Android."),
-      ApplySubCaptureTargetResult::kUnsupportedPlatform);
-  return promise;
-#else
 
   const std::optional<base::Token> token =
       IdStringToToken(target ? target->GetId() : String());
@@ -276,10 +262,8 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
                     WrapWeakPersistent(this), sub_capture_target_version));
 
   return promise;
-#endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
     uint32_t sub_capture_target_version,
     media::mojom::ApplySubCaptureTargetResult result) {
@@ -352,6 +336,5 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   pending_promises_.erase(iter);
   ResolveApplySubCaptureTargetPromiseHelper(resolver, result);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

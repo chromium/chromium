@@ -236,7 +236,7 @@ MediaStreamVideoCapturerSource::GetNextSubCaptureTargetVersion() {
   }
   return ++current_sub_capture_target_version_;
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 uint32_t MediaStreamVideoCapturerSource::GetSubCaptureTargetVersion() const {
   return current_sub_capture_target_version_;
