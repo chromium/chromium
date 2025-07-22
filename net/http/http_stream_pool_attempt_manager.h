@@ -243,13 +243,6 @@ class HttpStreamPool::AttemptManager
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
 
-  // TODO(crbug.com/383606724): Remove this once we move unittests from
-  // HttpStreamPoolAttemptManagerTest to
-  // HttpStreamPoolIPEndPointStateTrackerTest
-  const IPEndPointStateTracker& ip_endpoint_state_tracker() const {
-    return ip_endpoint_state_tracker_;
-  }
-
   std::optional<int> GetQuicAttemptResultForTesting() {
     return quic_attempt_result_;
   }
