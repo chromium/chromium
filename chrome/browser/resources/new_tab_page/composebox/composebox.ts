@@ -67,7 +67,10 @@ export class ComposeboxElement extends I18nMixinLit
       attachmentFileTypes_: {type: String},
       files_: {type: Object},
       imageFileTypes_: {type: String},
-      inputsDisabled_: {type: Boolean},
+      inputsDisabled_: {
+        reflect: true,
+        type: Boolean,
+      },
       submitEnabled_: {
         reflect: true,
         type: Boolean,

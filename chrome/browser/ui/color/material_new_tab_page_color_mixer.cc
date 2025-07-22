@@ -62,6 +62,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageComposeboxUploadButton] = {
       dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
                 : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorNewTabPageComposeboxUploadButtonDisabled] = {
+      dark_mode ? SkColorSetRGB(0x56, 0x59, 0x5E)
+                : SkColorSetRGB(0xAD, 0xAF, 0xB8)};
   mixer[kColorNewTabPageComposeboxFileChipBackground] = {
       dark_mode ? SkColorSetRGB(0x2A, 0x2B, 0x36)
                 : SkColorSetRGB(0xE1, 0xE3, 0xE8)};

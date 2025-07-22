@@ -160,6 +160,10 @@
   opacity: 1;
 }
 
+:host([inputs-disabled_]) .upload-icon {
+  color: var(--color-new-tab-page-composebox-upload-button-disabled);
+}
+
 #imageUploadButton {
   --cr-icon-button-margin-start: -12px;
 }
