@@ -48,6 +48,9 @@ OffTheRecordProfileIOSImpl::OffTheRecordProfileIOSImpl(
 
 OffTheRecordProfileIOSImpl::~OffTheRecordProfileIOSImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Notify the callback of the profile destruction before destroying anything.
+  NotifyProfileDestroyed();
+
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
   if (pref_proxy_config_tracker_) {

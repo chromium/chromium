@@ -136,6 +136,9 @@ TestProfileIOS::~TestProfileIOS() {
   // Allows blocking in this scope for testing.
   base::ScopedAllowBlockingForTesting allow_bocking;
 
+  // Notify the callback of the profile destruction before destroying anything.
+  NotifyProfileDestroyed();
+
   // If this TestProfileIOS owns an incognito TestProfileIOS,
   // tear it down first.
   otr_profile_.reset();

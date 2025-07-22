@@ -321,6 +321,9 @@ ProfileIOSImpl::ProfileIOSImpl(
 
 ProfileIOSImpl::~ProfileIOSImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Notify the callback of the profile destruction before destroying anything.
+  NotifyProfileDestroyed();
+
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
   // Warning: the order for shutting down the BrowserState objects is important

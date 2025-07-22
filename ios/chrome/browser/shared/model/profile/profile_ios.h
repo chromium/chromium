@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -172,13 +173,23 @@ class ProfileIOS : public web::BrowserState {
   void UpdateCorsExemptHeader(
       network::mojom::NetworkContextParams* params) final;
 
+  // Register callback to be invoked when the Profile is destroyed.
+  base::CallbackListSubscription RegisterProfileDestroyedCallback(
+      base::OnceClosure callback);
+
  protected:
   explicit ProfileIOS(const base::FilePath& state_path,
                       std::string_view profile_name,
                       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
+  // Notify all callbacks registered that the ProfileIOS will be destroyed.
+  void NotifyProfileDestroyed();
+
   // ProfileIOS is sequence-affine.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Callbacks that will be called before the destruction of the ProfileIOS.
+  base::OnceClosureList profile_destroyed_callbacks_;
 
  private:
   base::FilePath const state_path_;

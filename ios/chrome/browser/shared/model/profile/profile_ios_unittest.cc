@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
+#include "base/run_loop.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -34,6 +35,20 @@ TEST_F(ProfileIOSTest, CorsExemptHeader) {
     EXPECT_EQ(expected_params->cors_exempt_header_list[i],
               actual_params->cors_exempt_header_list[i]);
   }
+}
+
+// Tests that RegisterProfileDestroyedCallback(...) works.
+TEST_F(ProfileIOSTest, RegisterProfileDestroyedCallback) {
+  web::WebTaskEnvironment task_environment;
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+
+  base::RunLoop run_loop;
+  base::CallbackListSubscription subscription =
+      profile->RegisterProfileDestroyedCallback(run_loop.QuitClosure());
+  profile.reset();
+
+  // The profile must have called the closure.
+  run_loop.Run();
 }
 
 }  // namespace
