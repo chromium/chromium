@@ -176,11 +176,9 @@ bool MediaCodecAudioDecoder::CreateMediaCodecLoop() {
   DVLOG(1) << __func__ << ": config:" << config_.AsHumanReadableString();
 
   codec_loop_.reset();
-  const base::android::JavaRef<jobject>& media_crypto =
-      media_crypto_ ? *media_crypto_ : nullptr;
   std::unique_ptr<MediaCodecBridge> audio_codec_bridge(
       MediaCodecBridgeImpl::CreateAudioDecoder(
-          config_, media_crypto,
+          config_, media_crypto_,
           base::BindPostTaskToCurrentDefault(
               base::BindRepeating(&MediaCodecAudioDecoder::PumpMediaCodecLoop,
                                   weak_factory_.GetWeakPtr()))));
@@ -298,14 +296,14 @@ void MediaCodecAudioDecoder::OnCdmContextEvent(CdmContext::Event event) {
 
 void MediaCodecAudioDecoder::OnMediaCryptoReady(
     InitCB init_cb,
-    JavaObjectPtr media_crypto,
+    base::android::ScopedJavaGlobalRef<jobject> media_crypto,
     bool /*requires_secure_video_codec*/) {
   DVLOG(1) << __func__;
 
   DCHECK(state_ == STATE_WAITING_FOR_MEDIA_CRYPTO);
   DCHECK(media_crypto);
 
-  if (media_crypto->is_null()) {
+  if (!media_crypto) {
     LOG(ERROR) << "MediaCrypto is not available, can't play encrypted stream.";
     SetState(STATE_UNINITIALIZED);
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);

@@ -220,12 +220,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
     // If there is a CDM available, then we expect that MCVD will be waiting
     // for the media crypto object.
-    // TODO(liberato): why does CreateJavaObjectPtr() not link?
     if (cdm_ && cdm_->media_crypto_ready_cb_) {
       std::move(cdm_->media_crypto_ready_cb_)
-          .Run(std::make_unique<base::android::ScopedJavaGlobalRef<jobject>>(
-                   media_crypto_),
-               require_secure_video_decoder_);
+          .Run(media_crypto_, require_secure_video_decoder_);
       // The callback is consumed, mark that we ran it so tests can verify.
       cdm_->ran_media_crypto_ready_cb_ = true;
       base::RunLoop().RunUntilIdle();

@@ -125,9 +125,10 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   // Called when the Cdm provides |media_crypto|.  Will signal |init_cb| based
   // on the result, and set the codec config properly.
-  void OnMediaCryptoReady(InitCB init_cb,
-                          JavaObjectPtr media_crypto,
-                          bool requires_secure_video_codec);
+  void OnMediaCryptoReady(
+      InitCB init_cb,
+      base::android::ScopedJavaGlobalRef<jobject> media_crypto,
+      bool requires_secure_video_codec);
 
   enum class State {
     // Initializing resources required to create a codec.

@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "media/base/android/android_util.h"
 #include "media/base/media_drm_storage.h"
 #include "url/origin.h"
 
@@ -73,12 +72,14 @@ class MediaDrmStorageBridge {
                    const base::android::JavaParamRef<jobject>& j_callback);
 
  private:
-  void RunAndroidBoolCallback(JavaObjectPtr j_callback, bool success);
+  void RunAndroidBoolCallback(
+      base::android::ScopedJavaGlobalRef<jobject> j_callback,
+      bool success);
   void OnInitialized(InitCB init_cb,
                      bool success,
                      const MediaDrmStorage::MediaDrmOriginId& origin_id);
   void OnSessionDataLoaded(
-      JavaObjectPtr j_callback,
+      const base::android::ScopedJavaGlobalRef<jobject>& j_callback,
       const std::string& session_id,
       std::unique_ptr<MediaDrmStorage::SessionData> session_data);
 

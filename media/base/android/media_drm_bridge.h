@@ -20,7 +20,6 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "base/version.h"
-#include "media/base/android/android_util.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/android/media_crypto_context_impl.h"
 #include "media/base/android/media_drm_storage_bridge.h"
@@ -351,7 +350,8 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   HdcpVersion GetCurrentHdcpLevel();
 
   // A helper method that is called when MediaCrypto is ready.
-  void NotifyMediaCryptoReady(JavaObjectPtr j_media_crypto);
+  void NotifyMediaCryptoReady(
+      base::android::ScopedJavaGlobalRef<jobject> j_media_crypto);
 
   // Sends HTTP provisioning request to a provisioning server.
   void SendProvisioningRequest(const GURL& default_url,
@@ -375,11 +375,10 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // Java MediaCrypto instance. Possible values are:
   // !j_media_crypto_:
   //   MediaCrypto creation has not been notified via NotifyMediaCryptoReady().
-  // !j_media_crypto_->is_null():
+  //   Or: MediaCrypto creation failed and it has been notified.
+  // !j_media_crypto_.is_null():
   //   MediaCrypto creation succeeded and it has been notified.
-  // j_media_crypto_->is_null():
-  //   MediaCrypto creation failed and it has been notified.
-  JavaObjectPtr j_media_crypto_;
+  base::android::ScopedJavaGlobalRef<jobject> j_media_crypto_;
 
   // The callback to create a ProvisionFetcher.
   CreateFetcherCB create_fetcher_cb_;
