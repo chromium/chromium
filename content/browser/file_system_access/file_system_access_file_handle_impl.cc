@@ -191,7 +191,8 @@ void FileSystemAccessFileHandleImpl::CreateFileWriter(
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
+  // TODO(crbug.com/40276567): Review whether to switch to write-only.
+  RunWithReadWritePermission(
       base::BindOnce(&FileSystemAccessFileHandleImpl::CreateFileWriterImpl,
                      weak_factory_.GetWeakPtr(), keep_existing_data, auto_close,
                      mode),
@@ -212,7 +213,8 @@ void FileSystemAccessFileHandleImpl::Move(
   RenderFrameHost* rfh = RenderFrameHost::FromID(context().frame_id);
   bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
 
-  RunWithWritePermission(
+  // TODO(crbug.com/40276567): Review whether to switch to write-only.
+  RunWithReadWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoMove,
                      weak_factory_.GetWeakPtr(),
                      std::move(destination_directory), new_entry_name,
@@ -231,7 +233,8 @@ void FileSystemAccessFileHandleImpl::Rename(const std::string& new_entry_name,
   RenderFrameHost* rfh = RenderFrameHost::FromID(context().frame_id);
   bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
 
-  RunWithWritePermission(
+  // TODO(crbug.com/40276567): Review whether to switch to write-only.
+  RunWithReadWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRename,
                      weak_factory_.GetWeakPtr(), new_entry_name,
                      has_transient_user_activation),
@@ -245,7 +248,8 @@ void FileSystemAccessFileHandleImpl::Rename(const std::string& new_entry_name,
 void FileSystemAccessFileHandleImpl::Remove(RemoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
+  // TODO(crbug.com/40276567): Review whether to switch to write-only.
+  RunWithReadWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
                      weak_factory_.GetWeakPtr(), url(), /*recurse=*/false),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -312,7 +316,8 @@ void FileSystemAccessFileHandleImpl::DidTakeAccessHandleLock(
                            weak_factory_.GetWeakPtr(), std::move(lock))
           : base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenFile,
                            weak_factory_.GetWeakPtr(), std::move(lock));
-  RunWithWritePermission(
+  // TODO(crbug.com/40276567): Review whether to switch to write-only.
+  RunWithReadWritePermission(
       std::move(open_file_callback),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         OpenAccessHandleCallback callback) {

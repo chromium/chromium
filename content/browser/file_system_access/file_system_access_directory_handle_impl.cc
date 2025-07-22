@@ -248,7 +248,8 @@ void FileSystemAccessDirectoryHandleImpl::DoGetFile(
     // If `create` is true, write permission is required unconditionally, i.e.
     // even if the file already exists. This is intentional, and matches the
     // behavior that is specified in the spec.
-    RunWithWritePermission(
+    // TODO(crbug.com/40276567): Review whether to switch to read-only.
+    RunWithReadWritePermission(
         base::BindOnce(
             &FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission,
             weak_factory_.GetWeakPtr(), basename, url),
@@ -345,7 +346,8 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryResolved(
     // If `create` is true, write permission is required unconditionally, i.e.
     // even if the file already exists. This is intentional, and matches the
     // behavior that is specified in the spec.
-    RunWithWritePermission(
+    // TODO(crbug.com/40276567): Review whether to switch to write-only.
+    RunWithReadWritePermission(
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                            GetDirectoryWithWritePermission,
                        weak_factory_.GetWeakPtr(), child_url),
@@ -416,7 +418,8 @@ void FileSystemAccessDirectoryHandleImpl::Remove(bool recurse,
                                                  RemoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
+  // TODO(crbug.com/40276567): Review whether to switch to readwrite-only.
+  RunWithReadWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
                      weak_factory_.GetWeakPtr(), url(), recurse),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -487,7 +490,8 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntryResolved(
     return;
   }
 
-  RunWithWritePermission(
+  // TODO(crbug.com/40276567): Review whether to switch to write-only.
+  RunWithReadWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
                      weak_factory_.GetWeakPtr(), child_url, recurse),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,

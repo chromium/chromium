@@ -123,7 +123,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   // permission isn't granted, `no_permission_callback` is invoked instead. The
   // callbacks can be invoked synchronously.
   template <typename CallbackArgType>
-  void RunWithWritePermission(
+  void RunWithReadWritePermission(
       base::OnceCallback<void(CallbackArgType)> callback,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               CallbackArgType)> no_permission_callback,
@@ -206,7 +206,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
 };
 
 template <typename CallbackArgType>
-void FileSystemAccessHandleBase::RunWithWritePermission(
+void FileSystemAccessHandleBase::RunWithReadWritePermission(
     base::OnceCallback<void(CallbackArgType)> callback,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             CallbackArgType)> no_permission_callback,
