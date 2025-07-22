@@ -27,7 +27,7 @@ scoped_refptr<dbus::Bus> CreateSharedSessionBus() {
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SESSION;
   options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = GetTaskRunner();
+  options.dbus_task_runner = g_dbus_thread_task_runner.Get();
   return base::MakeRefCounted<dbus::Bus>(options);
 }
 
@@ -35,15 +35,11 @@ scoped_refptr<dbus::Bus> CreateSharedSystemBus() {
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
   options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = GetTaskRunner();
+  options.dbus_task_runner = g_dbus_thread_task_runner.Get();
   return base::MakeRefCounted<dbus::Bus>(options);
 }
 
 }  // namespace
-
-scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
-  return g_dbus_thread_task_runner.Get();
-}
 
 scoped_refptr<dbus::Bus> GetSharedSessionBus() {
   static base::NoDestructor<scoped_refptr<dbus::Bus>> bus(

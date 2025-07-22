@@ -118,12 +118,7 @@ SystemMediaControlsLinux::SystemMediaControlsLinux(
       file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
 
-SystemMediaControlsLinux::~SystemMediaControlsLinux() {
-  if (bus_) {
-    dbus_thread_linux::GetTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
-  }
-}
+SystemMediaControlsLinux::~SystemMediaControlsLinux() = default;
 
 void SystemMediaControlsLinux::StartService() {
   if (started_) {
@@ -294,11 +289,7 @@ void SystemMediaControlsLinux::InitializeProperties() {
 void SystemMediaControlsLinux::InitializeDbusInterface() {
   // Bus may be set for testing.
   if (!bus_) {
-    dbus::Bus::Options bus_options;
-    bus_options.bus_type = dbus::Bus::SESSION;
-    bus_options.connection_type = dbus::Bus::PRIVATE;
-    bus_options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-    bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
+    bus_ = dbus_thread_linux::GetSharedSessionBus();
   }
 
   exported_object_ =
