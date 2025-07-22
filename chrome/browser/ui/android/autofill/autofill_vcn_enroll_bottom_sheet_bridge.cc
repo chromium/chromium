@@ -11,7 +11,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
-#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
+#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_bottom_sheet_delegate_mobile.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/strings/grit/components_strings.h"
@@ -36,7 +36,7 @@ AutofillVCNEnrollBottomSheetBridge::~AutofillVCNEnrollBottomSheetBridge() {
 
 bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
     content::WebContents* web_contents,
-    std::unique_ptr<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>
+    std::unique_ptr<AutofillVirtualCardEnrollmentBottomSheetDelegateMobile>
         delegate) {
   if (!web_contents) {
     return false;
@@ -75,8 +75,7 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
           delegate_->GetGoogleLegalMessage()),
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           delegate_->GetIssuerLegalMessage()),
-      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
-      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+      delegate_->GetAcceptButtonLabel(), delegate_->GetCancelButtonLabel());
 }
 
 void AutofillVCNEnrollBottomSheetBridge::Hide() {
@@ -93,7 +92,7 @@ void AutofillVCNEnrollBottomSheetBridge::OnCancel(JNIEnv* env) {
 }
 
 void AutofillVCNEnrollBottomSheetBridge::OnDismiss(JNIEnv* env) {
-  delegate_->InfoBarDismissed();
+  delegate_->OnDismiss();
 }
 
 void AutofillVCNEnrollBottomSheetBridge::RecordLinkClickMetric(JNIEnv* env,

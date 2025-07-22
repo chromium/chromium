@@ -15,8 +15,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
-#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
-#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_mobile.h"
+#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_bottom_sheet_delegate_mobile.h"
 #include "components/infobars/core/infobar.h"  // nogncheck
 #else
 #include "chrome/browser/ui/browser.h"
@@ -307,7 +306,7 @@ VirtualCardEnrollBubbleControllerImpl::GetPageActionIconType() {
 void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 #if BUILDFLAG(IS_ANDROID)
   auto delegate_mobile =
-      std::make_unique<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>(
+      std::make_unique<AutofillVirtualCardEnrollmentBottomSheetDelegateMobile>(
           this);
   autofill_vcn_enroll_bottom_sheet_bridge_ =
       std::make_unique<AutofillVCNEnrollBottomSheetBridge>();

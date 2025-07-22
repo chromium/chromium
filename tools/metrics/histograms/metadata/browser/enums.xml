@@ -316,7 +316,8 @@ chromium-metrics-reviews@google.com.
   <int value="109"
       label="SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS (Obsolete)"/>
   <int value="110"
-      label="AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_DELEGATE_MOBILE"/>
+      label="AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_DELEGATE_MOBILE
+             (Obsolete)"/>
   <int value="111" label="TAILORED_SECURITY_SERVICE_INFOBAR_DELEGATE"/>
   <int value="112" label="CHROME_FOR_TESTING_INFOBAR_DELEGATE"/>
   <int value="113" label="EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE"/>
