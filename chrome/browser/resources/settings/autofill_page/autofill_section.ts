@@ -40,6 +40,21 @@ import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill
 import {AutofillManagerImpl} from './autofill_manager_proxy.js';
 import {getTemplate} from './autofill_section.html.js';
 
+/**
+ * The enum values for the Autofill.Address.IsEnabled.Change metric.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+// LINT.IfChange(AutofillAddressOptInChange)
+export enum AutofillAddressOptInChange {
+  OPT_IN = 0,
+  OPT_OUT = 1,
+
+  // Must be last.
+  COUNT = 2,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAddressOptInChange)
+
 declare global {
   interface HTMLElementEventMap {
     'save-address': CustomEvent<chrome.autofillPrivate.AddressEntry>;
@@ -367,6 +382,15 @@ export class SettingsAutofillSectionElement extends
         this.accountInfo_ && this.accountInfo_.isAutofillSyncToggleAvailable);
     this.autofillManager_.setAutofillSyncToggleEnabled(
         this.$.autofillSyncToggle.checked);
+  }
+
+  private onAutofillProfileToggleChanged_() {
+    const value = this.$.autofillProfileToggle.checked ?
+        AutofillAddressOptInChange.OPT_IN :
+        AutofillAddressOptInChange.OPT_OUT;
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Autofill.Address.IsEnabled.Change', value,
+        AutofillAddressOptInChange.COUNT);
   }
 
   private onPlusAddressClick_() {

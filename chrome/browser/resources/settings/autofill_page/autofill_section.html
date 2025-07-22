@@ -42,7 +42,8 @@
     <settings-toggle-button id="autofillProfileToggle"
         no-extension-indicator label="$i18n{enableProfilesLabel}"
         sub-label="$i18n{enableProfilesSublabel}"
-        pref="{{prefs.autofill.profile_enabled}}">
+        pref="{{prefs.autofill.profile_enabled}}"
+        on-change="onAutofillProfileToggleChanged_">
     </settings-toggle-button>
     <div id="autofillSyncToggleWrapper"
         hidden$="[[!isAutofillSyncToggleVisible_(accountInfo_)]]">

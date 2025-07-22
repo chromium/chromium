@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
-import {AutofillManagerImpl, CountryDetailManagerProxyImpl} from 'chrome://settings/lazy_load.js';
+import {AutofillAddressOptInChange, AutofillManagerImpl, CountryDetailManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -353,6 +353,35 @@ suite('AutofillSectionAddressTests', function() {
       {name: 'United Kingdom', countryCode: 'GB'},
     ]);
     countryDetailManager.setGetAddressFormatRepsonse(ADDRESS_COMPONENTS_US);
+  });
+
+  test('verifyAutofillAddressToggleMetric', async function() {
+    const section =
+        await createAutofillSection([], {profile_enabled: {value: true}});
+    const button = section.$.autofillProfileToggle;
+    assertTrue(!!button);
+
+    // The address profile toggle is on by default.
+    assertTrue(button.checked);
+    assertEquals(metricsTracker.count('Autofill.Address.IsEnabled.Change'), 0);
+
+    // Test that toggling the button off records the correct metric.
+    button.click();
+    assertEquals(metricsTracker.count('Autofill.Address.IsEnabled.Change'), 1);
+    assertEquals(
+        metricsTracker.count(
+            'Autofill.Address.IsEnabled.Change',
+            AutofillAddressOptInChange.OPT_OUT),
+        1);
+
+    // Test that toggling the button on records the correct metric.
+    button.click();
+    assertEquals(metricsTracker.count('Autofill.Address.IsEnabled.Change'), 2);
+    assertEquals(
+        metricsTracker.count(
+            'Autofill.Address.IsEnabled.Change',
+            AutofillAddressOptInChange.OPT_IN),
+        1);
   });
 
   test('verifyNoAddresses', async function() {

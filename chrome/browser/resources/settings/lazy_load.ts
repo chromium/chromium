@@ -122,7 +122,7 @@ export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/ad
 export {SettingsAutofillAiAddOrEditDialogElement} from './autofill_page/autofill_ai_add_or_edit_dialog.js';
 export {SettingsAutofillAiSectionElement} from './autofill_page/autofill_ai_section.js';
 export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
-export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
+export {AutofillAddressOptInChange, SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
 export {CountryDetailManagerProxy, CountryDetailManagerProxyImpl} from './autofill_page/country_detail_manager_proxy.js';
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
 export {SettingsCreditCardListEntryElement} from './autofill_page/credit_card_list_entry.js';

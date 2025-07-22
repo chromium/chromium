@@ -858,6 +858,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Address.IsEnabled.Change"
+    enum="AutofillAddressOptInChange" expires_after="2026-06-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded whenever the user explicitly changes the address autofill opt-in
+    status in settings.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2025-12-12">
   <owner>battre@chromium.org</owner>

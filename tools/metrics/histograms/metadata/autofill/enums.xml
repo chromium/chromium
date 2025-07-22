@@ -75,6 +75,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Suggestion Deleted"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillAddressOptInChange) -->
+
+<enum name="AutofillAddressOptInChange">
+  <summary>
+    Records when a user opts in or out of the address autofill feature.
+  </summary>
+  <int value="0" label="OptIn"/>
+  <int value="1" label="OptOut"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/autofill_section.ts:AutofillAddressOptInChange) -->
+
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
   <int value="0" label="All required fields present"/>
   <int value="1" label="Missing: ZIP"/>
