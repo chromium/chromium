@@ -15,6 +15,7 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/env.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -87,6 +88,7 @@ bool KioskArcvmAppLauncher::CheckAndPinWindow(aura::Window* const window) {
   // Stop observing as target window is already found.
   StopObserving();
   PinWindow(window, /*trusted=*/true);
+  ::wm::SetWindowFullscreen(window, true);
   if (owner_) {
     owner_->OnAppWindowLaunched();
   }
