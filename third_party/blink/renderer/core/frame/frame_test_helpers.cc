@@ -1054,7 +1054,7 @@ void TestWebFrameWidget::BindWidgetChannels(
 
   widget_host_->GetWidgetInputHandler(
       input_handler.BindNewPipeAndPassReceiver(),
-      GetInputHandlerHost()->BindNewRemote());
+      GetInputHandlerHost()->BindNewRemote(), /* from_viz= */ false);
 }
 
 bool TestWebFrameWidget::HaveScrollEventHandlers() const {
@@ -1153,8 +1153,10 @@ void TestWebFrameWidgetHost::BindRenderInputRouterInterfaces(
 
 void TestWebFrameWidgetHost::GetWidgetInputHandler(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
-    mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
-  client_remote_->GetWidgetInputHandler(std::move(request), std::move(host));
+    mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host,
+    bool from_viz) {
+  client_remote_->GetWidgetInputHandler(std::move(request), std::move(host),
+                                        from_viz);
 }
 
 mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost>

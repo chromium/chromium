@@ -138,7 +138,8 @@ FakeRenderWidgetHost::GetWidgetInputHandler() {
 
     client_remote_->GetWidgetInputHandler(
         widget_input_handler_.BindNewPipeAndPassReceiver(),
-        widget_input_handler_host_.BindNewPipeAndPassRemote());
+        widget_input_handler_host_.BindNewPipeAndPassRemote(),
+        /* from_viz= */ false);
   }
   return widget_input_handler_.get();
 }
