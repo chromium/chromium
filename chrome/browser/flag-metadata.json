@@ -9212,6 +9212,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "symphonia-audio-decoding",
+    "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "sync-autofill-wallet-credential-data",
     "owners": [ "koulvipul@google.com", "treib@chromium.org", "payments-autofill-team@google.com" ],
     "expiry_milestone": 140

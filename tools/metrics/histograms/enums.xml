@@ -15659,6 +15659,7 @@ from previous Chrome versions.
   <int value="593707592" label="disable-network-portal-notification"/>
   <int value="594756372" label="MyFilesVolume:disabled"/>
   <int value="595168244" label="NotificationExpansionAnimation:enabled"/>
+  <int value="595185284" label="SymphoniaAudioDecoding:disabled"/>
   <int value="595371145" label="OmniboxRichEntitySuggestions:disabled"/>
   <int value="595372984"
       label="OmniboxMostVisitedTilesAddRecycledViewPool:disabled"/>
@@ -17927,6 +17928,7 @@ from previous Chrome versions.
   <int value="1421620678" label="simple-clear-browsing-data-support-string"/>
   <int value="1422421509" label="SetTimeoutWithoutClamp:disabled"/>
   <int value="1422462035" label="PaymentRequestBasicCard:disabled"/>
+  <int value="1422967358" label="SymphoniaAudioDecoding:enabled"/>
   <int value="1424775876" label="ToolbarIphAndroid:enabled"/>
   <int value="1425103276" label="SharedHighlightingV2:enabled"/>
   <int value="1425425055" label="WiFiDirect:disabled"/>

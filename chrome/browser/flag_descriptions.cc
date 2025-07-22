@@ -1913,6 +1913,13 @@ const char kSafeBrowsingLocalListsUseSBv5Description[] =
     "Fetch and check local lists using the Safe Browsing v5 API instead of the "
     "v4 Update API.";
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+const char kSymphoniaAudioDecodingName[] = "Symphonia Audio Decoding";
+const char kSymphoniaAudioDecodingDescription[] =
+    "Enables using the experimental Symphonia audio decoder instead of using "
+    "FFMPEG for decoding audio.";
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kEnableWebHidInWebViewName[] = "Web HID in WebView";
 const char kEnableWebHidInWebViewDescription[] =

@@ -9914,6 +9914,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description, kOsAll,
      FEATURE_VALUE_TYPE(safe_browsing::kLocalListsUseSBv5)},
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+    {"symphonia-audio-decoding", flag_descriptions::kSymphoniaAudioDecodingName,
+     flag_descriptions::kSymphoniaAudioDecodingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media::kSymphoniaAudioDecoding)},
+#endif
+
     {"safety-check-unused-site-permissions",
      flag_descriptions::kSafetyCheckUnusedSitePermissionsName,
      flag_descriptions::kSafetyCheckUnusedSitePermissionsDescription, kOsAll,
