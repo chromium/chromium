@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_COMMON_GPU_METAL_CONTEXT_PROVIDER_H_
-#define COMPONENTS_VIZ_COMMON_GPU_METAL_CONTEXT_PROVIDER_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_METAL_CONTEXT_PROVIDER_H_
+#define GPU_COMMAND_BUFFER_SERVICE_METAL_CONTEXT_PROVIDER_H_
 
 #include <memory>
 
-#include "components/viz/common/viz_metal_context_provider_export.h"
+#include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/gpu/graphite/ContextOptions.h"
 #include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypes.h"
 
@@ -15,18 +15,14 @@
 @protocol MTLDevice;
 #endif  // __OBJC__
 
-namespace gl {
-class ProgressReporter;
-}  // namespace gl
-
 namespace gpu {
 class GraphiteSharedContext;
 }  // namespace gpu
 
 namespace viz {
 
-// The MetalContextProvider provides a Metal-backed GrContext.
-class VIZ_METAL_CONTEXT_PROVIDER_EXPORT MetalContextProvider {
+// The MetalContextProvider provides a Metal-backed GraphiteSharedContext.
+class GPU_GLES2_EXPORT MetalContextProvider {
  public:
   // Create and return a MetalContextProvider if possible. May return nullptr
   // if no Metal devices exist.
@@ -58,4 +54,4 @@ class VIZ_METAL_CONTEXT_PROVIDER_EXPORT MetalContextProvider {
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_COMMON_GPU_METAL_CONTEXT_PROVIDER_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_METAL_CONTEXT_PROVIDER_H_
