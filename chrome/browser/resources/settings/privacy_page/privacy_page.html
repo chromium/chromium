@@ -105,6 +105,9 @@
             sub-label="$i18n{permissionsPageDescription}"
             on-click="onPermissionsPageClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <cr-toast id="deleteBrowsingDataToast" duration="5000">
+          <div>[[dbdDeletionConfirmationToastLabel_]]</div>
+        </cr-toast>
       </div>
 
       <template is="dom-if" route-path="/content/v8" no-search>
@@ -1326,6 +1329,3 @@
         </template>
       </template>
     </settings-animated-pages>
-    <cr-toast id="deleteBrowsingDataToast" duration="5000">
-      <div>[[dbdDeletionConfirmationToastLabel_]]</div>
-    </cr-toast>

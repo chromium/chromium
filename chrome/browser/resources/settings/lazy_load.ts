@@ -97,6 +97,7 @@ export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 export {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 export {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
+export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 export {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';

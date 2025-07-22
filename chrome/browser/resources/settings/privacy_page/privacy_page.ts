@@ -66,7 +66,6 @@ export interface SettingsPrivacyPageElement {
     clearBrowsingData: CrLinkRowElement,
     permissionsLinkRow: CrLinkRowElement,
     securityLinkRow: CrLinkRowElement,
-    deleteBrowsingDataToast: CrToastElement,
   };
 }
 
@@ -333,6 +332,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: '',
       },
 
+      shouldShowDbdDeletionConfirmationToast_: {
+        type: Boolean,
+        value: false,
+      },
+
       allSitesPageTitle_: String,
     };
   }
@@ -380,6 +384,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private enableIncognitoTrackingProtections_: boolean;
   declare private enableBundledSecuritySettings_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;
+  declare private shouldShowDbdDeletionConfirmationToast_: boolean;
 
   override ready() {
     super.ready();
@@ -438,6 +443,16 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   private onCbdDialogClosed_() {
     Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA.parent!);
+
+    if (this.shouldShowDbdDeletionConfirmationToast_) {
+      assert(this.dbdDeletionConfirmationToastLabel_);
+      const toast = this.shadowRoot!.querySelector<CrToastElement>(
+          '#deleteBrowsingDataToast');
+      assert(toast);
+      toast.show();
+      this.shouldShowDbdDeletionConfirmationToast_ = false;
+    }
+
     setTimeout(() => {
       // Focus after a timeout to ensure any a11y messages get read before
       // screen readers read out the newly focused element.
@@ -553,7 +568,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private onBrowsingDataDeleted_(
       e: CustomEvent<{deletionConfirmationText: string}>) {
     this.dbdDeletionConfirmationToastLabel_ = e.detail.deletionConfirmationText;
-    this.$.deleteBrowsingDataToast.show();
+    this.shouldShowDbdDeletionConfirmationToast_ = true;
   }
 }
 

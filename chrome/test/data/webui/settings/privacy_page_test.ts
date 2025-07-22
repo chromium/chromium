@@ -7,11 +7,12 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrToastElement} from 'chrome://settings/lazy_load.js';
 import {ClearBrowsingDataBrowserProxyImpl, ContentSetting, ContentSettingsTypes, CookieControlsMode, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, Route, SettingsPrefsElement, SettingsPrivacyPageElement, SyncStatus} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertThrows} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
@@ -123,8 +124,11 @@ suite('PrivacyPage', function() {
     assertTrue(!!dialog);
   });
 
-  test('showDeletionConfirmationToast', function() {
-    assertFalse(page.$.deleteBrowsingDataToast.open);
+  test('showDeletionConfirmationToast', async function() {
+    const toast = page.shadowRoot!.querySelector<CrToastElement>(
+        '#deleteBrowsingDataToast');
+    assertTrue(!!toast);
+    assertFalse(toast.open);
     page.$.clearBrowsingData.click();
     flush();
 
@@ -136,10 +140,12 @@ suite('PrivacyPage', function() {
       composed: true,
       detail: {deletionConfirmationText: 'test'},
     }));
+    dialog.$.deleteBrowsingDataDialog.close();
+    await eventToPromise('close', dialog);
     flush();
 
-    assertTrue(page.$.deleteBrowsingDataToast.open);
-    assertEquals('test', page.$.deleteBrowsingDataToast.textContent!.trim());
+    assertTrue(toast.open);
+    assertEquals('test', toast.textContent!.trim());
   });
 
   // TODO(crbug.com/417690232): Update once its kBundledSecuritySettings is
