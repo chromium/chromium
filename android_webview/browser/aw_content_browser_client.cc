@@ -703,7 +703,7 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
   if ((navigation_handle.GetNavigatingFrameType() ==
            FrameType::kPrimaryMainFrame ||
        navigation_handle.GetNavigatingFrameType() == FrameType::kSubframe) &&
-      navigation_handle.GetURL().SchemeIsHTTPOrHTTPS()) {
+      registry.IsHTTPOrHTTPS()) {
     AwSupervisedUserUrlClassifier* urlClassifier =
         AwSupervisedUserUrlClassifier::GetInstance();
     if (urlClassifier->ShouldCreateThrottle()) {
