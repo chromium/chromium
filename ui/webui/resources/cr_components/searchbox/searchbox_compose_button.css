@@ -179,6 +179,10 @@
   filter: blur(40px);
 }
 
+#glowAnimationWrapper:hover .outer-glow{
+  filter: none;
+}
+
 /* Containers used to position the gradient and masks correctly. The gradient
  * and masks themselves are created using pseudo-elements. */
  .gradient,
