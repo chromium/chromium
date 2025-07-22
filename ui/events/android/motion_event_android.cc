@@ -368,26 +368,6 @@ MotionEvent::ToolType MotionEventAndroid::GetCachedPointerToolType(
   return cached_pointers_[pointer_index].tool_type;
 }
 
-#define TOOL_TYPE_CASE(x)              \
-  case JNI_MotionEvent::TOOL_TYPE_##x: \
-    return MotionEventAndroid::ToolType::x
-
-MotionEventAndroid::ToolType MotionEventAndroid::FromAndroidToolType(
-    int android_tool_type) {
-  switch (android_tool_type) {
-    TOOL_TYPE_CASE(UNKNOWN);
-    TOOL_TYPE_CASE(FINGER);
-    TOOL_TYPE_CASE(STYLUS);
-    TOOL_TYPE_CASE(MOUSE);
-    TOOL_TYPE_CASE(ERASER);
-    default:
-      NOTREACHED() << "Invalid Android MotionEvent tool type: "
-                   << android_tool_type;
-  }
-}
-
-#undef TOOL_TYPE_CASE
-
 base::TimeTicks MotionEventAndroid::FromAndroidTime(base::TimeTicks time) {
   ValidateEventTimeClock(&time);
   return time;

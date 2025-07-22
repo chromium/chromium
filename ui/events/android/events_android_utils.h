@@ -15,6 +15,8 @@ EVENTS_EXPORT PlatformEvent NativeEventFromEvent(Event& event);
 
 EVENTS_EXPORT MotionEvent::Action FromAndroidAction(int android_action);
 
+EVENTS_EXPORT MotionEvent::ToolType FromAndroidToolType(int android_tool_type);
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_ANDROID_EVENTS_ANDROID_UTILS_H_

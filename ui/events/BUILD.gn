@@ -404,6 +404,9 @@ component("events") {
       "android/motion_event_android_factory.h",
       "android/motion_event_android_java.h",
       "android/motion_event_android_native.h",
+      "android/motion_event_android_source.h",
+      "android/motion_event_android_source_java.h",
+      "android/motion_event_android_source_native.h",
 
       # TODO(crbug.com/40255699): Move this outside is_android block when
       # consuming cross-platform code which uses it lands.
@@ -420,6 +423,8 @@ component("events") {
       "android/motion_event_android_factory.cc",
       "android/motion_event_android_java.cc",
       "android/motion_event_android_native.cc",
+      "android/motion_event_android_source_java.cc",
+      "android/motion_event_android_source_native.cc",
       "back_gesture_event.cc",
     ]
     deps += [

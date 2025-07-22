@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
 #include "ui/events/android/motion_event_android.h"
+#include "ui/events/android/motion_event_android_source.h"
 #include "ui/events/events_export.h"
 #include "ui/events/velocity_tracker/motion_event.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -67,9 +68,7 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
  private:
   // Forcing the caller to provide all cached values upon construction
   // eliminates the need to perform a JNI call to retrieve values individually.
-  MotionEventAndroidJava(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& event,
-                         jfloat pix_to_dip,
+  MotionEventAndroidJava(jfloat pix_to_dip,
                          jfloat ticks_x,
                          jfloat ticks_y,
                          jfloat tick_multiplier,
@@ -81,15 +80,15 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          jint android_action_button,
                          jint android_gesture_classification,
                          jint android_button_state,
+                         jint meta_state,
                          jfloat raw_offset_x_pixels,
                          jfloat raw_offset_y_pixels,
                          jboolean for_touch_handle,
                          const Pointer* const pointer0,
-                         const Pointer* const pointer1);
+                         const Pointer* const pointer1,
+                         std::unique_ptr<MotionEventAndroidSource> source);
 
-  MotionEventAndroidJava(JNIEnv* env,
-                         const base::android::JavaRef<jobject>& event,
-                         jfloat pix_to_dip,
+  MotionEventAndroidJava(jfloat pix_to_dip,
                          jfloat ticks_x,
                          jfloat ticks_y,
                          jfloat tick_multiplier,
@@ -103,16 +102,15 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          jint android_action_button,
                          jint android_gesture_classification,
                          jint android_button_state,
+                         jint meta_state,
                          jfloat raw_offset_x_pixels,
                          jfloat raw_offset_y_pixels,
                          jboolean for_touch_handle,
                          const Pointer* const pointer0,
                          const Pointer* const pointer1,
-                         bool is_latest_event_time_resampled);
-  // The Java reference to the underlying MotionEvent.
-  base::android::ScopedJavaGlobalRef<jobject> event_;
+                         std::unique_ptr<MotionEventAndroidSource> source);
 
-  bool is_latest_event_time_resampled_;
+  std::unique_ptr<MotionEventAndroidSource> source_;
 
   // Makes a copy of passed object |e| such that the cached pointers are
   // translated to new coordinates where the 0th indexded pointer points to

@@ -168,7 +168,6 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
 
   MotionEventAndroid(const MotionEventAndroid& e, const gfx::PointF& point);
 
-  static ToolType FromAndroidToolType(int android_tool_type);
   static base::TimeTicks FromAndroidTime(base::TimeTicks time);
   static float ToValidFloat(float x);
   static void ConvertTiltOrientationToTiltXY(float tilt_rad,
