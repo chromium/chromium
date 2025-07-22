@@ -585,6 +585,12 @@ if (is_clang_or_gcc) {
     # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
     if (enable_pkeys && partition_alloc_is_debug) {
       configs += [ ":no_stack_protector" ]
+
+      if (is_debug) {
+        # Debug build uses -fstack-protector for libc++ modules and the flag is
+        # not compatible with "no_stack_protector" config.
+        use_libcxx_modules = false
+      }
     }
   }
 
