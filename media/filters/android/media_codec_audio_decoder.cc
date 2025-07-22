@@ -435,12 +435,15 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
       return false;
     }
 
+    // TODO(crbug.com/373960632): Use spans from AudioBuffer directly once that
+    // class is spanified.
+    auto data = UNSAFE_TODO(
+        base::span<const uint8_t>(audio_buffer->channel_data()[0], out.size));
+
     if (config_.codec() == AudioCodec::kAC3) {
-      frame_count = Ac3Util::ParseTotalAc3SampleCount(
-          audio_buffer->channel_data()[0], out.size);
+      frame_count = Ac3Util::ParseTotalAc3SampleCount(data);
     } else if (config_.codec() == AudioCodec::kEAC3) {
-      frame_count = Ac3Util::ParseTotalEac3SampleCount(
-          audio_buffer->channel_data()[0], out.size);
+      frame_count = Ac3Util::ParseTotalEac3SampleCount(data);
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else if (config_.codec() == AudioCodec::kDTS) {
       frame_count = media::dts::ParseTotalSampleCount(
