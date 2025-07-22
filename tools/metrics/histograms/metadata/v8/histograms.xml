@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.ExternalPointerTableCompactionOutcome"
     enum="V8ExternalPointerTableCompactionOutcome" expires_after="2026-06-30">
-  <owner>saelo@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
     The outcome of external pointer table compaction.
@@ -1675,8 +1675,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.JSDispatchTableEntriesCount" units="count"
-    expires_after="2025-08-31">
-  <owner>saelo@chromium.org</owner>
+    expires_after="2026-08-31">
+  <owner>mlippautz@chromium.org</owner>
   <owner>olivf@chromium.org</owner>
   <summary>
     The number of in-use entries in a JSDispatchTable.
@@ -1871,7 +1871,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.SandboxedCodePointersCount" units="count"
     expires_after="2026-06-30">
-  <owner>saelo@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
     The number of in-use entries in a CodePointerTable.
@@ -1885,7 +1885,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.SandboxedCppHeapPointersCount" units="count"
     expires_after="2026-06-30">
-  <owner>saelo@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
     The number of in-use entries in a CppHeapPointerTable.
@@ -1900,7 +1900,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.SandboxedExternalPointersCount" units="count"
     expires_after="2026-06-30">
-  <owner>saelo@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
     The number of in-use external pointers in an Isolate's ExternalPointerTable.
@@ -1915,7 +1915,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.SandboxedTrustedPointersCount" units="count"
     expires_after="2026-06-30">
-  <owner>saelo@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
     The number of in-use entries in a TrustedPointerTable.
@@ -1930,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.SandboxMode" enum="V8SandboxMode"
     expires_after="2026-01-04">
-  <owner>saelo@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
     Mode of operation of V8's sandbox.
@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.SandboxReservationSizeGB" units="GB"
     expires_after="2026-01-04">
-  <owner>saelo@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
     Size of the virtual address space reservation backing the V8 sandbox, in GB.
