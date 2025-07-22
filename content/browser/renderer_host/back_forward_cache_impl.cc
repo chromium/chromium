@@ -1290,8 +1290,8 @@ void BackForwardCacheImpl::EnforceCacheSizeLimit() {
       GetCacheSize(), BackForwardCacheMetrics::NotRestoredReason::kCacheLimit);
 }
 
-void BackForwardCacheImpl::Prune(size_t limit, NotRestoredReason reason) {
-  EnforceCacheSizeLimitInternal(limit, reason);
+size_t BackForwardCacheImpl::Prune(size_t limit, NotRestoredReason reason) {
+  return EnforceCacheSizeLimitInternal(limit, reason);
 }
 
 size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
