@@ -56,11 +56,20 @@ base::TimeDelta MediaPosition::GetPositionAtTime(base::TimeTicks time) const {
     delta = base::Microseconds(0);
   }
 
-  base::TimeDelta elapsed_time = playback_rate_ * delta;
-  base::TimeDelta updated_position = position_ + elapsed_time;
-
   base::TimeDelta start = base::Seconds(0);
 
+  base::TimeDelta elapsed_time = playback_rate_ * delta;
+  if (elapsed_time.is_min()) {
+    // If the elapsed time is negative infinity, then assume we made it to the
+    // start.
+    return start;
+  } else if (elapsed_time.is_max()) {
+    // If the elapsed time is positive infinity, then assume we made it to the
+    // end.
+    return duration_;
+  }
+
+  base::TimeDelta updated_position = position_ + elapsed_time;
   if (updated_position <= start)
     return start;
   else if (updated_position >= duration_)
