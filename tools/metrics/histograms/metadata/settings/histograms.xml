@@ -746,7 +746,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.All"
-    units="days" expires_after="2025-07-27">
+    units="days" expires_after="2026-07-27">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -765,7 +765,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.{PermissionType}"
-    units="days" expires_after="2025-07-27">
+    units="days" expires_after="2026-07-27">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -1187,7 +1187,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.Impression" enum="SafetyHubSurfaces"
-    expires_after="2025-07-27">
+    expires_after="2026-07-27">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -1288,7 +1288,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2"
-    enum="ContentType" expires_after="2025-07-27">
+    enum="ContentType" expires_after="2026-07-27">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
