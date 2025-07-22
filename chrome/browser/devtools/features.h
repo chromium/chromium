@@ -7,6 +7,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
+#include "content/public/common/buildflags.h"
 
 namespace features {
 
@@ -92,6 +94,10 @@ BASE_DECLARE_FEATURE(kDevToolsAiGeneratedTimelineLabels);
 BASE_DECLARE_FEATURE(kDevToolsNewPermissionDialog);
 
 BASE_DECLARE_FEATURE(kDevToolsVerticalDrawer);
+
+#if BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
+BASE_DECLARE_FEATURE(kDevToolsPwaHandler);
+#endif  // BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
 
 }  // namespace features
 

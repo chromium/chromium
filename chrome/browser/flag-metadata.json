@@ -2152,6 +2152,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "devtools-pwa-handler",
+    "owners": [ "mohamedaomar@google.com" ],
+    "expiry_milestone": 200
+  },
+  {
     "name": "diamond-prototype",
     "owners": ["gambard@chromium.com", "ewannpv@chromium.org"],
     "expiry_milestone": 145

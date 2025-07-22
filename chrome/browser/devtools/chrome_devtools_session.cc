@@ -9,11 +9,14 @@
 #include <type_traits>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/devtools/protocol/cast_handler.h"
@@ -25,11 +28,13 @@
 #include "chrome/browser/devtools/protocol/storage_handler.h"
 #include "chrome/browser/devtools/protocol/system_info_handler.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/common/buildflags.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -112,9 +117,14 @@ ChromeDevToolsSession::ChromeDevToolsSession(
       channel->GetClient()->IsTrusted()) {
     system_info_handler_ = std::make_unique<SystemInfoHandler>(&dispatcher_);
   }
+
   if ((agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser ||
        agent_host->GetType() == content::DevToolsAgentHost::kTypePage) &&
-      channel->GetClient()->AllowUnsafeOperations()) {
+      (channel->GetClient()->AllowUnsafeOperations()
+#if BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
+       || base::FeatureList::IsEnabled(features::kDevToolsPwaHandler)
+#endif
+           )) {
     if (IsDomainAvailableToUntrustedClient<PWAHandler>() ||
         channel->GetClient()->IsTrusted()) {
       pwa_handler_ =

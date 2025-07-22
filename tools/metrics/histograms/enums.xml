@@ -11897,6 +11897,7 @@ from previous Chrome versions.
   <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
   <int value="-800565336" label="ArcInstantResponseWindowOpen:disabled"/>
   <int value="-800464360" label="ContextualPageActions:enabled"/>
+  <int value="-800364245" label="DevToolsPwaHandler:enabled"/>
   <int value="-800301139" label="VCLightIntensity:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
@@ -16285,6 +16286,7 @@ from previous Chrome versions.
   <int value="808855873" label="RequestDesktopSiteGlobal:disabled"/>
   <int value="809404981" label="CrosBatterySaver:enabled"/>
   <int value="811057677" label="ConfirmNtpSuggestionRemovals:disabled"/>
+  <int value="811158245" label="DevToolsPwaHandler:disabled"/>
   <int value="811374216" label="disable-new-bookmark-apps"/>
   <int value="811726957" label="SlideTopChromeWithPageScrolls:enabled"/>
   <int value="812710781" label="SyncUSSBookmarks:disabled"/>

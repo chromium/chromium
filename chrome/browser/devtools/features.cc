@@ -163,4 +163,11 @@ BASE_FEATURE(kDevToolsVerticalDrawer,
              "DevToolsVerticalDrawer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
+// Enables creating PWA handler for DevTools.
+BASE_FEATURE(kDevToolsPwaHandler,
+             "DevToolsPwaHandler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_PWA_INSTALL_ON_CROS_TEST)
+
 }  // namespace features
