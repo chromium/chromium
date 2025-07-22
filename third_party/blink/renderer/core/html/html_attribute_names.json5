@@ -221,6 +221,7 @@
     "onloadeddata",
     "onloadedmetadata",
     "onloadstart",
+    "onlocation",
     "onlostpointercapture",
     "onmessage",
     "onmessageerror",

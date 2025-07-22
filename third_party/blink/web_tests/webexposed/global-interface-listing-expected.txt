@@ -4257,6 +4257,11 @@ interface HTMLFrameSetElement : HTMLElement
     setter onunhandledrejection
     setter onunload
     setter rows
+interface HTMLGeolocationElement : HTMLPermissionElement
+    attribute @@toStringTag
+    getter onlocation
+    method constructor
+    setter onlocation
 interface HTMLHRElement : HTMLElement
     attribute @@toStringTag
     getter align

@@ -185,6 +185,7 @@
     "loadingdone",
     "loadingerror",
     "loadstart",
+    "location",
     "loseinterest",
     "lostpointercapture",
     "managedconfigurationchange",

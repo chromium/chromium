@@ -211,6 +211,11 @@
       interfaceName: "HTMLFrameSetElement",
     },
     {
+      name: "geolocation",
+      interfaceName: "HTMLGeolocationElement",
+      runtimeEnabled: "GeolocationElement",
+    },
+    {
       name: "h1",
       interfaceName: "HTMLHeadingElement",
     },

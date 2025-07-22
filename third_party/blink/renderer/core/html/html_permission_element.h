@@ -35,7 +35,7 @@ namespace blink {
 class Page;
 class V8PermissionState;
 
-class CORE_EXPORT HTMLPermissionElement final
+class CORE_EXPORT HTMLPermissionElement
     : public HTMLElement,
       public mojom::blink::EmbeddedPermissionControlClient,
       public ScrollSnapshotClient,
@@ -102,6 +102,9 @@ class CORE_EXPORT HTMLPermissionElement final
 
   // HTMLElement overrides.
   bool IsHTMLPermissionElement() const final { return true; }
+
+ protected:
+  void setType(const AtomicString& type) { type_ = type; }
 
  private:
   // TODO(crbug.com/1315595): remove this friend class once migration

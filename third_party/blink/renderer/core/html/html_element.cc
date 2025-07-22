@@ -669,6 +669,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kWebkitTransitionEnd, nullptr},
       {html_names::kOnwheelAttr, kNoWebFeature, event_type_names::kWheel,
        nullptr},
+      {html_names::kOnlocationAttr, kNoWebFeature,
+       event_type_names::kLocation, nullptr},
 
       // Begin ARIA attributes.
       {html_names::kAriaActionsAttr, WebFeature::kARIAActionsAttribute,

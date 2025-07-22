@@ -677,6 +677,18 @@ html element frameset
     property onunhandledrejection
     property onunload
     property rows
+html element geolocation
+    property initialPermissionStatus
+    property invalidReason
+    property isValid
+    property ondismiss
+    property onlocation
+    property onpromptaction
+    property onpromptdismiss
+    property onresolve
+    property onvalidationstatuschange
+    property permissionStatus
+    property type
 html element h1
     property align
 html element h2
