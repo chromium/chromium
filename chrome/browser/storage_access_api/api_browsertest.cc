@@ -334,8 +334,6 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     base::PathService::Get(content::DIR_TEST_DATA, &path);
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromDirectory(path);
-    https_server_.ServeFilesFromSourceDirectory(
-        net::GetWebSocketTestDataDirectory());
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&HandleEchoCookiesWithCorsRequest));
@@ -628,7 +626,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
 
     ASSERT_TRUE(content::NavigateToURLFromRenderer(
         frame, https_server()
-                   .GetURL(kHostB, "/connect_to.html")
+                   .GetURL(kHostB, "/websocket/connect_to.html")
                    .ReplaceComponents(replacements)));
   }
 

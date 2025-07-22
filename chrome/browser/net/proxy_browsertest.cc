@@ -86,8 +86,7 @@ class ProxyBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
   net::test_server::EmbeddedTestServer ws_server{
       net::test_server::EmbeddedTestServer::Type::TYPE_HTTP};
-  net::test_server::InstallDefaultWebSocketHandlers(
-      &ws_server, /*serve_websocket_test_data=*/false);
+  net::test_server::InstallDefaultWebSocketHandlers(&ws_server);
   EXPECT_TRUE(ws_server.Start());
 
   embedded_test_server()->EnableConnectProxy(

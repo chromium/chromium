@@ -282,8 +282,7 @@ void BackForwardCacheBrowserTest::EnableCacheSize(
 
 void BackForwardCacheBrowserTest::SetUpOnMainThread() {
   // Set up WebSocket handlers, as a number of tests use them.
-  net::test_server::InstallDefaultWebSocketHandlers(
-      embedded_test_server(), /*serve_websocket_test_data=*/false);
+  net::test_server::InstallDefaultWebSocketHandlers(embedded_test_server());
 
   mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
   host_resolver()->AddRule("*", "127.0.0.1");

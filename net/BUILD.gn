@@ -2293,7 +2293,6 @@ static_library("test_support") {
     "data/parse_certificate_unittest/",
     "data/ssl/",
     "data/url_request_unittest/",
-    "data/websocket/",
   ]
 
   if (is_mac) {

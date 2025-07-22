@@ -517,8 +517,7 @@ TEST_F(WebSocketEndToEndTest, HttpsProxyUnauthedFails) {
   // Set up WebSocket server. Should not actually be used, beyond providing a
   // URL that is blocked by the proxy requesting authentication.
   EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
-  test_server::InstallDefaultWebSocketHandlers(
-      &ws_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&ws_server);
   ASSERT_TRUE(ws_server.Start());
 
   EmbeddedTestServer proxy_server(EmbeddedTestServer::Type::TYPE_HTTP);
@@ -549,8 +548,7 @@ TEST_F(WebSocketEndToEndTest, HttpsWssProxyUnauthedFails) {
   // Set up WebSocket server. Should not actually be used, beyond providing a
   // URL that is blocked by the proxy requesting authentication.
   EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
-  test_server::InstallDefaultWebSocketHandlers(
-      &wss_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&wss_server);
   ASSERT_TRUE(wss_server.Start());
 
   EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
@@ -580,8 +578,7 @@ TEST_F(WebSocketEndToEndTest, HttpsWssProxyUnauthedFails) {
 // configured system HTTPS Proxy".
 TEST_F(WebSocketEndToEndTest, HttpsProxyUsed) {
   EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
-  test_server::InstallDefaultWebSocketHandlers(
-      &ws_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&ws_server);
   ASSERT_TRUE(ws_server.Start());
 
   EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
@@ -642,8 +639,7 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
   }
 
   EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
-  test_server::InstallDefaultWebSocketHandlers(
-      &ws_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&ws_server);
   ASSERT_TRUE(ws_server.Start());
 
   EmbeddedTestServer proxy_pac_server(EmbeddedTestServer::Type::TYPE_HTTP);
@@ -685,8 +681,7 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
 // net::WebSocketBasicHandshakeStream::Upgrade.
 TEST_F(WebSocketEndToEndTest, TruncatedResponse) {
   EmbeddedTestServer ws_server(EmbeddedTestServer::Type::TYPE_HTTP);
-  test_server::InstallDefaultWebSocketHandlers(
-      &ws_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&ws_server);
   ASSERT_TRUE(ws_server.Start());
   InitialiseContext();
 
@@ -709,8 +704,7 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
 
   EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
   wss_server.SetCertHostnames({test_server_hostname});
-  test_server::InstallDefaultWebSocketHandlers(
-      &wss_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&wss_server);
   ASSERT_TRUE(wss_server.Start());
 
   InitialiseContext();
@@ -774,8 +768,7 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
 
   EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
   wss_server.SetCertHostnames({test_server_hostname});
-  test_server::InstallDefaultWebSocketHandlers(
-      &wss_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&wss_server);
   ASSERT_TRUE(wss_server.Start());
 
   InitialiseContext();
@@ -809,8 +802,7 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToWebSocket) {
   std::string test_server_hostname = "a.test";
   EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
   wss_server.SetCertHostnames({test_server_hostname});
-  test_server::InstallDefaultWebSocketHandlers(
-      &wss_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&wss_server);
   ASSERT_TRUE(wss_server.Start());
 
   InitialiseContext();
@@ -897,8 +889,7 @@ TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
 
   EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
   wss_server.SetCertHostnames({kTestServerHostname});
-  test_server::InstallDefaultWebSocketHandlers(
-      &wss_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&wss_server);
   ASSERT_TRUE(wss_server.Start());
 
   GURL wss_url = test_server::GetWebSocketURL(wss_server, kTestServerHostname,
@@ -935,8 +926,7 @@ TEST_F(WebSocketEndToEndTest, HostResolverEndpointResult) {
 
   EmbeddedTestServer wss_server(EmbeddedTestServer::Type::TYPE_HTTPS);
   wss_server.SetCertHostnames({kTestServerHostname});
-  test_server::InstallDefaultWebSocketHandlers(
-      &wss_server, /*serve_websocket_test_data=*/true);
+  test_server::InstallDefaultWebSocketHandlers(&wss_server);
   ASSERT_TRUE(wss_server.Start());
 
   uint16_t port = wss_server.port();

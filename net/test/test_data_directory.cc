@@ -47,9 +47,4 @@ base::FilePath GetTestClientCertsDirectory() {
   return base::FilePath(kNetDataRelativePath).Append(kCertificateDataSubPath);
 }
 
-base::FilePath GetWebSocketTestDataDirectory() {
-  base::FilePath data_dir(FILE_PATH_LITERAL("net/data/websocket"));
-  return data_dir;
-}
-
 }  // namespace net

@@ -58,7 +58,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/embedded_test_server/register_basic_auth_handler.h"
-#include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
@@ -84,11 +83,12 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     // Set SSL configuration for the secure WebSocket server.
     wss_server_.SetSSLConfig(cert);
 
-    // Install default WebSocket handlers for both HTTP and HTTPS servers.
-    net::test_server::InstallDefaultWebSocketHandlers(
-        &ws_server_, /*serve_websocket_test_data=*/true);
-    net::test_server::InstallDefaultWebSocketHandlers(
-        &wss_server_, /*serve_websocket_test_data=*/true);
+    // Install default WebSocket and HTTP handlers for both HTTP and HTTPS
+    // servers.
+    net::test_server::InstallDefaultWebSocketHandlers(&ws_server_);
+    ws_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    net::test_server::InstallDefaultWebSocketHandlers(&wss_server_);
+    wss_server_.AddDefaultHandlers(GetChromeTestDataDir());
   }
 
   WebSocketBrowserTest(const WebSocketBrowserTest&) = delete;
@@ -112,8 +112,9 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
   void NavigateToPath(const std::string& relative) {
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
-    path =
-        path.Append(net::GetWebSocketTestDataDirectory()).AppendASCII(relative);
+    path = path.Append(GetChromeTestDataDir())
+               .AppendASCII("websocket")
+               .AppendASCII(relative);
     GURL url(std::string("file://") + path.MaybeAsASCII());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
@@ -209,8 +210,7 @@ class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
   // framework. Each test case still needs to configure and start the
   // WebSocket server(s) it needs.
   void SetUpOnMainThread() override {
-    server().ServeFilesFromSourceDirectory(
-        net::GetWebSocketTestDataDirectory());
+    server().ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     WebSocketBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(server().Start());
   }
@@ -229,7 +229,7 @@ class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
     replacements.SetQueryStr(query);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), server()
-                       .GetURL(host, "/connect_to.html")
+                       .GetURL(host, "/websocket/connect_to.html")
                        .ReplaceComponents(replacements)));
   }
 
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketSplitSegments) {
   // Launch a WebSocket server.
   ASSERT_TRUE(ws_server_.Start());
 
-  NavigateToHTTPPage("/split_packet_check.html");
+  NavigateToHTTPPage("/websocket/split_packet_check.html");
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SecureWebSocketSplitRecords) {
   // Launch a secure WebSocket server.
   ASSERT_TRUE(wss_server_.Start());
 
-  NavigateToHTTPSPage("/split_packet_check.html");
+  NavigateToHTTPSPage("/websocket/split_packet_check.html");
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SendCloseFrameWhenTabIsClosed) {
 
     content::TitleWatcher connected_title_watcher(raw_new_tab, u"CONNECTED");
     connected_title_watcher.AlsoWaitForTitle(u"CLOSED");
-    NavigateToHTTPPage("/connect_and_be_observed.html");
+    NavigateToHTTPPage("/websocket//connect_and_be_observed.html");
     const std::u16string result = connected_title_watcher.WaitAndGetTitle();
     EXPECT_TRUE(base::EqualsASCII(result, "CONNECTED"));
 
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SendCloseFrameWhenTabIsClosed) {
     destroyed_watcher.Wait();
   }
 
-  NavigateToHTTPPage("/close_observer.html");
+  NavigateToHTTPPage("/websocket//close_observer.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPURL) {
   replacements.SetSchemeStr("http");
 
   GURL url = net::test_server::GetURLWithUserAndPassword(
-      ws_server_, "/connect_check.html", "test", "test");
+      ws_server_, "/websocket/connect_check.html", "test", "test");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPSURL) {
   replacements.SetSchemeStr("http");
 
   GURL url = net::test_server::GetURLWithUserAndPassword(
-      wss_server_, "/connect_check.html", "test", "test");
+      wss_server_, "/websocket/connect_check.html", "test", "test");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
   // Launch a basic-auth-protected WebSocket server.
   net::test_server::RegisterBasicAuthHandler(ws_server_, "test", "test");
   ASSERT_TRUE(ws_server_.Start());
-  NavigateToHTTPPage("/connect_check.html");
+  NavigateToHTTPPage("/websocket/connect_check.html");
 
   ASSERT_TRUE(base::test::RunUntil(
       []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
 IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SSLConnectionLimit) {
   ASSERT_TRUE(wss_server_.Start());
 
-  NavigateToHTTPSPage("/multiple-connections.html");
+  NavigateToHTTPSPage("/websocket/multiple-connections.html");
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -450,8 +450,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWebSocketHSTS,
 
   net::EmbeddedTestServer wss_server(net::EmbeddedTestServer::TYPE_HTTPS);
   wss_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  wss_server.ServeFilesFromSourceDirectory(
-      net::GetWebSocketTestDataDirectory());
+  wss_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   net::test_server::InstallDefaultWebSocketHandlers(&wss_server);
 
   ASSERT_TRUE(https_server.Start());
