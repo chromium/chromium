@@ -18,17 +18,21 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
+#include "base/profiler/frame.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/wrapped_window_proc.h"
+#include "media/base/buffering_state.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/pipeline_status.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/base/win/hresults.h"
@@ -604,6 +608,16 @@ void MediaFoundationRenderer::SetMediaFoundationRenderingMode(
       hr = mf_media_engine_ex->EnableWindowlessSwapchainMode(
           render_mode == MediaFoundationRenderingMode::DirectComposition);
       if (SUCCEEDED(hr)) {
+        // Set the start time for the rendered video frame detection if for some
+        // reason EnableWindowlessSwapChainMode was set to 0 and back to 1
+        // during playback.
+        if (has_reported_playing_ == true &&
+            rendering_mode_ !=
+                MediaFoundationRenderingMode::DirectComposition &&
+            render_mode == MediaFoundationRenderingMode::DirectComposition) {
+          RestartRenderedVideoFrameDetectionTimerInNotReported();
+        }
+
         rendering_mode_ = render_mode;
         MEDIA_LOG(INFO, media_log_)
             << "Set MediaFoundationRenderingMode: " << rendering_mode_;
@@ -661,6 +675,12 @@ void MediaFoundationRenderer::SetPlaybackRate(double playback_rate) {
   hr = mf_media_engine_->SetPlaybackRate(playback_rate);
 
   if (SUCCEEDED(hr)) {
+    // Set the start time for the rendered video frame detection if playback
+    // rate was set to 0 and changed to non-zero.
+    if (playback_rate_ == 0.0 && playback_rate > 0.0) {
+      RestartRenderedVideoFrameDetectionTimerInNotReported();
+    }
+
     playback_rate_ = playback_rate;
   } else {
     DVLOG_IF(1, FAILED(hr)) << "Failed to set playback rate: " << PrintHr(hr);
@@ -790,6 +810,10 @@ HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Size rect_size) {
   // rect set in SetWindowPos.
   RETURN_IF_FAILED(mf_media_engine_ex->UpdateVideoStream(
       /*pSrc=*/nullptr, &dest_rect, /*pBorderClr=*/nullptr));
+
+  // Set the start time for the rendered video frame detection.
+  RestartRenderedVideoFrameDetectionTimerInNotReported();
+
   if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
     RETURN_IF_FAILED(InitializeTexturePool(native_video_size_));
   }
@@ -851,6 +875,8 @@ void MediaFoundationRenderer::SendStatistics() {
     cdm_proxy_->OnSignificantPlayback();
   }
 
+  CheckRenderedVideoFrame(new_stats);
+
   if (statistics_ != new_stats) {
     // OnStatisticsUpdate() expects delta values.
     PipelineStatistics delta;
@@ -873,11 +899,104 @@ void MediaFoundationRenderer::StartSendingStatistics() {
   const auto kPipelineStatsPollingPeriod = base::Milliseconds(500);
   statistics_timer_.Start(FROM_HERE, kPipelineStatsPollingPeriod, this,
                           &MediaFoundationRenderer::SendStatistics);
+
+  // Set the start time for the rendered video frame detection.
+  RestartRenderedVideoFrameDetectionTimerInNotReported();
 }
 
-void MediaFoundationRenderer::StopSendingStatistics() {
-  DVLOG_FUNC(2);
+void MediaFoundationRenderer::StopSendingStatistics(
+    bool conclude_rendered_video_frame_detection) {
+  DVLOG_FUNC(2) << "conclude_rendered_video_frame_detection="
+                << conclude_rendered_video_frame_detection;
   statistics_timer_.Stop();
+
+  // Conclude the rendered video frame detection only when needed. Otherwise,
+  // just reset the start time.
+  if (conclude_rendered_video_frame_detection &&
+      NeedRenderedVideoFrameDetection()) {
+    DVLOG_FUNC(1) << "First rendered video frame check has not done yet. But "
+                     "video is ended or paused!";
+    ReportRenderedVideoFrameDetectionResult(
+        RenderedVideoFrameDetectionResult::kUnknown);
+  }
+  rendered_video_frame_detection_start_time_.reset();
+}
+
+bool MediaFoundationRenderer::NeedRenderedVideoFrameDetection() {
+  // We need to check rendered video frame only if the detection check has never
+  // done before and the start time is set.
+  return !has_reported_rendered_video_frame_detection_ &&
+         rendered_video_frame_detection_start_time_.has_value();
+}
+
+void MediaFoundationRenderer::CheckRenderedVideoFrame(
+    const PipelineStatistics& stats) {
+  if (!NeedRenderedVideoFrameDetection()) {
+    return;
+  }
+
+  // Minimally required number of rendered video frames. 1 means any frame.
+  const int kMinRenderedViedoFrames = 1;
+  // Minimum 5 seconds to be considered something is rendered on the screen
+  // regardless of the current playback rate.
+  const base::TimeDelta kMinPlaybackTimeout = base::Seconds(5);
+  auto elapsed_time = base::TimeTicks::Now() -
+                      rendered_video_frame_detection_start_time_.value();
+  DVLOG_FUNC(3) << "elapsed_time=" << elapsed_time
+                << ", stats.video_frames_decoded=" << stats.video_frames_decoded
+                << ", stats.video_frames_dropped="
+                << stats.video_frames_dropped;
+
+  // If the elapsed time is greater than or equal to `kMinPlaybackTimeout`,
+  // conclude the rendered video frame detection.
+  if (elapsed_time >= kMinPlaybackTimeout) {
+    has_reported_rendered_video_frame_detection_ = true;
+    rendered_video_frame_detection_start_time_.reset();
+
+    // Use the number of rendered frames instead since frames dropped would
+    // count towards "hanging". video_frames_decoded = rendered_frame +
+    // video_frames_dropped.
+    const uint32_t rendered_frame =
+        stats.video_frames_decoded - stats.video_frames_dropped;
+
+    // If the number of rendered frames is smaller than
+    // `kMinRenderedViedoFrames`, consider it as no decode video frame detected.
+    if (rendered_frame < kMinRenderedViedoFrames) {
+      DVLOG_FUNC(1) << "No rendered video frame detected within the given time "
+                    << kMinPlaybackTimeout.InSeconds() << " seconds!";
+      ReportRenderedVideoFrameDetectionResult(
+          RenderedVideoFrameDetectionResult::kNotDetected);
+    } else {
+      DVLOG_FUNC(1) << "First rendered video frame detected!";
+      ReportRenderedVideoFrameDetectionResult(
+          RenderedVideoFrameDetectionResult::kDetected);
+    }
+  }
+}
+
+void MediaFoundationRenderer::
+    RestartRenderedVideoFrameDetectionTimerInNotReported() {
+  rendered_video_frame_detection_start_time_.reset();
+
+  // Don't set the start time if the current playback rate is 0.0. For example,
+  // format/size change can trigger this call while `playback_rate_` is still
+  // zero.
+  if (playback_rate_ == 0.0) {
+    return;
+  }
+
+  if (!has_reported_rendered_video_frame_detection_) {
+    rendered_video_frame_detection_start_time_ = base::TimeTicks::Now();
+  }
+}
+
+void MediaFoundationRenderer::ReportRenderedVideoFrameDetectionResult(
+    RenderedVideoFrameDetectionResult result) {
+  DVLOG_FUNC(2) << "result=" << static_cast<int>(result);
+
+  base::UmaHistogramSparse(
+      "Media.MediaFoundationRenderer.RenderedVideoFrameDetectionResult",
+      static_cast<int>(result));
 }
 
 void MediaFoundationRenderer::SetVolume(float volume) {
@@ -942,6 +1061,9 @@ void MediaFoundationRenderer::OnPlaybackEnded() {
 void MediaFoundationRenderer::OnFormatChange() {
   DVLOG_FUNC(2);
   OnVideoNaturalSizeChange();
+
+  // Set the start time for the rendered video frame detection.
+  RestartRenderedVideoFrameDetectionTimerInNotReported();
 }
 
 void MediaFoundationRenderer::OnLoadedData() {
@@ -1065,7 +1187,9 @@ HRESULT MediaFoundationRenderer::PauseInternal() {
   // transition to the Pause state & then back to Play state. To try and
   // avoid cases where we may get Media Engine's reset statistics call
   // StopSendingStatistics before transitioning to Pause.
-  StopSendingStatistics();
+  // Note that `conclude_rendered_video_frame_detection` should be false since
+  // PauseInternal() can be called by flush or restart.
+  StopSendingStatistics(/*conclude_rendered_video_frame_detection=*/false);
   return mf_media_engine_->Pause();
 }
 

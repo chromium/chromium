@@ -1304,6 +1304,16 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="FailedToGetMediaEngineEx"/>
 </enum>
 
+<!-- LINT.IfChange(MediaFoundationRendererRenderedVideoFrameDetectionResult) -->
+
+<enum name="MediaFoundationRendererRenderedVideoFrameDetectionResult">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kDetected"/>
+  <int value="2" label="kNotDetected"/>
+</enum>
+
+<!-- LINT.ThenChange(/media/renderers/win/media_foundation_renderer.h:RenderedVideoFrameDetectionResult) -->
+
 <enum name="MediaHardwareKeyAction">
   <int value="0" label="Play"/>
   <int value="1" label="Pause"/>
