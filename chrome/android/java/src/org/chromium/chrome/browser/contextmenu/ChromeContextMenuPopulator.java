@@ -43,6 +43,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -1306,13 +1307,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         int menuItemId = ChromeContextMenuItem.getMenuId(item);
 
         final PropertyModel model = buildListItemModel(title, menuItemId, enabled);
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
+        return new ListItem(ListItemType.MENU_ITEM, model);
     }
 
     private ListItem createCustomListItem(CustomContentAction action, int customMenuItemId) {
         final PropertyModel model =
                 buildListItemModel(action.getLabel(), customMenuItemId, /* enabled= */ true);
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
+        return new ListItem(ListItemType.MENU_ITEM, model);
     }
 
     /**
@@ -1348,7 +1349,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         .with(END_BUTTON_CONTENT_DESC, shareInfo.second)
                         .with(END_BUTTON_MENU_ID, ChromeContextMenuItem.getMenuId(iconButtonItem))
                         .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
+        return new ListItem(ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }
 
     @VisibleForTesting
@@ -1359,7 +1360,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         .with(ENABLED, true)
                         .with(ContextMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems)
                         .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU, model);
+        return new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, model);
     }
 
     /**

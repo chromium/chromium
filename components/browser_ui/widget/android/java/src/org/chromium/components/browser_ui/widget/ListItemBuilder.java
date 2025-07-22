@@ -4,7 +4,7 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import static org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType.MENU_ITEM;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 
 import android.content.res.Resources;
 

@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24"
-    android:tint="?attr/colorControlNormal">
+    android:tint="?android:attr/colorControlNormal">
   <path
       android:fillColor="@android:color/white"
       android:pathData="M10,6L8.59,7.41 13.17,12l-4.58,4.59L10,18l6,-6 -6,-6z"/>

@@ -13,7 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
-import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -84,6 +84,6 @@ public class MessageSecondaryMenuItems {
 
     /** Add a divider to the list menu. */
     void addMenuDivider() {
-        mMenuItems.add(new ListItem(ListMenuItemType.DIVIDER, new PropertyModel()));
+        mMenuItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
     }
 }

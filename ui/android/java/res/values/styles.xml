@@ -397,10 +397,11 @@ found in the LICENSE file.
         <item name="android:windowExitAnimation">@anim/menu_exit_raiseup</item>
     </style>
 
-    <!-- ListMenuButton -->
+    <!-- ListMenu -->
     <style name="ListMenuItemStyle">
         <item name="android:paddingStart">@dimen/list_menu_item_horizontal_padding</item>
         <item name="android:paddingEnd">@dimen/list_menu_item_horizontal_padding</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
     <style name="ListMenuItemIconStyle">
         <item name="android:layout_width">@dimen/list_menu_item_icon_width</item>
@@ -413,6 +414,9 @@ found in the LICENSE file.
     <style name="TextAppearance.ListMenuItem">
         <item name="android:textColor">@color/list_menu_item_text_color_list</item>
         <item name="android:textSize">@dimen/list_menu_item_text_size</item>
+    </style>
+    <style name="TextAppearance.ListMenuItem.Bold" parent="TextAppearance.ListMenuItem">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="EndIconMenuAnim" parent="AnchoredPopupAnimEndTop" />

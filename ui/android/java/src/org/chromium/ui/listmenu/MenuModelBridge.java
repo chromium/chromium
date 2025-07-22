@@ -79,7 +79,7 @@ public class MenuModelBridge {
                         .with(START_ICON_BITMAP, bitmap)
                         .with(ENABLED, isEnabled)
                         .with(CLICK_LISTENER, (view) -> callback.run());
-        mItems.add(new ListItem(ListItemType.CONTEXT_MENU_ITEM, modelBuilder.build()));
+        mItems.add(new ListItem(ListItemType.MENU_ITEM, modelBuilder.build()));
     }
 
     /**
@@ -102,8 +102,7 @@ public class MenuModelBridge {
                         .with(ContextMenuCheckItemProperties.CHECKED, isChecked)
                         .with(ENABLED, isEnabled)
                         .with(CLICK_LISTENER, (view) -> callback.run());
-        mItems.add(
-                new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX, modelBuilder.build()));
+        mItems.add(new ListItem(ListItemType.MENU_ITEM_WITH_CHECKBOX, modelBuilder.build()));
     }
 
     /**
@@ -126,9 +125,7 @@ public class MenuModelBridge {
                         .with(ContextMenuRadioItemProperties.SELECTED, isSelected)
                         .with(ENABLED, isEnabled)
                         .with(CLICK_LISTENER, (view) -> callback.run());
-        mItems.add(
-                new ListItem(
-                        ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON, modelBuilder.build()));
+        mItems.add(new ListItem(ListItemType.MENU_ITEM_WITH_RADIO_BUTTON, modelBuilder.build()));
     }
 
     /** Adds a context menu item that is a submenu parent. */
@@ -144,7 +141,7 @@ public class MenuModelBridge {
                         .with(START_ICON_BITMAP, bitmap)
                         .with(ENABLED, isEnabled)
                         .with(ContextMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems.mItems);
-        mItems.add(new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU, modelBuilder.build()));
+        mItems.add(new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, modelBuilder.build()));
     }
 
     /** Adds a divider to the context menu. */

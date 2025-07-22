@@ -463,10 +463,6 @@ found in the LICENSE file.
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
     </style>
 
-    <style name="ContextMenuItemText.Bold" parent="ContextMenuItemText">
-        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary.Bold</item>
-    </style>
-
     <style name="ContextMenuChip" parent="Chip">
         <item name="primaryTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
         <item name="iconWidth">@dimen/context_menu_chip_icon_size</item>

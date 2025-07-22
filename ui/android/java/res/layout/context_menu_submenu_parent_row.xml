@@ -9,37 +9,30 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_item_ripple"
-    android:paddingStart="@dimen/context_menu_list_lateral_padding"
-    android:orientation="horizontal">
+    android:background="?android:attr/selectableItemBackground"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    style="@style/ListMenuItemStyle" >
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/menu_item_icon"
-        android:layout_width="@dimen/list_item_start_icon_width"
-        android:layout_height="@dimen/context_menu_chip_icon_size"
-        android:layout_marginEnd="@dimen/context_menu_chip_icon_margin_end"
-        android:layout_gravity="center"
         android:duplicateParentState="true"
         android:importantForAccessibility="no"
-        android:visibility="gone" />
+        android:visibility="gone"
+        style="@style/ListMenuItemIconStyle.Start" />
 
     <TextView
         android:id="@+id/menu_row_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        style="@style/ContextMenuItemText" />
+        style="@style/TextAppearance.ListMenuItem" />
 
     <ImageView
         android:id="@+id/submenu_arrow"
         android:src="@drawable/outline_chevron_right_24dp"
         android:importantForAccessibility="no"
-        android:layout_width="@dimen/list_item_end_icon_width"
+        android:layout_width="@dimen/list_menu_item_icon_size"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
-        android:paddingTop="@dimen/context_menu_row_item_vertical_padding"
-        android:paddingBottom="@dimen/context_menu_row_item_vertical_padding"
-        android:paddingStart="@dimen/context_menu_row_item_horizontal_padding"
-        android:paddingEnd="@dimen/context_menu_row_item_horizontal_padding"
         android:background="@android:color/transparent" />
 </LinearLayout>

@@ -16,9 +16,9 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Batch.UNIT_TESTS;
 import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.SUBMENU_ITEMS;
-import static org.chromium.ui.listmenu.ListItemType.CONTEXT_MENU_ITEM;
-import static org.chromium.ui.listmenu.ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU;
-import static org.chromium.ui.listmenu.ListItemType.CONTEXT_MENU_SUBMENU_HEADER;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
+import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
@@ -96,16 +97,20 @@ public class ContextMenuMediatorTest {
 
         ModelList itemList = getItemList(rawItems, /* hasHeader= */ true);
 
-        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
+        assertThat(itemList.get(0).type, equalTo(ContextMenuItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        assertThat(itemList.get(2).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(3).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(4).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(
+                itemList.get(5).type,
+                equalTo(ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
         assertThat(itemList.get(6).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        assertThat(itemList.get(7).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(8).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(
+                itemList.get(9).type,
+                equalTo(ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
         // "Save link as"  and "save image" should be enabled.
         assertTrue(itemList.get(4).model.get(ENABLED));
         assertTrue(itemList.get(8).model.get(ENABLED));
@@ -130,16 +135,20 @@ public class ContextMenuMediatorTest {
 
         ModelList itemList = getItemList(rawItems, /* hasHeader= */ true);
 
-        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
+        assertThat(itemList.get(0).type, equalTo(ContextMenuItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        assertThat(itemList.get(2).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(3).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(4).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(
+                itemList.get(5).type,
+                equalTo(ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
         assertThat(itemList.get(6).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        assertThat(itemList.get(7).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(8).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(
+                itemList.get(9).type,
+                equalTo(ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
         // "Save link as"  and "save image" should be disabled.
         assertFalse(itemList.get(4).model.get(ENABLED));
         assertFalse(itemList.get(8).model.get(ENABLED));
@@ -158,12 +167,14 @@ public class ContextMenuMediatorTest {
 
         ModelList itemList = getItemList(rawItems, /* hasHeader= */ true);
 
-        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
+        assertThat(itemList.get(0).type, equalTo(ContextMenuItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
-        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        assertThat(itemList.get(2).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(3).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(4).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(
+                itemList.get(5).type,
+                equalTo(ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
     }
 
     @Test
@@ -175,9 +186,9 @@ public class ContextMenuMediatorTest {
         rawItems.add(groupOne);
         ModelList itemList = getItemList(rawItems, /* hasHeader= */ true);
 
-        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
+        assertThat(itemList.get(0).type, equalTo(ContextMenuItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
-        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(2).type, equalTo(ListItemType.MENU_ITEM));
     }
 
     @Test
@@ -201,7 +212,7 @@ public class ContextMenuMediatorTest {
 
         ListItem listItemWithModelClickCallback =
                 new ListItem(
-                        CONTEXT_MENU_ITEM,
+                        MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                 .with(ENABLED, true)
                                 .with(TITLE, LABEL)
@@ -210,7 +221,7 @@ public class ContextMenuMediatorTest {
 
         ListItem submenuLevel1 =
                 new ListItem(
-                        CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                        MENU_ITEM_WITH_SUBMENU,
                         new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -219,7 +230,7 @@ public class ContextMenuMediatorTest {
 
         ListItem submenuLevel0 =
                 new ListItem(
-                        CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                        MENU_ITEM_WITH_SUBMENU,
                         new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -230,7 +241,7 @@ public class ContextMenuMediatorTest {
         // Add an item with no click callback
         ListItem listItemWithoutModelClickCallback =
                 new ListItem(
-                        CONTEXT_MENU_ITEM,
+                        MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -244,7 +255,7 @@ public class ContextMenuMediatorTest {
         submenuLevel0.model.get(CLICK_LISTENER).onClick(mListView);
         assertEquals(2, modelList.size());
         ListItem header = modelList.get(0);
-        assertEquals(CONTEXT_MENU_SUBMENU_HEADER, header.type);
+        assertEquals(SUBMENU_HEADER, header.type);
         // Go back to the root level
         header.model.get(CLICK_LISTENER).onClick(mListView);
         verify(mDismissDialog, never()).run(); // Clicking into submenu and back should not dismiss
@@ -259,7 +270,7 @@ public class ContextMenuMediatorTest {
         submenuLevel1.model.get(CLICK_LISTENER).onClick(mListView);
         assertEquals(2, modelList.size()); // Should still have 2 items (no extra header)
         // Assert correctness of contents
-        assertEquals(CONTEXT_MENU_SUBMENU_HEADER, modelList.get(0).type);
+        assertEquals(SUBMENU_HEADER, modelList.get(0).type);
         assertEquals(listItemWithModelClickCallback, modelList.get(1));
     }
 
@@ -270,7 +281,7 @@ public class ContextMenuMediatorTest {
 
         ListItem listItemWithModelClickCallback =
                 new ListItem(
-                        CONTEXT_MENU_ITEM,
+                        MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                 .with(ENABLED, true)
                                 .with(TITLE, LABEL)
@@ -279,7 +290,7 @@ public class ContextMenuMediatorTest {
 
         ListItem submenuLevel1 =
                 new ListItem(
-                        CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                        MENU_ITEM_WITH_SUBMENU,
                         new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -288,7 +299,7 @@ public class ContextMenuMediatorTest {
 
         ListItem submenuLevel0 =
                 new ListItem(
-                        CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                        MENU_ITEM_WITH_SUBMENU,
                         new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -299,7 +310,7 @@ public class ContextMenuMediatorTest {
         // Add an item with no click callback
         ListItem listItemWithoutModelClickCallback =
                 new ListItem(
-                        CONTEXT_MENU_ITEM,
+                        MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -321,7 +332,7 @@ public class ContextMenuMediatorTest {
 
         ListItem listItemWithModelClickCallback =
                 new ListItem(
-                        CONTEXT_MENU_ITEM,
+                        MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                 .with(ENABLED, true)
                                 .with(TITLE, LABEL)
@@ -330,7 +341,7 @@ public class ContextMenuMediatorTest {
 
         ListItem submenuLevel1 =
                 new ListItem(
-                        CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                        MENU_ITEM_WITH_SUBMENU,
                         new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -339,7 +350,7 @@ public class ContextMenuMediatorTest {
 
         ListItem submenuLevel0 =
                 new ListItem(
-                        CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                        MENU_ITEM_WITH_SUBMENU,
                         new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -350,7 +361,7 @@ public class ContextMenuMediatorTest {
         // Add an item with no click callback
         ListItem listItemWithoutModelClickCallback =
                 new ListItem(
-                        CONTEXT_MENU_ITEM,
+                        MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
@@ -382,7 +393,7 @@ public class ContextMenuMediatorTest {
                                 TITLE,
                                 ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
                         .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
+        return new ListItem(ListItemType.MENU_ITEM, model);
     }
 
     private ListItem createShareListItem(@ChromeContextMenuItem.Item int item) {
@@ -394,6 +405,6 @@ public class ContextMenuMediatorTest {
                                 TITLE,
                                 ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
                         .build();
-        return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
+        return new ListItem(ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }
 }

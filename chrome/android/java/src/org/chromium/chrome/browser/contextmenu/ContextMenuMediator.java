@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_MENU_ID;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.addRunnableToCallback;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.hasClickListener;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.setupSubmenuParent;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuUtils.hasClickListener;
+import static org.chromium.ui.listmenu.ListMenuUtils.setupCallbacksRecursively;
+import static org.chromium.ui.listmenu.ListMenuUtils.setupSubmenuParent;
 
 import android.app.Activity;
 import android.widget.ListView;
@@ -20,6 +20,7 @@ import androidx.annotation.IdRes;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -94,7 +95,8 @@ public class ContextMenuMediator {
         // Start with the header
         if (hasHeader) {
             mModelList.add(
-                    new ListItem(ListItemType.HEADER, mContextMenuHeaderCoordinator.getModel()));
+                    new ListItem(
+                            ContextMenuItemType.HEADER, mContextMenuHeaderCoordinator.getModel()));
         }
 
         for (ModelList group : items) {
@@ -112,21 +114,21 @@ public class ContextMenuMediator {
         for (ListItem item : mModelList) {
             // Special case handling (for items whose callbacks don't use clickItem method)
             if (hasClickListener(item)) {
-                addRunnableToCallback(item, mDismissDialog);
+                setupCallbacksRecursively(mModelList, item, mDismissDialog);
                 continue;
             }
-            if (item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU) {
+            if (item.type == ListItemType.MENU_ITEM_WITH_SUBMENU) {
                 setupSubmenuParent(mModelList, item, mDismissDialog);
                 continue;
             }
             // Usual case handling
-            if (item.type != ListItemType.DIVIDER && item.type != ListItemType.HEADER) {
+            if (item.type != ListItemType.DIVIDER && item.type != ContextMenuItemType.HEADER) {
                 // Note: this does NOT handle items inside submenus.
                 item.model.set(
                         CLICK_LISTENER,
                         (v) -> clickItem(item.model.get(MENU_ITEM_ID), item.model.get(ENABLED)));
             }
-            if (item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
+            if (item.type == ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
                 PropertyModel model = item.model;
                 model.set(
                         END_BUTTON_CLICK_LISTENER,

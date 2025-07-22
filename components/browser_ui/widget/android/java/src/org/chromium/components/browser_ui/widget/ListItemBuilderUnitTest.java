@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,7 +44,7 @@ public class ListItemBuilderUnitTest {
         ListItem listItem = new ListItemBuilder().build();
         PropertyModel model = listItem.model;
 
-        assertEquals(BasicListMenu.ListMenuItemType.MENU_ITEM, listItem.type);
+        assertEquals(ListItemType.MENU_ITEM, listItem.type);
         assertTrue(model.get(ListMenuItemProperties.ENABLED));
         assertEquals(
                 BrowserUiListMenuUtils.getDefaultTextAppearanceStyle(),

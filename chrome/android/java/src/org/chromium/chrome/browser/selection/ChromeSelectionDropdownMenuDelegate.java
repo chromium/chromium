@@ -18,7 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.listmenu.BasicListMenu;
-import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -117,7 +117,7 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
                         .with(
                                 ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
                                 R.dimen.list_menu_item_horizontal_padding);
-        return new ListItem(ListMenuItemType.DIVIDER, builder.build());
+        return new ListItem(ListItemType.DIVIDER, builder.build());
     }
 
     @Override
@@ -153,6 +153,6 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
                     ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
                     BrowserUiListMenuUtils.getDefaultIconTintColorStateListId());
         }
-        return new ListItem(ListMenuItemType.MENU_ITEM, modelBuilder.build());
+        return new ListItem(ListItemType.MENU_ITEM, modelBuilder.build());
     }
 }

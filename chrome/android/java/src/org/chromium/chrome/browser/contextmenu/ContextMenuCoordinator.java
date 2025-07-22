@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.createAdapter;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.view.Window;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
@@ -43,12 +44,17 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuUtils;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The main coordinator for the context menu, responsible for creating the context menu in general
@@ -56,6 +62,17 @@ import java.util.List;
  */
 @NullMarked
 public class ContextMenuCoordinator implements ContextMenuUi {
+
+    private static final int INVALID_ITEM_ID = -1;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ContextMenuItemType.HEADER, ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON})
+    public @interface ContextMenuItemType {
+        // These should come after the ListItemTypes in
+        // //ui/android/java/src/org/chromium/ui/listmenu/ListItemType.java
+        int HEADER = 6;
+        int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 7;
+    }
 
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
@@ -346,6 +363,17 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mListView = menu.findViewById(R.id.context_menu_list_view);
         mListView.setAdapter(adapter);
 
+        // TODO(crbug.com/427797271): Clean up click handling and remove this.
+        mListView.setOnItemClickListener(
+                (p, v, pos, id) -> {
+                    if (id == INVALID_ITEM_ID) return;
+                    @Nullable ListItem item = findItem((int) id);
+                    if (item == null) return;
+                    if (item.model.containsKey(CLICK_LISTENER) && item.type == MENU_ITEM) {
+                        item.model.get(CLICK_LISTENER).onClick(v);
+                    }
+                });
+
         mListView.setItemsCanFocus(true);
         // Set the fading edge for context menu. This is guarded by drag and drop feature flag, but
         // ideally this could be enabled for all forms of context menu.
@@ -525,6 +553,22 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             }
         }
         return null;
+    }
+
+    @VisibleForTesting
+    /* package */ static ModelListAdapter createAdapter(ModelList listItems) {
+        ModelListAdapter adapter =
+                ListMenuUtils.createAdapter(listItems, Set.of(ContextMenuItemType.HEADER));
+        // Register types / view binders not covered by the default adapter
+        adapter.registerType(
+                ContextMenuItemType.HEADER,
+                new LayoutViewBuilder(R.layout.context_menu_header),
+                ContextMenuHeaderViewBinder::bind);
+        adapter.registerType(
+                ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                new LayoutViewBuilder(R.layout.context_menu_row),
+                ContextMenuItemViewBinder::bind);
+        return adapter;
     }
 
     public ContextMenuDialog getDialogForTest() {

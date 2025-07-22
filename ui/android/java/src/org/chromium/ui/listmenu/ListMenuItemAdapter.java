@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.modelutil.ModelListAdapter;
 
 /** Default adapter for use with {@link ListMenu}. */
@@ -31,7 +30,7 @@ public class ListMenuItemAdapter extends ModelListAdapter {
 
     @Override
     public boolean isEnabled(int position) {
-        return getItemViewType(position) != ListMenuItemType.DIVIDER
+        return getItemViewType(position) != ListItemType.DIVIDER
                 && ((ListItem) getItem(position)).model.get(ListMenuItemProperties.ENABLED);
     }
 

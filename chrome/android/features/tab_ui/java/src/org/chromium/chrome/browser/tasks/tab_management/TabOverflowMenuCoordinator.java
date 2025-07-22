@@ -39,7 +39,7 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuItemViewBinder;
@@ -123,7 +123,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         @Override
                         public long getItemId(int position) {
                             ListItem item = (ListItem) getItem(position);
-                            if (getItemViewType(position) == ListMenuItemType.MENU_ITEM) {
+                            if (getItemViewType(position) == ListItemType.MENU_ITEM) {
                                 return item.model.get(ListMenuItemProperties.MENU_ITEM_ID);
                             } else {
                                 return INVALID_ITEM_ID;
@@ -131,11 +131,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         }
                     };
             adapter.registerType(
-                    ListMenuItemType.MENU_ITEM,
+                    ListItemType.MENU_ITEM,
                     new LayoutViewBuilder(R.layout.list_menu_item),
                     ListMenuItemViewBinder::binder);
             adapter.registerType(
-                    ListMenuItemType.DIVIDER,
+                    ListItemType.DIVIDER,
                     new LayoutViewBuilder(R.layout.list_section_divider),
                     ListSectionDividerViewBinder::bind);
             touchTrackingListView.setAdapter(adapter);

@@ -9,25 +9,23 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_item_ripple"
-    android:paddingHorizontal="@dimen/context_menu_row_item_horizontal_padding"
-    android:orientation="horizontal">
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    style="@style/ListMenuItemStyle" >
 
     <ImageView
         android:id="@+id/submenu_arrow"
         android:src="@drawable/ic_arrow_back_24dp"
         android:importantForAccessibility="no"
-        android:layout_width="@dimen/list_item_start_icon_width"
-        android:layout_height="@dimen/context_menu_chip_icon_size"
-        android:layout_marginEnd="@dimen/context_menu_chip_icon_margin_end"
-        android:layout_gravity="center"
         android:scaleType="fitCenter"
-        android:background="@android:color/transparent" />
+        android:background="@android:color/transparent"
+        style="@style/ListMenuItemIconStyle.Start" />
 
     <TextView
         android:id="@+id/menu_row_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        style="@style/ContextMenuItemText.Bold" />
+        style="@style/TextAppearance.ListMenuItem.Bold" />
 </LinearLayout>

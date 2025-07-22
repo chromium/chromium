@@ -146,11 +146,6 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>
 
-    <style name="TextAppearance.TextLarge.Primary.Bold">
-        <item name="android:textColor">@color/default_text_color_list</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="TextAppearance.TextMediumThick.Primary">
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contextmenu;
+package org.chromium.ui.listmenu;
 
 import static org.chromium.ui.listmenu.ContextMenuRadioItemProperties.SELECTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
@@ -14,8 +14,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.R;
-import org.chromium.ui.listmenu.ContextMenuRadioItemProperties;
+import org.chromium.ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

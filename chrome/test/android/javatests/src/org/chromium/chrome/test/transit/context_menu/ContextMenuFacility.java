@@ -18,8 +18,8 @@ import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.modelutil.MVCListAdapter;
 
 /** Station represents a opened list menu (for example, a context menu). */
@@ -35,14 +35,15 @@ public class ContextMenuFacility extends ScrollableFacility<WebPageStation> {
     protected void declareItems(ScrollableFacility<WebPageStation>.ItemsBuilder items) {
         // Context menu always has a header.
         items.declareItem(
-                itemViewSpec(withId(R.id.title_and_url)), withMenuItemType(ListItemType.HEADER));
+                itemViewSpec(withId(R.id.title_and_url)),
+                withMenuItemType(ContextMenuItemType.HEADER));
     }
 
     protected ViewSpec<View> itemViewSpec(Matcher<View> matcher) {
         return menuListElement.descendant(matcher);
     }
 
-    protected static Matcher<MVCListAdapter.ListItem> withMenuItemType(@ListItemType int type) {
+    protected static Matcher<MVCListAdapter.ListItem> withMenuItemType(int type) {
         return new TypeSafeMatcher<>() {
             @Override
             public void describeTo(Description description) {

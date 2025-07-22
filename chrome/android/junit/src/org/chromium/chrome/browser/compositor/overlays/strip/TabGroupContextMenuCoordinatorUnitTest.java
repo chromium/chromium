@@ -71,7 +71,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -593,7 +593,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     private void verifyDivider(ListItem item) {
-        assertEquals(ListMenuItemType.DIVIDER, item.type);
+        assertEquals(ListItemType.DIVIDER, item.type);
         assertEquals(
                 "Expected divider item to not have customization",
                 0,

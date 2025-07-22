@@ -8,17 +8,14 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/context_menu_list_lateral_padding"
-    android:gravity="start"
-    android:background="@drawable/list_item_ripple"
-    android:orientation="horizontal">
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    style="@style/ListMenuItemStyle">
 
     <CheckBox
         android:id="@+id/checkbox"
-        android:layout_width="@dimen/list_item_start_icon_width"
-        android:layout_height="@dimen/list_item_start_icon_width"
-        android:layout_marginEnd="@dimen/context_menu_chip_icon_margin_end"
-        android:layout_gravity="center" />
+        style="@style/ListMenuItemIconStyle.Start" />
 
     <TextView
         android:id="@+id/checkbox_title"
@@ -26,6 +23,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:maxLines="1"
         android:ellipsize="end"
-        style="@style/ContextMenuItemText" />
+        style="@style/TextAppearance.ListMenuItem" />
 
 </LinearLayout>

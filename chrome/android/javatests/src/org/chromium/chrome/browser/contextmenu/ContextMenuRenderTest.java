@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuUtils.createAdapter;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.createAdapter;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
@@ -164,7 +165,7 @@ public class ContextMenuRenderTest {
                     // Submenu back header
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_SUBMENU_HEADER,
+                                    ListItemType.SUBMENU_HEADER,
                                     new PropertyModel.Builder(
                                                     ContextMenuSubmenuHeaderItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
@@ -173,7 +174,7 @@ public class ContextMenuRenderTest {
                     // Command type items
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
+                                    ListItemType.MENU_ITEM,
                                     new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
                                             .with(
@@ -183,7 +184,7 @@ public class ContextMenuRenderTest {
                                             .build()));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
+                                    ListItemType.MENU_ITEM,
                                     new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
                                             .with(
@@ -194,7 +195,7 @@ public class ContextMenuRenderTest {
                     // Check items
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
+                                    ListItemType.MENU_ITEM_WITH_CHECKBOX,
                                     new PropertyModel.Builder(
                                                     ContextMenuCheckItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
@@ -203,7 +204,7 @@ public class ContextMenuRenderTest {
                                             .build()));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
+                                    ListItemType.MENU_ITEM_WITH_CHECKBOX,
                                     new PropertyModel.Builder(
                                                     ContextMenuCheckItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
@@ -213,7 +214,7 @@ public class ContextMenuRenderTest {
                     // Radio items
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
+                                    ListItemType.MENU_ITEM_WITH_RADIO_BUTTON,
                                     new PropertyModel.Builder(
                                                     ContextMenuRadioItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
@@ -222,7 +223,7 @@ public class ContextMenuRenderTest {
                                             .build()));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
+                                    ListItemType.MENU_ITEM_WITH_RADIO_BUTTON,
                                     new PropertyModel.Builder(
                                                     ContextMenuRadioItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
@@ -232,7 +233,7 @@ public class ContextMenuRenderTest {
                     // Submenu parent items
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                                    ListItemType.MENU_ITEM_WITH_SUBMENU,
                                     new PropertyModel.Builder(
                                                     ContextMenuSubmenuItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
@@ -243,7 +244,7 @@ public class ContextMenuRenderTest {
                                             .build()));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
+                                    ListItemType.MENU_ITEM_WITH_SUBMENU,
                                     new PropertyModel.Builder(
                                                     ContextMenuSubmenuItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
@@ -258,24 +259,20 @@ public class ContextMenuRenderTest {
                 () -> {
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.HEADER,
+                                    ContextMenuItemType.HEADER,
                                     getHeaderModel("", "www.google.com", false)));
                     mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
                     mListItems.add(
-                            new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open in new tab")));
+                            new ListItem(ListItemType.MENU_ITEM, getItemModel("Open in new tab")));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open in incognito tab")));
+                                    ListItemType.MENU_ITEM, getItemModel("Open in incognito tab")));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Copy link address")));
+                                    ListItemType.MENU_ITEM, getItemModel("Copy link address")));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                                    ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                                     getShareItemModel("Share link")));
                 });
         mRenderTestRule.render(mFrame, id);
@@ -286,37 +283,30 @@ public class ContextMenuRenderTest {
                 () -> {
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.HEADER,
+                                    ContextMenuItemType.HEADER,
                                     getHeaderModel("Capybara", "www.google.com", true)));
                     mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
                     mListItems.add(
-                            new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open in new tab")));
+                            new ListItem(ListItemType.MENU_ITEM, getItemModel("Open in new tab")));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open in incognito tab")));
+                                    ListItemType.MENU_ITEM, getItemModel("Open in incognito tab")));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Copy link address")));
+                                    ListItemType.MENU_ITEM, getItemModel("Copy link address")));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                                    ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                                     getShareItemModel("Share link")));
                     mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Open image in new tab")));
+                                    ListItemType.MENU_ITEM, getItemModel("Open image in new tab")));
+                    mListItems.add(
+                            new ListItem(ListItemType.MENU_ITEM, getItemModel("Download image")));
                     mListItems.add(
                             new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM,
-                                    getItemModel("Download image")));
-                    mListItems.add(
-                            new ListItem(
-                                    ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                                    ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                                     getShareItemModel("Share image")));
                 });
         mRenderTestRule.render(mFrame, id);

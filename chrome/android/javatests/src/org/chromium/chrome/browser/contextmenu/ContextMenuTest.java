@@ -14,7 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.listmenu.ListItemType.CONTEXT_MENU_ITEM;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
@@ -1419,7 +1418,7 @@ public class ContextMenuTest {
     private void assertMenuItemsAreEqual(ContextMenuCoordinator menu, Integer... expectedItems) {
         List<Integer> actualItems = new ArrayList<>();
         for (int i = 0; i < menu.getCount(); i++) {
-            if (menu.getItem(i).type >= CONTEXT_MENU_ITEM) {
+            if (menu.getItem(i).model.containsKey(MENU_ITEM_ID)) {
                 actualItems.add(menu.getItem(i).model.get(MENU_ITEM_ID));
             }
         }
@@ -1433,7 +1432,7 @@ public class ContextMenuTest {
     private String getMenuTitles(ContextMenuCoordinator menu) {
         StringBuilder items = new StringBuilder();
         for (int i = 0; i < menu.getCount(); i++) {
-            if (menu.getItem(i).type >= CONTEXT_MENU_ITEM) {
+            if (menu.getItem(i).model.containsKey(TITLE)) {
                 items.append("\n").append(menu.getItem(i).model.get(TITLE));
             }
         }
@@ -1443,7 +1442,7 @@ public class ContextMenuTest {
     private String getMenuTitleFromItem(ContextMenuCoordinator menu, int itemId) {
         StringBuilder itemName = new StringBuilder();
         for (int i = 0; i < menu.getCount(); i++) {
-            if (menu.getItem(i).type >= CONTEXT_MENU_ITEM) {
+            if (menu.getItem(i).model.containsKey(MENU_ITEM_ID)) {
                 if (menu.getItem(i).model.get(MENU_ITEM_ID) == itemId) {
                     itemName.append(menu.getItem(i).model.get(TITLE));
                     return itemName.toString();

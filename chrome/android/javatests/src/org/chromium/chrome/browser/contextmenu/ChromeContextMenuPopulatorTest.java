@@ -17,7 +17,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.listmenu.ListItemType.CONTEXT_MENU_ITEM;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
@@ -1865,7 +1865,7 @@ public class ChromeContextMenuPopulatorTest {
         ModelList modelListFromBridge = new ModelList();
         modelListFromBridge.add(
                 new ListItem(
-                        CONTEXT_MENU_ITEM,
+                        MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                 .with(TITLE, "Test title")
                                 .build()));
@@ -1891,7 +1891,7 @@ public class ChromeContextMenuPopulatorTest {
         List<ListItem> submenuItems = new ArrayList<>();
         submenuItems.add(
                 new ListItem(
-                        ListItemType.CONTEXT_MENU_ITEM,
+                        ListItemType.MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                                 .with(TITLE, "Sample submenu item")
                                 .build()));
@@ -2347,7 +2347,7 @@ public class ChromeContextMenuPopulatorTest {
     private ListItem findItemWithTitle(List<ModelList> menuState, String title) {
         for (ModelList group : menuState) {
             for (ListItem item : group) {
-                if (item.type == CONTEXT_MENU_ITEM) {
+                if (item.type == MENU_ITEM) {
                     if (title.equals(item.model.get(TITLE))) {
                         return item;
                     }

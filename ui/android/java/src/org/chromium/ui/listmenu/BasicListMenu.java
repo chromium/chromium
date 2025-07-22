@@ -14,7 +14,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.IntDef;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
@@ -28,8 +27,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,12 +36,6 @@ import java.util.List;
  */
 @NullMarked
 public class BasicListMenu implements ListMenu, OnItemClickListener {
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ListMenuItemType.DIVIDER, ListMenuItemType.MENU_ITEM})
-    public @interface ListMenuItemType {
-        int DIVIDER = 0;
-        int MENU_ITEM = 1;
-    }
 
     /**
      * Helper function to build a ListItem of a divider.
@@ -59,7 +50,7 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
             builder.with(
                     ListSectionDividerProperties.COLOR_ID, R.color.divider_line_bg_color_light);
         }
-        return new ListItem(ListMenuItemType.DIVIDER, builder.build());
+        return new ListItem(ListItemType.DIVIDER, builder.build());
     }
 
     /**
@@ -107,7 +98,7 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                         .with(
                                 ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
                                 isIconTintable ? R.color.list_menu_item_icon_color_list : 0);
-        return new ListItem(ListMenuItemType.MENU_ITEM, modelBuilder.build());
+        return new ListItem(ListItemType.MENU_ITEM, modelBuilder.build());
     }
 
     private final ListView mListView;
@@ -191,11 +182,11 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
 
     private void registerListItemTypes() {
         mAdapter.registerType(
-                ListMenuItemType.MENU_ITEM,
+                ListItemType.MENU_ITEM,
                 new LayoutViewBuilder(R.layout.list_menu_item),
                 ListMenuItemViewBinder::binder);
         mAdapter.registerType(
-                ListMenuItemType.DIVIDER,
+                ListItemType.DIVIDER,
                 new LayoutViewBuilder(R.layout.list_section_divider),
                 ListSectionDividerViewBinder::bind);
     }
