@@ -338,10 +338,6 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
     JavaRef<T>::SetNewGlobalRef(env, other.obj());
   }
 
-  // Create a new global reference to the object.
-  // Deprecated. Don't use bare jobjects; use a JavaRef as the input.
-  ScopedJavaGlobalRef(JNIEnv* env, T obj) { Reset(env, obj); }
-
   ~ScopedJavaGlobalRef() { Reset(); }
 
   // Null assignment, for disambiguation.
@@ -384,15 +380,14 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
   template <typename U,
             typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   void Reset(const ScopedJavaGlobalRef<U>& other) {
-    Reset(nullptr, other.obj());
+    Reset(nullptr, other);
   }
 
-  void Reset(const JavaRef<T>& other) { Reset(nullptr, other.obj()); }
+  void Reset(const JavaRef<T>& other) { Reset(nullptr, other); }
 
-  void Reset(JNIEnv* env, const JavaRef<T>& other) { Reset(env, other.obj()); }
-
-  // Deprecated. Don't use bare jobjects; use a JavaRef as the input.
-  void Reset(JNIEnv* env, T obj) { JavaRef<T>::SetNewGlobalRef(env, obj); }
+  void Reset(JNIEnv* env, const JavaRef<T>& other) {
+    JavaRef<T>::SetNewGlobalRef(env, other.obj());
+  }
 
   // Releases the global reference to the caller. The caller *must* delete the
   // global reference when it is done with it. Note that calling a Java method
