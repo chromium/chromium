@@ -205,9 +205,9 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
   model_->AddObserver(this);
   if (opt_guide_) {
     opt_guide_->RegisterOptimizationTypes(
-        {optimization_guide::proto::PAGE_ENTITIES,
-         optimization_guide::proto::SAVED_TAB_GROUP});
+        {optimization_guide::proto::SAVED_TAB_GROUP});
   }
+
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
@@ -710,6 +710,8 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   if (!saved_group || saved_group->is_shared_tab_group()) {
     return;
   }
+
+  RegisterPageEntityOptimizationTypeIfNeeded();
 
   LogTabGroupEvent(logger_, "MakeTabGroupShared", saved_group);
 
@@ -1241,6 +1243,10 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
     return;
   }
 
+  if (saved_tab_group->is_shared_tab_group()) {
+    RegisterPageEntityOptimizationTypeIfNeeded();
+  }
+
   if (saved_tab_group->saved_tabs().empty()) {
     LogTabGroupEvent(logger_, "HandleTabGroupAdded - Empty", saved_tab_group);
     empty_groups_.emplace(guid);
@@ -1647,6 +1653,10 @@ void TabGroupSyncServiceImpl::NotifyServiceInitialized() {
   }
 
   ForceRemoveClosedTabGroupsOnStartup();
+
+  if (!model_->GetSharedTabGroupsOnly().empty()) {
+    RegisterPageEntityOptimizationTypeIfNeeded();
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -2120,6 +2130,14 @@ void TabGroupSyncServiceImpl::FinishTransitionToSharedIfNotCompleted() {
     if (TransitionSavedToSharedTabGroupIfNeeded(*shared_group)) {
       NotifyTabGroupMigrated(shared_group_id, TriggerSource::REMOTE);
     }
+  }
+}
+
+void TabGroupSyncServiceImpl::RegisterPageEntityOptimizationTypeIfNeeded() {
+  if (opt_guide_ && !page_entity_optimization_type_registered_) {
+    opt_guide_->RegisterOptimizationTypes(
+        {optimization_guide::proto::PAGE_ENTITIES});
+    page_entity_optimization_type_registered_ = true;
   }
 }
 

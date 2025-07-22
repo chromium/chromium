@@ -374,6 +374,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // to shared and completes the transition.
   void FinishTransitionToSharedIfNotCompleted();
 
+  // Register PageEntities optimization type if there is a shared tab group.
+  void RegisterPageEntityOptimizationTypeIfNeeded();
+
   THREAD_CHECKER(thread_checker_);
 
   // The in-memory model representing the currently present saved tab groups.
@@ -473,6 +476,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  bool page_entity_optimization_type_registered_ = false;
 
   base::WeakPtrFactory<TabGroupSyncServiceImpl> weak_ptr_factory_{this};
 };
