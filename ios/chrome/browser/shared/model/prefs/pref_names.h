@@ -815,6 +815,10 @@ inline constexpr char kGeminiEnabledByPolicy[] = "ios.gemini_enabled_by_policy";
 inline constexpr char kMultiProfileForcedMigrationDone[] =
     "ios.multi_profile_forced_migration_done";
 
+// A bool checking that multi-profile support for widgets is available.
+inline constexpr char kWidgetsForMultiProfile[] =
+    "ios.multi_profile_for_widgets";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
