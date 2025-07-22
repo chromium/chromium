@@ -4,11 +4,11 @@
 
 #include "chrome/browser/page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.h"
 
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,7 +35,7 @@ bool AshSessionRestorePageLoadMetricsObserver::ShouldBeInstantiated(
   // observer instance if the user's prefs don't allow a full restore to begin
   // with.
   CHECK(profile);
-  if (!ash::full_restore::CanPerformRestore(profile->GetPrefs())) {
+  if (!ash::CanPerformRestore(profile->GetPrefs())) {
     g_can_record_first_input_delay = false;
     return false;
   }

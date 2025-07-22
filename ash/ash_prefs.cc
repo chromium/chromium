@@ -101,6 +101,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_enterprise_policy_enums.h"
@@ -154,6 +155,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   DockedMagnifierController::RegisterProfilePrefs(registry);
   FeatureDiscoveryDurationReporterImpl::RegisterProfilePrefs(registry);
   FocusModeController::RegisterProfilePrefs(registry);
+  RegisterProfilePrefsFullRestore(registry, for_test);
   FullscreenController::RegisterProfilePrefs(registry);
   GameDashboardController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);
@@ -247,10 +249,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackHome, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackPageUp, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackPageDown, 0);
-    registry->RegisterBooleanPref(prefs::kShowInformedRestoreOnboarding, false);
-    registry->RegisterIntegerPref(prefs::kInformedRestoreNudgeShownCount, 0);
-    registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
-                               base::Time());
     registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
     registry->RegisterIntegerPref(
         prefs::kGenAISmartGroupingSettings,

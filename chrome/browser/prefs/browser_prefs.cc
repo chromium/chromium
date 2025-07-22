@@ -2068,7 +2068,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::InlineLoginHandlerImpl::RegisterProfilePrefs(registry);
   ash::first_run::RegisterProfilePrefs(registry);
   ash::file_system_provider::RegisterProfilePrefs(registry);
-  ash::full_restore::RegisterProfilePrefs(registry);
+  ash::full_restore::RegisterProfilePolicyPrefs(registry);
   ash::KerberosCredentialsManager::RegisterProfilePrefs(registry);
   ash::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
       registry);
