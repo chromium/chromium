@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+<script>
+test(() => {
+    assert_not_equals(window.internals,undefined,'This test must be run from the test runner');
+    const kAttributeValueContainsLtOrGt = 4527;
+    assert_false(internals.isUseCounted(document,kAttributeValueContainsLtOrGt));
+    
+    const div = document.createElement("div");
+    div.title = "no-special-characters";
+    const s1 = div.outerHTML;
+    assert_false(internals.isUseCounted(document,kAttributeValueContainsLtOrGt));
+
+    div.title = "aaa <u>test";
+    const s2 = div.outerHTML;
+    assert_true(internals.isUseCounted(document,kAttributeValueContainsLtOrGt));
+}, 'Attribute value containing ">" or "<" should be use counted');
+</script>
