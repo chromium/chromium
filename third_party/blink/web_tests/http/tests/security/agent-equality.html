@@ -10,8 +10,26 @@
 // https://html.spec.whatwg.org/multipage/webappapis.html#integration-with-the-javascript-agent-formalism
 // For details on each test, see the comments of the iframe file.
 
+// See crbug.com/40260067. This test is flaky, with a random extra line inserted
+// into the (otherwise-blank) output of the test. I am trying to troubleshoot
+// that flakiness, because it does not occur for me locally. One hypothesis is
+// that the test runner is preserving the window between tests, and other tests
+// also add 'message' event handlers that add text to the page, e.g. this one:
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/http/tests/security/referrer-policy-window-open.html;l=18;drc=bcb1b4012da416d5783f6fe09fbdcb51058bc505
+// So this function fires a message event with {data:'done'} to try to stop most
+// of those other tests.
+async function debugFlakiness() {
+  let message = {
+    data: 'done',
+  };
+  window.postMessage(message, '*');
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+}
+
 function runTestCase(filename,testFunction,description) {
-  promise_test(t => new Promise(resolve => {
+  promise_test(t => new Promise(async resolve => {
+    await debugFlakiness();
     let iframe = document.createElement('iframe');
     t.add_cleanup(async () => {
       iframe.remove();
