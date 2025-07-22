@@ -9,10 +9,13 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/version.h"
-#include "content/public/browser/browser_context.h"
 #include "extensions/common/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "url/gurl.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 FORWARD_DECLARE_TEST(ExtensionServiceTest, AddPendingExtensionFromSync);

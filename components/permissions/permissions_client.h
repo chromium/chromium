@@ -20,7 +20,6 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
-#include "content/public/browser/browser_context.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 

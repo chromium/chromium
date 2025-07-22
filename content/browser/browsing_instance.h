@@ -18,7 +18,6 @@
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "url/origin.h"
@@ -26,6 +25,7 @@
 class GURL;
 
 namespace content {
+class BrowserContext;
 class SiteInfo;
 class SiteInstanceGroup;
 class SiteInstanceImpl;

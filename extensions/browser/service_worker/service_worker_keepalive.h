@@ -8,10 +8,13 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_external_request_timeout_type.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/service_worker/worker_id.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 
