@@ -1147,6 +1147,32 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestPaidContentDisabled,
       nodes[1], optimization_guide::proto::ANNOTATED_ROLE_PAID_CONTENT));
 }
 
+class PageContentProtoProviderBrowserTestScriptTools
+    : public PageContentProtoProviderBrowserTest {
+ public:
+  PageContentProtoProviderBrowserTestScriptTools() {
+    features_.InitAndEnableFeature(blink::features::kScriptTools);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestScriptTools, Basic) {
+  LoadPage(https_server()->GetURL("/script_tool.html"));
+
+  const auto& frame_data = page_content().main_frame_data();
+  ASSERT_EQ(frame_data.script_tools().size(), 1u);
+
+  const auto& tool = frame_data.script_tools().at(0);
+  EXPECT_EQ(tool.name(), "echo");
+  EXPECT_EQ(tool.description(), "echo input");
+  EXPECT_EQ(tool.input_schema(),
+            "{\"type\":\"object\",\"properties\":{\"text\":{\"description\":"
+            "\"Value to echo\",\"type\":\"string\"}},\"required\":[\"text\"]}");
+  EXPECT_TRUE(tool.annotations().read_only());
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

@@ -25,6 +25,13 @@ String ValidateAndStringifyObject(ScriptState* script_state,
 
 AutomationDelegate::AutomationDelegate() = default;
 
+void AutomationDelegate::ForEachScriptTool(
+    base::FunctionRef<void(const mojom::blink::ScriptTool&)> func) const {
+  for (const auto& tool : tool_map_) {
+    func(*tool.value->script_tool);
+  }
+}
+
 void AutomationDelegate::registerTool(ScriptState* script_state,
                                       ToolRegistrationParams* params,
                                       ExceptionState& exception_state) {
@@ -60,6 +67,7 @@ void AutomationDelegate::registerTool(ScriptState* script_state,
   tool_data->script_tool = std::move(script_tool);
   tool_data->tool_function = params->execute();
 
+  LOG(ERROR) << "hellp tool";
   tool_map_.insert(params->name(), std::move(tool_data));
 }
 

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
+#include "third_party/blink/renderer/core/script_tools/automation_delegate_supplement.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1335,7 +1336,7 @@ void AIPageContentAgent::ContentBuilder::AddPageInteractionInfo(
 }
 
 void AIPageContentAgent::ContentBuilder::AddFrameData(
-    const LocalFrame& frame,
+    LocalFrame& frame,
     mojom::blink::AIPageContentFrameData& frame_data) {
   frame_data.frame_interaction_info =
       mojom::blink::AIPageContentFrameInteractionInfo::New();
@@ -1350,6 +1351,15 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
   }
 
   ComputeHitTestableNodesInViewport(frame, frame_data);
+
+  if (auto* automation_delegate =
+          AutomationDelegateSupplement::GetDelegateIfExists(
+              *frame.DomWindow())) {
+    automation_delegate->ForEachScriptTool(
+        [&](const mojom::blink::ScriptTool& tool) {
+          frame_data.script_tools.push_back(tool.Clone());
+        });
+  }
 }
 
 void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(

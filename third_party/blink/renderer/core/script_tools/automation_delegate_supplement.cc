@@ -25,6 +25,14 @@ AutomationDelegateSupplement& AutomationDelegateSupplement::From(
 }
 
 // static
+AutomationDelegate* AutomationDelegateSupplement::GetDelegateIfExists(
+    LocalDOMWindow& window) {
+  AutomationDelegateSupplement* supplement =
+      Supplement<LocalDOMWindow>::From<AutomationDelegateSupplement>(window);
+  return supplement ? supplement->automationDelegate() : nullptr;
+}
+
+// static
 AutomationDelegate* AutomationDelegateSupplement::automationDelegate(
     LocalDOMWindow& window) {
   return From(window).automationDelegate();

@@ -103,7 +103,7 @@ class MODULES_EXPORT AIPageContentAgent final
         const RecursionData& recursion_data);
     void AddPageInteractionInfo(const Document& document,
                                 mojom::blink::AIPageContent& page_content);
-    void AddFrameData(const LocalFrame& frame,
+    void AddFrameData(LocalFrame& frame,
                       mojom::blink::AIPageContentFrameData& frame_data);
     void AddFrameInteractionInfo(
         const LocalFrame& frame,

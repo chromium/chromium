@@ -10,6 +10,7 @@ import "ui/accessibility/ax_enums.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/content_extraction/script_tools.mojom";
 
 // This is a mojom representation of the corresponding AnnotatedPageContent
 // proto.
@@ -296,6 +297,9 @@ struct AIPageContentFrameData {
   // Whether the frame contains paid content. The value exists
   // if the document was checked.
   bool? contains_paid_content;
+
+  // The set of tools supported by this Document.
+  array<ScriptTool> script_tools;
 };
 
 // Provides metadata for frames (local and remote) accessible from the

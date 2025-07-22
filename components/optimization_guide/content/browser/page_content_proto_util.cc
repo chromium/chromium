@@ -598,6 +598,19 @@ void ConvertFrameMetadata(
   metadata.frame_metadata.push_back(std::move(frame_metadata));
 }
 
+void ConvertScriptTool(
+    const blink::mojom::ScriptTool& tool,
+    optimization_guide::proto::ScriptTool* proto_script_tool) {
+  proto_script_tool->set_name(tool.name);
+  proto_script_tool->set_description(tool.description);
+  proto_script_tool->set_input_schema(tool.input_schema);
+
+  if (tool.annotations) {
+    proto_script_tool->mutable_annotations()->set_read_only(
+        tool.annotations->read_only);
+  }
+}
+
 void ConvertFrameData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentFrameData& mojom_frame_data,
@@ -626,6 +639,10 @@ void ConvertFrameData(
         proto_frame_data->mutable_paid_content_metadata();
     paid_content_metadata->set_contains_paid_content(
         mojom_frame_data.contains_paid_content.value());
+  }
+
+  for (const auto& tool : mojom_frame_data.script_tools) {
+    ConvertScriptTool(*tool, proto_frame_data->add_script_tools());
   }
 }
 
