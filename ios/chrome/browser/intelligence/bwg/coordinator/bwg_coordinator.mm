@@ -214,7 +214,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Presents the page action menu IPH.
 - (void)presentPageActionMenuIPH {
-  if (_wasPromoShown) {
+  if (_wasPromoShown && _entryPoint != bwg::EntryPoint::AIHub) {
     [_helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
   }

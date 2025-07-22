@@ -613,6 +613,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kAddressBarSettingsNewBadgeShownCount,
                                 0);
 
+  registry->RegisterIntegerPref(prefs::kBWGSettingsNewBadgeShownCount, 0);
+
   registry->RegisterIntegerPref(
       prefs::kProminenceNotificationAlertImpressionCount, 0);
 
@@ -1035,7 +1037,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // BWG prefs.
   registry->RegisterDictionaryPref(prefs::kBwgSessionMap);
-  registry->RegisterIntegerPref(prefs::kBWGSettingsNewBadgeShownCount, 0);
   registry->RegisterBooleanPref(prefs::kIOSBwgConsent, false);
   registry->RegisterBooleanPref(prefs::kIOSBWGPreciseLocationSetting, false);
   registry->RegisterBooleanPref(prefs::kIOSBWGPageContentSetting, true);
