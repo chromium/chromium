@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/main/model/browser_agent_util.h"
 
+#import "base/check_op.h"
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
@@ -56,19 +57,47 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 #endif
 
-void AttachBrowserAgents(Browser* browser) {
-  const bool browser_is_off_record = browser->GetProfile()->IsOffTheRecord();
-  const bool browser_is_inactive = browser->IsInactive();
+namespace {
 
+// Feature controlling for which Browser to create agents.
+BASE_FEATURE(kLimitBrowserAgentsForInactiveBrowser,
+             "LimitBrowserAgentsForInactiveBrowser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Attach agents for a regular, incognito or inactive Browser.
+void AttachBrowserAgentsForInactiveBrowser(Browser* browser) {
+  if (base::FeatureList::IsEnabled(kLimitBrowserAgentsForInactiveBrowser)) {
+    CHECK_NE(Browser::Type::kTemporary, browser->type());
+  }
+
+  // DO NOT ADD NEW BROWSER AGENTS HERE.
+  //
+  // Add new agents to AttachBrowserAgentsForActiveBrowser(...) instead.
+
+  SnapshotBrowserAgent::CreateForBrowser(browser);
+  SyncedWindowDelegateBrowserAgent::CreateForBrowser(browser);
+  WebUsageEnablerBrowserAgent::CreateForBrowser(browser);
   if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
     BreadcrumbManagerBrowserAgent::CreateForBrowser(browser);
   }
+}
+
+// Attach agents for a regular or incognito Browser.
+void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
+  if (base::FeatureList::IsEnabled(kLimitBrowserAgentsForInactiveBrowser)) {
+    CHECK_NE(Browser::Type::kTemporary, browser->type());
+    CHECK_NE(Browser::Type::kInactive, browser->type());
+  }
+
+  // TODO(crbug.com/433229469): Once kLimitBrowserAgentsForInactiveBrowser is
+  // fully launched the variable browser_is_inactive can be removed as it will
+  // always be false. Cleanup the variable and its use when the feature launch.
+  const bool browser_is_off_record = browser->GetProfile()->IsOffTheRecord();
+  const bool browser_is_inactive = browser->IsInactive();
 
   LiveTabContextBrowserAgent::CreateForBrowser(browser);
   TabInsertionBrowserAgent::CreateForBrowser(browser);
   AttachInfobarOverlayBrowserAgent(browser);
-  SyncedWindowDelegateBrowserAgent::CreateForBrowser(browser);
-  WebUsageEnablerBrowserAgent::CreateForBrowser(browser);
   DeviceSharingBrowserAgent::CreateForBrowser(browser);
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser);
   AppLauncherBrowserAgent::CreateForBrowser(browser);
@@ -85,8 +114,6 @@ void AttachBrowserAgents(Browser* browser) {
   if (!browser_is_off_record) {
     IOSChromeTabRestoreBrowserAgent::CreateForBrowser(browser);
   }
-
-  SnapshotBrowserAgent::CreateForBrowser(browser);
 
   if (IsWebChannelsEnabled() && !browser_is_off_record) {
     FollowBrowserAgent::CreateForBrowser(browser);
@@ -114,9 +141,6 @@ void AttachBrowserAgents(Browser* browser) {
   // UrlLoadingBrowserAgent requires UrlLoadingNotifierBrowserAgent.
   UrlLoadingBrowserAgent::CreateForBrowser(browser);
 
-  // TabUsageRecorderBrowserAgent and WebStateListMetricsBrowserAgent observe
-  // the SessionRestorationBrowserAgent, so they should be created after the the
-  // SessionRestorationBrowserAgent is created.
   WebStateListMetricsBrowserAgent::CreateForBrowser(
       browser, SessionMetrics::FromProfile(browser->GetProfile()));
 
@@ -166,4 +190,34 @@ void AttachBrowserAgents(Browser* browser) {
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.
   ios::provider::AttachBrowserAgents(browser);
+}
+
+}  // anonymous namespace
+
+void AttachBrowserAgents(Browser* browser) {
+  // If the feature is not enabled, treat all Browser identically.
+  if (!base::FeatureList::IsEnabled(kLimitBrowserAgentsForInactiveBrowser)) {
+    AttachBrowserAgentsForInactiveBrowser(browser);
+    AttachBrowserAgentsForActiveBrowser(browser);
+    return;
+  }
+
+  switch (browser->type()) {
+    case Browser::Type::kRegular:
+    case Browser::Type::kIncognito:
+      // Attach all browser agents for regular and incognito Browsers.
+      AttachBrowserAgentsForInactiveBrowser(browser);
+      AttachBrowserAgentsForActiveBrowser(browser);
+      break;
+
+    case Browser::Type::kInactive:
+      // Attach only limited selection of browser agents for inactive
+      // Browsers.
+      AttachBrowserAgentsForInactiveBrowser(browser);
+      break;
+
+    case Browser::Type::kTemporary:
+      // Do not attach any browser agents for tempory Browsers.
+      break;
+  }
 }
