@@ -1058,11 +1058,16 @@ void TestResponseProvider::GetLanguageResponse(
 
   // Make sure the Translate manual trigger button is enabled and tap it.
   [ChromeEarlGreyUI openToolsMenu];
+
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
   [[[[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                                        kToolsMenuTranslateId),
                                                    grey_interactable(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
+      onElementWithMatcher:tableViewMatcher]
       assertWithMatcher:grey_not(grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled))]
       performAction:grey_tap()];
