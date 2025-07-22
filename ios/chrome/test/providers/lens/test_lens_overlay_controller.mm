@@ -73,8 +73,4 @@
   // NO-OP
 }
 
-- (void)updateGuidanceViewVisibility:(BOOL)visible animated:(BOOL)animated {
-  // NO-OP
-}
-
 @end

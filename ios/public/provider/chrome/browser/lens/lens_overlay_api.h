@@ -113,9 +113,6 @@ class GURL;
 // Shows the overflow menu tooltip.
 - (void)requestShowOverflowMenuTooltip;
 
-/// Updates the visibility of the guidance view.
-- (void)updateGuidanceViewVisibility:(BOOL)visible animated:(BOOL)animated;
-
 @end
 
 namespace ios {

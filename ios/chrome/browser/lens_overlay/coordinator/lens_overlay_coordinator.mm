@@ -428,9 +428,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 
   [_selectionViewController setTopIconsHidden:self.shouldShowConsentFlow];
-  if (self.shouldShowConsentFlow) {
-    [_selectionViewController updateGuidanceViewVisibility:NO animated:YES];
-  }
 
   [_metricsRecorder setLensOverlayInForeground:YES];
 
@@ -1503,7 +1500,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [self disableSelectionInteraction:NO];
   [_selectionViewController setTopIconsHidden:NO];
   [_selectionViewController start];
-  [_selectionViewController updateGuidanceViewVisibility:YES animated:YES];
 
   [self scheduleTooltipHintDisplayIfNecessary];
 }
