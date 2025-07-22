@@ -172,7 +172,7 @@
 <translation id="2326539130272988168">Búlgar</translation>
 <translation id="233822363739146957">No hi ha prou espai d'emmagatzematge per sincronitzar tots els fitxers</translation>
 <translation id="23721837607121582">Baixa el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
-<translation id="2377319039870049694">Canvia a la visualització de llista</translation>
+<translation id="2377319039870049694">Canvia a la vista de llista</translation>
 <translation id="2377590462528165447">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Linux</translation>
 <translation id="2379576081295865700">S'està comprovant l'espai d'emmagatzematge… S'ha trobat 1 element.</translation>
 <translation id="2383454254762599978">Mou a la paperera</translation>
@@ -584,7 +584,7 @@
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5500122897333236901">Islandès</translation>
 <translation id="5508696409934741614">Punts</translation>
-<translation id="5522908512596376669">La llista de fitxers ha canviat a la visualització de llista.</translation>
+<translation id="5522908512596376669">La llista de fitxers ha canviat a la vista de llista.</translation>
 <translation id="5524517123096967210">El fitxer no s'ha pogut llegir.</translation>
 <translation id="5533102081734025921">Imatge <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">S'està calculant la mida</translation>
