@@ -528,7 +528,7 @@ BASE_FEATURE(kAndroidAppIntegrationV2,
 
 BASE_FEATURE(kAndroidAppIntegrationMultiDataSource,
              "AndroidAppIntegrationMultiDataSource",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageCustomization,
              "NewTabPageCustomization",
