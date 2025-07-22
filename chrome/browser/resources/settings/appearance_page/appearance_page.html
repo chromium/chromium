@@ -49,7 +49,8 @@
 <if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
-            <cr-button id="useDefault" on-click="onUseDefaultClick_">
+            <cr-button id="useDefault" on-click="onUseDefaultClick_"
+                aria-label="$i18n{resetToDefaultTheme}">
               $i18n{resetToDefault}
             </cr-button>
           </template>
@@ -89,7 +90,8 @@
           <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
             <div class="separator"></div>
             <cr-button id="resetPinnedToolbarActions"
-                on-click="onResetPinnedToolbarActionsClick_">
+                on-click="onResetPinnedToolbarActionsClick_"
+                aria-label="$i18n{resetToolbarToDefault}">
               $i18n{resetToDefault}
             </cr-button>
           </template>
