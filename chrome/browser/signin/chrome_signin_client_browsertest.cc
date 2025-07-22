@@ -150,10 +150,17 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
           .Build("alice@example.com"));
 }
 
+// TODO(crbug.com/433498793): Re-enable this flaky test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HatsSurveyLaunchedOnBrowserCreationAfterSignin DISABLED_HatsSurveyLaunchedOnBrowserCreationAfterSignin
+#else
+#define MAYBE_HatsSurveyLaunchedOnBrowserCreationAfterSignin HatsSurveyLaunchedOnBrowserCreationAfterSignin
+#endif
+
 // Tests that if a user signs in when no browser is open, the HaTS survey is
 // launched immediately when a browser is subsequently created for that profile.
 IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
-                       HatsSurveyLaunchedOnBrowserCreationAfterSignin) {
+  MAYBE_HatsSurveyLaunchedOnBrowserCreationAfterSignin) {
   // Keep the profile alive and close all existing browsers.
   Profile* profile = browser()->profile();
   ScopedProfileKeepAlive profile_keep_alive(
