@@ -1254,13 +1254,11 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal_prod',
-          # 138.0.7194.0
           'version': 'RUzQ5K8MJXrR4gyHEiCfYR2AMjD-zb6b6c242SR6IOkC',
         },
       ],
   },
 
-  # version:2@132.0.6833.0
   'src/third_party/updater/chrome_win_arm64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
@@ -1272,7 +1270,6 @@ deps = {
       ],
   },
 
-  # version:2@132.0.6833.0
   'src/third_party/updater/chrome_win_x86/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
@@ -1284,7 +1281,6 @@ deps = {
       ],
   },
 
-  # version:2@132.0.6833.0
   'src/third_party/updater/chrome_win_x86_64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
@@ -1325,7 +1321,6 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal_prod',
-          # 129.0.6651.0
           'version': 'version:2@140.0.7272.0',
         },
       ],
@@ -1399,7 +1394,6 @@ deps = {
       ],
   },
 
-  # r1372006
   'src/third_party/updater/chromium_win_arm64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
@@ -1411,7 +1405,6 @@ deps = {
       ],
   },
 
-  # r1372046
   'src/third_party/updater/chromium_win_x86/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
@@ -1423,7 +1416,6 @@ deps = {
       ],
   },
 
-  # r1372030
   'src/third_party/updater/chromium_win_x86_64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
