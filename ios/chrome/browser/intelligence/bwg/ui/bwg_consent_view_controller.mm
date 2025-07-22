@@ -355,13 +355,17 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
       _isAccountManaged ? IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE
                         : IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE);
 
-  UIImageView* secondIconImageView =
-      _isAccountManaged
-          ? [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
-                                                   kBuilding2Symbol, config)]
-          : [[UIImageView alloc]
-                initWithImage:DefaultSymbolWithConfiguration(
-                                  kCounterClockWiseSymbol, config)];
+  NSString* symbolName;
+  if (_isAccountManaged) {
+    symbolName = kBuilding2Symbol;
+  } else if (@available(iOS 18, *)) {
+    symbolName = kCounterClockWiseSymbol;
+  } else {
+    symbolName = kHistorySymbol;
+  }
+
+  UIImageView* secondIconImageView = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithConfiguration(symbolName, config)];
 
   secondIconImageView.contentMode = UIViewContentModeScaleAspectFit;
 
