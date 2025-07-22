@@ -45,7 +45,7 @@ double EstimateCpuFrequency() {
 
 std::optional<CpuThroughputEstimationResult> EstimateCpuThroughput() {
 #if defined(ARCH_CPU_X86_FAMILY)
-  TRACE_EVENT0("power", "EstimateCpuThroughput");
+  TRACE_EVENT("base.power", "EstimateCpuThroughput");
 
 #if BUILDFLAG(IS_WIN)
   DWORD start_processor_number = GetCurrentProcessorNumber();

@@ -1208,7 +1208,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     // PowerMonitor is needed in reduced mode. BrowserMainLoop will safely skip
     // initializing it again if it has already been initialized.
     base::PowerMonitor::GetInstance()->Initialize(
-        MakePowerMonitorDeviceSource());
+        MakePowerMonitorDeviceSource(), /*emit_global_event=*/true);
 
     // Ensure the visibility tracker is created on the main thread.
     ProcessVisibilityTracker::GetInstance();

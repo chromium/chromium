@@ -80,7 +80,8 @@ CpuThroughputEstimatedStatus EstimateCpuThroughputStatus(
   return CpuThroughputEstimatedStatus::kNormal;
 }
 
-constexpr char kCpuEstimationEventCategory[] = "power";
+constexpr char kCpuEstimationEventCategory[] =
+    "performance_manager.cpu_metrics";
 constexpr char kCpuEstimationEvent[] = "CpuStatusSampling";
 
 constexpr char kCpuEstimationStatusNormalEvent[] =

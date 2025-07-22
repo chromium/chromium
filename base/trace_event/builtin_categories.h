@@ -26,7 +26,7 @@ PERFETTO_DEFINE_TEST_CATEGORY_PREFIXES("cat",
 // the name.
 // See https://perfetto.dev/docs/instrumentation/track-events.
 //
-// Naming Convention: Follow the `component.category(.sub_category)(.debug)`
+// Naming Convention: Follow the `namespace.category(.sub_category)(.debug)`
 // naming convention for new categories.
 // Example: `base.scheduling`, `base.scheduling.debug`
 //
@@ -86,6 +86,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("blink.worker"),
     perfetto::Category("blink_style"),
     perfetto::Category("Blob"),
+    perfetto::Category("base.power").SetDescription(
+      "Events about global system power and battery/thermal state.")
+      .SetTags("toplevel"),
     perfetto::Category("browser").SetTags("navigation"),
     perfetto::Category("browsing_data"),
     perfetto::Category("CacheStorage"),
@@ -197,9 +200,10 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
         "ScenarioScope::kCurrentProcess are emitted to an async track under "
         "each process track, and events for ScenarioScope::kGlobal are emitted "
         "to global async tracks."),
+    perfetto::Category("performance_manager.cpu_metrics").SetDescription(
+      "Events reporting cpu metrics computed in performance_manager"),
     perfetto::Category("persistent_cache"),
     perfetto::Category("PlatformMalloc"),
-    perfetto::Category("power"),
     perfetto::Category("ppapi"),
     perfetto::Category("ppapi_proxy"),
     perfetto::Category("print"),

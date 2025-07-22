@@ -670,7 +670,8 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:PowerMonitor");
     if (auto* power_monitor = base::PowerMonitor::GetInstance();
         !power_monitor->IsInitialized()) {
-      power_monitor->Initialize(MakePowerMonitorDeviceSource());
+      power_monitor->Initialize(MakePowerMonitorDeviceSource(),
+                                /*emit_global_event=*/true);
     }
   }
   {
