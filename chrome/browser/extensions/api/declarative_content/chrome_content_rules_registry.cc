@@ -131,6 +131,7 @@ void ChromeContentRulesRegistry::DidFinishNavigation(
 void ChromeContentRulesRegistry::WebContentsDestroyed(
     content::WebContents* web_contents) {
   active_rules_.erase(web_contents);
+  evaluation_pending_.erase(web_contents);
 }
 
 void ChromeContentRulesRegistry::OnWatchedPageChanged(
