@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -114,6 +115,28 @@ IN_PROC_BROWSER_TEST_P(SplashScreenTest, NetworkShortcutWorksOnline) {
   ClickNetworkScreenContinueButton();
   ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
+}
+
+IN_PROC_BROWSER_TEST_P(SplashScreenTest, CheckBlockedLoginAcceleratorActions) {
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  auto scoped_launch_blocker = BlockKioskLaunch();
+  WaitSplashScreen();
+
+  // All actions are blocked except `kAppLaunchBailout` and
+  // `kAppLaunchNetworkConfig`.
+  std::vector<LoginAcceleratorAction> blocked_actions = {
+      kToggleSystemInfo,   kShowFeedback,          kShowResetScreen,
+      kCancelScreenAction, kStartEnrollment,       kStartKioskEnrollment,
+      kEnableDebugging,    kEditDeviceRequisition, kDeviceRequisitionRemora,
+      kStartDemoMode,      kLaunchDiagnostics,     kEnableQuickStart,
+  };
+
+  for (auto action : blocked_actions) {
+    // When the action is blocked, the accelerator is not handled.
+    ASSERT_FALSE(LoginDisplayHost::default_host()->HandleAccelerator(action));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

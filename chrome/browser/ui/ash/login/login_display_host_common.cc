@@ -446,6 +446,10 @@ void LoginDisplayHostCommon::CancelPasswordChangedFlow() {
 }
 
 bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
+  if (KioskController::Get().IsSessionStarting()) {
+    return KioskController::Get().HandleAccelerator(action);
+  }
+
   if (action == LoginAcceleratorAction::kShowFeedback) {
     login_feedback_ = std::make_unique<LoginFeedback>(
         ProfileHelper::Get()->GetSigninProfile());
@@ -460,10 +464,6 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
       return false;
     }
     DiagnosticsDialog::ShowDialog();
-    return true;
-  }
-
-  if (KioskController::Get().HandleAccelerator(action)) {
     return true;
   }
 
