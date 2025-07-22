@@ -138,9 +138,11 @@ updater_windows_builder(
     ),
     contact_team_email = "omaha@google.com",
     main_list_view = "try",
-    tryjob = try_.job(
-        location_filters = _LOCATION_FILTER,
-    ),
+    # TODO(http://b/416579620): Scheduled downtime (2025-07-22) for infra
+    # project.
+    # tryjob = try_.job(
+    #     location_filters = _LOCATION_FILTER,
+    # ),
 )
 
 updater_windows_builder(
