@@ -7416,6 +7416,7 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/vid
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/video/readyState/readyState_during_playing.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-no-infinite-loop-playing.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-no-infinite-loop-playing-rvfc.html [ Failure Skip ]
+crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-no-infinite-loop-paused-seeked.html [ Failure Skip ]
 
 
 crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]

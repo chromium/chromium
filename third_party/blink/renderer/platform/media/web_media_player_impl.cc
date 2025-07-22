@@ -1141,20 +1141,20 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   if (ready_state_ > WebMediaPlayer::kReadyStateHaveMetadata)
     SetReadyState(WebMediaPlayer::kReadyStateHaveMetadata);
 
-  // For zero duration video-only media, if we can elide the seek, use a large
-  // delay to avoid an expensive spin loop. Per spec we must still deliver all
-  // the requisite events, but we're not required to be timely about it.
+  // For playing zero duration video-only media, if we can elide the seek, use a
+  // large delay to avoid an expensive spin loop. Per spec we must still deliver
+  // all the requisite events, but we're not required to be timely about it.
   //
   // 250ms matches the max timeupdate interval used by the media element.
   auto delay = base::TimeDelta();
-  bool is_at_eos = false;
+  bool seeking_for_zero_duration_loop = false;
   if (ended_) {
     if (time == base::Seconds(Duration())) {
-      is_at_eos = true;
+      seeking_for_zero_duration_loop = !paused_;
     } else if (!HasAudio()) {
       if (auto frame = compositor_->GetCurrentFrameOnAnyThread()) {
         if (frame->timestamp() == GetCurrentTimeInternal()) {
-          is_at_eos = true;
+          seeking_for_zero_duration_loop = !paused_;
           delay = base::Milliseconds(250);
         }
       }
@@ -1173,7 +1173,8 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   //   3) For MSE.
   //      Because the buffers may have changed between seeks, MSE seeks are
   //      never elided.
-  if (((paused_ && paused_time_ == time) || (ended_ && is_at_eos)) &&
+  const bool seeking_to_same_paused_time = paused_ && paused_time_ == time;
+  if ((seeking_to_same_paused_time || seeking_for_zero_duration_loop) &&
       pipeline_controller_->IsStable() &&
       GetDemuxerType() != media::DemuxerType::kChunkDemuxer) {
     if (old_state == kReadyStateHaveEnoughData) {
