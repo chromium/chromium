@@ -931,16 +931,13 @@ class ExtensionDevToolsProtocolTest
     : public ExtensionWebRequestApiTestWithContextType,
       public content::TestDevToolsProtocolClient {
  protected:
-  void Attach() { AttachToWebContents(web_contents()); }
+  void Attach() { AttachToWebContents(GetActiveWebContents()); }
 
   void TearDownOnMainThread() override {
     DetachProtocolClient();
     ExtensionWebRequestApiTest::TearDownOnMainThread();
   }
 
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1389,8 +1386,7 @@ class ExtensionWebRequestApiAuthRequiredTestVariousContext
     GURL url =
         embedded_test_server()->GetURL("/workers/service_worker_setup.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    EXPECT_EQ("ok", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                           "setup();"));
+    EXPECT_EQ("ok", EvalJs(GetActiveWebContents(), "setup();"));
   }
 
   void RunCommonTestSetup() {
@@ -1421,7 +1417,7 @@ class ExtensionWebRequestApiAuthRequiredTestVariousContext
         "/auth-basic/auth_required_subresource?realm=auth_required_subresource";
     std::string fetch_url =
         embedded_test_server()->GetURL(kSubResourceUrl).spec();
-    EXPECT_EQ(401, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+    EXPECT_EQ(401, EvalJs(GetActiveWebContents(),
                           "try_fetch_status('" + fetch_url + "');"));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
@@ -1441,7 +1437,7 @@ class ExtensionWebRequestApiAuthRequiredTestVariousContext
         document.body.appendChild(el);
       )";
     content::EvalJsResult result =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+        EvalJs(GetActiveWebContents(),
                content::JsReplace(kAddIframeScript, frame_url));
     ASSERT_THAT(result, content::EvalJsResult::IsOk());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -1643,7 +1639,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // Wait for the extension to set itself up and return control to us.
   ASSERT_TRUE(RunExtensionTest("webrequest/test_new_tab")) << message_;
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   ResultCatcher catcher;
@@ -1734,7 +1730,7 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetActiveWebContents();
   EXPECT_EQ(expected_content_regular_window,
             content::EvalJs(tab, "document.body.textContent"));
 
@@ -1978,8 +1974,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   ui_test_utils::NavigateToURL(&params);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
@@ -2100,8 +2095,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   EXPECT_FALSE(HasSeenWebRequestInBackgroundScript(extension, profile(),
                                                    kCrossSiteHost));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
@@ -2168,8 +2162,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       browser(), embedded_test_server()->GetURL(
                      "example.com", "/extensions/cross_site_script.html")));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
@@ -3100,8 +3093,7 @@ IN_PROC_BROWSER_TEST_P(NTPInterceptionWebRequestAPITest,
         .ExtractBool();
   };
 
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   // Navigate to the NTP. The request for "fake_ntp_script.js" should not have
   // reached the extension, since it was made by the instant NTP renderer, which
@@ -3246,10 +3238,7 @@ IN_PROC_BROWSER_TEST_P(WebUiNtpInterceptionWebRequestAPITest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
   ASSERT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL());
+            GetActiveWebContents()->GetLastCommittedURL());
   WaitForOneGoogleBarDataUpdate();
   ASSERT_TRUE(GetAndResetOneGoogleBarRequestSeen());
 
@@ -3579,8 +3568,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
   // The second extension is the latest installed, hence it's redirect url
@@ -4508,7 +4496,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       "webrequest", {.extension_url = "test_simple_cancel_navigation.html"}))
       << message_;
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetActiveWebContents();
   std::string body =
       content::EvalJs(tab, "document.body.textContent").ExtractString();
 
@@ -4562,10 +4550,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       "test.com", "/server-redirect?" + http_url.spec());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
-  EXPECT_EQ(final_url, browser()
-                           ->tab_strip_model()
-                           ->GetActiveWebContents()
-                           ->GetLastCommittedURL());
+  EXPECT_EQ(final_url, GetActiveWebContents()->GetLastCommittedURL());
 }
 
 // Regression test for https://crbug.com/40864513. This test passes if it
@@ -4636,10 +4621,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       "test.com", "/server-redirect-with-csp?" + http_url.spec());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
-  EXPECT_EQ(final_url, browser()
-                           ->tab_strip_model()
-                           ->GetActiveWebContents()
-                           ->GetLastCommittedURL());
+  EXPECT_EQ(final_url, GetActiveWebContents()->GetLastCommittedURL());
 }
 
 struct SWBTestParams {
@@ -4677,8 +4659,7 @@ class SubresourceWebBundlesWebRequestApiTest
   }
 
   bool TryLoadScript(const std::string& script_src) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     std::string script = base::StringPrintf(R"(
           (() => {
             const script = document.createElement('script');
@@ -4699,8 +4680,7 @@ class SubresourceWebBundlesWebRequestApiTest
   }
 
   bool TryLoadBundle(const std::string& href, const std::string& resources) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     std::string script = base::StringPrintf(R"(
           (() => {
             const script = document.createElement('script');
@@ -4897,8 +4877,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   std::u16string expected_title = u"ScriptDone:UUIDInPackageScriptDone";
   content::TitleWatcher title_watcher(web_contents, expected_title);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
@@ -5028,8 +5007,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
 
@@ -5143,12 +5121,10 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest, ChangeHeader) {
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   std::u16string expected_title = u"200:bar-changed, inserted";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+  content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
@@ -5248,12 +5224,10 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   std::u16string expected_title = u"failed to load";
-  content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+  content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
@@ -5377,8 +5351,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
   {
@@ -5549,8 +5522,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   web_bundle = std::string(bundle.begin(), bundle.end());
 
   GURL page_url = embedded_test_server()->GetURL("/test.html");
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
 
@@ -5695,8 +5667,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   // redirects it.
   GURL url = embedded_test_server()->GetURL("original.test", "/hello.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   GURL redirected_url =
       embedded_test_server()->GetURL("redirected.test", "/hello.html");
@@ -5736,8 +5707,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
           base::StringPairs{
               {"title1.html", original_iframed_url.spec().c_str()}}));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_with_iframe_url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   EXPECT_EQ(page_with_iframe_url, web_contents->GetLastCommittedURL());
 
@@ -5804,8 +5774,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
 
   // Navigate to the URL that should be redirected, and check that the extension
   // navigation happens successfully.
-  content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  content::TestNavigationObserver navigation_observer(GetActiveWebContents());
   GURL url = embedded_test_server()->GetURL("redirect.test", "/hello.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
@@ -5943,8 +5912,7 @@ class ProxyCORSWebRequestApiTest
   // Executes a CORS preflight request on the main frame with a custom preflight
   // header.
   void ExecuteCorsPreflightedRequest() {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     ASSERT_TRUE(web_contents);
     static constexpr char kCORSPreflightedRequest[] = R"(
         var xhr = new XMLHttpRequest();
@@ -6373,8 +6341,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
   const Extension* extension = LoadPolicyExtension(test_dir);
   ASSERT_TRUE(extension);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   // Navigate to allow.example. This should succeed.
   {
@@ -6434,8 +6401,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   const Extension* extension = LoadPolicyExtension(test_dir);
   ASSERT_TRUE(extension);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   // Navigate to allow.example. This should succeed.
   {
@@ -6489,8 +6455,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   const Extension* extension = LoadPolicyExtension(test_dir);
   ASSERT_TRUE(extension);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   ErrorConsoleTestObserver error_observer(1u, profile());
   error_observer.EnableErrorCollection();
@@ -6554,8 +6519,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   const Extension* extension = LoadPolicyExtension(test_dir);
   ASSERT_TRUE(extension);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   // Navigate to test.example. The extension intercepts this request, and then
   // returns a promise that never resolves. This will result in the request
@@ -6744,8 +6708,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 
   // Navigate to block.example. The request should be blocked by the extension.
   {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     content::TestNavigationObserver nav_observer(web_contents);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
@@ -7255,8 +7218,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequiredTab) {
   GURL auth_url = embedded_test_server()->GetURL("example.com", auth_url_path);
 
   ResultCatcher result_catcher;
-  content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  content::TestNavigationObserver navigation_observer(GetActiveWebContents());
   content::RenderFrameHost* frame_host =
       ui_test_utils::NavigateToURL(browser(), auth_url);
   ASSERT_TRUE(result_catcher.GetNextResult());
@@ -7447,8 +7409,7 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), requestor_url));
 
   // Perform a fetch from a worker and validate that it succeeds.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   std::string fetch_response =
       content::EvalJs(web_contents,
                       content::JsReplace("doFetchInWorker($1);", MakeAuthUrl()))
@@ -7523,8 +7484,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
 
   // Navigate to example.com to check our setup; the request should be blocked.
   {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     content::TestNavigationObserver nav_observer(web_contents);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
@@ -7552,8 +7512,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
   // worker, but we'll fail to dispatch the event to the extension because the
   // listener isn't registered. The request should be allowed to continue.
   {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents = GetActiveWebContents();
     content::TestNavigationObserver nav_observer(web_contents);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_TRUE(nav_observer.last_navigation_succeeded());
@@ -7621,8 +7580,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_TRUE(test_listener.WaitUntilSatisfied());
   // The web contents should still be loading, and should have no last
   // committed URL since the extension is blocking the request.
