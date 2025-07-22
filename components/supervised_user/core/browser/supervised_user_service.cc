@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -412,11 +411,6 @@ void SupervisedUserService::UpdateURLFilter(
     url_filter_->UpdateManualUrls();
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // Max 40 chars for crash key (category-name).
-  SCOPED_CRASH_KEY_STRING64("SUService_OnURLFilterChanged", "pref_name",
-                            pref_name.value_or("<nullopt>"));
-#endif  // BUILDFLAG(IS_ANDROID)
   observer_list_.Notify(&SupervisedUserServiceObserver::OnURLFilterChanged);
 }
 

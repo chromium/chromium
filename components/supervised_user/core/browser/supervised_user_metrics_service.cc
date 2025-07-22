@@ -5,8 +5,6 @@
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -167,12 +165,6 @@ void SupervisedUserMetricsService::EmitMetrics() {
     WebFilterType web_filter_type =
         supervised_user_service_->GetURLFilter()->GetWebFilterType();
 
-#if BUILDFLAG(IS_ANDROID)
-    // Max 40 chars for crash key (category-name).
-    SCOPED_CRASH_KEY_NUMBER("SUMetrics_EmitMetrics", "web_filter_type",
-                            static_cast<int>(web_filter_type));
-    base::debug::DumpWithoutCrashing();  // http://crbug.com/431949472
-#endif                                   // BUILDFLAG(IS_ANDROID)
     base::UmaHistogramEnumeration(kWebFilterTypeHistogramName, web_filter_type);
     last_recorded_web_filter_type_ = web_filter_type;
   }
