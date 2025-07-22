@@ -1009,5 +1009,23 @@ foo
   // This test passes if no crashes.
 }
 
+TEST_F(InlineLayoutAlgorithmTest, BidiControlsInLineClampedLines) {
+  if (!RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()) {
+    return;
+  }
+  SetBodyInnerHTML(R"HTML(
+<div style="line-clamp: 1; font: monospace; width: 7ch;">
+    <bdi>Line 1
+    L</bdi>ine 2
+</div>
+)HTML");
+
+  // There was a crash in the case where a line-breaking ellipsis is followed in
+  // the clamped lines by bidi controls (such as closing a <bdi>) which could
+  // fit in the ellipsis line if it didn't have the ellipsis.
+
+  // This test passes if no crashes.
+}
+
 }  // namespace
 }  // namespace blink

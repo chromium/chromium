@@ -1794,8 +1794,7 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
     if (item.IsForcedLineBreak() || item.Type() == InlineItem::kBlockInInline) {
       return false;
     } else if (item.Type() == InlineItem::kText ||
-               item.Type() == InlineItem::kControl ||
-               item.Type() == InlineItem::kBidiControl) {
+               item.Type() == InlineItem::kControl) {
       if (breakpoint_status != kHasBreakpoints &&
           item.Type() == InlineItem::kControl &&
           text[item.StartOffset()] == uchar::kZeroWidthSpace) {
@@ -1852,8 +1851,10 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
       if (bmp_width) {
         can_hang_or_collapse = LayoutUnit();
       }
-    } else if (item.Type() == InlineItem::kOutOfFlowPositioned) {
-      // Doesn't affect the line layout.
+    } else if (item.Type() == InlineItem::kBidiControl ||
+               item.Type() == InlineItem::kOutOfFlowPositioned) {
+      // These items don't add line width or affect whitespace
+      // hanging/collapsing.
     } else {
       DCHECK(item.Type() == InlineItem::kAtomicInline ||
              item.Type() == InlineItem::kFloating ||
