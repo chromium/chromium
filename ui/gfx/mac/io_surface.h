@@ -10,6 +10,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/component_export.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/generic_shared_memory_id.h"
@@ -44,27 +45,6 @@ struct ScopedInUseIOSurfaceTraits {
 
 using IOSurfaceId = GenericSharedMemoryId;
 
-// Helper function to create an IOSurface with a specified size and format.
-// The surface is zero-initialized if |should_clear| is true. This is not
-// necessary for anonymous surfaces that are not exported to renderers and used
-// as render targets only. If |override_rgba_to_bgra| is true (default) a BGRA
-// IOSurface is created for RGBA/X_8888 BufferFormat. This is needed for GL
-// usage since neither ANGLE Metal nor CGL support importing RGBA IOSurfaces,
-// whereas for non-GL backends (Dawn and Metal) we want the formats to match.
-// TODO(sunnyps): Revisit this when we switch to ANGLE Metal completely since
-// wrapping RGBA_8888 can be implemented with Metal quite easily.
-COMPONENT_EXPORT(GFX)
-base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
-    const Size& size,
-    BufferFormat format,
-    bool should_clear = true,
-#if BUILDFLAG(IS_IOS)
-    bool override_rgba_to_bgra = false
-#else
-    bool override_rgba_to_bgra = true
-#endif
-);
-
 // A scoper for handling Mach port names that are send rights for IOSurfaces.
 // This scoper is both copyable and assignable, which will increase the kernel
 // reference count of the right. On destruction, the reference count is
@@ -80,6 +60,37 @@ using ScopedInUseIOSurface =
 
 // A scoper for holding a reference to an IOSurface.
 using ScopedIOSurface = base::apple::ScopedCFTypeRef<IOSurfaceRef>;
+
+static constexpr size_t kMaxIOSurfacePlanes = 3;
+
+// Helper function to create an IOSurface with a specified size and format.
+// The surface is zero-initialized if |should_clear| is true. This is not
+// necessary for anonymous surfaces that are not exported to renderers and used
+// as render targets only. If |override_rgba_to_bgra| is true (default) a BGRA
+// IOSurface is created for RGBA/X_8888 BufferFormat. This is needed for GL
+// usage since neither ANGLE Metal nor CGL support importing RGBA IOSurfaces,
+// whereas for non-GL backends (Dawn and Metal) we want the formats to match.
+// TODO(sunnyps): Revisit this when we switch to ANGLE Metal completely since
+// wrapping RGBA_8888 can be implemented with Metal quite easily.
+COMPONENT_EXPORT(GFX)
+ScopedIOSurface CreateIOSurface(const Size& size,
+                                BufferFormat format,
+                                bool should_clear = true,
+#if BUILDFLAG(IS_IOS)
+                                bool override_rgba_to_bgra = false
+#else
+                                bool override_rgba_to_bgra = true
+#endif
+);
+
+#if BUILDFLAG(IS_IOS)
+COMPONENT_EXPORT(GFX)
+void ExportIOSurfaceSharedMemoryRegion(
+    IOSurfaceRef io_surface,
+    base::UnsafeSharedMemoryRegion& shared_memory_region,
+    std::array<uint32_t, kMaxIOSurfacePlanes>& plane_strides,
+    std::array<uint32_t, kMaxIOSurfacePlanes>& plane_offsets);
+#endif
 
 // Return true if there exists a value for IOSurfaceColorSpace or
 // IOSurfaceICCProfile that will make CoreAnimation render using |color_space|.

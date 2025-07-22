@@ -71,9 +71,7 @@ base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  handle->type = gfx::IO_SURFACE_BUFFER;
-  handle->io_surface = gfx::CreateIOSurface(size, format);
-  DCHECK(handle->io_surface);
+  *handle = gfx::GpuMemoryBufferHandle(gfx::CreateIOSurface(size, format));
   return base::DoNothing();
 }
 
@@ -100,7 +98,7 @@ GpuMemoryBufferImplIOSurface::CreateFromHandleImpl(
   constexpr int kMaxCrashDumps = 10;
   static int dump_counter = kMaxCrashDumps;
 #if BUILDFLAG(IS_IOS)
-  if (!handle.io_surface_shared_memory_region.IsValid()) {
+  if (!handle.io_surface_shared_memory_region().IsValid()) {
     LOG(ERROR) << "Invalid shared memory region returned to client.";
     if (dump_counter) {
       dump_counter -= 1;
@@ -109,7 +107,7 @@ GpuMemoryBufferImplIOSurface::CreateFromHandleImpl(
     return nullptr;
   }
 #else
-  if (!handle.io_surface) {
+  if (!handle.io_surface()) {
     LOG(ERROR) << "Failed to open IOSurface via mach port returned to client.";
     if (dump_counter) {
       dump_counter -= 1;
@@ -118,8 +116,8 @@ GpuMemoryBufferImplIOSurface::CreateFromHandleImpl(
     return nullptr;
   }
 
-  int64_t io_surface_width = IOSurfaceGetWidth(handle.io_surface.get());
-  int64_t io_surface_height = IOSurfaceGetHeight(handle.io_surface.get());
+  int64_t io_surface_width = IOSurfaceGetWidth(handle.io_surface().get());
+  int64_t io_surface_height = IOSurfaceGetHeight(handle.io_surface().get());
   if (io_surface_width < size.width() || io_surface_height < size.height()) {
     DLOG(ERROR) << "IOSurface size does not match handle.";
     return nullptr;
@@ -137,7 +135,7 @@ bool GpuMemoryBufferImplIOSurface::Map() {
 
 #if BUILDFLAG(IS_IOS)
   if (!shared_memory_mapping_.IsValid()) {
-    shared_memory_mapping_ = handle_.io_surface_shared_memory_region.Map();
+    shared_memory_mapping_ = handle_.io_surface_shared_memory_region().Map();
   }
   if (!shared_memory_mapping_.IsValid()) {
     LOG(ERROR) << "Invalid shared memory mapping";
@@ -145,7 +143,7 @@ bool GpuMemoryBufferImplIOSurface::Map() {
   }
 #else
   kern_return_t kr =
-      IOSurfaceLock(handle_.io_surface.get(), lock_flags_, nullptr);
+      IOSurfaceLock(handle_.io_surface().get(), lock_flags_, nullptr);
   DCHECK_EQ(kr, KERN_SUCCESS) << " lock_flags_: " << lock_flags_;
   MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
       << "GpuMemoryBufferImplIOSurface::Map IOSurfaceLock lock_flags_: "
@@ -156,17 +154,17 @@ bool GpuMemoryBufferImplIOSurface::Map() {
 
 void* GpuMemoryBufferImplIOSurface::memory(size_t plane) {
   AssertMapped();
-  DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+  CHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
 #if BUILDFLAG(IS_IOS)
   // SAFETY: We trust the GPU process to allocate the IOSurface and initialize
   // the shared memory region from it correctly and we assert that below too.
   CHECK(shared_memory_mapping_.IsValid());
-  CHECK_LT(plane, gfx::GpuMemoryBufferHandle::kMaxIOSurfacePlanes);
-  const size_t plane_offset = handle_.io_surface_plane_offsets[plane];
+  CHECK_LT(plane, gfx::kMaxIOSurfacePlanes);
+  const size_t plane_offset = handle_.io_surface_plane_offset(plane);
   CHECK_LE(plane_offset, shared_memory_mapping_.mapped_size());
   return UNSAFE_BUFFERS(shared_memory_mapping_.data() + plane_offset);
 #else
-  return IOSurfaceGetBaseAddressOfPlane(handle_.io_surface.get(), plane);
+  return IOSurfaceGetBaseAddressOfPlane(handle_.io_surface().get(), plane);
 #endif
 }
 
@@ -177,7 +175,7 @@ void GpuMemoryBufferImplIOSurface::Unmap() {
     return;
 #if !BUILDFLAG(IS_IOS)
   kern_return_t kr =
-      IOSurfaceUnlock(handle_.io_surface.get(), lock_flags_, nullptr);
+      IOSurfaceUnlock(handle_.io_surface().get(), lock_flags_, nullptr);
   DCHECK_EQ(kr, KERN_SUCCESS) << " lock_flags_: " << lock_flags_;
   MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
       << "GpuMemoryBufferImplIOSurface::Unmap IOSurfaceUnlock lock_flags_: "
@@ -186,12 +184,12 @@ void GpuMemoryBufferImplIOSurface::Unmap() {
 }
 
 int GpuMemoryBufferImplIOSurface::stride(size_t plane) const {
-  DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+  CHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
 #if BUILDFLAG(IS_IOS)
-  CHECK_LT(plane, gfx::GpuMemoryBufferHandle::kMaxIOSurfacePlanes);
-  return handle_.io_surface_plane_strides[plane];
+  CHECK_LT(plane, gfx::kMaxIOSurfacePlanes);
+  return handle_.io_surface_plane_stride(plane);
 #else
-  return IOSurfaceGetBytesPerRowOfPlane(handle_.io_surface.get(), plane);
+  return IOSurfaceGetBytesPerRowOfPlane(handle_.io_surface().get(), plane);
 #endif
 }
 

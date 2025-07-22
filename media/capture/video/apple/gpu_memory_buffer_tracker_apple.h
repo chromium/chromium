@@ -15,8 +15,7 @@ class CAPTURE_EXPORT GpuMemoryBufferTrackerApple final
     : public VideoCaptureBufferTracker {
  public:
   GpuMemoryBufferTrackerApple();
-  explicit GpuMemoryBufferTrackerApple(
-      base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface);
+  explicit GpuMemoryBufferTrackerApple(gfx::ScopedIOSurface io_surface);
 
   GpuMemoryBufferTrackerApple(const GpuMemoryBufferTrackerApple&) = delete;
   GpuMemoryBufferTrackerApple& operator=(const GpuMemoryBufferTrackerApple&) =

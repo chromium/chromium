@@ -189,12 +189,10 @@ void VideoToolboxFrameConverter::Convert(
   const gfx::Size natural_size =
       metadata->aspect_ratio.GetNaturalSize(visible_rect);
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface.reset(CVPixelBufferGetIOSurface(image.get()),
-                          base::scoped_policy::RETAIN);
+  gfx::GpuMemoryBufferHandle handle(gfx::ScopedIOSurface(
+      CVPixelBufferGetIOSurface(image.get()), base::scoped_policy::RETAIN));
 
-  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface.get());
+  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface().get());
   std::optional<viz::SharedImageFormat> format =
       PixelFormatToImageFormat(pixel_format);
   if (!format) {

@@ -916,7 +916,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
     DLOG(ERROR) << "Non-IOSurface handle.";
     return nullptr;
   }
-  gfx::ScopedIOSurface io_surface = handle.io_surface;
+
+  gfx::ScopedIOSurface io_surface = handle.io_surface();
   if (!io_surface) {
     return nullptr;
   }

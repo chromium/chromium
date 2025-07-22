@@ -247,14 +247,14 @@ IOSurfaceHandle UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
   gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port;
 #if BUILDFLAG(IS_IOS)
   io_surface_handle.mach_send_right.reset(
-      gmb_handle.io_surface_mach_port.release());
+      gmb_handle.io_surface_mach_port_.release());
   io_surface_handle.shared_memory_region =
-      std::move(gmb_handle.io_surface_shared_memory_region);
-  io_surface_handle.plane_strides = gmb_handle.io_surface_plane_strides;
-  io_surface_handle.plane_offsets = gmb_handle.io_surface_plane_offsets;
+      std::move(gmb_handle.io_surface_shared_memory_region_);
+  io_surface_handle.plane_strides = gmb_handle.io_surface_plane_strides_;
+  io_surface_handle.plane_offsets = gmb_handle.io_surface_plane_offsets_;
 #else
   io_surface_handle.mach_send_right.reset(
-      IOSurfaceCreateMachPort(gmb_handle.io_surface.get()));
+      IOSurfaceCreateMachPort(gmb_handle.io_surface().get()));
 #endif
   return io_surface_handle;
 }
@@ -277,18 +277,18 @@ bool UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
       }
       if (io_surface_handle.mach_send_right.is_valid()) {
         // This is expected to fail in sandboxed renderer processes on iOS.
-        gmb_handle->io_surface.reset(IOSurfaceLookupFromMachPort(
+        gmb_handle->io_surface_.reset(IOSurfaceLookupFromMachPort(
             io_surface_handle.mach_send_right.get()));
       } else {
-        gmb_handle->io_surface.reset();
+        gmb_handle->io_surface_.reset();
       }
 #if BUILDFLAG(IS_IOS)
-      gmb_handle->io_surface_mach_port.reset(
+      gmb_handle->io_surface_mach_port_.reset(
           io_surface_handle.mach_send_right.release());
-      gmb_handle->io_surface_shared_memory_region =
+      gmb_handle->io_surface_shared_memory_region_ =
           std::move(io_surface_handle.shared_memory_region);
-      gmb_handle->io_surface_plane_strides = io_surface_handle.plane_strides;
-      gmb_handle->io_surface_plane_offsets = io_surface_handle.plane_offsets;
+      gmb_handle->io_surface_plane_strides_ = io_surface_handle.plane_strides;
+      gmb_handle->io_surface_plane_offsets_ = io_surface_handle.plane_offsets;
 #endif
       return true;
 #endif  // BUILDFLAG(IS_APPLE)

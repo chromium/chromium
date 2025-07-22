@@ -1049,7 +1049,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   // Shared image uses iosurface as native resource which is compatible to
   // WebGPU always.
   is_webgpu_compatible =
-      media::IOSurfaceIsWebGPUCompatible(handle.io_surface.get());
+      media::IOSurfaceIsWebGPUCompatible(handle.io_surface().get());
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

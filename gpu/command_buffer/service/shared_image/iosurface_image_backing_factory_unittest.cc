@@ -1338,11 +1338,9 @@ class IOSurfaceImageBackingFactoryGMBTest
     bool override_rgba_to_bgra = get_gr_context_type() == GrContextType::kGL;
 
     gfx::BufferFormat buffer_format = gpu::ToBufferFormat(format);
-    gfx::GpuMemoryBufferHandle handle;
-    handle.type = gfx::IO_SURFACE_BUFFER;
-    handle.io_surface = gfx::CreateIOSurface(
-        size, buffer_format, /*should_clear=*/true, override_rgba_to_bgra);
-    DCHECK(handle.io_surface);
+    gfx::GpuMemoryBufferHandle handle(gfx::CreateIOSurface(
+        size, buffer_format, /*should_clear=*/true, override_rgba_to_bgra));
+    DCHECK(handle.io_surface());
 
     auto backing = backing_factory_->CreateSharedImage(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,

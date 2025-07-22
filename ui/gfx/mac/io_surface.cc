@@ -233,11 +233,10 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
 }  // namespace internal
 
-base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    bool should_clear,
-    bool override_rgba_to_bgra) {
+ScopedIOSurface CreateIOSurface(const gfx::Size& size,
+                                gfx::BufferFormat format,
+                                bool should_clear,
+                                bool override_rgba_to_bgra) {
   TRACE_EVENT0("ui", "CreateIOSurface");
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -311,33 +310,81 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
     AddIntegerValue(properties.get(), kIOSurfaceAllocSize, bytes_alloc);
   }
 
-  base::apple::ScopedCFTypeRef<IOSurfaceRef> surface(
-      IOSurfaceCreate(properties.get()));
-  if (!surface) {
+  ScopedIOSurface io_surface(IOSurfaceCreate(properties.get()));
+  if (!io_surface) {
     LOG(ERROR) << "Failed to allocate IOSurface of size " << size.ToString()
                << ".";
-    return base::apple::ScopedCFTypeRef<IOSurfaceRef>();
+    return ScopedIOSurface();
   }
 
   if (should_clear) {
     // Zero-initialize the IOSurface. Calling IOSurfaceLock/IOSurfaceUnlock
     // appears to be sufficient. https://crbug.com/584760#c17
-    kern_return_t r = IOSurfaceLock(surface.get(), 0, nullptr);
+    kern_return_t r = IOSurfaceLock(io_surface.get(), 0, nullptr);
     DCHECK_EQ(KERN_SUCCESS, r);
-    r = IOSurfaceUnlock(surface.get(), 0, nullptr);
+    r = IOSurfaceUnlock(io_surface.get(), 0, nullptr);
     DCHECK_EQ(KERN_SUCCESS, r);
   }
 
   // Ensure that all IOSurfaces start as sRGB.
-  IOSurfaceSetValue(surface.get(), CFSTR("IOSurfaceColorSpace"),
+  IOSurfaceSetValue(io_surface.get(), CFSTR("IOSurfaceColorSpace"),
                     kCGColorSpaceSRGB);
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "GPU.IOSurface.CreationTimeUs", base::TimeTicks::Now() - start_time,
       base::Microseconds(1), base::Milliseconds(50), /*bucket_count=*/100);
 
-  return surface;
+  return io_surface;
 }
+
+#if BUILDFLAG(IS_IOS)
+void ExportIOSurfaceSharedMemoryRegion(
+    IOSurfaceRef io_surface,
+    base::UnsafeSharedMemoryRegion& shared_memory_region,
+    std::array<uint32_t, kMaxIOSurfacePlanes>& plane_strides,
+    std::array<uint32_t, kMaxIOSurfacePlanes>& plane_offsets) {
+  CHECK(io_surface);
+
+  const void* io_surface_base_addr = IOSurfaceGetBaseAddress(io_surface);
+  const size_t io_surface_alloc_size = IOSurfaceGetAllocSize(io_surface);
+
+  memory_object_size_t alloc_size = io_surface_alloc_size;
+  base::apple::ScopedMachSendRight named_right;
+  kern_return_t kr = mach_make_memory_entry_64(
+      mach_task_self(), &alloc_size,
+      reinterpret_cast<memory_object_offset_t>(io_surface_base_addr),
+      VM_PROT_READ | VM_PROT_WRITE,
+      base::apple::ScopedMachSendRight::Receiver(named_right).get(),
+      MACH_PORT_NULL);
+  MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_make_memory_entry_64";
+  CHECK_GE(alloc_size, io_surface_alloc_size);
+
+  using base::subtle::PlatformSharedMemoryRegion;
+  auto platform_shared_memory_region = PlatformSharedMemoryRegion::Take(
+      std::move(named_right), PlatformSharedMemoryRegion::Mode::kUnsafe,
+      alloc_size, base::UnguessableToken::Create());
+  CHECK(platform_shared_memory_region.IsValid());
+
+  shared_memory_region = base::UnsafeSharedMemoryRegion::Deserialize(
+      std::move(platform_shared_memory_region));
+  CHECK(shared_memory_region.IsValid());
+
+  // IOSurfaceGetPlaneCount returns 0 for single-plane surfaces.
+  const size_t plane_count = std::max(1ul, IOSurfaceGetPlaneCount(io_surface));
+  plane_strides = {};
+  plane_offsets = {};
+  for (size_t plane = 0; plane < plane_count; plane++) {
+    plane_strides[plane] = base::checked_cast<uint32_t>(
+        IOSurfaceGetBytesPerRowOfPlane(io_surface, plane));
+
+    const void* io_surface_plane_addr =
+        IOSurfaceGetBaseAddressOfPlane(io_surface, plane);
+    plane_offsets[plane] = base::checked_cast<uint32_t>(
+        reinterpret_cast<intptr_t>(io_surface_plane_addr) -
+        reinterpret_cast<intptr_t>(io_surface_base_addr));
+  }
+}
+#endif
 
 bool IOSurfaceCanSetColorSpace(const ColorSpace& color_space) {
   return internal::IOSurfaceSetColorSpace(nullptr, color_space);
@@ -353,7 +400,7 @@ void IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
 ScopedIOSurface IOSurfaceMachPortToIOSurface(
     ScopedRefCountedIOSurfaceMachPort io_surface_mach_port) {
-  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface;
+  ScopedIOSurface io_surface;
   if (!io_surface_mach_port) {
     DLOG(ERROR) << "Invalid mach port.";
     return io_surface;

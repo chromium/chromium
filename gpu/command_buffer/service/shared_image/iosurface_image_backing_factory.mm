@@ -256,15 +256,11 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   }
   SetIOSurfaceColorSpace(io_surface.get(), color_space);
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::IO_SURFACE_BUFFER;
-  handle.io_surface = std::move(io_surface);
-
   CHECK(!format.PrefersExternalSampler());
-  return CreateSharedImageGMBs(mailbox, format, size, color_space,
-                               surface_origin, alpha_type, usage,
-                               std::move(debug_label), std::move(handle),
-                               is_thread_safe, std::move(buffer_usage));
+  return CreateSharedImageGMBs(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), gfx::GpuMemoryBufferHandle(std::move(io_surface)),
+      is_thread_safe, std::move(buffer_usage));
 }
 
 bool IOSurfaceImageBackingFactory::IsSupported(
@@ -400,7 +396,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     gfx::GpuMemoryBufferHandle handle,
     bool is_thread_safe,
     std::optional<gfx::BufferUsage> buffer_usage) {
-  if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface) {
+  if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface()) {
     LOG(ERROR) << "Invalid IOSurface GpuMemoryBufferHandle.";
     return nullptr;
   }
@@ -411,7 +407,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     return nullptr;
   }
 
-  auto io_surface = handle.io_surface;
+  auto io_surface = std::move(handle).io_surface();
 
   // Ensure that the IOSurface has the same size and pixel format as those
   // specified by `size` and `format`. A malicious client could lie about
@@ -445,7 +441,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
       for_framebuffer_attachment && angle_texture_usage_;
 
   return std::make_unique<IOSurfaceImageBacking>(
-      io_surface, mailbox, format, size, color_space, surface_origin,
+      std::move(io_surface), mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(debug_label), texture_target_,
       framebuffer_attachment_angle, /*is_cleared=*/true, is_thread_safe,
       gr_context_type_, std::move(buffer_usage));

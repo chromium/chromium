@@ -11,7 +11,7 @@ namespace media {
 GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple() {}
 
 GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple(
-    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface)
+    gfx::ScopedIOSurface io_surface)
     : is_external_io_surface_(true), io_surface_(std::move(io_surface)) {}
 
 GpuMemoryBufferTrackerApple::~GpuMemoryBufferTrackerApple() {}
@@ -41,7 +41,7 @@ bool GpuMemoryBufferTrackerApple::IsSameGpuMemoryBuffer(
     return false;
   }
   return IOSurfaceGetID(io_surface_.get()) ==
-         IOSurfaceGetID(handle.io_surface.get());
+         IOSurfaceGetID(handle.io_surface().get());
 }
 
 bool GpuMemoryBufferTrackerApple::IsReusableForFormat(
@@ -73,10 +73,7 @@ GpuMemoryBufferTrackerApple::DuplicateAsUnsafeRegion() {
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerApple::GetGpuMemoryBufferHandle() {
   DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_.get());
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  gmb_handle.io_surface = io_surface_;
-  return gmb_handle;
+  return gfx::GpuMemoryBufferHandle(io_surface_);
 }
 
 VideoCaptureBufferType GpuMemoryBufferTrackerApple::GetBufferType() {

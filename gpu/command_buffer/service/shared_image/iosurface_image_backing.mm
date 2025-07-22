@@ -1659,10 +1659,7 @@ void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 }
 
 gfx::GpuMemoryBufferHandle IOSurfaceImageBacking::GetGpuMemoryBufferHandle() {
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::IO_SURFACE_BUFFER;
-  handle.io_surface = io_surface_;
-  return handle;
+  return gfx::GpuMemoryBufferHandle(io_surface_);
 }
 
 bool IOSurfaceImageBacking::BeginAccess(bool readonly) {

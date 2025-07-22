@@ -966,9 +966,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                       colorSpace:
                                           (const gfx::ColorSpace&)colorSpace {
   DCHECK(ioSurface);
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface.reset(ioSurface, base::scoped_policy::RETAIN);
+  gfx::GpuMemoryBufferHandle handle(
+      gfx::ScopedIOSurface(ioSurface, base::scoped_policy::RETAIN));
 
   // The BT709_APPLE color space is stored as an ICC profile, which is parsed
   // every frame in the GPU process. For this particularly common case, go back
