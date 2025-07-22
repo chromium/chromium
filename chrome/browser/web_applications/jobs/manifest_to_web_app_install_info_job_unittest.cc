@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -33,6 +34,8 @@ namespace web_app {
 using Purpose = blink::mojom::ManifestImageResource_Purpose;
 
 namespace {
+
+using testing::ElementsAre;
 
 constexpr SquareSizePx kIconSize = 64;
 
@@ -904,8 +907,8 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, MainIconsNotPopulated) {
       web_app_info->other_icon_bitmaps[file_handler_icon_url][0]);
 }
 
-// Unit-tests verifying the primary icon behavior.
-class ManifestToWebAppInstallInfoPrimaryIconTest
+// Unit-tests verifying the trusted icon behavior.
+class ManifestToWebAppInstallInfoTrustedIconTest
     : public ManifestToWebAppInstallInfoJobTest {
  protected:
   bool ShouldPreferMaskable() {
@@ -919,7 +922,7 @@ class ManifestToWebAppInstallInfoPrimaryIconTest
   base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
 };
 
-TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, ChooseLargestIconAny) {
+TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, ChooseLargestIconAny) {
   const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
   const int larger_icon_size = 128;
   const SkBitmap larger_icon =
@@ -951,22 +954,41 @@ TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, ChooseLargestIconAny) {
   web_contents_manager().GetOrCreateIconState(largest_icon_url).bitmaps = {
       largest_icon};
 
-  // Verify the largest icon is chosen to be used as the primary icon.
+  // Verify the largest icon is chosen to be used as the trusted icon.
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
-  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
-  EXPECT_EQ(web_app_info->manifest_icons[0].url, largest_icon_url);
-  EXPECT_EQ(web_app_info->manifest_icons[0].purpose,
-            apps::IconInfo::Purpose::kAny);
-  EXPECT_EQ(web_app_info->manifest_icons[0].square_size_px, largest_icon_size);
+  ASSERT_EQ(web_app_info->trusted_icons.size(), 1u);
+  apps::IconInfo trusted_info(largest_icon_url, largest_icon_size);
+  trusted_info.purpose = apps::IconInfo::Purpose::kAny;
+  EXPECT_THAT(web_app_info->trusted_icons, ElementsAre(trusted_info));
 
-  ASSERT_FALSE(web_app_info->icon_bitmaps.any.empty());
-  EXPECT_TRUE(web_app_info->icon_bitmaps.maskable.empty());
+  // Verify that manifest_icons are populated in the order they are specified in
+  // the manifest.
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 3u);
 
-  // Verify correct bitmap chosen
-  gfx::test::AreBitmapsEqual(largest_icon, web_app_info->icon_bitmaps.any[512]);
+  apps::IconInfo info1(icon_url_, kIconSize);
+  info1.purpose = apps::IconInfo::Purpose::kAny;
+  apps::IconInfo info2(larger_icon_url, larger_icon_size);
+  info2.purpose = apps::IconInfo::Purpose::kAny;
+  apps::IconInfo info3(largest_icon_url, largest_icon_size);
+  info3.purpose = apps::IconInfo::Purpose::kAny;
+  EXPECT_THAT(web_app_info->manifest_icons, ElementsAre(info1, info2, info3));
+
+  EXPECT_FALSE(web_app_info->trusted_icon_bitmaps.any.empty());
+  EXPECT_TRUE(web_app_info->trusted_icon_bitmaps.maskable.empty());
+
+  // Verify expected bitmap chosen of proper size.
+  gfx::test::AreBitmapsEqual(largest_icon,
+                             web_app_info->trusted_icon_bitmaps.any[512]);
+
+  // Verify bitmaps populated properly for `any` icons.
+  for (const auto& icon_data : web_app_info->trusted_icon_bitmaps.any) {
+    const SkBitmap& bitmap = icon_data.second;
+    gfx::test::CheckColors(
+        bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2), SK_ColorBLUE);
+  }
 }
 
-TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest,
+TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
        MaskableIconNotChosenIfBelow256) {
   const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
   const int larger_icon_size = 96;
@@ -1002,20 +1024,24 @@ TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest,
       .GetOrCreateIconState(largest_icon_maskable_url)
       .bitmaps = {largest_icon_maskable};
 
-  // Verify the icon of purpose 'Any' is chosen to be used as the primary icon.
+  // Verify the icon of purpose 'Any' is chosen to be used as the trusted icon.
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
-  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
-  ASSERT_FALSE(web_app_info->icon_bitmaps.any.empty());
-  EXPECT_TRUE(web_app_info->icon_bitmaps.maskable.empty());
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 3u);
+  ASSERT_EQ(web_app_info->trusted_icons.size(), 1u);
+  apps::IconInfo trusted_info(larger_icon_url, larger_icon_size);
+  trusted_info.purpose = apps::IconInfo::Purpose::kAny;
+  EXPECT_THAT(web_app_info->trusted_icons, ElementsAre(trusted_info));
 
   // Verify that the larger icon is chosen an all platforms, even though there
   // is a larger maskable icon, because it's size is not greater than 256.
-  gfx::test::AreBitmapsEqual(larger_icon, web_app_info->icon_bitmaps.any[96]);
+  EXPECT_TRUE(web_app_info->trusted_icon_bitmaps.maskable.empty());
+  gfx::test::AreBitmapsEqual(larger_icon,
+                             web_app_info->trusted_icon_bitmaps.any[96]);
 }
 
 // Choose same icon, to be used as `maskable` or `any` depending on whichever OS
 // it is used on.
-TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, MultiPurposeIcons) {
+TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, MultiPurposeIcons) {
   const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
   const int larger_icon_size = 128;
   const SkBitmap larger_icon =
@@ -1049,27 +1075,29 @@ TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, MultiPurposeIcons) {
   web_contents_manager().GetOrCreateIconState(largest_icon_url).bitmaps = {
       largest_icon};
 
-  // Verify the icon of purpose 'maskable` is chosen as the primary icon on Mac
-  // and ChromeOS, while on Linux and Windows, `any` is chosen as the primary
+  // Verify the icon of purpose 'maskable` is chosen as the trusted icon on Mac
+  // and ChromeOS, while on Linux and Windows, `any` is chosen as the trusted
   // icon
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
-  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
-  EXPECT_EQ(web_app_info->manifest_icons[0].url, largest_icon_url);
-  EXPECT_EQ(web_app_info->manifest_icons[0].purpose ==
-                apps::IconInfo::Purpose::kMaskable,
-            ShouldPreferMaskable());
-  EXPECT_EQ(web_app_info->manifest_icons[0].square_size_px, largest_icon_size);
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 4u);
 
-  // TODO(crbug.com/427566601): Compare with !ShouldPreferMaskable().
-  ASSERT_TRUE(web_app_info->icon_bitmaps.any.size() > 0);
-  ASSERT_EQ(web_app_info->icon_bitmaps.maskable.size() > 0,
+  ASSERT_EQ(web_app_info->trusted_icons.size(), 1u);
+  apps::IconInfo trusted_info(largest_icon_url, largest_icon_size);
+  trusted_info.purpose = ShouldPreferMaskable()
+                             ? apps::IconInfo::Purpose::kMaskable
+                             : apps::IconInfo::Purpose::kAny;
+  EXPECT_THAT(web_app_info->trusted_icons, ElementsAre(trusted_info));
+
+  ASSERT_EQ(web_app_info->trusted_icon_bitmaps.any.size() > 0,
+            !ShouldPreferMaskable());
+  ASSERT_EQ(web_app_info->trusted_icon_bitmaps.maskable.size() > 0,
             ShouldPreferMaskable());
 
   // Verify the same bitmap has been parsed and generated as per the
   // requirements, since it is both maskable and any, and is the largest icon.
   const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
-      ShouldPreferMaskable() ? web_app_info->icon_bitmaps.maskable
-                             : web_app_info->icon_bitmaps.any;
+      ShouldPreferMaskable() ? web_app_info->trusted_icon_bitmaps.maskable
+                             : web_app_info->trusted_icon_bitmaps.any;
   for (const auto& icon_data : icon_map_parsed) {
     const SkBitmap& bitmap = icon_data.second;
     gfx::test::CheckColors(
@@ -1077,7 +1105,8 @@ TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, MultiPurposeIcons) {
   }
 }
 
-TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, AnyAndMaskableAsPerOs) {
+TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
+       AnyAndMaskableAsPerOsBitmaps) {
   const GURL larger_icon_any_url{"https://www.foo.bar/icon_larger.png"};
   const int larger_icon_size = 128;
   const SkColor icon_color_any = SK_ColorGREEN;
@@ -1113,22 +1142,22 @@ TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, AnyAndMaskableAsPerOs) {
       .GetOrCreateIconState(largest_icon_maskable_url)
       .bitmaps = {largest_icon_maskable};
 
-  // Verify the icon of purpose 'maskable` is chosen as the primary icon on Mac
-  // and ChromeOS, while on Linux and Windows, `any` is chosen as the primary
+  // Verify the icon of purpose 'maskable` is chosen as the trusted icon on Mac
+  // and ChromeOS, while on Linux and Windows, `any` is chosen as the trusted
   // icon
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
-  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
+  ASSERT_EQ(web_app_info->manifest_icons.size(), 3u);
 
-  // TODO(crbug.com/427566601): Compare with !ShouldPreferMaskable().
-  ASSERT_TRUE(web_app_info->icon_bitmaps.any.size() > 0);
-  ASSERT_EQ(web_app_info->icon_bitmaps.maskable.size() > 0,
+  ASSERT_EQ(web_app_info->trusted_icon_bitmaps.any.size() > 0,
+            !ShouldPreferMaskable());
+  ASSERT_EQ(web_app_info->trusted_icon_bitmaps.maskable.size() > 0,
             ShouldPreferMaskable());
 
   // Verify the correct bitmap has been parsed and generated as per the
   // requirements.
   const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
-      ShouldPreferMaskable() ? web_app_info->icon_bitmaps.maskable
-                             : web_app_info->icon_bitmaps.any;
+      ShouldPreferMaskable() ? web_app_info->trusted_icon_bitmaps.maskable
+                             : web_app_info->trusted_icon_bitmaps.any;
   const SkColor final_color =
       ShouldPreferMaskable() ? icon_color_maskable : icon_color_any;
   for (const auto& icon_data : icon_map_parsed) {
@@ -1138,7 +1167,8 @@ TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, AnyAndMaskableAsPerOs) {
   }
 }
 
-TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, GeneratedIconsIfNoDownload) {
+TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
+       NotPopulatedIfGeneratedIcons) {
   const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
   const int larger_icon_size = 128;
   const SkBitmap larger_icon =
@@ -1148,20 +1178,24 @@ TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, GeneratedIconsIfNoDownload) {
   SetupBasicPageState();
   auto& manifest = GetPageManifest();
 
-  // Set up icon, but don't add it to the WebContentsManager.
+  // Set up icon, but don't add it to the WebContentsManager, to mimic icon
+  // downloading failure.
   blink::Manifest::ImageResource icon_larger;
   icon_larger.src = larger_icon_url;
   icon_larger.sizes = {{larger_icon_size, larger_icon_size}};
   icon_larger.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  manifest->icons.push_back(std::move(icon_larger));
+  manifest->icons = {icon_larger};
 
-  // Verify that the `web_app_info` has generated icons.
+  // Verify that the `web_app_info` has generated icons, but no trusted icons
+  // metadata.
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
-  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
-  ASSERT_TRUE(web_app_info->is_generated_icon);
+  EXPECT_EQ(web_app_info->manifest_icons.size(), 1u);
+  EXPECT_TRUE(web_app_info->is_generated_icon);
+  EXPECT_FALSE(web_app_info->trusted_icons.empty());
+  EXPECT_TRUE(web_app_info->trusted_icon_bitmaps.any.empty());
 }
 
-TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, SVGIconsNoSize) {
+TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, SVGIconsNoSize) {
   const GURL svg_icon_url{"https://www.foo.bar/icon_larger.svg"};
   const SkBitmap expected_svg_icon =
       gfx::test::CreateBitmap(512, SK_ColorGREEN);
@@ -1185,23 +1219,24 @@ TEST_F(ManifestToWebAppInstallInfoPrimaryIconTest, SVGIconsNoSize) {
   // Verify that the `web_app_info` has the correct icon metadata for the SVG
   // icon.
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
-  ASSERT_EQ(web_app_info->manifest_icons.size(), 1u);
-  EXPECT_EQ(web_app_info->manifest_icons[0].url, svg_icon_url);
-  EXPECT_EQ(web_app_info->manifest_icons[0].purpose ==
-                apps::IconInfo::Purpose::kMaskable,
-            ShouldPreferMaskable());
-  EXPECT_EQ(web_app_info->manifest_icons[0].square_size_px, 512);
+  EXPECT_EQ(web_app_info->manifest_icons.size(), 2u);
+  ASSERT_EQ(web_app_info->trusted_icons.size(), 1u);
+  apps::IconInfo trusted_info(svg_icon_url, /*size=*/512);
+  trusted_info.purpose = ShouldPreferMaskable()
+                             ? apps::IconInfo::Purpose::kMaskable
+                             : apps::IconInfo::Purpose::kAny;
+  EXPECT_THAT(web_app_info->trusted_icons, ElementsAre(trusted_info));
 
-  // TODO(crbug.com/427566601): Compare with !ShouldPreferMaskable().
-  ASSERT_TRUE(web_app_info->icon_bitmaps.any.size() > 0);
-  ASSERT_EQ(web_app_info->icon_bitmaps.maskable.size() > 0,
+  ASSERT_EQ(web_app_info->trusted_icon_bitmaps.any.size() > 0,
+            !ShouldPreferMaskable());
+  ASSERT_EQ(web_app_info->trusted_icon_bitmaps.maskable.size() > 0,
             ShouldPreferMaskable());
 
   // Verify the correct bitmap has been parsed and downloaded as per the
   // requirements.
   const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
-      ShouldPreferMaskable() ? web_app_info->icon_bitmaps.maskable
-                             : web_app_info->icon_bitmaps.any;
+      ShouldPreferMaskable() ? web_app_info->trusted_icon_bitmaps.maskable
+                             : web_app_info->trusted_icon_bitmaps.any;
   for (const auto& icon_data : icon_map_parsed) {
     const SkBitmap& bitmap = icon_data.second;
     gfx::test::CheckColors(

@@ -503,6 +503,8 @@ void ManifestToWebAppInstallInfoJob::Start(
 
   // Second, fetch icons, and populate them inside the `install_info_`. Exit
   // early if icon generation needs to be bypassed.
+  // Since the `trusted_icons` metadata is populated from the icons provided in
+  // the manifest, it is guaranteed to exist in `icon_urls_to_download`.
   IconUrlSizeSet icon_urls_to_download =
       GetValidIconUrlsToDownload(*install_info_.get());
   icon_url_modifications(icon_urls_to_download);
@@ -570,15 +572,14 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
 
   if (!options_.skip_primary_icon_download) {
+    UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest_->icons,
+                                                     install_info_.get());
     if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
       std::optional<apps::IconInfo> primary_icon_metadata =
           GetTrustedIconsFromManifest(manifest_->icons);
       if (primary_icon_metadata) {
-        install_info_->manifest_icons = {*primary_icon_metadata};
+        install_info_->trusted_icons = {*primary_icon_metadata};
       }
-    } else {
-      UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest_->icons,
-                                                       install_info_.get());
     }
   }
 
@@ -674,6 +675,9 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
   // been downloaded.
   if (!options_.skip_primary_icon_download) {
     PopulateProductIcons(install_info_.get(), &icons_map);
+    if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+      PopulateTrustedIconBitmaps(*install_info_.get(), icons_map);
+    }
   }
   PopulateOtherIcons(install_info_.get(), icons_map);
   RecordDownloadedIconsResultAndHttpStatusCodes(result, icons_http_results);

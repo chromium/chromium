@@ -340,6 +340,36 @@ apps::FileHandler::LaunchType ToFileHandlerLaunchType(
   }
 }
 
+void PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
+    const IconsMap& icons_downloaded,
+    const std::vector<apps::IconInfo>& icon_metadata,
+    std::map<SquareSizePx, SkBitmap>& output_size_to_bitmaps) {
+  CHECK(output_size_to_bitmaps.empty());
+  std::vector<SkBitmap> square_icons_matching_infos;
+  // First, choose all bitmaps from `icons_downloaded` that share the same url
+  // as the entries in `icon_metadata` in `square_icons_matching_infos`.
+  AddSquareIconsFromMapMatchingIconInfos(&square_icons_matching_infos,
+                                         icon_metadata, icons_downloaded);
+
+  // Second, start populating the `output_size_to_bitmaps` map with all the
+  // parsed bitmaps, once per size.
+  for (auto& icon : square_icons_matching_infos) {
+    if (!base::Contains(output_size_to_bitmaps, icon.width())) {
+      output_size_to_bitmaps[icon.width()] = icon;
+    }
+  }
+
+  // Third, resize existing icons if any and populate `output_size_to_bitmaps`
+  // with the bitmaps whose sizes are not populated previously.
+  SizeToBitmap sizes_to_icons = ConstrainBitmapsToSizes(
+      square_icons_matching_infos, web_app::SizesToGenerate());
+  for (auto& [size, icon] : sizes_to_icons) {
+    if (!base::Contains(output_size_to_bitmaps, size)) {
+      output_size_to_bitmaps[size] = std::move(icon);
+    }
+  }
+}
+
 }  // namespace
 
 void PopulateFileHandlerInfoFromManifest(
@@ -450,16 +480,17 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
   }
   AddSquareIconsFromBitmaps(&square_icons_any, web_app_info->icon_bitmaps.any);
 
-  for (SkBitmap& bitmap : square_icons_maskable) {
-    // Retain any bitmaps provided as input to the installation.
-    if (web_app_info->icon_bitmaps.maskable.count(bitmap.width()) == 0)
-      web_app_info->icon_bitmaps.maskable[bitmap.width()] = std::move(bitmap);
+  // Retain any bitmaps provided as input to the installation.
+  for (auto& icon : square_icons_maskable) {
+    if (!base::Contains(web_app_info->icon_bitmaps.maskable, icon.width())) {
+      web_app_info->icon_bitmaps.maskable[icon.width()] = std::move(icon);
+    }
   }
 
-  for (SkBitmap& bitmap : square_icons_monochrome) {
-    // Retain any bitmaps provided as input to the installation.
-    if (web_app_info->icon_bitmaps.monochrome.count(bitmap.width()) == 0)
-      web_app_info->icon_bitmaps.monochrome[bitmap.width()] = std::move(bitmap);
+  for (auto& icon : square_icons_monochrome) {
+    if (!base::Contains(web_app_info->icon_bitmaps.monochrome, icon.width())) {
+      web_app_info->icon_bitmaps.monochrome[icon.width()] = std::move(icon);
+    }
   }
 
   std::u16string icon_letter =
@@ -482,6 +513,42 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
     if (web_app_info->icon_bitmaps.any.count(item.first) == 0)
       web_app_info->icon_bitmaps.any[item.first] = std::move(item.second);
   }
+}
+
+void PopulateTrustedIconBitmaps(WebAppInstallInfo& web_app_info,
+                                const IconsMap& icons_map) {
+  // Exit early if there have been no downloaded icons, as then the whole
+  // `trusted_icons` metadata will be empty.
+  if (icons_map.empty()) {
+    return;
+  }
+
+  // Construct the trusted icon metadata per purpose.
+  std::vector<apps::IconInfo> trusted_icons_any;
+  std::vector<apps::IconInfo> trusted_icons_maskable;
+  std::vector<apps::IconInfo> trusted_icons_monochrome;
+  for (apps::IconInfo& icon_info : web_app_info.trusted_icons) {
+    switch (icon_info.purpose) {
+      case apps::IconInfo::Purpose::kAny:
+        trusted_icons_any.push_back(icon_info);
+        break;
+      case apps::IconInfo::Purpose::kMaskable:
+        trusted_icons_maskable.push_back(icon_info);
+        break;
+      case apps::IconInfo::Purpose::kMonochrome:
+        trusted_icons_monochrome.push_back(icon_info);
+        break;
+    }
+  }
+
+  PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
+      icons_map, trusted_icons_any, web_app_info.trusted_icon_bitmaps.any);
+  PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
+      icons_map, trusted_icons_maskable,
+      web_app_info.trusted_icon_bitmaps.maskable);
+  PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
+      icons_map, trusted_icons_monochrome,
+      web_app_info.trusted_icon_bitmaps.monochrome);
 }
 
 void RecordDownloadedIconsResultAndHttpStatusCodes(
@@ -779,7 +846,14 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
         purpose, GetSquareSizePxs(web_app_info.icon_bitmaps, purpose));
   }
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
-  web_app.SetTrustedIcons(web_app_info.trusted_icons);
+
+  // If the installation or update process does not provide any trusted icons,
+  // clone them from the manifest icons itself.
+  if (web_app_info.trusted_icons.empty()) {
+    web_app.SetTrustedIcons(web_app_info.manifest_icons);
+  } else {
+    web_app.SetTrustedIcons(web_app_info.trusted_icons);
+  }
 }
 
 bool CanWebAppUpdateIdentity(const WebApp* web_app) {

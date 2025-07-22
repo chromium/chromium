@@ -74,6 +74,13 @@ void PopulateOtherIcons(WebAppInstallInfo* web_app_info,
 void PopulateProductIcons(WebAppInstallInfo* web_app_info,
                           const IconsMap* icons_map);
 
+// Populates `web_app_info.trusted_icon_bitmaps`, using the information in
+// `trusted_icons` from the downloaded icons in `icons_map`. It is possible that
+// at the end of the call, the `web_app_info.trusted_icon_bitmaps` field might
+// not be populated due to various factors like icon downloading failure etc.
+void PopulateTrustedIconBitmaps(WebAppInstallInfo& web_app_info,
+                                const IconsMap& icons_map);
+
 // Records downloaded icons result and http code and code class.
 void RecordDownloadedIconsResultAndHttpStatusCodes(
     IconsDownloadedResult result,
