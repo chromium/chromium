@@ -12,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -22,6 +21,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -34,6 +35,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
  * <p>No URL or search term can be entered in, the Incognito tab is started with a blank (but
  * focused) omnibox. This component will be disabled if incognito mode is disabled.
  */
+@NullMarked
 public class IncognitoTabLauncher extends Activity {
     /** The Intent action used to launch the IncognitoTabLauncher. */
     @VisibleForTesting
