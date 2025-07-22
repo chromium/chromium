@@ -130,7 +130,8 @@ public class IncognitoNewTabPageTest {
     @SmallTest
     @DisableFeatures({
         ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
+        ChromeFeatureList.IP_PROTECTION_UX
     })
     public void testCookieControlsToggleStartsOn() throws Exception {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
@@ -149,7 +150,8 @@ public class IncognitoNewTabPageTest {
     @SmallTest
     @DisableFeatures({
         ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
+        ChromeFeatureList.IP_PROTECTION_UX
     })
     public void testCookieControlsToggleChanges() throws Exception {
         setCookieControlsMode(CookieControlsMode.OFF);
@@ -176,7 +178,8 @@ public class IncognitoNewTabPageTest {
     @SmallTest
     @DisableFeatures({
         ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
+        ChromeFeatureList.IP_PROTECTION_UX
     })
     public void testCookieControlsToggleManaged() throws Exception {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
@@ -217,7 +220,10 @@ public class IncognitoNewTabPageTest {
     // TODO(crbug.com/408036586): Remove once FingerprintingProtectionUx launched.
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.FINGERPRINTING_PROTECTION_UX})
+    @DisableFeatures({
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
+        ChromeFeatureList.IP_PROTECTION_UX
+    })
     public void incognitoNtpShowsThirdPartyCookieBlockingHeader() throws Exception {
         mActivityTestRule.newIncognitoTabFromMenu();
         onView(withId(R.id.tracking_protection_card))
