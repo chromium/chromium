@@ -13,8 +13,9 @@
 /// to its UI.
 @protocol SafariDataItemConsumer
 
-/// Populate Safari data items.
-- (void)populateItems:(NSArray<SafariDataItem*>*)items;
+/// Populate Safari data items. Note that this method should only be invoked
+/// from the same thread.
+- (void)populateItem:(SafariDataItem*)item;
 
 @end
 

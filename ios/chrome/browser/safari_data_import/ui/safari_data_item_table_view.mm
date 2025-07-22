@@ -6,7 +6,9 @@
 
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/public/utils.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_consumer.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -19,10 +21,8 @@
 
 namespace {
 
-typedef NSDiffableDataSourceSnapshot<NSString*, NSNumber*>
-    SafariDataItemSnapshot;
-typedef UITableViewDiffableDataSource<NSString*, NSNumber*>
-    SafariDataItemDiffableDataSource;
+/// Number of expected items in the table.
+constexpr int kExpectedItemsCount = 4;
 
 /// Size of the leading image for each item.
 constexpr NSInteger kLeadingSymbolImagePointSize = 20;
@@ -32,12 +32,9 @@ NSString* const kSafariDataItemSectionIdentifier =
     @"SafariDataItemSectionIdentifier";
 
 /// Helper methods that converts the `SafariDataItemType` to and from a NSNumber
-/// representation to be used by `SafariDataItemDiffableDataSource`.
+/// representation to be used by the data source.
 NSNumber* GetUniqueIdentifierFromType(SafariDataItemType type) {
   return @(static_cast<NSUInteger>(type));
-}
-SafariDataItemType GetTypeWithUniqueIdentifier(NSNumber* identifier) {
-  return static_cast<SafariDataItemType>(identifier.unsignedIntegerValue);
 }
 
 /// Returns the localized label text for the given `type`.
@@ -142,22 +139,22 @@ NSString* GetDescriptionForImportedItemTypeWithCount(SafariDataItemType type,
 
 /// Returns a view with a spinning activity indicator.
 UIView* GetAnimatingActivityIndicator() {
-  UIActivityIndicatorView* activityIndicator =
+  UIActivityIndicatorView* activity_indicator =
       [[UIActivityIndicatorView alloc] init];
-  [activityIndicator startAnimating];
-  activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-  return activityIndicator;
+  [activity_indicator startAnimating];
+  activity_indicator.translatesAutoresizingMaskIntoConstraints = NO;
+  return activity_indicator;
 }
 
 /// Returns a view with a checkmark image.
 UIView* GetCheckmark() {
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithWeight:UIImageSymbolWeightMedium];
-  UIImageView* checkmarkImageView = [[UIImageView alloc]
+  UIImageView* checkmark = [[UIImageView alloc]
       initWithImage:DefaultSymbolWithConfiguration(kCheckmarkCircleFillSymbol,
                                                    config)];
-  checkmarkImageView.tintColor = [UIColor colorNamed:kGreen500Color];
-  return checkmarkImageView;
+  checkmark.tintColor = [UIColor colorNamed:kGreen500Color];
+  return checkmark;
 }
 
 }  // namespace
@@ -167,18 +164,21 @@ UIView* GetCheckmark() {
 @end
 
 @implementation SafariDataItemTableView {
-  /// Safari data items to be displayed in the table.
-  SafariDataItem* _passwordsItem;
-  SafariDataItem* _bookmarksItem;
-  SafariDataItem* _paymentItem;
-  SafariDataItem* _historyItem;
+  /// Safari data items to be displayed in the table. The dictionary key is an
+  /// NSNumber representation of the type.
+  NSMutableDictionary<NSNumber*, SafariDataItem*>* _itemDictionary;
   /// The data source for the table view.
-  SafariDataItemDiffableDataSource* _dataSource;
+  UITableViewDiffableDataSource<NSString*, NSNumber*>* _dataSource;
+  /// Number of items ready to be imported.
+  int _pendingImportCount;
+  /// Number of items already imported.
+  int _importedCount;
 }
 
 - (instancetype)init {
   self = [super initWithFrame:CGRectZero style:ChromeTableViewStyle()];
   if (self) {
+    _itemDictionary = [NSMutableDictionary dictionary];
     self.accessibilityIdentifier =
         GetSafariDataItemTableViewAccessibilityIdentifier();
     self.translatesAutoresizingMaskIntoConstraints = NO;
@@ -193,7 +193,6 @@ UIView* GetCheckmark() {
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
     self.tableFooterView =
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
-    [self createDataSource];
     RegisterTableViewCell<TableViewDetailIconCell>(self);
   }
   return self;
@@ -202,26 +201,55 @@ UIView* GetCheckmark() {
 #pragma mark - Helpers
 
 /// Helper method to establish the data source.
-- (void)createDataSource {
+- (void)initializeDataSource {
+  /// Create the data source.
   __weak __typeof(self) weakSelf = self;
   auto cellProvider = ^UITableViewCell*(
       UITableView* tableView, NSIndexPath* indexPath, NSNumber* identifier) {
+    CHECK_EQ(tableView, weakSelf);
     return [weakSelf cellForIndexPath:indexPath itemIdentifier:identifier];
   };
   _dataSource =
-      [[SafariDataItemDiffableDataSource alloc] initWithTableView:self
-                                                     cellProvider:cellProvider];
+      [[UITableViewDiffableDataSource alloc] initWithTableView:self
+                                                  cellProvider:cellProvider];
+  /// Retrieve first snapshot and apply.
+  NSArray<NSNumber*>* sortedItemIdentifiers =
+      [_itemDictionary.allKeys sortedArrayUsingSelector:@selector(compare:)];
+  NSDiffableDataSourceSnapshot<NSString*, NSNumber*>* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot
+      appendSectionsWithIdentifiers:@[ kSafariDataItemSectionIdentifier ]];
+  [snapshot appendItemsWithIdentifiers:sortedItemIdentifiers
+             intoSectionWithIdentifier:kSafariDataItemSectionIdentifier];
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+/// Update `item` in the table.
+- (void)updateCellForItem:(SafariDataItem*)item {
+  CHECK(_dataSource);
+  NSDiffableDataSourceSnapshot<NSString*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  NSNumber* identifier = GetUniqueIdentifierFromType(item.type);
+  BOOL animate;
+  if (item.status == SafariDataItemImportStatus::kReady ||
+      item.count + item.invalidCount > 0) {
+    [snapshot reconfigureItemsWithIdentifiers:@[ identifier ]];
+    animate = NO;
+  } else {
+    [snapshot deleteItemsWithIdentifiers:@[ identifier ]];
+    animate = YES;
+  }
+  [_dataSource applySnapshot:snapshot animatingDifferences:animate];
 }
 
 /// Returns the cell with the properties of the `item` displayed.
 - (TableViewDetailIconCell*)cellForIndexPath:(NSIndexPath*)indexPath
                               itemIdentifier:(NSNumber*)identifier {
+  /// Check that cells are requested only when all items are available.
+  SafariDataItem* item = _itemDictionary[identifier];
+  CHECK(item);
   TableViewDetailIconCell* cell =
       DequeueTableViewCell<TableViewDetailIconCell>(self);
-  SafariDataItem* item = [self itemForUniqueIdentifier:identifier];
-  if (!item) {
-    return cell;
-  }
   cell.backgroundColor = [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   cell.textLabel.text = GetTextForItemType(item.type);
   [self setupDescriptionForItem:item forCell:cell];
@@ -236,40 +264,6 @@ UIView* GetCheckmark() {
   return cell;
 }
 
-/// Returns the `SafariDataItem` with the given unique identifier.
-- (SafariDataItem*)itemForUniqueIdentifier:(NSNumber*)identifier {
-  SafariDataItemType type = GetTypeWithUniqueIdentifier(identifier);
-  switch (type) {
-    case SafariDataItemType::kPasswords:
-      return _passwordsItem;
-    case SafariDataItemType::kBookmarks:
-      return _bookmarksItem;
-    case SafariDataItemType::kPayment:
-      return _paymentItem;
-    case SafariDataItemType::kHistory:
-      return _historyItem;
-  }
-}
-
-/// Updates the stored Safari data item to the given `item` based on the its
-/// type.
-- (void)updateItemBasedOnType:(SafariDataItem*)item {
-  switch (item.type) {
-    case SafariDataItemType::kPasswords:
-      _passwordsItem = item;
-      break;
-    case SafariDataItemType::kBookmarks:
-      _bookmarksItem = item;
-      break;
-    case SafariDataItemType::kPayment:
-      _paymentItem = item;
-      break;
-    case SafariDataItemType::kHistory:
-      _historyItem = item;
-      break;
-  }
-}
-
 /// Helper method that sets up the description for `item`.
 - (void)setupDescriptionForItem:(SafariDataItem*)item
                         forCell:(TableViewDetailIconCell*)cell {
@@ -277,20 +271,18 @@ UIView* GetCheckmark() {
       item.status == SafariDataItemImportStatus::kImported
           ? GetDescriptionForImportedItemTypeWithCount(item.type, item.count)
           : GetDescriptionForUnimportedItemTypeWithCount(item.type, item.count);
-  if (item.invalidCount == 0) {
-    [cell setDetailText:description];
-    return;
+  if (item.invalidCount > 0) {
+    /// Concatenate string for invalid passwords.
+    CHECK_EQ(item.type, SafariDataItemType::kPasswords);
+    CHECK_EQ(item.status, SafariDataItemImportStatus::kImported);
+    std::u16string invalidCountString = l10n_util::GetPluralStringFUTF16(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS,
+        item.invalidCount);
+    description = l10n_util::GetNSStringF(IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
+                                          base::SysNSStringToUTF16(description),
+                                          invalidCountString);
   }
-  /// Concatenate string for invalid passwords.
-  CHECK_EQ(item.type, SafariDataItemType::kPasswords);
-  CHECK_EQ(item.status, SafariDataItemImportStatus::kImported);
-  std::u16string invalidCountString = l10n_util::GetPluralStringFUTF16(
-      IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS,
-      item.invalidCount);
-  [cell setDetailText:l10n_util::GetNSStringF(
-                          IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
-                          base::SysNSStringToUTF16(description),
-                          invalidCountString)];
+  [cell setDetailText:description];
   cell.detailTextNumberOfLines = 0;
 }
 
@@ -321,18 +313,38 @@ UIView* GetCheckmark() {
 
 #pragma mark - SafariDataItemConsumer
 
-- (void)populateItems:(NSArray<SafariDataItem*>*)items {
-  NSMutableArray<NSNumber*>* itemsToPopulate = [NSMutableArray array];
-  for (SafariDataItem* item in items) {
-    [self updateItemBasedOnType:item];
-    [itemsToPopulate addObject:GetUniqueIdentifierFromType(item.type)];
+- (void)populateItem:(SafariDataItem*)item {
+  /// Item should only be populated when there is a status update.
+  SafariDataItem* currentItem =
+      _itemDictionary[GetUniqueIdentifierFromType(item.type)];
+  if (currentItem) {
+    CHECK_NE(item.status, currentItem.status)
+        << "Updating item type " << static_cast<NSUInteger>(item.type)
+        << " for status " << static_cast<NSUInteger>(item.status)
+        << "multiple times";
   }
-  SafariDataItemSnapshot* snapshot = [[SafariDataItemSnapshot alloc] init];
-  [snapshot
-      appendSectionsWithIdentifiers:@[ kSafariDataItemSectionIdentifier ]];
-  [snapshot appendItemsWithIdentifiers:itemsToPopulate
-             intoSectionWithIdentifier:kSafariDataItemSectionIdentifier];
-  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+  _itemDictionary[GetUniqueIdentifierFromType(item.type)] = item;
+  switch (item.status) {
+    case SafariDataItemImportStatus::kReady:
+      _pendingImportCount++;
+      if (_pendingImportCount == kExpectedItemsCount) {
+        [self initializeDataSource];
+        [self.importStageConsumer
+            transitionToImportStage:SafariDataImportStage::kReadyForImport];
+      }
+      return;
+    case SafariDataItemImportStatus::kImporting:
+      [self updateCellForItem:item];
+      return;
+    case SafariDataItemImportStatus::kImported:
+      [self updateCellForItem:item];
+      _importedCount++;
+      if (_importedCount == kExpectedItemsCount) {
+        [self.importStageConsumer
+            transitionToImportStage:SafariDataImportStage::kImported];
+      }
+      return;
+  }
 }
 
 #pragma mark - UITableViewDelegate

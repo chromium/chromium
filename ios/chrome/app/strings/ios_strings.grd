@@ -5388,9 +5388,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_ONE" desc="Instructions view to teach users how to import data from Safari - step 1. [iOS only]">
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Select your file<ph name="END_BOLD">END_BOLD</ph>
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_THREE" desc="Instructions view to teach users how to import data from Safari - step 3. [iOS only]">
-        Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Done<ph name="END_BOLD">END_BOLD</ph>
-      </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_TWO" desc="Instructions view to teach users how to import data from Safari - step 2. [iOS only]">
         Select your Safari export <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>.zip<ph name="END_BOLD">END_BOLD</ph> file
       </message>

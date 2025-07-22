@@ -51,6 +51,7 @@
       [[SafariDataImportImportViewController alloc] init];
   _containerViewController.delegate = self;
   _tableView = [[SafariDataItemTableView alloc] init];
+  _tableView.importStageConsumer = _containerViewController;
   _containerViewController.itemTableView = _tableView;
   _mediator = [[SafariDataImportImportMediator alloc] init];
   _mediator.importStageConsumer = _containerViewController;

@@ -7,12 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-/// Different types of items identified by a SafariDataItem.
+/// Different types of items identified by a SafariDataItem. Ordered by position
+/// in the table view.
 enum class SafariDataItemType : NSUInteger {
-  kPasswords,
-  kBookmarks,
-  kHistory,
-  kPayment,
+  kPasswords = 0,
+  kPayment = 1,
+  kHistory = 2,
+  kBookmarks = 3,
 };
 
 /// Current import progress for each SafariDataItem.

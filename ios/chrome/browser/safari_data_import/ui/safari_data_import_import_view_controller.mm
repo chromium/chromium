@@ -61,6 +61,10 @@
       self.primaryButtonSpinnerEnabled = YES;
       break;
     case SafariDataImportStage::kReadyForImport:
+      CHECK_EQ(_importStage, SafariDataImportStage::kFileLoading)
+          << "Can only transition to kReadyForImport stage from kFileLoading, "
+             "which happens when file loading has failed. The current stage is "
+          << static_cast<int>(_importStage);
       [self showTableView];
       self.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT);
@@ -101,7 +105,6 @@
   NSArray* instructions = @[
     l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_ONE),
     l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_TWO),
-    l10n_util::GetNSString(IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_THREE),
   ];
   InstructionView* instructionsView =
       [[InstructionView alloc] initWithList:instructions];
