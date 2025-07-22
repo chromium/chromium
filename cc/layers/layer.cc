@@ -159,7 +159,7 @@ void Layer::SetLayerTreeHost(LayerTreeHost* host) {
 
     layer_tree_host()->UnregisterLayer(this);
     if (element_id)
-      layer_tree_host()->UnregisterElement(element_id);
+      layer_tree_host()->UnregisterElement(element_id, this);
     if (!IsUsingLayerLists()) {
       layer_tree_host()->property_trees()->set_needs_rebuild(true);
       property_tree_indices_invalid = true;
@@ -1690,7 +1690,7 @@ void Layer::SetElementId(ElementId id) {
                "element", id.ToString());
   auto& inputs = inputs_.Write(*this);
   if (IsAttached() && inputs.element_id)
-    layer_tree_host()->UnregisterElement(inputs.element_id);
+    layer_tree_host()->UnregisterElement(inputs.element_id, this);
 
   inputs.element_id = id;
 

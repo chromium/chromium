@@ -1789,14 +1789,31 @@ const Layer* LayerTreeHost::LayerByElementId(ElementId element_id) const {
   return iter != element_layers_map_.end() ? iter->second : nullptr;
 }
 
-void LayerTreeHost::RegisterElement(ElementId element_id,
-                                    Layer* layer) {
+void LayerTreeHost::RegisterElement(ElementId element_id, Layer* layer) {
   DCHECK(IsMainThread());
+  DCHECK(layer);
+  const Layer* existing_layer = LayerByElementId(element_id);
+  if (existing_layer) {
+    if (existing_layer == layer) {
+      return;
+    } else {
+      UnregisterElement(element_id, existing_layer);
+    }
+  }
   element_layers_map_[element_id] = layer;
 }
 
-void LayerTreeHost::UnregisterElement(ElementId element_id) {
+void LayerTreeHost::UnregisterElement(ElementId element_id,
+                                      const Layer* layer) {
   DCHECK(IsMainThread());
+  DCHECK(layer);
+  const Layer* existing_layer = LayerByElementId(element_id);
+  if (existing_layer != layer) {
+    // Nothing to do; the element_id is already associated with another layer.
+    // This can happen if a scrollbar is lost and restored in the same frame,
+    // as we register the new scrollbar layer before cleaning up the old one.
+    return;
+  }
   property_tree_delegate_->OnUnregisterElement(element_id);
   element_layers_map_.erase(element_id);
 }

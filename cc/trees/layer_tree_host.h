@@ -747,9 +747,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   Layer* LayerByElementId(ElementId element_id);
   const Layer* LayerByElementId(ElementId element_id) const;
 
-  void RegisterElement(ElementId element_id,
-                       Layer* layer);
-  void UnregisterElement(ElementId element_id);
+  void RegisterElement(ElementId element_id, Layer* layer);
+  void UnregisterElement(ElementId element_id, const Layer* layer);
 
   void SetElementIdsForTesting();
   void BuildPropertyTreesForTesting();
