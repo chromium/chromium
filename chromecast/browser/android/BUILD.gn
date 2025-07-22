@@ -42,16 +42,11 @@ java_group("cast_shell_android_resources") {
 android_resources("cast_browser_android_resources") {
   sources = [
     "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
-    "apk/res/drawable-hdpi/ic_notification_cast.png",
     "apk/res/drawable-hdpi/ic_settings_cast.png",
-    "apk/res/drawable-mdpi/ic_notification_cast.png",
     "apk/res/drawable-mdpi/ic_settings_cast.png",
     "apk/res/drawable-nodpi/ic_cast_vector.xml",
-    "apk/res/drawable-xhdpi/ic_notification_cast.png",
     "apk/res/drawable-xhdpi/ic_settings_cast.png",
-    "apk/res/drawable-xxhdpi/ic_notification_cast.png",
     "apk/res/drawable-xxhdpi/ic_settings_cast.png",
-    "apk/res/drawable-xxxhdpi/ic_notification_cast.png",
     "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
     "apk/res/layout/cast_web_contents_activity.xml",
   ]
@@ -61,7 +56,6 @@ android_resources("cast_shell_android_stub_resources") {
   sources = [
     "apk/res-values/values-v17/styles.xml",
     "apk/res-values/values/colors.xml",
-    "apk/res-values/values/strings.xml",
   ]
 }
 
