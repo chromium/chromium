@@ -9,6 +9,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -42,14 +43,13 @@ TEST_F(IdentityTestEnvironmentTest,
       "primary@example.com", signin::ConsentLevel::kSignin);
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
-  std::set<std::string> scopes{GaiaConstants::kGoogleUserInfoEmail};
 
   std::unique_ptr<AccessTokenFetcher> fetcher =
       identity_test_environment->identity_manager()
           ->CreateAccessTokenFetcherForAccount(
               identity_test_environment->identity_manager()
                   ->GetPrimaryAccountId(ConsentLevel::kSignin),
-              "dummy_consumer", scopes, std::move(callback),
+              OAuthConsumerId::kSync, std::move(callback),
               AccessTokenFetcher::Mode::kImmediate);
 
   // Deleting the IdentityTestEnvironment should cancel any pending
