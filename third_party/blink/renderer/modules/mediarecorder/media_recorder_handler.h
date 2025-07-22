@@ -48,8 +48,6 @@ class MediaStreamDescriptor;
 struct WebMediaCapabilitiesInfo;
 struct WebMediaConfiguration;
 
-MODULES_EXPORT BASE_DECLARE_FEATURE(kMediaRecorderEnableMp4Muxer);
-
 // Helper function to convert media recorder codec id to media video codec.
 MODULES_EXPORT media::VideoCodec MediaVideoCodecFromCodecId(
     VideoTrackRecorder::CodecId id);

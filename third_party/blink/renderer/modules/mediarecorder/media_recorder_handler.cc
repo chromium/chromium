@@ -69,10 +69,6 @@ using base::TimeTicks;
 
 namespace blink {
 
-BASE_FEATURE(kMediaRecorderEnableMp4Muxer,
-             "MediaRecorderEnableMp4Muxer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMediaRecorderSeekableWebm,
              "MediaRecorderSeekableWebm",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -178,11 +174,7 @@ bool CanSupportVideoType(const String& type) {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
-    return EqualStringView(type, "video/mp4");
-  }
-
-  return false;
+  return EqualStringView(type, "video/mp4");
 }
 
 bool CanSupportAudioType(const String& type) {
@@ -191,11 +183,7 @@ bool CanSupportAudioType(const String& type) {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
-    return EqualStringView(type, "audio/mp4");
-  }
-
-  return false;
+  return EqualStringView(type, "audio/mp4");
 }
 
 bool IsAllowedMp4Type(const String& type) {
@@ -206,9 +194,6 @@ bool IsAllowedMp4Type(const String& type) {
 bool IsMp4MuxerRequired(const String& type) {
   // The function should be called only after type and codecs are validated
   // by `CanSupportMimeType()` first in code path.
-  if (!base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
-    return false;
-  }
   return IsAllowedMp4Type(type);
 }
 
@@ -618,11 +603,6 @@ bool MediaRecorderHandler::Start(int timeslice,
       return false;
     }
     if (use_audio_tracks && !(video_type_supported || audio_type_supported)) {
-      return false;
-    }
-
-    if (use_mp4_muxer &&
-        !base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
       return false;
     }
   }
