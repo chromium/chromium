@@ -13,6 +13,7 @@
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/webid/constants.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
@@ -56,7 +57,11 @@ void InMemoryFederatedPermissionContext::RecordIgnoreAndEmbargo(
 
 bool InMemoryFederatedPermissionContext::ShouldCompleteRequestImmediately()
     const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch("run-web-tests");
+  const base::CommandLine* current_command_line =
+      base::CommandLine::ForCurrentProcess();
+  return current_command_line->HasSwitch("run-web-tests") ||
+         current_command_line->HasSwitch(switches::kBrowserTest) ||
+         current_command_line->HasSwitch(switches::kTestType);
 }
 
 bool InMemoryFederatedPermissionContext::HasThirdPartyCookiesAccess(
