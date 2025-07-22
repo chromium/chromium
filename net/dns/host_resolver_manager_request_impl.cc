@@ -111,13 +111,13 @@ HostResolverManager::RequestImpl::GetEndpointResults() const {
 const std::vector<std::string>*
 HostResolverManager::RequestImpl::GetTextResults() const {
   DCHECK(complete_);
-  return results_ ? &results_.value().text_records() : nullptr;
+  return results_ ? &results_->text_records() : nullptr;
 }
 
 const std::vector<HostPortPair>*
 HostResolverManager::RequestImpl::GetHostnameResults() const {
   DCHECK(complete_);
-  return results_ ? &results_.value().hostnames() : nullptr;
+  return results_ ? &results_->hostnames() : nullptr;
 }
 
 const std::set<std::string>*
@@ -367,22 +367,20 @@ void HostResolverManager::RequestImpl::FixUpEndpointAndAliasResults() {
   DCHECK(!endpoint_results_.has_value());
   DCHECK(!fixed_up_dns_alias_results_.has_value());
 
-  endpoint_results_ = results_.value().GetEndpoints();
-  if (endpoint_results_.has_value()) {
-    fixed_up_dns_alias_results_ = results_.value().aliases();
+  endpoint_results_ = results_->GetEndpoints();
+  fixed_up_dns_alias_results_ = results_->aliases();
 
-    // Skip fixups for `include_canonical_name` requests. Just use the
-    // canonical name exactly as it was received from the system resolver.
-    if (parameters().include_canonical_name) {
-      DCHECK_LE(fixed_up_dns_alias_results_.value().size(), 1u);
-    } else {
-      fixed_up_dns_alias_results_ = dns_alias_utility::FixUpDnsAliases(
-          fixed_up_dns_alias_results_.value());
-    }
-
-    legacy_address_results_ = HostResolver::EndpointResultToAddressList(
-        endpoint_results_.value(), fixed_up_dns_alias_results_.value());
+  // Skip fixups for `include_canonical_name` requests. Just use the
+  // canonical name exactly as it was received from the system resolver.
+  if (parameters().include_canonical_name) {
+    DCHECK_LE(fixed_up_dns_alias_results_->size(), 1u);
+  } else {
+    fixed_up_dns_alias_results_ =
+        dns_alias_utility::FixUpDnsAliases(fixed_up_dns_alias_results_.value());
   }
+
+  legacy_address_results_ = HostResolver::EndpointResultToAddressList(
+      endpoint_results_.value(), fixed_up_dns_alias_results_.value());
 }
 
 void HostResolverManager::RequestImpl::LogStartRequest() {
