@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
@@ -46,9 +48,11 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.printing.PrintManagerDelegateImpl;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /** Implementation of share interface. Mostly a wrapper around ShareSheetCoordinator. */
@@ -273,13 +277,24 @@ public class ShareDelegateImpl implements ShareDelegate {
             final GURL canonicalUrl,
             @ShareOrigin final int shareOrigin,
             final boolean shareDirectly) {
+        ShareParams.Builder shareParamsBuilder =
+                new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl));
+
+        boolean isDownloadedPdf = PdfUtils.isDownloadedPdf(visibleUrl.getSpec());
+        if (isDownloadedPdf) {
+            ArrayList<Uri> fileToShare = new ArrayList<>();
+            fileToShare.add(Uri.parse(PdfUtils.decodePdfPageUrl(visibleUrl.getSpec())));
+            shareParamsBuilder
+                    .setFileUris(fileToShare)
+                    .setFileContentType(MimeTypeUtils.PDF_MIME_TYPE);
+        }
+
         share(
-                new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl))
-                        .build(),
+                shareParamsBuilder.build(),
                 new ChromeShareExtras.Builder()
                         .setSaveLastUsed(!shareDirectly)
                         .setShareDirectly(shareDirectly)
-                        .setIsUrlOfVisiblePage(true)
+                        .setIsUrlOfVisiblePage(!isDownloadedPdf)
                         .setRenderFrameHost(webContents != null ? webContents.getMainFrame() : null)
                         .build(),
                 shareOrigin);
@@ -293,7 +308,9 @@ public class ShareDelegateImpl implements ShareDelegate {
         if (webContents == null) return false;
         if (webContents.getMainFrame() == null) return false;
         if (currentTab.getUrl().isEmpty()) return false;
-        if (currentTab.isShowingErrorPage() || SadTab.isShowing(currentTab)) {
+        if (currentTab.isShowingErrorPage()
+                || SadTab.isShowing(currentTab)
+                || currentTab.isNativePage()) {
             return false;
         }
         return true;
@@ -309,6 +326,7 @@ public class ShareDelegateImpl implements ShareDelegate {
 
     @VisibleForTesting
     static String getUrlToShare(@NonNull GURL visibleUrl, GURL canonicalUrl) {
+        if (PdfUtils.isDownloadedPdf(visibleUrl.getSpec())) return "";
         if (canonicalUrl == null || canonicalUrl.isEmpty()) {
             return visibleUrl.getSpec();
         }
