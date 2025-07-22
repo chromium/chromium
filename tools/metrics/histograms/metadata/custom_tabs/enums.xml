@@ -185,6 +185,19 @@ chromium-metrics-reviews@google.com.
 
 <!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabMtbHiddenReason.java:CustomTabMtbHiddenReason) -->
 
+<!--LINT.IfChange(CustomTabsNavigationEvent) -->
+
+<enum name="CustomTabsNavigationEvent">
+  <int value="1" label="Navigation Started"/>
+  <int value="2" label="Navigation Finished"/>
+  <int value="3" label="Navigation Failed"/>
+  <int value="4" label="Navigation Aborted"/>
+  <int value="5" label="Tab Shown"/>
+  <int value="6" label="Tab Hidden"/>
+</enum>
+
+<!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java:CustomTabsNavigationEvent) -->
+
 <enum name="CustomTabsParallelRequestStatusOnStart">
   <int value="0" label="No Parallel Request was requested"/>
   <int value="1" label="Parallel request successfully started"/>

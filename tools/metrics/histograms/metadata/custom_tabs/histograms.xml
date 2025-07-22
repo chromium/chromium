@@ -613,6 +613,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.NavigationEvent" enum="CustomTabsNavigationEvent"
+    expires_after="2026-07-23">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>clank-app-team@chromium.org</owner>
+  <summary>
+    Records the navigation event occurring in CustomTab and being reported to
+    the host app via CustomTabsCallback. Recorded when the events are notified
+    to the host app. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Omnibox.EnabledState" units="BooleanEnabled"
     expires_after="2026-07-01">
   <owner>ender@google.com</owner>

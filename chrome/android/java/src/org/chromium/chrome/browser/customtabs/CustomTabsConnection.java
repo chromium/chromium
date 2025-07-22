@@ -207,6 +207,31 @@ public class CustomTabsConnection {
         "Invalid referrer for session"
     };
 
+    // NOTE: This must be kept in sync with the definitions in CustomTabsCallback.java in AndroidX
+    // browser lib and the enums in /tools/metrics/histograms/metadata/custom_tabs/enums.xml.
+    // LINT.IfChange(CustomTabsNavigationEvent)
+    @IntDef({
+        CustomTabsNavigationEvent.NAVIGATION_STARTED,
+        CustomTabsNavigationEvent.NAVIGATION_FINISHED,
+        CustomTabsNavigationEvent.NAVIGATION_FAILED,
+        CustomTabsNavigationEvent.NAVIGATION_ABORTED,
+        CustomTabsNavigationEvent.TAB_SHOWN,
+        CustomTabsNavigationEvent.TAB_HIDDEN
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface CustomTabsNavigationEvent {
+        int NAVIGATION_STARTED = CustomTabsCallback.NAVIGATION_STARTED;
+        int NAVIGATION_FINISHED = CustomTabsCallback.NAVIGATION_FINISHED;
+        int NAVIGATION_FAILED = CustomTabsCallback.NAVIGATION_FAILED;
+        int NAVIGATION_ABORTED = CustomTabsCallback.NAVIGATION_ABORTED;
+        int TAB_SHOWN = CustomTabsCallback.TAB_SHOWN;
+        int TAB_HIDDEN = CustomTabsCallback.TAB_HIDDEN;
+
+        int NUM_ENTRIES = 6;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/custom_tabs/enums.xml:CustomTabsNavigationEvent)
+
     private static CustomTabsConnection sInstance;
     private @Nullable String mTrustedPublisherUrlPackage;
 
@@ -1598,6 +1623,10 @@ public class CustomTabsConnection {
             return false;
         }
         logCallback("onNavigationEvent()", navigationEvent);
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.NavigationEvent",
+                navigationEvent,
+                CustomTabsNavigationEvent.NUM_ENTRIES);
         return true;
     }
 
