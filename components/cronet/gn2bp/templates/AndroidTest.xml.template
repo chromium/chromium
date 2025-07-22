@@ -1,0 +1,62 @@
+<!--
+  ~ Copyright (C) 2023 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<configuration description="Runs coverage tests for NetHttp">
+    <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
+        <option name="test-file-name" value="NetHttpCoverageTests.apk" />
+        <option name="install-arg" value="-t" />
+    </target_preparer>
+    <option name="test-tag" value="NetHttpCoverageTests" />
+
+    <target_preparer class="com.android.tradefed.targetprep.PushFilePreparer">
+        <option name="push-file" key="net" value="/storage/emulated/0/chromium_tests_root/net" />
+        <option name="push-file" key="test_server" value="${TEST_SERVER_FOLDER}" />
+    </target_preparer>
+    <!-- Tethering/Connectivity is a SDK 30+ module however Cronet is installed on 31+ due to b/270049141. -->
+    <object type="module_controller"
+            class="com.android.tradefed.testtype.suite.module.Sdk31ModuleController" />
+    <!-- Only run NetHttpCoverageTests in MTS if the Tethering Mainline module is installed. -->
+    <object type="module_controller"
+            class="com.android.tradefed.testtype.suite.module.MainlineTestModuleController">
+        <option name="mainline-module-package-name" value="com.google.android.tethering" />
+    </object>
+    <option name="config-descriptor:metadata" key="mainline-param"
+            value="CaptivePortalLoginGoogle.apk+NetworkStackGoogle.apk+com.google.android.resolv.apex+com.google.android.tethering.apex" />
+    <test class="com.android.tradefed.testtype.AndroidJUnitTest" >
+        <option name="package" value="org.chromium.net.tests" />
+        <option name="runner" value="androidx.test.runner.AndroidJUnitRunner" />
+        <!-- Chromium disables tests via this annotation. -->
+        <option name="exclude-annotation" value="org.chromium.base.test.util.DisabledTest" />
+        <!-- b/316554711-->
+        <option name="exclude-filter" value="org.chromium.net.NetworkChangesTest" />
+        <!-- b/316550794 -->
+        <option name="exclude-filter" value="org.chromium.net.impl.CronetLoggerTest#testEngineCreation" />
+        <!-- b/327182569 -->
+        <option name="exclude-filter" value="org.chromium.net.urlconnection.CronetURLStreamHandlerFactoryTest#testSetUrlStreamFactoryUsesCronetForNative" />
+        <!-- b/345344485 -->
+        <option name="exclude-filter" value="org.chromium.net.impl.AndroidHttpEngineBuilderWrapperTest" />
+        <!-- b/345344485 -->
+        <option name="exclude-filter" value="org.chromium.net.impl.CronetLoggerTest#testCronetEngineBuilderInitializedLoggedFromImplIfApiIsTooOld" />
+        <!-- b/345344485 -->
+        <option name="exclude-filter" value="org.chromium.net.impl.CronetLoggerTest#testCronetEngineInfoCreation" />
+        <option name="hidden-api-checks" value="false"/>
+        <option name="isolated-storage" value="false"/>
+        <option name="orchestrator" value="true"/>
+        <option name="fail-on-empty-instrumentation" value="true"/>
+        <option
+            name="device-listeners"
+            value="com.android.modules.utils.testing.NativeCoverageHackInstrumentationListener" />
+    </test>
+</configuration>
