@@ -459,13 +459,14 @@ void HTMLCanvasElement::ColorSchemeMayHaveChanged() {
 
 void HTMLCanvasElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  // Force a reset if the width or height is being assigned *unless* the
-  // assignment is happening from within SetSize(), in which case the Reset()
-  // call will be made from SetSize() after both attributes are assigned.
+  // Detect assignments to width/height and kick off any needed processing
+  // *unless* the assignment is happening from within SetSize(), in which case
+  // the OnWidthOrHeightAssigned() call will be made from SetSize() after both
+  // attributes are assigned.
   if ((params.name == html_names::kWidthAttr ||
        params.name == html_names::kHeightAttr) &&
       !within_set_size_) {
-    Reset();
+    OnWidthOrHeightAssigned();
   }
   HTMLElement::ParseAttribute(params);
 }
@@ -550,7 +551,7 @@ void HTMLCanvasElement::SetSize(gfx::Size new_size) {
   within_set_size_ = true;
   SetIntegralAttribute(html_names::kWidthAttr, new_size.width());
   SetIntegralAttribute(html_names::kHeightAttr, new_size.height());
-  Reset();
+  OnWidthOrHeightAssigned();
   within_set_size_ = false;
 }
 
@@ -968,7 +969,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
   dirty_rect_ = gfx::Rect();
 }
 
-void HTMLCanvasElement::Reset() {
+void HTMLCanvasElement::OnWidthOrHeightAssigned() {
   dirty_rect_ = gfx::Rect();
 
   unsigned w = 0;

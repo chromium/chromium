@@ -422,7 +422,7 @@ class CORE_EXPORT HTMLCanvasElement final
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   bool AreAuthorShadowsAllowed() const override { return false; }
 
-  void Reset();
+  void OnWidthOrHeightAssigned();
 
   void SetSurfaceSize(gfx::Size);
 
