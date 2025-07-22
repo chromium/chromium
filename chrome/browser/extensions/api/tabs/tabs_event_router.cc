@@ -29,11 +29,13 @@
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -53,6 +55,7 @@ namespace {
 
 constexpr char kFromIndexKey[] = "fromIndex";
 constexpr char kGroupIdKey[] = "groupId";
+constexpr char kSplitIdKey[] = "splitViewId";
 constexpr char kNewPositionKey[] = "newPosition";
 constexpr char kNewWindowIdKey[] = "newWindowId";
 constexpr char kOldPositionKey[] = "oldPosition";
@@ -314,6 +317,31 @@ void TabsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
       std::set<std::string> changed_property_names;
       changed_property_names.insert(kGroupIdKey);
       DispatchTabUpdatedEvent(tab->GetContents(),
+                              std::move(changed_property_names));
+    }
+  }
+}
+
+void TabsEventRouter::OnSplitTabChanged(const SplitTabChange& change) {
+  if (change.type == SplitTabChange::Type::kAdded &&
+      change.GetAddedChange()->reason() !=
+          SplitTabChange::SplitTabAddReason::kInsertedFromAnotherTabstrip) {
+    for (const std::pair<tabs::TabInterface*, int>& tab :
+         change.GetAddedChange()->tabs()) {
+      std::set<std::string> changed_property_names;
+      changed_property_names.insert(kSplitIdKey);
+      DispatchTabUpdatedEvent(tab.first->GetContents(),
+                              std::move(changed_property_names));
+    }
+  }
+  if (change.type == SplitTabChange::Type::kRemoved &&
+      change.GetRemovedChange()->reason() !=
+          SplitTabChange::SplitTabRemoveReason::kDetachedToAnotherTabstrip) {
+    for (const std::pair<tabs::TabInterface*, int>& tab :
+         change.GetRemovedChange()->tabs()) {
+      std::set<std::string> changed_property_names;
+      changed_property_names.insert(kSplitIdKey);
+      DispatchTabUpdatedEvent(tab.first->GetContents(),
                               std::move(changed_property_names));
     }
   }

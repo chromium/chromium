@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "components/tabs/public/split_tab_id.h"
 
 // TODO(jamescook): Switch most of these guards to ENABLE_EXTENSIONS.
 #if !BUILDFLAG(IS_ANDROID)
@@ -247,6 +248,9 @@ class ExtensionTabUtil {
 
   // Gets the extensions-specific Group ID.
   static int GetGroupId(const tab_groups::TabGroupId& id);
+
+  // Gets the extensions-specific split view ID.
+  static int GetSplitId(const split_tabs::SplitTabId& id);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Gets the window ID that the group belongs to.

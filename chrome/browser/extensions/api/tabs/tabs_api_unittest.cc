@@ -2073,4 +2073,36 @@ TEST_F(TabsApiSideBySideUnitTest, TabsDeleteFromSplitView) {
   EXPECT_FALSE(GetTabStripModel()->GetSplitForTab(0).has_value());
 }
 
+TEST_F(TabsApiSideBySideUnitTest, TabsQueryWithSplitView) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsDeleteFromSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark the first two as
+  // split.
+  CreateAndGetWebContents(5);
+  GetTabStripModel()->ActivateTabAt(0);
+  GetTabStripModel()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                                    split_tabs::SplitTabCreatedSource());
+
+  // Check that the two tabs are split
+  EXPECT_TRUE(GetTabStripModel()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(GetTabStripModel()->GetSplitForTab(1).has_value());
+
+  // Use the TabsQueryFunction to get the list of tabs without a split.
+  const char* kNoSplitQueryInfo = "[{\"splitViewId\": -1}]";
+  base::Value::List tabs_list_without_split =
+      RunTabsQueryFunction(profile(), extension.get(), kNoSplitQueryInfo);
+  EXPECT_EQ(3u, tabs_list_without_split.size());
+
+  int split_id = ExtensionTabUtil::GetSplitId(
+      GetTabStripModel()->GetSplitForTab(0).value());
+
+  constexpr char kFormatArgs[] = R"([{"splitViewId": %d}])";
+  const std::string args = base::StringPrintf(kFormatArgs, split_id);
+  base::Value::List tabs_list_with_split =
+      RunTabsQueryFunction(profile(), extension.get(), args);
+  EXPECT_EQ(2u, tabs_list_with_split.size());
+  EXPECT_EQ(split_id, tabs_list_with_split[0].GetDict().FindInt("splitViewId"));
+}
+
 }  // namespace extensions

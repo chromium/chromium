@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/favicon_status.h"
@@ -551,6 +552,14 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     }
   }
 
+  tab_object.split_view_id = -1;
+  if (tab_interface) {
+    std::optional<split_tabs::SplitTabId> split = tab_interface->GetSplit();
+    if (split.has_value()) {
+      tab_object.split_view_id = GetSplitId(split.value());
+    }
+  }
+
   auto get_audible = [contents]() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);
@@ -955,6 +964,12 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
 
 // static
 int ExtensionTabUtil::GetGroupId(const tab_groups::TabGroupId& id) {
+  uint32_t hash = base::PersistentHash(id.ToString());
+  return std::abs(static_cast<int>(hash));
+}
+
+// static
+int ExtensionTabUtil::GetSplitId(const split_tabs::SplitTabId& id) {
   uint32_t hash = base::PersistentHash(id.ToString());
   return std::abs(static_cast<int>(hash));
 }

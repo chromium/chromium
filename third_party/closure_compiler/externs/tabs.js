@@ -59,6 +59,7 @@ chrome.tabs.MutedInfo;
  *   id: (number|undefined),
  *   index: number,
  *   groupId: number,
+ *   splitViewId: number,
  *   windowId: number,
  *   openerTabId: (number|undefined),
  *   selected: boolean,
@@ -258,6 +259,7 @@ chrome.tabs.duplicate = function(tabId, callback) {};
  *   title: (string|undefined),
  *   url: ((string|!Array<string>)|undefined),
  *   groupId: (number|undefined),
+ *   splitViewId: (number|undefined),
  *   windowId: (number|undefined),
  *   windowType: (!chrome.tabs.WindowType|undefined),
  *   index: (number|undefined)

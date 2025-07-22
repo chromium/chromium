@@ -1001,6 +1001,11 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     group_id = *params->query_info.group_id;
   }
 
+  std::optional<int> split_id = std::nullopt;
+  if (params->query_info.split_view_id) {
+    split_id = *params->query_info.split_view_id;
+  }
+
   int index = -1;
   if (params->query_info.index) {
     index = *params->query_info.index;
@@ -1111,6 +1116,19 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
           continue;
         } else if (ExtensionTabUtil::GetGroupId(group.value()) !=
                    group_id.value()) {
+          continue;
+        }
+      }
+
+      if (split_id.has_value()) {
+        std::optional<split_tabs::SplitTabId> split = tab->GetSplit();
+        if (split_id.value() == -1) {
+          if (split.has_value()) {
+            continue;
+          }
+        } else if (!split.has_value() ||
+                   ExtensionTabUtil::GetSplitId(split.value()) !=
+                       split_id.value()) {
           continue;
         }
       }
