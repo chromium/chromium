@@ -372,7 +372,8 @@ TEST_F(ImageResourceTest, CancelOnRemoveObserver) {
 
   ResourceFetcher* fetcher = CreateFetcher();
   scheduler::FakeTaskRunner* task_runner =
-      static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
+      static_cast<scheduler::FakeTaskRunner*>(
+          fetcher->GetUnfreezableTaskRunner().get());
   task_runner->SetTime(1);
 
   // Emulate starting a real load.
