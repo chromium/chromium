@@ -380,11 +380,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       return base::ValuesEquivalent(a, b);
     }
 
-    template <typename T>
-    static bool Equals(const T& a, const T& b) {
-      return a == b;
-    }
-
    public:
     template <typename CreationFunc>
     ValueType Get(KeyType key, CreationFunc create) {
@@ -401,10 +396,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
     KeyType key_{};
     std::optional<ValueType> value_;
   };
-
-  // Caches most recent result of PositionAreaModifiedContainingBlock.
-  mutable CachedValue<std::optional<PositionAreaOffsets>, PhysicalRect>
-      cached_position_area_modified_containing_block_;
 
   // Caches most recent result of DefaultAnchor.
   mutable CachedValue<const ScopedCSSName*, const LayoutObject*>

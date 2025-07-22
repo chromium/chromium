@@ -743,22 +743,16 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
 
 PhysicalRect AnchorEvaluatorImpl::PositionAreaModifiedContainingBlock(
     const std::optional<PositionAreaOffsets>& position_area_offsets) const {
-  return cached_position_area_modified_containing_block_.Get(
-      position_area_offsets, [&]() {
-        if (!position_area_offsets.has_value()) {
-          return containing_block_rect_;
-        }
+  PhysicalRect rect = containing_block_rect_;
 
-        PhysicalRect rect = containing_block_rect_;
+  // If calculated, reduce the containing-block rect based on the position-area.
+  if (position_area_offsets) {
+    rect.Contract(position_area_offsets->insets);
+  }
 
-        // Reduce the container size and adjust the insets based on the
-        // position-area.
-        rect.Contract(position_area_offsets->insets);
-
-        DCHECK_GE(rect.size.width, LayoutUnit());
-        DCHECK_GE(rect.size.height, LayoutUnit());
-        return rect;
-      });
+  DCHECK_GE(rect.size.width, LayoutUnit());
+  DCHECK_GE(rect.size.height, LayoutUnit());
+  return rect;
 }
 
 void PhysicalAnchorReference::Trace(Visitor* visitor) const {
