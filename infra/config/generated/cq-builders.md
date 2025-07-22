@@ -748,6 +748,12 @@ builder.
   * [`//sandbox/win/.+`](https://cs.chromium.org/chromium/src/sandbox/win/)
   * [`//sandbox/policy/win/.+`](https://cs.chromium.org/chromium/src/sandbox/policy/win/)
 
+* [win-arm64-updater-rel](https://ci.chromium.org/p/chromium/builders/try/win-arm64-updater-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-arm64-updater-rel""))
+
+  Location filters:
+  * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
+  * [`//chrome/enterprise_companion/.+`](https://cs.chromium.org/chromium/src/chrome/enterprise_companion/)
+
 * [win-enterprise-companion-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/win-enterprise-companion-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-enterprise-companion-try-builder-dbg""))
 
   Location filters:
