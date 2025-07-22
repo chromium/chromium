@@ -91,6 +91,7 @@ export class FreAppController {
         const parentPanel = button.closest('.panel');
         if (parentPanel) {
           button.addEventListener('click', () => {
+            chrome.metricsPrivate.recordUserAction('Glic.Fre.CloseWithX');
             freHandler.dismissFre(this.panelIdToEnum(parentPanel.id));
           });
         }
@@ -108,6 +109,7 @@ export class FreAppController {
         const visiblePanel =
             document.querySelector<HTMLElement>('.panel:not([hidden])');
         if (visiblePanel) {
+          chrome.metricsPrivate.recordUserAction('Glic.Fre.CloseWithEsc');
           freHandler.dismissFre(this.panelIdToEnum(visiblePanel.id));
         }
       }
@@ -133,7 +135,13 @@ export class FreAppController {
     // glic/intro...#noThanks
     if (urlHash === '#continue') {
       freHandler.acceptFre();
-    } else if (urlHash === '#noThanks') {
+    } else if (urlHash.startsWith('#noThanks')) {
+      const source = url.searchParams.get('source');
+      if (source === 'x_button') {
+        chrome.metricsPrivate.recordUserAction(`Glic.Fre.CloseWithX`);
+      } else {
+        chrome.metricsPrivate.recordUserAction('Glic.Fre.NoThanks');
+      }
       freHandler.dismissFre(FreWebUiState.kReady);
     }
   }
@@ -311,6 +319,7 @@ export class FreAppController {
         MAX_WAIT_TIME_MS;
     this.loadingTimer = setTimeout(() => {
       console.warn('Exceeded timeout in finishLoading');
+      chrome.metricsPrivate.recordUserAction('Glic.Fre.WebviewLoadTimedOut');
       chrome.metricsPrivate.recordEnumerationValue(
           'Glic.Fre.WebviewLoadAbortReason',
           GlicFreWebviewLoadAbortReason.ERR_TIMED_OUT,
@@ -383,6 +392,7 @@ export class FreAppController {
 
   private onLoadAbort(e: any) {
     const reasonEnum = this.reasonStringToEnum(e.reason);
+    chrome.metricsPrivate.recordUserAction('Glic.Fre.WebviewLoadAborted');
     chrome.metricsPrivate.recordEnumerationValue(
         'Glic.Fre.WebviewLoadAbortReason', reasonEnum,
         GlicFreWebviewLoadAbortReason.MAX_VALUE + 1);

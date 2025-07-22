@@ -12534,6 +12534,49 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.CloseByClickOutside">
+  <owner>birnie@google.com</owner>
+  <description>
+    User clicked outside of the Glic First Run Experience dialog to close it.
+  </description>
+</action>
+
+<action name="Glic.Fre.CloseByClosingHostTab">
+  <owner>birnie@google.com</owner>
+  <description>
+    User closed the tab hosting the First Run Experience dialog to close it.
+  </description>
+</action>
+
+<action name="Glic.Fre.CloseByMovingHostTab">
+  <owner>birnie@google.com</owner>
+  <description>
+    User moved the tab hosting the First Run Experience dialog which closes it.
+  </description>
+</action>
+
+<action name="Glic.Fre.CloseWithEsc">
+  <owner>birnie@google.com</owner>
+  <description>
+    User pressed the Escape key to close the Glic First Run Experience dialog.
+  </description>
+</action>
+
+<action name="Glic.Fre.CloseWithToggle">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    User closed the FRE by toggling the glic feature invocation source.
+  </description>
+</action>
+
+<action name="Glic.Fre.CloseWithX">
+  <owner>birnie@google.com</owner>
+  <description>
+    User clicked the 'X' button to close the Glic First Run Experience dialog.
+  </description>
+</action>
+
 <action name="Glic.Fre.ErrorPanelClosed">
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>
@@ -12610,6 +12653,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.ReadyPanelClosed">
+  <owner>birnie@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>User closed the FRE while it was fully loaded.</description>
+</action>
+
 <action name="Glic.Fre.Shown">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
@@ -12624,6 +12673,21 @@ should be able to be added at any place in this file.
   <owner>erikchen@chromium.org</owner>
   <description>
     The Fre panel was closed while in the uninitialized state.
+  </description>
+</action>
+
+<action name="Glic.Fre.WebviewLoadAborted" not_user_triggered="true">
+  <owner>birnie@google.com</owner>
+  <description>
+    Recorded when the Glic FRE webview fails to load for any reason other than a
+    timeout.
+  </description>
+</action>
+
+<action name="Glic.Fre.WebviewLoadTimedOut" not_user_triggered="true">
+  <owner>birnie@google.com</owner>
+  <description>
+    Recorded when the Glic FRE webview fails to load due to a timeout.
   </description>
 </action>
 

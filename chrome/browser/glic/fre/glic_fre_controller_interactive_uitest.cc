@@ -12,6 +12,9 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -26,6 +29,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/views/controls/button/button.h"
+#include "url/gurl.h"
 
 namespace glic {
 namespace {
@@ -82,12 +86,14 @@ class GlicFreControllerUiTestBase : public test::InteractiveGlicTest {
   const GURL& fre_url() { return fre_url_; }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  base::UserActionTester& user_action_tester() { return user_action_tester_; }
 
  protected:
   base::test::ScopedFeatureList features_;
   net::EmbeddedTestServer fre_server_;
   GURL fre_url_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 };
 
 class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
@@ -181,7 +187,6 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<size_t>,
                                     kAcceptedSocketCount);
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PreconnectOnButtonHover) {
-  base::UserActionTester user_action_tester;
   EXPECT_TRUE(predictors::IsPreconnectAllowed(browser()->profile()));
 
   // The `server_running` handle is held until the end of the function, to keep
@@ -198,8 +203,8 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PreconnectOnButtonHover) {
                 [&]() { return connection_tracker.GetAcceptedSocketCount(); }),
       WaitForState(kAcceptedSocketCount, 0), HoverButton(kGlicButtonElementId),
       WaitForState(kAcceptedSocketCount, 1), PressButton(kGlicButtonElementId),
-      Do([this, &user_action_tester]() {
-        EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 1);
+      Do([this]() {
+        EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Shown"), 1);
         histogram_tester().ExpectUniqueSample(
             "Glic.FRE.InvocationSource",
             mojom::InvocationSource::kTopChromeButton, 1);
@@ -224,7 +229,6 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PreconnectOnButtonHover) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressNoThanksButton) {
-  base::UserActionTester user_action_tester;
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   // Tests that pressing the "No Thanks" button in the FRE closes the FRE
@@ -238,8 +242,11 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressNoThanksButton) {
       ClickMockFreElement(kMockFreClientNoThanksButton, true),
       WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
       CheckFreDialogIsShowing(false), CheckControllerHasWidget(false),
-      Do([&]() {
-        EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.NoThanks"), 1);
+      Do([this]() {
+        EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.NoThanks"), 1);
+        EXPECT_EQ(
+            user_action_tester().GetActionCount("Glic.Fre.ReadyPanelClosed"),
+            1);
         histogram_tester().ExpectUniqueSample(
             "Glic.FreModalWebUiState.FinishState2",
             mojom::FreWebUiState::kReady, 1);
@@ -247,7 +254,6 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressNoThanksButton) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressContinueButton) {
-  base::UserActionTester user_action_tester;
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
 
   // Tests that pressing the "Continue" button in the FRE closes the FRE
@@ -260,8 +266,9 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressContinueButton) {
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
       ClickMockFreElement(kMockFreClientContinueButton, true),
       WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
-      CheckFreDialogIsShowing(false), CheckControllerHasWidget(true), Do([&]() {
-        EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Accept"), 1);
+      CheckFreDialogIsShowing(false), CheckControllerHasWidget(true),
+      Do([this]() {
+        EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Accept"), 1);
         histogram_tester().ExpectUniqueSample(
             "Glic.FreModalWebUiState.FinishState2",
             mojom::FreWebUiState::kReady, 1);
@@ -423,6 +430,9 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiHttpErrorTest,
       PressButton(kGlicButtonElementId),
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kError), Do([this]() {
+        EXPECT_EQ(
+            user_action_tester().GetActionCount("Glic.Fre.WebviewLoadAborted"),
+            1);
         histogram_tester().ExpectUniqueSample(
             "Glic.Fre.WebviewLoadAbortReason",
             10  // GlicFreWebviewLoadAbortReason::ERR_HTTP_RESPONSE_CODE_FAILURE
@@ -478,6 +488,9 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
       WaitForShow(GlicFreDialogView::kWebViewElementIdForTesting),
       WaitForState(kFreWebUiState, mojom::FreWebUiState::kError),
       InAnyContext(Do([this]() {
+        EXPECT_EQ(
+            user_action_tester().GetActionCount("Glic.Fre.WebviewLoadTimedOut"),
+            1);
         histogram_tester().ExpectUniqueSample(
             "Glic.FreErrorStateReason",
             glic::FreErrorStateReason::kTimeoutExceeded, 1);
@@ -491,6 +504,106 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
                               GlicFreDialogView::kWebViewElementIdForTesting),
       InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
                                          {"#errorPanel:not([hidden])"})));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseWithEsc) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  RunTestSequence(
+      ObserveState(kFreWebUiState,
+                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
+                                  base::Unretained(this))),
+      PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+      SendKeyPress(GlicFreDialogView::kWebViewElementIdForTesting,
+                   ui::VKEY_ESCAPE, ui::EF_NONE),
+      WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
+      CheckFreDialogIsShowing(false), CheckControllerHasWidget(false),
+      InAnyContext(Do([&]() {
+        EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.CloseWithEsc"),
+                  1);
+      })));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseByClosingHostTab) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  RunTestSequence(
+      ObserveState(kFreWebUiState,
+                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
+                                  base::Unretained(this))),
+      // Open a new tab before showing the FRE.
+      Do([this]() {
+        NavigateParams params(browser(), GURL("about:blank"),
+                              ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+        params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        Navigate(&params);
+      }),
+      PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady), Do([this]() {
+        // Assert that the FRE dialog is showing before closing the tab.
+        EXPECT_TRUE(GetFreController()->IsShowingDialog());
+        EXPECT_EQ(user_action_tester().GetActionCount(
+                      "Glic.Fre.CloseByClosingHostTab"),
+                  0);
+      }),
+      Do([&]() {
+        // Close the second tab (the one with the FRE).
+        TabStripModel* tab_strip_model = browser()->tab_strip_model();
+        ASSERT_EQ(tab_strip_model->count(), 2);
+        tab_strip_model->CloseWebContentsAt(1,
+                                            TabCloseTypes::CLOSE_USER_GESTURE);
+      }),
+      WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
+      CheckFreDialogIsShowing(false), CheckControllerHasWidget(false),
+      // Check the action count after the tab is closed.
+      InAnyContext(Do([&]() {
+        EXPECT_EQ(user_action_tester().GetActionCount(
+                      "Glic.Fre.CloseByClosingHostTab"),
+                  1);
+      })));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseWithToggle) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  RunTestSequence(
+      ObserveState(kFreWebUiState,
+                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
+                                  base::Unretained(this))),
+      PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+      PressButton(kGlicButtonElementId),
+      WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
+      CheckFreDialogIsShowing(false), CheckControllerHasWidget(false),
+      InAnyContext(Do([&]() {
+        EXPECT_EQ(
+            user_action_tester().GetActionCount("Glic.Fre.CloseWithToggle"), 1);
+      })));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, CloseWithXButton) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  const InteractiveBrowserTestApi::DeepQuery kMockFreClientCloseButton = {
+      "#close"};
+
+  RunTestSequence(
+      ObserveState(kFreWebUiState,
+                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
+                                  base::Unretained(this))),
+      PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+      ClickMockFreElement(kMockFreClientCloseButton, true),
+      WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
+      CheckFreDialogIsShowing(false), CheckControllerHasWidget(false),
+      InAnyContext(Do([&]() {
+        EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.CloseWithX"),
+                  1);
+        histogram_tester().ExpectUniqueSample(
+            "Glic.FreModalWebUiState.FinishState2",
+            mojom::FreWebUiState::kReady, 1);
+      })));
 }
 
 }  // namespace
