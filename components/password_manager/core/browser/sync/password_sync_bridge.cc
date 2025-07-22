@@ -765,9 +765,6 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
         });
     metrics_util::LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
         password_count);
-    metrics_util::
-        LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
-            entity_data.size() - password_count);
   }
 
   sync_enabled_or_disabled_cb_.Run();

@@ -1702,8 +1702,6 @@ TEST_F(PasswordSyncBridgeAccountStoreTest,
   ASSERT_FALSE(error);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStoreCredentialsAfterOptIn", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn", 1, 1);
 }
 
 TEST_F(PasswordSyncBridgeTest,

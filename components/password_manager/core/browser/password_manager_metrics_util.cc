@@ -365,13 +365,6 @@ void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
       account_store_passwords_count);
 }
 
-void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
-    int blocklist_entries_count) {
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn",
-      blocklist_entries_count);
-}
-
 void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.ReauthToAccessPasswordInSettings", result);

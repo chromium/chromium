@@ -752,11 +752,6 @@ void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
 void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
     int account_store_passwords_count);
 
-// Logs how many blocklisted entries are downloaded to the account store right
-// after unlock.
-void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
-    int blocklist_entries_count);
-
 // Logs the result of a re-auth challenge in the password settings.
 void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result);
 
