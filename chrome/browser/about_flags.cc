@@ -1268,19 +1268,6 @@ constexpr FeatureEntry::FeatureVariation
          nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-const FeatureEntry::FeatureParam kHistoryEmbeddingsAtKeywordAcceleration[]{
-    {"AtKeywordAcceleration", "true"},
-};
-const FeatureEntry::FeatureVariation kHistoryEmbeddingsVariations[] = {
-    {"with AtKeywordAcceleration", kHistoryEmbeddingsAtKeywordAcceleration,
-     std::size(kHistoryEmbeddingsAtKeywordAcceleration), nullptr},
-};
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
-
 const FeatureEntry::FeatureParam kJourneysShowAllVisitsParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},
     // To show all visits, set the number of visits above the fold to a very
@@ -7099,9 +7086,7 @@ const FeatureEntry kFeatureEntries[] = {
     BUILDFLAG(IS_WIN)
     {"history-embeddings", flag_descriptions::kHistoryEmbeddingsName,
      flag_descriptions::kHistoryEmbeddingsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(history_embeddings::kHistoryEmbeddings,
-                                    kHistoryEmbeddingsVariations,
-                                    "HistoryEmbeddings")},
+     FEATURE_VALUE_TYPE(history_embeddings::kHistoryEmbeddings)},
     {"history-embeddings-answers",
      flag_descriptions::kHistoryEmbeddingsAnswersName,
      flag_descriptions::kHistoryEmbeddingsAnswersDescription, kOsDesktop,

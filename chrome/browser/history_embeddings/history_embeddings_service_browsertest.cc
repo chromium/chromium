@@ -365,8 +365,7 @@ class HistoryEmbeddingsWithDatabaseCacheBrowserTest
     : public HistoryEmbeddingsBrowserTest {
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{kHistoryEmbeddings,
-          {{"SendQualityLog", "true"}, {"UseDatabaseBeforeEmbedder", "true"}}},
+        {{kHistoryEmbeddings, {{"SendQualityLog", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)

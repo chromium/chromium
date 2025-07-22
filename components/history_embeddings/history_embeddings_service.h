@@ -324,7 +324,7 @@ class HistoryEmbeddingsService
   void ComputeAndStorePassageEmbeddingsWithExistingData(
       UrlData url_data,
       std::vector<std::string> passages,
-      std::optional<base::ElapsedTimer> database_access_timer,
+      base::ElapsedTimer database_access_timer,
       std::optional<UrlData> existing_url_data);
 
   // Invoked after the embeddings for `passages` has been computed. Stores the

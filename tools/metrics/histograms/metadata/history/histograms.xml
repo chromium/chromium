@@ -1682,8 +1682,8 @@ chromium-metrics-reviews@google.com.
     The time spent on the Storage sequence to read existing passages and
     embeddings from the database so it can be used as a cache to avoid
     re-embedding identical passages from the same URL. Logged each time page
-    passages are retrieved when the kUseDatabaseBeforeEmbedder feature parameter
-    is enabled. (This metric includes SQL query time only; no waits.)
+    passages are retrieved. (This metric includes SQL query time only; no
+    waits.)
   </summary>
 </histogram>
 
@@ -1694,8 +1694,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time the HistoryEmbeddingsService waited to receive existing passages
     and embeddings from its database Storage sequence. Logged each time page
-    passages are retrieved when the kUseDatabaseBeforeEmbedder feature parameter
-    is enabled. (This metric includes the SQL query time plus sequence waits.)
+    passages are retrieved. (This metric includes the SQL query time plus
+    sequence waits.)
   </summary>
 </histogram>
 
@@ -1719,8 +1719,7 @@ chromium-metrics-reviews@google.com.
     the URL was retrieved and used as a cache. These passages reuse the
     embedding stored for the identical passage in the database, thus saving the
     embedder this portion of work. Logged regardless of presence/absence of
-    existing data for the URL, as long as the kUseDatabaseBeforeEmbedder feature
-    parameter is enabled.
+    existing data for the URL.
   </summary>
 </histogram>
 

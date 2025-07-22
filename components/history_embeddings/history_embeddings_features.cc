@@ -73,10 +73,6 @@ const base::FeatureParam<int> kSearchResultItemCount(&kHistoryEmbeddings,
                                                      "SearchResultItemCount",
                                                      3);
 
-const base::FeatureParam<bool> kAtKeywordAcceleration(&kHistoryEmbeddings,
-                                                      "AtKeywordAcceleration",
-                                                      false);
-
 const base::FeatureParam<double> kContentVisibilityThreshold(
     &kHistoryEmbeddings,
     "ContentVisibilityThreshold",
@@ -163,11 +159,6 @@ const base::FeatureParam<bool> kRebuildEmbeddings(&kHistoryEmbeddings,
                                                   "RebuildEmbeddings",
                                                   true);
 
-const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder(
-    &kHistoryEmbeddings,
-    "UseDatabaseBeforeEmbedder",
-    true);
-
 const base::FeatureParam<bool> kUseUrlFilter(&kHistoryEmbeddings,
                                              "UseUrlFilter",
                                              false);
@@ -247,7 +238,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   search_passage_minimum_word_count = kSearchPassageMinimumWordCount.Get();
   context_passages_minimum_word_count = kContextPassagesMinimumWordCount.Get();
   search_result_item_count = kSearchResultItemCount.Get();
-  at_keyword_acceleration = kAtKeywordAcceleration.Get();
   content_visibility_threshold = kContentVisibilityThreshold.Get();
   search_score_threshold = kSearchScoreThreshold.Get();
   search_word_match_score_threshold = kSearchWordMatchScoreThreshold.Get();
@@ -268,7 +258,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   max_passages_per_page = kMaxPassagesPerPage.Get();
   delete_embeddings = kDeleteEmbeddings.Get();
   rebuild_embeddings = kRebuildEmbeddings.Get();
-  use_database_before_embedder = kUseDatabaseBeforeEmbedder.Get();
   use_url_filter = kUseUrlFilter.Get();
   enable_side_panel = kEnableSidePanel.Get();
   trim_after_host_in_results = kTrimAfterHostInResults.Get();

@@ -1181,37 +1181,6 @@ bool OmniboxEditModel::OnSpacePressed() {
   return false;
 }
 
-bool OmniboxEditModel::MaybeAccelerateKeywordSelection(
-    std::u16string_view input_text,
-    char16_t ch) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Only check for acceleration when the current input text is "@" exactly.
-  if (AutocompleteInput::GetFeaturedKeywordMode(input_text) !=
-          AutocompleteInput::FeaturedKeywordMode::kExact ||
-      !history_embeddings::GetFeatureParameters().at_keyword_acceleration) {
-    return false;
-  }
-  TemplateURLService* turl_service =
-      controller_->client()->GetTemplateURLService();
-  const AutocompleteResult& result = autocomplete_controller()->result();
-  for (size_t i = 0; i < result.size(); i++) {
-    const AutocompleteMatch& match = result.match_at(i);
-    // TODO(b/332783748): If this gets used in practice, a more general
-    //  matching mechanism would be needed to handle keywords with a
-    //  prefix in common. This is simple for the prototype where all
-    //  first characters are unique.
-    if (match.HasInstantKeyword(turl_service) && match.keyword.size() > 1 &&
-        match.keyword[1] == ch) {
-      SetPopupSelection(OmniboxPopupSelection(i), true, true);
-      // TODO(b/332783748): Use a different entry method.
-      AcceptKeyword(metrics::OmniboxEventProto::TAB);
-      return true;
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  return false;
-}
-
 void OmniboxEditModel::OnNavigationLikely(
     size_t line,
     NavigationPredictor navigation_predictor) {
