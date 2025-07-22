@@ -24,6 +24,10 @@
 
 namespace actor::ui {
 namespace {
+
+using ::actor::mojom::ActionResultCode;
+using ::actor::mojom::ActionResultPtr;
+
 template <typename T>
 struct is_variant_t : std::false_type {};
 
@@ -228,14 +232,14 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   UiCompleteCallback overall_callback_;
   base::WeakPtrFactory<UiEventDispatcherImpl> weak_ptr_factory_{this};
 
-  void ResetAndComplete(mojom::ActionResultPtr result) {
+  void ResetAndComplete(ActionResultPtr result) {
     weak_ptr_factory_.InvalidateWeakPtrs();
     std::visit([]<typename T>(EventSequence<T>& e) { return e.clear(); },
                events_);
     if (!overall_callback_.is_null()) {
       std::move(overall_callback_).Run(std::move(result));
     } else {
-      if (result->code != mojom::ActionResultCode::kOk) {
+      if (result->code != ActionResultCode::kOk) {
         LOG(DFATAL) << ToDebugString(*result);
       }
     }
@@ -291,8 +295,8 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   // Asynchronously send events.  Called back after each event is processed
   // by ActorUiStateManager.
   template <Visitor V>
-  void MaybeSendNextEvent(mojom::ActionResultPtr result) {
-    if (result->code != mojom::ActionResultCode::kOk) {
+  void MaybeSendNextEvent(ActionResultPtr result) {
+    if (result->code != ActionResultCode::kOk) {
       VLOG(4) << VisitorTraits<V>::phase_name
               << " UI actuation failed: " << ToDebugString(*result);
       ResetAndComplete(std::move(result));

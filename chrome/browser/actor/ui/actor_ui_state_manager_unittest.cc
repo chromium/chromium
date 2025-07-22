@@ -25,6 +25,7 @@
 
 namespace actor::ui {
 namespace {
+using ::actor::mojom::ActionResultPtr;
 using ::tabs::MockTabInterface;
 using ::tabs::TabFeatures;
 using ::tabs::TabInterface;
@@ -118,7 +119,7 @@ class ActorUiStateManagerTest : public testing::Test {
   void OnUiEventComplete(AsyncUiEvent event) {
     base::RunLoop loop;
     actor_ui_state_manager()->OnUiEvent(
-        event, base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+        event, base::BindLambdaForTesting([&](ActionResultPtr result) {
           EXPECT_TRUE(IsOk(*result));
           loop.Quit();
         }));
@@ -320,7 +321,7 @@ TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
   base::RunLoop loop;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       mock_tab.GetHandle(),
-      base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+      base::BindLambdaForTesting([&](ActionResultPtr result) {
         EXPECT_TRUE(IsOk(*result));
         loop.Quit();
       }));

@@ -16,7 +16,8 @@
 #endif
 
 namespace actor::ui {
-using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+using UiCompleteCallback =
+    base::OnceCallback<void(::actor::mojom::ActionResultPtr)>;
 
 // ExpiryPeriod from when the user completes a task and when it should no longer
 // show on the ui

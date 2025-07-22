@@ -22,7 +22,8 @@ class ActorUiStateManagerInterface;
 // This object is not thread safe; it expects to be called from a single thread.
 class UiEventDispatcher {
  public:
-  using UiCompleteCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+  using UiCompleteCallback =
+      base::OnceCallback<void(::actor::mojom::ActionResultPtr)>;
   struct FirstActInfo {
     TaskId task_id;
     std::optional<tabs::TabInterface::Handle> tab_handle;

@@ -176,8 +176,9 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
     } else {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(callback),
-                         MakeResult(mojom::ActionResultCode::kTabWentAway)));
+          base::BindOnce(
+              std::move(callback),
+              MakeResult(::actor::mojom::ActionResultCode::kTabWentAway)));
     }
   } else {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

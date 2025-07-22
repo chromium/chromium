@@ -20,6 +20,7 @@ namespace actor::ui {
 
 namespace {
 
+using ::actor::mojom::ActionResultPtr;
 using base::test::TestFuture;
 using testing::_;
 using testing::AllOf;
@@ -42,7 +43,7 @@ class EventDispatcherTest : public ::testing::Test {
 TEST_F(EventDispatcherTest, NoEventsToDispatch) {
   EXPECT_CALL(*mock_state_manager_, OnUiEvent(_, _)).Times(0);
   WaitToolRequest tr(base::Microseconds(1000));
-  TestFuture<mojom::ActionResultPtr> success;
+  TestFuture<ActionResultPtr> success;
   dispatcher_->OnPostTool(tr, success.GetCallback());
   EXPECT_TRUE(IsOk(*success.Get()));
 }
@@ -55,7 +56,7 @@ TEST_F(EventDispatcherTest, SingleUiEvent) {
       }));
   MoveMouseToolRequest tr(tabs::TabHandle(123),
                           PageTarget(gfx::Point(100, 200)));
-  TestFuture<mojom::ActionResultPtr> result;
+  TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
   EXPECT_TRUE(IsOk(*result.Get()));
 }
@@ -70,7 +71,7 @@ TEST_F(EventDispatcherTest, TwoToolRequests) {
                            PageTarget(gfx::Point(100, 200)));
   MoveMouseToolRequest tr2(tabs::TabHandle(456),
                            PageTarget(gfx::Point(300, 400)));
-  TestFuture<mojom::ActionResultPtr> result1, result2;
+  TestFuture<ActionResultPtr> result1, result2;
   dispatcher_->OnPreTool(tr1, result1.GetCallback());
   dispatcher_->OnPreTool(tr2, result2.GetCallback());
   EXPECT_TRUE(IsOk(*result1.Get()));
@@ -88,7 +89,7 @@ TEST_F(EventDispatcherTest, TwoUiEvents) {
       }));
   ClickToolRequest tr(tabs::TabHandle(123), PageTarget(gfx::Point(10, 50)),
                       MouseClickType::kLeft, MouseClickCount::kSingle);
-  TestFuture<mojom::ActionResultPtr> result;
+  TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
   EXPECT_TRUE(IsOk(*result.Get()));
 }
@@ -102,9 +103,9 @@ TEST_F(EventDispatcherTest, TwoUiEventsWithFirstOneFailing) {
       .Times(0);
   ClickToolRequest tr(tabs::TabHandle(123), PageTarget(gfx::Point(10, 50)),
                       MouseClickType::kLeft, MouseClickCount::kSingle);
-  TestFuture<mojom::ActionResultPtr> result;
+  TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
-  EXPECT_EQ(result.Get()->code, mojom::ActionResultCode::kError);
+  EXPECT_EQ(result.Get()->code, ::actor::mojom::ActionResultCode::kError);
 }
 
 TEST_F(EventDispatcherTest, SyncActorTaskChange_OneEvent) {
@@ -151,7 +152,7 @@ TEST_F(EventDispatcherTest, AsyncActorTaskChange_OneEvent) {
       .WillOnce(WithArgs<1>([&](UiCompleteCallback callback) {
         std::move(callback).Run(MakeOkResult());
       }));
-  TestFuture<mojom::ActionResultPtr> result;
+  TestFuture<ActionResultPtr> result;
   dispatcher_->OnActorTaskAsyncChange(
       UiEventDispatcher::AddTab{.task_id = TaskId(992),
                                 .handle = tabs::TabHandle(998)},
