@@ -1966,6 +1966,16 @@
       status: "stable",
     },
     {
+      // ElementInternals.type allows web authors to create autonomous
+      // custom elements that inherit specific behaviors from native
+      // HTML elements, while maintaining the ability to use shadow DOM
+      // and custom rendering.
+      // crbug.com/422947646
+      // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ElementInternalsType/explainer.md
+      name: "ElementInternalsDotType",
+      status: "experimental",
+    },
+    {
       // crbug.com/40118302
       name: "EmptyReferenceFilterInvalidation",
       status: "stable",

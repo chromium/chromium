@@ -2092,8 +2092,7 @@ bool HTMLInputElement::ShouldAppearIndeterminate() const {
   return input_type_->ShouldAppearIndeterminate();
 }
 
-HTMLFormControlElement::PopoverTriggerSupport
-HTMLInputElement::SupportsPopoverTriggering() const {
+PopoverTriggerSupport HTMLInputElement::SupportsPopoverTriggering() const {
   return input_type_->SupportsPopoverTriggering();
 }
 

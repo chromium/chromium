@@ -240,5 +240,9 @@
     "-internal-print-header",
     "-internal-print-footer",
     "-internal-print-page-number",
+
+    // ElementInternals.type
+    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ElementInternalsType/explainer.md
+    "button",
   ],
 }

@@ -152,6 +152,14 @@ HTMLElement* ElementInternals::formForBinding(
   return ListedElement::RetargetedForm();
 }
 
+String ElementInternals::type() const {
+  return type_;
+}
+
+void ElementInternals::setType(const String& value) {
+  type_ = value;
+}
+
 void ElementInternals::setValidity(ValidityStateFlags* flags,
                                    ExceptionState& exception_state) {
   setValidity(flags, String(), nullptr, exception_state);
