@@ -50,16 +50,6 @@ constexpr int kFakeContentNodeId = 123;
 constexpr char kActionResultHistogram[] =
     "Actor.ExecutionEngine.Action.ResultCode";
 
-template <typename T>
-auto UiEventDispatcherCallback(
-    base::RepeatingCallback<mojom::ActionResultPtr()> result_fn) {
-  return [result_fn = std::move(result_fn)](
-             const T&,
-             ui::UiEventDispatcher::UiCompleteCallback callback) mutable {
-    std::move(callback).Run(result_fn.Run());
-  };
-}
-
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
   FakeChromeRenderFrame() = default;

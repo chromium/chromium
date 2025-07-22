@@ -26,6 +26,7 @@ source_set("ui") {
     "//chrome/browser/actor:variant_visitor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/actor_overlay:resources",
+    "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
@@ -131,6 +132,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_ui_state_manager_unittest.cc",
+    "actor_ui_tab_controller_unittest.cc",
     "event_dispatcher_unittest.cc",
     "ui_event_debugstring_unittest.cc",
   ]
@@ -142,6 +144,7 @@ source_set("unit_tests") {
     ":ui_event_utils",
     "//chrome/browser/actor:actor",
     "//chrome/browser/actor:impl",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//chrome/test:test_support",

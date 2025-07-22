@@ -5,12 +5,16 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor::ui {
 using ::tabs::TabInterface;
 
-ActorUiTabController::ActorUiTabController(TabInterface& tab) : tab_(tab) {
+ActorUiTabController::ActorUiTabController(TabInterface& tab,
+                                           ActorKeyedService* actor_service)
+    : tab_(tab), actor_keyed_service_(actor_service) {
+  CHECK(actor_keyed_service_);
   tab_subscriptions_.push_back(tab.RegisterDidActivate(
       base::BindRepeating(&ActorUiTabController::OnTabActivationChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/true)));
@@ -24,9 +28,9 @@ ActorUiTabController::ActorUiTabController(TabInterface& tab) : tab_(tab) {
 }
 
 ActorUiTabController::~ActorUiTabController() = default;
+
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
                                               UiResultCallback callback) {
-  // TODO(crbug.com/425952887): Implement this function.
   if (current_ui_tab_state_ != ui_tab_state) {
     // TODO(crbug.com/428216197): Only notify relevant UI components on change.
     current_ui_tab_state_ = ui_tab_state;
@@ -67,6 +71,17 @@ void ActorUiTabController::OnTabWillDetach(TabInterface* tab,
 
 void ActorUiTabController::OnTabDidInsert(TabInterface* tab) {
   // TODO(crbug.com/422540636): Implement.
+}
+
+void ActorUiTabController::SetActorTaskPaused() {
+  if (auto* task = actor_keyed_service_->GetTask(active_task_id_)) {
+    task->Pause();
+  }
+}
+void ActorUiTabController::SetActorTaskResume() {
+  if (auto* task = actor_keyed_service_->GetTask(active_task_id_)) {
+    task->Resume();
+  }
 }
 
 base::WeakPtr<ActorUiTabControllerInterface>

@@ -10,11 +10,16 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "components/tabs/public/tab_interface.h"
 
+namespace actor {
+class ActorKeyedService;
+}
+
 namespace actor::ui {
 
 class ActorUiTabController : public ActorUiTabControllerInterface {
  public:
-  explicit ActorUiTabController(tabs::TabInterface& tab);
+  ActorUiTabController(tabs::TabInterface& tab,
+                       ActorKeyedService* actor_service);
   ~ActorUiTabController() override;
 
   // ActorUiTabControllerInterface:
@@ -23,6 +28,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void SetActiveTaskId(TaskId task_id) override;
   void ClearActiveTaskId() override;
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
+  void SetActorTaskPaused() override;
+  void SetActorTaskResume() override;
 
  private:
   // Notifies tab scoped ui components that their state has changed.
@@ -50,6 +57,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   };
   // The last active task id actuating on this tab.
   TaskId active_task_id_;
+
+  raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;
+
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };
 

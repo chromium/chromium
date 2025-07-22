@@ -170,6 +170,8 @@ source_set("variant_visitor") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "actor_keyed_service_fake.cc",
+    "actor_keyed_service_fake.h",
     "actor_test_util.cc",
     "actor_test_util.h",
   ]
@@ -178,6 +180,8 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/actor/ui:event_dispatcher",
+    "//chrome/browser/actor/ui:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/test:test_support",
   ]

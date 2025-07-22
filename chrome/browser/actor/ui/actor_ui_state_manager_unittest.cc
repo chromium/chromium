@@ -7,11 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/ui/mock_actor_ui_tab_controller.h"
-#include "chrome/browser/actor/ui/mock_event_dispatcher.h"
-#include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -34,8 +31,6 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ValuesIn;
-using ui::MockUiEventDispatcher;
-using ui::UiEventDispatcher;
 class ActorUiStateManagerFake : public ActorUiStateManager {
  public:
   explicit ActorUiStateManagerFake(ActorKeyedService& actor_service)
@@ -66,25 +61,6 @@ class ActorUiStateManagerFake : public ActorUiStateManager {
  private:
   UiTabState ui_tab_state_;
   std::unique_ptr<MockActorUiTabController> mock_tab_controller_;
-};
-
-class ActorKeyedServiceFake : public ActorKeyedService {
- public:
-  explicit ActorKeyedServiceFake(Profile* profile)
-      : ActorKeyedService(profile) {}
-
-  TaskId CreateTaskForTesting() {
-    std::unique_ptr<UiEventDispatcher> ui_event_dispatcher =
-        ui::NewMockUiEventDispatcher();
-    auto execution_engine = ExecutionEngine::CreateForTesting(
-        GetProfile(), std::move(ui_event_dispatcher));
-    auto actor_task =
-        std::make_unique<ActorTask>(GetProfile(), std::move(execution_engine));
-    return AddActiveTask(std::move(actor_task));
-  }
-
- private:
-  base::WeakPtrFactory<ActorKeyedServiceFake> weak_ptr_factory_{this};
 };
 
 class ActorUiStateManagerTest : public testing::Test {
@@ -144,6 +120,29 @@ class ActorUiStateManagerTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
+  // TODO(crbug.com/424495020): Refactor the actor_keyed_service_fake to set
+  // Active/Inactive tasks correct from ActorTask states and then remove manual
+  // setting of task states in the below tests.
+  void PauseActorTask(TaskId task_id) {
+    actor_keyed_service()->GetTask(task_id)->Pause();
+    TaskStateChanged pause_task_event(task_id,
+                                      ActorTask::State::kPausedByClient);
+    actor_ui_state_manager()->OnUiEvent(pause_task_event);
+  }
+
+  void ResumeActorTask(TaskId task_id) {
+    actor_keyed_service()->GetTask(task_id)->Resume();
+    TaskStateChanged reflecting_task_event(task_id,
+                                           ActorTask::State::kReflecting);
+    actor_ui_state_manager()->OnUiEvent(reflecting_task_event);
+  }
+
+  void StopActorTask(TaskId task_id) {
+    actor_keyed_service()->StopTask(task_id);
+    TaskStateChanged finished_task_event(task_id, ActorTask::State::kFinished);
+    actor_ui_state_manager()->OnUiEvent(finished_task_event);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -185,19 +184,19 @@ TEST_F(ActorUiStateManagerTest, SingleTask_ReturnsCorrectUiState) {
             ActorUiStateManager::UiState::kActive);
 
   // Pause the task.
-  actor_keyed_service()->GetTask(task_id)->Pause();
+  PauseActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
 
   // Resume the task.
-  actor_keyed_service()->GetTask(task_id)->Resume();
+  ResumeActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
 
   // Stop the task.
-  actor_keyed_service()->StopTask(task_id);
+  StopActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
@@ -213,8 +212,8 @@ TEST_F(ActorUiStateManagerTest, SingleTask_RapidStateChanges_Debounced) {
   actor_ui_state_manager()->OnUiEvent(start_task_event);
 
   // Immediately pause and resume without waiting for the debounce delay.
-  actor_keyed_service()->GetTask(task_id)->Pause();
-  actor_keyed_service()->GetTask(task_id)->Resume();
+  PauseActorTask(task_id);
+  ResumeActorTask(task_id);
 
   // The debounce delay timer has not yet fired so we should still be in the
   // active state.
@@ -236,7 +235,7 @@ TEST_F(ActorUiStateManagerTest, MultiTask_OneTaskPaused_ReturnsCorrectUiState) {
             ActorUiStateManager::UiState::kActive);
 
   // Pause the first task, the state should now be in kCheckTasks.
-  actor_keyed_service()->GetTask(task_id)->Pause();
+  PauseActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
@@ -250,7 +249,7 @@ TEST_F(ActorUiStateManagerTest, MultiTask_OneTaskPaused_ReturnsCorrectUiState) {
             ActorUiStateManager::UiState::kCheckTasks);
 
   // Resume the first task, the state should now be in kActive.
-  actor_keyed_service()->GetTask(task_id)->Resume();
+  ResumeActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kActive);
@@ -265,7 +264,7 @@ TEST_F(ActorUiStateManagerTest,
             ActorUiStateManager::UiState::kActive);
 
   // Stop first task.
-  actor_keyed_service()->StopTask(task_id);
+  StopActorTask(task_id);
   task_environment().FastForwardBy(kProfileScopedUiUpdateDebounceDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kCheckTasks);
@@ -283,7 +282,7 @@ TEST_F(ActorUiStateManagerTest,
             ActorUiStateManager::UiState::kActive);
 
   // When both tasks stop, then the state should be inactive.
-  actor_keyed_service()->StopTask(task_id2);
+  StopActorTask(task_id2);
   task_environment().FastForwardBy(kCompletedTaskExpiryDelay);
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),
             ActorUiStateManager::UiState::kInactive);
@@ -306,9 +305,9 @@ TEST_F(ActorUiStateManagerTest,
 
   // Stop both tasks within delay of each other.
   base::Time task1_finish_time = base::Time::Now();
-  actor_keyed_service()->StopTask(task_id);
+  StopActorTask(task_id);
   task_environment().FastForwardBy(base::Minutes(1));
-  actor_keyed_service()->StopTask(task_id2);
+  StopActorTask(task_id2);
 
   base::TimeDelta delay =
       kCompletedTaskExpiryDelay - (base::Time::Now() - task1_finish_time);

@@ -29,6 +29,10 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               (),
               (override));
 
+  MOCK_METHOD(void, SetActorTaskPaused, (), (override));
+
+  MOCK_METHOD(void, SetActorTaskResume, (), (override));
+
  private:
   base::WeakPtrFactory<MockActorUiTabController> weak_factory_{this};
 };

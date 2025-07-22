@@ -395,6 +395,7 @@ if (!is_android) {
       ":tabs",
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
+      "//chrome/browser/actor:actor",
       "//chrome/browser/actor/ui:ui",
       "//chrome/browser/commerce",
       "//chrome/browser/content_settings:content_settings_factory",

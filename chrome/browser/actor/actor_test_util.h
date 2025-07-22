@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -35,6 +36,15 @@ class TabInterface;
 }  // namespace tabs
 
 namespace actor {
+template <typename T>
+auto UiEventDispatcherCallback(
+    base::RepeatingCallback<mojom::ActionResultPtr()> result_fn) {
+  return [result_fn = std::move(result_fn)](
+             const T&,
+             ui::UiEventDispatcher::UiCompleteCallback callback) mutable {
+    std::move(callback).Run(result_fn.Run());
+  };
+}
 
 /////////////////////////
 // Proto action makers

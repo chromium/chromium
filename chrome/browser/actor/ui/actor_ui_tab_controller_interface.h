@@ -26,6 +26,12 @@ class ActorUiTabControllerInterface {
   virtual void OnUiTabStateChange(const UiTabState& ui_tab_state,
                                   UiResultCallback callback) = 0;
 
+  // Sets the last active task id's state to paused. If there is no task
+  // associated to the active task id, this function will do nothing.
+  virtual void SetActorTaskPaused() = 0;
+
+  virtual void SetActorTaskResume() = 0;
+
   // Sets the last active task id actuating on this tab.
   // TODO(crbug.com/425952887): At most one task should be acting on a tab at
   // once. In the future we should implement a callback to halt agent execution

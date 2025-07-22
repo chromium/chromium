@@ -15,6 +15,15 @@ specific_include_rules = {
     "+chrome/browser/actor/ui/actor_ui_state_manager.h",
     "+chrome/browser/actor/ui/actor_ui_state_manager_interface.h",
   ],
+  'actor_keyed_service_fake*': [
+    # This is required for unit tests.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+    "+chrome/browser/actor/ui/mock_event_dispatcher.h",
+  ],
+  'actor_test_util*': [
+    # This is required for unit tests.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+  ],
   'actor_task\.cc': [
     # This dependency is intentional and required to provide a translation
     # layer between the service and ui.
