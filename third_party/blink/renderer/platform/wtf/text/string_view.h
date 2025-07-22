@@ -261,7 +261,7 @@ class WTF_EXPORT StringView {
     // with a zero offset and the same length we can just access the impl
     // directly since this == StringView(m_impl).
     if (impl_->RawByteSpan().data() == Bytes() && length_ == impl_->length()) {
-      return WTF::GetPtr(impl_);
+      return GetPtr(impl_);
     }
     return nullptr;
   }
