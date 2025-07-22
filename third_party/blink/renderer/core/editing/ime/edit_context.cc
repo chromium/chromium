@@ -719,6 +719,11 @@ void EditContext::SetSelection(int start,
   TRACE_EVENT1("ime", "EditContext::SetSelection", "start, end",
                std::to_string(start) + ", " + std::to_string(end));
 
+  if (start == base::saturated_cast<int>(selection_start_) &&
+      end == base::saturated_cast<int>(selection_end_)) {
+    return;
+  }
+
   selection_start_ = start;
   selection_end_ = end;
 
