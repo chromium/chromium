@@ -41,12 +41,12 @@ import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMen
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
-import org.chromium.ui.listmenu.ContextMenuCheckItemProperties;
-import org.chromium.ui.listmenu.ContextMenuRadioItemProperties;
-import org.chromium.ui.listmenu.ContextMenuSubmenuHeaderItemProperties;
-import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
+import org.chromium.ui.listmenu.ListMenuCheckItemProperties;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuRadioItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -167,7 +167,7 @@ public class ContextMenuRenderTest {
                             new ListItem(
                                     ListItemType.SUBMENU_HEADER,
                                     new PropertyModel.Builder(
-                                                    ContextMenuSubmenuHeaderItemProperties.ALL_KEYS)
+                                                    ListMenuSubmenuHeaderItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
                                             .with(ENABLED, true)
                                             .build()));
@@ -196,38 +196,34 @@ public class ContextMenuRenderTest {
                     mListItems.add(
                             new ListItem(
                                     ListItemType.MENU_ITEM_WITH_CHECKBOX,
-                                    new PropertyModel.Builder(
-                                                    ContextMenuCheckItemProperties.ALL_KEYS)
+                                    new PropertyModel.Builder(ListMenuCheckItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
-                                            .with(ContextMenuCheckItemProperties.CHECKED, true)
+                                            .with(ListMenuCheckItemProperties.CHECKED, true)
                                             .with(ENABLED, true)
                                             .build()));
                     mListItems.add(
                             new ListItem(
                                     ListItemType.MENU_ITEM_WITH_CHECKBOX,
-                                    new PropertyModel.Builder(
-                                                    ContextMenuCheckItemProperties.ALL_KEYS)
+                                    new PropertyModel.Builder(ListMenuCheckItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
-                                            .with(ContextMenuCheckItemProperties.CHECKED, false)
+                                            .with(ListMenuCheckItemProperties.CHECKED, false)
                                             .with(ENABLED, false)
                                             .build()));
                     // Radio items
                     mListItems.add(
                             new ListItem(
                                     ListItemType.MENU_ITEM_WITH_RADIO_BUTTON,
-                                    new PropertyModel.Builder(
-                                                    ContextMenuRadioItemProperties.ALL_KEYS)
+                                    new PropertyModel.Builder(ListMenuRadioItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
-                                            .with(ContextMenuRadioItemProperties.SELECTED, true)
+                                            .with(ListMenuRadioItemProperties.SELECTED, true)
                                             .with(ENABLED, true)
                                             .build()));
                     mListItems.add(
                             new ListItem(
                                     ListItemType.MENU_ITEM_WITH_RADIO_BUTTON,
-                                    new PropertyModel.Builder(
-                                                    ContextMenuRadioItemProperties.ALL_KEYS)
+                                    new PropertyModel.Builder(ListMenuRadioItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
-                                            .with(ContextMenuRadioItemProperties.SELECTED, false)
+                                            .with(ListMenuRadioItemProperties.SELECTED, false)
                                             .with(ENABLED, false)
                                             .build()));
                     // Submenu parent items
@@ -235,7 +231,7 @@ public class ContextMenuRenderTest {
                             new ListItem(
                                     ListItemType.MENU_ITEM_WITH_SUBMENU,
                                     new PropertyModel.Builder(
-                                                    ContextMenuSubmenuItemProperties.ALL_KEYS)
+                                                    ListMenuSubmenuItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
                                             .with(
                                                     ListMenuItemProperties.START_ICON_BITMAP,
@@ -246,7 +242,7 @@ public class ContextMenuRenderTest {
                             new ListItem(
                                     ListItemType.MENU_ITEM_WITH_SUBMENU,
                                     new PropertyModel.Builder(
-                                                    ContextMenuSubmenuItemProperties.ALL_KEYS)
+                                                    ListMenuSubmenuItemProperties.ALL_KEYS)
                                             .with(TITLE, EXAMPLE_LABEL)
                                             .with(ENABLED, false)
                                             .build()));

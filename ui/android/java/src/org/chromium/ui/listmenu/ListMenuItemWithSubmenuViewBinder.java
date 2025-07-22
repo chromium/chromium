@@ -7,11 +7,11 @@ package org.chromium.ui.listmenu;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.ON_HOVER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.ON_HOVER;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -28,10 +28,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * View binder for a context menu item with submenu (of type {@code
  * ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU}, with property keys {@link
- * ContextMenuSubmenuItemProperties}).
+ * ListMenuSubmenuItemProperties}).
  */
 @NullMarked
-class ContextMenuItemWithSubmenuViewBinder {
+class ListMenuItemWithSubmenuViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView textView = view.findViewById(R.id.menu_row_text);
         if (propertyKey == TITLE) {

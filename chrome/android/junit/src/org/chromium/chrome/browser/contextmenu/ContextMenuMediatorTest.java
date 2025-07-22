@@ -15,7 +15,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Batch.UNIT_TESTS;
-import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.SUBMENU_ITEMS;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
@@ -23,6 +22,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
 import android.view.View.OnClickListener;
@@ -41,9 +41,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -222,7 +222,7 @@ public class ContextMenuMediatorTest {
         ListItem submenuLevel1 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(listItemWithModelClickCallback))
@@ -231,7 +231,7 @@ public class ContextMenuMediatorTest {
         ListItem submenuLevel0 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(submenuLevel1))
@@ -291,7 +291,7 @@ public class ContextMenuMediatorTest {
         ListItem submenuLevel1 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(listItemWithModelClickCallback))
@@ -300,7 +300,7 @@ public class ContextMenuMediatorTest {
         ListItem submenuLevel0 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(submenuLevel1))
@@ -342,7 +342,7 @@ public class ContextMenuMediatorTest {
         ListItem submenuLevel1 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(listItemWithModelClickCallback))
@@ -351,7 +351,7 @@ public class ContextMenuMediatorTest {
         ListItem submenuLevel0 =
                 new ListItem(
                         MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 .with(TITLE, LABEL)
                                 .with(ENABLED, true)
                                 .with(SUBMENU_ITEMS, List.of(submenuLevel1))

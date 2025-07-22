@@ -4,13 +4,13 @@
 
 package org.chromium.ui.listmenu;
 
-import static org.chromium.ui.listmenu.ContextMenuCheckItemProperties.CHECKED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuRadioItemProperties.SELECTED;
 
 import android.view.View;
-import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
@@ -19,23 +19,22 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * View binder for a context menu item with checkbox (of type {@code
- * ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX}, with property keys {@link
- * ContextMenuCheckItemProperties}).
+ * View binder for a context menu item with radio button (of type {@code
+ * ListItemType.LIST_MENU_ITEM_WITH_RADIO_BUTTON}, with property keys {@link
+ * ListMenuRadioItemProperties}).
  */
 @NullMarked
-class ContextMenuItemWithCheckboxViewBinder {
+class ListMenuItemWithRadioButtonViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        CheckBox checkBox = view.findViewById(R.id.checkbox);
-        TextView title = view.findViewById(R.id.checkbox_title);
-
+        RadioButton radioButton = view.findViewById(R.id.radio_button);
+        TextView title = view.findViewById(R.id.radio_button_title);
         if (propertyKey == TITLE) {
             title.setText(model.get(TITLE));
         } else if (propertyKey == ENABLED) {
-            checkBox.setEnabled(model.get(ENABLED));
+            radioButton.setEnabled(model.get(ENABLED));
             title.setEnabled(model.get(ENABLED));
-        } else if (propertyKey == CHECKED) {
-            checkBox.setChecked(model.get(CHECKED));
+        } else if (propertyKey == SELECTED) {
+            radioButton.setChecked(model.get(SELECTED));
         } else if (propertyKey == CLICK_LISTENER) {
             view.setOnClickListener(model.get(CLICK_LISTENER));
         }

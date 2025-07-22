@@ -90,9 +90,9 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -1355,10 +1355,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     @VisibleForTesting
     ListItem createListItemWithSubmenu(String title, List<ListItem> submenuItems) {
         final PropertyModel model =
-                new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                         .with(TITLE, title)
                         .with(ENABLED, true)
-                        .with(ContextMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems)
+                        .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems)
                         .build();
         return new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, model);
     }

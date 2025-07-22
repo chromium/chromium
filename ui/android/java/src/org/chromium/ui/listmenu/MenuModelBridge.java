@@ -97,9 +97,9 @@ public class MenuModelBridge {
             final boolean isEnabled,
             final Runnable callback) {
         PropertyModel.Builder modelBuilder =
-                new PropertyModel.Builder(ContextMenuCheckItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(ListMenuCheckItemProperties.ALL_KEYS)
                         .with(TITLE, label)
-                        .with(ContextMenuCheckItemProperties.CHECKED, isChecked)
+                        .with(ListMenuCheckItemProperties.CHECKED, isChecked)
                         .with(ENABLED, isEnabled)
                         .with(CLICK_LISTENER, (view) -> callback.run());
         mItems.add(new ListItem(ListItemType.MENU_ITEM_WITH_CHECKBOX, modelBuilder.build()));
@@ -120,9 +120,9 @@ public class MenuModelBridge {
             final boolean isEnabled,
             final Runnable callback) {
         PropertyModel.Builder modelBuilder =
-                new PropertyModel.Builder(ContextMenuRadioItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(ListMenuRadioItemProperties.ALL_KEYS)
                         .with(TITLE, label)
-                        .with(ContextMenuRadioItemProperties.SELECTED, isSelected)
+                        .with(ListMenuRadioItemProperties.SELECTED, isSelected)
                         .with(ENABLED, isEnabled)
                         .with(CLICK_LISTENER, (view) -> callback.run());
         mItems.add(new ListItem(ListItemType.MENU_ITEM_WITH_RADIO_BUTTON, modelBuilder.build()));
@@ -136,11 +136,11 @@ public class MenuModelBridge {
             final boolean isEnabled,
             MenuModelBridge submenuItems) {
         PropertyModel.Builder modelBuilder =
-                new PropertyModel.Builder(ContextMenuSubmenuItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                         .with(TITLE, label)
                         .with(START_ICON_BITMAP, bitmap)
                         .with(ENABLED, isEnabled)
-                        .with(ContextMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems.mItems);
+                        .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems.mItems);
         mItems.add(new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, modelBuilder.build()));
     }
 

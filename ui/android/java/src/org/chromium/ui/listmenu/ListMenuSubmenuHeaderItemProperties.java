@@ -13,6 +13,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 
 /** The properties controlling submenu header item in context menus. */
 @NullMarked
-public class ContextMenuSubmenuHeaderItemProperties {
+public class ListMenuSubmenuHeaderItemProperties {
     public static final PropertyKey[] ALL_KEYS = {TITLE, CLICK_LISTENER, ENABLED};
 }

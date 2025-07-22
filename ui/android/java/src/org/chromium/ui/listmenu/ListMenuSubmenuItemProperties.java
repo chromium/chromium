@@ -18,7 +18,7 @@ import java.util.List;
 
 /** The properties controlling submenu-type items in context menus. */
 @NullMarked
-public class ContextMenuSubmenuItemProperties {
+public class ListMenuSubmenuItemProperties {
     // The ON_HOVER should show the flyout on mouse hover or keyboard focus.
     public static final WritableObjectPropertyKey<Runnable> ON_HOVER =
             new WritableObjectPropertyKey<>();

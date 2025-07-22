@@ -18,11 +18,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * View binder for a context menu submenu header (of type {@code
- * ListItemType.CONTEXT_MENU_SUBMENU_HEADER}, with property keys {@link
- * ContextMenuSubmenuHeaderItemProperties}).
+ * ListItemType.LIST_MENU_SUBMENU_HEADER}, with property keys {@link
+ * ListMenuSubmenuHeaderItemProperties}).
  */
 @NullMarked
-class ContextMenuItemWithSubmenuHeaderViewBinder {
+class ListMenuSubmenuHeaderViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView textView = view.findViewById(R.id.menu_row_text);
         if (propertyKey == TITLE) {

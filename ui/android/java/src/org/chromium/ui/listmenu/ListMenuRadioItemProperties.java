@@ -12,10 +12,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
-/** The properties controlling checkmark-type items in context menus. */
+/** The properties controlling radio-button-type items in context menus. */
 @NullMarked
-public class ContextMenuCheckItemProperties {
-    public static final WritableBooleanPropertyKey CHECKED = new WritableBooleanPropertyKey();
+public class ListMenuRadioItemProperties {
+    public static final WritableBooleanPropertyKey SELECTED = new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {TITLE, CLICK_LISTENER, ENABLED, CHECKED};
+    public static final PropertyKey[] ALL_KEYS = {TITLE, CLICK_LISTENER, ENABLED, SELECTED};
 }

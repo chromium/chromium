@@ -4,11 +4,11 @@
 
 package org.chromium.ui.listmenu;
 
-import static org.chromium.ui.listmenu.ContextMenuSubmenuItemProperties.SUBMENU_ITEMS;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.view.View;
 import android.widget.ListView;
@@ -93,20 +93,20 @@ public class ListMenuUtils {
                 ListMenuItemViewBinder::binder);
         adapter.registerType(
                 ListItemType.MENU_ITEM_WITH_CHECKBOX,
-                new LayoutViewBuilder<>(R.layout.context_menu_checkbox),
-                ContextMenuItemWithCheckboxViewBinder::bind);
+                new LayoutViewBuilder<>(R.layout.list_menu_checkbox),
+                ListMenuItemWithCheckboxViewBinder::bind);
         adapter.registerType(
                 ListItemType.MENU_ITEM_WITH_RADIO_BUTTON,
-                new LayoutViewBuilder<>(R.layout.context_menu_radio_button),
-                ContextMenuItemWithRadioButtonViewBinder::bind);
+                new LayoutViewBuilder<>(R.layout.list_menu_radio_button),
+                ListMenuItemWithRadioButtonViewBinder::bind);
         adapter.registerType(
                 ListItemType.MENU_ITEM_WITH_SUBMENU,
-                new LayoutViewBuilder<>(R.layout.context_menu_submenu_parent_row),
-                ContextMenuItemWithSubmenuViewBinder::bind);
+                new LayoutViewBuilder<>(R.layout.list_menu_submenu_parent_row),
+                ListMenuItemWithSubmenuViewBinder::bind);
         adapter.registerType(
                 ListItemType.SUBMENU_HEADER,
-                new LayoutViewBuilder<>(R.layout.context_menu_submenu_header),
-                ContextMenuItemWithSubmenuHeaderViewBinder::bind);
+                new LayoutViewBuilder<>(R.layout.list_menu_submenu_header),
+                ListMenuSubmenuHeaderViewBinder::bind);
 
         return adapter;
     }
@@ -135,7 +135,7 @@ public class ListMenuUtils {
         modelList.clear();
         // Add the clicked item as a header to the submenu.
         final PropertyModel model =
-                new PropertyModel.Builder(ContextMenuSubmenuHeaderItemProperties.ALL_KEYS)
+                new PropertyModel.Builder(ListMenuSubmenuHeaderItemProperties.ALL_KEYS)
                         .with(TITLE, item.model.get(TITLE))
                         .with(ENABLED, true)
                         .with(
