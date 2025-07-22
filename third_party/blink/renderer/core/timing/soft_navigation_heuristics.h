@@ -96,14 +96,6 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void Shutdown();
 
-  // The class's API.
-
-  // Returns an id to be used for retrieving the associated task state during
-  // commit, or nullopt if no `SoftNavigationContext` is associated with the
-  // navigation.
-  std::optional<scheduler::TaskAttributionId>
-  AsyncSameDocumentNavigationStarted();
-
   void SameDocumentNavigationCommitted(const String& url,
                                        SoftNavigationContext*);
   void ModifiedDOM(Node* node);

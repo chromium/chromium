@@ -293,28 +293,6 @@ SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() const {
   return nullptr;
 }
 
-std::optional<scheduler::TaskAttributionId>
-SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
-  // `task_attribution_tracker_` will be null if
-  // TaskAttributionInfrastructureDisabledForTesting is enabled.
-  if (!task_attribution_tracker_) {
-    return std::nullopt;
-  }
-  scheduler::TaskAttributionInfo* task_state =
-      task_attribution_tracker_->CurrentTaskState();
-  if (!task_state) {
-    return std::nullopt;
-  }
-  // We don't need to EnsureContextForCurrentWindow here because this function
-  // is not really "part" of SNH. It's a helper for task attribution.
-  SoftNavigationContext* context = task_state->GetSoftNavigationContext();
-  if (!context) {
-    return std::nullopt;
-  }
-  task_attribution_tracker_->AddSameDocumentNavigationTask(task_state);
-  return task_state->Id();
-}
-
 void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     const String& url,
     SoftNavigationContext* context) {

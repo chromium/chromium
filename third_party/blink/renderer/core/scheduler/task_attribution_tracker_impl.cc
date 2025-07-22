@@ -183,9 +183,14 @@ void TaskAttributionTrackerImpl::OnObserverScopeDestroyed(
   observer_ = observer_scope.PreviousObserver();
 }
 
-void TaskAttributionTrackerImpl::AddSameDocumentNavigationTask(
-    TaskAttributionInfo* task) {
-  same_document_navigation_tasks_.push_back(task);
+std::optional<TaskAttributionId>
+TaskAttributionTrackerImpl::AsyncSameDocumentNavigationStarted() {
+  scheduler::TaskAttributionInfo* task_state = CurrentTaskState();
+  if (!task_state) {
+    return std::nullopt;
+  }
+  same_document_navigation_tasks_.push_back(task_state);
+  return task_state->Id();
 }
 
 void TaskAttributionTrackerImpl::ResetSameDocumentNavigationTasks() {

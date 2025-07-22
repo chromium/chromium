@@ -990,8 +990,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
     bool should_skip_screenshot,
     bool is_browser_initiated,
     bool is_synchronously_committed,
-    std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id) {
+    std::optional<scheduler::TaskAttributionId> task_state_id) {
   // We use the security origin of this frame since callers of this method must
   // already have performed same origin checks.
   // is_browser_initiated is false and is_synchronously_committed is true
@@ -1000,8 +999,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
   UpdateForSameDocumentNavigation(
       new_url, history_item, same_document_navigation_type, std::move(data),
       type, fire_popstate, frame_->DomWindow()->GetSecurityOrigin(),
-      is_browser_initiated, is_synchronously_committed,
-      soft_navigation_heuristics_task_id,
+      is_browser_initiated, is_synchronously_committed, task_state_id,
       LocalFrame::HasTransientUserActivation(frame_),
       /*has_ua_visual_transition*/ false, should_skip_screenshot);
 }
@@ -1016,8 +1014,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     const SecurityOrigin* initiator_origin,
     bool is_browser_initiated,
     bool is_synchronously_committed,
-    std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id,
+    std::optional<scheduler::TaskAttributionId> task_state_id,
     bool has_transient_user_activation,
     bool has_ua_visual_transition,
     bool should_skip_screenshot) {
@@ -1145,10 +1142,10 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       // There are three cases where the commit should be associated with a
       // `SoftNavigationContext`:
       //
-      //  1. `soft_navigation_heuristics_task_id` exists. This means the task
-      //  state being propagated was captured in a main world history API call.
-      //  The relevant context is the one captured when the navigation started,
-      //  which is is stored in `tracker` along with the id.
+      //  1. `task_state_id` exists. This means the task state being propagated
+      //  was captured in a main world history API call.  The relevant context
+      //  is the one captured when the navigation started, which is is stored in
+      //  `tracker` along with the id.
       //
       //  2. Browser-initiated navigations. In this case a new context would
       //  have been created when the `EventScope` was created above, and the
@@ -1158,9 +1155,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       //  when the navigation started, but the relevant context is part of the
       //  current task state.
       navigation_task_state =
-          soft_navigation_heuristics_task_id
-              ? tracker->CommitSameDocumentNavigation(
-                    soft_navigation_heuristics_task_id.value())
+          task_state_id
+              ? tracker->CommitSameDocumentNavigation(task_state_id.value())
               : tracker->CurrentTaskState();
     }
   }
@@ -1643,8 +1639,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     mojom::blink::TriggeringEventInfo triggering_event_info,
     bool is_browser_initiated,
     bool has_ua_visual_transition,
-    std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id,
+    std::optional<scheduler::TaskAttributionId> task_state_id,
     bool should_skip_screenshot) {
   DCHECK(!IsReloadLoadType(frame_load_type));
   DCHECK(frame_->GetDocument());
@@ -1714,8 +1709,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     params->has_ua_visual_transition = has_ua_visual_transition;
     params->is_synchronously_committed_same_document =
         is_synchronously_committed;
-    params->soft_navigation_heuristics_task_id =
-        soft_navigation_heuristics_task_id;
+    params->soft_navigation_heuristics_task_id = task_state_id;
     params->should_skip_screenshot = should_skip_screenshot;
     auto dispatch_result =
         frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
@@ -1738,22 +1732,21 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     frame_->GetTaskRunner(TaskType::kInternalLoading)
         ->PostTask(
             FROM_HERE,
-            WTF::BindOnce(
-                &DocumentLoader::CommitSameDocumentNavigationInternal,
-                WrapWeakPersistent(this), url, frame_load_type,
-                WrapPersistent(history_item), same_document_navigation_type,
-                client_redirect_policy, has_transient_user_activation,
-                WTF::RetainedRef(initiator_origin), is_browser_initiated,
-                is_synchronously_committed, triggering_event_info,
-                soft_navigation_heuristics_task_id, has_ua_visual_transition,
-                should_skip_screenshot));
+            WTF::BindOnce(&DocumentLoader::CommitSameDocumentNavigationInternal,
+                          WrapWeakPersistent(this), url, frame_load_type,
+                          WrapPersistent(history_item),
+                          same_document_navigation_type, client_redirect_policy,
+                          has_transient_user_activation,
+                          WTF::RetainedRef(initiator_origin),
+                          is_browser_initiated, is_synchronously_committed,
+                          triggering_event_info, task_state_id,
+                          has_ua_visual_transition, should_skip_screenshot));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, same_document_navigation_type,
         client_redirect_policy, has_transient_user_activation, initiator_origin,
         is_browser_initiated, is_synchronously_committed, triggering_event_info,
-        soft_navigation_heuristics_task_id, has_ua_visual_transition,
-        should_skip_screenshot);
+        task_state_id, has_ua_visual_transition, should_skip_screenshot);
   }
   return mojom::CommitResult::Ok;
 }
@@ -1769,8 +1762,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     bool is_browser_initiated,
     bool is_synchronously_committed,
     mojom::blink::TriggeringEventInfo triggering_event_info,
-    std::optional<scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id,
+    std::optional<scheduler::TaskAttributionId> task_state_id,
     bool has_ua_visual_transition,
     bool should_skip_screenshot) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
@@ -1823,9 +1815,9 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
   UpdateForSameDocumentNavigation(
       url, history_item, same_document_navigation_type, nullptr,
       frame_load_type, FirePopstate::kYes, initiator_origin,
-      is_browser_initiated, is_synchronously_committed,
-      soft_navigation_heuristics_task_id, has_transient_user_activation,
-      has_ua_visual_transition, should_skip_screenshot);
+      is_browser_initiated, is_synchronously_committed, task_state_id,
+      has_transient_user_activation, has_ua_visual_transition,
+      should_skip_screenshot);
   if (!frame_)
     return;
 

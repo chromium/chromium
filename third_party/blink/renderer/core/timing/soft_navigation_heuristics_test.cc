@@ -385,7 +385,7 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigation) {
   {
     std::optional<TaskScope> task_scope =
         tracker->MaybeCreateTaskScopeForCallback(task_state);
-    navigation_task_id = heuristics->AsyncSameDocumentNavigationStarted();
+    navigation_task_id = tracker->AsyncSameDocumentNavigationStarted();
   }
   ASSERT_TRUE(navigation_task_id);
 
@@ -413,7 +413,7 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigationNoContext) {
   {
     std::optional<TaskScope> task_scope =
         tracker->MaybeCreateTaskScopeForCallback(/*task_state=*/nullptr);
-    navigation_task_id = heuristics->AsyncSameDocumentNavigationStarted();
+    navigation_task_id = tracker->AsyncSameDocumentNavigationStarted();
   }
   EXPECT_FALSE(navigation_task_id);
 

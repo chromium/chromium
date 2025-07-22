@@ -208,8 +208,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual bool NavigateBackForward(
       int offset,
       base::TimeTicks actual_navigation_start,
-      std::optional<scheduler::TaskAttributionId>
-          soft_navigation_heuristics_task_id) const = 0;
+      std::optional<scheduler::TaskAttributionId> task_state_id) const = 0;
 
   virtual void DidDispatchPingLoader(const KURL&) = 0;
 

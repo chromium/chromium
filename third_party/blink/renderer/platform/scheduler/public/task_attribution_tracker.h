@@ -168,12 +168,19 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // receive callbacks.
   virtual ObserverScope RegisterObserver(Observer* observer) = 0;
 
-  // Setter and getter for a pointer to a pending same-document navigation task,
-  // to ensure the task's lifetime.
-  virtual void AddSameDocumentNavigationTask(TaskAttributionInfo* task) = 0;
-  virtual void ResetSameDocumentNavigationTasks() = 0;
+  // Registers the current task state as being associated with a same-document
+  // navigation, managing its lifetime until the navigation is committed
+  // or aborted. Returns the `TaskAttributionId` associated with the current
+  // task state, if any.
+  virtual std::optional<scheduler::TaskAttributionId>
+  AsyncSameDocumentNavigationStarted() = 0;
+  // Returns the task state for the `TaskAttributionId`, which is associated
+  // with a same-document navigation. Clears the tracked task state associated
+  // with this and any previous pending same-document navigations.
   virtual TaskAttributionInfo* CommitSameDocumentNavigation(
       TaskAttributionId) = 0;
+  // Clears all tracked task state associated with same-document navigations.
+  virtual void ResetSameDocumentNavigationTasks() = 0;
 
  protected:
   virtual void OnTaskScopeDestroyed(const TaskScope&) = 0;

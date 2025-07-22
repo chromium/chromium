@@ -55,9 +55,10 @@ class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
       TaskAttributionInfo* task_state) override;
 
   ObserverScope RegisterObserver(Observer* observer) override;
-  void AddSameDocumentNavigationTask(TaskAttributionInfo* task) override;
-  void ResetSameDocumentNavigationTasks() override;
+  std::optional<TaskAttributionId> AsyncSameDocumentNavigationStarted()
+      override;
   TaskAttributionInfo* CommitSameDocumentNavigation(TaskAttributionId) override;
+  void ResetSameDocumentNavigationTasks() override;
 
  private:
   explicit TaskAttributionTrackerImpl(v8::Isolate*);
