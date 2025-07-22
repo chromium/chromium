@@ -121,10 +121,6 @@ namespace enterprise_watermark {
 class WatermarkView;
 }
 
-namespace glic {
-class GlicBorderView;
-}  // namespace glic
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
 //
@@ -306,10 +302,6 @@ class BrowserView : public BrowserWindow,
   }
 
   ScrimView* devtools_scrim_view() { return devtools_scrim_view_; }
-
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicBorderView* glic_border() const { return glic_border_; }
-#endif
 
   ScrimView* window_scrim_view() { return window_scrim_view_; }
 
@@ -1244,11 +1236,6 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains all visible WebContents.
   raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
-
-  // It draws a border around the web contents area, on top of the
-  // WebContents. Null if the feature isn't enabled, or the platform
-  // isn't supported.
-  raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;
 
   // The view that contains devtools window for the selected WebContents.
   raw_ptr<views::WebView> devtools_web_view_ = nullptr;

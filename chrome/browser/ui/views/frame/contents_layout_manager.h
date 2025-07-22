@@ -22,7 +22,6 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
                         views::View* devtools_scrim_view,
                         views::View* contents_view,
                         views::View* lens_overlay_view,
-                        views::View* border_view = nullptr,
                         views::View* watermark_view = nullptr,
                         views::View* actor_overlay_view = nullptr);
 
@@ -45,7 +44,6 @@ class ContentsLayoutManager : public views::LayoutManagerBase {
   const raw_ptr<views::View> devtools_scrim_view_;
   const raw_ptr<views::View> contents_view_;
   const raw_ptr<views::View> lens_overlay_view_;
-  const raw_ptr<views::View> border_view_;
   const raw_ptr<views::View> watermark_view_;
   const raw_ptr<views::View> actor_overlay_view_;
 

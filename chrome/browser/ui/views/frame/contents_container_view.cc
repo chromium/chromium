@@ -28,6 +28,11 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_border_view.h"
+#include "chrome/browser/glic/glic_enabling.h"
+#endif
+
 namespace {
 constexpr gfx::RoundedCornersF kContentCornerRadius{6};
 constexpr int kContentOutlineCornerRadius = 8;
@@ -47,6 +52,18 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
 
   contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
   contents_scrim_view_->layer()->SetName("ContentsScrimView");
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
+    glic_border_ =
+        AddChildView(views::Builder<glic::GlicBorderView>(
+                         glic::GlicBorderView::Factory::Create(
+                             browser_view->browser(), contents_view_))
+                         .SetVisible(false)
+                         .SetCanProcessEventsWithinSubtree(false)
+                         .Build());
+  }
+#endif
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     new_tab_footer_view_separator_ =
@@ -150,6 +167,13 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
 
   layouts.child_layouts.emplace_back(
       contents_view_.get(), contents_view_->GetVisible(), contents_rect);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_border_ && glic_border_->GetVisible()) {
+    layouts.child_layouts.emplace_back(
+        glic_border_.get(), glic_border_->GetVisible(), contents_bounds);
+  }
+#endif
 
   // The scrim view should cover the entire contents bounds.
   CHECK(contents_scrim_view_);

@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -41,6 +42,7 @@ class GlicSharingManagerImpl;
 class GlicFocusedTabManager : public BrowserListObserver,
                               public content::WebContentsObserver,
                               public GlicWindowController::StateObserver,
+                              public TabStripModelObserver,
                               public views::WidgetObserver {
  public:
   GlicFocusedTabManager(GlicWindowController* window_controller,
@@ -65,6 +67,9 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // GlicWindowController::StateObserver
   void PanelStateChanged(const glic::mojom::PanelState& panel_state,
                          Browser*) override;
+
+  // TabStripModelObserver
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // Callback for changes to focused tab. If no tab is in focus an error reason
   // is returned indicating why and maybe a tab candidate with details as to

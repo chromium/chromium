@@ -355,14 +355,12 @@
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/glic_border_view.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "ui/views/layout/box_layout_view.h"
 #endif
 
 using base::UserMetricsAction;
@@ -1007,23 +1005,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   lens_overlay_view_ =
       contents_container->AddChildView(std::move(lens_overlay_view));
 
-#if BUILDFLAG(ENABLE_GLIC)
-  // `IsProfileEligible` returns true if the feature flags are present and the
-  // profile can potentially enable the feature. If the feature is disabled the
-  // view will exist but never become visible.
-  if (glic::GlicEnabling::IsProfileEligible(browser_->profile())) {
-    glic_border_ = contents_container->AddChildView(
-        views::Builder<glic::GlicBorderView>(
-            glic::GlicBorderView::Factory::Create(browser_.get()))
-            // https://crbug.com/387458471: By default the border view is
-            // visible, meaning it will paint during the initial layout of the
-            // browser UI, causing a flash of the border.
-            .SetVisible(false)
-            // `glic_border_` should never receive input events.
-            .SetCanProcessEventsWithinSubtree(false)
-            .Build());
-  }
-#endif
   watermark_view_ = contents_container->AddChildView(
       std::make_unique<enterprise_watermark::WatermarkView>());
 
@@ -1039,11 +1020,11 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, glic_border_, watermark_view_, actor_overlay_view_));
+      lens_overlay_view_, watermark_view_, actor_overlay_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, devtools_scrim_view_, contents_view,
-      lens_overlay_view_, nullptr, watermark_view_, actor_overlay_view_));
+      lens_overlay_view_, watermark_view_, actor_overlay_view_));
 #endif
 
   toolbar_ = top_container_->AddChildView(
@@ -1175,7 +1156,6 @@ BrowserView::~BrowserView() {
   devtools_scrim_view_ = nullptr;
   window_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
-  glic_border_ = nullptr;
   contents_container_ = nullptr;
   unified_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;

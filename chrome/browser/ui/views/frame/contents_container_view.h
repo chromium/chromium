@@ -14,6 +14,10 @@ class ContentsWebView;
 class MultiContentsViewMiniToolbar;
 class ScrimView;
 
+namespace glic {
+class GlicBorderView;
+}  // namespace glic
+
 namespace new_tab_footer {
 class NewTabFooterWebView;
 }  // namespace new_tab_footer
@@ -31,6 +35,7 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
   ContentsWebView* GetContentsView() { return contents_view_; }
   MultiContentsViewMiniToolbar* GetMiniToolbar() { return mini_toolbar_; }
   ScrimView* GetContentsScrimView() { return contents_scrim_view_; }
+  glic::GlicBorderView* GetGlicBorderView() { return glic_border_; }
   new_tab_footer::NewTabFooterWebView* GetNewTabFooterView() {
     return new_tab_footer_view_;
   }
@@ -50,6 +55,9 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
   // open.
   raw_ptr<ScrimView> contents_scrim_view_;
 
+  // The glic browser view that renders around the web contents area.
+  raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;
+
   // The view that shows a footer at the bottom of the contents
   // container on new tab pages.
   raw_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_view_ = nullptr;
@@ -59,6 +67,7 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
   // Scrim view shown on the inactive side of a split view when the omnibox is
   // focused or site permissions dialogs are showing.
   raw_ptr<ScrimView> inactive_split_scrim_view_ = nullptr;
+
   raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_ = nullptr;
 };
 

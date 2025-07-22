@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/base_window.h"
@@ -103,12 +104,16 @@ void GlicFocusedTabManager::OnBrowserAdded(Browser* browser) {
                             base::Unretained(this))));
 
     browser_subscriptions_[browser] = std::move(subscriptions);
+    browser->tab_strip_model()->AddObserver(this);
   }
 }
 
 void GlicFocusedTabManager::OnBrowserRemoved(Browser* browser) {
   // Remove the browser if it exists in the map.
-  browser_subscriptions_.erase(browser);
+  if (browser_subscriptions_.contains(browser)) {
+    browser->tab_strip_model()->RemoveObserver(this);
+    browser_subscriptions_.erase(browser);
+  }
   MaybeUpdateFocusedTab();
 }
 
@@ -163,6 +168,12 @@ void GlicFocusedTabManager::OnWidgetDestroyed(views::Widget* widget) {
 void GlicFocusedTabManager::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
   MaybeUpdateFocusedTab();
+}
+
+void GlicFocusedTabManager::OnSplitTabChanged(const SplitTabChange& change) {
+  if (change.type == SplitTabChange::Type::kContentsChanged) {
+    MaybeUpdateFocusedTab(/*force_notify=*/true);
+  }
 }
 
 void GlicFocusedTabManager::PrimaryPageChanged(content::Page& page) {
