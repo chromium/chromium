@@ -217,21 +217,6 @@ const CGFloat kLargeButtonImagePadding = 8;
   navigationItem.rightBarButtonItem = dismissButton;
   [topBar setItems:@[ navigationItem ] animated:NO];
 
-  // Add the logo.
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  UIImageView* logoIcon = [[UIImageView alloc]
-      initWithImage:[UIImage imageNamed:kChromeAIHubHeaderImage]];
-#else
-  UIImageView* logoIcon = [[UIImageView alloc]
-      initWithImage:[UIImage imageNamed:kChromiumSigninPromoLogoImage]];
-#endif
-  logoIcon.translatesAutoresizingMaskIntoConstraints = NO;
-  [topBar addSubview:logoIcon];
-  [NSLayoutConstraint activateConstraints:@[
-    [logoIcon.centerXAnchor constraintEqualToAnchor:topBar.centerXAnchor],
-    [logoIcon.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
-  ]];
-
   return topBar;
 }
 
