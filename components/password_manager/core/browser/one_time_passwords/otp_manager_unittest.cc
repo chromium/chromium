@@ -9,6 +9,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
 #include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 
 namespace password_manager {
@@ -129,6 +130,95 @@ TEST_F(OtpManagerTest, FormManagerdDeletedWhenOtpFieldIsNoLongerParsedAsSuch) {
   otp_manager_.ProcessClassificationModelPredictions(
       form, {{form.fields()[0].global_id(), autofill::UNKNOWN_TYPE}});
   EXPECT_TRUE(otp_manager_.form_managers().empty());
+}
+
+TEST_F(OtpManagerTest, FormManagerCreatedForOtpFormWithServerOverrides) {
+  FormData form;
+  form.set_fields({autofill::test::CreateTestFormField(
+      "some_label", "some_name", "some_value",
+      autofill::FormControlType::kInputText)});
+
+  EXPECT_CALL(mock_client_, InformPasswordChangeServiceOfOtpPresent);
+  otp_manager_.ProcessServerPredictions(
+      form, CreateServerPredictions(form, {{0, autofill::ONE_TIME_CODE}},
+                                    /*is_override=*/true));
+
+  EXPECT_TRUE(otp_manager_.form_managers().contains(form.global_id()));
+  std::vector<autofill::FieldGlobalId> expected_otp_field_ids = {
+      form.fields()[0].global_id()};
+  EXPECT_EQ(expected_otp_field_ids,
+            otp_manager_.form_managers().at(form.global_id())->otp_field_ids());
+}
+
+TEST_F(OtpManagerTest, FormManagerDeletedForOtpFormWithNonOtpServerOverrides) {
+  FormData form;
+  form.set_fields({autofill::test::CreateTestFormField(
+      "some_label", "some_name", "some_value",
+      autofill::FormControlType::kInputText)});
+
+  EXPECT_CALL(mock_client_, InformPasswordChangeServiceOfOtpPresent);
+  otp_manager_.ProcessClassificationModelPredictions(
+      form, {{form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+
+  otp_manager_.ProcessServerPredictions(
+      form, CreateServerPredictions(form, {{0, autofill::PASSWORD}},
+                                    /*is_override=*/true));
+
+  EXPECT_FALSE(otp_manager_.form_managers().contains(form.global_id()));
+}
+
+TEST_F(OtpManagerTest, FormManagerUpdatedWithServerOverrides) {
+  FormData form;
+  form.set_fields({autofill::test::CreateTestFormField(
+                       "some_label1", "some_name1", "some_value1",
+                       autofill::FormControlType::kInputText),
+                   {autofill::test::CreateTestFormField(
+                       "some_label2", "some_name2", "some_value2",
+                       autofill::FormControlType::kInputPassword)}});
+
+  EXPECT_CALL(mock_client_, InformPasswordChangeServiceOfOtpPresent);
+  otp_manager_.ProcessClassificationModelPredictions(
+      form, {{form.fields()[0].global_id(), autofill::ONE_TIME_CODE},
+             {form.fields()[1].global_id(), autofill::UNKNOWN_TYPE}});
+
+  otp_manager_.ProcessServerPredictions(
+      form,
+      CreateServerPredictions(
+          form, {{0, autofill::UNKNOWN_TYPE}, {1, autofill::ONE_TIME_CODE}},
+          /*is_override=*/true));
+
+  EXPECT_TRUE(otp_manager_.form_managers().contains(form.global_id()));
+  std::vector<autofill::FieldGlobalId> expected_otp_field_ids = {
+      form.fields()[1].global_id()};
+  EXPECT_EQ(expected_otp_field_ids,
+            otp_manager_.form_managers().at(form.global_id())->otp_field_ids());
+}
+
+TEST_F(OtpManagerTest, FormManagerNotUpdatedWithNotOverridePredictions) {
+  FormData form;
+  form.set_fields({autofill::test::CreateTestFormField(
+                       "some_label1", "some_name1", "some_value1",
+                       autofill::FormControlType::kInputText),
+                   {autofill::test::CreateTestFormField(
+                       "some_label2", "some_name2", "some_value2",
+                       autofill::FormControlType::kInputPassword)}});
+
+  EXPECT_CALL(mock_client_, InformPasswordChangeServiceOfOtpPresent);
+  otp_manager_.ProcessClassificationModelPredictions(
+      form, {{form.fields()[0].global_id(), autofill::ONE_TIME_CODE},
+             {form.fields()[1].global_id(), autofill::UNKNOWN_TYPE}});
+
+  otp_manager_.ProcessServerPredictions(
+      form,
+      CreateServerPredictions(
+          form, {{0, autofill::UNKNOWN_TYPE}, {1, autofill::ONE_TIME_CODE}},
+          /*is_override=*/false));
+
+  EXPECT_TRUE(otp_manager_.form_managers().contains(form.global_id()));
+  std::vector<autofill::FieldGlobalId> expected_otp_field_ids = {
+      form.fields()[0].global_id()};
+  EXPECT_EQ(expected_otp_field_ids,
+            otp_manager_.form_managers().at(form.global_id())->otp_field_ids());
 }
 
 #if BUILDFLAG(IS_ANDROID)

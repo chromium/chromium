@@ -84,6 +84,30 @@ void OtpFormManager::ProcessUpdatedPredictions(
   RetrieveOtpValue();
 }
 
+void OtpFormManager::ProcessServerOverrides(
+    const std::vector<FieldGlobalId>& otp_overrides,
+    const std::vector<FieldGlobalId>& other_overrides) {
+  // Add missing OTP fields to `otp_field_ids_`.
+  for (const FieldGlobalId& otp_field : otp_overrides) {
+    if (std::find(otp_field_ids_.begin(), otp_field_ids_.end(), otp_field) ==
+        otp_field_ids_.end()) {
+      otp_field_ids_.push_back(otp_field);
+    }
+  }
+
+  // Remove incorrectly classified fields from `otp_field_ids_`.
+  for (const FieldGlobalId& non_otp_field : other_overrides) {
+    otp_field_ids_.erase(std::remove(otp_field_ids_.begin(),
+                                     otp_field_ids_.end(), non_otp_field),
+                         otp_field_ids_.end());
+  }
+  // Run the pending callback immediately with no suggestions if no OTP
+  // suggestions should be offered.
+  if (otp_field_ids_.empty() && pending_suggestion_callback_) {
+    std::move(pending_suggestion_callback_).Run({});
+  }
+}
+
 bool OtpFormManager::IsFieldEligibleForOtpFilling(
     const FieldGlobalId& field_id) const {
   return (std::ranges::find(otp_field_ids_, field_id) !=

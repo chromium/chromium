@@ -42,6 +42,12 @@ class OtpFormManager {
   void ProcessUpdatedPredictions(
       const std::vector<autofill::FieldGlobalId>& otp_field_ids);
 
+  // Processes manual overrides coming form the server to update
+  // `otp_field_ids_` if needed.
+  void ProcessServerOverrides(
+      const std::vector<autofill::FieldGlobalId>& otp_overrides,
+      const std::vector<autofill::FieldGlobalId>& other_overrides);
+
   // Returns true if the field was parsed to an OTP field, and the OTP value
   // was either retrieved successfully, or the retrieval is still ongoing.
   bool IsFieldEligibleForOtpFilling(
@@ -52,11 +58,11 @@ class OtpFormManager {
       const autofill::FieldGlobalId& field_id,
       base::OnceCallback<void(std::vector<std::string>)> callback);
 
-#if defined(UNIT_TEST)
   const std::vector<autofill::FieldGlobalId>& otp_field_ids() const {
     return otp_field_ids_;
   }
 
+#if defined(UNIT_TEST)
   OtpSource otp_source() const { return otp_source_; }
 #endif  // defined(UNIT_TEST)
 

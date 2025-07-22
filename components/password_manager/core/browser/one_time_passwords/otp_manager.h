@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/integrators/password_manager/otp_suggestion_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -31,6 +32,13 @@ class OtpManager : public autofill::OtpSuggestionDelegate {
   void ProcessClassificationModelPredictions(
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+          field_predictions);
+
+  // Processes the server predictions.
+  void ProcessServerPredictions(
+      const autofill::FormData& form,
+      const base::flat_map<autofill::FieldGlobalId,
+                           autofill::AutofillType::ServerPrediction>&
           field_predictions);
 
   // OtpSuggestionDelegate implementation

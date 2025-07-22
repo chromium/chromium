@@ -16,11 +16,11 @@ namespace {
 using autofill::FieldGlobalId;
 using autofill::FormGlobalId;
 
-std::vector<autofill::FieldGlobalId> GetFillableOtpFieldIds(
+std::vector<FieldGlobalId> GetFillableOtpFieldIds(
     const autofill::FormData& form,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+    const base::flat_map<FieldGlobalId, autofill::FieldType>&
         field_predictions) {
-  std::vector<autofill::FieldGlobalId> fillable_otp_fields;
+  std::vector<FieldGlobalId> fillable_otp_fields;
   for (const auto& prediction : field_predictions) {
     if (prediction.second != autofill::ONE_TIME_CODE) {
       continue;
@@ -34,6 +34,26 @@ std::vector<autofill::FieldGlobalId> GetFillableOtpFieldIds(
   return fillable_otp_fields;
 }
 
+std::pair<std::vector<FieldGlobalId>, std::vector<FieldGlobalId>>
+GetOverridePredictions(
+    const base::flat_map<FieldGlobalId,
+                         autofill::AutofillType::ServerPrediction>&
+        field_predictions) {
+  std::vector<FieldGlobalId> otp_overrides;
+  std::vector<FieldGlobalId> other_overrides;
+
+  for (const auto& [field_id, prediction] : field_predictions) {
+    if (prediction.is_override()) {
+      if (prediction.server_type() == autofill::ONE_TIME_CODE) {
+        otp_overrides.push_back(field_id);
+      } else {
+        other_overrides.push_back(field_id);
+      }
+    }
+  }
+  return {otp_overrides, other_overrides};
+}
+
 }  // namespace
 
 OtpManager::OtpManager(PasswordManagerClient* client) : client_(client) {
@@ -44,9 +64,9 @@ OtpManager::~OtpManager() = default;
 
 void OtpManager::ProcessClassificationModelPredictions(
     const autofill::FormData& form,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+    const base::flat_map<FieldGlobalId, autofill::FieldType>&
         field_predictions) {
-  std::vector<autofill::FieldGlobalId> fillable_otp_fields(
+  std::vector<FieldGlobalId> fillable_otp_fields(
       GetFillableOtpFieldIds(form, field_predictions));
 
   autofill::FormGlobalId form_id(form.global_id());
@@ -63,6 +83,39 @@ void OtpManager::ProcessClassificationModelPredictions(
 
   } else {
     form_manager->ProcessUpdatedPredictions(fillable_otp_fields);
+  }
+}
+
+void OtpManager::ProcessServerPredictions(
+    const autofill::FormData& form,
+    const base::flat_map<FieldGlobalId,
+                         autofill::AutofillType::ServerPrediction>&
+        field_predictions) {
+  // The server does not classify OTP fields, but it can provide manual
+  // overrides.
+  auto [otp_overrides, other_overrides] =
+      GetOverridePredictions(field_predictions);
+
+  OtpFormManager* form_manager = GetManagerForForm(form.global_id());
+  if (!form_manager) {
+    if (otp_overrides.empty()) {
+      // Return early if the form was not predicted to be an OTP form
+      // neither by the classification model, nor by the server.
+      return;
+    }
+    // Create a new form manager if the form was predicted to be an OTP form by
+    // the server.
+    form_managers_.emplace(form.global_id(),
+                           std::make_unique<OtpFormManager>(
+                               form.global_id(), otp_overrides, client_));
+    client_->InformPasswordChangeServiceOfOtpPresent();
+    return;
+  }
+
+  form_manager->ProcessServerOverrides(otp_overrides, other_overrides);
+  if (form_manager->otp_field_ids().empty()) {
+    // Destroy the manager if no OTP fields are left.
+    form_managers_.erase(form.global_id());
   }
 }
 
