@@ -2454,8 +2454,8 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
   if (result == OK) {
     base::UmaHistogramEnumeration(
         base::StrCat({
-            "Net.NetworkTransaction.NegotiatedProtocol.",
-            IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : "",
+            "Net.NetworkTransaction.NegotiatedProtocol",
+            IsGoogleHostWithAlpnH3(url_.host_piece()) ? ".GoogleHost" : "",
         }),
         negotiated_protocol_);
 
