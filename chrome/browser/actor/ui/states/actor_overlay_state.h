@@ -31,6 +31,20 @@ struct ActorOverlayState {
   bool operator==(const ActorOverlayState& other) const;
 };
 
+inline std::ostream& operator<<(std::ostream& os,
+                                const ActorOverlayState& state) {
+  os << "ActorOverlayState{"
+     << "is_active: " << state.is_active << ", mouse_down: " << state.mouse_down
+     << ", mouse_target: ";
+  if (state.mouse_target.has_value()) {
+    os << state.mouse_target.value();
+  } else {
+    os << "nullopt";
+  }
+  os << "}";
+  return os;
+}
+
 }  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_STATES_ACTOR_OVERLAY_STATE_H_

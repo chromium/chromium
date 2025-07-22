@@ -20,6 +20,11 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               (const UiTabState& ui_tab_state, UiResultCallback callback),
               (override));
 
+  MOCK_METHOD(void,
+              OnTabActiveStatusChanged,
+              (bool tab_active_status, tabs::TabInterface* tab),
+              (override));
+
   MOCK_METHOD(void, SetActiveTaskId, (TaskId task_id), (override));
 
   MOCK_METHOD(void, ClearActiveTaskId, (), (override));

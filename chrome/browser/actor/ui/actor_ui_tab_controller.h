@@ -25,6 +25,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // ActorUiTabControllerInterface:
   void OnUiTabStateChange(const UiTabState& ui_tab_state,
                           UiResultCallback callback) override;
+  void OnTabActiveStatusChanged(bool tab_active_status,
+                                tabs::TabInterface* tab) override;
   void SetActiveTaskId(TaskId task_id) override;
   void ClearActiveTaskId() override;
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
@@ -32,12 +34,11 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void SetActorTaskResume() override;
 
  private:
-  // Notifies tab scoped ui components that their state has changed.
-  void NotifyTabScopedUiComponents(const UiTabState& ui_tab_state,
-                                   bool tab_activated);
+  // Called to propagate a UiTabState and tab status change to UI controllers.
+  void UpdateState(const UiTabState& ui_tab_state,
+                   bool tab_active_status,
+                   UiResultCallback callback);
   // Tab subscriptions:
-  // Called when this tab's activation status changes.
-  void OnTabActivationChanged(bool is_activated, tabs::TabInterface* tab);
   // Called when the tab is detached.
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
@@ -55,6 +56,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
       .actor_overlay = ActorOverlayState(),
       .handoff_button = HandoffButtonState(),
   };
+  // The current active status of the tab.
+  bool current_tab_active_status_;
   // The last active task id actuating on this tab.
   TaskId active_task_id_;
 
