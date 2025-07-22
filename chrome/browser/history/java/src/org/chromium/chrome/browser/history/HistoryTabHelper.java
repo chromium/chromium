@@ -31,7 +31,7 @@ public class HistoryTabHelper extends TabWebContentsUserData {
         return handler;
     }
 
-    private static @Nullable HistoryTabHelper get(Tab tab) {
+    public static @Nullable HistoryTabHelper get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
@@ -47,6 +47,13 @@ public class HistoryTabHelper extends TabWebContentsUserData {
         setAppId(webContents);
     }
 
+    public void setAppIdForViewIntent(String appId, WebContents webContents) {
+        // For view intent, appId is stored in the native class and nulled out
+        // after the first commit.
+        assert webContents != null : "WebContents should be non-null";
+        HistoryTabHelperJni.get().setAppIdForViewIntentNative(appId, webContents);
+    }
+
     private void setAppId(WebContents webContents) {
         assert webContents != null : "WebContents should be non-null";
         HistoryTabHelperJni.get().setAppIdNative(mAppId, webContents);
@@ -60,9 +67,31 @@ public class HistoryTabHelper extends TabWebContentsUserData {
     @Override
     public void cleanupWebContents(@Nullable WebContents webContents) {}
 
+    /**
+     * Destroy the helper class for a given tab.
+     *
+     * @param tab {@link Tab} this helper class is associated with.
+     */
+    public static void destroy(Tab tab) {
+        tab.getUserDataHost().removeUserData(USER_DATA_KEY);
+    }
+
+    @Nullable
+    public static String getAppIdForTesting(WebContents webContents) {
+        assert webContents != null : "WebContents should be non-null";
+        return HistoryTabHelperJni.get().getAppIdForTestingNative(webContents);
+    }
+
     @NativeMethods
     interface Natives {
         void setAppIdNative(
-                @JniType("std::string") @Nullable String appId, WebContents webContents);
+                @JniType("std::optional<std::string>") @Nullable String appId,
+                WebContents webContents);
+
+        void setAppIdForViewIntentNative(
+                @JniType("std::optional<std::string>") @Nullable String appId,
+                WebContents webContents);
+
+        @Nullable String getAppIdForTestingNative(WebContents webContents);
     }
 }

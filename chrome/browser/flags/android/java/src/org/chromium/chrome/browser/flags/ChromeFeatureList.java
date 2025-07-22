@@ -217,6 +217,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_WINDOW_POPUP_LARGE_SCREEN = "AndroidWindowPopupLargeScreen";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
+    public static final String APP_SPECIFIC_HISTORY_VIEW_INTENT = "AppSpecificHistoryViewIntent";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
     public static final String ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD =
             "AsyncNotificationManagerForDownload";
@@ -741,6 +742,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidWindowPopupLargeScreen =
             newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, false, true);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
+    public static final CachedFlag sAppSpecificHistoryViewIntent =
+            newCachedFlag(APP_SPECIFIC_HISTORY_VIEW_INTENT, true);
     public static final CachedFlag sAsyncNotificationManager =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =
@@ -1077,6 +1080,7 @@ public abstract class ChromeFeatureList {
                     sAndroidWebAppLaunchHandler,
                     sAndroidWindowPopupLargeScreen,
                     sAppSpecificHistory,
+                    sAppSpecificHistoryViewIntent,
                     sAsyncNotificationManager,
                     sAutomotiveBackButtonBarStreamline,
                     sBackgroundThreadPoolFieldTrial,

@@ -233,6 +233,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidWindowPopupLargeScreen,
     &kAnimatedImageDragShadow,
     &kAppSpecificHistory,
+    &kAppSpecificHistoryViewIntent,
     &kAsyncNotificationManager,
     &kAsyncNotificationManagerForDownload,
     &kAutomotiveBackButtonBarStreamline,
@@ -678,6 +679,10 @@ BASE_FEATURE(kAnimatedImageDragShadow,
 
 BASE_FEATURE(kAppSpecificHistory,
              "AppSpecificHistory",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAppSpecificHistoryViewIntent,
+             "AppSpecificHistoryViewIntent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAsyncNotificationManager,

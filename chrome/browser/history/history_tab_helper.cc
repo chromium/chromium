@@ -56,6 +56,7 @@ namespace {
 using content::NavigationEntry;
 using content::WebContents;
 #if BUILDFLAG(IS_ANDROID)
+using base::android::ConvertUTF8ToJavaString;
 using chrome::android::BackgroundTabManager;
 #endif
 
@@ -187,7 +188,11 @@ HistoryTabHelper::HistoryTabHelper(WebContents* web_contents)
   }
 }
 
-HistoryTabHelper::~HistoryTabHelper() = default;
+HistoryTabHelper::~HistoryTabHelper() {
+  if (history_service_) {
+    history_service_->RemoveObserver(this);
+  }
+}
 
 void HistoryTabHelper::UpdateHistoryForNavigation(
     const history::HistoryAddPageArgs& add_page_args) {
@@ -421,6 +426,15 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   return add_page_args;
 }
 
+void HistoryTabHelper::OnURLVisited(history::HistoryService* history_service,
+                                    const history::URLRow& url_row,
+                                    const history::VisitRow& new_visit) {
+  if (clear_app_id_after_first_commit_) {
+    app_id_ = std::nullopt;
+  }
+  history_service->RemoveObserver(this);
+}
+
 void HistoryTabHelper::OnPasswordStateUpdated(
     sessions::SerializedNavigationEntry::PasswordState password_state) {
   if (history::HistoryService* hs = GetHistoryService()) {
@@ -635,13 +649,41 @@ bool HistoryTabHelper::IsEligibleTab(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void HistoryTabHelper::SetClearAppIdAfterFirstCommit() {
+  history::HistoryService* history_service = GetHistoryService();
+  if (!history_service) {
+    return;
+  }
+  clear_app_id_after_first_commit_ = true;
+  history_service->AddObserver(this);
+  history_service_ = history_service;
+}
+
 static void JNI_HistoryTabHelper_SetAppIdNative(
     JNIEnv* env,
-    std::string& app_id,
+    std::optional<std::string>& app_id,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
   history_tab_helper->SetAppId(app_id);
+}
+static void JNI_HistoryTabHelper_SetAppIdForViewIntentNative(
+    JNIEnv* env,
+    std::optional<std::string>& app_id,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
+  history_tab_helper->SetClearAppIdAfterFirstCommit();
+  history_tab_helper->SetAppId(app_id);
+}
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_HistoryTabHelper_GetAppIdForTestingNative(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
+  auto appId = history_tab_helper->GetAppId();
+  return appId ? ConvertUTF8ToJavaString(env, *appId) : nullptr;
 }
 #endif
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);

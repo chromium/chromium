@@ -385,25 +385,9 @@ public class LaunchIntentDispatcher {
                 "CustomTabs.Startup.StartedNavigationEarly", startedNavigationEarly);
         if (!startedNavigationEarly) maybePrefetchDnsInBackground();
 
-        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
-        // the original intent so that it cannot be spoofed by CCT client apps.
-        IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
-        IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
-
         Intent intent = new Intent(mIntent);
-        String packageName = mActivity.getCallingPackage(); // from startActivityForResult
-        String packageNameIdentitySharing = getCallingPackageIdentitySharing();
-        if (packageName == null) packageName = packageNameIdentitySharing;
-        if (packageName != null) {
-            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
-        }
+        boolean identityShared = maybePutCallingAppPackage(intent);
 
-        // Pass the package name obtained via identity sharing API separately from the one
-        // obtained via startActivityForResult.
-        boolean identityShared = packageNameIdentitySharing != null;
-        if (identityShared) {
-            intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageNameIdentitySharing);
-        }
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, intent);
         Uri extraReferrer = mActivity.getReferrer();
@@ -420,6 +404,28 @@ public class LaunchIntentDispatcher {
         mActivity.startActivity(launchIntent, null);
         RecordHistogram.recordBooleanHistogram("CustomTabs.IdentityShared", identityShared);
         return true;
+    }
+
+    // Pass the target Activity the package name of the calling app.
+    // EXTRA_LAUNCHED_FROM_PACKAGE: set only when identity sharing is enabled by the calling app
+    // EXTRA_CALLING_ACTIVITY_PACKAGE: from either startActivityForResult or identity sharing
+    private boolean maybePutCallingAppPackage(Intent intent) {
+        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
+        // the original intent so that it cannot be spoofed by CCT client apps.
+        IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
+        IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
+
+        String packageName = mActivity.getCallingPackage();
+        String packageNameIdentitySharing = getCallingPackageIdentitySharing();
+        if (packageName == null) packageName = packageNameIdentitySharing;
+        if (packageName != null) {
+            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
+        }
+        boolean hasIdentitySharingPackageName = packageNameIdentitySharing != null;
+        if (hasIdentitySharingPackageName) {
+            intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageNameIdentitySharing);
+        }
+        return hasIdentitySharingPackageName;
     }
 
     private boolean maybeStartNavigation() {
@@ -494,7 +500,7 @@ public class LaunchIntentDispatcher {
             }
             RecordHistogram.recordBooleanHistogram(
                     "Android.Intent.HasNonSpoofablePackageName", hasNonSpoofablePackageName());
-            boolean identityShared = getCallingPackageIdentitySharing() != null;
+            boolean identityShared = maybePutCallingAppPackage(newIntent);
             RecordHistogram.recordBooleanHistogram("Android.Intent.IdentityShared", identityShared);
         }
 
