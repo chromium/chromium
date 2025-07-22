@@ -170,8 +170,9 @@ void MigrationCompleteForProfile(
   BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   for (Browser* browser :
        browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
-    CredentialProviderBrowserAgent::FromBrowser(browser)->SetInfobarAllowed(
-        allowed);
+    if (auto* agent = CredentialProviderBrowserAgent::FromBrowser(browser)) {
+      agent->SetInfobarAllowed(allowed);
+    }
   }
 }
 
