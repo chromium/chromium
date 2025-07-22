@@ -4067,6 +4067,7 @@ Called by update_autofill_enums.py.-->
 
 <enum name="SaveAndFillFormEvent">
   <int value="0" label="The Save and Fill suggestion was shown."/>
+  <int value="1" label="The Save and Fill suggestion was accepted."/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillFormEvent) -->

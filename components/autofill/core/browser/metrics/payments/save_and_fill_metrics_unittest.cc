@@ -33,4 +33,15 @@ TEST_F(SaveAndFillMetricsTest, LogSuggestionShown) {
       /*expected_count=*/1);
 }
 
+TEST_F(SaveAndFillMetricsTest, LogSuggestionAccepted) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillFormEvent(SaveAndFillFormEvent::kSuggestionAccepted);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.SaveAndFill",
+      /*sample=*/SaveAndFillFormEvent::kSuggestionAccepted,
+      /*expected_count=*/1);
+}
+
 }  // namespace autofill::autofill_metrics

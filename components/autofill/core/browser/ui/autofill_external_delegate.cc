@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -1403,6 +1404,9 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                 }
               },
               GetWeakPtr()));
+
+      manager_->GetCreditCardFormEventLogger()
+          .OnDidAcceptSaveAndFillSuggestion();
       break;
     }
     case SuggestionType::kScanCreditCard:

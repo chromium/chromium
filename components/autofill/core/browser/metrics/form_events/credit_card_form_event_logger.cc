@@ -582,6 +582,13 @@ void CreditCardFormEventLogger::OnSaveAndFillSuggestionShown() {
   }
 }
 
+void CreditCardFormEventLogger::OnDidAcceptSaveAndFillSuggestion() {
+  if (!has_logged_save_and_fill_suggestion_accepted_) {
+    LogSaveAndFillFormEvent(SaveAndFillFormEvent::kSuggestionAccepted);
+    has_logged_save_and_fill_suggestion_accepted_ = true;
+  }
+}
+
 std::optional<CreditCard>
 CreditCardFormEventLogger::GetFilledCreditCardForTesting() {
   return filled_credit_card_;

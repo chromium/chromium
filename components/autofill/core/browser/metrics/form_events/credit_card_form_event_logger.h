@@ -143,6 +143,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // shown.
   void OnSaveAndFillSuggestionShown();
 
+  // Called by AutofillExternalDelegate after the Save and Fill suggestion is
+  // accepted.
+  void OnDidAcceptSaveAndFillSuggestion();
+
   std::optional<CreditCard> GetFilledCreditCardForTesting();
 
  protected:
@@ -239,6 +243,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the Save and Fill suggestion has already been logged as shown and
   // should not be logged again.
   bool has_logged_save_and_fill_suggestion_shown_ = false;
+  // If true, the Save and Fill suggestion has already been logged as accepted
+  // and should not be logged again.
+  bool has_logged_save_and_fill_suggestion_accepted_ = false;
 
   CardMetadataLoggingContext metadata_logging_context_;
 

@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -2362,6 +2363,20 @@ TEST_F(AutofillExternalDelegateTest, AcceptedSaveAndFillEntry_FillForm) {
       test::CreateAutofillSuggestion(
           SuggestionType::kSaveAndFillCreditCardEntry),
       SuggestionPosition{.row = 0});
+}
+
+TEST_F(AutofillExternalDelegateTest, SaveAndFillMetrics_SuggestionAccepted) {
+  base::HistogramTester histogram;
+  IssueOnQuery();
+
+  external_delegate().DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(
+          SuggestionType::kSaveAndFillCreditCardEntry),
+      SuggestionPosition{.row = 0});
+
+  histogram.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.SaveAndFill",
+      autofill_metrics::SaveAndFillFormEvent::kSuggestionAccepted, 1);
 }
 
 TEST_F(AutofillExternalDelegateTest,

@@ -14,7 +14,9 @@ namespace autofill::autofill_metrics {
 enum class SaveAndFillFormEvent {
   // The Save and Fill suggestion was shown to the user.
   kSuggestionShown = 0,
-  kMaxValue = kSuggestionShown,
+  // The Save and Fill suggestion was accepted by the user.
+  kSuggestionAccepted = 1,
+  kMaxValue = kSuggestionAccepted,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillFormEvent)
 
