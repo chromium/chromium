@@ -351,6 +351,9 @@ void ReaderModeTabHelper::PageDistillationCompleted(
     } else {
       // If the page could not be distilled, deactivate Reader mode in this tab.
       SetActive(false);
+      for (auto& observer : observers_) {
+        observer.ReaderModeDistillationFailed(this);
+      }
     }
   }
 }

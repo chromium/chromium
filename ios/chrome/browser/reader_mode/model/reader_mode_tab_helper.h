@@ -33,6 +33,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
     virtual void ReaderModeWebStateWillBecomeUnavailable(
         ReaderModeTabHelper* tab_helper) = 0;
 
+    // Called when distillation fails.
+    virtual void ReaderModeDistillationFailed(
+        ReaderModeTabHelper* tab_helper) = 0;
+
     // Called when the ReaderModeTabHelper is destroyed.
     virtual void ReaderModeTabHelperDestroyed(
         ReaderModeTabHelper* tab_helper) = 0;

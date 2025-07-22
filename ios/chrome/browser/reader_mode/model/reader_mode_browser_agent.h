@@ -59,6 +59,7 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
       ReaderModeTabHelper* tab_helper) override;
   void ReaderModeWebStateWillBecomeUnavailable(
       ReaderModeTabHelper* tab_helper) override;
+  void ReaderModeDistillationFailed(ReaderModeTabHelper* tab_helper) override;
   void ReaderModeTabHelperDestroyed(ReaderModeTabHelper* tab_helper) override;
 
   base::ScopedObservation<WebStateList, WebStateListObserver>

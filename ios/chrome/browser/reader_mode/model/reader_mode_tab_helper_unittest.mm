@@ -45,6 +45,10 @@ class MockReaderModeTabHelperObserver : public ReaderModeTabHelper::Observer {
               (ReaderModeTabHelper * tab_helper),
               (override));
   MOCK_METHOD(void,
+              ReaderModeDistillationFailed,
+              (ReaderModeTabHelper * tab_helper),
+              (override));
+  MOCK_METHOD(void,
               ReaderModeTabHelperDestroyed,
               (ReaderModeTabHelper * tab_helper),
               (override));
@@ -293,6 +297,32 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserverOfDestruction) {
             tab_helper->RemoveObserver(&mock_observer);
           }));
   ReaderModeTabHelper::RemoveFromWebState(web_state_.get());
+}
+
+// Tests that ReaderModeTabHelper observers are notified when distillation
+// fails.
+TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfDistillationFailure) {
+  MockReaderModeTabHelperObserver mock_observer;
+  base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>
+      observation(&mock_observer);
+  observation.Observe(reader_mode_tab_helper());
+
+  // Set an empty DOM Distiller result to simulate failure.
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  // Initially, no observer methods should be called.
+  WaitForReaderModeContentReady();
+
+  // When SetActive(true) is called and distillation fails,
+  // ReaderModeDistillationFailed should be called.
+  EXPECT_CALL(mock_observer,
+              ReaderModeDistillationFailed(reader_mode_tab_helper()));
+  reader_mode_tab_helper()->SetActive(true);
+  WaitForReaderModeContentReady();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
 }
 
 // Tests that the WebViewProxy is updated when reader mode is toggled.

@@ -144,6 +144,9 @@ void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
   crash_keys::SetCurrentlyInReaderMode(false);
 }
 
+void ReaderModeBrowserAgent::ReaderModeDistillationFailed(
+    ReaderModeTabHelper* tab_helper) {}
+
 void ReaderModeBrowserAgent::ReaderModeTabHelperDestroyed(
     ReaderModeTabHelper* tab_helper) {
   tab_helper->RemoveObserver(this);
