@@ -318,9 +318,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   UIView* _miaAnimationView;
   // Whether AIM is allowed.
   BOOL _isAIMAllowed;
-
-  // The current NTP color palette.
-  NewTabPageColorPalette* _colorPalette;
 }
 
 #pragma mark - Public
@@ -951,14 +948,22 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // Sets the background using the current color palette, or defaults if none is
 // set.
 - (void)applyBackgroundColors {
-  _colorPalette = [self.traitCollection objectForTrait:NewTabPageTrait.class];
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForTrait:NewTabPageTrait.class];
 
-  if (_colorPalette) {
-    [_fakeLocationBar setStartColor:_colorPalette.omniboxColor
-                           endColor:_colorPalette.omniboxColor];
+  if (colorPalette) {
+    [_fakeLocationBar setStartColor:colorPalette.omniboxColor
+                           endColor:colorPalette.omniboxColor];
 
-    _customizationMenuButton.backgroundColor = _colorPalette.secondaryColor;
-    _customizationMenuButton.tintColor = _colorPalette.tintColor;
+    _customizationMenuButton.backgroundColor = colorPalette.secondaryColor;
+    _customizationMenuButton.tintColor = colorPalette.tintColor;
+
+    _miaButton.tintColor = colorPalette.tintColor;
+    _voiceSearchButton.tintColor = colorPalette.tintColor;
+    _lensButton.tintColor = colorPalette.tintColor;
+
+    _voiceAndLensDivider.backgroundColor = colorPalette.omniboxIconDividerColor;
+    _miaAndVoiceDivider.backgroundColor = colorPalette.omniboxIconDividerColor;
   } else {
     [_fakeLocationBar setStartColor:FakeboxTopColor()
                            endColor:FakeboxBottomColor()];
@@ -973,6 +978,13 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     _customizationMenuButton.tintColor = [UIColor
         colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
                                                     : kTextSecondaryColor)];
+
+    _miaButton.tintColor = [UIColor colorNamed:kGrey700Color];
+    _voiceSearchButton.tintColor = [UIColor colorNamed:kGrey700Color];
+    _lensButton.tintColor = [UIColor colorNamed:kGrey700Color];
+
+    _voiceAndLensDivider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+    _miaAndVoiceDivider.backgroundColor = [UIColor colorNamed:kGrey600Color];
   }
 }
 
@@ -1151,22 +1163,26 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // being pinned at the top.
 - (void)setFakeboxBackgroundWithProgress:(CGFloat)progress {
   UIColor* pinnedColor = [UIColor colorNamed:kTextfieldBackgroundColor];
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForTrait:NewTabPageTrait.class];
 
   // Use a quadratic curve interpolation.
   progress = progress * progress;
   [_fakeLocationBar
-      setStartColor:BlendColors(_colorPalette ? _colorPalette.omniboxColor
-                                              : FakeboxTopColor(),
+      setStartColor:BlendColors(colorPalette ? colorPalette.omniboxColor
+                                             : FakeboxTopColor(),
                                 pinnedColor, progress)
-           endColor:BlendColors(_colorPalette ? _colorPalette.omniboxColor
-                                              : FakeboxBottomColor(),
+           endColor:BlendColors(colorPalette ? colorPalette.omniboxColor
+                                             : FakeboxBottomColor(),
                                 pinnedColor, progress)];
 }
 
 // Creates a thin grey divider that acts as a visual separator.
 - (UIView*)createDivider {
   UIView* divider = [[UIView alloc] init];
-  divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+  }
   divider.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dividerWidth = 1.0 / [[UIScreen mainScreen] scale];
 

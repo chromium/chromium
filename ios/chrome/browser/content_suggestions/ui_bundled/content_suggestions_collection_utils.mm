@@ -312,7 +312,9 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
   voice_search_button.configuration = buttonConfig;
 
-  voice_search_button.tintColor = FakeboxIconColor();
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    voice_search_button.tintColor = FakeboxIconColor();
+  }
   UIImage* mic_image = CustomSymbolWithPointSize(
       kVoiceSymbol, kSymbolContentSuggestionsPointSize);
   mic_image = use_color_icon ? MakeSymbolMulticolor(mic_image)
@@ -351,7 +353,9 @@ void ConfigureLensButtonAppearance(UIButton* lens_button,
   camera_image = use_color_icon ? MakeSymbolMulticolor(camera_image)
                                 : MakeSymbolMonochrome(camera_image);
   [lens_button setImage:camera_image forState:UIControlStateNormal];
-  lens_button.tintColor = FakeboxIconColor();
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    lens_button.tintColor = FakeboxIconColor();
+  }
 
   if (use_new_badge) {
     // Show the "New" badge and colored symbol.
@@ -373,7 +377,10 @@ void ConfigureMIAButton(UIButton* mia_button, BOOL use_color_icon) {
   magnifier_icon = use_color_icon ? MakeSymbolMulticolor(magnifier_icon)
                                   : MakeSymbolMonochrome(magnifier_icon);
   [mia_button setImage:magnifier_icon forState:UIControlStateNormal];
-  mia_button.tintColor = FakeboxIconColor();
+
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    mia_button.tintColor = FakeboxIconColor();
+  }
   // TODO(crbug.com/425339867): Handle button accessibility
 
   mia_button.pointerInteractionEnabled = YES;
