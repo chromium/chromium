@@ -92,6 +92,8 @@ public class UrlBar extends AutocompleteEditText {
     // check for text equality, instead of worrying about partial equality with truncated text.
     static final int MIN_LENGTH_FOR_TRUNCATION = 100;
 
+    private static final int MULTILINE_EDIT_MAX_LINES = 5;
+
     /**
      * The text direction of the URL or query: LAYOUT_DIRECTION_LOCALE, LAYOUT_DIRECTION_LTR, or
      * LAYOUT_DIRECTION_RTL.
@@ -331,6 +333,17 @@ public class UrlBar extends AutocompleteEditText {
         if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
+        // TODO(crbug.com432311666): Confirm with UX if any of these settings could be persisted as
+        // the default height of the UrlBar.
+        setMinHeight(
+                getResources()
+                        .getDimensionPixelSize(
+                                focused
+                                        ? R.dimen.url_bar_default_height_active
+                                        : R.dimen.url_bar_default_height_inactive));
+
+        setSingleLine(true);
+        setMaxLines(1);
         setHorizontalFadingEdgeEnabled(!focused);
 
         if (focused) {
@@ -457,6 +470,22 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         limitDisplayableLength();
+
+        if (OmniboxFeatures.allowMultilineEditField()) {
+            // Observe the user input alone, to prevent autocompletion from taking over the input.
+            boolean isMultilineEligible = TextUtils.indexOf(getTextWithoutAutocomplete(), ' ') >= 0;
+            boolean wasMultilineEligible = !isSingleLine();
+            if (isMultilineEligible != wasMultilineEligible) {
+                // Toggling between single- and multi-line edit fields appears to make the EditText
+                // restart and reposition the cursor.
+                // TODO(crbug.com/432311666): verify if selection restart is caused by our own
+                // logic. If it is, see if this can be fixed and remove selection management below.
+                int cursor = getSelectionStart();
+                setSingleLine(!isMultilineEligible);
+                setMaxLines(isMultilineEligible ? MULTILINE_EDIT_MAX_LINES : 1);
+                setSelection(cursor);
+            }
+        }
     }
 
     @Override
@@ -1107,7 +1136,7 @@ public class UrlBar extends AutocompleteEditText {
         // TextView internally attempts to keep the selection visible, but in the unfocused state
         // this class ensures that the TLD is visible.
         if (!mFocused) return false;
-        assert !mPendingScroll;
+        assert !mPendingScroll || hasFocus();
 
         return super.bringPointIntoView(offset);
     }

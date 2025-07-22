@@ -1979,6 +1979,26 @@ public class ToolbarPhone extends ToolbarLayout
     public void onUrlFocusChange(final boolean hasFocus) {
         super.onUrlFocusChange(hasFocus);
 
+        // Unblock toolbar height when in focused mode, allowing the Omnibox to expand.
+        // TODO(crbug.com/432311666): address following open questions
+        // - this may overdraw the toolbar hairline, which has a fixed margin equal to
+        //   toolbarHeight.
+        // - need to notify TopControlStacker of toolbar height changes, so that other top controls
+        //   are repositioned accordingly. Currently this would be bookmark bar (AL only) progress
+        //   bar, and hairline.
+        // - investigate what else needs to be done to make the WRAP_CONTENT work well as the
+        //   default / static setting (likely leading to elimination of `toolbar_height_no_shadow`
+        //   dimension).
+        if (OmniboxFeatures.allowMultilineEditField()) {
+            var params = getLayoutParams();
+            params.height =
+                    hasFocus
+                            ? LayoutParams.WRAP_CONTENT
+                            : getResources()
+                                    .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+            setLayoutParams(params);
+        }
+
         updateBackground(hasFocus);
         updateLocationBarForNtp(mVisualState, urlHasFocus());
         getTabSwitcherButtonCoordinator().getContainerView().setClickable(!hasFocus);

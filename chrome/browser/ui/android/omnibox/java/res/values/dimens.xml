@@ -4,9 +4,7 @@ Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-
 <resources xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Toolbar dimensions -->
     <dimen name="toolbar_height_no_shadow">@dimen/default_action_bar_height</dimen>
     <dimen name="toolbar_url_focus_height_increase">8dp</dimen>
@@ -20,11 +18,12 @@ found in the LICENSE file.
     <!-- URL bar -->
     <dimen name="url_bar_vertical_padding">@dimen/location_bar_vertical_margin</dimen>
     <dimen name="url_bar_vertical_margin">3dp</dimen>
+    <dimen name="url_bar_default_height_inactive">50dp</dimen>
+    <dimen name="url_bar_default_height_active">52dp</dimen>
 
     <!-- Bottom Toolbar -->
     <dimen name="split_toolbar_button_height">56dp</dimen>
     <dimen name="split_toolbar_button_width">@dimen/split_toolbar_button_height</dimen>
-
     <dimen name="toolbar_edge_padding">8dp</dimen>
     <dimen name="toolbar_edge_padding_ntp">16dp</dimen>
     <dimen name="location_bar_vertical_margin">8dp</dimen>
@@ -40,7 +39,6 @@ found in the LICENSE file.
     <dimen name="location_bar_status_separator_spacer">8dp</dimen>
     <dimen name="location_bar_min_url_width">68dp</dimen>
     <dimen name="location_bar_min_verbose_status_text_width">48dp</dimen>
-
     <dimen name="location_bar_start_padding">0dp</dimen>
     <dimen name="location_bar_end_padding">8dp</dimen>
     <dimen name="fake_search_box_lateral_padding">10dp</dimen>
@@ -59,11 +57,8 @@ found in the LICENSE file.
     <dimen name="location_bar_url_action_offset">-8dp</dimen>
     <dimen name="location_bar_url_action_offset_ntp">-4dp</dimen>
     <dimen name="location_bar_url_action_padding">8dp</dimen>
-
     <dimen name="location_bar_status_view_left_space_width_bigger">12dp</dimen>
-
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
-
     <dimen name="incognito_indicator_lateral_margin">8dp</dimen>
     <dimen name="incognito_indicator_lateral_start_padding">8dp</dimen>
     <dimen name="incognito_indicator_lateral_end_padding">12dp</dimen>
@@ -96,7 +91,6 @@ found in the LICENSE file.
     <dimen name="omnibox_pedal_suggestion_text_vertical_padding">6dp</dimen>
     <dimen name="omnibox_small_icon_rounding_radius">4dp</dimen>
     <dimen name="omnibox_large_icon_rounding_radius">@dimen/default_rounded_corner_radius</dimen>
-
     <dimen name="omnibox_suggestion_36dp_icon_size">36dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_size">24dp</dimen>
     <dimen name="omnibox_suggestion_favicon_size">24dp</dimen>
@@ -104,19 +98,17 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_icon_area_size">56dp</dimen>
     <dimen name="omnibox_suggestion_icon_area_size_modern">52dp</dimen>
     <dimen name="omnibox_suggestion_icon_area_size_large">72dp</dimen>
-
     <dimen name="omnibox_suggestion_action_button_width">48dp</dimen>
     <dimen name="omnibox_suggestion_end_padding">@dimen/omnibox_suggestion_dropdown_side_spacing</dimen>
-
     <dimen name="omnibox_suggestion_bg_round_corner_radius">16dp</dimen>
     <dimen name="omnibox_suggestion_side_spacing_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_dropdown_side_spacing">0dp</dimen>
     <dimen name="omnibox_suggestion_dropdown_round_corner_radius">0dp</dimen>
     <dimen name="omnibox_min_space_above_window_bottom">0dp</dimen>
-
     <item name="omnibox_suggestion_bg_hover_overlay_fraction" type="fraction">8%</item>
 
     <!-- Adding search engine logo to the omnibox. -->
+
     <!-- Max size which will fit completely in the composed/rounded bg. -->
     <dimen name="omnibox_search_engine_logo_favicon_size">17dp</dimen>
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>

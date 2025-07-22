@@ -454,6 +454,10 @@ public class OmniboxFeatures {
         sPrefs.edit().putLong(KEY_LAST_EXIT_TIMESTAMP, TimeUtils.currentTimeMillis()).apply();
     }
 
+    public static boolean allowMultilineEditField() {
+        return (!DeviceFormFactor.isTablet() && sMultilineEditField.isEnabled());
+    }
+
     public static boolean shouldJumpStartOmnibox() {
         return isJumpStartOmniboxEnabled();
     }
