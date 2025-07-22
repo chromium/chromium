@@ -105,7 +105,8 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return false;
   }
 
-  if (event.GetToolType() != ui::MotionEvent::ToolType::FINGER) {
+  if (event.ui::MotionEvent::GetToolType() !=
+      ui::MotionEvent::ToolType::FINGER) {
     EmitTransferResultHistogramAndTraceEvent(
         TransferInputToVizResult::kNonFingerToolType);
     return false;

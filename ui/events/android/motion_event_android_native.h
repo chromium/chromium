@@ -29,30 +29,12 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
   void operator=(const MotionEventAndroidNative&) = delete;
 
   // Start ui::MotionEvent overrides
-  int GetPointerId(size_t pointer_index) const override;
-  float GetX(size_t pointer_index) const override;
-  float GetY(size_t pointer_index) const override;
-  float GetTouchMajor(size_t pointer_index) const override;
-  float GetTouchMinor(size_t pointer_index) const override;
-  float GetOrientation(size_t pointer_index) const override;
   float GetPressure(size_t pointer_index) const override;
-  float GetTiltX(size_t pointer_index) const override;
-  float GetTiltY(size_t pointer_index) const override;
-  base::TimeTicks GetHistoricalEventTime(
-      size_t historical_index) const override;
-  float GetHistoricalTouchMajor(size_t pointer_index,
-                                size_t historical_index) const override;
-  float GetHistoricalX(size_t pointer_index,
-                       size_t historical_index) const override;
-  float GetHistoricalY(size_t pointer_index,
-                       size_t historical_index) const override;
-  ToolType GetToolType(size_t pointer_index) const override;
   // End ui::MotionEvent overrides
 
   // Start MotionEventAndroid overrides
   float GetXPix(size_t pointer_index) const override;
   float GetYPix(size_t pointer_index) const override;
-  int GetSource() const override;
   // End MotionEventAndroid overrides
 
  private:
@@ -79,8 +61,6 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
                            const Pointer* const pointer0,
                            const Pointer* const pointer1,
                            std::unique_ptr<MotionEventAndroidSource> source);
-
-  std::unique_ptr<MotionEventAndroidSource> source_;
 };
 
 }  // namespace ui

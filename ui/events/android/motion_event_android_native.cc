@@ -65,126 +65,14 @@ MotionEventAndroidNative::MotionEventAndroidNative(
                          raw_offset_y_pixels,
                          for_touch_handle,
                          pointer0,
-                         pointer1),
-      source_(std::move(source)) {
-  CHECK(source_);
-}
-
-int MotionEventAndroidNative::GetPointerId(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerId(pointer_index);
-  }
-  return source_->GetPointerId(pointer_index);
-}
-
-float MotionEventAndroidNative::GetX(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerPosition(pointer_index).x();
-  }
-  return ToDips(source_->GetXPix(pointer_index));
-}
-float MotionEventAndroidNative::GetY(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerPosition(pointer_index).y();
-  }
-  return ToDips(source_->GetYPix(pointer_index));
-}
-
-float MotionEventAndroidNative::GetTouchMajor(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerTouchMajor(pointer_index);
-  }
-  return ToDips(source_->GetTouchMajorPix(pointer_index));
-}
-
-float MotionEventAndroidNative::GetTouchMinor(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerTouchMinor(pointer_index);
-  }
-  return ToDips(source_->GetTouchMinorPix(pointer_index));
-}
-
-float MotionEventAndroidNative::GetOrientation(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerOrientation(pointer_index);
-  }
-  return ToValidFloat(source_->GetRawOrientation(pointer_index));
-}
+                         pointer1,
+                         std::move(source)) {}
 
 float MotionEventAndroidNative::GetPressure(size_t pointer_index) const {
   if (GetAction() == MotionEvent::Action::UP) {
     return 0.f;
   }
-  return source_->GetPressure(pointer_index);
-}
-
-float MotionEventAndroidNative::GetTiltX(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerTiltX(pointer_index);
-  }
-  float tilt_x, tilt_y;
-  float tilt_rad = ToValidFloat(source_->GetRawTilt(pointer_index));
-  float orientation_rad =
-      ToValidFloat(source_->GetRawOrientation(pointer_index));
-  ConvertTiltOrientationToTiltXY(tilt_rad, orientation_rad, &tilt_x, &tilt_y);
-  return tilt_x;
-}
-
-float MotionEventAndroidNative::GetTiltY(size_t pointer_index) const {
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerTiltY(pointer_index);
-  }
-  float tilt_x, tilt_y;
-  float tilt_rad = ToValidFloat(source_->GetRawTilt(pointer_index));
-  float orientation_rad =
-      ToValidFloat(source_->GetRawOrientation(pointer_index));
-  ConvertTiltOrientationToTiltXY(tilt_rad, orientation_rad, &tilt_x, &tilt_y);
-  return tilt_y;
-}
-
-base::TimeTicks MotionEventAndroidNative::GetHistoricalEventTime(
-    size_t historical_index) const {
-  DCHECK_LT(historical_index, GetHistorySize());
-  return source_->GetHistoricalEventTime(historical_index);
-}
-
-float MotionEventAndroidNative::GetHistoricalTouchMajor(
-    size_t pointer_index,
-    size_t historical_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  DCHECK_LT(historical_index, GetHistorySize());
-  return ToDips(
-      source_->GetHistoricalTouchMajorPix(pointer_index, historical_index));
-}
-
-float MotionEventAndroidNative::GetHistoricalX(size_t pointer_index,
-                                               size_t historical_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  DCHECK_LT(historical_index, GetHistorySize());
-  return ToDips(source_->GetHistoricalXPix(pointer_index, historical_index));
-}
-
-float MotionEventAndroidNative::GetHistoricalY(size_t pointer_index,
-                                               size_t historical_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  DCHECK_LT(historical_index, GetHistorySize());
-  return ToDips(source_->GetHistoricalYPix(pointer_index, historical_index));
-}
-
-ui::MotionEvent::ToolType MotionEventAndroidNative::GetToolType(
-    size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerToolType(pointer_index);
-  }
-  return source_->GetToolType(pointer_index);
+  return source()->GetPressure(pointer_index);
 }
 
 float MotionEventAndroidNative::GetXPix(size_t pointer_index) const {
@@ -192,10 +80,6 @@ float MotionEventAndroidNative::GetXPix(size_t pointer_index) const {
 }
 float MotionEventAndroidNative::GetYPix(size_t pointer_index) const {
   return GetY(pointer_index) / pix_to_dip();
-}
-
-int MotionEventAndroidNative::GetSource() const {
-  return source_->GetSource();
 }
 
 }  // namespace ui

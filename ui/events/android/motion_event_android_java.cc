@@ -69,10 +69,8 @@ MotionEventAndroidJava::MotionEventAndroidJava(
                          raw_offset_y_pixels,
                          for_touch_handle,
                          pointer0,
-                         pointer1),
-      source_(std::move(source)) {
-  DCHECK(source_);
-}
+                         pointer1,
+                         std::move(source)) {}
 
 MotionEventAndroidJava::MotionEventAndroidJava(
     jfloat pix_to_dip,
@@ -120,7 +118,7 @@ MotionEventAndroidJava::MotionEventAndroidJava(
 
 MotionEventAndroidJava::MotionEventAndroidJava(const MotionEventAndroidJava& e,
                                                const gfx::PointF& point)
-    : MotionEventAndroid(e, point), source_(e.source_->Clone()) {}
+    : MotionEventAndroid(e, point) {}
 
 std::unique_ptr<MotionEventAndroid> MotionEventAndroidJava::CreateFor(
     const gfx::PointF& point) const {
@@ -130,31 +128,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidJava::CreateFor(
 MotionEventAndroidJava::~MotionEventAndroidJava() = default;
 
 ScopedJavaLocalRef<jobject> MotionEventAndroidJava::GetJavaObject() const {
-  return source_->GetJavaObject();
-}
-
-int MotionEventAndroidJava::GetPointerId(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerId(pointer_index);
-  }
-  return source_->GetPointerId(pointer_index);
-}
-
-float MotionEventAndroidJava::GetX(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerPosition(pointer_index).x();
-  }
-  return ToDips(source_->GetXPix(pointer_index));
-}
-
-float MotionEventAndroidJava::GetY(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerPosition(pointer_index).y();
-  }
-  return ToDips(source_->GetYPix(pointer_index));
+  return source()->GetJavaObject();
 }
 
 float MotionEventAndroidJava::GetXPix(size_t pointer_index) const {
@@ -162,7 +136,7 @@ float MotionEventAndroidJava::GetXPix(size_t pointer_index) const {
   if (IsPointerCacheable(pointer_index)) {
     return GetCachedPointerPosition(pointer_index).x() / pix_to_dip();
   }
-  return source_->GetXPix(pointer_index);
+  return source()->GetXPix(pointer_index);
 }
 
 float MotionEventAndroidJava::GetYPix(size_t pointer_index) const {
@@ -170,35 +144,7 @@ float MotionEventAndroidJava::GetYPix(size_t pointer_index) const {
   if (IsPointerCacheable(pointer_index)) {
     return GetCachedPointerPosition(pointer_index).y() / pix_to_dip();
   }
-  return source_->GetYPix(pointer_index);
-}
-
-int MotionEventAndroidJava::GetSource() const {
-  return source_->GetSource();
-}
-
-float MotionEventAndroidJava::GetTouchMajor(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerTouchMajor(pointer_index);
-  }
-  return ToDips(source_->GetTouchMajorPix(pointer_index));
-}
-
-float MotionEventAndroidJava::GetTouchMinor(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerTouchMinor(pointer_index);
-  }
-  return ToDips(source_->GetTouchMinorPix(pointer_index));
-}
-
-float MotionEventAndroidJava::GetOrientation(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerOrientation(pointer_index);
-  }
-  return ToValidFloat(source_->GetRawOrientation(pointer_index));
+  return source()->GetYPix(pointer_index);
 }
 
 float MotionEventAndroidJava::GetPressure(size_t pointer_index) const {
@@ -206,68 +152,11 @@ float MotionEventAndroidJava::GetPressure(size_t pointer_index) const {
   if (IsPointerCacheable(pointer_index)) {
     return GetCachedPointerPressure(pointer_index);
   }
-  return source_->GetPressure(pointer_index);
-}
-
-float MotionEventAndroidJava::GetTiltX(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerTiltX(pointer_index);
-  }
-  float tilt_x, tilt_y;
-  float tilt_rad = ToValidFloat(source_->GetRawTilt(pointer_index));
-  float orientation_rad =
-      ToValidFloat(source_->GetRawOrientation(pointer_index));
-  ConvertTiltOrientationToTiltXY(tilt_rad, orientation_rad, &tilt_x, &tilt_y);
-  return tilt_x;
-}
-
-float MotionEventAndroidJava::GetTiltY(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerTiltY(pointer_index);
-  }
-  float tilt_x, tilt_y;
-  float tilt_rad = ToValidFloat(source_->GetRawTilt(pointer_index));
-  float orientation_rad =
-      ToValidFloat(source_->GetRawOrientation(pointer_index));
-  ConvertTiltOrientationToTiltXY(tilt_rad, orientation_rad, &tilt_x, &tilt_y);
-  return tilt_y;
-}
-
-base::TimeTicks MotionEventAndroidJava::GetHistoricalEventTime(
-    size_t historical_index) const {
-  return FromAndroidTime(source_->GetHistoricalEventTime(historical_index));
-}
-
-float MotionEventAndroidJava::GetHistoricalTouchMajor(
-    size_t pointer_index,
-    size_t historical_index) const {
-  return ToDips(
-      source_->GetHistoricalTouchMajorPix(pointer_index, historical_index));
-}
-
-float MotionEventAndroidJava::GetHistoricalX(size_t pointer_index,
-                                             size_t historical_index) const {
-  return ToDips(source_->GetHistoricalXPix(pointer_index, historical_index));
-}
-
-float MotionEventAndroidJava::GetHistoricalY(size_t pointer_index,
-                                             size_t historical_index) const {
-  return ToDips(source_->GetHistoricalYPix(pointer_index, historical_index));
-}
-
-ui::MotionEvent::ToolType MotionEventAndroidJava::GetToolType(
-    size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
-    return GetCachedPointerToolType(pointer_index);
-  }
-  return source_->GetToolType(pointer_index);
+  return source()->GetPressure(pointer_index);
 }
 
 bool MotionEventAndroidJava::IsLatestEventTimeResampled() const {
-  return source_->IsLatestEventTimeResampled();
+  return source()->IsLatestEventTimeResampled();
 }
 
 }  // namespace ui
