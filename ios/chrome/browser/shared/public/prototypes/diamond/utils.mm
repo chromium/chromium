@@ -37,6 +37,10 @@ const CGFloat kChromeAppBarPrototypeHeight = 58;
 
 const CGFloat kDiamondBrowserCornerRadius = 18;
 
+const CGFloat kDiamondToolbarHeight = 62;
+const CGFloat kDiamondCollapsedToolbarHeight = 41;
+const CGFloat kDiamondLocationBarHeight = 46;
+
 NSString* kDiamondEnterTabGridNotification =
     @"kDiamondEnterTabGridNotification";
 NSString* kDiamondLeaveTabGridNotification =

@@ -131,6 +131,10 @@
       hasBottomSafeArea ? kBottomAdaptiveLocationBarVerticalMarginFullscreen
                         : 0;
 
+  if (IsDiamondPrototypeEnabled()) {
+    return AlignValueToPixel(kBottomAdaptiveLocationBarTopMargin * progress);
+  }
+
   return AlignValueToPixel((kBottomAdaptiveLocationBarTopMargin * progress +
                             fullscreenMargin * (1 - progress)) *
                                clampedFontSizeMultiplier +

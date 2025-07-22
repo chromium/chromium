@@ -65,6 +65,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -1312,11 +1313,11 @@ const CGFloat kTopDynamicIslandInset = 24;
 // Returns 0 if the toolbar should be hidden.
 - (CGFloat)secondaryToolbarHeightWithInset {
   CGFloat height = self.toolbarCoordinator.expandedSecondaryToolbarHeight;
-  if (IsDiamondPrototypeEnabled()) {
-    return height;
-  }
   if (!height) {
     return 0.0;
+  }
+  if (IsDiamondPrototypeEnabled()) {
+    return kDiamondToolbarHeight;
   }
   // Add the safe area inset to the toolbar height.
   CGFloat unsafeHeight = self.rootSafeAreaInsets.bottom;
@@ -2052,6 +2053,9 @@ const CGFloat kTopDynamicIslandInset = 24;
   CGFloat height = self.toolbarCoordinator.collapsedSecondaryToolbarHeight;
   if (!height) {
     return 0.0;
+  }
+  if (IsDiamondPrototypeEnabled()) {
+    return kDiamondCollapsedToolbarHeight;
   }
   // Height is non-zero only when bottom omnibox is enabled.
   return self.rootSafeAreaInsets.bottom + height;

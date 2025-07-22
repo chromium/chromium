@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -459,6 +460,13 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 // Updates `locationBarContainer` height and adjusts its corner radius for the
 // fullscreen `progress`
 - (void)updateLocationBarHeightForFullscreenProgress:(CGFloat)progress {
+  if (IsDiamondPrototypeEnabled()) {
+    const CGFloat height = kDiamondLocationBarHeight * progress +
+                           kDiamondCollapsedToolbarHeight * (1 - progress);
+    self.view.locationBarContainerHeight.constant = height;
+    self.view.locationBarContainer.layer.cornerRadius = height / 2;
+    return;
+  }
   const CGFloat expandedHeight =
       LocationBarHeight(self.traitCollection.preferredContentSizeCategory);
   const CGFloat collapsedHeight =

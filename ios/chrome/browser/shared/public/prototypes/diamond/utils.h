@@ -15,6 +15,11 @@ extern const CGFloat kChromeAppBarPrototypeHeight;
 // The corner radius of the browser container.
 extern const CGFloat kDiamondBrowserCornerRadius;
 
+// Height of the toolbar with diamond.
+extern const CGFloat kDiamondToolbarHeight;
+extern const CGFloat kDiamondCollapsedToolbarHeight;
+extern const CGFloat kDiamondLocationBarHeight;
+
 // Notification sent when entering the tab grid.
 extern NSString* kDiamondEnterTabGridNotification;
 // Notification sent when leaving the tab grid.

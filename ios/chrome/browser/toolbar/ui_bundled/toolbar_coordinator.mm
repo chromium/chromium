@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_coordinator.h"
@@ -376,11 +377,20 @@
     return 1.0;
   }
 
+  if (IsDiamondPrototypeEnabled()) {
+    return kDiamondCollapsedToolbarHeight;
+  }
+
   return ToolbarCollapsedHeight(
       self.traitEnvironment.traitCollection.preferredContentSizeCategory);
 }
 
 - (CGFloat)expandedPrimaryToolbarHeight {
+  if (IsDiamondPrototypeEnabled() &&
+      _omniboxPosition != ToolbarType::kSecondary) {
+    return kDiamondToolbarHeight;
+  }
+
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;
   if (CanShowTabStrip(self.traitEnvironment)) {
