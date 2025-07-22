@@ -560,6 +560,11 @@ _CROSSBENCH_PIXEL9 = frozenset([
     ]),
 ])
 
+_CROSSBENCH_ANDROID_AL_BRYA = frozenset([
+    _speedometer3_crossbench(arguments=['--fileserver', '--debug']),
+    _motionmark1_3_crossbench(arguments=['--fileserver', '--debug']),
+])
+
 _CROSSBENCH_ANDROID_AL = frozenset([
     _speedometer3_crossbench(arguments=['--fileserver', '--debug']),
 ])
@@ -826,6 +831,10 @@ _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer3-minorms')
     ])
 # Android Desktop (AL)
+_ANDROID_AL_BRYA_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('speedometer2'),
+])
 _ANDROID_AL_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.mobile'),
 ])
@@ -990,7 +999,7 @@ ANDROID_BRYA = PerfPlatform(
     name='android-brya-kano-i5-8gb-perf',
     description='Brya SKU kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
     num_shards=7,
-    benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
+    benchmark_configs=_ANDROID_AL_BRYA_BENCHMARK_CONFIGS,
     platform_os='android',
     executables=None,
     crossbench=_CROSSBENCH_ANDROID_AL)
