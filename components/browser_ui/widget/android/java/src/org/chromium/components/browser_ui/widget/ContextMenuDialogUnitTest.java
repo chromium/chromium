@@ -140,25 +140,7 @@ public class ContextMenuDialogUnitTest {
                 window.getFlag(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL));
     }
 
-    @Test
-    public void testCreateDialog_dontMatchSysUi() {
-        mDialog =
-                createContextMenuDialog(
-                        /* isPopup= */ false,
-                        /* shouldRemoveScrim= */ false,
-                        /* shouldSysUiMatchActivity */ false);
-        mDialog.show();
 
-        // Only checks the flag is unset to make sure the setup for |shouldSysUiMatchActivity| is
-        // not ran.
-        ShadowPhoneWindow window = (ShadowPhoneWindow) Shadows.shadowOf(mDialog.getWindow());
-        Assert.assertFalse(
-                "FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS is in window flags.",
-                window.getFlag(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS));
-        Assert.assertFalse(
-                "FLAG_NOT_TOUCH_MODAL is in window flags.",
-                window.getFlag(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL));
-    }
 
     @Test
     public void testShowPopupWindow() {
@@ -304,7 +286,6 @@ public class ContextMenuDialogUnitTest {
                         mMenuContentView,
                         /* isPopup*/ false,
                         /* shouldRemoveScrim */ false,
-                        /* shouldSysUiMatchActivity */ true,
                         0,
                         0,
                         mSpyDragDispatchingDestinationView,
@@ -331,11 +312,6 @@ public class ContextMenuDialogUnitTest {
     }
 
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
-        return createContextMenuDialog(isPopup, shouldRemoveScrim, true);
-    }
-
-    private ContextMenuDialog createContextMenuDialog(
-            boolean isPopup, boolean shouldRemoveScrim, boolean shouldSysUiMatchActivity) {
         return new ContextMenuDialog(
                 mActivity,
                 0,
@@ -345,7 +321,6 @@ public class ContextMenuDialogUnitTest {
                 mMenuContentView,
                 isPopup,
                 shouldRemoveScrim,
-                shouldSysUiMatchActivity,
                 0,
                 0,
                 mSpyDragDispatchingDestinationView,

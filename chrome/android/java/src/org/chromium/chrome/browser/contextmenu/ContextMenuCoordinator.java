@@ -27,7 +27,6 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -444,8 +443,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         menuView,
                         isPopup,
                         shouldRemoveScrim,
-                        ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.CONTEXT_MENU_SYS_UI_MATCHES_ACTIVITY),
                         popupMargin,
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,

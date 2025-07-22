@@ -50,7 +50,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private final View mContentView;
     private final boolean mIsPopup;
     private final boolean mShouldRemoveScrim;
-    private final boolean mShouldSysUiMatchActivity;
 
     private float mContextMenuSourceXPx;
     private float mContextMenuSourceYPx;
@@ -88,8 +87,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
      * @param shouldRemoveScrim Whether the context menu should removes the scrim behind the dialog
      *     visually.
-     * @param shouldSysUiMatchActivity Whether the status bar and navigation bar for the dialog
-     *     window should be styled to match the {@code ownerActivity}.
      * @param popupMargin The margin for the context menu.
      * @param desiredPopupContentWidth The desired width for the content of the context menu.
      * @param touchEventDelegateView View View that is showing behind the context menu. If menu is
@@ -109,7 +106,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             View contentView,
             boolean isPopup,
             boolean shouldRemoveScrim,
-            boolean shouldSysUiMatchActivity,
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
@@ -123,7 +119,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mLayout = layout;
         mIsPopup = isPopup;
         mShouldRemoveScrim = shouldRemoveScrim;
-        mShouldSysUiMatchActivity = shouldSysUiMatchActivity;
         mPopupMargin = popupMargin;
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
@@ -140,24 +135,22 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         }
-        if (mShouldRemoveScrim || mShouldSysUiMatchActivity) {
-            Window activityWindow = mActivity.getWindow();
-            dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            // Set the navigation bar when API level >= 27 to match android:navigationBarColor
-            // reference in styles.xml.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                dialogWindow.setNavigationBarColor(activityWindow.getNavigationBarColor());
-                UiUtils.setNavigationBarIconColor(
-                        dialogWindow.getDecorView(),
-                        mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
-            }
-            // Apply the status bar color in case the website had override them.
-            int statusBarColor = activityWindow.getStatusBarColor();
-            UiUtils.setStatusBarColor(dialogWindow, statusBarColor);
-            UiUtils.setStatusBarIconColor(
-                    dialogWindow.getDecorView().getRootView(),
-                    !ColorUtils.shouldUseLightForegroundOnBackground(statusBarColor));
+        Window activityWindow = mActivity.getWindow();
+        dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        // Set the navigation bar when API level >= 27 to match android:navigationBarColor
+        // reference in styles.xml.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            dialogWindow.setNavigationBarColor(activityWindow.getNavigationBarColor());
+            UiUtils.setNavigationBarIconColor(
+                    dialogWindow.getDecorView(),
+                    mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
         }
+        // Apply the status bar color in case the website had override them.
+        int statusBarColor = activityWindow.getStatusBarColor();
+        UiUtils.setStatusBarColor(dialogWindow, statusBarColor);
+        UiUtils.setStatusBarIconColor(
+                dialogWindow.getDecorView().getRootView(),
+                !ColorUtils.shouldUseLightForegroundOnBackground(statusBarColor));
 
         // Both bottom margin and top margin must be set together to ensure default
         // values are not relied upon for custom behavior.
