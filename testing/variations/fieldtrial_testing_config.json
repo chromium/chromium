@@ -20058,22 +20058,6 @@
             ]
         }
     ],
-    "RegmonPolicyMonitoring": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootRegmonPolicyMonitoringEnabled",
-                        "NetworkAnnotationMonitoring"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReloadSelectionModel": [
         {
             "platforms": [

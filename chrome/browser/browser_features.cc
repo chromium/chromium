@@ -150,7 +150,7 @@ BASE_FEATURE(kMuteNotificationSnoozeAction,
 // network request controlled by that policy is observed.
 BASE_FEATURE(kNetworkAnnotationMonitoring,
              "NetworkAnnotationMonitoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This flag is used for enabling New Tab Page triggered prerendering. See
 // crbug.com/1462832 for more details of New Tab Page triggered prerendering.
