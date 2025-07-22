@@ -880,11 +880,10 @@ bool RTCPeerConnectionHandler::Initialize(
   configuration_.set_experiment_cpu_load_estimator(true);
 
   // Configure optional SRTP configurations enabled via the command line.
-  configuration_.crypto_options = webrtc::CryptoOptions{};
-  configuration_.crypto_options->srtp.enable_gcm_crypto_suites = true;
-  configuration_.crypto_options->srtp.enable_encrypted_rtp_header_extensions =
+  webrtc::CryptoOptions crypto_options;
+  crypto_options.srtp.enable_gcm_crypto_suites = true;
+  crypto_options.srtp.enable_encrypted_rtp_header_extensions =
       base::FeatureList::IsEnabled(kWebRtcEncryptedRtpHeaderExtensions);
-  configuration_.enable_implicit_rollback = true;
   bool webrtc_post_quantum_key_agreement =
       LocalFrame::FromFrameToken(frame_->GetLocalFrameToken())
           ->GetPage()
@@ -893,10 +892,12 @@ bool RTCPeerConnectionHandler::Initialize(
           .value_or(base::FeatureList::IsEnabled(features::kWebRtcPqcForDtls));
 
   if (webrtc_post_quantum_key_agreement) {
-    configuration_.crypto_options->ephemeral_key_exchange_cipher_groups
-        .AddFirst(webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
-                      kX25519_MLKEM768);
+    crypto_options.ephemeral_key_exchange_cipher_groups.AddFirst(
+        webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
+            kX25519_MLKEM768);
   }
+  configuration_.crypto_options = crypto_options;
+  configuration_.enable_implicit_rollback = true;
 
   // Apply 40 ms worth of bursting. See webrtc::TaskQueuePacedSender.
   configuration_.pacer_burst_interval = webrtc::TimeDelta::Millis(40);
