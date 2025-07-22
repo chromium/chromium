@@ -27,4 +27,8 @@ const base::FeatureParam<base::TimeDelta> kPrivacySandboxActSurveyDelayMax{
 const base::FeatureParam<bool> kPrivacySandboxActSurveyCustomInvitation{
     &kPrivacySandboxActSurvey, "custom_invitation", true};
 
+BASE_FEATURE(kPrivacySandboxActWhatsNew,
+             "PrivacySandboxActWhatsNew",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace privacy_sandbox

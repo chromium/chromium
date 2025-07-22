@@ -33,6 +33,9 @@ extern const base::FeatureParam<base::TimeDelta>
 // Whether a custom invitation text should be shown on Android.
 extern const base::FeatureParam<bool> kPrivacySandboxActSurveyCustomInvitation;
 
+// Show ACT features on the What's New page.
+BASE_DECLARE_FEATURE(kPrivacySandboxActWhatsNew);
+
 }  // namespace privacy_sandbox
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_INCOGNITO_PRIVACY_SANDBOX_INCOGNITO_FEATURES_H_
