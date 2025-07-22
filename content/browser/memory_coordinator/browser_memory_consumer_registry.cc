@@ -85,8 +85,11 @@ void BrowserMemoryConsumerRegistry::ChildMemoryConsumer::OnUpdateMemoryLimit() {
 
 BrowserMemoryConsumerRegistry::ConsumerGroup::ConsumerGroup(
     base::MemoryConsumerTraits traits,
-    ProcessType process_type)
-    : traits_(traits), process_type_(process_type) {}
+    ProcessType process_type,
+    ChildProcessId child_process_id)
+    : traits_(traits),
+      process_type_(process_type),
+      child_process_id_(child_process_id) {}
 
 BrowserMemoryConsumerRegistry::ConsumerGroup::~ConsumerGroup() {
   CHECK(memory_consumers_.empty());
@@ -136,23 +139,19 @@ void BrowserMemoryConsumerRegistry::RegisterChildMemoryConsumer(
     const std::string& consumer_id,
     base::MemoryConsumerTraits traits,
     mojo::PendingRemote<mojom::ChildMemoryConsumer> remote_consumer) {
-  ChildProcessId child_process_id =
-      receivers_.current_context().child_process_id;
-
-  auto [it, inserted] = child_memory_consumers_.emplace(
-      std::piecewise_construct,
-      std::forward_as_tuple(consumer_id, child_process_id),
-      std::forward_as_tuple(
-          std::move(remote_consumer),
-          base::BindOnce(
-              &BrowserMemoryConsumerRegistry::OnChildMemoryConsumerDisconnected,
-              base::Unretained(this), consumer_id, child_process_id)));
+  auto [it, inserted] = child_memory_consumers_.try_emplace(
+      consumer_id, std::move(remote_consumer),
+      base::BindOnce(
+          &BrowserMemoryConsumerRegistry::OnChildMemoryConsumerDisconnected,
+          base::Unretained(this), consumer_id));
   if (!inserted) {
     receivers_.ReportBadMessage("Duplicate MemoryConsumer ID.");
     return;
   }
 
   ProcessType process_type = receivers_.current_context().process_type;
+  ChildProcessId child_process_id =
+      receivers_.current_context().child_process_id;
 
   AddMemoryConsumerImpl(consumer_id, traits, process_type, child_process_id,
                         CreateRegisteredMemoryConsumer(&it->second));
@@ -169,7 +168,7 @@ void BrowserMemoryConsumerRegistry::OnMemoryConsumerAdded(
 void BrowserMemoryConsumerRegistry::OnMemoryConsumerRemoved(
     std::string_view consumer_id,
     base::RegisteredMemoryConsumer consumer) {
-  RemoveMemoryConsumerImpl(consumer_id, ChildProcessId(), consumer);
+  RemoveMemoryConsumerImpl(consumer_id, consumer);
 }
 
 void BrowserMemoryConsumerRegistry::AddMemoryConsumerImpl(
@@ -178,15 +177,13 @@ void BrowserMemoryConsumerRegistry::AddMemoryConsumerImpl(
     ProcessType process_type,
     ChildProcessId child_process_id,
     base::RegisteredMemoryConsumer consumer) {
-  auto [it, inserted] = consumer_groups_.emplace(
-      std::piecewise_construct,
-      std::forward_as_tuple(consumer_id, child_process_id),
-      std::forward_as_tuple(traits, process_type));
+  auto [it, inserted] = consumer_groups_.try_emplace(
+      std::string(consumer_id), traits, process_type, child_process_id);
   ConsumerGroup& consumer_group = it->second;
 
   if (inserted) {
-    // First time seeing a consumer with this ID in this process. Add to
-    // `consumer_infos_` to facilitate iteration by external callers.
+    // First time seeing an consumer with this ID. Add to `consumer_infos_` to
+    // facilitate iteration by external callers.
     consumer_infos_.emplace_back(
         std::string(consumer_id), traits, process_type, child_process_id,
         CreateRegisteredMemoryConsumer(&consumer_group));
@@ -194,15 +191,15 @@ void BrowserMemoryConsumerRegistry::AddMemoryConsumerImpl(
 
   CHECK(consumer_group.traits() == traits);
   CHECK_EQ(consumer_group.process_type(), process_type);
+  CHECK_EQ(consumer_group.child_process_id(), child_process_id);
 
   consumer_group.AddMemoryConsumer(consumer);
 }
 
 void BrowserMemoryConsumerRegistry::RemoveMemoryConsumerImpl(
     std::string_view consumer_id,
-    ChildProcessId child_process_id,
     base::RegisteredMemoryConsumer consumer) {
-  auto it = consumer_groups_.find(std::tie(consumer_id, child_process_id));
+  auto it = consumer_groups_.find(consumer_id);
   CHECK(it != consumer_groups_.end());
   ConsumerGroup& consumer_group = it->second;
 
@@ -211,10 +208,8 @@ void BrowserMemoryConsumerRegistry::RemoveMemoryConsumerImpl(
   if (consumer_group.empty()) {
     // Last consumer with this ID. Clean up from `consumer_infos_`.
     size_t removed = std::erase_if(
-        consumer_infos_,
-        [consumer_id, child_process_id](const ConsumerInfo& consumer_info) {
-          return consumer_info.consumer_id == consumer_id &&
-                 consumer_info.child_process_id == child_process_id;
+        consumer_infos_, [consumer_id](const ConsumerInfo& consumer_info) {
+          return consumer_info.consumer_id == consumer_id;
         });
     CHECK_EQ(removed, 1u);
 
@@ -225,14 +220,11 @@ void BrowserMemoryConsumerRegistry::RemoveMemoryConsumerImpl(
 
 void BrowserMemoryConsumerRegistry::OnChildMemoryConsumerDisconnected(
     const std::string& consumer_id,
-    ChildProcessId child_process_id,
     ChildMemoryConsumer* child_memory_consumer) {
   RemoveMemoryConsumerImpl(
-      consumer_id, child_process_id,
-      CreateRegisteredMemoryConsumer(child_memory_consumer));
+      consumer_id, CreateRegisteredMemoryConsumer(child_memory_consumer));
 
-  size_t removed =
-      child_memory_consumers_.erase(std::tie(consumer_id, child_process_id));
+  size_t removed = child_memory_consumers_.erase(consumer_id);
   CHECK_EQ(removed, 1u);
 }
 

@@ -9,7 +9,6 @@
 #include <map>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <vector>
 
 #include "base/memory_coordinator/memory_consumer.h"
@@ -111,7 +110,9 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
   // consumer ID and process ID to ensure they are treated identically.
   class ConsumerGroup : public base::MemoryConsumer {
    public:
-    ConsumerGroup(base::MemoryConsumerTraits traits, ProcessType process_type);
+    ConsumerGroup(base::MemoryConsumerTraits traits,
+                  ProcessType process_type,
+                  ChildProcessId child_process_id);
     ~ConsumerGroup() override;
 
     // base::MemoryConsumer:
@@ -126,10 +127,12 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
 
     base::MemoryConsumerTraits traits() const { return traits_; }
     ProcessType process_type() const { return process_type_; }
+    ChildProcessId child_process_id() const { return child_process_id_; }
 
    private:
     base::MemoryConsumerTraits traits_;
     ProcessType process_type_;
+    ChildProcessId child_process_id_;
 
     std::vector<base::RegisteredMemoryConsumer> memory_consumers_;
   };
@@ -151,12 +154,10 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
                              ChildProcessId child_process_id,
                              base::RegisteredMemoryConsumer consumer);
   void RemoveMemoryConsumerImpl(std::string_view consumer_id,
-                                ChildProcessId child_process_id,
                                 base::RegisteredMemoryConsumer consumer);
 
   void OnChildMemoryConsumerDisconnected(
       const std::string& consumer_id,
-      ChildProcessId child_process_id,
       ChildMemoryConsumer* child_memory_consumer);
 
   struct ChildRegistryContext {
@@ -166,16 +167,12 @@ class CONTENT_EXPORT BrowserMemoryConsumerRegistry
   mojo::ReceiverSet<mojom::BrowserMemoryConsumerRegistry, ChildRegistryContext>
       receivers_;
 
-  using ConsumerGroupKey = std::tuple<std::string, ChildProcessId>;
-
   // Holds a ChildMemoryConsumer for each consumer group that lives in a child
   // process.
-  std::map<ConsumerGroupKey, ChildMemoryConsumer, std::less<>>
-      child_memory_consumers_;
+  std::map<std::string, ChildMemoryConsumer> child_memory_consumers_;
 
-  // Contains groups of all MemoryConsumers with the same consumer ID and
-  // process ID.
-  std::map<ConsumerGroupKey, ConsumerGroup, std::less<>> consumer_groups_;
+  // Contains groups of all MemoryConsumers with the same consumer ID.
+  std::map<std::string, ConsumerGroup, std::less<>> consumer_groups_;
 
   // For each ConsumerGroup, this holds a corresponding ConsumerInfo entry. This
   // exists to facilitate iteration over existing MemoryConsumers.
