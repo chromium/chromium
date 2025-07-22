@@ -214,10 +214,8 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
 #pragma mark - FormSuggestionLabelDelegate
 
 - (void)didTapFormSuggestionLabel:(FormSuggestionLabel*)formSuggestionLabel {
-  NSUInteger index =
-      [self.stackView.arrangedSubviews indexOfObject:formSuggestionLabel];
-  DCHECK(index != NSNotFound);
-  FormSuggestion* suggestion = [self.suggestions objectAtIndex:index];
+  NSUInteger index = formSuggestionLabel.suggestionIndex;
+  FormSuggestion* suggestion = formSuggestionLabel.suggestion;
   LogSelectedSuggestionIndexMetric(suggestion.type, index);
   base::RecordAction(
       base::UserMetricsAction("KeyboardAccessory_SuggestionAccepted"));

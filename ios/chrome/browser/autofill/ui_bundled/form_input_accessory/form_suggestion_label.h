@@ -35,6 +35,12 @@
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
+// Returns the label's associated suggestion.
+- (FormSuggestion*)suggestion;
+
+// Returns the label's associated suggestion's index.
+- (NSUInteger)suggestionIndex;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_FORM_INPUT_ACCESSORY_FORM_SUGGESTION_LABEL_H_

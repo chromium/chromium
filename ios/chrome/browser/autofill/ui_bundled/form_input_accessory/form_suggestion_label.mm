@@ -348,6 +348,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
   // Client of this view.
   __weak id<FormSuggestionLabelDelegate> _delegate;
   FormSuggestion* _suggestion;
+  NSUInteger _suggestionIndex;
 }
 
 #pragma mark - Public
@@ -360,6 +361,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _suggestion = suggestion;
+    _suggestionIndex = index;
     _delegate = delegate;
 
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
@@ -472,6 +474,14 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
   }
 
   return self;
+}
+
+- (FormSuggestion*)suggestion {
+  return _suggestion;
+}
+
+- (NSUInteger)suggestionIndex {
+  return _suggestionIndex;
 }
 
 #pragma mark - UIView
