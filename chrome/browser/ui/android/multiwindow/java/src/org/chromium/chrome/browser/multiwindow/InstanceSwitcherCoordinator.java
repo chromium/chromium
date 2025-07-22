@@ -14,8 +14,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -100,8 +103,9 @@ public class InstanceSwitcherCoordinator {
     private @Nullable InstanceInfo mSelectedItem;
     private boolean mNewWindowEnabled;
     private boolean mIsInactiveListShowing;
-
+    private @MonotonicNonNull FrameLayout mInstanceListContainer;
     private @MonotonicNonNull RecyclerView mActiveInstancesList;
+    private @MonotonicNonNull RecyclerView mInactiveInstancesList;
     private @MonotonicNonNull DialogListItemDecoration mActiveListItemDecoration;
 
     /**
@@ -159,6 +163,7 @@ public class InstanceSwitcherCoordinator {
             mDialogView =
                     LayoutInflater.from(context)
                             .inflate(R.layout.instance_switcher_dialog_v2, null);
+            mInstanceListContainer = mDialogView.findViewById(R.id.instance_list_container);
             mMaxInfoView = mDialogView.findViewById(R.id.max_instance_info);
             mNewWindowLayout = mDialogView.findViewById(R.id.new_window);
 
@@ -175,12 +180,14 @@ public class InstanceSwitcherCoordinator {
             mActiveInstancesList.setAdapter(activeListAdapter);
             mActiveInstancesList.addItemDecoration(mActiveListItemDecoration);
 
-            RecyclerView inactiveInstancesList =
-                    mDialogView.findViewById(R.id.inactive_instance_list);
-            inactiveInstancesList.setLayoutManager(
+            mInactiveInstancesList = mDialogView.findViewById(R.id.inactive_instance_list);
+            mInactiveInstancesList.setLayoutManager(
                     new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
-            inactiveInstancesList.setAdapter(inactiveListAdapter);
-            inactiveInstancesList.addItemDecoration(inactiveListItemDecoration);
+            mInactiveInstancesList.setAdapter(inactiveListAdapter);
+            mInactiveInstancesList.addItemDecoration(inactiveListItemDecoration);
+
+            addInstanceListGlobalLayoutListener(
+                    mInstanceListContainer, mActiveInstancesList, mIsInactiveListShowing);
 
             mTabHeaderRow = mDialogView.findViewById(R.id.tabs);
             mTabHeaderRow.addOnTabSelectedListener(
@@ -190,9 +197,13 @@ public class InstanceSwitcherCoordinator {
                             boolean isActiveTab = tab.getPosition() == 0;
                             mActiveInstancesList.setVisibility(
                                     isActiveTab ? View.VISIBLE : View.GONE);
-                            inactiveInstancesList.setVisibility(
+                            mInactiveInstancesList.setVisibility(
                                     isActiveTab ? View.GONE : View.VISIBLE);
                             mIsInactiveListShowing = !isActiveTab;
+                            addInstanceListGlobalLayoutListener(
+                                    mInstanceListContainer,
+                                    mActiveInstancesList,
+                                    mIsInactiveListShowing);
                             updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
                             unselectItems();
                             updatePositiveButtonText();
@@ -236,6 +247,60 @@ public class InstanceSwitcherCoordinator {
                                 .inflate(R.layout.instance_switcher_item_v2, null),
                 InstanceSwitcherItemViewBinder::bind);
         return adapter;
+    }
+
+    // Adds a listener to layout the command item correctly relative to the instance list view.
+    /* package */ static OnGlobalLayoutListener addInstanceListGlobalLayoutListener(
+            View instanceListContainer,
+            RecyclerView activeInstancesList,
+            boolean isInactiveListShowing) {
+        var listener =
+                new OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        instanceListContainer
+                                .getViewTreeObserver()
+                                .removeOnGlobalLayoutListener(this);
+                        maybeUpdateInstanceListContainerParams(
+                                instanceListContainer, activeInstancesList, isInactiveListShowing);
+                    }
+                };
+        instanceListContainer.getViewTreeObserver().addOnGlobalLayoutListener(listener);
+        return listener;
+    }
+
+    private static void maybeUpdateInstanceListContainerParams(
+            View instanceListContainer,
+            RecyclerView activeInstancesList,
+            boolean isInactiveListShowing) {
+        LayoutParams params = (LayoutParams) instanceListContainer.getLayoutParams();
+
+        // Default height / weight params should be applied for the inactive instance list, or a
+        // scrollable active instance list so that the command item sticks while the instance list
+        // is scrolled.
+        boolean shouldUseDefaultWeight =
+                isInactiveListShowing
+                        || activeInstancesList.getMeasuredHeight()
+                                < activeInstancesList.computeVerticalScrollRange();
+
+        // Do nothing if params are already as expected.
+        if ((shouldUseDefaultWeight && params.weight == 1f)
+                || (!shouldUseDefaultWeight && params.weight == 0)) {
+            return;
+        }
+
+        if (shouldUseDefaultWeight) {
+            params.weight = 1f;
+            params.height = 0;
+        } else {
+            // Special height / weight params, for when the active instance list does not have
+            // enough items to make it scrollable. It is specifically required in a fullscreen
+            // dialog layout where the list will occupy most of the container space pushing the
+            // command item to the bottom of the container if weight=1, which is not desirable.
+            params.weight = 0f;
+            params.height = LayoutParams.WRAP_CONTENT;
+        }
+        instanceListContainer.setLayoutParams(params);
     }
 
     private void show(List<InstanceInfo> items) {
@@ -539,6 +604,10 @@ public class InstanceSwitcherCoordinator {
     private void removeInstance(InstanceInfo item) {
         int instanceId = item.instanceId;
         if (UiUtils.isInstanceSwitcherV2Enabled()) {
+            addInstanceListGlobalLayoutListener(
+                    assumeNonNull(mInstanceListContainer),
+                    assumeNonNull(mActiveInstancesList),
+                    mIsInactiveListShowing);
             if (mSelectedItem != null && mSelectedItem.instanceId == item.instanceId) {
                 assert mDialog != null;
                 mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
