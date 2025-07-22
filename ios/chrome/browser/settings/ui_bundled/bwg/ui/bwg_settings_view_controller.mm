@@ -66,6 +66,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   TableViewSwitchItem* _pageContentSharingItem;
   // BWG Apps activity item. Uses `accessoryView` to create a tappable icon.
   TableViewDetailTextItem* _BWGAppsActivityItem;
+  // Location view controller shown when precise location row is tapped.
+  BWGLocationViewController* _locationViewController;
   // Precise location preference value.
   BOOL _preciseLocationEnabled;
   // Page content sharing preference value.
@@ -229,12 +231,13 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeLocation) {
-    BWGLocationViewController* locationViewController =
-        [[BWGLocationViewController alloc]
-            initWithStyle:ChromeTableViewStyle()];
-    locationViewController.navigationItem.backButtonTitle =
+    _locationViewController = [[BWGLocationViewController alloc]
+        initWithStyle:ChromeTableViewStyle()];
+    _locationViewController.navigationItem.backButtonTitle =
         l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_BACK_BUTTON_TITLE);
-    [self.navigationController pushViewController:locationViewController
+    _locationViewController.preciseLocationEnabled = _preciseLocationEnabled;
+    _locationViewController.mutator = self.mutator;
+    [self.navigationController pushViewController:_locationViewController
                                          animated:YES];
   }
 
@@ -288,6 +291,12 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 - (void)setPreciseLocationEnabled:(BOOL)enabled {
   _preciseLocationEnabled = enabled;
+
+  // Propagate precise location pref changes to other views that may be opened
+  // such as an alternate multi-window screen.
+  if (_locationViewController) {
+    _locationViewController.preciseLocationEnabled = enabled;
+  }
 
   if ([self isViewLoaded]) {
     _preciseLocationItem.trailingDetailText =

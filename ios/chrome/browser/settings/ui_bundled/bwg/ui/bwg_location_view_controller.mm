@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -70,6 +72,42 @@ NSString* const kPreciseLocationCellId = @"PreciseLocationCellId";
       toSectionWithIdentifier:SectionIdentifierLocation];
   [model setFooter:locationFooterItem
       forSectionWithIdentifier:SectionIdentifierLocation];
+}
+
+- (void)setPreciseLocationEnabled:(BOOL)enabled {
+  _preciseLocationEnabled = enabled;
+  if ([self isViewLoaded]) {
+    _preciseLocationSwitchItem.on = _preciseLocationEnabled;
+    [self reconfigureCellsForItems:@[ _preciseLocationSwitchItem ]];
+  }
+}
+
+#pragma mark - Private
+
+// Called from the Precise Location setting's UIControlEventTouchUpInside.
+// Updates underlying precise location sharing pref.
+- (void)preciseLocationSwitchTapped:(UISwitch*)switchView {
+  [self.mutator setPreciseLocationPref:switchView.isOn];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+
+  ItemType itemType = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
+
+  if (itemType == ItemTypeLocation) {
+    TableViewSwitchCell* switchCell =
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(preciseLocationSwitchTapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
+  }
+  return cell;
 }
 
 #pragma mark - SettingsControllerProtocol
