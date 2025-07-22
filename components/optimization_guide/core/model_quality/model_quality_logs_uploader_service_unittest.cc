@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -99,9 +100,8 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
   }
 
   void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
-    pref_service_.SetInteger(
-        model_execution::prefs::localstate::kOnDevicePerformanceClass,
-        base::to_underlying(OnDeviceModelPerformanceClass::kVeryHigh));
+    UpdatePerformanceClassPref(&pref_service_,
+                               OnDeviceModelPerformanceClass::kVeryHigh);
   }
 
   void UploadModelQualityLogs(

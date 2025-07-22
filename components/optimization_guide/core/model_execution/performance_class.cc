@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/version_info/version_info.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/prefs/pref_service.h"
@@ -92,9 +93,12 @@ OnDeviceModelPerformanceClass PerformanceClassFromPref(
 void UpdatePerformanceClassPref(
     PrefService* local_state,
     OnDeviceModelPerformanceClass performance_class) {
-  return local_state->SetInteger(
+   local_state->SetInteger(
       model_execution::prefs::localstate::kOnDevicePerformanceClass,
       base::to_underlying(performance_class));
+   local_state->SetString(
+       model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
+       version_info::GetVersionNumber());
 }
 
 }  // namespace optimization_guide

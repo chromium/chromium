@@ -8,6 +8,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -26,9 +27,7 @@ FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
         {{"on_device_model_validation_delay", "0"}}}},
       {});
   model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
-  local_state_.SetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass,
-      base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
+  UpdatePerformanceClassPref(&local_state_, OnDeviceModelPerformanceClass::kHigh);
   auto access_controller =
       std::make_unique<OnDeviceModelAccessController>(local_state_);
   test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(

@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -453,8 +454,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   EnableSignIn();
 
   // Not visible - performance class not in the list
-  local_state()->SetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass, 2);
+  UpdatePerformanceClassPref(local_state(),
+                             OnDeviceModelPerformanceClass::kVeryLow);
   EXPECT_FALSE(
       controller()->IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
   histogram_tester()->ExpectUniqueSample(
@@ -464,8 +465,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       1);
 
   // Visible - performance class in the list.
-  local_state()->SetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass, 4);
+  UpdatePerformanceClassPref(local_state(),
+                             OnDeviceModelPerformanceClass::kMedium);
   EXPECT_TRUE(
       controller()->IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
   histogram_tester()->ExpectBucketCount(

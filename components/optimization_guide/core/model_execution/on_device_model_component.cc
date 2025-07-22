@@ -219,9 +219,6 @@ void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
     OnDeviceModelPerformanceClass performance_class) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdatePerformanceClassPref(local_state_, performance_class);
-  local_state_->SetString(
-      model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
-      version_info::GetVersionNumber());
   BeginUpdateRegistration(std::move(complete));
 }
 

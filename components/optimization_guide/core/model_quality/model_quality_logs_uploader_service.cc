@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -110,10 +111,7 @@ void OnURLLoadComplete(
 }
 
 proto::PerformanceClass GetPerformanceClass(PrefService* local_state) {
-  int value = local_state->GetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass);
-  OnDeviceModelPerformanceClass performance_class =
-      static_cast<OnDeviceModelPerformanceClass>(value);
+  auto performance_class = PerformanceClassFromPref(*local_state);
   switch (performance_class) {
     case OnDeviceModelPerformanceClass::kVeryLow:
       return proto::PERFORMANCE_CLASS_VERY_LOW;

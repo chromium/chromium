@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -91,9 +92,8 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
          {features::kOptimizationGuideOnDeviceModel, {}}},
         {});
     model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
-    local_state_.SetInteger(
-        model_execution::prefs::localstate::kOnDevicePerformanceClass,
-        base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
+    UpdatePerformanceClassPref(&local_state_,
+                               OnDeviceModelPerformanceClass::kHigh);
 
     on_device_component_state_manager_.get()->OnDeviceEligibleFeatureUsed(
         ModelBasedCapabilityKey::kTest);

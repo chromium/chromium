@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -95,9 +96,8 @@ class OnDeviceAssetManagerTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures({features::kTextSafetyClassifier},
                                           {});
     model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
-    local_state_.SetInteger(
-        model_execution::prefs::localstate::kOnDevicePerformanceClass,
-        base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
+    UpdatePerformanceClassPref(&local_state_,
+                               OnDeviceModelPerformanceClass::kHigh);
     service_controller_ = base::MakeRefCounted<FakeServiceController>();
   }
 
