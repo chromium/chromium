@@ -14,6 +14,10 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif
 
 namespace actor::ui {
 namespace {
@@ -219,6 +223,15 @@ void ActorUiStateManager::OnGlicUpdateFloatyState(
     case glic::GlicWindowController::State::kWaitingForGlicToLoad:
       break;
   }
+  if (state_ != UiState::kInactive) {
+    floaty_task_state_change_callback_list_.Notify(state_, floaty_state);
+  }
+}
+
+base::CallbackListSubscription
+ActorUiStateManager::RegisterFloatyTaskStateChange(
+    FloatyTaskStateChangeCallback callback) {
+  return floaty_task_state_change_callback_list_.Add(std::move(callback));
 }
 #endif
 
@@ -245,9 +258,17 @@ void ActorUiStateManager::MaybeUpdateProfileScopedUiState() {
 
   if (state_ != new_state) {
     state_ = new_state;
-    // TODO(crbug.com/424495020): Create window controller and send new state
-    // via BrowserList::GetInstance()->ForEachCurrentAndNewBrowser...
-    // then wait for a callback.
+
+// TODO(crbug.com/424495020): Refactor to remove this dependency post-m3 &
+// post-task icon refactor.
+#if BUILDFLAG(ENABLE_GLIC)
+    if (auto* glic_keyed_service =
+            glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+                actor_service_->GetProfile())) {
+      floaty_task_state_change_callback_list_.Notify(
+          state_, glic_keyed_service->window_controller().state());
+    }
+#endif
   }
 }
 

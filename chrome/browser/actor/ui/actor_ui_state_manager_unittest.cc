@@ -61,6 +61,8 @@ class ActorUiStateManagerFake : public ActorUiStateManager {
 
   UiTabState GetUiTabState() { return ui_tab_state_; }
 
+  void SetUiStateForTesting(UiState new_state) { state_ = new_state; }
+
  private:
   UiTabState ui_tab_state_;
   std::unique_ptr<MockActorUiTabController> mock_tab_controller_;
@@ -147,6 +149,27 @@ class ActorUiStateManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+#if BUILDFLAG(ENABLE_GLIC)
+TEST_F(ActorUiStateManagerTest, GlicUpdateFloatyState_NotifiesSubscribers) {
+  std::vector<base::CallbackListSubscription> subscriptions;
+  actor_ui_state_manager()->SetUiStateForTesting(
+      ActorUiStateManager::UiState::kCheckTasks);
+  subscriptions.push_back(
+      actor_ui_state_manager()->RegisterFloatyTaskStateChange(
+          base::BindRepeating(
+              [](ActorUiStateManager::UiState actual_ui_state,
+                 glic::GlicWindowController::State actual_glic_state) {
+                EXPECT_EQ(actual_ui_state,
+                          ActorUiStateManager::UiState::kCheckTasks);
+                EXPECT_EQ(actual_glic_state,
+                          glic::GlicWindowController::State::kOpen);
+              })));
+  actor_ui_state_manager()->OnGlicUpdateFloatyState(
+      glic::GlicWindowController::State::kOpen);
+}
+
+#endif
 
 TEST_F(ActorUiStateManagerTest, NoTask_ReturnsInactiveUiState) {
   EXPECT_EQ(actor_ui_state_manager()->GetUiState(),

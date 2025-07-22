@@ -30,11 +30,14 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   ActorUiTabControllerInterface* GetUiTabController(
       tabs::TabInterface* tab) override;
 
-// TODO(crbug.com/424495020): Post-task icon refactor, look into removing this
-// function from AUSM.
+// TODO(crbug.com/424495020): Post-task icon refactor, look into removing these
+// functions from AUSM.
 #if BUILDFLAG(ENABLE_GLIC)
   void OnGlicUpdateFloatyState(
       glic::GlicWindowController::State floaty_state) override;
+
+  base::CallbackListSubscription RegisterFloatyTaskStateChange(
+      FloatyTaskStateChangeCallback callback) override;
 #endif
 
   // Returns the tabs associated with a given task id.
@@ -42,6 +45,9 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
 
   // Returns the current profile scoped ui state.
   UiState GetUiState() const;
+
+ protected:
+  UiState state_ = UiState::kInactive;
 
  private:
   void MaybeUpdateProfileScopedUiState();
@@ -60,7 +66,14 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   base::OneShotTimer completed_tasks_expiry_timer_;
 
   const raw_ref<ActorKeyedService> actor_service_;
-  UiState state_ = UiState::kInactive;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  using FloatyTaskStateChangeCallbackList =
+      base::RepeatingCallbackList<void(ActorUiStateManagerInterface::UiState,
+                                       glic::GlicWindowController::State)>;
+  FloatyTaskStateChangeCallbackList floaty_task_state_change_callback_list_;
+#endif
+
   base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};
 };
 

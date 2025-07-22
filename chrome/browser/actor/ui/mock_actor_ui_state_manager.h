@@ -41,6 +41,10 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               OnGlicUpdateFloatyState,
               (glic::GlicWindowController::State floaty_state),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterFloatyTaskStateChange,
+              (FloatyTaskStateChangeCallback callback),
+              (override));
 #endif
 };
 

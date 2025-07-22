@@ -55,6 +55,14 @@ class ActorUiStateManagerInterface {
   // Called on glic window (floaty) state change.
   virtual void OnGlicUpdateFloatyState(
       glic::GlicWindowController::State floaty_state) = 0;
+
+  // Register for this callback to detect changes to the glic floaty status and
+  // UiState.
+  using FloatyTaskStateChangeCallback =
+      base::RepeatingCallback<void(ActorUiStateManagerInterface::UiState,
+                                   glic::GlicWindowController::State)>;
+  virtual base::CallbackListSubscription RegisterFloatyTaskStateChange(
+      FloatyTaskStateChangeCallback callback) = 0;
 #endif
 };
 
