@@ -160,8 +160,8 @@ export class ComposeboxElement extends CrLitElement {
         newFileMap.set(token, {
           uuid: token,
           name: file.name,
-          objectUrl:
-              e.target === this.$.imageInput ? URL.createObjectURL(file) : null,
+          objectUrl: input === this.$.imageInput ? URL.createObjectURL(file) :
+                                                   null,
           type: file.type,
         });
       }

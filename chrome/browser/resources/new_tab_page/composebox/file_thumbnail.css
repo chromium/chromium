@@ -7,8 +7,105 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-/* TODO(crbug.com/420938297): Replace with styles to spec. */
-.thumbnail {
-  height: 50px;
-  width: 50px;
+#container {
+  margin-top: 20px;
+}
+
+.img-thumbnail {
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+#imgChip {
+  border-radius: 0.8px;
+  height: 52px;
+  overflow: hidden;
+  position: relative;
+  width: 52px;
+}
+
+.img-overlay {
+  background-color: var(--color-new-tab-page-composebox-file-image-overlay);
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  visibility: hidden;
+  width: 100%;
+}
+
+#removeImgButton {
+  --cr-icon-button-height: 100%;
+  --cr-icon-button-width: 100%;
+  --cr-icon-button-fill-color: white;
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-margin-start: 0px;
+  border-radius: 4px;
+  display: flex;
+}
+
+#pdfChip{
+  align-items: center;
+  background-color: var(--color-new-tab-page-composebox-file-chip-background);
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px 8px 12px;
+}
+
+#pdfThumbnail{
+  align-items: center;
+  display: flex;
+  height: 36px;
+  position: relative;
+  width: 36px;
+}
+
+.pdf-icon {
+  background-color: var(--color-new-tab-page-composebox-background);
+  border-radius: 4px;
+  color: var(--color-new-tab-page-composebox-pdf-chip-icon);
+  height: 100%;
+  padding: 6px 0px 0px 6px;
+  width: 100%;
+}
+
+.pdf-overlay {
+  position: absolute;
+  visibility: hidden;
+}
+
+#removePdfButton {
+  --cr-icon-button-fill-color:
+    var(--color-new-tab-page-composebox-file-chip-text);
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-margin-start: 1px;
+  --cr-icon-button-margin-end: 8px;
+  background-color: var(--color-new-tab-page-composebox-background);
+  border-radius: 4px;
+  color: var(--color-new-tab-page-composebox-pdf-chip-icon);
+  height: 100%;
+  width: 100%;
+}
+
+.pdf-title {
+  color: var(--color-new-tab-page-composebox-file-chip-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  margin-inline-end: 16px;
+  max-width: 100px;
+  overflow: hidden;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#imgChip:hover #removeImgButton,
+#pdfChip:hover #removePdfButton,
+:host(:focus-within) #removeImgButton,
+:host(:focus-within) #removePdfButton {
+  visibility: visible;
 }

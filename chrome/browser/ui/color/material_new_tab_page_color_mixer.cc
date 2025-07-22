@@ -59,6 +59,17 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageComposeboxUploadButton] = {
       dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
                 : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorNewTabPageComposeboxFileChipBackground] = {
+      dark_mode ? SkColorSetRGB(0x2A, 0x2B, 0x36)
+                : SkColorSetRGB(0xE1, 0xE3, 0xE8)};
+  mixer[kColorNewTabPageComposeboxFileChipText] = {
+      dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
+                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorNewTabPageComposeboxPdfChipIcon] = {
+      dark_mode ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
+                : SkColorSetRGB(0x56, 0x59, 0x5E)};
+  mixer[kColorNewTabPageComposeboxFileImageOverlay] = {
+      SkColorSetARGB(0x99, 0x00, 0x00, 0x00)};
 
   mixer[kColorNewTabPageControlBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
