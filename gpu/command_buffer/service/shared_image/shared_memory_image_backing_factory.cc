@@ -16,6 +16,16 @@
 
 namespace gpu {
 
+// static
+gfx::GpuMemoryBufferHandle
+SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
+    const gfx::Size& size,
+    gfx::BufferFormat buffer_format,
+    gfx::BufferUsage buffer_usage) {
+  return GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+      size, buffer_format, buffer_usage);
+}
+
 SharedMemoryImageBackingFactory::SharedMemoryImageBackingFactory()
     : SharedImageBackingFactory(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                                 SHARED_IMAGE_USAGE_CPU_READ |
@@ -61,8 +71,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
   auto buffer_format = ToBufferFormat(format);
   gfx::GpuMemoryBufferHandle handle;
   if (GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage)) {
-    handle = GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-        size, buffer_format, buffer_usage);
+    handle = CreateGpuMemoryBufferHandle(size, buffer_format, buffer_usage);
   }
   SharedMemoryRegionWrapper shm_wrapper;
   if (!shm_wrapper.Initialize(handle, size, buffer_format)) {
