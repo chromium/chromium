@@ -226,6 +226,10 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 #pragma mark - Public
 
 - (void)lockManualFallbackView {
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    return;
+  }
+
   [self.formSuggestionView lockTrailingView];
 }
 

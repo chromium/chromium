@@ -516,6 +516,7 @@ bool CanReloadInputViews() {
   [self startManualFillFromButton:manualFillButton
                       forDataType:dataType
          invokedOnObfuscatedField:invokedOnObfuscatedField];
+  [self updateKeyboardAccessoryForManualFilling];
 }
 
 - (void)formInputAccessoryViewController:
