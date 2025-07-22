@@ -1270,14 +1270,21 @@ export declare interface ScrollToParams {
   /**
    * Identifies the document we want to perform the scrollTo operation on. When
    * specified, we verify that the currently focused tab's document matches the
-   * ID, and throw an error if doesn't. If not specified, the implementation
-   * will use the main frame of the currently focused tab without verification.
-   *
-   * Note: documentId is being migrated to become a required param and the
-   * client will soon throw a NotSupported error (behind a flag currently) when
-   * not specified.
+   * ID, and throw an error if doesn't. This is a required parameter for all
+   * document types except PDF (see `url` below), and a NOT_SUPPORTED error will
+   * be thrown if it is not specified.
    */
   documentId?: string;
+
+  /**
+   * Identifies the url of a document we want to perform the scrollTo
+   * operation on. This is only required when scrolling PDF documents (and is
+   * ignored otherwise; other document types require `documentId` to be
+   * specified instead), and is used to verify that the currently focused tab
+   * still points to a PDF with that URL. If not specified, and the currently
+   * focused tab has a PDF loaded, a NOT_SUPPORTED error will be thrown.
+   */
+  url?: string;
 }
 
 /**
@@ -1372,10 +1379,10 @@ export enum ScrollToErrorReason {
    */
   FOCUSED_TAB_CHANGED_OR_NAVIGATED = 4,
   /**
-   * The documentId provided doesn't match the currently focused tab's primary
-   * document. The document may have been navigated away, may not currently be
-   * in focus, or may not be in a primary main frame (we don't currently support
-   * iframes).
+   * The documentId or url provided doesn't match the currently focused tab's
+   * primary document. The document may have been navigated away, may not
+   * currently be in focus, or may not be in a primary main frame (we don't
+   * currently support iframes).
    */
   NO_MATCHING_DOCUMENT = 5,
 

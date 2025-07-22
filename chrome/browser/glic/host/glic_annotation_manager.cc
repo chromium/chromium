@@ -71,6 +71,15 @@ GetVerifiedAnnotationTargetFrameForPDF(const mojom::ScrollToParams& params,
     return mojom::ScrollToErrorReason::kNotSupported;
   }
 
+  // Verifies that the `url` parameter is set and that it matches the
+  // currently focused tab's url.
+  if (!params.url) {
+    return mojom::ScrollToErrorReason::kNotSupported;
+  }
+  if (params.url != focused_contents->GetLastCommittedURL()) {
+    return mojom::ScrollToErrorReason::kNoMatchingDocument;
+  }
+
   auto* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(focused_contents);
   if (!pdf_helper || !pdf_helper->IsDocumentLoadComplete()) {

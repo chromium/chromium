@@ -298,8 +298,14 @@ struct ScrollToParams {
 
   // The document targeted by this operation. When specified, it verifies
   // that the document in the primary main frame of the currently focused tab
-  // matches the ID (and fails the operation if it doesn't).
+  // matches the ID (and fails the operation if it doesn't). The verification
+  // does not happen for PDFs.
   string? document_id;
+
+  // The URL of the document targeted by this operation. If the currently
+  // focused tab has a PDF loaded, this url is matched and verified against the
+  // tab's primary main frame's URL (and is ignored otherwise).
+  url.mojom.Url? url;
 };
 
 // Used to select content in a page to scroll to and highlight.
@@ -365,8 +371,8 @@ enum ScrollToErrorReason {
   // ScrollTo() call.
   [MinVersion=1] kFocusedTabChangedOrNavigated,
 
-  // The document_id provided doesn't match the active document in the primary
-  // main frame of the currently focused tab. The document may have been
+  // The document_id or url provided doesn't match the active document in the
+  // primary main frame of the currently focused tab. The document may have been
   // navigated away, may not currently be in focus, or may not be in a primary
   // main frame (we don't currently support iframes).
   [MinVersion=2] kNoMatchingDocument,

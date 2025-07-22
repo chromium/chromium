@@ -185,20 +185,31 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
   using Selector = base::OnceCallback<base::Value::Dict()>;
   using DocumentIdGetter = base::OnceCallback<std::string()>;
   using NodeIdCallback = base::OnceCallback<int()>;
+  using URLGetter = base::OnceCallback<GURL()>;
 
   // Calls scrollTo() and waits until the promise resolves and succeeds.
   auto ScrollTo(Selector selector) {
-    return ScrollToImpl(std::move(selector), /*document_id=*/std::nullopt);
+    return ScrollToImpl(std::move(selector), /*document_id=*/std::nullopt,
+                        /*url=*/std::nullopt);
   }
 
-  // Similar to the above method, but also includes documentId in the params.
+  // Similar to ScrollTo(), but also includes documentId in the params.
   // If `document_id` is not set, it uses a value retrieved from
   // `annotated_page_content_`.
   auto ScrollToWithDocumentId(
       Selector selector,
       std::optional<DocumentIdGetter> document_id = std::nullopt) {
     return ScrollToImpl(std::move(selector),
-                        DocumentIdOrDefault(std::move(document_id)));
+                        DocumentIdOrDefault(std::move(document_id)),
+                        /*url=*/std::nullopt);
+  }
+
+  // Similar to ScrollTo(), but also includes url in the params. If `url` is
+  // not set, it uses the active tab's primary main frame's URL.
+  auto ScrollToWithURL(Selector selector,
+                       std::optional<URLGetter> url = std::nullopt) {
+    return ScrollToImpl(std::move(selector), /*document_id=*/std::nullopt,
+                        URLOrDefault(std::move(url)));
   }
 
   // Calls scrollTo() and waits until the promise rejects with an error.
@@ -207,11 +218,11 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
                               mojom::ScrollToErrorReason error_reason) {
     return ScrollToExpectingErrorImpl(std::move(selector),
                                       /*document_id=*/std::nullopt,
-                                      error_reason);
+                                      /*url=*/std::nullopt, error_reason);
   }
 
-  // Similar to the above method, but also includes documentId in the params. If
-  // `document_id` is not set, it uses a value retrieved from
+  // Similar to ScrollToExpectingError(), but also includes documentId in the
+  // params. If `document_id` is not set, it uses a value retrieved from
   // `annotated_page_content_`.
   auto ScrollToWithDocumentIdExpectingError(
       Selector selector,
@@ -219,22 +230,56 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
       std::optional<DocumentIdGetter> document_id = std::nullopt) {
     return ScrollToExpectingErrorImpl(
         std::move(selector), DocumentIdOrDefault(std::move(document_id)),
-        error_reason);
+        /*url=*/std::nullopt, error_reason);
+  }
+
+  // Similar to ScrollToExpectingError(), but also includes url in the params.
+  // If `url` is not set, it uses the active tab's primary main frame's URL.
+  auto ScrollToWithURLExpectingError(
+      Selector selector,
+      mojom::ScrollToErrorReason error_reason,
+      std::optional<URLGetter> url = std::nullopt) {
+    return ScrollToExpectingErrorImpl(
+        std::move(selector), /*document_id=*/std::nullopt,
+        URLOrDefault(std::move(url)), error_reason);
+  }
+
+  // Similar to ScrollToExpectingError(), but also includes both documentId and
+  // url. Uses defaults for `document_id`/`url` if not set, see above methods
+  // for what the default values used are.
+  auto ScrollToWithDocumentIdAndURLExpectingError(
+      Selector selector,
+      mojom::ScrollToErrorReason error_reason,
+      std::optional<DocumentIdGetter> document_id = std::nullopt,
+      std::optional<URLGetter> url = std::nullopt) {
+    return ScrollToExpectingErrorImpl(
+        std::move(selector), DocumentIdOrDefault(std::move(document_id)),
+        URLOrDefault(std::move(url)), error_reason);
   }
 
   // Calls scrollTo() and returns immediately.
   auto ScrollToAsync(Selector selector) {
-    return ScrollToAsyncImpl(std::move(selector), /*document_id=*/std::nullopt);
+    return ScrollToAsyncImpl(std::move(selector), /*document_id=*/std::nullopt,
+                             /*url=*/std::nullopt);
   }
 
-  // Similar to the above method, but also includes documentId in the params. If
+  // Similar to ScrollToAsync(), but also includes documentId in the params. If
   // `document_id` is not set, it uses a value retrieved from
   // `annotated_page_content_`.
   auto ScrollToAsyncWithDocumentId(
       Selector selector,
       std::optional<DocumentIdGetter> document_id = std::nullopt) {
     return ScrollToAsyncImpl(std::move(selector),
-                             DocumentIdOrDefault(std::move(document_id)));
+                             DocumentIdOrDefault(std::move(document_id)),
+                             /*url=*/std::nullopt);
+  }
+
+  // Similar to ScrollToAsync(), but also includes url in the params.
+  // If `url` is not set, it uses the active tab's primary main frame's URL.
+  auto ScrollToAsyncWithURL(Selector selector,
+                            std::optional<URLGetter> url = std::nullopt) {
+    return ScrollToAsyncImpl(std::move(selector), /*document_id=*/std::nullopt,
+                             URLOrDefault(std::move(url)));
   }
 
   // Should be used in combination with ScrollToAsync*() above.
@@ -418,11 +463,16 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
  private:
   base::Value::Dict CreateScrollToParams(
       Selector selector,
-      std::optional<DocumentIdGetter> document_id) {
+      std::optional<DocumentIdGetter> document_id,
+      std::optional<URLGetter> url) {
     base::Value::Dict scroll_to_params;
     scroll_to_params.Set("selector", std::move(selector).Run());
     if (document_id) {
       scroll_to_params.Set("documentId", std::move(*document_id).Run());
+    }
+    if (url) {
+      scroll_to_params.Set("url", content::JsLiteralHelper<GURL>::Convert(
+                                      std::move(*url).Run()));
     }
     return scroll_to_params;
   }
@@ -438,9 +488,24 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
         });
   }
 
+  URLGetter URLOrDefault(std::optional<URLGetter> url) {
+    return base::BindLambdaForTesting(
+        [&, url_getter = std::move(url)]() mutable {
+          if (!url_getter) {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame()
+                ->GetLastCommittedURL();
+          }
+          return std::move(*url_getter).Run();
+        });
+  }
+
   InteractiveGlicTest::MultiStep ScrollToImpl(
       Selector selector,
-      std::optional<DocumentIdGetter> document_id) {
+      std::optional<DocumentIdGetter> document_id,
+      std::optional<URLGetter> url) {
     return Steps(
         Do([&]() {
           histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -448,12 +513,12 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
         InAnyContext(WithElement(
             kGlicContentsElementId,
             [&, selector = std::move(selector),
-             document_id =
-                 std::move(document_id)](ui::TrackedElement* el) mutable {
+             document_id = std::move(document_id),
+             url = std::move(url)](ui::TrackedElement* el) mutable {
               content::WebContents* glic_contents =
                   AsInstrumentedWebContents(el)->web_contents();
               base::Value::Dict scroll_to_params = CreateScrollToParams(
-                  std::move(selector), std::move(document_id));
+                  std::move(selector), std::move(document_id), std::move(url));
               std::string script = content::JsReplace(
                   R"js(
                   (() => {
@@ -472,6 +537,7 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
   InteractiveGlicTest::MultiStep ScrollToExpectingErrorImpl(
       Selector selector,
       std::optional<DocumentIdGetter> document_id,
+      std::optional<URLGetter> url,
       mojom::ScrollToErrorReason error_reason) {
     return Steps(
         Do([&]() {
@@ -480,12 +546,12 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
         InAnyContext(WithElement(
             kGlicContentsElementId,
             [&, selector = std::move(selector),
-             document_id = std::move(document_id),
+             document_id = std::move(document_id), url = std::move(url),
              error_reason](ui::TrackedElement* el) mutable {
               content::WebContents* glic_contents =
                   AsInstrumentedWebContents(el)->web_contents();
               base::Value::Dict scroll_to_params = CreateScrollToParams(
-                  std::move(selector), std::move(document_id));
+                  std::move(selector), std::move(document_id), std::move(url));
               std::string script = content::JsReplace(
                   R"js(
                     (async () => {
@@ -505,15 +571,17 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
 
   InteractiveGlicTest::MultiStep ScrollToAsyncImpl(
       Selector selector,
-      std::optional<DocumentIdGetter> document_id) {
+      std::optional<DocumentIdGetter> document_id,
+      std::optional<URLGetter> url) {
     return Steps(InAnyContext(WithElement(
         kGlicContentsElementId,
         [&, selector = std::move(selector),
-         document_id = std::move(document_id)](ui::TrackedElement* el) mutable {
+         document_id = std::move(document_id),
+         url = std::move(url)](ui::TrackedElement* el) mutable {
           content::WebContents* glic_contents =
               AsInstrumentedWebContents(el)->web_contents();
-          auto scroll_to_params =
-              CreateScrollToParams(std::move(selector), std::move(document_id));
+          auto scroll_to_params = CreateScrollToParams(
+              std::move(selector), std::move(document_id), std::move(url));
           std::string script = content::JsReplace(
               R"js(
                 (() => {
@@ -1302,15 +1370,15 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TextFragmentFound) {
       // At the end of `ScrollTo`, "Glic.ScrollTo.MatchDuration.Success" is
       // asserted to have one sample. The histogram is only recorded with a
       // successful `DidFinishAttachment()`.
-      ScrollTo(ExactTextSelector("test")));
+      ScrollToWithURL(ExactTextSelector("test")));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TwoScrolls) {
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   SetTabContextPermission(true),
-                  ScrollTo(ExactTextSelector("test")),
-                  ScrollTo(ExactTextSelector("Result")));
+                  ScrollToWithURL(ExactTextSelector("test")),
+                  ScrollToWithURL(ExactTextSelector("Result")));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
@@ -1318,17 +1386,17 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
-      ScrollTo(ExactTextSelector("test")),
-      ScrollToAsync(ExactTextSelector("not_found")),
-      WaitForScrollToError(mojom::ScrollToErrorReason::kNoMatchFound));
+      ScrollToWithURL(ExactTextSelector("test")),
+      ScrollToWithURLExpectingError(ExactTextSelector("not_found"),
+                                    mojom::ScrollToErrorReason::kNoMatchFound));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TextFragmentNotFound) {
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
-      ScrollToAsync(ExactTextSelector("not_found")),
-      WaitForScrollToError(mojom::ScrollToErrorReason::kNoMatchFound));
+      ScrollToWithURLExpectingError(ExactTextSelector("not_found"),
+                                    mojom::ScrollToErrorReason::kNoMatchFound));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
@@ -1336,17 +1404,17 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
-      ScrollToAsync(ExactTextSelector("not_found")),
-      WaitForScrollToError(mojom::ScrollToErrorReason::kNoMatchFound),
-      ScrollTo(ExactTextSelector("test")));
+      ScrollToWithURLExpectingError(ExactTextSelector("not_found"),
+                                    mojom::ScrollToErrorReason::kNoMatchFound),
+      ScrollToWithURL(ExactTextSelector("test")));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, EmptyTextFragment) {
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
-      ScrollToAsync(ExactTextSelector("")),
-      WaitForScrollToError(mojom::ScrollToErrorReason::kNotSupported));
+      ScrollToWithURLExpectingError(ExactTextSelector(""),
+                                    mojom::ScrollToErrorReason::kNotSupported));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
@@ -1354,7 +1422,7 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   SetTabContextPermission(true), GetPageContextFromFocusedTab(),
-                  ScrollToWithDocumentIdExpectingError(
+                  ScrollToWithDocumentIdAndURLExpectingError(
                       NodeIdSelector(base::BindOnce([]() { return -1; })),
                       mojom::ScrollToErrorReason::kNotSupported,
                       base::BindLambdaForTesting([]() {
@@ -1371,12 +1439,12 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
       InstrumentTab(kActiveTabId), OpenGlicWindow(GlicWindowMode::kDetached),
       SetTabContextPermission(true),
       // Blocks until "test" is found.
-      ScrollTo(ExactTextSelector("test")),
+      ScrollToWithURL(ExactTextSelector("test")),
       NavigateWebContents(
           kActiveTabId,
           embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
       // Blocks until "Some text" is found.
-      ScrollTo(ExactTextSelector("Some text")));
+      ScrollToWithURL(ExactTextSelector("Some text")));
 }
 
 // Asserts that the annotation is not dispatched to embedded PDFs.
@@ -1390,7 +1458,29 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
       InjectEmbeddedPDF(
           embedded_test_server()->GetURL("/find_in_pdf_page.pdf")),
       OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
-      ScrollTo(ExactTextSelector("Some text")));
+      ScrollToWithURL(ExactTextSelector("Some text")));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, NoURLProvided) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(
+      InstrumentTab(kActiveTabId), OpenGlicWindow(GlicWindowMode::kDetached),
+      SetTabContextPermission(true),
+      ScrollToExpectingError(ExactTextSelector("Some text"),
+                             mojom::ScrollToErrorReason::kNotSupported));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
+                       NonMatchingURLProvided) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(InstrumentTab(kActiveTabId),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  SetTabContextPermission(true),
+                  ScrollToWithURLExpectingError(
+                      ExactTextSelector("Some text"),
+                      mojom::ScrollToErrorReason::kNoMatchingDocument,
+                      base::BindLambdaForTesting(
+                          [] { return GURL("https://www.google.com"); })));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1413,8 +1503,8 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDFFeatureDisabled,
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
-      ScrollToExpectingError(ExactTextSelector("test"),
-                             mojom::ScrollToErrorReason::kNotSupported));
+      ScrollToWithURLExpectingError(ExactTextSelector("test"),
+                                    mojom::ScrollToErrorReason::kNotSupported));
 }
 
 INSTANTIATE_TEST_SUITE_P(
