@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.homepage;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
@@ -15,6 +13,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomeButtonStatus;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
@@ -42,7 +41,7 @@ public class HomepageManager
         void onHomepageStateUpdated();
     }
 
-    private static HomepageManager sInstance;
+    private static @Nullable HomepageManager sInstance;
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomepageStateListener> mHomepageStateListeners;
@@ -215,7 +214,7 @@ public class HomepageManager
      *
      * @return Homepage GURL based on policy and shared preference settings.
      */
-    private @NonNull GURL getHomepageGurlIgnoringEnabledState() {
+    private GURL getHomepageGurlIgnoringEnabledState() {
         if (HomepagePolicyManager.isHomepageNewTabPageEnabled()) {
             return ChromeUrlConstants.nativeNtpGurl();
         }

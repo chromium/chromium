@@ -5,13 +5,12 @@
 package org.chromium.chrome.browser.homepage;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -62,12 +61,12 @@ public class HomepagePolicyManager implements PrefObserver {
         int RECOMMENDED_IS_NOT_FOLLOWED = 4;
     }
 
-    private static HomepagePolicyManager sInstance;
+    private static @Nullable HomepagePolicyManager sInstance;
 
-    private static PrefService sPrefServiceForTesting;
+    private static @Nullable PrefService sPrefServiceForTesting;
 
     private boolean mIsHomepageLocationManaged;
-    @NonNull private GURL mHomepageUrl;
+    private GURL mHomepageUrl;
 
     @ShowHomeButtonPolicyState private int mHomeButtonPolicyState;
 
@@ -75,7 +74,7 @@ public class HomepagePolicyManager implements PrefObserver {
     private boolean mHomepageIsNtpPolicyValue;
 
     private boolean mIsInitializedWithNative;
-    private PrefChangeRegistrar mPrefChangeRegistrar;
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
 
     private final SharedPreferencesManager mSharedPreferenceManager;
     private final ObserverList<HomepagePolicyStateListener> mListeners = new ObserverList<>();
@@ -103,7 +102,7 @@ public class HomepagePolicyManager implements PrefObserver {
     /**
      * @return The homepage URL from the homepage preference.
      */
-    public static @NonNull GURL getHomepageUrl() {
+    public static GURL getHomepageUrl() {
         return getInstance().getHomepageLocationPolicyUrl();
     }
 
@@ -186,8 +185,8 @@ public class HomepagePolicyManager implements PrefObserver {
     }
 
     /**
-     * Stop observing pref changes and destroy the singleton instance.
-     * Will be called from {@link org.chromium.chrome.browser.ChromeActivitySessionTracker}.
+     * Stop observing pref changes and destroy the singleton instance. Will be called from {@link
+     * org.chromium.chrome.browser.ChromeActivitySessionTracker}.
      */
     public static void destroy() {
         sInstance.destroyInternal();
@@ -253,15 +252,16 @@ public class HomepagePolicyManager implements PrefObserver {
 
     /**
      * Constructor for unit tests.
+     *
      * @param prefChangeRegistrar Instance of {@link PrefChangeRegistrar} or test mocking.
      * @param listener Object extends {@link HomepagePolicyStateListener}. Will be added between
-     *         singleton {@link HomepagePolicyManager} created, and have it initialized with {@link
-     *         #initializeWithNative(PrefChangeRegistrar)} so that it will get the update from
-     *         {@link HomepagePolicyStateListener#onHomepagePolicyUpdate()}.
+     *     singleton {@link HomepagePolicyManager} created, and have it initialized with {@link
+     *     #initializeWithNative(PrefChangeRegistrar)} so that it will get the update from {@link
+     *     HomepagePolicyStateListener#onHomepagePolicyUpdate()}.
      */
     @VisibleForTesting
     HomepagePolicyManager(
-            @NonNull PrefChangeRegistrar prefChangeRegistrar,
+            PrefChangeRegistrar prefChangeRegistrar,
             @Nullable HomepagePolicyStateListener listener) {
         this();
 
@@ -299,7 +299,7 @@ public class HomepagePolicyManager implements PrefObserver {
         assert mIsInitializedWithNative;
         PrefService prefService = getPrefService();
         boolean isHomepageLocationManaged = prefService.isManagedPreference(Pref.HOME_PAGE);
-        @NonNull GURL homepage = GURL.emptyGURL();
+        GURL homepage = GURL.emptyGURL();
         if (isHomepageLocationManaged) {
             String homepagePref = prefService.getString(Pref.HOME_PAGE);
             assert homepagePref != null;
@@ -407,7 +407,7 @@ public class HomepagePolicyManager implements PrefObserver {
     }
 
     @VisibleForTesting
-    public @NonNull GURL getHomepageLocationPolicyUrl() {
+    public GURL getHomepageLocationPolicyUrl() {
         assert mIsHomepageLocationManaged;
         return mHomepageUrl;
     }
