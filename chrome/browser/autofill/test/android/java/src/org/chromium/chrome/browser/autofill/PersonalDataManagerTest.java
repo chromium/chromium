@@ -727,8 +727,7 @@ public class PersonalDataManagerTest {
         // use date. Because of its very high use count, it is still ranked second.
         mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
 
-        List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
+        List<AutofillProfile> profiles = mHelper.getProfilesToSuggest();
         assertEquals(3, profiles.size());
         assertTrue("Profile1 should be ranked first", guid1.equals(profiles.get(0).getGUID()));
         assertTrue("Profile3 should be ranked second", guid3.equals(profiles.get(1).getGUID()));
@@ -791,8 +790,7 @@ public class PersonalDataManagerTest {
         // use date. Because of its very far last use date, it's ranked third.
         mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
 
-        List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
+        List<AutofillProfile> profiles = mHelper.getProfilesToSuggest();
         assertEquals(3, profiles.size());
         assertTrue("Profile2 should be ranked first", guid2.equals(profiles.get(0).getGUID()));
         assertTrue("Profile1 should be ranked second", guid1.equals(profiles.get(1).getGUID()));
@@ -989,27 +987,12 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void testGetProfilesToSuggest_NoName() throws TimeoutException {
+    public void testGetProfilesToSuggest() throws TimeoutException {
         mHelper.setProfile(createTestProfile());
 
-        List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
+        List<AutofillProfile> profiles = mHelper.getProfilesToSuggest();
         assertEquals(
                 "Acme Inc., 123 Main, Los Angeles, California 90210, United States",
-                profiles.get(0).getLabel());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    public void testGetProfilesToSuggest_WithName() throws TimeoutException {
-        mHelper.setProfile(createTestProfile());
-
-        List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ true);
-        assertEquals(
-                "John Major, Acme Inc., 123 Main, Los Angeles, California 90210, "
-                        + "United States",
                 profiles.get(0).getLabel());
     }
 

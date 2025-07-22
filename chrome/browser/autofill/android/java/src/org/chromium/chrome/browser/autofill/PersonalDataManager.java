@@ -730,18 +730,12 @@ public class PersonalDataManager implements Destroyable {
      * <p>Gets the profiles to suggest when filling a form or completing a transaction. The profiles
      * will have been processed to be more relevant to the user.
      *
-     * @param includeNameInLabel Whether to include the name in the profile's label.
      * @return The list of profiles to suggest to the user.
      */
-    public ArrayList<AutofillProfile> getProfilesToSuggest(boolean includeNameInLabel) {
+    public ArrayList<AutofillProfile> getProfilesToSuggest() {
         ThreadUtils.assertOnUiThread();
         return getProfilesWithLabels(
-                PersonalDataManagerJni.get()
-                        .getProfileLabelsToSuggest(
-                                mPersonalDataManagerAndroid,
-                                includeNameInLabel,
-                                /* includeOrganizationInLabel= */ true,
-                                /* includeCountryInLabel= */ true),
+                PersonalDataManagerJni.get().getProfileLabelsToSuggest(mPersonalDataManagerAndroid),
                 PersonalDataManagerJni.get().getProfileGUIDsToSuggest(mPersonalDataManagerAndroid));
     }
 
@@ -1129,11 +1123,7 @@ public class PersonalDataManager implements Destroyable {
 
         String[] getProfileLabelsForSettings(long nativePersonalDataManagerAndroid);
 
-        String[] getProfileLabelsToSuggest(
-                long nativePersonalDataManagerAndroid,
-                boolean includeNameInLabel,
-                boolean includeOrganizationInLabel,
-                boolean includeCountryInLabel);
+        String[] getProfileLabelsToSuggest(long nativePersonalDataManagerAndroid);
 
         AutofillProfile getProfileByGUID(
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);

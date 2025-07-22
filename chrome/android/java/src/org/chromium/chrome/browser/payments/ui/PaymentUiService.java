@@ -487,9 +487,7 @@ public class PaymentUiService
                 PersonalDataManagerFactory.getForProfile(Profile.fromWebContents(mWebContents));
         if (PaymentOptionsUtils.requestAnyInformation(mParams.getPaymentOptions())) {
             mAutofillProfiles =
-                    Collections.unmodifiableList(
-                            personalDataManager.getProfilesToSuggest(
-                                    /* includeNameInLabel= */ false));
+                    Collections.unmodifiableList(personalDataManager.getProfilesToSuggest());
         }
 
         PaymentOptions options = mParams.getPaymentOptions();

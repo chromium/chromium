@@ -94,11 +94,9 @@ public class AutofillTestHelper {
                 () -> getPersonalDataManagerForLastUsedProfile().getProfile(guid));
     }
 
-    List<AutofillProfile> getProfilesToSuggest(final boolean includeNameInLabel) {
+    List<AutofillProfile> getProfilesToSuggest() {
         return runOnUiThreadBlocking(
-                () ->
-                        getPersonalDataManagerForLastUsedProfile()
-                                .getProfilesToSuggest(includeNameInLabel));
+                () -> getPersonalDataManagerForLastUsedProfile().getProfilesToSuggest());
     }
 
     List<AutofillProfile> getProfilesForSettings() {
@@ -107,7 +105,7 @@ public class AutofillTestHelper {
     }
 
     int getNumberOfProfilesToSuggest() {
-        return getProfilesToSuggest(false).size();
+        return getProfilesToSuggest().size();
     }
 
     int getNumberOfProfilesForSettings() {
