@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -1031,25 +1032,11 @@ float FontFace::GetSizeAdjust() const {
 
 scoped_refptr<FontFeatureSettings> FontFace::GetFontFeatureSettings() const {
   DCHECK(RuntimeEnabledFeatures::FontFeatureSettingsDescriptorEnabled());
-  scoped_refptr<FontFeatureSettings> settings = FontFeatureSettings::Create();
   if (!feature_settings_) {
-    return settings;
+    return FontFeatureSettings::Create();
   }
-
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(*feature_settings_);
-  if ((identifier_value &&
-       identifier_value->GetValueID() == CSSValueID::kNormal)) {
-    return settings;
-  }
-
-  const auto& list = To<CSSValueList>(*feature_settings_);
-  const wtf_size_t len = list.length();
-  for (wtf_size_t i = 0; i < len; ++i) {
-    const auto& feature = To<cssvalue::CSSFontFeatureValue>(list.Item(i));
-    settings->Append(
-        FontFeature(feature.Tag(), feature.Value(EnsureLengthResolver())));
-  }
-  return settings;
+  return StyleBuilderConverterBase::ConvertFontFeatureSettings(
+      EnsureLengthResolver(), *feature_settings_);
 }
 
 scoped_refptr<FontVariationSettings> FontFace::GetFontVariationSettings()

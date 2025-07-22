@@ -629,24 +629,39 @@ OpticalSizing StyleBuilderConverter::ConvertFontOpticalSizing(
 scoped_refptr<FontFeatureSettings>
 StyleBuilderConverter::ConvertFontFeatureSettings(StyleResolverState& state,
                                                   const CSSValue& value) {
+  return StyleBuilderConverterBase::ConvertFontFeatureSettings(
+      state.CssToLengthConversionData(), value);
+}
+
+scoped_refptr<FontFeatureSettings>
+StyleBuilderConverterBase::ConvertFontFeatureSettings(
+    const CSSLengthResolver& length_resolver,
+    const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kNormal) {
-    return FontBuilder::InitialFeatureSettings();
+    return FontFeatureSettings::Create();
   }
 
   if (value.IsPendingSystemFontValue()) {
-    return FontBuilder::InitialFeatureSettings();
+    return FontFeatureSettings::Create();
   }
 
   const auto& list = To<CSSValueList>(value);
-  scoped_refptr<FontFeatureSettings> settings = FontFeatureSettings::Create();
-  int len = list.length();
-  for (int i = 0; i < len; ++i) {
-    const auto& feature = To<cssvalue::CSSFontFeatureValue>(list.Item(i));
-    settings->Append(FontFeature(
-        feature.Tag(), feature.Value(state.CssToLengthConversionData())));
+  std::map<uint32_t, int> features;
+
+  for (const auto& css_value : list) {
+    const auto& feature = To<cssvalue::CSSFontFeatureValue>(*css_value);
+    features[AtomicStringToFourByteTag(feature.Tag())] =
+        feature.Value(length_resolver);
   }
+
+  scoped_refptr<FontFeatureSettings> settings = FontFeatureSettings::Create();
+  for (const auto& [tag, feature_value] : features) {
+    settings->Append(FontFeature(tag, feature_value));
+  }
+
+  DCHECK(std::is_sorted(settings->begin(), settings->end()));
   return settings;
 }
 

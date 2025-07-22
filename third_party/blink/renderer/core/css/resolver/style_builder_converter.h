@@ -118,6 +118,9 @@ class StyleBuilderConverterBase {
                                                        const CSSValue&);
   static scoped_refptr<FontPalette> ConvertPaletteMix(const CSSLengthResolver&,
                                                       const CSSValue&);
+  static scoped_refptr<FontFeatureSettings> ConvertFontFeatureSettings(
+      const CSSLengthResolver&,
+      const CSSValue&);
 };
 
 // Note that we assume the parser only allows valid CSSValue types.
