@@ -23,8 +23,8 @@ struct WebServiceWorkerProviderContextDeleter;
 // WebServiceWorkerProviderContext is an abstract class implemented by
 // content::ServiceWorkerProviderContext.
 class WebServiceWorkerProviderContext
-    : public WTF::ThreadSafeRefCounted<WebServiceWorkerProviderContext,
-                                       WebServiceWorkerProviderContextDeleter> {
+    : public ThreadSafeRefCounted<WebServiceWorkerProviderContext,
+                                  WebServiceWorkerProviderContextDeleter> {
  public:
   // Binds a new ServiceWorkerWorkerClient endpoint.
   virtual void BindServiceWorkerWorkerClientRemote(

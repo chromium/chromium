@@ -1968,7 +1968,7 @@ _CONFIG = [
         # meant to be a bridge between Blink and non-Blink code. However,
         # base::RefCounted and base::RefCountedThreadSafe should still be
         # explicitly blocked.
-        # WTF::RefCounted and WTF::ThreadSafeRefCounted should be used instead.
+        # WTF::RefCounted and blink::ThreadSafeRefCounted should be used instead.
         'allowed': ['.+'],
         'inclass_allowed': ['.+'],
         'disallowed': [

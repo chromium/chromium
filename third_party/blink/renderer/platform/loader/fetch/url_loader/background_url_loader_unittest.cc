@@ -91,7 +91,7 @@ using MaybeStartFunction =
                                  BackgroundResponseProcessor::Client*)>;
 
 class BackgroundResponseProcessorTestUtil
-    : public WTF::ThreadSafeRefCounted<BackgroundResponseProcessorTestUtil> {
+    : public ThreadSafeRefCounted<BackgroundResponseProcessorTestUtil> {
  public:
   BackgroundResponseProcessorTestUtil() = default;
 
@@ -192,7 +192,7 @@ class BackgroundResponseProcessorTestUtil
     scoped_refptr<BackgroundResponseProcessorTestUtil> test_util_;
   };
 
-  friend class WTF::ThreadSafeRefCounted<BackgroundResponseProcessorTestUtil>;
+  friend class ThreadSafeRefCounted<BackgroundResponseProcessorTestUtil>;
   ~BackgroundResponseProcessorTestUtil() = default;
 
   bool result_of_maybe_start_processing_response_ = true;

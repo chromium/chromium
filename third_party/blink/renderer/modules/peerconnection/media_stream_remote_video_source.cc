@@ -86,7 +86,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
 // Internal class used for receiving frames from the webrtc track on a
 // libjingle thread and forward it to the IO-thread.
 class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
-    : public WTF::ThreadSafeRefCounted<RemoteVideoSourceDelegate>,
+    : public ThreadSafeRefCounted<RemoteVideoSourceDelegate>,
       public webrtc::VideoSinkInterface<webrtc::VideoFrame>,
       public webrtc::VideoSinkInterface<webrtc::RecordableEncodedFrame> {
  public:
@@ -98,7 +98,7 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
           sub_capture_target_version_callback);
 
  protected:
-  friend class WTF::ThreadSafeRefCounted<RemoteVideoSourceDelegate>;
+  friend class ThreadSafeRefCounted<RemoteVideoSourceDelegate>;
   ~RemoteVideoSourceDelegate() override;
 
   // Implements webrtc::VideoSinkInterface used for receiving video frames

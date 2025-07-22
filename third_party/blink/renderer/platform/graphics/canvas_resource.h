@@ -59,7 +59,7 @@ class StaticBitmapImage;
 // concurrently. The caller is responsible to call Transfer on the object before
 // using it on a different thread.
 class PLATFORM_EXPORT CanvasResource
-    : public WTF::ThreadSafeRefCounted<CanvasResource> {
+    : public ThreadSafeRefCounted<CanvasResource> {
  public:
   using ReleaseCallback = base::OnceCallback<void(
       scoped_refptr<blink::CanvasResource>&& canvas_resource,

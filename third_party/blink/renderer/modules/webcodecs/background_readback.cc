@@ -71,8 +71,7 @@ struct CrossThreadCopier<base::span<uint8_t>>
 // This is a part of BackgroundReadback that lives and dies on the worker's
 // thread and does all the actual work of creating GPU context and calling
 // sync readback functions.
-class SyncReadbackThread
-    : public WTF::ThreadSafeRefCounted<SyncReadbackThread> {
+class SyncReadbackThread : public ThreadSafeRefCounted<SyncReadbackThread> {
  public:
   SyncReadbackThread();
   scoped_refptr<media::VideoFrame> ReadbackToFrame(

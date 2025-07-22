@@ -14,7 +14,7 @@ namespace base {
 namespace sequence_manager {
 
 struct PLATFORM_EXPORT TaskQueueWithVoters
-    : public ThreadSafeRefCounted<TaskQueueWithVoters> {
+    : public blink::ThreadSafeRefCounted<TaskQueueWithVoters> {
  public:
   explicit TaskQueueWithVoters(TaskQueue::Handle task_queue)
       : queue(std::move(task_queue)) {}
@@ -23,7 +23,7 @@ struct PLATFORM_EXPORT TaskQueueWithVoters
   blink::Vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>> voters;
 
  private:
-  friend ThreadSafeRefCounted<TaskQueueWithVoters>;
+  friend blink::ThreadSafeRefCounted<TaskQueueWithVoters>;
   ~TaskQueueWithVoters() = default;
 };
 

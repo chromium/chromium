@@ -15,7 +15,7 @@
 namespace blink {
 namespace scheduler {
 
-class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data>,
+class FakeTaskRunner::Data : public ThreadSafeRefCounted<Data>,
                              public base::TickClock {
  public:
   Data() = default;

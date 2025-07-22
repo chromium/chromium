@@ -58,7 +58,7 @@ TEST_F(CrossThreadHandleTest, UnwrapperGetOnCreationThread) {
   EXPECT_EQ(gced, unwrapping_handle.GetOnCreationThread());
 }
 
-class PingPongBase : public WTF::ThreadSafeRefCounted<PingPongBase> {
+class PingPongBase : public ThreadSafeRefCounted<PingPongBase> {
  public:
   PingPongBase(scoped_refptr<base::SingleThreadTaskRunner> main_runner,
                scoped_refptr<base::SequencedTaskRunner> thread_runner)

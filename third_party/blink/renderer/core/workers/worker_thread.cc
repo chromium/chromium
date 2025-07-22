@@ -103,7 +103,7 @@ static int GetNextWorkerThreadId() {
 // thread and the worker thread with this wrapper. See
 // WorkerThread::PerformShutdownOnWorkerThread() for details.
 class WorkerThread::RefCountedWaitableEvent
-    : public WTF::ThreadSafeRefCounted<RefCountedWaitableEvent> {
+    : public ThreadSafeRefCounted<RefCountedWaitableEvent> {
  public:
   static scoped_refptr<RefCountedWaitableEvent> Create() {
     return base::AdoptRef<RefCountedWaitableEvent>(new RefCountedWaitableEvent);

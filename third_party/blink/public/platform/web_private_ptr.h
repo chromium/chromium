@@ -39,12 +39,10 @@
 
 #include <cstddef>
 
-namespace WTF {
+namespace blink {
+
 template <class T, typename Traits>
 class ThreadSafeRefCounted;
-}
-
-namespace blink {
 
 // By default, the destruction of a WebPrivatePtrForGC and
 // WebPrivatePtrForRefCounted must happen on the same thread that created it,
@@ -147,7 +145,7 @@ class WebPrivatePtrForRefCounted final {
   // NOLINTNEXTLINE(google-explicit-constructor)
   WebPrivatePtrForRefCounted(U&& ptr) : WebPrivatePtrForRefCounted() {
     static_assert(PtrDestruction == WebPrivatePtrDestruction::kSameThread ||
-                      IsSubclassOfTemplate<T, WTF::ThreadSafeRefCounted>::value,
+                      IsSubclassOfTemplate<T, ThreadSafeRefCounted>::value,
                   "Cross thread destructible class must derive from "
                   "ThreadSafeRefCounted<>");
     AsRefPtr() = std::forward<U>(ptr);

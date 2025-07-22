@@ -50,7 +50,7 @@ struct CrossThreadCopier<ScopedPromiseResolver<T>>
 // Ref-counted class to receive a single VideoFrame on IO thread, convert it and
 // send it to |task_runner|, where this class is created and destroyed.
 class ImageCaptureFrameGrabber::SingleShotFrameHandler
-    : public WTF::ThreadSafeRefCounted<SingleShotFrameHandler> {
+    : public ThreadSafeRefCounted<SingleShotFrameHandler> {
  public:
   using SkImageDeliverCB = WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>)>;
 
@@ -74,7 +74,7 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
       base::TimeTicks current_time);
 
  private:
-  friend class WTF::ThreadSafeRefCounted<SingleShotFrameHandler>;
+  friend class ThreadSafeRefCounted<SingleShotFrameHandler>;
 
   // Converts the media::VideoFrame into a SkImage on the |task_runner|.
   void ConvertAndDeliverFrame(SkImageDeliverCB callback,

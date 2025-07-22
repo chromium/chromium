@@ -45,7 +45,7 @@ class MODULES_EXPORT RTCRtpTransportProcessorEvent : public Event {
   Member<RTCRtpTransportProcessor> processor_;
 };
 
-class FeedbackProvider : public WTF::ThreadSafeRefCounted<FeedbackProvider> {
+class FeedbackProvider : public ThreadSafeRefCounted<FeedbackProvider> {
  public:
   virtual ~FeedbackProvider() = default;
   virtual void SetProcessor(

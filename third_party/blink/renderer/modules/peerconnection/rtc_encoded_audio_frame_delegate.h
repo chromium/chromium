@@ -29,7 +29,7 @@ class DOMArrayBuffer;
 // copies. Its purpose is to support making RTCEncodedVideoFrames
 // serializable in the same process.
 class RTCEncodedAudioFrameDelegate
-    : public WTF::ThreadSafeRefCounted<RTCEncodedAudioFrameDelegate> {
+    : public ThreadSafeRefCounted<RTCEncodedAudioFrameDelegate> {
  public:
   explicit RTCEncodedAudioFrameDelegate(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,

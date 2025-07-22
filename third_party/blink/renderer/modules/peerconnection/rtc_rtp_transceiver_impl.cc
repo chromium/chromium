@@ -180,7 +180,7 @@ RtpTransceiverState::header_extensions_negotiated() const {
 }
 
 class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
-    : public WTF::ThreadSafeRefCounted<
+    : public ThreadSafeRefCounted<
           RTCRtpTransceiverImpl::RTCRtpTransceiverInternal,
           RTCRtpTransceiverImpl::RTCRtpTransceiverInternalTraits> {
  public:
@@ -290,8 +290,8 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
   }
 
  private:
-  friend class WTF::ThreadSafeRefCounted<RTCRtpTransceiverInternal,
-                                         RTCRtpTransceiverInternalTraits>;
+  friend class ThreadSafeRefCounted<RTCRtpTransceiverInternal,
+                                    RTCRtpTransceiverInternalTraits>;
   friend struct RTCRtpTransceiverImpl::RTCRtpTransceiverInternalTraits;
 
   ~RTCRtpTransceiverInternal() {

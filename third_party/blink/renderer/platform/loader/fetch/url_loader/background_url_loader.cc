@@ -179,7 +179,7 @@ BackgroundResourceFetchSupportStatus CanHandleRequestInternal(
 }  // namespace
 
 class BackgroundURLLoader::Context
-    : public WTF::ThreadSafeRefCounted<BackgroundURLLoader::Context> {
+    : public ThreadSafeRefCounted<BackgroundURLLoader::Context> {
  public:
   Context(scoped_refptr<WebBackgroundResourceFetchAssets>
               background_resource_fetch_context,

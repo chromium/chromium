@@ -131,7 +131,7 @@ void LogVideoFrameDropUMA(media::VideoCaptureFrameDropReason reason,
 // black frame is instead forwarded to the sinks at the same frame rate. A
 // disabled track does not forward data to encoded sinks.
 class MediaStreamVideoTrack::FrameDeliverer
-    : public WTF::ThreadSafeRefCounted<FrameDeliverer> {
+    : public ThreadSafeRefCounted<FrameDeliverer> {
  public:
   using VideoSinkId = WebMediaStreamSink*;
 
@@ -223,7 +223,7 @@ class MediaStreamVideoTrack::FrameDeliverer
       base::RepeatingCallback<void(const std::string&)> emit_log_message);
 
  private:
-  friend class WTF::ThreadSafeRefCounted<FrameDeliverer>;
+  friend class ThreadSafeRefCounted<FrameDeliverer>;
 
   // Struct containing sink id, frame delivery and frame dropped callbacks.
   struct VideoIdCallbacks {

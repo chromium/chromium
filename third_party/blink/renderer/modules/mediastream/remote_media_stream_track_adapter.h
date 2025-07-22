@@ -33,7 +33,7 @@ class TrackObserver;
 // (RemoteAudioTrackAdapter) and video (RemoteVideoTrackAdapter) track.
 template <typename WebRtcMediaStreamTrackType>
 class MODULES_EXPORT RemoteMediaStreamTrackAdapter
-    : public WTF::ThreadSafeRefCounted<
+    : public ThreadSafeRefCounted<
           RemoteMediaStreamTrackAdapter<WebRtcMediaStreamTrackType>> {
  public:
   RemoteMediaStreamTrackAdapter(
@@ -74,7 +74,7 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
   }
 
  protected:
-  friend class WTF::ThreadSafeRefCounted<
+  friend class ThreadSafeRefCounted<
       RemoteMediaStreamTrackAdapter<WebRtcMediaStreamTrackType>>;
 
   virtual ~RemoteMediaStreamTrackAdapter() {

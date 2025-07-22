@@ -15,8 +15,7 @@ namespace blink {
 
 // Implements a thread-safe circular queue.
 template <typename NativeFrameType>
-class FrameQueue
-    : public WTF::ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
+class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
  public:
   explicit FrameQueue(wtf_size_t max_size)
       : max_size_(std::max(1u, max_size)) {}

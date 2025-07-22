@@ -24,7 +24,7 @@ namespace {
 // is handled by a separate class so that reference counting can keep the
 // request alive independently of the |RTCCertificateGenerator| that spawned it.
 class RTCCertificateGeneratorRequest
-    : public WTF::ThreadSafeRefCounted<RTCCertificateGeneratorRequest> {
+    : public ThreadSafeRefCounted<RTCCertificateGeneratorRequest> {
  public:
   RTCCertificateGeneratorRequest(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
@@ -49,7 +49,7 @@ class RTCCertificateGeneratorRequest
   }
 
  private:
-  friend class WTF::ThreadSafeRefCounted<RTCCertificateGeneratorRequest>;
+  friend class ThreadSafeRefCounted<RTCCertificateGeneratorRequest>;
   ~RTCCertificateGeneratorRequest() {}
 
   void GenerateCertificateOnWorkerThread(

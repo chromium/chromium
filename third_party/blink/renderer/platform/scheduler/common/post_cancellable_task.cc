@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class TaskHandle::Runner : public WTF::ThreadSafeRefCounted<Runner> {
+class TaskHandle::Runner : public ThreadSafeRefCounted<Runner> {
  public:
   explicit Runner(base::OnceClosure task) : task_(std::move(task)) {}
   Runner(const Runner&) = delete;

@@ -137,7 +137,7 @@ const std::vector<std::string>& RtpReceiverState::stream_ids() const {
 }
 
 class RTCRtpReceiverImpl::RTCRtpReceiverInternal
-    : public WTF::ThreadSafeRefCounted<
+    : public ThreadSafeRefCounted<
           RTCRtpReceiverImpl::RTCRtpReceiverInternal,
           RTCRtpReceiverImpl::RTCRtpReceiverInternalTraits> {
  public:
@@ -223,8 +223,8 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   }
 
  private:
-  friend class WTF::ThreadSafeRefCounted<RTCRtpReceiverInternal,
-                                         RTCRtpReceiverInternalTraits>;
+  friend class ThreadSafeRefCounted<RTCRtpReceiverInternal,
+                                    RTCRtpReceiverInternalTraits>;
   friend struct RTCRtpReceiverImpl::RTCRtpReceiverInternalTraits;
 
   ~RTCRtpReceiverInternal() {

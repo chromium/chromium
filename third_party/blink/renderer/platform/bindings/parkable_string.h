@@ -44,7 +44,7 @@ struct BackgroundTaskParams;
 // |ToString()| on a parked string.
 // |Lock()| does *not* unpark a string.
 class PLATFORM_EXPORT ParkableStringImpl
-    : public WTF::ThreadSafeRefCounted<ParkableStringImpl> {
+    : public ThreadSafeRefCounted<ParkableStringImpl> {
  public:
   enum class ParkingMode {
     kSynchronousOnly,

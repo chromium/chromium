@@ -29,7 +29,7 @@ class PeerConnectionDependencyFactory;
 // `GetOrCreateRemoteTrackAdapter()` which must not be called from the main
 // thread.
 class MODULES_EXPORT WebRtcMediaStreamTrackAdapterMap
-    : public WTF::ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapterMap> {
+    : public ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapterMap> {
  public:
   // Acts as an accessor to adapter members without leaking a reference to the
   // adapter. When the last |AdapterRef| is destroyed, the corresponding adapter
@@ -120,7 +120,7 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapterMap
   size_t GetRemoteTrackCount() const;
 
  private:
-  friend class WTF::ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapterMap>;
+  friend class ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapterMap>;
 
   // "(MediaStreamComponent, webrtc::MediaStreamTrackInterface) ->
   // WebRtcMediaStreamTrackAdapter" maps. The primary key is based on the object

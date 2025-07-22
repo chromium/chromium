@@ -139,7 +139,7 @@ VideoTrackAdapterSettings ReturnSettingsMaybeOverrideMaxFps(
 // tracks on the video task runner. All method calls must be on the video task
 // runner.
 class VideoTrackAdapter::VideoFrameResolutionAdapter
-    : public WTF::ThreadSafeRefCounted<VideoFrameResolutionAdapter> {
+    : public ThreadSafeRefCounted<VideoFrameResolutionAdapter> {
  public:
   struct VideoTrackCallbacks {
     VideoCaptureDeliverFrameInternalCallback frame_callback;
@@ -214,7 +214,7 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
 
  private:
   virtual ~VideoFrameResolutionAdapter();
-  friend class WTF::ThreadSafeRefCounted<VideoFrameResolutionAdapter>;
+  friend class ThreadSafeRefCounted<VideoFrameResolutionAdapter>;
 
   void DoDeliverFrame(
       scoped_refptr<media::VideoFrame> video_frame,

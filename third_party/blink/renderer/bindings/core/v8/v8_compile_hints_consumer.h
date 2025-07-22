@@ -34,7 +34,7 @@ class CORE_EXPORT V8CrowdsourcedCompileHintsConsumer
   // `DataAndScriptNameHash` is such an object. The actual data (the Bloom
   // filter) is in a `Data` object shared by multiple `DataAndScriptNameHash`
   // objects.
-  class Data : public WTF::ThreadSafeRefCounted<Data> {
+  class Data : public ThreadSafeRefCounted<Data> {
    public:
     Data() = default;
 

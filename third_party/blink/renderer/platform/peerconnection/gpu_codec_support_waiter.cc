@@ -24,14 +24,14 @@ static constexpr base::TimeDelta kRTCGpuCodecSupportWaiterTimeout =
 // to keep it alive in such case.
 class RefCountedWaitableEvent
     : public base::WaitableEvent,
-      public WTF::ThreadSafeRefCounted<RefCountedWaitableEvent> {
+      public ThreadSafeRefCounted<RefCountedWaitableEvent> {
  public:
   RefCountedWaitableEvent()
       : base::WaitableEvent(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
  private:
-  friend class WTF::ThreadSafeRefCounted<RefCountedWaitableEvent>;
+  friend class ThreadSafeRefCounted<RefCountedWaitableEvent>;
   ~RefCountedWaitableEvent() = default;
 };
 

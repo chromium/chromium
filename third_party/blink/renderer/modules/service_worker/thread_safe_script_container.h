@@ -39,7 +39,7 @@ namespace blink {
 // and Internal is destroyed earlier if all of scripts are received before
 // finishing script evaluation.
 class MODULES_EXPORT ThreadSafeScriptContainer
-    : public WTF::ThreadSafeRefCounted<ThreadSafeScriptContainer> {
+    : public ThreadSafeRefCounted<ThreadSafeScriptContainer> {
  public:
   using BytesChunk = Vector<char>;
 
@@ -117,7 +117,7 @@ class MODULES_EXPORT ThreadSafeScriptContainer
   void OnAllDataAddedOnIOThread();
 
  private:
-  friend class WTF::ThreadSafeRefCounted<ThreadSafeScriptContainer>;
+  friend class ThreadSafeRefCounted<ThreadSafeScriptContainer>;
   ~ThreadSafeScriptContainer();
 
   base::Lock lock_;

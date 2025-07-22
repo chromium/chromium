@@ -42,7 +42,7 @@ class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
   // cross-thread safe weak pointer to a Transformer object. This allows us to
   // post tasks to the Transformer from classes the transformer owns without
   // creating a circular reference.
-  class PLATFORM_EXPORT Broker : public WTF::ThreadSafeRefCounted<Broker> {
+  class PLATFORM_EXPORT Broker : public ThreadSafeRefCounted<Broker> {
    public:
     void RegisterTransformedFrameSinkCallback(
         webrtc::scoped_refptr<webrtc::TransformedFrameCallback>,

@@ -40,7 +40,7 @@ class VideoTrackAdapterSettings;
 // Adaptations is done by wrapping the original media::VideoFrame in a new
 // media::VideoFrame with a new visible_rect and natural_size.
 class MODULES_EXPORT VideoTrackAdapter
-    : public WTF::ThreadSafeRefCounted<VideoTrackAdapter> {
+    : public ThreadSafeRefCounted<VideoTrackAdapter> {
  public:
   using OnMutedCallback = base::RepeatingCallback<void(bool mute_state)>;
 
@@ -119,7 +119,7 @@ class MODULES_EXPORT VideoTrackAdapter
 
  private:
   virtual ~VideoTrackAdapter();
-  friend class WTF::ThreadSafeRefCounted<VideoTrackAdapter>;
+  friend class ThreadSafeRefCounted<VideoTrackAdapter>;
 
   // These aliases mimic the definition of VideoCaptureDeliverFrameCB,
   // VideoTrackSettingsCallback and VideoTrackFormatCallback respectively.
