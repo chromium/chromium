@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/crx_file/id_util.h"
 #include "components/value_store/leveldb_value_store.h"
 #include "components/value_store/value_store.h"
@@ -58,6 +59,73 @@ std::unique_ptr<KeyedService> BuildEventRouter(
     content::BrowserContext* context) {
   return std::make_unique<extensions::EventRouter>(context, nullptr);
 }
+
+// A fake ValueStore that can be used to mock a ValueStore for testing.
+class FakeValueStore : public value_store::ValueStore {
+ public:
+  FakeValueStore() = default;
+  // Constructor for GetBytesInUseIntOverflow test.
+  explicit FakeValueStore(size_t bytes_in_use) : bytes_in_use_(bytes_in_use) {}
+  // Constructor for GetOperationExceedsSizeLimit test.
+  explicit FakeValueStore(base::Value::Dict large_value)
+      : large_value_(std::move(large_value)) {}
+
+  // value_store::ValueStore:
+  size_t GetBytesInUse(const std::string& key) override {
+    return bytes_in_use_;
+  }
+  size_t GetBytesInUse(const std::vector<std::string>& keys) override {
+    return bytes_in_use_;
+  }
+  size_t GetBytesInUse() override { return bytes_in_use_; }
+  ReadResult Get(const std::vector<std::string>& keys) override {
+    return ReadResult(large_value_.Clone(), Status());
+  }
+
+  // The following methods are not used in tests and are not implemented.
+  ReadResult GetKeys() override { NOTREACHED(); }
+  ReadResult Get(const std::string& key) override { NOTREACHED(); }
+  ReadResult Get() override { NOTREACHED(); }
+  WriteResult Set(WriteOptions options,
+                  const std::string& key,
+                  const base::Value& value) override {
+    NOTREACHED();
+  }
+  WriteResult Set(WriteOptions options,
+                  const base::Value::Dict& values) override {
+    NOTREACHED();
+  }
+  WriteResult Remove(const std::string& key) override { NOTREACHED(); }
+  WriteResult Remove(const std::vector<std::string>& keys) override {
+    NOTREACHED();
+  }
+  WriteResult Clear() override { NOTREACHED(); }
+
+ private:
+  size_t bytes_in_use_ = 0;
+  base::Value::Dict large_value_;
+};
+
+// A fake ValueStoreCache that we can assign to a storage area in the
+// StorageFrontend. This allows us to call StorageFrontend using an extension
+// API and access our mock ValueStore.
+class FakeValueStoreCache : public ValueStoreCache {
+ public:
+  explicit FakeValueStoreCache(FakeValueStore&& store)
+      : store_(std::move(store)) {}
+
+  // ValueStoreCache:
+  void ShutdownOnUI() override {}
+  void RunWithValueStoreForExtension(
+      StorageCallback callback,
+      scoped_refptr<const Extension> extension) override {
+    std::move(callback).Run(&store_);
+  }
+  void DeleteStorageSoon(const ExtensionId& extension_id) override {}
+
+ private:
+  FakeValueStore store_;
+};
 
 }  // namespace
 
@@ -335,75 +403,6 @@ TEST_F(StorageApiUnittest, StorageAreaOnChangedOnlyOneListener) {
 
 // This is a regression test for crbug.com/1483828.
 TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
-  // A fake value store that only implements the overloads of GetBytesInUse().
-  class FakeValueStore : public value_store::ValueStore {
-   public:
-    explicit FakeValueStore(size_t bytes_in_use)
-        : bytes_in_use_(bytes_in_use) {}
-
-    size_t GetBytesInUse(const std::string& key) override {
-      return bytes_in_use_;
-    }
-
-    size_t GetBytesInUse(const std::vector<std::string>& keys) override {
-      return bytes_in_use_;
-    }
-
-    size_t GetBytesInUse() override { return bytes_in_use_; }
-
-    ReadResult GetKeys() override { NOTREACHED(); }
-
-    ReadResult Get(const std::string& key) override { NOTREACHED(); }
-
-    ReadResult Get(const std::vector<std::string>& keys) override {
-      NOTREACHED();
-    }
-
-    ReadResult Get() override { NOTREACHED(); }
-
-    WriteResult Set(WriteOptions options,
-                    const std::string& key,
-                    const base::Value& value) override {
-      NOTREACHED();
-    }
-
-    WriteResult Set(WriteOptions options,
-                    const base::Value::Dict& values) override {
-      NOTREACHED();
-    }
-
-    WriteResult Remove(const std::string& key) override { NOTREACHED(); }
-
-    WriteResult Remove(const std::vector<std::string>& keys) override {
-      NOTREACHED();
-    }
-
-    WriteResult Clear() override { NOTREACHED(); }
-
-   private:
-    size_t bytes_in_use_ = 0;
-  };
-
-  // Create a fake ValueStoreCache that we can assign to a storage area in the
-  // StorageFrontend. This allows us to call StorageFrontend using an extension
-  // API and access our mock ValueStore.
-  class FakeValueStoreCache : public ValueStoreCache {
-   public:
-    explicit FakeValueStoreCache(FakeValueStore store) : store_(store) {}
-
-    // ValueStoreCache:
-    void ShutdownOnUI() override {}
-    void RunWithValueStoreForExtension(
-        FakeValueStoreCache::StorageCallback callback,
-        scoped_refptr<const Extension> extension) override {
-      std::move(callback).Run(&store_);
-    }
-    void DeleteStorageSoon(const ExtensionId& extension_id) override {}
-
-   private:
-    FakeValueStore store_;
-  };
-
   static constexpr struct TestCase {
     size_t bytes_in_use;
     double result;
@@ -421,7 +420,7 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
     FakeValueStore value_store(test_case.bytes_in_use);
     frontend->SetCacheForTesting(
         settings_namespace::Namespace::LOCAL,
-        std::make_unique<FakeValueStoreCache>(value_store));
+        std::make_unique<FakeValueStoreCache>(std::move(value_store)));
 
     auto function =
         base::MakeRefCounted<StorageStorageAreaGetBytesInUseFunction>();
@@ -439,6 +438,32 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
     EXPECT_EQ(test_case.result, result->GetDouble());
     frontend->DisableStorageForTesting(settings_namespace::Namespace::LOCAL);
   }
+}
+
+TEST_F(StorageApiUnittest, GetOperationExceedsSizeLimit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine("EnforceStorageGetSizeLimit", "");
+
+  constexpr size_t kMaxSingleGetSizeBytes = 512 * 1024 * 1024;
+  base::Value::Dict dict;
+  dict.Set("kKeyWithLargeValue", std::string(kMaxSingleGetSizeBytes, 'a'));
+
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
+  frontend->SetCacheForTesting(
+      settings_namespace::Namespace::LOCAL,
+      std::make_unique<FakeValueStoreCache>(FakeValueStore(std::move(dict))));
+
+  auto function = base::MakeRefCounted<StorageStorageAreaGetFunction>();
+  function->set_extension(extension());
+  function->set_source_context_type(mojom::ContextType::kPrivilegedExtension);
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), "[\"local\", \"kKeyWithLargeValue\"]", browser_context());
+
+  const std::string expected_error_substring = "exceeds the maximum limit";
+  EXPECT_TRUE(base::Contains(error, expected_error_substring));
+
+  frontend->DisableStorageForTesting(settings_namespace::Namespace::LOCAL);
 }
 
 }  // namespace extensions

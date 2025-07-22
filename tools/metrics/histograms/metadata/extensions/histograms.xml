@@ -5053,6 +5053,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Storage.GetOperation.AllocationSize" units="MB"
+    expires_after="2025-10-21">
+  <owner>evasu@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Logged when a storage get() operation retrieves a value. This records the
+    estimated size of the data in MB and helps us understand the distribution of
+    sizes for storage get() operations.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.SyncBlockedByDefaultWebAppMigration" enum="Boolean"
     expires_after="2024-02-08">
   <owner>alancutter@chromium.org</owner>
