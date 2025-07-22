@@ -4,15 +4,16 @@
 
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 
-#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
+#include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
 namespace {
 
-gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(const gfx::Size& size,
-                                                 gfx::BufferFormat format) {
-  return GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
+    const gfx::Size& size,
+    gfx::BufferFormat format) {
+  return SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
       size, format, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 }
 
@@ -20,7 +21,7 @@ TEST(SharedMemoryRegionWrapperTest, SinglePlaneRGBA_8888) {
   constexpr gfx::Size size(100, 100);
   constexpr gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
 
-  auto handle = CreateGpuMemoryBuffer(size, buffer_format);
+  auto handle = CreateGpuMemoryBufferHandle(size, buffer_format);
 
   SharedMemoryRegionWrapper wrapper;
   EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format));
@@ -31,7 +32,7 @@ TEST(SharedMemoryRegionWrapperTest, MultiPlaneY_UV_420) {
   constexpr gfx::BufferFormat buffer_format =
       gfx::BufferFormat::YUV_420_BIPLANAR;
 
-  auto handle = CreateGpuMemoryBuffer(size, buffer_format);
+  auto handle = CreateGpuMemoryBufferHandle(size, buffer_format);
 
   SharedMemoryRegionWrapper wrapper;
   EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format));
@@ -48,7 +49,7 @@ TEST(SharedMemoryRegionWrapperTest, MultiPlaneY_V_U_420) {
   constexpr gfx::Size size(100, 100);
   constexpr gfx::BufferFormat buffer_format = gfx::BufferFormat::YVU_420;
 
-  auto handle = CreateGpuMemoryBuffer(size, buffer_format);
+  auto handle = CreateGpuMemoryBufferHandle(size, buffer_format);
 
   SharedMemoryRegionWrapper wrapper;
   EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format));
@@ -71,7 +72,7 @@ TEST(SharedMemoryRegionWrapperTest, BufferTooSmallWrongFormat) {
   constexpr gfx::BufferFormat buffer_format =
       gfx::BufferFormat::YUV_420_BIPLANAR;
 
-  auto handle = CreateGpuMemoryBuffer(size, gfx::BufferFormat::R_8);
+  auto handle = CreateGpuMemoryBufferHandle(size, gfx::BufferFormat::R_8);
 
   SharedMemoryRegionWrapper wrapper;
   EXPECT_FALSE(wrapper.Initialize(std::move(handle), size, buffer_format));
@@ -82,7 +83,7 @@ TEST(SharedMemoryRegionWrapperTest, BufferTooSmallWrongSize) {
   constexpr gfx::BufferFormat buffer_format =
       gfx::BufferFormat::YUV_420_BIPLANAR;
 
-  auto handle = CreateGpuMemoryBuffer(size, buffer_format);
+  auto handle = CreateGpuMemoryBufferHandle(size, buffer_format);
 
   SharedMemoryRegionWrapper wrapper;
   EXPECT_FALSE(wrapper.Initialize(std::move(handle), gfx::Size(200, 200),
