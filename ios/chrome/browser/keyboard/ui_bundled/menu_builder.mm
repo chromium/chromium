@@ -22,8 +22,13 @@
     return;
   }
 
-  // File
-  UIMenu* fileMenu = [UIMenu menuWithChildren:@[
+  // Application: Remove the Application menu, as it contains a system entry to
+  // open the Settings app, as it conflicts with the in-app settings key
+  // command.
+  [builder removeMenuForIdentifier:UIMenuApplication];
+
+  // File: Add elements.
+  NSArray<UIMenuElement*>* fileElements = @[
     UIKeyCommand.cr_openNewTab,
     UIKeyCommand.cr_openNewIncognitoTab,
     UIKeyCommand.cr_openNewWindow,
@@ -32,28 +37,36 @@
     UIKeyCommand.cr_closeTab,
     UIKeyCommand.cr_voiceSearch,
     UIKeyCommand.cr_closeAll,
-  ]];
-  [builder insertChildMenu:fileMenu atStartOfMenuForIdentifier:UIMenuFile];
+  ];
+  [self insertElements:fileElements
+      atStartOfMenuForIdentifier:UIMenuFile
+                       inBuilder:builder];
 
-  // Edit
-  UIMenu* editMenu = [UIMenu menuWithChildren:@[
+  // Edit: Replace the Find actions.
+  NSArray<UIMenuElement*>* findElements = @[
     UIKeyCommand.cr_find,
     UIKeyCommand.cr_findNext,
     UIKeyCommand.cr_findPrevious,
-  ]];
-  // Remove the conflicting Find commands.
-  [builder removeMenuForIdentifier:UIMenuFind];
-  [builder insertChildMenu:editMenu atStartOfMenuForIdentifier:UIMenuEdit];
+  ];
+  [builder replaceChildrenOfMenuForIdentifier:UIMenuFind
+                            fromChildrenBlock:^(NSArray<UIMenuElement*>* _) {
+                              return findElements;
+                            }];
 
-  // View
-  UIMenu* viewMenu = [UIMenu menuWithChildren:@[
+  // Format: Remove the system entry to format text.
+  [builder removeMenuForIdentifier:UIMenuFormat];
+
+  // View: Add elements.
+  NSArray<UIMenuElement*>* viewElements = @[
     UIKeyCommand.cr_stop,
     UIKeyCommand.cr_reload,
     UIKeyCommand.cr_goToTabGrid,
-  ]];
-  [builder insertChildMenu:viewMenu atStartOfMenuForIdentifier:UIMenuView];
+  ];
+  [self insertElements:viewElements
+      atStartOfMenuForIdentifier:UIMenuView
+                       inBuilder:builder];
 
-  // History
+  // History: Add new menu.
   UIMenu* historyMenu =
       [UIMenu menuWithTitle:NSLocalizedString(@"IDS_IOS_KEYBOARD_HISTORY", @"")
                    children:@[
@@ -65,7 +78,7 @@
                    ]];
   [builder insertSiblingMenu:historyMenu afterMenuForIdentifier:UIMenuView];
 
-  // Bookmarks
+  // Bookmarks: Add new menu.
   UIMenu* bookmarksMenu = [UIMenu
       menuWithTitle:NSLocalizedString(@"IDS_IOS_KEYBOARD_BOOKMARKS", @"")
            children:@[
@@ -77,8 +90,8 @@
   [builder insertSiblingMenu:bookmarksMenu
       afterMenuForIdentifier:historyMenu.identifier];
 
-  // Window
-  UIMenu* windowMenu = [UIMenu menuWithChildren:@[
+  // Window: Add elements.
+  NSArray<UIMenuElement*>* windowElements = @[
     UIKeyCommand.cr_showNextTab,
     UIKeyCommand.cr_showPreviousTab,
     UIKeyCommand.cr_select1,
@@ -87,15 +100,40 @@
     UIKeyCommand.cr_select9,
     UIKeyCommand.cr_showDownloads,
     UIKeyCommand.cr_showSettings,
-  ]];
-  [builder insertChildMenu:windowMenu atStartOfMenuForIdentifier:UIMenuWindow];
+  ];
+  [self insertElements:windowElements
+      atStartOfMenuForIdentifier:UIMenuWindow
+                       inBuilder:builder];
 
-  // Help
-  UIMenu* helpMenu = [UIMenu menuWithChildren:@[
+  // Help: Add elements.
+  NSArray<UIMenuElement*>* helpElements = @[
     UIKeyCommand.cr_showHelp,
     UIKeyCommand.cr_reportAnIssue,
-  ]];
-  [builder insertChildMenu:helpMenu atStartOfMenuForIdentifier:UIMenuHelp];
+  ];
+  [self insertElements:helpElements
+      atStartOfMenuForIdentifier:UIMenuHelp
+                       inBuilder:builder];
+}
+
+#pragma mark - Private
+
++ (void)insertElements:(NSArray<UIMenuElement*>*)childElements
+    atStartOfMenuForIdentifier:(UIMenuIdentifier)parentIdentifier
+                     inBuilder:(id<UIMenuBuilder>)builder {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    [builder insertElements:childElements
+        atStartOfMenuForIdentifier:parentIdentifier];
+    return;
+  }
+#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
+        // __IPHONE_26_0
+  [builder
+      replaceChildrenOfMenuForIdentifier:parentIdentifier
+                       fromChildrenBlock:^(NSArray<UIMenuElement*>* elements) {
+                         return [childElements
+                             arrayByAddingObjectsFromArray:elements];
+                       }];
 }
 
 @end

@@ -2136,21 +2136,27 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)validateCommand:(UICommand*)command {
+  NSString* newTitle;
   if (command.action == @selector(keyCommand_find)) {
-    command.discoverabilityTitle =
-        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_SEARCH_TABS);
+    newTitle = l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_SEARCH_TABS);
   }
   if (command.action == @selector(keyCommand_select1)) {
-    command.discoverabilityTitle = l10n_util::GetNSStringWithFixup(
+    newTitle = l10n_util::GetNSStringWithFixup(
         IDS_IOS_KEYBOARD_GO_TO_INCOGNITO_TAB_GRID);
   }
   if (command.action == @selector(keyCommand_select2)) {
-    command.discoverabilityTitle = l10n_util::GetNSStringWithFixup(
+    newTitle = l10n_util::GetNSStringWithFixup(
         IDS_IOS_KEYBOARD_GO_TO_REGULAR_TAB_GRID);
   }
   if (command.action == @selector(keyCommand_select3)) {
-    command.discoverabilityTitle =
+    newTitle =
         l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_GO_TO_REMOTE_TAB_GRID);
+  }
+  // If a new title was determined, set it on the command.
+  if (newTitle.length > 0) {
+    command.title = newTitle;
+    // Keep the discoverability title in sync.
+    command.discoverabilityTitle = newTitle;
   }
   [super validateCommand:command];
 }

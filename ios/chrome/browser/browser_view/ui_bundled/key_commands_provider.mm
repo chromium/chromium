@@ -252,19 +252,24 @@ using base::UserMetricsAction;
 // Changes the title to display the most appropriate string in the shortcut
 // menu.
 - (void)validateCommand:(UICommand*)command {
+  NSString* newTitle;
   if (command.action == @selector(keyCommand_find)) {
-    command.discoverabilityTitle =
-        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIND_IN_PAGE);
+    newTitle = l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIND_IN_PAGE);
   }
   if (command.action == @selector(keyCommand_select1)) {
-    command.discoverabilityTitle =
-        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIRST_TAB);
+    newTitle = l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIRST_TAB);
   }
   if (command.action == @selector(keyCommand_addToBookmarks)) {
     if ([self isBookmarkedPage]) {
-      command.discoverabilityTitle =
+      newTitle =
           l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_EDIT_BOOKMARK);
     }
+  }
+  // If a new title was determined, set it on the command.
+  if (newTitle.length > 0) {
+    command.title = newTitle;
+    // Keep the discoverability title in sync.
+    command.discoverabilityTitle = newTitle;
   }
   [super validateCommand:command];
 }
