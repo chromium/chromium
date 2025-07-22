@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
@@ -95,6 +96,7 @@ public class ToolbarTablet extends ToolbarLayout {
     private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
     private @Nullable TabletCaptureStateToken mLastCaptureStateToken;
     private @DrawableRes int mBookmarkButtonImageRes;
+    private @Nullable ExtensionToolbarCoordinator mExtensionToolbarCoordinator;
 
     /**
      * Constructs a ToolbarTablet object.
@@ -323,6 +325,10 @@ public class ToolbarTablet extends ToolbarLayout {
         mBookmarkButton.setBackgroundResource(omniboxIconRippleId);
         mSaveOfflineButton.setBackgroundResource(omniboxIconRippleId);
         mLocationBar.updateButtonBackground(omniboxIconRippleId);
+
+        if (mExtensionToolbarCoordinator != null) {
+            mExtensionToolbarCoordinator.updateMenuButtonBackground(toolbarIconRippleId);
+        }
     }
 
     @Override
@@ -393,7 +399,8 @@ public class ToolbarTablet extends ToolbarLayout {
             ToolbarProgressBar progressBar,
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
             @Nullable BackButtonCoordinator backButtonCoordinator,
-            @Nullable HomeButtonDisplay homeButtonDisplay) {
+            @Nullable HomeButtonDisplay homeButtonDisplay,
+            @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -405,11 +412,13 @@ public class ToolbarTablet extends ToolbarLayout {
                 progressBar,
                 reloadButtonCoordinator,
                 backButtonCoordinator,
-                homeButtonDisplay);
+                homeButtonDisplay,
+                extensionToolbarCoordinator);
         mHistoryDelegate = historyDelegate;
         mReloadButtonCoordinator = assertNonNull(reloadButtonCoordinator);
         mBackButtonCoordinator = assertNonNull(backButtonCoordinator);
         menuButtonCoordinator.setVisibility(true);
+        mExtensionToolbarCoordinator = extensionToolbarCoordinator;
     }
 
     @Override

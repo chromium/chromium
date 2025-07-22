@@ -1882,7 +1882,8 @@ public class ToolbarManager
                         mBackButtonCoordinator,
                         mIsNewTabPageCustomizationToolbarButtonEnabled
                                 ? mHomePageButtonsCoordinator
-                                : mHomeButtonCoordinator);
+                                : mHomeButtonCoordinator,
+                        mExtensionToolbarCoordinator);
 
         mHomepageStateListener =
                 () -> {

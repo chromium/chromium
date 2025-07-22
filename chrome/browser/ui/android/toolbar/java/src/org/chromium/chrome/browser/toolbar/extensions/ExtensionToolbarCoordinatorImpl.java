@@ -104,4 +104,9 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
         mExtensionActionListCoordinator.click(result.actionId);
         return true;
     }
+
+    @Override
+    public void updateMenuButtonBackground(int backgroundResource) {
+        mExtensionsMenuButtonCoordinator.updateButtonBackground(backgroundResource);
+    }
 }

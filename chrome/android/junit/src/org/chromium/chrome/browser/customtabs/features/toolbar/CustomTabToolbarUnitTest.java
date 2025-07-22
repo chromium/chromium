@@ -219,7 +219,8 @@ public class CustomTabToolbarUnitTest {
                 mToolbarProgressBar,
                 null,
                 null,
-                /* homeButtonDisplay= */ null);
+                /* homeButtonDisplay= */ null,
+                null);
         if (!ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             mToolbar.initVisibilityRule(mActivity, () -> mAppMenuHandler, mIntentDataProvider);
         }

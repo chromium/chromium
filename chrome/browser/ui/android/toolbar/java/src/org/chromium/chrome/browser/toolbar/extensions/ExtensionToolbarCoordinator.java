@@ -82,4 +82,12 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
      * @return Whether the event has been consumed.
      */
     boolean dispatchKeyEvent(KeyEvent event);
+
+    /**
+     * Updates the ripple background of the extensions menu button
+     *
+     * <p>This method is typically invoked when the toolbar's tab model changes, such as when
+     * transitioning into incognito mode.
+     */
+    void updateMenuButtonBackground(int backgroundResource);
 }

@@ -154,6 +154,10 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
         ImageViewCompat.setImageTintList(mExtensionsMenuButton, activityFocusTintList);
     }
 
+    public void updateButtonBackground(int backgroundResource) {
+        mExtensionsMenuButton.setBackgroundResource(backgroundResource);
+    }
+
     @Override
     public void destroy() {
         if (mExtensionsMenuCoordinator != null) {
