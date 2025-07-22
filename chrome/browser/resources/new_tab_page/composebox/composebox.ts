@@ -94,8 +94,7 @@ export class ComposeboxElement extends CrLitElement {
     this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.$.input.value.trim().length > 0;
     });
-    // Make the element focusable to receive keyboard events.
-    this.$.composebox.focus();
+    this.$.input.focus();
   }
 
   override disconnectedCallback() {
