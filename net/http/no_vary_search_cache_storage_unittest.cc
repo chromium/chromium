@@ -52,6 +52,7 @@ using ::base::test::ErrorIs;
 using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -199,8 +200,14 @@ class FakeFileOperations final : public NoVarySearchCacheStorageFileOperations {
   explicit FakeFileOperations(scoped_refptr<FakeFilesystem> filesystem)
       : filesystem_(std::move(filesystem)) {}
 
+  bool Init() override {
+    init_called_ = true;
+    return true;
+  }
+
   base::expected<LoadResult, base::File::Error> Load(std::string_view filename,
                                                      size_t max_size) override {
+    EXPECT_TRUE(init_called_);
     auto maybe_result = filesystem_->Load(filename);
     if (!maybe_result) {
       return base::unexpected(base::File::FILE_ERROR_NOT_FOUND);
@@ -215,6 +222,7 @@ class FakeFileOperations final : public NoVarySearchCacheStorageFileOperations {
   base::expected<void, base::File::Error> AtomicSave(
       std::string_view filename,
       base::span<const base::span<const uint8_t>> segments) override {
+    EXPECT_TRUE(init_called_);
     const size_t total_size =
         std::accumulate(segments.begin(), segments.end(), size_t{0u},
                         [](size_t total, base::span<const uint8_t> inner_span) {
@@ -234,11 +242,13 @@ class FakeFileOperations final : public NoVarySearchCacheStorageFileOperations {
 
   base::expected<std::unique_ptr<Writer>, base::File::Error> CreateWriter(
       std::string_view filename) override {
+    EXPECT_TRUE(init_called_);
     filesystem_->Store(filename, {});
     return std::make_unique<FakeWriter>(filesystem_, filename);
   }
 
  private:
+  bool init_called_ = false;
   scoped_refptr<FakeFilesystem> filesystem_;
 };
 
@@ -855,7 +865,43 @@ class NoVarySearchCacheStorageMockFilesystemTest
   NoVarySearchCacheStorage storage_;
 };
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemTest, WriteSnapshotFails) {
+TEST_F(NoVarySearchCacheStorageMockFilesystemTest, InitFails) {
+  EXPECT_CALL(operations(), Init).WillOnce(Return(false));
+
+  TriggerLoad();
+
+  EXPECT_THAT(TakeLoadResult(),
+              ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
+}
+
+TEST_F(NoVarySearchCacheStorageMockFilesystemTest, InitIsCalledFirst) {
+  {
+    InSequence s;
+    EXPECT_CALL(operations(), Init).WillOnce(Return(true));
+    EXPECT_CALL(operations(), Load)
+        .WillOnce(Return(base::unexpected(base::File::FILE_ERROR_NOT_FOUND)));
+
+    // Cause the load to fail just to keep this test simple.
+    EXPECT_CALL(operations(), AtomicSave)
+        .WillOnce(Return(base::unexpected(base::File::FILE_ERROR_NO_SPACE)));
+  }
+
+  TriggerLoad();
+
+  EXPECT_THAT(TakeLoadResult(),
+              ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
+}
+
+class NoVarySearchCacheStorageMockFilesystemInitCalledTest
+    : public NoVarySearchCacheStorageMockFilesystemTest {
+ public:
+  NoVarySearchCacheStorageMockFilesystemInitCalledTest() {
+    EXPECT_CALL(operations(), Init).WillOnce(Return(true));
+  }
+};
+
+TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+       WriteSnapshotFails) {
   EXPECT_CALL(operations(), Load)
       .WillOnce(Return(base::unexpected(base::File::FILE_ERROR_NOT_FOUND)));
   EXPECT_CALL(operations(), AtomicSave)
@@ -867,7 +913,8 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemTest, WriteSnapshotFails) {
               ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemTest, CreateJournalFails) {
+TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+       CreateJournalFails) {
   EXPECT_CALL(operations(), Load)
       .WillOnce(Return(base::unexpected(base::File::FILE_ERROR_NOT_FOUND)));
   EXPECT_CALL(operations(), AtomicSave).WillOnce(Return(base::ok()));
@@ -880,7 +927,8 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemTest, CreateJournalFails) {
               ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemTest, StartJournalFails) {
+TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+       StartJournalFails) {
   auto writer = std::make_unique<StrictMock<MockWriter>>();
   EXPECT_CALL(*writer, Write).WillOnce(Return(false));
 
@@ -895,7 +943,8 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemTest, StartJournalFails) {
               ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemTest, JournallingFailsAfterStart) {
+TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+       JournallingFailsAfterStart) {
   auto writer = std::make_unique<StrictMock<MockWriter>>();
 
   // If more than two writes are attempted the test will fail.
@@ -927,7 +976,8 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemTest, JournallingFailsAfterStart) {
   EXPECT_EQ(cache->size(), 3u);
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemTest, TakeSnapshotFails) {
+TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+       TakeSnapshotFails) {
   auto writer = std::make_unique<StrictMock<MockWriter>>();
   base::RunLoop run_loop;
 

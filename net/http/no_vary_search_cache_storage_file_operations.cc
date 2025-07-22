@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include "net/http/no_vary_search_cache_storage.h"
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>  // For {Get,Set}FileAttributes
 #endif                // BUILDFLAG(IS_WIN)
@@ -15,12 +17,14 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_math.h"
 #include "base/pickle.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 
@@ -34,6 +38,8 @@ namespace {
 
 // NoVarySearchCacheStorageFileOperations is a very long name.
 using FileOperations = NoVarySearchCacheStorageFileOperations;
+
+using enum base::File::Error;
 
 // Implementation of FileOperations::Writer that appends to a real file.
 class RealWriter final : public FileOperations::Writer {
@@ -58,6 +64,157 @@ bool IsAcceptableFilename(std::string_view filename) {
   return base::IsStringASCII(filename) &&
          std::ranges::none_of(filename, base::FilePath::IsSeparator) &&
          filename != "." && filename != "..";
+}
+
+// Creates the directory `path` and all non-existent parent directories if
+// possible. Reports the results to histograms using `histogram_suffix`.
+bool CreateDirectoryIfNotExists(const base::FilePath& path,
+                                std::string_view histogram_suffix) {
+  // The result of trying to create the directory.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(CreateDirectoryResult)
+  enum class CreateDirectoryResult {
+    kAlreadyExisted = 0,
+    kCreated = 1,
+    kCreateFailed = 2,
+    kMaxValue = kCreateFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NoVarySearchDirectoryCreateResult)
+
+  const CreateDirectoryResult result = [&] {
+    if (base::DirectoryExists(path)) {
+      return CreateDirectoryResult::kAlreadyExisted;
+    }
+
+    base::File::Error error;
+    if (!base::CreateDirectoryAndGetError(path, &error)) {
+      base::UmaHistogramExactLinear(
+          base::StrCat({"HttpCache.NoVarySearch.DirectoryCreateError.",
+                        histogram_suffix}),
+          -error, -FILE_ERROR_MAX);
+      return CreateDirectoryResult::kCreateFailed;
+    }
+
+    return CreateDirectoryResult::kCreated;
+  }();
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"HttpCache.NoVarySearch.DirectoryCreateResult.", histogram_suffix}),
+      result);
+
+  return result != CreateDirectoryResult::kCreateFailed;
+}
+
+// Deletes `path`. Returns true on success. Logs the error code to the histogram
+// named by concatenating `histogram_name_parts` and returns false if deletion
+// fails.
+bool DeleteLoggingErrors(
+    const base::FilePath& path,
+    base::span<const std::string_view> histogram_name_parts) {
+  if (base::DeleteFile(path)) {
+    return true;
+  }
+
+  base::UmaHistogramExactLinear(base::StrCat(histogram_name_parts),
+                                -base::File::GetLastFileError(),
+                                -FILE_ERROR_MAX);
+
+  return false;
+}
+
+// Renames `old_path` to `new_path` if `old_path` exists and `new_path` does
+// not. If both exist, deletes `old_path`. Records results to histograms using
+// `histogram_suffix`.
+void RenameOrDeleteIfExists(const base::FilePath& old_path,
+                            const base::FilePath& new_path,
+                            std::string_view histogram_suffix) {
+  // The result of the attempted rename or delete operation.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(RenameResult)
+  enum class RenameResult {
+    kSourceDidNotExist = 0,
+    kSourceDeleted = 1,
+    kDeletionFailed = 2,
+    kRenamed = 3,
+    kRenameFailed = 4,
+    kMaxValue = kRenameFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NoVarySearchRenameOrDeleteResult)
+
+  const RenameResult result = [&] {
+    if (!base::PathExists(old_path)) {
+      return RenameResult::kSourceDidNotExist;
+    }
+
+    if (base::PathExists(new_path)) {
+      return DeleteLoggingErrors(
+                 old_path,
+                 {"HttpCache.NoVarySearch.InitDeleteError.", histogram_suffix})
+                 ? RenameResult::kSourceDeleted
+                 : RenameResult::kDeletionFailed;
+    }
+
+    base::File::Error error;
+    if (!base::ReplaceFile(old_path, new_path, &error)) {
+      // We don't attempt retries on Windows. If something has the file open we
+      // just give up. This rename functionality is purely best-effort and it's
+      // not critical if it fails, as the NoVarySearchCache will just be
+      // recreated.
+      base::UmaHistogramExactLinear(
+          base::StrCat(
+              {"HttpCache.NoVarySearch.InitRenameError.", histogram_suffix}),
+          -error, -FILE_ERROR_MAX);
+      return RenameResult::kRenameFailed;
+    }
+
+    return RenameResult::kRenamed;
+  }();
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"HttpCache.NoVarySearch.RenameOrDeleteResult.", histogram_suffix}),
+      result);
+}
+
+constexpr std::string_view kSnapshotFilename =
+    NoVarySearchCacheStorage::kSnapshotFilename;
+
+void MoveOldFilesIfNeeded(const base::FilePath& parent_path,
+                          const base::FilePath& path) {
+  static constexpr std::string_view kJournalFilename =
+      NoVarySearchCacheStorage::kJournalFilename;
+
+  RenameOrDeleteIfExists(parent_path.AppendASCII(kSnapshotFilename),
+                         path.AppendASCII(kSnapshotFilename), "Snapshot");
+  RenameOrDeleteIfExists(parent_path.AppendASCII(kJournalFilename),
+                         path.AppendASCII(kJournalFilename), "Journal");
+}
+
+void DeleteIfExists(const base::FilePath& path,
+                    std::string_view histogram_suffix) {
+  // base::DeleteFile actually already tests if the file exists, but since it
+  // almost always won't we can save some time by doing it ourselves.
+  if (!base::PathExists(path)) {
+    return;
+  }
+
+  DeleteLoggingErrors(
+      path, {"HttpCache.NoVarySearch.DeleteIfExistsError.", histogram_suffix});
+}
+
+void DeleteTempFilesIfNeeded(const base::FilePath& parent_path,
+                             const base::FilePath& path) {
+  const std::string snapshot_tempfile =
+      base::StrCat({kSnapshotFilename, "-new"});
+  DeleteIfExists(parent_path.AppendASCII(snapshot_tempfile), "Parent");
+  DeleteIfExists(path.AppendASCII(snapshot_tempfile), "NoVarySearch");
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -113,15 +270,35 @@ bool ReplaceFileWithRetries(const base::FilePath& source,
 class RealFileOperations : public FileOperations {
  public:
   using enum base::File::Flags;
-  using enum base::File::Error;
 
-  explicit RealFileOperations(const base::FilePath& path) : path_(path) {
+  explicit RealFileOperations(const base::FilePath& path)
+      : parent_path_(path), path_(path.AppendASCII(kNoVarySearchDirName)) {
     // It's normal to construct this on a different thread than it will be used.
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
   ~RealFileOperations() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  bool Init() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!CreateDirectoryIfNotExists(parent_path_,
+                                    /*histogram_suffix=*/"Parent") ||
+        !CreateDirectoryIfNotExists(path_,
+                                    /*histogram_suffix=*/"NoVarySearch")) {
+      return false;
+    }
+
+    // TODO(https://crbug.com/421927600): Remove this in December 2025 provided
+    // the kSourceDidNotExist bucket of the
+    // HttpCache.NoVarySearch.RenameOrDeleteResult.Snapshot histogram has
+    // reached 100%.
+    MoveOldFilesIfNeeded(parent_path_, path_);
+
+    DeleteTempFilesIfNeeded(parent_path_, path_);
+
+    return true;
   }
 
   base::expected<LoadResult, base::File::Error> Load(std::string_view filename,
@@ -256,7 +433,8 @@ class RealFileOperations : public FileOperations {
     return path_.AppendASCII(filename);
   }
 
-  base::FilePath path_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const base::FilePath parent_path_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const base::FilePath path_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

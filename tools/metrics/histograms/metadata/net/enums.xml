@@ -1951,18 +1951,33 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Corrupt journal entry">
     Deserialization of a journal entry failed. Journal loading incomplete.
   </int>
-  <int value="11" label="Couldnt create cache file">
+  <int value="11" label="Couldn't create cache file">
     Couldn't write a new snapshot.baf file. Persistence abandoned.
   </int>
-  <int value="12" label="Couldnt Create Journal">
+  <int value="12" label="Couldn't create journal">
     Couldn't create a new journal.baj file. Persistence abandoned.
   </int>
-  <int value="13" label="Couldnt Start Journal">
+  <int value="13" label="Couldn't start journal">
     Couldn't write to journal.baj file. Persistence abandoned.
+  </int>
+  <int value="14" label="Operations init failed">
+    Target directory doesn't exist, and can't create it. Persistence abandoned.
   </int>
 </enum>
 
 <!-- LINT.ThenChange(//net/http/no_vary_search_cache_storage.cc:Result) -->
+
+<!-- LINT.IfChange(NoVarySearchDirectoryCreateResult) -->
+
+<enum name="NoVarySearchDirectoryCreateResult">
+  <int value="0" label="Already existed">Directory already existed.</int>
+  <int value="1" label="Created">Directory successfully created.</int>
+  <int value="2" label="Create failed">
+    Directory didn't exist and couldn't be created.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/no_vary_search_cache_storage_file_operations.cc:CreateDirectoryResult) -->
 
 <!-- LINT.IfChange(NoVarySearchHeaderParseResult) -->
 
@@ -1999,6 +2014,31 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//net/http/http_no_vary_search_data.h:NoVarySearchHeaderParseResult) -->
+
+<!-- LINT.IfChange(NoVarySearchRenameOrDeleteResult) -->
+
+<enum name="NoVarySearchRenameOrDeleteResult">
+  <int value="0" label="Source did not exist">
+    The file was not present in the old location.
+  </int>
+  <int value="1" label="Source deleted">
+    The file was present in both the old and the new locations. The file in the
+    old location was deleted.
+  </int>
+  <int value="2" label="Deletion failed">
+    The file was present in both the old and the new locations. An attempt to
+    delete the file in the old location failed.
+  </int>
+  <int value="3" label="Renamed">
+    The file was moved from the old location to the new location.
+  </int>
+  <int value="4" label="Rename failed">
+    An attempt to move the file from the old location to the new location
+    failed.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/no_vary_search_cache_storage_file_operations.cc:RenameResult) -->
 
 <!-- LINT.IfChange(NoVarySearchUseResult) -->
 

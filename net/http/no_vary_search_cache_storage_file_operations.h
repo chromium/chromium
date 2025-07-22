@@ -33,6 +33,8 @@ namespace net {
 // these interfaces, so calls will be devirtualized and may be inlined.
 class NET_EXPORT NoVarySearchCacheStorageFileOperations {
  public:
+  static constexpr char kNoVarySearchDirName[] = "no-vary-search";
+
   // Result of a call to Load().
   struct NET_EXPORT LoadResult {
     std::vector<uint8_t> contents;
@@ -68,7 +70,8 @@ class NET_EXPORT NoVarySearchCacheStorageFileOperations {
   };
 
   // Creates a NoVarySearchCacheStorageFileOperations object that accesses the
-  // real file system. All filenames will be treated as relative to `path`.
+  // real file system. All filenames will be treated as relative to a
+  // subdirectory of `path` named `kNoVarySearchDirName`.
   static std::unique_ptr<NoVarySearchCacheStorageFileOperations> Create(
       const base::FilePath& path);
 
@@ -78,6 +81,13 @@ class NET_EXPORT NoVarySearchCacheStorageFileOperations {
       const NoVarySearchCacheStorageFileOperations&) = delete;
 
   virtual ~NoVarySearchCacheStorageFileOperations();
+
+  // Performs any cleanup or initialization operations that need to be done
+  // before using the object. Must be called exactly once after `path` is ready
+  // to be accessed but before calling any of the other methods. Returns true if
+  // the subdirectory `kNoVarySearchDirName` probably exists when Init()
+  // returns.
+  virtual bool Init() = 0;
 
   // Loads the complete contents of the file `filename` into memory and
   // returns it and its last modified time. Returns the appropriate Error on

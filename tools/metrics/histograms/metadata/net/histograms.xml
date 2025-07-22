@@ -643,6 +643,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.DeleteIfExistsError.{Directory}"
+    enum="PlatformFileError" expires_after="2026-01-11">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to delete the
+    &quot;snapshot.baj-new&quot; temporary file from the {Directory} directory
+    by net::NoVarySearchCacheStorage. This is only logged if the file exists and
+    deleting it fails. The check is only done when creating an on-the-record
+    NetworkContext.
+
+    These errors should be rare and harmless.
+  </summary>
+  <token key="Directory">
+    <variant name="NoVarySearch" summary="no-vary-search"/>
+    <variant name="Parent" summary="parent"/>
+  </token>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.DirectoryCreateError.{Directory}"
+    enum="PlatformFileError" expires_after="2026-01-11">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to create the {Directory}
+    directory by net::NoVarySearchCacheStorage. This is logged any time creating
+    the directory fails. The directory is only created when opening a profile
+    when the directory doesn't already exist.
+  </summary>
+  <token key="Directory">
+    <variant name="NoVarySearch" summary="no-vary-search"/>
+    <variant name="Parent" summary="parent"/>
+  </token>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.DirectoryCreateResult.{Directory}"
+    enum="NoVarySearchDirectoryCreateResult" expires_after="2026-01-11">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The result from checking for the existence of the {Directory} directory by
+    net::NoVarySearchCacheStorage. This is logged when an on-the-record
+    NetworkContext is created.
+
+    Anything other than &quot;Create failed&quot; is good.
+  </summary>
+  <token key="Directory">
+    <variant name="NoVarySearch" summary="no-vary-search"/>
+    <variant name="Parent" summary="parent"/>
+  </token>
+</histogram>
+
 <histogram name="HttpCache.NoVarySearch.EntriesAddedDuringLoading"
     units="entries" expires_after="2025-12-16">
   <owner>ricea@chromium.org</owner>
@@ -679,6 +731,44 @@ chromium-metrics-reviews@google.com.
     This metric is emitted every time an HTTP response is written to the HTTP
     disk cache.
   </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.InitDeleteError.{File}"
+    enum="PlatformFileError" expires_after="2026-01-11">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to delete the {File} file from
+    the old location by net::NoVarySearchCacheStorage. This is logged when the
+    {File} file is found to exist in both the old and new locations, and
+    deleting it from the old location fails. This can only happen when opening
+    the cache directory on creation of an on-the-record NetworkContext.
+
+    Unless the quantity is very large these errors are harmless.
+  </summary>
+  <token key="File">
+    <variant name="Journal" summary="journal.baj"/>
+    <variant name="Snapshot" summary="snapshot.baf"/>
+  </token>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.InitRenameError.{File}"
+    enum="PlatformFileError" expires_after="2026-01-11">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to rename the {File} file from
+    the old location to the new location by net::NoVarySearchCacheStorage. This
+    is logged when the {File} file is only found in the old location, and moving
+    it from the old location fails. This can only happen when opening the cache
+    directory on creation of an on-the-record NetworkContext.
+
+    Unless the quantity is very large these errors are harmless.
+  </summary>
+  <token key="File">
+    <variant name="Journal" summary="journal.baj"/>
+    <variant name="Snapshot" summary="snapshot.baf"/>
+  </token>
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.JournalAppendError" enum="Boolean"
@@ -794,6 +884,31 @@ chromium-metrics-reviews@google.com.
     The histogram is not reported on Windows machines without high resolution
     clocks.
   </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.RenameOrDeleteResult.{File}"
+    enum="NoVarySearchRenameOrDeleteResult" expires_after="2026-01-11">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The result from checking for and possibly moving {File} from the old
+    location to the new location.
+
+    This is logged when an on-the-record NetworkContext is created.
+
+    &quot;Source did not exist&quot; and &quot;Renamed&quot; are good outcomes.
+    &quot;Rename failed&quot; means the user had to start again from an empty
+    NoVarySearchCache, but is otherwise harmless. See
+    HttpCache.NoVarySearch.InitRenameError.* for the actual filesystem error.
+    &quot;Source deleted&quot; probably means rename failed on a previous run
+    but is harmless. &quot;Deletion failed&quot; means we left junk on the
+    user's disk but is otherwise harmless. See
+    HttpCache.NoVarySearch.InitDeleteError.* for the actual filesystem error.
+  </summary>
+  <token key="File">
+    <variant name="Journal" summary="journal.baj"/>
+    <variant name="Snapshot" summary="snapshot.baf"/>
+  </token>
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.ReplaceFileError"
