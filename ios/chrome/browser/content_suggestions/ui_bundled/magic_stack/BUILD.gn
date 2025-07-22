@@ -150,6 +150,7 @@ source_set("cells") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card_data",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips",
+    "//ios/chrome/browser/ntp/ui_bundled:color",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/public/features",

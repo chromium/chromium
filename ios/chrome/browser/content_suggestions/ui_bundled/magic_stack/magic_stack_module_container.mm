@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -208,6 +210,14 @@ const CGFloat kSeparatorHeight = 0.5;
           @[ UITraitPreferredContentSizeCategory.class ]);
       [self registerForTraitChanges:traits
                          withAction:@selector(updateCardSizing)];
+
+      if (IsNTPBackgroundCustomizationEnabled()) {
+        NSArray<UITrait>* colorTraits =
+            TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
+        [self registerForTraitChanges:colorTraits
+                           withAction:@selector(applyBackgroundColors)];
+        [self applyBackgroundColors];
+      }
     }
   }
   return self;
@@ -271,7 +281,9 @@ const CGFloat kSeparatorHeight = 0.5;
   // intrinsic size as possible, the constraint is configured to be less than
   // or equal to.
   if (config.type == ContentSuggestionsModuleType::kMostVisited) {
-    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    if (!IsNTPBackgroundCustomizationEnabled()) {
+      self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    }
     self.layer.cornerRadius = kCornerRadius;
     self.clipsToBounds = YES;
     _containerHeightAnchor.active = NO;
@@ -444,8 +456,7 @@ const CGFloat kSeparatorHeight = 0.5;
     default:
       // TODO(crbug.com/40946679): the code should use constants for
       // accessibility identifiers, and not localized strings.
-      return [self titleStringForModule:type
-                                 config:config];
+      return [self titleStringForModule:type config:config];
   }
 }
 
@@ -601,6 +612,21 @@ const CGFloat kSeparatorHeight = 0.5;
     _contentStackViewBottomMarginAnchor.constant =
         isContentOversized(_stackView) ? -kOversizedReducedContentBottomInset
                                        : -kReducedContentBottomInset;
+  }
+}
+
+#pragma mark - Private
+
+// Sets the background using the current color palette, or defaults if none is
+// set.
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForTrait:NewTabPageTrait.class];
+
+  if (colorPalette) {
+    self.backgroundColor = colorPalette.secondaryCellColor;
+  } else {
+    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   }
 }
 

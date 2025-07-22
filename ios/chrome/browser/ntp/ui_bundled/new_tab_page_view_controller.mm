@@ -279,13 +279,10 @@ CGFloat SpaceBetweenModules() {
           TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
       [self registerForTraitChanges:colorTraits
                          withAction:@selector(applyBackgroundColors)];
+      [self applyBackgroundColors];
     }
   }
-
   [self.mutator checkNewBadgeEligibility];
-  if (IsNTPBackgroundCustomizationEnabled()) {
-    [self applyBackgroundColors];
-  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -494,7 +491,9 @@ CGFloat SpaceBetweenModules() {
     _feedContainer = [[UIView alloc] initWithFrame:CGRectZero];
     _feedContainer.userInteractionEnabled = YES;
     _feedContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    if (!IsNTPBackgroundCustomizationEnabled()) {
+      _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    }
 
     // Add corner radius to the top border.
     _feedContainer.clipsToBounds = YES;
@@ -1108,11 +1107,13 @@ CGFloat SpaceBetweenModules() {
     self.view.backgroundColor = colorPalette.primaryColor;
     [_backgroundGradientView setStartColor:colorPalette.secondaryColor
                                   endColor:colorPalette.primaryColor];
+    _feedContainer.backgroundColor = colorPalette.secondaryCellColor;
   } else {
     self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
     [_backgroundGradientView
         setStartColor:[UIColor colorNamed:kSecondaryBackgroundColor]
              endColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+    _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   }
 }
 
