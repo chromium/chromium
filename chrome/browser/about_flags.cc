@@ -2311,18 +2311,22 @@ const FeatureEntry::FeatureVariation kScrollableTabStripOverflowVariations[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kMiniToolbarOnActiveView[] = {
-    {"mini_toolbar_active_config", "showall"}};
-
-const FeatureEntry::FeatureParam kMiniToolbarWithMenuOnlyOnActiveView[] = {
-    {"mini_toolbar_active_config", "showmenuonly"}};
+const FeatureEntry::FeatureParam kMiniToolbarHiddenOnActiveView[] = {
+    {"mini_toolbar_active_config", "hide"}};
+const FeatureEntry::FeatureParam kMiniToolbarWithMenuOnActiveView[] = {
+    {"mini_toolbar_active_config", "showmenu"}};
+const FeatureEntry::FeatureParam kMiniToolbarWithCloseOnActiveView[] = {
+    {"mini_toolbar_active_config", "showclose"}};
 
 const FeatureEntry::FeatureVariation kSideBySideVariations[] = {
-    {" - show mini toolbar on active view", kMiniToolbarOnActiveView,
-     std::size(kMiniToolbarOnActiveView)},
-    {" - show mini toolbar with menu only on active view",
-     kMiniToolbarWithMenuOnlyOnActiveView,
-     std::size(kMiniToolbarWithMenuOnlyOnActiveView)},
+    {" - hide mini toolbar on active view", kMiniToolbarHiddenOnActiveView,
+     std::size(kMiniToolbarHiddenOnActiveView)},
+    {" - show mini toolbar with menu button on active view",
+     kMiniToolbarWithMenuOnActiveView,
+     std::size(kMiniToolbarWithMenuOnActiveView)},
+    {" - show mini toolbar with close button on active view",
+     kMiniToolbarWithCloseOnActiveView,
+     std::size(kMiniToolbarWithCloseOnActiveView)},
 };
 #endif
 

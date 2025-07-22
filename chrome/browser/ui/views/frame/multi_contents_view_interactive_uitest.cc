@@ -621,29 +621,34 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
-                       MiniToolbarShownForInactiveContents) {
+                       MiniToolbarVisibilityForContents) {
+  bool visible_on_active_contents =
+      features::kSideBySideMiniToolbarActiveConfiguration.Get() !=
+      features::MiniToolbarActiveConfiguration::Hide;
   RunTestSequence(
       // Open split view.
       CreateTabsAndEnterSplitView(), WaitForActiveTabChange(0),
-      // Verify the mini toolbar is only visible for the inactive contents.
+      // Verify the mini toolbar is visible for the inactive contents.
       Check([&]() {
-        return !multi_contents_view()
-                    ->mini_toolbar_for_testing(0)
-                    ->GetVisible();
+        return multi_contents_view()
+                   ->mini_toolbar_for_testing(0)
+                   ->GetVisible() == visible_on_active_contents;
       }),
+      // Verify the mini toolbar visibility on active contents.
       Check([&]() {
         return multi_contents_view()->mini_toolbar_for_testing(1)->GetVisible();
       }),
       // Focus inactive contents and verify active tab.
       FocusInactiveTabInSplit(), WaitForActiveTabChange(1),
-      // Verify the mini toolbar is only visile for the newly inactive contents.
+      // Verify the mini toolbar is only visible on the newly inactive contents.
       Check([&]() {
         return multi_contents_view()->mini_toolbar_for_testing(0)->GetVisible();
       }),
+      // Verify the mini toolbar visibility on the newly active contents.
       Check([&]() {
-        return !multi_contents_view()
-                    ->mini_toolbar_for_testing(1)
-                    ->GetVisible();
+        return multi_contents_view()
+                   ->mini_toolbar_for_testing(1)
+                   ->GetVisible() == visible_on_active_contents;
       }));
 }
 

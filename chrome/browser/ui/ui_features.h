@@ -150,9 +150,9 @@ enum class MiniToolbarActiveConfiguration {
   // Hides the toolbar in the active view.
   Hide,
   // Shows only the menu button in the active view.
-  ShowMenuOnly,
-  // Shows favicon, domain, alerts and menu button in the active view.
-  ShowAll
+  ShowMenu,
+  // Shows only the close button in the active view.
+  ShowClose,
 };
 
 BASE_DECLARE_FEATURE_PARAM(MiniToolbarActiveConfiguration,

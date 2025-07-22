@@ -71,12 +71,14 @@ class MultiContentsViewMiniToolbar : public views::View,
   // Updates the favicon and domain based on the provided |tab_data|.
   void UpdateContents(TabRendererData tab_data);
   void UpdateFavicon(TabRendererData tab_data);
+
   void OpenSplitViewMenu();
+  void CloseCurrentView();
 
   raw_ptr<views::ImageView> favicon_;
   raw_ptr<views::Label> domain_label_;
   raw_ptr<views::ImageView> alert_state_indicator_;
-  raw_ptr<views::ImageButton> menu_button_;
+  raw_ptr<views::ImageButton> image_button_;
   // Model for the split view menu.
   std::unique_ptr<ui::MenuModel> menu_model_;
   // Runner for the split view menu.

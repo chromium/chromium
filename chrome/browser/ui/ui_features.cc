@@ -148,15 +148,15 @@ BASE_FEATURE_PARAM(int,
 constexpr base::FeatureParam<MiniToolbarActiveConfiguration>::Option
     kMiniToolbarActiveConfigurationOptions[] = {
         {MiniToolbarActiveConfiguration::Hide, "hide"},
-        {MiniToolbarActiveConfiguration::ShowMenuOnly, "showmenuonly"},
-        {MiniToolbarActiveConfiguration::ShowAll, "showall"}};
+        {MiniToolbarActiveConfiguration::ShowMenu, "showmenu"},
+        {MiniToolbarActiveConfiguration::ShowClose, "showclose"}};
 
 // The active configuration for the mini toolbar on active view of a split.
 BASE_FEATURE_ENUM_PARAM(MiniToolbarActiveConfiguration,
                         kSideBySideMiniToolbarActiveConfiguration,
                         &kSideBySide,
                         "mini_toolbar_active_config",
-                        MiniToolbarActiveConfiguration::Hide,
+                        MiniToolbarActiveConfiguration::ShowMenu,
                         &kMiniToolbarActiveConfigurationOptions);
 
 // When enabled along with SideBySide flag, split tabs will be restored on

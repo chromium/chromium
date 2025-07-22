@@ -10028,6 +10028,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DesktopSplitView_MiniToolbarCloseView">
+  <owner>agale@google.com</owner>
+  <owner>chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user clicks on split view mini toolbar close button.
+  </description>
+</action>
+
 <action name="DesktopSplitView_OpenMiniToolbarMenu">
   <owner>agale@google.com</owner>
   <owner>chrome-desktop-ui@google.com</owner>
