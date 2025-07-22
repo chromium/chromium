@@ -406,6 +406,15 @@ void ThreadCache::Init(PartitionRoot* root) {
 }
 
 // static
+ThreadCache* ThreadCache::EnsureAndGet() {
+  PartitionRoot* root = g_thread_cache_root.load(std::memory_order_relaxed);
+  if (root) {
+    return root->EnsureThreadCache();
+  }
+  return nullptr;
+}
+
+// static
 void ThreadCache::SetGlobalLimits(PartitionRoot* root, float multiplier) {
   size_t initial_value =
       static_cast<size_t>(kSmallBucketBaseCount) * multiplier;

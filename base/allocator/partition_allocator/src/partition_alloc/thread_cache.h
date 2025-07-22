@@ -270,6 +270,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 #endif
   }
 
+  static ThreadCache* EnsureAndGet();
+
   static bool IsValid(ThreadCache* tcache) {
     // Do not MTE-untag, as it'd mess up the sentinel value.
     return reinterpret_cast<uintptr_t>(tcache) & kTombstoneMask;
