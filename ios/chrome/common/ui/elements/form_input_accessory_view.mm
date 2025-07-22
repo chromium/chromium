@@ -6,6 +6,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/rtl.h"
 #import "base/notreached.h"
