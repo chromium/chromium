@@ -393,7 +393,7 @@ BASE_DECLARE_FEATURE(kGlicPanelSetPositionOnDrag);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicPanelResetOnSessionTimeout);
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<int> kGlicPanelResetOnSessionTimeoutDelayH;
+extern const base::FeatureParam<double> kGlicPanelResetOnSessionTimeoutDelayH;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicRecordActorJournal);

@@ -687,7 +687,7 @@ BASE_FEATURE(kGlicPanelSetPositionOnDrag,
 BASE_FEATURE(kGlicPanelResetOnSessionTimeout,
              "GlicPanelResetOnSessionTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kGlicPanelResetOnSessionTimeoutDelayH{
+const base::FeatureParam<double> kGlicPanelResetOnSessionTimeoutDelayH{
     &kGlicPanelResetOnSessionTimeout,
     "glic-panel-reset-session-timeout-delay-h", 4};
 

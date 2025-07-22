@@ -4511,6 +4511,18 @@ const FeatureEntry::FeatureVariation
         {"Reset on open - 10s", kGlicPanelResetTopChromeButtonOnOpen_10s,
          std::size(kGlicPanelResetTopChromeButtonOnOpen_10s), nullptr}};
 
+const FeatureEntry::FeatureParam kGlicPanelResetOnSessionTimeout_0h[] = {
+    {"glic-panel-reset-session-timeout-delay-h", "0"},
+};
+
+const FeatureEntry::FeatureParam kGlicPanelResetOnSessionTimeout_5min[] = {
+    {"glic-panel-reset-session-timeout-delay-h", "0.084"},
+};
+
+const FeatureEntry::FeatureParam kGlicPanelResetOnSessionTimeout_30min[] = {
+    {"glic-panel-reset-session-timeout-delay-h", "0.5"},
+};
+
 const FeatureEntry::FeatureParam kGlicPanelResetOnSessionTimeout_1h[] = {
     {"glic-panel-reset-session-timeout-delay-h", "1"},
 };
@@ -4532,6 +4544,12 @@ const FeatureEntry::FeatureParam kGlicPanelResetOnSessionTimeout_48h[] = {
 
 const FeatureEntry::FeatureVariation
     kGlicPanelResetOnSessionTimeoutVariations[] = {
+        {"Always Restart (0min)", kGlicPanelResetOnSessionTimeout_0h,
+         std::size(kGlicPanelResetOnSessionTimeout_0h), nullptr},
+        {"Reset after 5min", kGlicPanelResetOnSessionTimeout_5min,
+         std::size(kGlicPanelResetOnSessionTimeout_5min), nullptr},
+        {"Reset after 30min", kGlicPanelResetOnSessionTimeout_30min,
+         std::size(kGlicPanelResetOnSessionTimeout_30min), nullptr},
         {"Reset after 1h", kGlicPanelResetOnSessionTimeout_1h,
          std::size(kGlicPanelResetOnSessionTimeout_1h), nullptr},
         {"Reset after 2h", kGlicPanelResetOnSessionTimeout_2h,
