@@ -230,8 +230,7 @@ static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
 static void JNI_TraceEvent_WebViewStartupTotalFactoryInit(JNIEnv* env,
                                                           jlong start_time_ms,
                                                           jlong duration_ms) {
-  auto t = perfetto::Track::ThreadScoped(
-      reinterpret_cast<void*>(trace_event::GetNextGlobalTraceId()));
+  auto t = perfetto::ThreadTrack::Current();
   TRACE_EVENT_BEGIN("android_webview.timeline",
                     "WebView.Startup.CreationTime.TotalFactoryInitTime", t,
                     TimeTicks() + Milliseconds(start_time_ms));
@@ -242,8 +241,7 @@ static void JNI_TraceEvent_WebViewStartupTotalFactoryInit(JNIEnv* env,
 static void JNI_TraceEvent_WebViewStartupStage1(JNIEnv* env,
                                                 jlong start_time_ms,
                                                 jlong duration_ms) {
-  auto t = perfetto::Track::ThreadScoped(
-      reinterpret_cast<void*>(trace_event::GetNextGlobalTraceId()));
+  auto t = perfetto::ThreadTrack::Current();
   TRACE_EVENT_BEGIN("android_webview.timeline",
                     "WebView.Startup.CreationTime.Stage1.FactoryInit", t,
                     TimeTicks() + Milliseconds(start_time_ms));
@@ -256,8 +254,7 @@ static void JNI_TraceEvent_WebViewStartupFirstInstance(
     jlong start_time_ms,
     jlong duration_ms,
     jboolean included_global_startup) {
-  auto t = perfetto::Track::ThreadScoped(
-      reinterpret_cast<void*>(trace_event::GetNextGlobalTraceId()));
+  auto t = perfetto::ThreadTrack::Current();
   if (included_global_startup) {
     TRACE_EVENT_BEGIN(
         "android_webview.timeline",
@@ -277,8 +274,7 @@ static void JNI_TraceEvent_WebViewStartupFirstInstance(
 static void JNI_TraceEvent_WebViewStartupNotFirstInstance(JNIEnv* env,
                                                           jlong start_time_ms,
                                                           jlong duration_ms) {
-  auto t = perfetto::Track::ThreadScoped(
-      reinterpret_cast<void*>(trace_event::GetNextGlobalTraceId()));
+  auto t = perfetto::ThreadTrack::Current();
   TRACE_EVENT_BEGIN("android_webview.timeline",
                     "WebView.Startup.CreationTime.NotFirstInstance", t,
                     TimeTicks() + Milliseconds(start_time_ms));
@@ -293,8 +289,7 @@ static void JNI_TraceEvent_WebViewStartupStartChromiumLocked(
     jint start_call_site,
     jint finish_call_site,
     jint startup_mode) {
-  auto t = perfetto::Track::ThreadScoped(
-      reinterpret_cast<void*>(trace_event::GetNextGlobalTraceId()));
+  auto t = perfetto::ThreadTrack::Current();
   TRACE_EVENT_BEGIN(
       "android_webview.timeline",
       "WebView.Startup.CreationTime.StartChromiumLocked", t,
