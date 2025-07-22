@@ -152,6 +152,7 @@ component("webnn_service") {
 
     deps += [
       "//third_party/flatbuffers",
+      "//third_party/fp16",
       "//third_party/tflite",
       "//third_party/tflite:buildflags",
       "//third_party/tflite:tflite_builtin_op_resolver",

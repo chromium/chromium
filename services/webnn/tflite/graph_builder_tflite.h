@@ -34,6 +34,10 @@ class WebNNConstantOperand;
 
 namespace tflite {
 
+struct Float16 {
+  uint16_t data;
+};
+
 namespace internal {
 
 // Methods which take a generic numerical type as input (e.g. uint32_t) and
@@ -44,8 +48,15 @@ namespace internal {
 template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
-concept IsSupportedTensorType =
-    IsAnyOf<T, float, int32_t, uint32_t, int64_t, int8_t, uint8_t, bool>;
+concept IsSupportedTensorType = IsAnyOf<T,
+                                        Float16,
+                                        float,
+                                        int32_t,
+                                        uint32_t,
+                                        int64_t,
+                                        int8_t,
+                                        uint8_t,
+                                        bool>;
 
 }  // namespace internal
 
@@ -222,6 +233,8 @@ class GraphBuilderTflite final {
 
   // Get the value from constant operand and cast it to int64 data type.
   base::FixedArray<int64_t> GetConstantInt64Value(OperandId operand_id);
+  // Get quantize scale value for float16 and float32 data type.
+  base::FixedArray<float> GetQuantizeScaleValue(OperandId operand_id);
 
   // Operation serialization helpers for operations not directly declared in
   // the mojom::Operation union.
