@@ -129,7 +129,8 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
                              Data&& data,
-                             ml::ModelPerformanceHint performance_hint);
+                             ml::ModelPerformanceHint performance_hint,
+                             ml::ModelBackendType backend_type);
   ~FakeOnDeviceModel() override;
 
   // mojom::OnDeviceModel:
@@ -156,10 +157,13 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
     return performance_hint_;
   }
 
+  ml::ModelBackendType backend_type() const { return backend_type_; }
+
  private:
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   Data data_;
   ml::ModelPerformanceHint performance_hint_;
+  ml::ModelBackendType backend_type_;
 
   mojo::UniqueReceiverSet<mojom::Session> receivers_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;

@@ -47,6 +47,10 @@ void LogGpuBlocked(GpuBlockedReason reason) {
 
 DISABLE_CFI_DLSYM
 GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
+  if (base::FeatureList::IsEnabled(kOnDeviceModelAllowGpuForTesting)) {
+    return GpuBlockedReason::kNotBlocked;
+  }
+
   struct QueryData {
     bool blocklisted;
     bool is_blocklisted_cpu_adapter;
@@ -133,6 +137,10 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
 }
 
 }  // namespace
+
+BASE_FEATURE(kOnDeviceModelAllowGpuForTesting,
+             "OnDeviceModelAllowGpuForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 bool IsGpuBlocked(const ChromeMLAPI& api, bool log_histogram) {

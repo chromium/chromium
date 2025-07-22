@@ -454,7 +454,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
-  EXPECT_EQ(*response_.value(), "Cache weight: 1015execute:foo max:1024");
+  EXPECT_EQ(*response_.value(),
+            "CPU backendCache weight: 1015execute:foo max:1024");
 
   // If we destroy all sessions and wait long enough, everything should idle out
   // and the service should get terminated.
@@ -3248,15 +3249,42 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SendsPerformanceHint) {
-  // Low performance class should use fastest inference.
-  UpdatePerformanceClassPref(&pref_service_,
-                             OnDeviceModelPerformanceClass::kLow);
-  Initialize(standard_assets_);
+  FakeBaseModelAsset base_model(
+      {.supported_performance_hint =
+           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE});
+  Initialize(InitializeParams{
+      .base_model = &base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&standard_assets_.compose},
+  });
   auto session = CreateSession();
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "Fastest inferenceexecute:foo max:1024");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, UsesCpuModel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      on_device_model::features::kOnDeviceModelCpuBackend,
+      {{"on_device_cpu_ram_threshold_mb", "0"},
+       {"on_device_cpu_processor_count_threshold", "0"}});
+  FakeBaseModelAsset base_model(
+      {.supported_performance_hint =
+           proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU});
+  Initialize(InitializeParams{
+      .base_model = &base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&standard_assets_.compose},
+  });
+  auto session = CreateSession();
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(), "CPU backendexecute:foo max:1024");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {

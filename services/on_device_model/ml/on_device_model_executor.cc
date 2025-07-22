@@ -29,6 +29,7 @@
 #include "services/on_device_model/ml/gpu_blocklist.h"
 #include "services/on_device_model/ml/performance_class.h"
 #include "services/on_device_model/ml/session_accessor.h"
+#include "services/on_device_model/public/cpp/cpu.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -283,9 +284,8 @@ BackendImpl::CanCreate() {
     return base::unexpected(
         on_device_model::ServiceDisconnectReason::kFailedToLoadLibrary);
   }
-  if (!base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelForceCpuBackend) &&
-      ml::IsGpuBlocked(chrome_ml_->api())) {
+  if (!on_device_model::IsCpuCapable() &&
+      ml::IsGpuBlocked(chrome_ml_->api(), /*log_histogram=*/false)) {
     return base::unexpected(
         on_device_model::ServiceDisconnectReason::kGpuBlocked);
   }
@@ -561,6 +561,10 @@ DISABLE_CFI_DLSYM
 LoadModelResult OnDeviceModelExecutor::Init(
     on_device_model::mojom::LoadModelParamsPtr params,
     base::OnceClosure on_complete) {
+  if (params->backend_type == ml::ModelBackendType::kGpuBackend &&
+      ml::IsGpuBlocked(chrome_ml_->api(), /*log_histogram=*/false)) {
+    return LoadModelResult::kGpuBlocked;
+  }
   on_device_model::ModelAssets assets = std::move(params->assets);
 
   max_tokens_ = std::max(params->max_tokens, kReserveTokensForSafety);
@@ -577,12 +581,10 @@ LoadModelResult OnDeviceModelExecutor::Init(
     data.sentencepiece_model_path = sp_model_path_str.data();
   }
   // TODO(crbug.com/400998489): Cache files are experimental for now.
-  data.cache_file =
-      base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelForceCpuBackend) &&
-              assets.cache.IsValid()
-          ? assets.cache.TakePlatformFile()
-          : base::kInvalidPlatformFile;
+  data.cache_file = params->backend_type == ml::ModelBackendType::kCpuBackend &&
+                            assets.cache.IsValid()
+                        ? assets.cache.TakePlatformFile()
+                        : base::kInvalidPlatformFile;
   ChromeMLModelDescriptor descriptor = {
       .backend_type = params->backend_type,
       .model_data = &data,

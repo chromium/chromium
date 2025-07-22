@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -14,6 +15,7 @@
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
+#include "services/on_device_model/ml/gpu_blocklist.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
@@ -178,6 +180,8 @@ class OnDeviceModelServiceTest : public testing::Test {
  private:
   mojo::Remote<mojom::OnDeviceModelService> service_;
   OnDeviceModelService service_impl_;
+  base::test::ScopedFeatureList feature_list_{
+      ml::kOnDeviceModelAllowGpuForTesting};
 };
 
 TEST_F(OnDeviceModelServiceTest, IdleTimeout) {
@@ -652,6 +656,31 @@ TEST_F(OnDeviceModelServiceTest, CloneTextSafety) {
     clone->ClassifyTextSafety("unsafe text", future.GetCallback());
     EXPECT_THAT(future.Take()->class_scores, ElementsAre(0.8, 0.8));
   }
+}
+
+TEST_F(OnDeviceModelServiceTest, GpuBlocked) {
+  // The fake implementation of ChromeML always blocks GPU by default.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ml::kOnDeviceModelAllowGpuForTesting);
+
+  mojo::Remote<mojom::OnDeviceModel> remote;
+  auto params = mojom::LoadModelParams::New();
+  params->backend_type = ml::ModelBackendType::kGpuBackend;
+  params->max_tokens = 8000;
+  params->assets = ModelAssets::FromPath(base::FilePath());
+  base::test::TestFuture<mojom::LoadModelResult> future;
+  service()->LoadModel(std::move(params), remote.BindNewPipeAndPassReceiver(),
+                       future.GetCallback());
+  EXPECT_EQ(future.Get(), mojom::LoadModelResult::kGpuBlocked);
+}
+
+TEST_F(OnDeviceModelServiceTest, CpuModel) {
+  // The fake implementation of ChromeML always blocks GPU by default.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ml::kOnDeviceModelAllowGpuForTesting);
+
+  auto model = LoadModel(ml::ModelBackendType::kCpuBackend);
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("CPU backend", "foo"));
 }
 
 TEST_F(OnDeviceModelServiceTest, PerformanceHint) {

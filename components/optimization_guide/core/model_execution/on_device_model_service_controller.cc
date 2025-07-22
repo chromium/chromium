@@ -577,17 +577,34 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     on_device_model::ModelAssets assets) {
   auto params = on_device_model::mojom::LoadModelParams::New();
-  params->backend_type =
-      base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelForceCpuBackend)
-          ? ml::ModelBackendType::kCpuBackend
-          : ml::ModelBackendType::kGpuBackend;
+  params->backend_type = ml::ModelBackendType::kGpuBackend;
   params->assets = std::move(assets);
   // TODO(crbug.com/302402959): Choose max_tokens based on device.
   params->max_tokens = features::GetOnDeviceModelMaxTokens();
   params->adaptation_ranks = supported_adaptation_ranks_;
-  if (controller_->on_device_component_state_manager_ &&
-      controller_->on_device_component_state_manager_->IsLowTierDevice()) {
+
+  proto::OnDeviceModelPerformanceHint hint =
+      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY;
+  auto state_manager = controller_->on_device_component_state_manager_;
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelForceCpuBackend)) {
+    hint = proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU;
+  } else if (state_manager && state_manager->GetState() &&
+             !state_manager->GetState()
+                  ->GetBaseModelSpec()
+                  .supported_performance_hints.empty()) {
+    DCHECK_EQ(state_manager->GetState()
+                  ->GetBaseModelSpec()
+                  .supported_performance_hints.size(),
+              1u);
+    hint = *state_manager->GetState()
+                ->GetBaseModelSpec()
+                .supported_performance_hints.begin();
+  }
+  if (hint == proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU) {
+    params->backend_type = ml::ModelBackendType::kCpuBackend;
+  } else if (hint ==
+             proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE) {
     params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
   }
   controller_->service_client_.Get()->LoadModel(

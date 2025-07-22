@@ -130,6 +130,7 @@ bool GetEstimatedPerformance(ChromeMLPerformanceInfo* performance_info) {
 bool QueryGPUAdapter(void (*adapter_callback_fn)(WGPUAdapter adapter,
                                                  void* userdata),
                      void* userdata) {
+  // Some tests depend on this always returning false to block the GPU.
   return false;
 }
 
@@ -277,6 +278,10 @@ bool SessionGenerate(ChromeMLSession session,
     output_fn(&output);
   };
 
+  if (instance->model_instance->backend_type ==
+      ml::ModelBackendType::kCpuBackend) {
+    OutputChunk("CPU backend");
+  }
   if (instance->model_instance->performance_hint ==
       ml::ModelPerformanceHint::kFastestInference) {
     OutputChunk("Fastest inference");

@@ -179,6 +179,11 @@ void FakeOnDeviceSession::GenerateImpl(
     mojom::GenerateOptionsPtr options,
     mojo::PendingRemote<mojom::StreamingResponder> response) {
   mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
+  if (model_->backend_type() == ml::ModelBackendType::kCpuBackend) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "CPU backend";
+    remote->OnResponse(std::move(chunk));
+  }
   if (model_->performance_hint() ==
       ml::ModelPerformanceHint::kFastestInference) {
     auto chunk = mojom::ResponseChunk::New();
@@ -288,10 +293,12 @@ FakeOnDeviceModel::Data::~Data() = default;
 
 FakeOnDeviceModel::FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
                                      FakeOnDeviceModel::Data&& data,
-                                     ml::ModelPerformanceHint performance_hint)
+                                     ml::ModelPerformanceHint performance_hint,
+                                     ml::ModelBackendType backend_type)
     : settings_(settings),
       data_(std::move(data)),
-      performance_hint_(performance_hint) {}
+      performance_hint_(performance_hint),
+      backend_type_(backend_type) {}
 
 FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 
@@ -329,7 +336,7 @@ void FakeOnDeviceModel::LoadAdaptation(
   Data data = data_;
   data.adaptation_model_weight = ReadFile(params->assets.weights);
   auto test_model = std::make_unique<FakeOnDeviceModel>(
-      settings_, std::move(data), ml::ModelPerformanceHint::kHighestQuality);
+      settings_, std::move(data), performance_hint_, backend_type_);
   model_adaptation_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
@@ -410,7 +417,8 @@ void FakeOnDeviceModelService::LoadModel(
   }
   data.adaptation_ranks = params->adaptation_ranks;
   auto test_model = std::make_unique<FakeOnDeviceModel>(
-      settings_, std::move(data), params->performance_hint);
+      settings_, std::move(data), params->performance_hint,
+      params->backend_type);
   if (settings_->drop_connection_request) {
     mojo::Receiver<mojom::OnDeviceModel>(test_model.get(), std::move(model))
         .ResetWithReason(

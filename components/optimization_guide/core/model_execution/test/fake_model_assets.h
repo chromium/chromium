@@ -31,6 +31,8 @@ class FakeBaseModelAsset {
     proto::OnDeviceModelExecutionConfig config;
     std::string version = "0.0.1";
     uint32_t cache_weight = 0;
+    int supported_performance_hint =
+        proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY;
   };
   FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content&& content);
@@ -53,6 +55,7 @@ class FakeBaseModelAsset {
 
  private:
   std::string version_;
+  int supported_performance_hint_;
   base::ScopedTempDir temp_dir_;
 };
 

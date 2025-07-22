@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "services/on_device_model/ml/gpu_blocklist.h"
 
 namespace ml {
 namespace {
@@ -74,6 +75,12 @@ COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo(
     const ChromeML& chrome_ml) {
   auto result = on_device_model::mojom::DevicePerformanceInfo::New();
+  if (ml::IsGpuBlocked(chrome_ml.api(), /*log_histogram=*/true)) {
+    result->performance_class =
+        on_device_model::mojom::PerformanceClass::kGpuBlocked;
+    result->vram_mb = 0ul;
+    return result;
+  }
 
   ChromeMLPerformanceInfo info;
   bool success = chrome_ml.api().GetEstimatedPerformance(&info);
