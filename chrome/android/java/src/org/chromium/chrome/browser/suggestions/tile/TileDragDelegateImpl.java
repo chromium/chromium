@@ -28,7 +28,7 @@ import java.util.List;
  * Uses {@link TileDragSession} to store per-session states.
  */
 @NullMarked
-class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSession.Delegate {
+class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate {
 
     // Tile drag dynamics are represented by a state machine. Here are its states.
     @IntDef({
@@ -43,17 +43,16 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
 
         // PREPARE: No drag. Default touch handling triggers ACTION_UP => tile click; ACTION_MOVE
         // (after small drag) => scroll. These default interactions trigger ACTION_CANCEL => :=NONE.
-        // If PREPARE persists longer than "start duration" then :=START. TileDragHandlerDelegate
-        // is passed here.
+        // If PREPARE persists longer than "start duration" then :=START. TileDragSession is
+        // instantiated here.
         int PREPARE = 1;
 
         // START: Tile drag is live: ACTION_MOVE => move "from" tile; ACTION_UP => cancel drag
-        // :=NONE. If drag displacement exceeds "dominate threshold" then :=DOMINATE, and call
-        // TileDragHandlerDelegate.onDragDominate().
+        // :=NONE. If drag displacement exceeds "dominate threshold" then :=DOMINATE.
         int START = 2;
 
         // DOMINATE: Tile drag is live: ACTION_MOVE => move "from" and background tiles; ACTION_UP
-        // => finalize, which *may* call TileDragHandlerDelegate.onDragAccept(), and then :=NONE.
+        // => finalize (potentially triggering operation and refresh), and then :=NONE.
         int DOMINATE = 3;
 
         int NUM_ENTRIES = 4;
@@ -99,7 +98,7 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
     // TileGroup.TileDragDelegate implementation.
     @Override
     public void onTileTouchDown(
-            View view, MotionEvent event, TileGroup.TileDragHandlerDelegate dragHandlerDelegate) {
+            View view, MotionEvent event, TileDragSession.EventListener eventListener) {
         assert event.getAction() == MotionEvent.ACTION_DOWN;
         if (!((TileView) view).isDraggable()) {
             return;
@@ -109,7 +108,7 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
         mPhase = DragPhase.PREPARE;
         mTileDragSession =
                 new TileDragSession(
-                        this, dragHandlerDelegate, (TileView) view, event.getX(), event.getY());
+                        this, eventListener, (TileView) view, event.getX(), event.getY());
 
         mTimer.startTimer(
                 START_DURATION_MS,
@@ -136,8 +135,8 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
                 float dragDisplacementSquared =
                         mTileDragSession.getDragDisplacementSquared(event.getX(), event.getY());
                 if (dragDisplacementSquared >= mDominateThresholdPxSquared) {
-                    mTileDragSession.getTileDragHandlerDelegate().onDragDominate();
                     mPhase = DragPhase.DOMINATE;
+                    mTileDragSession.dominate();
                 } else {
                     mTileDragSession.updateFromView(event.getX());
                 }
@@ -159,6 +158,22 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
     @Override
     public boolean hasSession() {
         return mPhase != DragPhase.NONE;
+    }
+
+    @Override
+    public void showDivider(boolean isAnimated) {
+        SuggestionsTileVerticalDivider divider = mMvTilesLayout.getDividerMaybeNull();
+        if (divider != null) {
+            divider.show(isAnimated);
+        }
+    }
+
+    @Override
+    public void hideDivider(boolean isAnimated) {
+        SuggestionsTileVerticalDivider divider = mMvTilesLayout.getDividerMaybeNull();
+        if (divider != null) {
+            divider.hide(isAnimated);
+        }
     }
 
     @Override

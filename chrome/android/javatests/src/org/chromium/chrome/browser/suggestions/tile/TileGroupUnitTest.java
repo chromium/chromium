@@ -78,7 +78,7 @@ public class TileGroupUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TileGroup.Observer mTileGroupObserver;
     @Mock private TileGroup.Delegate mTileGroupDelegate;
-    @Mock private TileGroup.TileDragDelegate mTileDragDelegate;
+    @Mock private TileDragDelegate mTileDragDelegate;
     @Mock private SuggestionsUiDelegate mSuggestionsUiDelegate;
     @Mock private ContextMenuManager mContextMenuManager;
     @Mock private OfflinePageBridge mOfflinePageBridge;

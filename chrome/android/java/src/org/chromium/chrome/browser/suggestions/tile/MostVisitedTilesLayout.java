@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.HorizontalScrollView;
 
 import androidx.annotation.Px;
@@ -36,6 +37,7 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
     private final int mEdgePaddingsTablet;
     private @Nullable Integer mTileToMoveInViewIdx;
     private @Nullable Runnable mTriggerIphTask;
+    private @Nullable SuggestionsTileVerticalDivider mDivider;
 
     /** Constructor for inflating from XML. */
     public MostVisitedTilesLayout(Context context, AttributeSet attrs) {
@@ -48,6 +50,24 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
                 resources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet);
         mEdgePaddingsTablet =
                 resources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet);
+    }
+
+    @Override
+    public void removeAllViews() {
+        super.removeAllViews();
+        mDivider = null;
+    }
+
+    @Override
+    public void addNonTileViewWithWidth(View view, float widthDp) {
+        super.addNonTileViewWithWidth(view, widthDp);
+        if (mDivider != null) return;
+
+        // Take the first divider found and assume it's the only one.
+        if (view instanceof SuggestionsTileVerticalDivider divider) {
+            mDivider = divider;
+            mDivider.hide(/* isAnimated= */ false);
+        }
     }
 
     void destroy() {
@@ -165,6 +185,10 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
 
     public HorizontalScrollView getScrollView() {
         return (HorizontalScrollView) getParent();
+    }
+
+    public @Nullable SuggestionsTileVerticalDivider getDividerMaybeNull() {
+        return mDivider;
     }
 
     private @Nullable Integer getScrollXToMakeTileVisible(int tileIdx) {

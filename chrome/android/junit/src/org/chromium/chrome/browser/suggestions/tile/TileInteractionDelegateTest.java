@@ -83,7 +83,7 @@ public class TileInteractionDelegateTest {
     @Mock SuggestionsUiDelegate mSuggestionsUiDelegate;
     @Mock ContextMenuManager mContextMenuManager;
     @Mock TileGroup.Delegate mTileGroupDelegate;
-    @Mock TileGroup.TileDragDelegate mTileDragDelegate;
+    @Mock TileDragDelegate mTileDragDelegate;
     @Mock OfflinePageBridge mOfflinePageBridge;
     @Mock private Runnable mSnapshotTileGridChangedRunnable;
     @Mock private Runnable mTileCountChangedRunnable;

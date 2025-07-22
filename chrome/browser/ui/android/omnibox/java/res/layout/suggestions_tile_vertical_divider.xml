@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<RelativeLayout
+<org.chromium.chrome.browser.suggestions.tile.SuggestionsTileVerticalDivider
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/tile_view_divider_width"
     android:layout_height="match_parent"
@@ -17,4 +17,4 @@ found in the LICENSE file.
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
         android:background="@drawable/divider_line_bg"/>
-</RelativeLayout>
+</org.chromium.chrome.browser.suggestions.tile.SuggestionsTileVerticalDivider>

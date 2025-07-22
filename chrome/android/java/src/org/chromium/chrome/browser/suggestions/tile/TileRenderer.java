@@ -311,8 +311,8 @@ public class TileRenderer {
         return tileView;
     }
 
-    View buildDivider(TilesLinearLayout parent) {
-        return (View)
+    SuggestionsTileVerticalDivider buildDivider(TilesLinearLayout parent) {
+        return (SuggestionsTileVerticalDivider)
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.suggestions_tile_vertical_divider, parent, false);
     }

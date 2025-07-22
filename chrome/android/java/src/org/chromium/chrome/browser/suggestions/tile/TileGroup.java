@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.util.SparseArray;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -139,11 +138,14 @@ public class TileGroup implements MostVisitedSites.Observer {
         void onTileOfflineBadgeVisibilityChanged(Tile tile);
 
         /**
-         * Called when a Custom Tile is created.
+         * Called on Custom Tile add, pin, unpin-undo.
          *
          * @param tile The Custom Tile that was created.
          */
         void onCustomTileCreation(Tile tile);
+
+        /** Called on Custom Tile add, pin, unpin, unpin-undo, update. */
+        void onCustomTileNonReorderChange();
     }
 
     /**
@@ -180,55 +182,10 @@ public class TileGroup implements MostVisitedSites.Observer {
         /**
          * Set a runnable for remove events on the tile. Similarly to setOnClickRunnable, this is
          * primarily used to track interaction with the tile used by feature engagement purposes.
+         *
          * @param removeRunnable The {@link Runnable} to be executed when tile is removed.
          */
         void setOnRemoveRunnable(Runnable removeRunnable);
-    }
-
-    /** Delegate for receive intermediate events and final results of tile drag. */
-    public interface TileDragHandlerDelegate {
-        /**
-         * Called when the tile drag session becomes the dominant UI mode. The implementation should
-         * suppress competing UI, e.g., context menu.
-         */
-        void onDragDominate();
-
-        /**
-         * Called when drag UI successfully produces result. The implementation should perform
-         * reorder and refresh UI if successful.
-         *
-         * @param fromSuggestion Data to identify the tile being dragged.
-         * @param toSuggestion Data to identify the tile being dropped on.
-         * @return Whether the operation successfully ran.
-         */
-        boolean onDragAccept(SiteSuggestion fromSuggestion, SiteSuggestion toSuggestion);
-    }
-
-    /** Delegate for tile drag UI. */
-    public interface TileDragDelegate {
-        /**
-         * Handler for ACTION_DOWN touch event on tile. This may start a tile drag session.
-         *
-         * @param view The View of the tile receiving ACTION_DOWN.
-         * @param event The ACTION_DOWN event.
-         * @param dragHandlerDelegate Handler for drag results.
-         */
-        void onTileTouchDown(
-                View view, MotionEvent event, TileDragHandlerDelegate dragHandlerDelegate);
-
-        /**
-         * Handler for non-ACTION_DOWN events to continue / end a tile drag session. Should be
-         * called if a tile drag session is live.
-         */
-        void onSessionTileTouch(View view, MotionEvent event);
-
-        /**
-         * @return Whether a tile drag session is live, requiring onSessionTileTouch() to be called.
-         */
-        boolean hasSession();
-
-        /** Forces tile drag session to end. */
-        void reset();
     }
 
     /** Delegate for handling interactions with custom tiles. Not tied to a particular Tile. */
@@ -265,7 +222,10 @@ public class TileGroup implements MostVisitedSites.Observer {
          *
          * @return Whether the operation successfully ran.
          */
-        boolean reorder(SiteSuggestion fromSuggestion, SiteSuggestion toSuggestion);
+        boolean reorder(
+                SiteSuggestion fromSuggestion,
+                SiteSuggestion toSuggestion,
+                Runnable onSuccessCallback);
 
         /** Returns whether there exists space for new Custom Tiles. */
         boolean hasSpace();
@@ -719,12 +679,16 @@ public class TileGroup implements MostVisitedSites.Observer {
         }
 
         @Override
-        public boolean reorder(SiteSuggestion fromSuggestion, SiteSuggestion toSuggestion) {
+        public boolean reorder(
+                SiteSuggestion fromSuggestion,
+                SiteSuggestion toSuggestion,
+                Runnable onSuccessCallback) {
             @Nullable Tile fromTile = findTile(fromSuggestion);
             @Nullable Tile toTile = findTile(toSuggestion);
             return fromTile != null
                     && toTile != null
-                    && reorderCustomLinkAndUpdateOnSuccess(fromTile.getUrl(), toTile.getIndex());
+                    && reorderCustomLinkAndUpdateOnSuccess(
+                            fromTile.getUrl(), toTile.getIndex(), onSuccessCallback);
         }
 
         @Override
@@ -737,6 +701,11 @@ public class TileGroup implements MostVisitedSites.Observer {
             if (tile != null) {
                 mObserver.onCustomTileCreation(tile);
             }
+            mObserver.onCustomTileNonReorderChange();
+        }
+
+        private void handleCustomTileDelete() {
+            mObserver.onCustomTileNonReorderChange();
         }
 
         private boolean addCustomLinkAndUpdateOnSuccess(
@@ -773,18 +742,30 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         private void deleteCustomLinkAndUpdateOnSuccess(Tile tile) {
             // On success, onSiteSuggestionsAvailable() triggers.
-            if (mTileGroupDelegate.deleteCustomLink(tile.getUrl())) {
+            Runnable onSuccessCallback = this::handleCustomTileDelete;
+            mPendingChanges.taskToRunAfterTileReload.add(onSuccessCallback);
+            boolean success = mTileGroupDelegate.deleteCustomLink(tile.getUrl());
+            if (success) {
                 mTileGroupDelegate.showTileUnpinSnackbar(
                         () -> {
                             // Perform undo by adding the tile back at its original index.
                             addCustomLinkAndUpdateOnSuccess(
                                     tile.getTitle(), tile.getUrl(), tile.getIndex());
                         });
+            } else {
+                mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(onSuccessCallback);
             }
         }
 
-        private boolean reorderCustomLinkAndUpdateOnSuccess(GURL url, int newPos) {
-            return mTileGroupDelegate.reorderCustomLink(url, newPos);
+        private boolean reorderCustomLinkAndUpdateOnSuccess(
+                GURL url, int newPos, Runnable onSuccessCallback) {
+            // On success, onSiteSuggestionsAvailable() triggers.
+            boolean success = mTileGroupDelegate.reorderCustomLink(url, newPos);
+            mPendingChanges.taskToRunAfterTileReload.add(onSuccessCallback);
+            if (!success) {
+                mPendingChanges.taskToRunAfterTileReload.removeLastOccurrence(onSuccessCallback);
+            }
+            return success;
         }
     }
 

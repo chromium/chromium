@@ -33,10 +33,11 @@ import java.util.Objects;
 class TileInteractionDelegateImpl
         implements TileGroup.TileInteractionDelegate,
                 ContextMenuManager.Delegate,
-                TileGroup.TileDragHandlerDelegate {
+                TileDragSession.EventListener {
+
     private final ContextMenuManager mContextMenuManager;
     private final TileGroup.Delegate mTileGroupDelegate;
-    private final TileGroup.TileDragDelegate mTileDragDelegate;
+    private final TileDragDelegate mTileDragDelegate;
     private final TileGroup.CustomTileModificationDelegate mCustomTileModificationDelegate;
     private final int mPrerenderDelay;
     private final Tile mTile;
@@ -51,7 +52,7 @@ class TileInteractionDelegateImpl
     public TileInteractionDelegateImpl(
             ContextMenuManager contextMenuManager,
             TileGroup.Delegate tileGroupDelegate,
-            TileGroup.TileDragDelegate tileDragDelegate,
+            TileDragDelegate tileDragDelegate,
             TileGroup.CustomTileModificationDelegate customTileModificationDelegate,
             int prerenderDelay,
             Tile tile,
@@ -247,7 +248,12 @@ class TileInteractionDelegateImpl
     @Override
     public void hideAllItems() {}
 
-    // TileGroup.TileDragHandlerDelegate implementation.
+    // TileDragSession.EventListener implementation.
+    @Override
+    public void onDragStart() {
+        mTileDragDelegate.showDivider(/* isAnimated= */ true);
+    }
+
     @Override
     public void onDragDominate() {
         mContextMenuManager.hideListContextMenu();
@@ -256,7 +262,20 @@ class TileInteractionDelegateImpl
     @Override
     public boolean onDragAccept(SiteSuggestion fromSuggestion, SiteSuggestion toSuggestion) {
         RecordUserAction.record("Suggestions.Drag.ReorderItem");
-        return mCustomTileModificationDelegate.reorder(fromSuggestion, toSuggestion);
+        return mCustomTileModificationDelegate.reorder(
+                fromSuggestion,
+                toSuggestion,
+                () -> {
+                    // Refresh has taken place, and the divider is re-rendered. For seamless
+                    // transition, show divider immediately, then hide it with animation.
+                    mTileDragDelegate.showDivider(/* isAnimated= */ false);
+                    mTileDragDelegate.hideDivider(/* isAnimated= */ true);
+                });
+    }
+
+    @Override
+    public void onDragCancel() {
+        mTileDragDelegate.hideDivider(/* isAnimated= */ true);
     }
 
     boolean isCustomizationItemSupported(boolean matchIsCustomLink) {
