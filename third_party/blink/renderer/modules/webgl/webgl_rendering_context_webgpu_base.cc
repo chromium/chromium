@@ -3626,6 +3626,10 @@ void WebGLRenderingContextWebGPUBase::SetNeedsCompositingUpdate() {
   }
 }
 
+bool WebGLRenderingContextWebGPUBase::IsGPUDeviceDestroyed() {
+  return IsLost();
+}
+
 void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
   visitor->Trace(draw_framebuffer_binding_);
   visitor->Trace(read_framebuffer_binding_);

@@ -197,6 +197,7 @@ class GPUDevice final : public EventTarget,
 
   // Used by USING_PRE_FINALIZER.
   void Dispose();
+  void DissociateMailboxes();
   void UnmapAllMappableBuffers(v8::Isolate* isolate);
 
   void OnUncapturedError(const wgpu::Device& device,

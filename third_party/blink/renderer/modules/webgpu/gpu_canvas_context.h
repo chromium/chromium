@@ -113,6 +113,7 @@ class GPUCanvasContext : public ScriptWrappable,
   void OnTextureTransferred() override;
   void InitializeLayer(cc::Layer* layer) override;
   void SetNeedsCompositingUpdate() override;
+  bool IsGPUDeviceDestroyed() override;
 
  private:
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider();

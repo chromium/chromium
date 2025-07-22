@@ -257,6 +257,10 @@ WebGPUSwapBufferProvider::ExportCurrentSharedImage(
     return nullptr;
   }
 
+  if (client_ && client_->IsGPUDeviceDestroyed()) {
+    return nullptr;
+  }
+
   scoped_refptr<gpu::ClientSharedImage> shared_image = GetCurrentSharedImage();
 
   ReleaseWGPUTextureAccessIfNeeded();
@@ -315,6 +319,10 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
     WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback) {
   DCHECK(!neutered_);
   if (!current_swap_buffer_ || neutered_ || !GetContextProviderWeakPtr()) {
+    return false;
+  }
+
+  if (client_ && client_->IsGPUDeviceDestroyed()) {
     return false;
   }
 

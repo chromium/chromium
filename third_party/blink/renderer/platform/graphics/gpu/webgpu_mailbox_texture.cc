@@ -249,10 +249,6 @@ void WebGPUMailboxTexture::SetAlphaClearer(
   alpha_clearer_ = std::move(alpha_clearer);
 }
 
-void WebGPUMailboxTexture::UnsetAlphaClearer() {
-  alpha_clearer_ = nullptr;
-}
-
 gpu::SyncToken WebGPUMailboxTexture::Dissociate() {
   gpu::SyncToken finished_access_token;
   if (wire_texture_id_ != 0) {
