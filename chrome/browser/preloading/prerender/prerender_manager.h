@@ -34,7 +34,7 @@ extern const char kHistogramPrerenderPredictionStatusDirectUrlInput[];
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange
+// LINT.IfChange(PrerenderPredictionStatus)
 enum class PrerenderPredictionStatus {
   // The prerender was not started at all for this omnibox interaction.
   kNotStarted = 0,

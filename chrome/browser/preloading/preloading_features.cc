@@ -13,6 +13,11 @@ BASE_FEATURE_PARAM(bool,
                    &kPrewarm,
                    "zero_suggest_trigger",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kForceEnableWithDevTools,
+                   &kPrewarm,
+                   "force_enable_with_devtools",
+                   false);
 
 BASE_FEATURE(kPrerender2WarmUpCompositorForBookmarkBar,
              "Prerender2WarmUpCompositorForBookmarkBar",

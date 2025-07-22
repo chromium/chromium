@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
@@ -219,11 +220,14 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
   // is reused for prerendering.
   if (search_prewarm_handle_ ||
       !base::FeatureList::IsEnabled(features::kPrewarm) ||
-      headless::IsHeadlessMode() || headless::IsOldHeadlessMode()) {
+      headless::IsHeadlessMode() || headless::IsOldHeadlessMode() ||
+      (content::DevToolsAgentHost::IsDebuggerAttached(web_contents()) &&
+       !features::kForceEnableWithDevTools.Get())) {
     // We just return in the following cases;
     // - The prewarm was already triggered.
     // - The prewarm feature is disabled.
     // - Running in a headless mode.
+    // - A Debugger is attached (this condition can be masked by a parameter).
     return false;
   }
 
