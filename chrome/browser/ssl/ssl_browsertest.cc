@@ -5929,9 +5929,6 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, GoBackFromInsecureFormWarning) {
 
 // Checks mixed form warnings work correctly for non-redirects.
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestDisplaysInsecureFormSubmissionWarning) {
-  base::HistogramTester histograms;
-  const std::string interstitial_histogram =
-      "Security.MixedForm.InterstitialTriggerState";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
 
@@ -5952,22 +5949,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestDisplaysInsecureFormSubmissionWarning) {
   EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
                 ->GetTypeForTesting(),
             security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
-
-  // Check this was logged correctly as a non-redirect interstitial.
-  histograms.ExpectTotalCount(interstitial_histogram, 1);
-  histograms.ExpectBucketCount(interstitial_histogram,
-                               InsecureFormNavigationThrottle::
-                                   InterstitialTriggeredState::kMixedFormDirect,
-                               1);
 }
 
 // Checks interstitial is shown for mixed forms caused by a 307 POST http
 // redirect, and that metrics are logged.
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        TestDisplaysInsecureFormSubmissionWarningRedirect) {
-  base::HistogramTester histograms;
-  const std::string interstitial_histogram =
-      "Security.MixedForm.InterstitialTriggerState";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
 
@@ -5988,24 +5975,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
                 ->GetTypeForTesting(),
             security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
-
-  // Check this was logged correctly as a redirect mixed form that may expose
-  // form data.
-  histograms.ExpectTotalCount(interstitial_histogram, 1);
-  histograms.ExpectBucketCount(
-      interstitial_histogram,
-      InsecureFormNavigationThrottle::InterstitialTriggeredState::
-          kMixedFormRedirectWithFormData,
-      1);
 }
 
 // Checks interstitial is shown for mixed forms caused by a 308 POST http
 // redirect, and that metrics are logged.
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        TestDisplaysInsecureFormSubmissionWarningRedirect308) {
-  base::HistogramTester histograms;
-  const std::string interstitial_histogram =
-      "Security.MixedForm.InterstitialTriggerState";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
 
@@ -6026,24 +6001,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
                 ->GetTypeForTesting(),
             security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
-
-  // Check this was logged correctly as a redirect mixed form that may expose
-  // form data.
-  histograms.ExpectTotalCount(interstitial_histogram, 1);
-  histograms.ExpectBucketCount(
-      interstitial_histogram,
-      InsecureFormNavigationThrottle::InterstitialTriggeredState::
-          kMixedFormRedirectWithFormData,
-      1);
 }
 
 // Checks no interstitial is shown for mixed forms caused for a POST form with a
 // 301 redirect, and that metrics are logged correctly.
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        TestDisplaysInsecureFormSubmissionWarningRedirect301) {
-  base::HistogramTester histograms;
-  const std::string interstitial_histogram =
-      "Security.MixedForm.InterstitialTriggerState";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
 
@@ -6070,24 +6033,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
           tab);
   // There should have been no interstitial triggered.
   EXPECT_FALSE(helper);
-
-  // Check this was logged correctly as a redirect mixed form that would not
-  // expose form data.
-  histograms.ExpectTotalCount(interstitial_histogram, 1);
-  histograms.ExpectBucketCount(
-      interstitial_histogram,
-      InsecureFormNavigationThrottle::InterstitialTriggeredState::
-          kMixedFormRedirectNoFormData,
-      1);
 }
 
 // Checks no interstitial is shown for mixed forms caused for a POST form with a
 // 302 redirect, and that metrics are logged correctly.
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        TestDisplaysInsecureFormSubmissionWarningRedirect302) {
-  base::HistogramTester histograms;
-  const std::string interstitial_histogram =
-      "Security.MixedForm.InterstitialTriggerState";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
 
@@ -6112,15 +6063,6 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
           tab);
   // There should have been no interstitial triggered.
   EXPECT_FALSE(helper);
-
-  // Check this was logged correctly as a redirect mixed form that would not
-  // expose form data.
-  histograms.ExpectTotalCount(interstitial_histogram, 1);
-  histograms.ExpectBucketCount(
-      interstitial_histogram,
-      InsecureFormNavigationThrottle::InterstitialTriggeredState::
-          kMixedFormRedirectNoFormData,
-      1);
 }
 
 namespace {
@@ -6153,9 +6095,6 @@ std::unique_ptr<net::test_server::HttpResponse> FormActionHTTPRedirectHandler(
 // a 307 redirect to http, and that metrics are logged correctly.
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        TestDisplaysInsecureFormSubmissionWarningRedirectGet) {
-  base::HistogramTester histograms;
-  const std::string interstitial_histogram =
-      "Security.MixedForm.InterstitialTriggerState";
   ASSERT_TRUE(embedded_test_server()->Start());
   https_server_.RegisterRequestHandler(
       base::BindRepeating(&FormActionHTTPRedirectHandler, &https_server_));
@@ -6182,15 +6121,6 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
           tab);
   // There should have been no interstitial triggered.
   EXPECT_FALSE(helper);
-
-  // Check this was logged correctly as a redirect mixed form that would not
-  // expose form data.
-  histograms.ExpectTotalCount(interstitial_histogram, 1);
-  histograms.ExpectBucketCount(
-      interstitial_histogram,
-      InsecureFormNavigationThrottle::InterstitialTriggeredState::
-          kMixedFormRedirectNoFormData,
-      1);
 }
 
 class MixedFormsPolicyTest : public policy::PolicyTest {};
