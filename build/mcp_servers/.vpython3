@@ -124,3 +124,8 @@ wheel: <
   name: "infra/python/wheels/uvicorn-py3"
   version: "version:0.35.0"
 >
+
+wheel: <
+  name: "infra/python/wheels/pyfakefs-py3"
+  version: "version:5.5.0"
+>
