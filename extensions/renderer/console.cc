@@ -17,6 +17,7 @@
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "gin/converter.h"
 #include "gin/per_isolate_data.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-primitive.h"
@@ -51,7 +52,9 @@ void BoundLogMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   AddMessage(script_context, level, message);
 }
 
-gin::DeprecatedWrapperInfo kWrapperInfo = {gin::kEmbedderNativeGin};
+gin::WrapperInfo kWrapperInfo = {
+    {gin::kEmbedderNativeGin},
+    static_cast<gin::WrappablePointerTag>(v8::CppHeapPointerTag::kNullTag)};
 
 }  // namespace
 
@@ -84,8 +87,7 @@ void AddMessage(ScriptContext* script_context,
 v8::Local<v8::Object> AsV8Object(v8::Isolate* isolate) {
   v8::EscapableHandleScope handle_scope(isolate);
   gin::PerIsolateData* data = gin::PerIsolateData::From(isolate);
-  v8::Local<v8::ObjectTemplate> templ =
-      data->DeprecatedGetObjectTemplate(&kWrapperInfo);
+  v8::Local<v8::ObjectTemplate> templ = data->GetObjectTemplate(&kWrapperInfo);
   if (templ.IsEmpty()) {
     templ = v8::ObjectTemplate::New(isolate);
     static const struct {
@@ -104,7 +106,7 @@ v8::Local<v8::Object> AsV8Object(v8::Isolate* isolate) {
           v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
       templ->Set(gin::StringToSymbol(isolate, method.name), function);
     }
-    data->DeprecatedSetObjectTemplate(&kWrapperInfo, templ);
+    data->SetObjectTemplate(&kWrapperInfo, templ);
   }
   return handle_scope.Escape(
       templ->NewInstance(isolate->GetCurrentContext()).ToLocalChecked());
