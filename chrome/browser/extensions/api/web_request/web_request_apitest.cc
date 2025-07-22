@@ -7597,6 +7597,8 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 }
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Tests that a MV3 extension that doesn't have the `webRequestAuthProvider`
 // permission cannot use blocking listeners for `onAuthRequired`.
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
@@ -7645,7 +7647,6 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                        u"permission to use blocking webRequest listeners."))
       << errors[0]->message();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that an extension that doesn't have the `webView` permission cannot
 // manually create and add a WebRequestEvent that specifies a webViewInstanceId.
