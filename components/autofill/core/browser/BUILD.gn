@@ -719,8 +719,6 @@ static_library("browser") {
     "webdata/addresses/contact_info_sync_bridge.h",
     "webdata/addresses/contact_info_sync_util.cc",
     "webdata/addresses/contact_info_sync_util.h",
-    "webdata/autocomplete/autocomplete_change_label_sensitive.cc",
-    "webdata/autocomplete/autocomplete_change_label_sensitive.h",
     "webdata/autocomplete/autocomplete_entry.cc",
     "webdata/autocomplete/autocomplete_entry.h",
     "webdata/autocomplete/autocomplete_entry_label_sensitive.cc",
