@@ -48,6 +48,8 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
       return ProtoType::TASK_SCOPE_XML_HTTP_REQUEST;
     case TaskAttributionTracker::TaskScopeType::kSoftNavigation:
       return ProtoType::TASK_SCOPE_SOFT_NAVIGATION;
+    case TaskAttributionTracker::TaskScopeType::kMiscEvent:
+      return ProtoType::TASK_SCOPE_MISC_EVENT;
   }
 }
 

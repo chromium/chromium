@@ -46,6 +46,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kRequestIdleCallback,
     kXMLHttpRequest,
     kSoftNavigation,
+    kMiscEvent,
   };
 
   // `TaskScope` stores state for the current task, which is propagated to tasks

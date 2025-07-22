@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_LINK_ELEMENT_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -45,6 +46,9 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
+namespace scheduler {
+class TaskAttributionInfo;
+}
 
 class KURL;
 class LinkLoader;
@@ -132,7 +136,8 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
 
   // Always call this asynchronously because this can cause synchronous
   // Document load event and JavaScript execution.
-  void DispatchPendingEvent(std::unique_ptr<IncrementLoadEventDelayCount>);
+  void DispatchPendingEvent(std::unique_ptr<IncrementLoadEventDelayCount>,
+                            scheduler::TaskAttributionInfo*);
 
   // From Node and subclassses
   void ParseAttribute(const AttributeModificationParams&) override;
@@ -171,6 +176,13 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   // 3. the link element is already attached to the document.
   void MaybeHandlePaymentLink();
 
+  void DispatchEventWithTaskState(const AtomicString& type,
+                                  scheduler::TaskAttributionInfo*);
+
+  scheduler::TaskAttributionInfo* TakeLoadInitiatorTaskState() {
+    return std::exchange(load_initiator_task_state_, nullptr);
+  }
+
   Member<LinkResource> link_;
   Member<LinkLoader> link_loader_;
 
@@ -186,6 +198,7 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   Member<RelList> rel_list_;
   LinkRelAttribute rel_attribute_;
   Member<BlockingAttribute> blocking_attribute_;
+  Member<scheduler::TaskAttributionInfo> load_initiator_task_state_;
 
   bool created_by_parser_;
 };
