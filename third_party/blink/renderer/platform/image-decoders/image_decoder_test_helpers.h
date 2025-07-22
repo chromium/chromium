@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_DECODER_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_DECODER_TEST_HELPERS_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "base/containers/span.h"
@@ -27,14 +28,10 @@ using DecoderCreator = std::unique_ptr<ImageDecoder> (*)();
 using DecoderCreatorWithAlpha =
     std::unique_ptr<ImageDecoder> (*)(ImageDecoder::AlphaOption);
 
-inline void PrepareReferenceData(base::span<char> buffer) {
-  for (size_t i = 0; i < buffer.size(); ++i) {
-    buffer[i] = static_cast<char>(i);
-  }
-}
-
 inline void PrepareReferenceData(base::span<uint8_t> buffer) {
-  PrepareReferenceData(base::as_writable_chars(buffer));
+  for (size_t i = 0; i < buffer.size(); ++i) {
+    buffer[i] = static_cast<uint8_t>(i);
+  }
 }
 
 Vector<char> ReadFile(StringView file_name);

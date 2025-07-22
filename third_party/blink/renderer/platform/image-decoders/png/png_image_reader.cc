@@ -138,10 +138,10 @@ static constexpr wtf_size_t kPngReadBufferSize = 33;
 const png_byte* ReadAsConstPngBytep(const FastSharedBufferReader& reader,
                                     wtf_size_t read_offset,
                                     wtf_size_t length,
-                                    char* buffer) {
+                                    base::span<uint8_t> buffer) {
   DCHECK_LE(length, kPngReadBufferSize);
   return reinterpret_cast<const png_byte*>(
-      reader.GetConsecutiveData(read_offset, length, buffer));
+      reader.GetConsecutiveData(read_offset, length, buffer).data());
 }
 
 bool PNGImageReader::ShouldDecodeWithNewPNG(wtf_size_t index) const {
@@ -228,10 +228,10 @@ void PNGImageReader::StartFrameDecoding(const FastSharedBufferReader& reader,
   // Process the IHDR chunk, but change the width and height so it reflects
   // the frame's width and height. ImageDecoder will apply the x,y offset.
   constexpr wtf_size_t kHeaderSize = 25;
-  char read_buffer[kHeaderSize];
+  std::array<uint8_t, kHeaderSize> read_buffer;
   const png_byte* chunk =
       ReadAsConstPngBytep(reader, ihdr_offset_, kHeaderSize, read_buffer);
-  png_byte* header = reinterpret_cast<png_byte*>(read_buffer);
+  png_byte* header = reinterpret_cast<png_byte*>(read_buffer.data());
   if (chunk != header) {
     UNSAFE_TODO(memcpy(header, chunk, kHeaderSize));
   }
@@ -260,7 +260,7 @@ bool PNGImageReader::ProgressivelyDecodeFirstFrame(
 
   // Loop while there is enough data to do progressive decoding.
   while (reader.size() >= offset + 8) {
-    char read_buffer[8];
+    std::array<uint8_t, 8> read_buffer;
     // At the beginning of each loop, the offset is at the start of a chunk.
     const png_byte* chunk = ReadAsConstPngBytep(reader, offset, 8, read_buffer);
 
@@ -334,7 +334,7 @@ void PNGImageReader::DecodeFrame(const FastSharedBufferReader& reader,
                                  wtf_size_t index) {
   wtf_size_t offset = frame_info_[index].start_offset;
   wtf_size_t end_offset = offset + frame_info_[index].byte_length;
-  char read_buffer[8];
+  std::array<uint8_t, 8> read_buffer;
 
   while (offset < end_offset) {
     const png_byte* chunk = ReadAsConstPngBytep(reader, offset, 8, read_buffer);
@@ -360,12 +360,12 @@ static bool CheckCrc(const FastSharedBufferReader& reader,
                      wtf_size_t chunk_start,
                      wtf_size_t chunk_length) {
   constexpr wtf_size_t kSizeNeededForfcTL = 26 + 4;
-  char read_buffer[kSizeNeededForfcTL];
+  std::array<uint8_t, kSizeNeededForfcTL> read_buffer;
   DCHECK_LE(chunk_length + 4u, kSizeNeededForfcTL);
   const png_byte* chunk = ReadAsConstPngBytep(reader, chunk_start + 4,
                                               chunk_length + 4, read_buffer);
 
-  char crc_buffer[4];
+  std::array<uint8_t, 4> crc_buffer;
   const png_byte* crc_position = ReadAsConstPngBytep(
       reader, chunk_start + 8 + chunk_length, 4, crc_buffer);
   png_uint_32 crc = UNSAFE_TODO(png_get_uint_32(crc_position));
@@ -426,7 +426,7 @@ bool PNGImageReader::Parse(SegmentReader& data, ParseQuery query) {
   // libpng for processing. A frame is registered on the next fcTL chunk or
   // when the IEND chunk is found. This ensures that only complete frames are
   // reported, unless there is an error in the stream.
-  char read_buffer[kPngReadBufferSize];
+  std::array<uint8_t, kPngReadBufferSize> read_buffer;
   for (;;) {
     constexpr wtf_size_t kChunkHeaderSize = 8;
     wtf_size_t chunk_start_offset;
@@ -546,12 +546,12 @@ bool PNGImageReader::Parse(SegmentReader& data, ParseQuery query) {
   return true;
 }
 
-// If |length| == 0, read until the stream ends. Return number of bytes
+// If `length` == 0, read until the stream ends. Return number of bytes
 // processed.
 wtf_size_t PNGImageReader::ProcessData(const FastSharedBufferReader& reader,
                                        wtf_size_t offset,
                                        wtf_size_t length) {
-  const char* segment;
+  const uint8_t* segment;
   wtf_size_t total_processed_bytes = 0;
   while (reader.size() > offset) {
     size_t segment_length = reader.GetSomeData(segment, offset);
@@ -560,7 +560,7 @@ wtf_size_t PNGImageReader::ProcessData(const FastSharedBufferReader& reader,
     }
 
     png_process_data(png_, info_,
-                     reinterpret_cast<png_byte*>(const_cast<char*>(segment)),
+                     reinterpret_cast<png_byte*>(const_cast<uint8_t*>(segment)),
                      segment_length);
     offset += segment_length;
     total_processed_bytes += segment_length;
@@ -578,7 +578,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
     return true;
   }
 
-  char read_buffer[kPngReadBufferSize];
+  std::array<uint8_t, kPngReadBufferSize> read_buffer;
 
   if (setjmp(JMPBUF(png_))) {
     return false;

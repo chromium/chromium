@@ -358,9 +358,10 @@ ICOImageDecoder::ImageType ICOImageDecoder::ImageTypeAtIndex(wtf_size_t index) {
   if ((image_offset > data_->size()) || ((data_->size() - image_offset) < 4)) {
     return kUnknown;
   }
-  char buffer[4];
-  const char* data = fast_reader_.GetConsecutiveData(image_offset, 4, buffer);
-  return UNSAFE_TODO(strncmp(data, "\x89PNG", 4)) ? BMP : PNG;
+  std::array<uint8_t, 4> buffer;
+  base::span<const uint8_t> data =
+      fast_reader_.GetConsecutiveData(image_offset, 4, buffer);
+  return base::byte_span_from_cstring("\x89PNG") == data ? PNG : BMP;
 }
 
 }  // namespace blink

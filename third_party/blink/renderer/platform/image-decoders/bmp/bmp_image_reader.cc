@@ -581,11 +581,11 @@ bool BMPImageReader::ProcessEmbeddedColorProfile() {
   }
 
   // Parse the profile.
-  auto owned_buffer = std::make_unique<char[]>(info_header_.profile_size);
-  const char* buffer = fast_reader_.GetConsecutiveData(
-      info_header_.profile_data, info_header_.profile_size, owned_buffer.get());
-  auto profile = ColorProfile::Create(base::as_bytes(
-      UNSAFE_TODO(base::span(buffer, info_header_.profile_size))));
+  auto owned_buffer =
+      base::HeapArray<uint8_t>::WithSize(info_header_.profile_size);
+  base::span<const uint8_t> buffer = fast_reader_.GetConsecutiveData(
+      info_header_.profile_data, info_header_.profile_size, owned_buffer);
+  auto profile = ColorProfile::Create(buffer);
   if (!profile) {
     return parent_->SetFailed();
   }

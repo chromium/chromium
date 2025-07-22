@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "base/containers/span_reader.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -26,17 +27,19 @@ class PLATFORM_EXPORT BMPImageReader final {
   USING_FAST_MALLOC(BMPImageReader);
 
  public:
-  // Read a value from |buffer|, converting to an int assuming little
+  // Read a value from `buffer`, converting to an int assuming little
   // endianness
-  static inline uint16_t ReadUint16(const char* buffer) {
+  static inline uint16_t ReadUint16(base::span<const uint8_t> buffer) {
     uint16_t v;
-    memcpy(&v, buffer, sizeof(v));
+    base::SpanReader span_reader(buffer);
+    span_reader.ReadU16LittleEndian(v);
     return v;
   }
 
-  static inline uint32_t ReadUint32(const char* buffer) {
+  static inline uint32_t ReadUint32(base::span<const uint8_t> buffer) {
     uint32_t v;
-    memcpy(&v, buffer, sizeof(v));
+    base::SpanReader span_reader(buffer);
+    span_reader.ReadU32LittleEndian(v);
     return v;
   }
 
@@ -110,15 +113,15 @@ class PLATFORM_EXPORT BMPImageReader final {
   }
 
   inline uint16_t ReadUint16(int offset) const {
-    char buffer[2];
-    const char* data =
+    std::array<uint8_t, 2> buffer;
+    base::span<const uint8_t> data =
         fast_reader_.GetConsecutiveData(decoded_offset_ + offset, 2, buffer);
     return ReadUint16(data);
   }
 
   inline uint32_t ReadUint32(int offset) const {
-    char buffer[4];
-    const char* data =
+    std::array<uint8_t, 4> buffer;
+    base::span<const uint8_t> data =
         fast_reader_.GetConsecutiveData(decoded_offset_ + offset, 4, buffer);
     return ReadUint32(data);
   }
@@ -213,13 +216,13 @@ class PLATFORM_EXPORT BMPImageReader final {
                         : ((coord_.y() - num_rows) < 0);
   }
 
-  // Returns the pixel data for the current |decoded_offset_| in a uint32_t.
+  // Returns the pixel data for the current `decoded_offset_` in a uint32_t.
   // NOTE: Only as many bytes of the return value as are needed to hold
   // the pixel data will actually be set.
   inline uint32_t ReadCurrentPixel(int bytes_per_pixel) const {
     // We need at most 4 bytes, starting at decoded_offset_.
-    char buffer[4];
-    const char* encoded_pixel = fast_reader_.GetConsecutiveData(
+    std::array<uint8_t, 4> buffer;
+    base::span<const uint8_t> encoded_pixel = fast_reader_.GetConsecutiveData(
         decoded_offset_, bytes_per_pixel, buffer);
     switch (bytes_per_pixel) {
       case 2:
@@ -229,7 +232,7 @@ class PLATFORM_EXPORT BMPImageReader final {
         // It doesn't matter that we never set the most significant byte
         // of the return value, the caller won't read it.
         uint32_t pixel;
-        memcpy(&pixel, encoded_pixel, 3);
+        memcpy(&pixel, encoded_pixel.data(), 3);
         return pixel;
       }
 

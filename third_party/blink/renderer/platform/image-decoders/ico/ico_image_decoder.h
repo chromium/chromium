@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_ICO_ICO_IMAGE_DECODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_ICO_ICO_IMAGE_DECODER_H_
 
+#include <array>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 
@@ -72,15 +74,15 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   }
 
   inline uint16_t ReadUint16(int offset) const {
-    char buffer[2];
-    const char* data =
+    std::array<uint8_t, 2> buffer;
+    base::span<const uint8_t> data =
         fast_reader_.GetConsecutiveData(decoded_offset_ + offset, 2, buffer);
     return BMPImageReader::ReadUint16(data);
   }
 
   inline uint32_t ReadUint32(int offset) const {
-    char buffer[4];
-    const char* data =
+    std::array<uint8_t, 4> buffer;
+    base::span<const uint8_t> data =
         fast_reader_.GetConsecutiveData(decoded_offset_ + offset, 4, buffer);
     return BMPImageReader::ReadUint32(data);
   }

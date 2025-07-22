@@ -496,11 +496,10 @@ bool CrabbyAVIFImageDecoder::MatchesAVIFSignature(
   // So the maximum number of bytes read is 144 bytes (size 4 bytes, type 4
   // bytes, major brand 4 bytes, minor version 4 bytes, and 4 bytes * 32
   // compatible brands).
-  char buffer[144];
+  std::array<uint8_t, 144> buffer;
   crabbyavif::avifROData input;
-  input.size = std::min(sizeof(buffer), fast_reader.size());
-  input.data = reinterpret_cast<const uint8_t*>(
-      fast_reader.GetConsecutiveData(0, input.size, buffer));
+  input.size = std::min(buffer.size(), fast_reader.size());
+  input.data = fast_reader.GetConsecutiveData(0, input.size, buffer).data();
   return crabbyavif::crabby_avifPeekCompatibleFileType(&input);
 }
 

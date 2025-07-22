@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <cstdint>
+
 #include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "skia/ext/skia_utils_base.h"
@@ -80,7 +83,7 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
 
 TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
   const size_t kDataSize = 3.5 * 4096;
-  char data[kDataSize];
+  std::array<uint8_t, kDataSize> data;
   PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
@@ -111,7 +114,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
 
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
   const size_t kDataSize = 3.5 * 4096;
-  char data[kDataSize];
+  std::array<uint8_t, kDataSize> data;
   PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
@@ -143,7 +146,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
 
 TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   const size_t kDataSize = 3.5 * 4096;
-  char data[kDataSize];
+  std::array<uint8_t, kDataSize> data;
   PrepareReferenceData(data);
 
   auto shared_buffer = SharedBuffer::Create();
@@ -158,7 +161,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   segment_reader = nullptr;
   parkable_image = nullptr;
 
-  UNSAFE_TODO(EXPECT_FALSE(memcmp(data, sk_data->bytes(), kDataSize)));
+  EXPECT_EQ(base::span(data), skia::as_byte_span(*sk_data));
 }
 
 }  // namespace blink
