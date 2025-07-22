@@ -762,6 +762,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
   bool HasPercentage() const final;
   bool InvolvesLayout() const final;
 
+  bool HasNestedIntermediateResult() const {
+    return has_nested_intermediate_result_;
+  }
+
   String CSSTextAsClamp() const;
 
   const CSSMathType& Type() const { return type_; }
@@ -824,6 +828,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return base::span(operands_).subspan<1>();
   }
 
+  // If operation has some nested operand which is of an intermediate type,
+  // e.g. 10px * 20px or 1px / 1px. Used to ban simplifications on such
+  // operations.
+  bool has_nested_intermediate_result_ = false;
   Operands operands_;
   const CSSMathOperator operator_;
   const CSSMathType type_;

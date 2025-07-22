@@ -245,6 +245,11 @@ CSSMathType DetermineType(const CSSMathExpressionNode& left_side,
   }
 }
 
+bool NodeHasNestedIntermediateResult(const CSSMathExpressionNode* node) {
+  return node->IsOperation() &&
+         To<CSSMathExpressionOperation>(node)->HasNestedIntermediateResult();
+}
+
 }  // namespace
 
 CSSMathType::CSSMathType(CalculationResultCategory category) {
@@ -897,33 +902,7 @@ bool ArithmeticOperationIsAllowedToBeSimplified(
   if (!RuntimeEnabledFeatures::CSSTypedArithmeticEnabled()) {
     return true;
   }
-  const CSSMathExpressionNode* left_side = operation.GetOperands().front();
-  const CSSMathExpressionNode* right_side = operation.GetOperands().back();
-  // Don't simplify (10px * (1 / 10px)) * 1px.
-  if (operation.IsMultiplyOrDivide() && left_side->Category() != kCalcNumber) {
-    if (const auto* right_operation =
-            DynamicTo<CSSMathExpressionOperation>(right_side)) {
-      if (right_operation->GetOperands().front()->Category() != kCalcNumber ||
-          right_operation->GetOperands().back()->Category() != kCalcNumber) {
-        return false;
-      }
-    }
-  }
-  if (operation.IsMultiplyOrDivide() && right_side->Category() != kCalcNumber) {
-    if (const auto* left_operation =
-            DynamicTo<CSSMathExpressionOperation>(left_side)) {
-      if (left_operation->GetOperands().front()->Category() != kCalcNumber ||
-          left_operation->GetOperands().back()->Category() != kCalcNumber) {
-        return false;
-      }
-    }
-  }
-  if (operation.Category() == kCalcIntermediate ||
-      left_side->Category() == kCalcIntermediate ||
-      right_side->Category() == kCalcIntermediate) {
-    return false;
-  }
-  return true;
+  return !operation.HasNestedIntermediateResult();
 }
 
 // This function follows:
@@ -2493,6 +2472,10 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
       operator_(op),
       type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
+  has_nested_intermediate_result_ = type_.IsIntermediateResult();
+  has_nested_intermediate_result_ |= NodeHasNestedIntermediateResult(left_side);
+  has_nested_intermediate_result_ |=
+      NodeHasNestedIntermediateResult(right_side);
 }
 
 bool CSSMathExpressionOperation::HasPercentage() const {
@@ -2575,6 +2558,13 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
       operator_(op),
       type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
+  has_nested_intermediate_result_ = type_.IsIntermediateResult();
+  if (IsArithmeticOperation()) {
+    has_nested_intermediate_result_ |=
+        NodeHasNestedIntermediateResult(operands_.front());
+    has_nested_intermediate_result_ |=
+        NodeHasNestedIntermediateResult(operands_.back());
+  }
 }
 
 CSSMathExpressionOperation::CSSMathExpressionOperation(
@@ -2588,6 +2578,7 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
       operator_(op),
       type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
+  has_nested_intermediate_result_ = type.IsIntermediateResult();
 }
 
 std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
