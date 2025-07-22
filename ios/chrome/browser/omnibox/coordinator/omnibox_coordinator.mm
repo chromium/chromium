@@ -314,7 +314,8 @@
                             browser:self.browser
              autocompleteController:[_omniboxAutocompleteController
                                         autocompleteController]
-      omniboxAutocompleteController:_omniboxAutocompleteController];
+      omniboxAutocompleteController:_omniboxAutocompleteController
+                      isLensOverlay:_isLensOverlay];
   coordinator.presenterDelegate = presenterDelegate;
 
   self.viewController.popupKeyboardDelegate = coordinator.KeyboardDelegate;

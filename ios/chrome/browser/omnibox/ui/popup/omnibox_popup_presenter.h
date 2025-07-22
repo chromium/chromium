@@ -67,7 +67,8 @@
                popupViewController:
                    (UIViewController<ContentProviding>*)viewController
                  layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
-                         incognito:(BOOL)incognito;
+                         incognito:(BOOL)incognito
+                     isLensOverlay:(BOOL)isLensOverlay;
 
 @end
 
