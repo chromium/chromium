@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/types/fixed_array.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -37,7 +33,7 @@ TEST(FixedArrayTest, TriviallyDefaultConstructibleInitializes) {
   // behavior.
   constexpr size_t kSize = sizeof(Array);
   alignas(Array) char storage[kSize];
-  std::memset(storage, 0xAA, kSize);
+  UNSAFE_TODO(std::memset(storage, 0xAA, kSize));
   Array* placement_new_array = new (storage) Array(1);
   EXPECT_EQ(0, (*placement_new_array)[0]);
   placement_new_array->~Array();

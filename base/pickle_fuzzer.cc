@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/pickle.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
@@ -14,6 +9,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 namespace {
@@ -31,7 +27,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Use the first kReadControlBytes bytes of the fuzzer input to control how
   // the pickled data is read.
   FuzzedDataProvider data_provider(data, kReadControlBytes);
-  data += kReadControlBytes;
+  UNSAFE_TODO(data += kReadControlBytes);
   size -= kReadControlBytes;
 
   base::Pickle pickle =

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/trace_arguments.h"
 
 #include <gtest/gtest.h>
@@ -14,6 +9,7 @@
 #include <limits>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 
 namespace base::trace_event {
@@ -55,7 +51,7 @@ TEST(TraceArguments, StringStorageConstructionWithSize) {
   EXPECT_TRUE(storage.data());
   EXPECT_EQ(kSize, storage.size());
   EXPECT_EQ(storage.data(), storage.begin());
-  EXPECT_EQ(storage.data() + kSize, storage.end());
+  UNSAFE_TODO(EXPECT_EQ(storage.data() + kSize, storage.end()));
 }
 
 TEST(TraceArguments, StringStorageReset) {
@@ -78,7 +74,7 @@ TEST(TraceArguments, StringStorageResetWithSize) {
   EXPECT_TRUE(storage.data());
   EXPECT_EQ(kSize, storage.size());
   EXPECT_EQ(storage.data(), storage.begin());
-  EXPECT_EQ(storage.data() + kSize, storage.end());
+  UNSAFE_TODO(EXPECT_EQ(storage.data() + kSize, storage.end()));
 }
 
 static void CheckJSONFor(TraceValue v, char type, const char* expected) {
@@ -265,11 +261,11 @@ TEST(TraceArguments, ConstructorWithTwoArguments) {
                          std::unique_ptr<MyConvertable>(ptr));
     EXPECT_EQ(2U, args1.size());
     EXPECT_STREQ("foo_arg1_cstring", args1.names()[0]);
-    EXPECT_STREQ("foo_arg2_convertable", args1.names()[1]);
+    UNSAFE_TODO(EXPECT_STREQ("foo_arg2_convertable", args1.names()[1]));
     EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args1.types()[0]);
-    EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args1.types()[1]);
+    UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args1.types()[1]));
     EXPECT_EQ(kText1, args1.values()[0].as_string);
-    EXPECT_EQ(ptr, args1.values()[1].as_convertable);
+    UNSAFE_TODO(EXPECT_EQ(ptr, args1.values()[1].as_convertable));
     EXPECT_FALSE(destroy_flag);
   }  // calls |args1| destructor. Should delete |ptr|.
   EXPECT_TRUE(destroy_flag);
@@ -286,17 +282,17 @@ TEST(TraceArguments, ConstructorLegacyNoConvertables) {
   const unsigned long long kValues[3] = {
       1000042ULL,
       reinterpret_cast<unsigned long long>(kText),
-      reinterpret_cast<unsigned long long>(kText + 2),
+      reinterpret_cast<unsigned long long>(UNSAFE_TODO(kText + 2)),
   };
   TraceArguments args(3, kNames, kTypes, kValues);
   // Check that only the first kMaxSize arguments are taken!
   EXPECT_EQ(2U, args.size());
   EXPECT_STREQ(kNames[0], args.names()[0]);
-  EXPECT_STREQ(kNames[1], args.names()[1]);
+  UNSAFE_TODO(EXPECT_STREQ(kNames[1], args.names()[1]));
   EXPECT_EQ(TRACE_VALUE_TYPE_INT, args.types()[0]);
-  EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args.types()[1]);
+  UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args.types()[1]));
   EXPECT_EQ(kValues[0], args.values()[0].as_uint);
-  EXPECT_EQ(kText, args.values()[1].as_string);
+  UNSAFE_TODO(EXPECT_EQ(kText, args.values()[1].as_string));
 }
 
 TEST(TraceArguments, ConstructorLegacyWithConvertables) {
@@ -315,9 +311,9 @@ TEST(TraceArguments, ConstructorLegacyWithConvertables) {
   // Check that only the first kMaxSize arguments are taken!
   EXPECT_EQ(2U, args.size());
   EXPECT_STREQ(kNames[0], args.names()[0]);
-  EXPECT_STREQ(kNames[1], args.names()[1]);
+  UNSAFE_TODO(EXPECT_STREQ(kNames[1], args.names()[1]));
   EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args.types()[0]);
-  EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args.types()[1]);
+  UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args.types()[1]));
   // Check that only the first two items were moved to |args|.
   EXPECT_FALSE(convertables[0].get());
   EXPECT_FALSE(convertables[1].get());
@@ -335,11 +331,11 @@ TEST(TraceArguments, MoveConstruction) {
                          std::unique_ptr<MyConvertable>(ptr));
     EXPECT_EQ(2U, args1.size());
     EXPECT_STREQ("foo_arg1_cstring", args1.names()[0]);
-    EXPECT_STREQ("foo_arg2_convertable", args1.names()[1]);
+    UNSAFE_TODO(EXPECT_STREQ("foo_arg2_convertable", args1.names()[1]));
     EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args1.types()[0]);
-    EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args1.types()[1]);
+    UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args1.types()[1]));
     EXPECT_EQ(kText1, args1.values()[0].as_string);
-    EXPECT_EQ(ptr, args1.values()[1].as_convertable);
+    UNSAFE_TODO(EXPECT_EQ(ptr, args1.values()[1].as_convertable));
 
     {
       TraceArguments args2(std::move(args1));
@@ -351,11 +347,11 @@ TEST(TraceArguments, MoveConstruction) {
       // Check that everything was transferred to |args2|.
       EXPECT_EQ(2U, args2.size());
       EXPECT_STREQ("foo_arg1_cstring", args2.names()[0]);
-      EXPECT_STREQ("foo_arg2_convertable", args2.names()[1]);
+      UNSAFE_TODO(EXPECT_STREQ("foo_arg2_convertable", args2.names()[1]));
       EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args2.types()[0]);
-      EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args2.types()[1]);
+      UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args2.types()[1]));
       EXPECT_EQ(kText1, args2.values()[0].as_string);
-      EXPECT_EQ(ptr, args2.values()[1].as_convertable);
+      UNSAFE_TODO(EXPECT_EQ(ptr, args2.values()[1].as_convertable));
     }  // Calls |args2| destructor. Should delete |ptr|.
     EXPECT_TRUE(destroy_flag);
     destroy_flag = false;
@@ -374,11 +370,11 @@ TEST(TraceArguments, MoveAssignment) {
                          std::unique_ptr<MyConvertable>(ptr));
     EXPECT_EQ(2U, args1.size());
     EXPECT_STREQ("foo_arg1_cstring", args1.names()[0]);
-    EXPECT_STREQ("foo_arg2_convertable", args1.names()[1]);
+    UNSAFE_TODO(EXPECT_STREQ("foo_arg2_convertable", args1.names()[1]));
     EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args1.types()[0]);
-    EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args1.types()[1]);
+    UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args1.types()[1]));
     EXPECT_EQ(kText1, args1.values()[0].as_string);
-    EXPECT_EQ(ptr, args1.values()[1].as_convertable);
+    UNSAFE_TODO(EXPECT_EQ(ptr, args1.values()[1].as_convertable));
 
     {
       TraceArguments args2;
@@ -392,11 +388,11 @@ TEST(TraceArguments, MoveAssignment) {
       // Check that everything was transferred to |args2|.
       EXPECT_EQ(2U, args2.size());
       EXPECT_STREQ("foo_arg1_cstring", args2.names()[0]);
-      EXPECT_STREQ("foo_arg2_convertable", args2.names()[1]);
+      UNSAFE_TODO(EXPECT_STREQ("foo_arg2_convertable", args2.names()[1]));
       EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args2.types()[0]);
-      EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args2.types()[1]);
+      UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_CONVERTABLE, args2.types()[1]));
       EXPECT_EQ(kText1, args2.values()[0].as_string);
-      EXPECT_EQ(ptr, args2.values()[1].as_convertable);
+      UNSAFE_TODO(EXPECT_EQ(ptr, args2.values()[1].as_convertable));
     }  // Calls |args2| destructor. Should delete |ptr|.
     EXPECT_TRUE(destroy_flag);
     destroy_flag = false;
@@ -443,7 +439,7 @@ TEST(TraceArguments, CopyStringsTo_OnlyArgs) {
 
   // Types should be copyable strings.
   EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[0]);
-  EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[1]);
+  UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[1]));
 
   args.CopyStringsTo(&storage, false, &extra1, &extra2);
 
@@ -453,19 +449,19 @@ TEST(TraceArguments, CopyStringsTo_OnlyArgs) {
 
   // Types should not be changed.
   EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[0]);
-  EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[1]);
+  UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[1]));
 
   // names should not be copied.
   EXPECT_FALSE(storage.Contains(args.names()[0]));
-  EXPECT_FALSE(storage.Contains(args.names()[1]));
+  UNSAFE_TODO(EXPECT_FALSE(storage.Contains(args.names()[1])));
   EXPECT_STREQ("arg1", args.names()[0]);
-  EXPECT_STREQ("arg2", args.names()[1]);
+  UNSAFE_TODO(EXPECT_STREQ("arg2", args.names()[1]));
 
   // strings should be copied.
   EXPECT_TRUE(storage.Contains(args.values()[0].as_string));
-  EXPECT_TRUE(storage.Contains(args.values()[1].as_string));
+  UNSAFE_TODO(EXPECT_TRUE(storage.Contains(args.values()[1].as_string)));
   EXPECT_STREQ("Hello", args.values()[0].as_string);
-  EXPECT_STREQ("World", args.values()[1].as_string);
+  UNSAFE_TODO(EXPECT_STREQ("World", args.values()[1].as_string));
 
   // |extra1| and |extra2| should not be copied.
   EXPECT_EQ(kExtra1, extra1);
@@ -483,7 +479,7 @@ TEST(TraceArguments, CopyStringsTo_Everything) {
 
   // Types should be normal strings.
   EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args.types()[0]);
-  EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args.types()[1]);
+  UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_STRING, args.types()[1]));
 
   args.CopyStringsTo(&storage, true, &extra1, &extra2);
 
@@ -493,19 +489,19 @@ TEST(TraceArguments, CopyStringsTo_Everything) {
 
   // Types should be changed to copyable strings.
   EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[0]);
-  EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[1]);
+  UNSAFE_TODO(EXPECT_EQ(TRACE_VALUE_TYPE_COPY_STRING, args.types()[1]));
 
   // names should be copied.
   EXPECT_TRUE(storage.Contains(args.names()[0]));
-  EXPECT_TRUE(storage.Contains(args.names()[1]));
+  UNSAFE_TODO(EXPECT_TRUE(storage.Contains(args.names()[1])));
   EXPECT_STREQ("arg1", args.names()[0]);
-  EXPECT_STREQ("arg2", args.names()[1]);
+  UNSAFE_TODO(EXPECT_STREQ("arg2", args.names()[1]));
 
   // strings should be copied.
   EXPECT_TRUE(storage.Contains(args.values()[0].as_string));
-  EXPECT_TRUE(storage.Contains(args.values()[1].as_string));
+  UNSAFE_TODO(EXPECT_TRUE(storage.Contains(args.values()[1].as_string)));
   EXPECT_STREQ("Hello", args.values()[0].as_string);
-  EXPECT_STREQ("World", args.values()[1].as_string);
+  UNSAFE_TODO(EXPECT_STREQ("World", args.values()[1].as_string));
 
   // |extra1| and |extra2| should be copied.
   EXPECT_NE(kExtra1, extra1);

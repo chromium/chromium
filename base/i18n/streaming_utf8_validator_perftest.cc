@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // All data that is passed through a WebSocket with type "Text" needs to be
 // validated as UTF8. Since this is done on the IO thread, it needs to be
 // reasonably fast.
@@ -22,6 +17,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/cstring_view.h"
@@ -169,11 +165,11 @@ void RunSomeTests(
     const int real_length = static_cast<int>(test_string.length());
     const int times = (1 << 24) / real_length;
     for (size_t test_index = 0; test_index < test_count; ++test_index) {
-      EXPECT_TRUE(
+      UNSAFE_TODO(EXPECT_TRUE(
           RunTest(StringPrintf("%s: bytes=%d %s length=%d repeat=%d",
                                test_functions[test_index].function_name,
                                num_bytes, type.c_str(), real_length, times),
-                  test_functions[test_index].function, test_string, times));
+                  test_functions[test_index].function, test_string, times)));
     }
   }
 }

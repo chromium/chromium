@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/task/sequence_manager/task_queue_selector.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -101,9 +97,10 @@ class TaskQueueSelectorTest : public testing::Test {
                                  const size_t enqueue_orders[],
                                  size_t num_tasks) {
     for (size_t i = 0; i < num_tasks; i++) {
-      task_queues_[queue_indices[i]]->immediate_work_queue()->Push(
-          Task(PostedTask(nullptr, test_closure_, FROM_HERE), EnqueueOrder(),
-               EnqueueOrder::FromIntForTesting(enqueue_orders[i])));
+      task_queues_[UNSAFE_TODO(queue_indices[i])]->immediate_work_queue()->Push(
+          Task(
+              PostedTask(nullptr, test_closure_, FROM_HERE), EnqueueOrder(),
+              EnqueueOrder::FromIntForTesting(UNSAFE_TODO(enqueue_orders[i]))));
     }
   }
 

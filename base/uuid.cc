@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/uuid.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <ostream>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
@@ -83,7 +79,7 @@ Uuid Uuid::FormatRandomDataAsV4Impl(base::span<const uint8_t, 16> input) {
   DCHECK_EQ(input.size_bytes(), kGuidV4InputLength);
 
   uint64_t sixteen_bytes[2];
-  memcpy(&sixteen_bytes, input.data(), sizeof(sixteen_bytes));
+  UNSAFE_TODO(memcpy(&sixteen_bytes, input.data(), sizeof(sixteen_bytes)));
 
   // Set the Uuid to version 4 as described in RFC 4122, section 4.4.
   // The format of Uuid version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,

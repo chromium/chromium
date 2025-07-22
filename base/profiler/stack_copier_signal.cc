@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/profiler/stack_copier_signal.h"
 
 #include <errno.h>
@@ -21,6 +16,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
@@ -165,7 +161,8 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
   *params->success = false;
 
   const ucontext_t* ucontext = static_cast<ucontext_t*>(sigcontext);
-  std::memcpy(params->context, &ucontext->uc_mcontext, sizeof(mcontext_t));
+  UNSAFE_TODO(
+      std::memcpy(params->context, &ucontext->uc_mcontext, sizeof(mcontext_t)));
 
   const uintptr_t bottom = RegisterContextStackPointer(params->context);
   const uintptr_t top = params->stack_base_address;
@@ -253,7 +250,7 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     // Set the signal handler for the thread to the stack copy function.
     struct sigaction action;
     struct sigaction original_action;
-    memset(&action, 0, sizeof(action));
+    UNSAFE_TODO(memset(&action, 0, sizeof(action)));
     action.sa_sigaction = CopyStackSignalHandler;
     action.sa_flags = SA_RESTART | SA_SIGINFO;
     sigemptyset(&action.sa_mask);

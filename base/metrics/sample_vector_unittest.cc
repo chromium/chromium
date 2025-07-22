@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/metrics/sample_vector.h"
 
 #include <limits.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/metrics_hashes.h"
@@ -425,7 +421,7 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   std::atomic<PersistentMemoryAllocator::Reference> samples_ref;
   samples_ref.store(0, std::memory_order_relaxed);
   HistogramSamples::Metadata samples_meta;
-  memset(&samples_meta, 0, sizeof(samples_meta));
+  UNSAFE_TODO(memset(&samples_meta, 0, sizeof(samples_meta)));
 
   // Custom buckets: [1, 5) [5, 10)
   BucketRanges ranges(3);
@@ -520,7 +516,7 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   std::atomic<PersistentMemoryAllocator::Reference> samples_ref;
   samples_ref.store(0, std::memory_order_relaxed);
   HistogramSamples::Metadata samples_meta;
-  memset(&samples_meta, 0, sizeof(samples_meta));
+  UNSAFE_TODO(memset(&samples_meta, 0, sizeof(samples_meta)));
 
   // Custom buckets: [1, 5) [5, 10)
   BucketRanges ranges(3);

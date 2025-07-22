@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/waitable_event.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -237,7 +233,7 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
   std::vector<std::pair<WaitableEvent*, size_t>> waitables;
   waitables.reserve(count);
   for (size_t i = 0; i < count; ++i) {
-    waitables.emplace_back(raw_waitables[i], i);
+    waitables.emplace_back(UNSAFE_TODO(raw_waitables[i]), i);
   }
 
   DCHECK_EQ(count, waitables.size());
@@ -285,19 +281,19 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
   // Take the locks of each WaitableEvent in turn (except the signaled one) and
   // remove our SyncWaiter from the wait-list
   for (size_t i = 0; i < count; ++i) {
-    if (raw_waitables[i] != signaled_event) {
-      raw_waitables[i]->kernel_->lock_.Acquire();
+    if (UNSAFE_TODO(raw_waitables[i]) != signaled_event) {
+      UNSAFE_TODO(raw_waitables[i])->kernel_->lock_.Acquire();
       // There's no possible ABA issue with the address of the SyncWaiter here
       // because it lives on the stack. Thus the tag value is just the pointer
       // value again.
-      raw_waitables[i]->kernel_->Dequeue(&sw, &sw);
-      raw_waitables[i]->kernel_->lock_.Release();
+      UNSAFE_TODO(raw_waitables[i])->kernel_->Dequeue(&sw, &sw);
+      UNSAFE_TODO(raw_waitables[i])->kernel_->lock_.Release();
     } else {
       // By taking this lock here we ensure that |Signal| has completed by the
       // time we return, because |Signal| holds this lock. This matches the
       // behaviour of |Wait| and |TimedWait|.
-      raw_waitables[i]->kernel_->lock_.Acquire();
-      raw_waitables[i]->kernel_->lock_.Release();
+      UNSAFE_TODO(raw_waitables[i])->kernel_->lock_.Acquire();
+      UNSAFE_TODO(raw_waitables[i])->kernel_->lock_.Release();
       signaled_index = i;
     }
   }
@@ -323,10 +319,10 @@ size_t WaitableEvent::EnqueueMany(std::pair<WaitableEvent*, size_t>* waitables,
   size_t winner = count;
   size_t winner_index = count;
   for (size_t i = 0; i < count; ++i) {
-    auto& kernel = waitables[i].first->kernel_;
+    auto& kernel = UNSAFE_TODO(waitables[i]).first->kernel_;
     kernel->lock_.Acquire();
-    if (kernel->signaled_ && waitables[i].second < winner) {
-      winner = waitables[i].second;
+    if (kernel->signaled_ && UNSAFE_TODO(waitables[i]).second < winner) {
+      winner = UNSAFE_TODO(waitables[i]).second;
       winner_index = i;
     }
   }
@@ -335,14 +331,15 @@ size_t WaitableEvent::EnqueueMany(std::pair<WaitableEvent*, size_t>* waitables,
   // and return.
   if (winner == count) {
     for (size_t i = 0; i < count; ++i) {
-      waitables[i].first->Enqueue(waiter);
+      UNSAFE_TODO(waitables[i]).first->Enqueue(waiter);
     }
     return count;
   }
 
   // Unlock in reverse order and possibly clear the chosen winner's signal
   // before returning its index.
-  for (auto* w = waitables + count - 1; w >= waitables; --w) {
+  for (auto* w = UNSAFE_TODO(waitables + count - 1); w >= waitables;
+       UNSAFE_TODO(--w)) {
     auto& kernel = w->first->kernel_;
     if (w->second == winner) {
       if (!kernel->manual_reset_) {

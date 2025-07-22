@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/metrics/persistent_histogram_allocator.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -57,7 +53,7 @@ class PersistentHistogramAllocatorTest : public testing::Test {
     ANNOTATE_LEAKING_OBJECT_PTR(allocator_memory_);
 
     GlobalHistogramAllocator::ReleaseForTesting();
-    memset(allocator_memory_, 0, kAllocatorMemorySize);
+    UNSAFE_TODO(memset(allocator_memory_, 0, kAllocatorMemorySize));
     GlobalHistogramAllocator::CreateWithPersistentMemory(
         allocator_memory_, kAllocatorMemorySize, 0, 0,
         "PersistentHistogramAllocatorTest");
@@ -222,8 +218,8 @@ TEST_F(PersistentHistogramAllocatorTest, CreateSpareFile) {
 
   char buffer[256];
   for (size_t pos = 0; pos < temp_size; pos += sizeof(buffer)) {
-    ASSERT_EQ(static_cast<int>(sizeof(buffer)),
-              file.ReadAtCurrentPos(buffer, sizeof(buffer)));
+    UNSAFE_TODO(ASSERT_EQ(static_cast<int>(sizeof(buffer)),
+                          file.ReadAtCurrentPos(buffer, sizeof(buffer))));
     for (char i : buffer) {
       EXPECT_EQ(0, i);
     }
@@ -684,8 +680,8 @@ TEST_F(PersistentHistogramAllocatorTest, RangesDeDuplication) {
       allocator_->GetAsArray<uint32_t>(ref1, 0, kRangesRefIndex + 1);
   uint32_t* data2 =
       allocator_->GetAsArray<uint32_t>(ref2, 0, kRangesRefIndex + 1);
-  EXPECT_EQ(ranges_ref, data1[kRangesRefIndex]);
-  EXPECT_EQ(ranges_ref, data2[kRangesRefIndex]);
+  UNSAFE_TODO(EXPECT_EQ(ranges_ref, data1[kRangesRefIndex]));
+  UNSAFE_TODO(EXPECT_EQ(ranges_ref, data2[kRangesRefIndex]));
 }
 
 TEST_F(PersistentHistogramAllocatorTest, MovePersistentFile) {

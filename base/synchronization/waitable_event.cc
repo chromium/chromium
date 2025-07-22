@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/waitable_event.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
@@ -80,7 +76,7 @@ size_t WaitableEvent::WaitMany(WaitableEvent** events, size_t count) {
       FROM_HERE, BlockingType::MAY_BLOCK);
 
   const size_t signaled_id = WaitManyImpl(events, count);
-  WaitableEvent* const signaled_event = events[signaled_id];
+  WaitableEvent* const signaled_event = UNSAFE_TODO(events[signaled_id]);
   if (!signaled_event->only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow",
                         "WaitableEvent::WaitMany Complete",

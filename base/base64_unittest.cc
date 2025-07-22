@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/base64.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/escape.h"
 #include "base/test/gtest_util.h"
@@ -159,7 +155,7 @@ TEST(Base64Test, Overflow) {
   // crash. This test is only meaningful because `EXPECT_CHECK_DEATH` looks for
   // a `CHECK`-based failure.
   uint8_t b;
-  auto large_span = span(&b, MODP_B64_MAX_INPUT_LEN + 1);
+  auto large_span = UNSAFE_TODO(span(&b, MODP_B64_MAX_INPUT_LEN + 1));
   EXPECT_CHECK_DEATH(Base64Encode(large_span));
 
   std::string output = "PREFIX";

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/waitable_event.h"
 
 #include <stddef.h>
@@ -131,7 +126,7 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
   // the WaitableEvents' addresses -- are relevant in determining who wins when
   // multiple events are signaled.
 
-  std::sort(ev, ev + 5);
+  std::sort(ev, UNSAFE_TODO(ev + 5));
   do {
     ev[0]->Signal();
     ev[1]->Signal();
@@ -149,7 +144,7 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
     ev[2]->Signal();
     EXPECT_EQ(2u, WaitableEvent::WaitMany(ev, 5));
     EXPECT_EQ(4u, WaitableEvent::WaitMany(ev, 5));
-  } while (std::next_permutation(ev, ev + 5));
+  } while (std::next_permutation(ev, UNSAFE_TODO(ev + 5)));
 
   for (auto* i : ev) {
     delete i;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/string_tokenizer.h"
 
 #include <stddef.h>
@@ -14,6 +9,8 @@
 
 #include <string>
 #include <tuple>
+
+#include "base/compiler_specific.h"
 
 void GetAllTokens(base::StringTokenizer& t) {
   while (t.GetNext()) {
@@ -33,11 +30,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   size_t pattern_size =
       *reinterpret_cast<const size_t*>(data) % (size - size_t_bytes);
 
-  std::string pattern(reinterpret_cast<const char*>(data + size_t_bytes),
-                      pattern_size);
-  std::string input(
-      reinterpret_cast<const char*>(data + size_t_bytes + pattern_size),
-      size - pattern_size - size_t_bytes);
+  std::string pattern(
+      reinterpret_cast<const char*>(UNSAFE_TODO(data + size_t_bytes)),
+      pattern_size);
+  std::string input(reinterpret_cast<const char*>(
+                        UNSAFE_TODO(data + size_t_bytes + pattern_size)),
+                    size - pattern_size - size_t_bytes);
 
   // Allow quote_chars and options to be set. Otherwise full coverage
   // won't be possible since IsQuote, FullGetNext and other functions

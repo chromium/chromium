@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/types/expected_macros.h"
 
 #include <memory>
@@ -16,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -403,10 +399,10 @@ TEST(AssignOrReturn, WorksWithParenthesesAndDereference) {
     ASSIGN_OR_RETURN(*pointer_to_integer, ReturnExpectedValue(2));
     EXPECT_EQ(integer, 2);
     // Test where the order of dereference matters.
-    --pointer_to_integer;
+    UNSAFE_TODO(--pointer_to_integer);
     int* const* const pointer_to_pointer_to_integer = &pointer_to_integer;
-    ASSIGN_OR_RETURN((*pointer_to_pointer_to_integer)[1],
-                     ReturnExpectedValue(3));
+    UNSAFE_TODO(ASSIGN_OR_RETURN((*pointer_to_pointer_to_integer)[1],
+                                 ReturnExpectedValue(3)));
     EXPECT_EQ(integer, 3);
     ASSIGN_OR_RETURN([[maybe_unused]] const int t1, ReturnError("EXPECTED"));
     return "ERROR";

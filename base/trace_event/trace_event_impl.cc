@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/trace_event/trace_event_impl.h"
 
 #include <stddef.h>
 
 #include <sstream>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/json/string_escape.h"
 #include "base/memory/ptr_util.h"
@@ -185,7 +181,7 @@ void TraceEvent::AppendAsJSON(
       thread_id ? thread_id->truncate_to_int32_for_display_only() : -1;
 
   // Category group checked at category creation time.
-  DCHECK(!strchr(name_, '"'));
+  UNSAFE_TODO(DCHECK(!strchr(name_, '"')));
   StringAppendF(out,
                 "{\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64
                 ",\"ph\":\"%c\",\"cat\":\"%s\",\"name\":",

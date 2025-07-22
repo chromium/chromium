@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/memory/madv_free_discardable_memory_allocator_posix.h"
 
 #include <fcntl.h>
@@ -14,6 +9,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/page_size.h"
@@ -90,11 +86,11 @@ TEST_F(MadvFreeDiscardableMemoryAllocatorPosixTest, AllocateAndUseMemory) {
   char buffer[sizeof(test_pattern)];
 
   void* data = mem2->data();
-  memcpy(data, test_pattern, sizeof(test_pattern));
+  UNSAFE_TODO(memcpy(data, test_pattern, sizeof(test_pattern)));
 
   data = mem2->data_as<uint8_t>();
-  memcpy(buffer, data, sizeof(test_pattern));
+  UNSAFE_TODO(memcpy(buffer, data, sizeof(test_pattern)));
 
-  EXPECT_EQ(memcmp(test_pattern, buffer, sizeof(test_pattern)), 0);
+  UNSAFE_TODO(EXPECT_EQ(memcmp(test_pattern, buffer, sizeof(test_pattern)), 0));
 }
 }  // namespace base

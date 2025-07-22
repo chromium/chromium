@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/test/perf_log.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 
@@ -38,8 +34,8 @@ void FinalizePerfLog() {
 void LogPerfResult(const char* test_name, double value, const char* units) {
   CHECK(perf_log_file);
 
-  fprintf(perf_log_file, "%s\t%g\t%s\n", test_name, value, units);
-  printf("%s\t%g\t%s\n", test_name, value, units);
+  UNSAFE_TODO(fprintf(perf_log_file, "%s\t%g\t%s\n", test_name, value, units));
+  UNSAFE_TODO(printf("%s\t%g\t%s\n", test_name, value, units));
   fflush(stdout);
 }
 

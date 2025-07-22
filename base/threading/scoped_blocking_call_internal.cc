@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/threading/scoped_blocking_call_internal.h"
 
 #include <algorithm>
@@ -284,7 +279,7 @@ void IOJankMonitoringWindow::AddJank(int local_jank_start_index,
     // ~IOJankMonitoringWindow().
     AutoLock lock(intervals_lock_);
     for (int i = local_jank_start_index; i < local_jank_end_index; ++i) {
-      ++intervals_jank_count_[i];
+      ++UNSAFE_TODO(intervals_jank_count_[i]);
     }
   }
 

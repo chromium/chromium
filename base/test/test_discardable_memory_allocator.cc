@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/test/test_discardable_memory_allocator.h"
 
 #include <cstdint>
 #include <cstring>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/ptr_util.h"
 
@@ -36,7 +32,7 @@ class DiscardableMemoryImpl : public DiscardableMemory {
     is_locked_ = false;
     // Force eviction to catch clients not correctly checking the return value
     // of Lock().
-    memset(data_.get(), 0, size_);
+    UNSAFE_TODO(memset(data_.get(), 0, size_));
   }
 
   void* data() const override {
