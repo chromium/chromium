@@ -752,6 +752,7 @@ if (is_android) {
 
     resource_excluded_patterns = [
       "*/third_party/android_deps/*",
+      "*/third_party/androidx/*",
       "*/third_party/java_src/*",
     ]
   }
