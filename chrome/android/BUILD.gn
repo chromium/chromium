@@ -2097,6 +2097,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/crash/ChromeMinidumpUploadJobService.java",
       "java/src/org/chromium/chrome/browser/crash/MinidumpUploadService.java",
       "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionService.java",
+      "java/src/org/chromium/chrome/browser/data_import/DataImporterService.java",
       "java/src/org/chromium/chrome/browser/download/DownloadBroadcastManager.java",
       "java/src/org/chromium/chrome/browser/download/DownloadForegroundService.java",
       "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationService.java",
