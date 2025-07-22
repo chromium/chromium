@@ -6444,9 +6444,6 @@ crbug.com/409953792 virtual/produce-compile-hints/external/wpt/html/semantics/sc
 crbug.com/409953792 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/code-cache-base-url.html [ Failure Pass ]
 crbug.com/409953792 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/code-cache-nonce.html [ Failure Pass ]
 
-# Incomplete support for mouse wheel in test_driver.
-crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Timeout ]
-
 # Possible Interop PE 2024 investigation
 crbug.com/1495467 external/wpt/uievents/mouse/synthetic-mouse-enter-leave-over-out-button-state-after-target-removed.tentative.html?buttonType=LEFT&button=0&buttons=1 [ Failure ]
 crbug.com/1495467 external/wpt/uievents/mouse/synthetic-mouse-enter-leave-over-out-button-state-after-target-removed.tentative.html?buttonType=MIDDLE&button=1&buttons=4 [ Failure ]
