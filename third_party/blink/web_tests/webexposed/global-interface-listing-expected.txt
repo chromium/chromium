@@ -1915,6 +1915,7 @@ interface DevicePosture : EventTarget
     method constructor
     setter onchange
 interface DigitalCredential : Credential
+    static method userAgentAllowsProtocol
     attribute @@toStringTag
     getter data
     getter protocol

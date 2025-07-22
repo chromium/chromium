@@ -27,6 +27,7 @@ class MODULES_EXPORT DigitalCredential final : public Credential {
   // DigitalCredential.idl
   const String& protocol() const { return protocol_; }
   const ScriptObject& data() const { return data_; }
+  static bool userAgentAllowsProtocol(const String& protocol);
 
  private:
   const String protocol_;

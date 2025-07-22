@@ -1832,6 +1832,7 @@ interface DeviceOrientationEvent : Event
     getter gamma
     method constructor
 interface DigitalCredential : Credential
+    static method userAgentAllowsProtocol
     attribute @@toStringTag
     getter data
     getter protocol
