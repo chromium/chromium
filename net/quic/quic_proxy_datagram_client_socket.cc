@@ -172,8 +172,7 @@ void QuicProxyDatagramClientSocket::OnHttp3Datagram(
       CHECK(read_buf_ != nullptr);
       CHECK(read_buf_len_ > 0);
 
-      UNSAFE_TODO(std::memcpy(read_buf_->data(), http_payload.data(),
-                              http_payload.size()));
+      read_buf_->span().copy_prefix_from(base::as_byte_span(http_payload));
       result = bytes_read;
     }
 
@@ -281,7 +280,7 @@ int QuicProxyDatagramClientSocket::Read(IOBuffer* buf,
     if (datagram.size() > static_cast<std::size_t>(buf_len)) {
       result = ERR_MSG_TOO_BIG;
     } else {
-      UNSAFE_TODO(std::memcpy(buf->data(), datagram.data(), datagram.size()));
+      buf->span().copy_prefix_from(base::as_byte_span(datagram));
       result = bytes_read;
     }
     datagrams_.pop();

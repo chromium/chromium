@@ -7,7 +7,7 @@
 #include <string_view>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -309,10 +310,7 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
   // Set Context ID to zero as per RFC 9298
   // (https://datatracker.ietf.org/doc/html/rfc9298#name-http-datagram-payload-forma)
   // and copy packet data.
-  std::string http_payload;
-  http_payload.resize(1 + packet.size());
-  http_payload[0] = 0;
-  UNSAFE_TODO(memcpy(&http_payload[1], packet.data(), packet.size()));
+  std::string http_payload = base::StrCat({std::string(1, '\0'), packet});
 
   // Attempt to send the HTTP payload as a datagram over the stream.
   quic::MessageStatus message_status = stream_->SendHttp3Datagram(http_payload);
