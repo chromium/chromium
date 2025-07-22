@@ -694,4 +694,60 @@ public class ScreenCaptureTest {
         // is already closed. This should be able to run without crashing.
         releaseCb0.run();
     }
+
+    @Test
+    public void testMultipleOnCapturedContentResizeBeforeFrame() {
+        final Queue<Runnable> pendingReleases = new ArrayDeque<>();
+        doAnswer(invocation -> pendingReleases.add(invocation.getArgument(1)))
+                .when(mNativeMock)
+                .onRgbaFrameAvailable(
+                        anyLong(),
+                        any(Runnable.class),
+                        anyLong(),
+                        any(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt());
+
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+        assertTrue(mScreenCapture.startCapture());
+        final MediaProjection.Callback callback = getMediaProjectionCallback();
+
+        // Resize twice before sending any frames.
+        callback.onCapturedContentResize(NEW_WIDTH_PX, NEW_HEIGHT_PX);
+        callback.onCapturedContentResize(NEW_WIDTH_PX + 1, NEW_HEIGHT_PX + 1);
+        assertEquals(3, mImageHandlerStates.size());
+
+        // Push a frame for the newest handler. This should trigger the closing of the older
+        // handlers. Since they have no acquired images, they should close immediately.
+        final ImageHandler handler2 = mImageHandlerStates.get(2).imageHandler;
+        final ImageReader reader2 = mImageHandlerStates.get(2).imageReader;
+        final Image image = createMockImage();
+        when(reader2.acquireLatestImage()).thenReturn(image).thenReturn(null);
+        handler2.onImageAvailable(reader2);
+        assertEquals(1, pendingReleases.size());
+
+        // Verify the old handlers were closed immediately.
+        final ImageHandler handler0 = mImageHandlerStates.get(0).imageHandler;
+        final ImageReader reader0 = mImageHandlerStates.get(0).imageReader;
+        verify(reader0).close();
+        verify(mScreenCapture).onClose(handler0);
+
+        final ImageHandler handler1 = mImageHandlerStates.get(1).imageHandler;
+        final ImageReader reader1 = mImageHandlerStates.get(1).imageReader;
+        verify(reader1).close();
+        verify(mScreenCapture).onClose(handler1);
+
+        // The current handler should not be closed.
+        verify(reader2, never()).close();
+
+        // Clean up the acquired frame.
+        pendingReleases.remove().run();
+        verify(image).close();
+    }
 }
