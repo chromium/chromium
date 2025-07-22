@@ -1413,16 +1413,15 @@ TEST_F(PasswordSuggestionGeneratorTest,
       ShowPasswordSuggestions(true), ShowWebAuthnCredentials(false),
       ShowIdentityCredentials(false));
 
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          EqualsDomainPasswordSuggestion(SuggestionType::kPasswordEntry,
-                                         u"username", password_label(8u),
-                                         /*realm_label=*/u"", favicon()),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePasswordsSuggestion(),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kPendingStateSignin)));
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsDomainPasswordSuggestion(
+                              SuggestionType::kPasswordEntry, u"username",
+                              password_label(8u),
+                              /*realm_label=*/u"", favicon()),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kPendingStateSignin),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
   histogram_tester.ExpectUniqueSample(
       kReauthPromoHistogramName,
       FillingReauthPromoShown::kShownWithOtherSuggestions, 1);

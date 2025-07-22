@@ -486,9 +486,6 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
     suggestions.emplace_back(CreateGenerationEntry());
   }
 
-  // Add "Manage all passwords" link to settings.
-  MaybeAppendManagePasswordsEntry(&suggestions);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (CanShowPendingStatePromo(*password_client_)) {
     RecordPendingStatePromoHistogram(
@@ -501,6 +498,9 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
     RecordPendingStatePromoHistogram(FillingReauthPromoShown::kNotShown);
   }
 #endif
+
+  // Add "Manage all passwords" link to settings.
+  MaybeAppendManagePasswordsEntry(&suggestions);
 
   return suggestions;
 }
