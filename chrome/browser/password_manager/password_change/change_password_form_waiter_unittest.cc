@@ -6,11 +6,14 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/mock_password_form_cache.h"
+#include "components/password_manager/core/browser/mock_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -37,6 +40,10 @@ class MockChromePasswordManagerClient
               GetProfilePasswordStore,
               (),
               (override, const));
+  MOCK_METHOD(password_manager::PasswordManagerInterface*,
+              GetPasswordManager,
+              (),
+              (override, const));
 };
 
 }  // namespace
@@ -54,6 +61,9 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness {
 
     ON_CALL(client_, GetProfilePasswordStore)
         .WillByDefault(Return(password_store_.get()));
+    ON_CALL(client_, GetPasswordManager).WillByDefault(Return(&mock_manager_));
+    ON_CALL(mock_manager_, GetPasswordFormCache)
+        .WillByDefault(Return(&mock_cache_));
   }
 
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager(
@@ -73,6 +83,7 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness {
   password_manager::PasswordManagerClient* client() { return &client_; }
 
   password_manager::StubPasswordManagerDriver& driver() { return driver_; }
+  password_manager::MockPasswordFormCache& cache() { return mock_cache_; }
 
   PrefService* prefs() { return profile()->GetPrefs(); }
 
@@ -84,6 +95,8 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness {
   MockChromePasswordManagerClient client_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_ =
       base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
+  password_manager::MockPasswordManager mock_manager_;
+  password_manager::MockPasswordFormCache mock_cache_;
   password_manager::FakeFormFetcher form_fetcher_;
   password_manager::StubPasswordManagerDriver driver_;
 };
@@ -349,4 +362,33 @@ TEST_F(ChangePasswordFormWaiterTest, ChangePasswordFormWithoutOldPassword) {
   EXPECT_CALL(completion_callback, Run(form_manager.get()));
   static_cast<password_manager::PasswordFormManagerObserver*>(&waiter)
       ->OnPasswordFormParsed(form_manager.get());
+}
+
+TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormAlreadyParsed) {
+  base::test::TestFuture<password_manager::PasswordFormManager*> result_future;
+
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password:", /*name=*/"password",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password confirmation:", /*name=*/"new_password_2",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  autofill::FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+
+  std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
+      form_managers;
+  form_managers.push_back(CreateFormManager(form));
+
+  EXPECT_CALL(cache(), GetFormManagers)
+      .WillOnce(testing::Return(base::span(form_managers)));
+  ChangePasswordFormWaiter waiter(web_contents(), client(),
+                                  result_future.GetCallback());
+
+  EXPECT_EQ(result_future.Get(), form_managers.back().get());
 }

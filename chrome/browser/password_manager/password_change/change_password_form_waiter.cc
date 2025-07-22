@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 
+#include "base/containers/adapters.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -25,6 +27,42 @@ PasswordFormCache* GetFormCache(
   return cache;
 }
 
+bool IsLikelyChangePasswordForm(
+    const password_manager::PasswordForm* parsed_form) {
+  CHECK(parsed_form);
+
+  // Change password form shouldn't contain username field. This doesn't apply
+  // to <form>-less forms.
+  if (parsed_form->form_data.renderer_id() &&
+      parsed_form->username_element_renderer_id) {
+    auto username_element =
+        std::ranges::find(parsed_form->form_data.fields(),
+                          parsed_form->username_element_renderer_id,
+                          &autofill::FormFieldData::renderer_id);
+    CHECK(username_element != parsed_form->form_data.fields().end());
+    // Username must be focusable, otherwise it's hidden or non-editable which
+    // isn't an issue.
+    if (username_element->is_focusable()) {
+      return false;
+    }
+  }
+
+  // New password field must be present in a change password form.
+  if (!parsed_form->new_password_element_renderer_id) {
+    return false;
+  }
+
+  // If there are multiple fields, either confirmation password or the old
+  // password must be present in a change password form.
+  if (parsed_form->form_data.fields().size() > 1 &&
+      !parsed_form->confirmation_password_element_renderer_id &&
+      !parsed_form->password_element_renderer_id) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 ChangePasswordFormWaiter::ChangePasswordFormWaiter(
@@ -34,7 +72,20 @@ ChangePasswordFormWaiter::ChangePasswordFormWaiter(
     : web_contents_(web_contents),
       client_(client),
       callback_(std::move(callback)) {
-  if (auto* cache = GetFormCache(client_)) {
+  if (PasswordFormCache* cache = GetFormCache(client_)) {
+    auto managers = cache->GetFormManagers();
+    // Check form managers in reversed order to process newly added managers
+    // first.
+    for (const auto & manager : base::Reversed(managers)) {
+      if (manager->GetParsedObservedForm() &&
+          IsLikelyChangePasswordForm(manager->GetParsedObservedForm())) {
+        // Change password form is already present on a page. Simply post a
+        // callback with result.
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback_), manager.get()));
+        return;
+      }
+    }
     cache->AddObserver(this);
   }
   if (web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
@@ -56,42 +107,11 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
   CHECK(callback_);
   CHECK(form_manager);
 
-  const password_manager::PasswordForm* parsed_form =
-      form_manager->GetParsedObservedForm();
-  CHECK(parsed_form);
-
-  // Change password form shouldn't contain username field. This doesn't apply
-  // to <form>-less forms.
-  if (parsed_form->form_data.renderer_id() &&
-      parsed_form->username_element_renderer_id) {
-    auto username_element =
-        std::ranges::find(parsed_form->form_data.fields(),
-                          parsed_form->username_element_renderer_id,
-                          &autofill::FormFieldData::renderer_id);
-    CHECK(username_element != parsed_form->form_data.fields().end());
-    // Username must be focusable, otherwise it's hidden or non-editable which
-    // isn't an issue.
-    if (username_element->is_focusable()) {
-      return;
-    }
+  if (IsLikelyChangePasswordForm(form_manager->GetParsedObservedForm())) {
+    // Do not invoke anything after calling the `callback_` as object might be
+    // destroyed immediately after.
+    std::move(callback_).Run(form_manager);
   }
-
-  // New password field must be present in a change password form.
-  if (!parsed_form->new_password_element_renderer_id) {
-    return;
-  }
-
-  // If there are multiple fields, either confirmation password or the old
-  // password must be present in a change password form.
-  if (parsed_form->form_data.fields().size() > 1 &&
-      !parsed_form->confirmation_password_element_renderer_id &&
-      !parsed_form->password_element_renderer_id) {
-    return;
-  }
-
-  // Do not invoke anything after calling the `callback_` as object might be
-  // destroyed immediately after.
-  std::move(callback_).Run(form_manager);
 }
 
 void ChangePasswordFormWaiter::DocumentOnLoadCompletedInPrimaryMainFrame() {
