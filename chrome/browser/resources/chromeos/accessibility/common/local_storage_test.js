@@ -17,8 +17,15 @@ AccessibilityExtensionLocalStorageTest = class extends CommonE2ETestBase {
   }
 };
 
+// TODO(crbug.com/260589686): Remove after localStorage migration is done.
 AX_TEST_F(
     'AccessibilityExtensionLocalStorageTest', 'Migration', async function() {
+      if (isRunningInServiceWorker()) {
+        console.log(
+            'Skip because "localStorage" is not available in service worker.');
+        return;
+      }
+
       localStorage['catSound'] = 'meow';
       localStorage['catIsShy'] = String(false);
       localStorage['catIsFluffy'] = String(true);
