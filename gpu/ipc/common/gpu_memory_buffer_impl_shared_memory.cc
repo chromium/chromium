@@ -62,29 +62,6 @@ GpuMemoryBufferImplSharedMemory::CreateForTesting(const gfx::Size& size,
 }
 
 // static
-gfx::GpuMemoryBufferHandle
-GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  size_t buffer_size = 0u;
-  if (!gfx::BufferSizeForBufferFormatChecked(size, format, &buffer_size))
-    return gfx::GpuMemoryBufferHandle();
-
-  auto shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  if (!shared_memory_region.IsValid())
-    return gfx::GpuMemoryBufferHandle();
-
-  gfx::GpuMemoryBufferHandle handle(std::move(shared_memory_region));
-  handle.type = gfx::SHARED_MEMORY_BUFFER;
-  handle.offset = 0;
-  handle.stride = static_cast<uint32_t>(
-      gfx::RowSizeForBufferFormat(size.width(), format, 0));
-  return handle;
-}
-
-// static
 std::unique_ptr<GpuMemoryBufferImplSharedMemory>
 GpuMemoryBufferImplSharedMemory::CreateFromHandle(
     gfx::GpuMemoryBufferHandle handle,
