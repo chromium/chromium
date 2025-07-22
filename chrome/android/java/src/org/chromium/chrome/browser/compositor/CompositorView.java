@@ -385,7 +385,7 @@ public class CompositorView extends FrameLayout
     }
 
     private int getSurfacePixelFormat() {
-        if (mOverlayVideoEnabled || mAlwaysTranslucent) {
+        if (mOverlayVideoEnabled || mAlwaysTranslucent || mIsXrFullSpaceMode) {
             return PixelFormat.TRANSLUCENT;
         }
 
@@ -417,8 +417,7 @@ public class CompositorView extends FrameLayout
             mIsXrFullSpaceMode = enabled;
             // Request the new surface as mode has changed. We'll get a synthetic destroy / create /
             // changed callback in that case, possibly before this returns.
-            mCompositorSurfaceManager.requestSurface(
-                    mIsXrFullSpaceMode ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE);
+            mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
             // Set space mode environment.
             CompositorViewJni.get().setOverlayXrFullScreenMode(mNativeCompositorView, enabled);
         }

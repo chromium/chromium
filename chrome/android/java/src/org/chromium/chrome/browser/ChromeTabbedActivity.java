@@ -310,7 +310,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -4549,26 +4548,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
     }
 
-    /**
-     * Hide/show web content, make background opaque or transparent when switching to/from XR full
-     * space mode.
-     *
-     * <p>Toolbar updates its visibility in ToolbarManager.onXrSpaceModeChanged.
-     *
-     * @param fullSpaceMode: true to hide, false to show
-     */
-    public void onXrSpaceModeChanged(boolean fullSpaceMode) {
+    private void onXrSpaceModeChanged(boolean fullSpaceMode) {
         if (mCompositorViewHolder != null) {
             mCompositorViewHolder.getCompositorView().setXrFullSpaceMode(fullSpaceMode);
-
-            // TODO(crbug.com/422140378): The video overlay stays visible on the transparent
-            //  background of the HubLayout if webcontent is not hidden.
-            Tab tab = mTabModelSelector.getCurrentTab();
-            if (tab != null) {
-                tab.getWebContents()
-                        .updateWebContentsVisibility(
-                                fullSpaceMode ? Visibility.HIDDEN : Visibility.VISIBLE);
-            }
         }
     }
 
