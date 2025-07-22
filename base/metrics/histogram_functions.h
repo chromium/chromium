@@ -202,7 +202,7 @@ BASE_EXPORT void UmaHistogramMemoryKB(std::string_view name, int sample);
 // Used to measure common MB-granularity memory stats. Sample is in MB. Range is
 // 1MB to ~1G.
 BASE_EXPORT void UmaHistogramMemoryMB(std::string_view name, int sample);
-// Used to measure common MB-granularity memory stats. Range is 1G to ~64G.
+// Used to measure common MB-granularity memory stats. Range is 1MB to ~64G.
 BASE_EXPORT void UmaHistogramMemoryLargeMB(std::string_view name, int sample);
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramMemory)
 
