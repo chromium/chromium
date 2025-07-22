@@ -749,9 +749,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE, false);
     public static final CachedFlag sBackgroundThreadPoolFieldTrial =
             newCachedFlag(BACKGROUND_THREAD_POOL_FIELD_TRIAL, false);
-    public static final CachedFlag sBatchTabRestore =
-            newCachedFlag(
-                    BATCH_TAB_RESTORE, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+    public static final CachedFlag sBatchTabRestore = newCachedFlag(BATCH_TAB_RESTORE, true);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =

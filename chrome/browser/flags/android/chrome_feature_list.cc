@@ -702,7 +702,7 @@ BASE_FEATURE(kTinkerTankBottomSheet,
 
 BASE_FEATURE(kBatchTabRestore,
              "BatchTabRestore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockIntentsWhileLocked,
              "BlockIntentsWhileLocked",
