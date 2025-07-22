@@ -1134,7 +1134,7 @@
     {
       // Allows using counter() and counters() in alt text (after / in content property).
       name: "CSSAltCounter",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support for the anchor-scope property.
