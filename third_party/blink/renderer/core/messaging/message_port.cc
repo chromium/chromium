@@ -171,6 +171,7 @@ void MessagePort::postMessage(ScriptState* script_state,
 MessagePortChannel MessagePort::Disentangle() {
   DCHECK(!IsNeutered());
   port_descriptor_.GiveDisentangledHandle(connector_->PassMessagePipe());
+  weak_cell_factory_for_dispatch_.Invalidate();
   connector_ = nullptr;
   // Using a variable here places the WeakMember pointer on the stack, ensuring
   // it doesn't get GCed while it's being used.
@@ -341,6 +342,7 @@ void MessagePort::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   visitor->Trace(initially_entangled_port_);
   visitor->Trace(post_message_task_container_);
+  visitor->Trace(weak_cell_factory_for_dispatch_);
 }
 
 bool MessagePort::Accept(mojo::Message* mojo_message) {
@@ -372,8 +374,11 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
     // TODO(crbug.com/426454597): Investigate task-ordering impact of re-queuing
     // BFCache tasks.
     dispatch_event_task_runner_->PostTask(
-        FROM_HERE, WTF::BindOnce(&MessagePort::DispatchMessageEvent,
-                                 WrapPersistent(this), std::move(message)));
+        FROM_HERE,
+        WTF::BindOnce(
+            &MessagePort::DispatchMessageEvent,
+            WrapPersistent(weak_cell_factory_for_dispatch_.GetWeakCell()),
+            std::move(message)));
   } else {
     MessagePort::DispatchMessageEvent(std::move(message));
   }

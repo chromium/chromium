@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -206,6 +207,8 @@ class CORE_EXPORT MessagePort : public EventTarget,
   WeakMember<MessagePort> initially_entangled_port_;
 
   Member<PostMessageTaskContainer> post_message_task_container_;
+
+  WeakCellFactory<MessagePort> weak_cell_factory_for_dispatch_{this};
 
   bool is_shared_worker_port_ = false;
 };
