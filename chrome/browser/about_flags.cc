@@ -4620,10 +4620,16 @@ const FeatureEntry::FeatureVariation kHistorySyncOptinExpansionPillVariations[] 
 const FeatureEntry::FeatureParam kTouchToSearchCalloutIphParams[] = {
     {"iph", "true"},
 };
+const FeatureEntry::FeatureParam
+    kTouchToSearchCalloutSnippetAsSubtitleParams[] = {
+        {"snippet_as_subtitle", "true"},
+};
 const FeatureEntry::FeatureVariation kTouchToSearchCalloutVariations[] = {
     {"Default", nullptr, 0, nullptr},
     {"IPH", kTouchToSearchCalloutIphParams,
      std::size(kTouchToSearchCalloutIphParams), nullptr},
+    {"Snippet As Subtitle", kTouchToSearchCalloutSnippetAsSubtitleParams,
+     std::size(kTouchToSearchCalloutSnippetAsSubtitleParams), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -321,6 +321,11 @@ constexpr base::FeatureParam<bool> kTouchToSearchCalloutIph(
     "iph",
     /*default_value=*/false);
 
+constexpr base::FeatureParam<bool> kTouchToSearchCalloutSnippetAsSubtitle(
+    &kTouchToSearchCallout,
+    "snippet_as_subtitle",
+    /*default_value=*/false);
+
 }  // namespace android
 }  // namespace chrome
 

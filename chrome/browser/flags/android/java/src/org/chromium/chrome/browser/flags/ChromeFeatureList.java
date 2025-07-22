@@ -1703,6 +1703,9 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sTouchToSearchCalloutIph =
             newBooleanCachedFeatureParam(TOUCH_TO_SEARCH_CALLOUT, "iph", false);
 
+    public static final BooleanCachedFeatureParam sTouchToSearchCalloutSnippetAsSubtitle =
+            newBooleanCachedFeatureParam(TOUCH_TO_SEARCH_CALLOUT, "snippet_as_subtitle", false);
+
     /** All {@link CachedFeatureParam}s of features in this FeatureList */
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
@@ -1786,6 +1789,7 @@ public abstract class ChromeFeatureList {
                     sTabStripLayoutOptimizationOnExternalDisplayOemDenylist,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sTouchToSearchCalloutIph,
+                    sTouchToSearchCalloutSnippetAsSubtitle,
                     sUseChimeAndroidSdkAlwaysRegister,
                     sWebApkMinShellApkVersionValue);
 
