@@ -608,6 +608,7 @@
 				<integer>9</integer>
 				<integer>10</integer>
 				<integer>11</integer>
+				<integer>13</integer>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -622,6 +623,7 @@
 				<string>Enhanced Safe Browsing</string>
 				<string>Lens Overlay</string>
 				<string>CPE</string>
+				<string>Trusted Vault</string>
 			</array>
 		</dict>
 		<dict>
