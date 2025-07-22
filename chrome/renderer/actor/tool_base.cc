@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/actor/tool_base.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/renderer/actor/tool_utils.h"
@@ -94,15 +96,29 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                    "The element from observation does not exist anymore."));
   }
 
-  const gfx::Rect observed_bounds =
-      observed_target_->node_attribute->geometry->outer_bounding_box;
-
-  if (!observed_bounds.Contains(gfx::ToFlooredPoint(resolved_target.point))) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
-                   "The element at the target location is not the same as "
-                   "the one observed."));
+  // For coordinate target, check the observed node matches the live DOM hit
+  // test target.
+  if (target_->is_coordinate() &&
+      observed_target_->node_attribute->dom_node_id) {
+    if (target_node.GetDomNodeId() !=
+        *observed_target_->node_attribute->dom_node_id) {
+      journal_->Log(
+          task_id_, "TimeOfUseValidation",
+          base::StrCat({"Observed Target Node:",
+                        base::NumberToString(
+                            *observed_target_->node_attribute->dom_node_id),
+                        " Hit Test Node:",
+                        base::NumberToString(target_node.GetDomNodeId())}));
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
+                     "The element at the target location is not the same as "
+                     "the one observed."));
+    }
   }
+
+  // TODO(crbug.com/420690132): Implement time of use check for DOM node id
+  // target after retry for failed task is landed.
+
   return resolved_target;
 }
 

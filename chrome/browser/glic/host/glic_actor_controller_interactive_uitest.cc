@@ -724,18 +724,17 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
-                       ToctouCheckFailWhenNodeMoved) {
+                       ToctouCheckFailForCoordinateTargetWhenNodeMoved) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
-  constexpr std::string_view kClickableButtonLabel = "clickable";
 
   RunTestSequence(
       // clang-format off
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
     GetPageContextFromFocusedTab(),
-    ClickAction(kClickableButtonLabel),
+    ClickAction({15, 15}),
     ExecuteJs(kNewActorTabId,
               "()=>{document.getElementById('clickable').style.cssText = "
               "'position: relative; left: 20px;'}"),
@@ -743,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
               "()=>{const forcelayout = "
               "document.getElementById('clickable').offsetHeight;}"),
     ClickAction(
-        kClickableButtonLabel,
+        {15, 15},
         actor::MakeResult(
             actor::mojom::ActionResultCode::kObservedTargetElementChanged))
       // clang-format on
