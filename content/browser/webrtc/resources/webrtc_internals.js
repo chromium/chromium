@@ -87,7 +87,8 @@ class PeerConnectionRecord {
   addUpdate(update) {
     const time = new Date(parseFloat(update.time));
     this.record_.updateLog.push({
-      time: time.toLocaleString(),
+      timestamp: parseFloat(update.time),
+      time: time.toLocaleString(), // deprecated, prefer timestamp.
       type: update.type,
       value: update.value,
     });
