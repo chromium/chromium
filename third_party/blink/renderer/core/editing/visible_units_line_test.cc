@@ -1169,6 +1169,33 @@ TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis2) {
   EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(*span)), start_of_line);
 }
 
+TEST_F(VisibleUnitsLineTest, LineClampEllipsisLtr) {
+  InsertStyleElement(R"HTML(
+    div {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
+
+      line-clamp: 1;
+
+      white-space: nowrap;
+      width: 50px;
+      direction: rtl;
+    })HTML");
+  SetBodyContent("<div>السطر ١<br>السطر ٢</div>");
+  Element* div = QuerySelector("div");
+  Text* first_line_text = To<Text>(div->firstChild());
+
+  // Should not crash
+  const PositionWithAffinity& end_of_line =
+      EndOfLine(PositionWithAffinity(Position(div, 1)));
+
+  EXPECT_EQ(PositionWithAffinity(Position(*first_line_text, 7),
+                                 TextAffinity::kUpstream),
+            end_of_line);
+}
+
 // https://crbug.com/1181451
 TEST_F(VisibleUnitsLineTest, InSameLineWithBidiReordering) {
   InsertStyleElement("div { display: inline-block; width: 75% }");

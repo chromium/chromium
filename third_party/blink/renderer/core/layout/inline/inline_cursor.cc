@@ -1073,10 +1073,9 @@ void InlineCursor::MoveToFirstNonPseudoLeaf() {
     if (!cursor.Current().GetLayoutObject()->NonPseudoNode())
       continue;
     if (cursor.Current().IsText()) {
-      // Note: We should not skip bidi control only text item to return
-      // position after bibi control character, e.g.
-      // <p dir=rtl>&#x202B;xyz ABC.&#x202C;</p>
-      // See "editing/selection/home-end.html".
+      if (cursor.Current().IsLayoutGeneratedText()) {
+        continue;
+      }
       DCHECK(!cursor.Current().IsLayoutGeneratedText()) << cursor;
       if (cursor.Current().IsLineBreak()) {
         // We ignore line break character, e.g. newline with white-space:pre,
