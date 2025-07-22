@@ -482,7 +482,8 @@ TEST_F(QuarantineWinTest, MetaData_ApplyMOTW_Directly) {
   EXPECT_TRUE(IsFileQuarantined(test_file, host_url_clean, referrer_url_clean));
 }
 
-TEST_F(QuarantineWinTest, MetaData_InvokeAS) {
+// TODO(crbug.com/433487891): Re-enable this flaky test
+TEST_F(QuarantineWinTest, DISABLED_MetaData_InvokeAS) {
   base::FilePath test_file = GetTempDir().AppendASCII("foo.exe");
   ASSERT_TRUE(CreateFile(test_file));
 
