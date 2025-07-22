@@ -160,6 +160,7 @@ UpdateRecommendedDialogTest.*
 *WatermarkDisabledBrowserTest.*
 WebAppConfirmViewBrowserTest.*
 WebAppMenuBrowserTest.*
+WebAppUpdateReviewDialog.*
 ZoomBubbleDialogTest.*
 
 # To temporarily disable a test, add it here with a leading '-', like this:

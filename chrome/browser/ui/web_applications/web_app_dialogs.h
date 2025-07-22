@@ -7,12 +7,14 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
@@ -80,6 +82,17 @@ void ShowWebAppIdentityUpdateDialog(const std::string& app_id,
                                     const SkBitmap& new_icon,
                                     content::WebContents* web_contents,
                                     AppIdentityDialogCallback callback);
+
+// Shows the an app update review dialog that always shows the name, icon, and
+// start url of the before and after states of the app. The user can accept,
+// ignore, or uninstall the app. This won't apply any of those changes, the
+// response is sent back via the `callback`, and the caller is expected to
+// facilitate those actual operations.
+// See the `WebAppIdentityUpdateResult` type for the possible responses.
+void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
+                                  const WebAppIdentityUpdate& update,
+                                  Browser* browser,
+                                  UpdateReviewDialogCallback callback);
 
 // Shows the web app uninstallation dialog on a page whenever user has decided
 // to uninstall an installed dPWA from a variety of OS surfaces and chrome.

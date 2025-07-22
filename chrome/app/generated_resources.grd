@@ -3453,6 +3453,18 @@ are declared in tools/grit/grit_args.gni.
         </message>
       </if>
 
+      <if expr="not is_android">
+        <message name="IDS_WEBAPP_UPDATE_REVIEW_ACCEPT_BUTTON" desc="The text content of the acceptance button for the PWA app update review dialog. Clicking on this button confirms the user wants to update how the installed app looks.">
+          Update
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_REVIEW_UNINSTALL_BUTTON" desc="The text content of the uninstall button for the PWA app update review dialog. Clicking on this button uninstalls the app.">
+          Uninstall
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_REVIEW_IGNORE_BUTTON" desc="The text content of the ignore button for the PWA app update review dialog. Clicking on this button ignores the update and closes the dialog.">
+          Ignore
+        </message>
+      </if>
+
       <!-- Bookmark app bubble -->
       <if expr="use_titlecase">
         <message name="IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE" desc="In Title Case: Title of the bubble for adding a bookmark app shortcut to the operating system.">
@@ -3518,15 +3530,38 @@ are declared in tools/grit/grit_args.gni.
       </message>
 
       <!-- WebApp name/icon update dialog -->
-      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME" desc="The title at the top of the dialog when only the name changed." formatter_data="android_java">
+      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME" desc="The title at the top of the web app update dialog when only the name changed." formatter_data="android_java">
         Review name update
       </message>
-      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_ICON" desc="The title at the top of the dialog when only the icon changed." formatter_data="android_java">
+      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_ICON" desc="The title at the top of the web app update dialog when only the icon changed." formatter_data="android_java">
         Review icon update
       </message>
-      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_ICON" desc="The title at the top of the dialog when the name and icon changed." formatter_data="android_java">
+      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_ICON" desc="The title at the top of the web app update dialog when the name and icon changed." formatter_data="android_java">
         Review name &amp; icon updates
       </message>
+      <if expr="not is_android">
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_LOGO" desc="The title at the top of the web app update dialog when only the icon changed.">
+          Review logo update
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_LOGO" desc="The title at the top of the web app update dialog when the name and icon changed.">
+          Review logo and name updates
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_URL" desc="The title at the top of an web app update dialog when only the name changed.">
+          Review URL update
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_URL" desc="The title at the top of the web app update dialog when only the name changed.">
+          Review name and URL updates
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_LOGO_AND_URL" desc="The title at the top of the web app update dialog when only the icon changed.">
+          Review logo and URL updates
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_LOGO_AND_URL" desc="The title at the top of the web app update dialog when the name and icon changed.">
+          Review logo, name, and URL updates
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_NEW_EXPLANATION" desc="The text at the top of the web app update dialog, explaining what to do when an app changes its identity.">
+          Apps sometimes update their branding. Review all changes to make sure you're comfortable with them before updating.
+        </message>
+      </if>
       <message name="IDS_WEBAPP_UPDATE_EXPLANATION" desc="The text at the top of the dialog, explaining what to do when an app changes its identity." formatter_data="android_java">
         If this web app is trying to trick you into thinking it's a different app, uninstall it.
       </message>
