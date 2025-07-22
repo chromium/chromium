@@ -670,7 +670,7 @@ Request* Request::CreateRequestWithRequestOrString(
       options.backoff_factor = retry_options->backoffFactor();
     }
     if (retry_options->hasMaxAge()) {
-      options.max_age = base::Milliseconds(retry_options->maxAge().value());
+      options.max_age = base::Milliseconds(retry_options->maxAge());
     }
     options.retry_after_unload = retry_options->retryAfterUnload();
     options.retry_non_idempotent = retry_options->retryNonIdempotent();

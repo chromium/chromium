@@ -206,7 +206,7 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
       int32_t request_id) const;
   size_t NumLoadersForTesting() const;
   size_t NumDisconnectedLoadersForTesting() const;
-  size_t NumLoadersAttemptingRetryForTesting() const;
+  size_t NumLoadersAttemptingRetryForTesting(bool include_failed_retry) const;
   void SetLoaderObserverForTesting(
       scoped_refptr<KeepAliveURLLoader::TestObserver> observer);
   void SetURLLoaderThrottlesGetterForTesting(
