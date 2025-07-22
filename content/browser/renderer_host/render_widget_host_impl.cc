@@ -3836,10 +3836,9 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
 
   if (mobile_optimized_state_changed) {
     input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized_);
-    if (auto* touch_emulator =
-            GetTouchEmulator(/*create_if_necessary=*/false)) {
-      touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized_);
-    }
+  }
+  if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
+    touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized_);
   }
 
   // TODO(danakj): Can this method be called during WebContents destruction?
