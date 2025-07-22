@@ -378,8 +378,6 @@ class PredictionManagerTestBase : public testing::Test {
     prefs::RegisterLocalStatePrefs(local_state_prefs_->registry());
     component_updater::RegisterComponentUpdateServicePrefs(
         local_state_prefs_->registry());
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs::RegisterProfilePrefs(pref_service_->registry());
 
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -461,8 +459,6 @@ class PredictionManagerTestBase : public testing::Test {
 
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
 
-  TestingPrefServiceSimple* pref_service() const { return pref_service_.get(); }
-
   void RunUntilIdle() {
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
@@ -484,7 +480,6 @@ class PredictionManagerTestBase : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
