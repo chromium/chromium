@@ -14,7 +14,7 @@
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
 <translation id="104491362976654916">Página offline</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
-<translation id="1053651653201045802">Conta desconectada. Faça login novamente para acessar os favoritos, as senhas e outros itens da sua conta.</translation>
+<translation id="1053651653201045802">Conta desconectada. Faça login novamente para acessar os favoritos, as senhas e outros recursos da sua conta.</translation>
 <translation id="1054745118061919935">Ao continuar, você concorda com os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Nunca salvas</translation>
 <translation id="1062138828266376352">O PIN não foi alterado. Confira sua conexão de Internet e tente de novo.</translation>
@@ -539,7 +539,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3208260410153224535">Sua organização desativou o processo de login. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
 <translation id="3213807041830307252">Compre, traduza e identifique o que você quiser usando a câmera e a galeria de fotos.</translation>
 <translation id="3214379938835224220">A conta foi desconectada como parte da redefinição do iPad. Toque em "Continuar" abaixo para fazer login.</translation>
-<translation id="3218296450292600703">Fazer login com a conta gerenciada ajuda a separar sua navegação relacionada à organização (incluindo abas, histórico e senhas) da sua outra navegação</translation>
+<translation id="3218296450292600703">Fazer login com a conta gerenciada mantém sua navegação relacionada à organização (incluindo abas, histórico e senhas) separada da navegação pessoal.</translation>
 <translation id="3224075676564434205">As guias continuarão abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Para exportar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="3227137524299004712">Microfone</translation>
@@ -947,7 +947,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4895540042460820904">Aberto pela última vez</translation>
 <translation id="4896467949657706481">As guias foram fechadas e sua conta foi desconectada</translation>
 <translation id="4913626501929406101">Você pode compartilhar uma cópia da sua senha de forma segura com alguém do grupo familiar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="4917025507570489430">Você pode usar os dados de navegação atuais quando fizer login como <ph name="USER_EMAIL" />. Sua organização pode ter acesso a esses dados.</translation>
+<translation id="4917025507570489430">Você pode usar os dados de navegação atuais quando fizer login como <ph name="USER_EMAIL" />. Sua organização pode visualizar esses dados.</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4930714375720679147">Ativar</translation>
 <translation id="4932733599132424254">Data</translation>
@@ -1303,7 +1303,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 
        Seus dados de navegação atuais vão ser mantidos separados. Para isso, saia da conta gerenciada.</translation>
 <translation id="6342069812937806050">Neste instante</translation>
-<translation id="6344533709188026708">Um espaço separado para o trabalho</translation>
+<translation id="6344533709188026708">Um espaço só para o trabalho</translation>
 <translation id="6347953390226388422">{count,plural, =1{Esse endereço será excluído da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}one{Esse endereço será excluído da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}other{Esses endereços serão excluídos da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}}</translation>
 <translation id="634878792104344809">Sincronize senhas, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="6351147166808964033">Entrar no Seletor de guias</translation>
@@ -1941,7 +1941,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="8819155700324279105">Adicione mais uma camada de proteção contra ameaças on-line</translation>
 <translation id="8820817407110198400">Favoritos</translation>
-<translation id="8822421075653507124">Para garantir que o dispositivo seja usado com segurança, talvez sua organização precise acessar informações sobre o sistema operacional, o navegador e as configurações, além de qual software está instalado no dispositivo.</translation>
+<translation id="8822421075653507124">Para garantir que o dispositivo seja usado com segurança, talvez sua organização precise verificar informações sobre o sistema operacional, o navegador e as configurações, além de qual software está instalado no dispositivo.</translation>
 <translation id="8825562130641217944">Confira seus favoritos, senhas e muito mais.</translation>
 <translation id="8827154289515190290">O navegador que você adora agora no iOS</translation>
 <translation id="8831208860914609320">Fechar todas as guias inativas</translation>

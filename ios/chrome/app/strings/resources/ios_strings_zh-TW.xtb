@@ -14,7 +14,7 @@
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="104491362976654916">離線版網頁</translation>
 <translation id="1049743911850919806">無痕模式</translation>
-<translation id="1053651653201045802">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資訊。</translation>
+<translation id="1053651653201045802">已登出。重新登入即可使用帳戶的書籤、密碼等資訊。</translation>
 <translation id="1054745118061919935">選擇繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="10614374240317010">一律不儲存</translation>
 <translation id="1062138828266376352">你的 PIN 碼並未變更。請檢查網路連線，然後再試一次</translation>
@@ -231,7 +231,7 @@
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
 <translation id="1941314575388338491">輕觸兩下即可複製。</translation>
 <translation id="1943478190258551035">「選單」→「設定」</translation>
-<translation id="1952728750904661634">使用受管理的帳戶登入</translation>
+<translation id="1952728750904661634">使用代管帳戶登入</translation>
 <translation id="1955773397805078763">新增付款方式</translation>
 <translation id="1956138802718275401">從主畫面快速查詢密碼</translation>
 <translation id="1959441496380398824">按住所需日期。</translation>
@@ -566,7 +566,7 @@
 <translation id="3348387552617855658">你可以透過這張資訊卡追蹤包裹及查看重要的配送動態。</translation>
 <translation id="3349031117032695619">封鎖彈出式視窗</translation>
 <translation id="3349676726073650389">你追蹤的網站和搜尋內容會儲存在 Google 帳戶中，隨時可以前往設定管理追蹤項目。</translation>
-<translation id="3353037916374303415">「<ph name="EMAIL" />」是受管理的帳戶</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" /> 是代管帳戶</translation>
 <translation id="3365529507898144230">儲存在相簿中</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
@@ -816,7 +816,7 @@
 <translation id="4405320213589929829">使用網頁上的地址取得當地資訊和路線。</translation>
 <translation id="441218095371040430">使用鍵盤</translation>
 <translation id="4415276339145661267">管理你的 Google 帳戶</translation>
-<translation id="4425365312778464779">這是受管理的帳戶</translation>
+<translation id="4425365312778464779">這是代管帳戶</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="4430505936695785931">取得在其他應用程式中儲存的密碼</translation>
 <translation id="4431224949908513835">請選取要填入的付款方式。</translation>
@@ -947,7 +947,7 @@
 <translation id="4895540042460820904">上次開啟時間</translation>
 <translation id="4896467949657706481">系統已關閉分頁並將你登出</translation>
 <translation id="4913626501929406101">你可以安全地分享密碼副本給家庭群組的成員。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="4917025507570489430">登入 <ph name="USER_EMAIL" /> 後，就能使用現有的瀏覽資料。貴機構可能會看到這項資料。</translation>
+<translation id="4917025507570489430">登入 <ph name="USER_EMAIL" /> 後，就能使用現有的瀏覽資料。貴機構可能會看到這些資料。</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4930714375720679147">開啟</translation>
 <translation id="4932733599132424254">日期</translation>
@@ -1173,7 +1173,7 @@
 <translation id="5854790677617711513">超過 30 天前</translation>
 <translation id="5857770089550859117">必須輸入通關密語，才能開始進行同步處理。</translation>
 <translation id="5859715514067755465">繼續</translation>
-<translation id="5860491529813859533">啟用</translation>
+<translation id="5860491529813859533">開啟</translation>
 <translation id="5868644772996939262">自動填入密碼和密碼金鑰</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5873179562631407582">按住任何開啟的分頁</translation>

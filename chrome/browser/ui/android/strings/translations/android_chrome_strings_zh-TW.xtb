@@ -351,7 +351,7 @@
 <translation id="2593272815202181319">等寬</translation>
 <translation id="260403163289591229">追蹤中</translation>
 <translation id="2604446170045642109">你可以在設定中關閉網站的深色主題設定。</translation>
-<translation id="2607441479295509868">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資訊。</translation>
+<translation id="2607441479295509868">已登出。重新登入即可使用帳戶的書籤、密碼等資訊。</translation>
 <translation id="2612676031748830579">卡號</translation>
 <translation id="2620314865574742210"><ph name="NAME" />邀請你取用一個共用項目。</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
@@ -1059,7 +1059,7 @@
 <translation id="5857447844686706637">發生錯誤，無法更新追蹤價格。</translation>
 <translation id="5859968346865909126">你可以在「設定」中開啟或關閉這個功能</translation>
 <translation id="5860033963881614850">關閉</translation>
-<translation id="5860491529813859533">啟用</translation>
+<translation id="5860491529813859533">開啟</translation>
 <translation id="5864419784173784555">正在等待其他下載程序完成…</translation>
 <translation id="5865733239029070421">自動將使用統計資料和當機報告傳送給 Google</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
@@ -1149,7 +1149,7 @@
 <translation id="6251449557817521191">這裡會顯示 Chrome 歷史記錄</translation>
 <translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 個項目只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{# 個項目只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="6254139308321626268">目前查看的是 PDF 檔案</translation>
-<translation id="6255809143828972562">Chrome 提供各種實用工具，你可以放心瀏覽網路，掌控一切設定</translation>
+<translation id="6255809143828972562">Chrome 提供各種實用工具，讓你放心瀏覽網路，掌控一切設定</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全網頁</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
@@ -1556,7 +1556,7 @@
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
 <translation id="7921782882718083488">歸納本頁摘要</translation>
 <translation id="7926975587469166629">卡片暱稱</translation>
-<translation id="7929587383660661825">如果網站濫用通知，或者是你最近未造訪，Chrome 都會自動移除權限</translation>
+<translation id="7929587383660661825">Chrome 會將濫用通知或最近未造訪的網站，自動移除權限</translation>
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7934668619883965330">無法下載檔案，因為系統不支援檔案格式。</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
@@ -1675,7 +1675,7 @@
 <translation id="8398389123831319859">輕觸兩下並按住即可切換到無痕模式</translation>
 <translation id="8402673309244746971">前往「追蹤中」</translation>
 <translation id="8413126021676339697">顯示完整記錄</translation>
-<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
+<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8419144699778179708">刪除歷史記錄，包含搜尋框記錄</translation>
 <translation id="8419244640277402268">納入</translation>

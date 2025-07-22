@@ -6890,7 +6890,7 @@
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860254591544742609">顯示標題列</translation>
 <translation id="5860335608673904825">搜尋鍵 + Ctrl + Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
-<translation id="5860491529813859533">啟用</translation>
+<translation id="5860491529813859533">開啟</translation>
 <translation id="5860494867054883682">正在將你的裝置更新至<ph name="CHANNEL_NAME" /> (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">在檔案櫃中顯示觸控筆工具</translation>
 <translation id="5862319196656206789">設定已連結的裝置</translation>
@@ -10488,7 +10488,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全螢幕</translation>
 <translation id="8412136526970428322">已允許：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
-<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
+<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="8413956290606243087">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>

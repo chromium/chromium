@@ -3275,7 +3275,7 @@
 <translation id="3284050785966252943">自动填充元数据预览</translation>
 <translation id="3285322247471302225">打开新的标签页(&amp;T)</translation>
 <translation id="3285465040399788513">设备存储空间不足，无法完成设置。请释放一些空间，然后重试。</translation>
-<translation id="3285500645985761267">允许相关网站查看您在该群组中的活动记录</translation>
+<translation id="3285500645985761267">允许关联网站查看您在该群组中的活动记录</translation>
 <translation id="328571385944182268">保存您的密码？</translation>
 <translation id="3289668031376215426">自动大写</translation>
 <translation id="3289856944988573801">要检查是否有更新，请使用以太网或 WLAN。</translation>
@@ -4792,7 +4792,7 @@
 <translation id="4332976768901252016">设置“家长控制”功能</translation>
 <translation id="4333854382783149454">PKCS #1，带有 RSA 加密的 SHA-1</translation>
 <translation id="4334768748331667190">系统不会再向您显示<ph name="MODULE_NAME" /></translation>
-<translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
+<translation id="4335835283689002019">“安全浏览”功能已关闭</translation>
 <translation id="4338034474804311322">若要重新开始将密码保存到 Google 密码管理工具，请更新 Google Play 服务</translation>
 <translation id="4338363401382232853">分屏窗口建议</translation>
 <translation id="4339203724549370495">卸载应用</translation>
@@ -6091,7 +6091,7 @@
 <translation id="5264252276333215551">请先连接到互联网，然后在自助服务终端模式下启动您的应用。</translation>
 <translation id="5265797726250773323">安装时出错</translation>
 <translation id="526622169288322445">显示可对“<ph name="ADDRESS_SUMMARY" />”执行的更多操作</translation>
-<translation id="5267572070504076962">开启安全浏览功能，防范危险网站</translation>
+<translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5269977353971873915">打印失败</translation>
 <translation id="5271578170655641944">撤消 Google 云端硬盘访问权限？</translation>
 <translation id="5273806377963980154">修改网站网址</translation>

@@ -167,7 +167,7 @@
 <translation id="7792860826279960128">Нижний экран с информацией об изменениях в общей группе вкладок открыт наполовину</translation>
 <translation id="7825973332242257878">Группы вкладок</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Сгруппировать <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранных вкладки}}</translation>
-<translation id="7853202427316060426">Действия</translation>
+<translation id="7853202427316060426">История действий</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзыв}one{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыв}few{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}many{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзывов}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}}</translation>
 <translation id="7885132941432959125">Переместить вкладку вправо</translation>
 <translation id="788914896430720926">Закрывать неиспользуемые вкладки автоматически?</translation>

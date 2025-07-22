@@ -189,7 +189,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1832459821645506983">Oui, j'accepte</translation>
 <translation id="1845958458910716240">Pour protéger vos données, autorisez Chrome à supprimer les autorisations des sites que vous n'avez pas consultés récemment</translation>
 <translation id="1871098866036088250">Ouvrir dans le navigateur Chrome</translation>
-<translation id="1877026089748256423">Version de Chrome obsolète</translation>
+<translation id="1877026089748256423">Chrome est obsolète</translation>
 <translation id="1877073879466606884">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier à distance les paramètres de votre profil, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires.</translation>
 <translation id="1879904908408734349">La bottom sheet de connexion est fermée</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
@@ -1606,7 +1606,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8090732854597034573">Si tu as besoin d'aide, demande à ton parent</translation>
 <translation id="8101414242770404289">Aucun onglet sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
-<translation id="8105613260829665809">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" />.\nPour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
+<translation id="8105613260829665809">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" />.\nPour améliorer l'appli, Chrome envoie des données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Fermer les options de tri</translation>
 <translation id="8110024788458304985">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
@@ -1798,7 +1798,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8945143127965743188"><ph name="LANG" /> - Impossible de télécharger cette langue. Réessayez plus tard.</translation>
 <translation id="8946759102391960088">Conservez l'accès à vos mots de passe</translation>
 <translation id="8957528460562961174">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, puis importez-les dans le gestionnaire de mots de passe de votre choix. Le Gestionnaire de mots de passe de Google a cessé de fonctionner, car les services Google Play ne sont pas disponibles.</translation>
-<translation id="8963117664422609631">Accéder aux paramètres du site</translation>
+<translation id="8963117664422609631">Accéder aux paramètres des sites</translation>
 <translation id="8965591936373831584">en attente</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_ONE" /> autre onglet seront supprimés}one{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autre onglet seront supprimés}other{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autres onglets seront supprimés}}</translation>
 <translation id="897061774231912216">Les mots de passe ne fonctionneront bientôt plus, car les services Google Play ne sont pas disponibles. Pour utiliser les mots de passe enregistrés dans votre compte Google, connectez-vous sur un autre appareil ou accédez à passwords.google.com.</translation>

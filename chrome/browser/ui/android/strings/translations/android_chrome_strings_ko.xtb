@@ -707,7 +707,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4270730597186910506">제품을 추적하거나 추적을 해제합니다.</translation>
 <translation id="4277529130885813215">다른 기기 사용</translation>
 <translation id="427987768447457592">새 탭 그룹</translation>
-<translation id="4282440837784183472"><ph name="MANAGED_DOMAIN" /> 조직에서 내가 로그인한 계정과 Chrome이 사용되는 방식을 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다</translation>
+<translation id="4282440837784183472"><ph name="MANAGED_DOMAIN" /> 조직에서 내가 로그인한 계정과 Chrome 사용 방식을 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다.</translation>
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="4285846616383034558">쿠키, 캐시, 기타 사이트 데이터</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android 설정에서 화면 잠금 사용 설정하기<ph name="END_LINK" /></translation>
@@ -930,7 +930,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5235196193381275927">로그인 중에 문제가 발생했습니다</translation>
 <translation id="5246093389635966745">툴바 바로가기 수정</translation>
 <translation id="5264813352784073502">지난 24시간</translation>
-<translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호하세요</translation>
+<translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호받으세요.</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
 <translation id="5273031377282080577">관리자가 이 설정을 관리합니다.</translation>
 <translation id="5292796745632149097">전송할 기기</translation>
@@ -1403,7 +1403,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="727288900855680735"><ph name="ORIGIN" />에 <ph name="ONE_TIME_CODE" /> 코드를 제출하시겠습니까?</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
 <translation id="7276868533747677875">이전에 비밀번호를 내보낸 경우 기기에서 CSV 파일을 찾아 원하는 비밀번호 관리자로 가져오세요.</translation>
-<translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다</translation>
+<translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다.</translation>
 <translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 <ph name="SITE_ETLD_PLUS_ONE" />에서 계속하기 위한 다른 방법을 시도해 보세요.</translation>
 <translation id="7290209999329137901">이름 변경 불가</translation>
 <translation id="7291910923717764901">이 페이지에 추가된 이미지 설명</translation>

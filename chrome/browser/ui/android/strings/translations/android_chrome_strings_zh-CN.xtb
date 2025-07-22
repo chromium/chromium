@@ -32,7 +32,7 @@
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
 <translation id="1126696498560056882">管理此设备上的账号</translation>
 <translation id="1129510026454351943">错误详情：<ph name="ERROR_DESCRIPTION" /></translation>
-<translation id="1135018701024399762">无痕模式可实现私密浏览，其他使用此设备的人员无法得知您的浏览信息</translation>
+<translation id="1135018701024399762">无痕模式可实现私密浏览，与您共用设备的其他人无法知晓您浏览了什么内容</translation>
 <translation id="1138458427267715730">当网络中任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="1140317858355046628">如果删除，所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除。</translation>
 <translation id="1142732900304639782">不询问是否翻译这些网站</translation>
@@ -246,7 +246,7 @@
 <translation id="2122601567107267586">无法打开此应用</translation>
 <translation id="213279576345780926">已关闭“<ph name="TAB_TITLE" />”</translation>
 <translation id="2141396931810938595">根据您的使用情况</translation>
-<translation id="2145315049852051678">Chrome 会定期进行检查，以确保您的浏览器使用最安全的设置。如有任何事项需要审核，我们会通知您。</translation>
+<translation id="2145315049852051678">Chrome 会定期进行检查，确保您的浏览器使用的是最安全的设置。如有任何事项需要审核，我们会通知您。</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2158408438301413340">Chrome 无法检查所有密码</translation>
 <translation id="2163089732491971196">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令</translation>
@@ -314,7 +314,7 @@
 <translation id="2461378706168271257">搜索标签页</translation>
 <translation id="2461822463642141190">当前</translation>
 <translation id="2463770278804271243">页面</translation>
-<translation id="2468444275314013497">您的浏览器看起来很安全</translation>
+<translation id="2468444275314013497">您的浏览器很安全</translation>
 <translation id="2472163211318554013">登录即可充分利用 Chrome</translation>
 <translation id="247737702124049222">“图片说明”功能已开启</translation>
 <translation id="2479148705183875116">前往“设置”</translation>
@@ -719,7 +719,7 @@
 <translation id="4320177379694898372">未连接到互联网</translation>
 <translation id="4326079409704643112">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请验证是您本人在操作</translation>
 <translation id="433213510553688132">正在关注…</translation>
-<translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
+<translation id="4335835283689002019">“安全浏览”功能已关闭</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
 <translation id="4352287748243729941">要使用您的 <ph name="PROVIDER" /> 密码吗？</translation>
 <translation id="4355272626458588338">您可为重要网页添加书签以便返回查看</translation>
@@ -930,7 +930,7 @@
 <translation id="5235196193381275927">登录期间出了点问题</translation>
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
 <translation id="5264813352784073502">过去 24 小时</translation>
-<translation id="5267572070504076962">开启安全浏览功能，防范危险网站</translation>
+<translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
 <translation id="5273031377282080577">此设置由您的管理员管理。</translation>
 <translation id="5292796745632149097">发送到</translation>
@@ -1000,7 +1000,7 @@
 <translation id="5599455543593328020">无痕模式</translation>
 <translation id="5601180634394228718">如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="5611398002774823980">保存到账号</translation>
-<translation id="5614625640221885312">登录后即可将您的书签、密码等信息同步到您的所有设备上</translation>
+<translation id="5614625640221885312">登录后即可在任何设备上使用您的书签、密码等信息</translation>
 <translation id="5619633276517849615">贵组织已开启“安全浏览”功能</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
 <translation id="5620928963363755975">通过“更多选项”按钮在“下载内容”中查找您的文件和网页</translation>
@@ -1245,7 +1245,7 @@
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6633067410344541938">解锁无痕模式</translation>
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
-<translation id="6637100877383020115">为帮助改进该应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
+<translation id="6637100877383020115">为帮助改进应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">始终屏蔽</translation>
 <translation id="6641780377503683465">移除“<ph name="INTEREST" />”</translation>
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
@@ -1604,7 +1604,7 @@
 <translation id="8090732854597034573">如需帮助，请找家长帮忙</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />内没有要关闭的标签页</translation>
 <translation id="8103578431304235997">无痕模式标签页</translation>
-<translation id="8105613260829665809">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />《服务条款》<ph name="END_TOS_LINK" />。\n为帮助改进该应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
+<translation id="8105613260829665809">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />《服务条款》<ph name="END_TOS_LINK" />。\n为帮助改进应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">关闭排序选项</translation>
 <translation id="8110024788458304985">帮助改进 Chrome 的功能和性能</translation>

@@ -314,7 +314,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2461378706168271257">Sekmelerinizde arayın</translation>
 <translation id="2461822463642141190">Şu an</translation>
 <translation id="2463770278804271243">SAYFA</translation>
-<translation id="2468444275314013497">Tarayıcınız iyi durumda</translation>
+<translation id="2468444275314013497">Tarayıcınızda bir sorun görünmüyor</translation>
 <translation id="2472163211318554013">Chrome'dan en iyi şekilde yararlanmak için oturum açın</translation>
 <translation id="247737702124049222">Resim açıklamaları açık</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
@@ -1556,7 +1556,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7919123827536834358">Şu dilleri otomatik olarak çevir</translation>
 <translation id="7921782882718083488">Bu sayfanın özetini çıkarın</translation>
 <translation id="7926975587469166629">Kart için takma ad</translation>
-<translation id="7929587383660661825">Chrome, bildirimleri kötüye kullanan veya son zamanlarda ziyaret etmediğiniz sitelerin izinlerini otomatik olarak kaldırır.</translation>
+<translation id="7929587383660661825">Chrome, bildirimleri kötüye kullanan veya son zamanlarda ziyaret etmediğiniz sitelerin izinlerini otomatik olarak kaldırır</translation>
 <translation id="7929962904089429003">Menüyü açar</translation>
 <translation id="7934668619883965330">Dosya indirilemiyor. Dosya biçimi desteklenmiyor.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> güncel değil.</translation>

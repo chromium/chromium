@@ -3897,7 +3897,7 @@ Dodatne pojedinosti:
 <translation id="7631072086707140121">URL mora biti https.</translation>
 <translation id="7631527008834753063">TV kvizovi</translation>
 <translation id="7633909222644580952">Podaci o uspješnosti i izvješća o padu programa</translation>
-<translation id="7636346903338549690">Web-lokacijama je dopuštena upotreba kolačića trećih strana</translation>
+<translation id="7636346903338549690">Web-lokacije kojima je dopuštena upotreba kolačića trećih strana</translation>
 <translation id="7637571805876720304">Želite li ukloniti kreditnu karticu iz Chromiuma?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Nijedna}=1{Jedna zaporka na vašem računu (za <ph name="DOMAIN_LIST" />)}one{# zaporka na vašem računu (za <ph name="DOMAIN_LIST" />)}few{# zaporke na vašem računu (za <ph name="DOMAIN_LIST" />)}other{# zaporki na vašem računu (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serijski priključci</translation>

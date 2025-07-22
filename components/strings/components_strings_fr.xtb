@@ -4063,7 +4063,7 @@ Informations supplémentaires :
 <translation id="79338296614623784">Saisissez un numéro de téléphone valide</translation>
 <translation id="7934414805353235750"><ph name="URL" /> souhaite diffuser un contenu protégé. L'identité de votre appareil sera validée par Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7937163678541954811">Le code CVC de cette carte sera chiffré et enregistré sur votre appareil pour accélérer le paiement</translation>
+<translation id="7937163678541954811">Le code CVC de cette carte sera chiffré et enregistré sur votre appareil pour accélérer les paiements</translation>
 <translation id="7937554595067888181">Date d'expiration : <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Le certificat du serveur n'est pas encore valide.</translation>
 <translation id="7941628148012649605">Enveloppe Chou 4</translation>
@@ -4641,7 +4641,7 @@ Informations supplémentaires :
 <translation id="8957210676456822347">Autorisation du portail captif</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8959288490306482616">Brun clair 3</translation>
-<translation id="8963117664422609631">Accéder aux paramètres du site</translation>
+<translation id="8963117664422609631">Accéder aux paramètres des sites</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions :<ph name="MARKUP_2" />Assurez-vous que vous disposez d'une connexion de données.<ph name="MARKUP_3" />Actualisez cette page ultérieurement.<ph name="MARKUP_4" />Vérifiez l'adresse que vous avez saisie.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Vos fichiers locaux seront supprimés dans <ph name="HOURS" /> heures</translation>
 <translation id="8968766641738584599">Enregistrer la carte</translation>

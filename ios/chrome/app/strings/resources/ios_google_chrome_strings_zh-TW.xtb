@@ -147,7 +147,7 @@
 <translation id="4840404732697892756">當你登入 Google 帳戶後，Google 密碼管理工具可以檢查你的密碼。</translation>
 <translation id="4903674399067644695">這張資訊卡會建議你如何充分運用 Chrome 的各項功能。</translation>
 <translation id="49200511069271369">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。管理員可以設定或限制特定功能。</translation>
-<translation id="4925322001044117929">使用 Chrome 做為 iPad 的預設瀏覽器</translation>
+<translation id="4925322001044117929">把 Chrome 設為 iPad 的預設瀏覽器</translation>
 <translation id="498985224078955265">如要將這個分頁傳送到另一部裝置，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可防範資料侵害事件、封鎖不安全的網站或採取其他措施，協助提升網路安全。</translation>
 <translation id="5109169629909011627">查看 Chrome 書籤</translation>
@@ -306,7 +306,7 @@
 <translation id="8392023217086447677">已在 Chrome 無痕模式中開啟</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
 <translation id="8413500425974960807">Chrome 提示：將 Chrome 移至 Dock</translation>
-<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
+<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。Chrome 會在你造訪網站時，透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="84594714173170813">請繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="8459495907675268833">系統已將您所選取的資料從 Chrome 和其他同步的裝置中移除。您的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
 <translation id="8491300088149538575">目前登入的帳戶是 <ph name="EMAIL" />。

@@ -775,7 +775,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4606559747793337066">Cuando un sitio o una aplicación te pregunta si quieres precargar de forma privada los enlaces de su página, Chrome cifra y precarga las páginas mediante los servidores de Google sin cookies. De esta manera, se oculta tu identidad en el sitio precargado.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar mi identidad</translation>
-<translation id="4624065194742029982">Chrome en Incógnito</translation>
+<translation id="4624065194742029982">Incógnito de Chrome</translation>
 <translation id="4634124774493850572">Usar contraseña</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña vulnerada}other{# contraseñas vulneradas}}</translation>
 <translation id="4642472735733036929">Seguimiento de precios detenido</translation>

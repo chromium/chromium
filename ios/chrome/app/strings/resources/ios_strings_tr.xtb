@@ -369,7 +369,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2462736546165239215">Tarama geçmişinizin tamamını burada bulabilirsiniz.</translation>
 <translation id="2466518891828668184">Sitelerde ve uygulamalarda kolayca oturum açmak için şifrelerinizi kaydedin.</translation>
 <translation id="2468132863574325555">Drive</translation>
-<translation id="2468444275314013497">Tarayıcınız iyi durumda</translation>
+<translation id="2468444275314013497">Tarayıcınızda bir sorun görünmüyor</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> için zaten kayıtlı şifreniz var</translation>
 <translation id="247430852844518481">Bu sayfayı daha sonra tekrar ziyaret etmek için hatırlatıcı oluşturabilirsiniz</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
@@ -765,7 +765,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4183350924949589798">Daha fazla güvenlik mi istiyorsunuz?</translation>
 <translation id="4184063163998877398">{count,plural, =1{{count} zayıf şifre}other{{count} zayıf şifre}}</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} öğe yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}other{{count} öğe yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}}</translation>
-<translation id="4207873326995387292">Tarayıcı Bilgisi</translation>
+<translation id="4207873326995387292">Tarayıcı Bilgileri</translation>
 <translation id="421070604241073551">Bu ayar etkinleştirildiğinde veriler Google Hesabınıza kaydedilir. Devre dışı bırakıldığında veriler yalnızca bu cihaza kaydedilir.</translation>
 <translation id="4224534474590365556">Etkin olmayan 99+ sekme kapatılsın mı?</translation>
 <translation id="422474357428465195">Güvenliğinizi riske atabilecek birden fazla şifre sorununuz var.</translation>

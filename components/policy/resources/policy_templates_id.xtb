@@ -6762,7 +6762,7 @@ Jika disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan menga
 <translation id="5621503441067774084">Aktifkan sorotan kursor di layar login</translation>
 <translation id="5622590774455244290">Aplikasi Android dapat memilih untuk menerima daftar ini secara sukarela dan tidak dapat dipaksa untuk melakukannya.</translation>
 <translation id="5622924058222112599">Aktifkan proses peluncuran CECPQ2 default</translation>
-<translation id="5623304306796942802">Permintaan saat ada beberapa sertifikat yang cocok</translation>
+<translation id="5623304306796942802">Tampilkan dialog saat ada beberapa sertifikat yang cocok</translation>
 <translation id="5624310713789233422">Mengontrol visibilitas badge profil perusahaan di toolbar</translation>
 <translation id="5624334866248253262">Mengonfigurasi daftar aturan Kontrol Data untuk mencegah kebocoran data.
 
@@ -9634,7 +9634,7 @@ Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, l
 <translation id="7482768039644066614">Aktifkan pengambilan metadata pemuatan halaman dan model machine learning yang meningkatkan pengalaman penjelajahan</translation>
 <translation id="748292668225669178">Mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
-<translation id="7486205887492534734">Meminta pengguna memilih saat beberapa sertifikat cocok pada layar login</translation>
+<translation id="7486205887492534734">Tampilkan dialog saat ada beberapa sertifikat yang cocok pada layar login</translation>
 <translation id="748873163367340515">Hanya gunakan cookie dan data penting di penelusuran.</translation>
 <translation id="7489169777107143496">Nonaktifkan pemindaian mendalam download Safe Browsing</translation>
 <translation id="7489661071474025727">Menentukan apakah layanan pemulihan akun diaktifkan untuk pengguna Anda di perangkat <ph name="PRODUCT_OS_NAME" />.

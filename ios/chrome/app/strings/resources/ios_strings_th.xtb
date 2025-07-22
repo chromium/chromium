@@ -243,7 +243,7 @@
 <translation id="1972325230031091483">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1977621687170192347">เปิด "ขอเปิดลิงก์จากแอปอื่นๆ ในโหมดไม่ระบุตัวตน"</translation>
-<translation id="1979055159547313322">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้</translation>
+<translation id="1979055159547313322">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้ เช่น</translation>
 <translation id="1979188886349613713">รวมนามสกุลไฟล์ที่เว็บไซต์ไม่ได้ระบุ</translation>
 <translation id="1980417445547898121">{count,plural, =1{รับแท็บที่เพิ่งใช้งาน {count} แท็บจากอุปกรณ์อื่นบน iPhone เครื่องนี้}other{รับแท็บที่เพิ่งใช้งาน {count} แท็บจากอุปกรณ์อื่นบน iPhone เครื่องนี้}}</translation>
 <translation id="1981118202195772574">อุปกรณ์เคลื่อนที่</translation>
@@ -1599,7 +1599,7 @@
 <translation id="7512909159512473473">ป้อนรหัสผ่าน…</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7514530647142300459">ใช้รหัสผ่านในบัญชี Google <ph name="EMAIL" /> ต่อไป</translation>
-<translation id="7522948500476882302">เมื่อดาวน์โหลดไฟล์ ให้เลือกลบไฟล์โดยอัตโนมัติใน 1 เดือน</translation>
+<translation id="7522948500476882302">สำหรับการดาวน์โหลดไฟล์ คุณสามารถเลือกเปิดฟีเจอร์ให้ลบไฟล์ดังกล่าวโดยอัตโนมัติใน 1 เดือน</translation>
 <translation id="7524055474074101597">เข้าถึงรหัสผ่านและข้อมูลอื่นๆ ได้ในแอปต่างๆ</translation>
 <translation id="75362970626182391">กลุ่มแท็บใหม่</translation>
 <translation id="7537586195939242955">ขออภัย ไม่สามารถติดตั้ง Pass ของคุณใน Passbook ในขณะนี้</translation>

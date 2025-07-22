@@ -369,7 +369,7 @@
 <translation id="2462736546165239215">您可在此处找到您的所有浏览记录。</translation>
 <translation id="2466518891828668184">保存密码即可轻松登录网站和应用。</translation>
 <translation id="2468132863574325555">云端硬盘</translation>
-<translation id="2468444275314013497">您的浏览器看起来很安全</translation>
+<translation id="2468444275314013497">您的浏览器很安全</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="247430852844518481">您可以设置提醒，以便日后再次访问此页面</translation>
 <translation id="2479148705183875116">前往“设置”</translation>
@@ -539,7 +539,7 @@
 <translation id="3208260410153224535">贵组织关闭了登录功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
 <translation id="3213807041830307252">使用相机和图库购买、翻译和识别所见内容。</translation>
 <translation id="3214379938835224220">您在 iPad 重置过程中退出了账号。点按下方的“继续”即可登录。</translation>
-<translation id="3218296450292600703">使用受管理的账号登录有助于您将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
+<translation id="3218296450292600703">登录受管理的账号后，您就能将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
 <translation id="3224075676564434205">相应标签页将在此设备上保持打开状态，但该分组会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除。</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
 <translation id="3227137524299004712">麦克风</translation>
@@ -883,7 +883,7 @@
 <translation id="4669618761237477717">贵组织要求您进行私密浏览。在无痕模式下，系统不会同步标签页分组。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">拨打电话联系商家</translation>
-<translation id="4673565891421389203">使用受管理的账号登录有助于您将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开。
+<translation id="4673565891421389203">登录受管理的账号后，您就能将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开。
 
        选择如何处理此设备上现有的浏览数据。</translation>
 <translation id="4682496302933121474">翻译网页吗？</translation>
@@ -947,7 +947,7 @@
 <translation id="4895540042460820904">上次打开时间</translation>
 <translation id="4896467949657706481">标签页已关闭；您已退出账号</translation>
 <translation id="4913626501929406101">您可以安全地与家人群组成员分享您的密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="4917025507570489430">以 <ph name="USER_EMAIL" /> 的身份登录后，即可使用现有的浏览数据。组织的成员或许可以查看这些数据。</translation>
+<translation id="4917025507570489430">以 <ph name="USER_EMAIL" /> 的身份登录后，即可使用现有的浏览数据。您的组织或许可以查看这些数据。</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4930714375720679147">开启</translation>
 <translation id="4932733599132424254">日期</translation>
@@ -1209,7 +1209,7 @@
 <translation id="6001839398155993679">开始</translation>
 <translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6012140227487808125">正在加密…</translation>
-<translation id="6027619584715411062">登录后即可将您的书签、密码等信息同步到您的所有设备上。</translation>
+<translation id="6027619584715411062">登录后即可在任何设备上使用您的书签、密码等信息。</translation>
 <translation id="6027945736510816438">您是想访问 <ph name="WEBSITE" /> 吧？</translation>
 <translation id="6032845897905314562">新功能</translation>
 <translation id="6038823991892265570">管理 Google 存储空间</translation>
@@ -1299,7 +1299,7 @@
 <translation id="6339793034470834130">如需使用网页检查器，请使用数据线连接到计算机上的 Safari，并从“开发”菜单中访问 iPhone。您可在计算机上 Safari 设置中的“高级”部分内启用“开发”菜单。</translation>
 <translation id="6340285871011301182">无法进行局部翻译。</translation>
 <translation id="6340526405444716530">个性化</translation>
-<translation id="6341140761912903432">使用受管理的账号登录有助于您将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开。
+<translation id="6341140761912903432">登录受管理的账号后，您就能将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开。
 
        现有的浏览数据将分开存储。请先退出受管理的账号，才能使用。</translation>
 <translation id="6342069812937806050">刚刚</translation>
@@ -1599,7 +1599,7 @@
 <translation id="7512909159512473473">输入口令…</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514530647142300459">继续使用 Google 账号 <ph name="EMAIL" /> 中的密码</translation>
-<translation id="7522948500476882302">下载文件时，选择在 1 个月后自动删除该文件</translation>
+<translation id="7522948500476882302">下载文件时，可选择在 1 个月后自动删除文件</translation>
 <translation id="7524055474074101597">在不同应用中使用保存的密码和其他信息。</translation>
 <translation id="75362970626182391">新标签页分组</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>

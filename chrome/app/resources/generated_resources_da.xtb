@@ -1378,7 +1378,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="193565226207940518">Supportværktøj</translation>
 <translation id="1935995810530254458">Kopiér alligevel</translation>
 <translation id="1936157145127842922">Vis i mappe</translation>
-<translation id="1936344977780165685">{PAGES,plural, =1{Siden blev føjet til læselisten}one{Siden blev føjet til læselisten}other{Siderne blev føjet til læselisten}}</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Siden er føjet til læselisten}one{Siden er føjet til læselisten}other{Siderne er føjet til læselisten}}</translation>
 <translation id="1936931585862840749">Brug et tal til at angive, hvor mange kopier der skal udskrives (1 til <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Containerarkitekturen <ph name="ARCHITECTURE_CONTAINER" /> kan ikke importeres med denne enhed, som kører med <ph name="ARCHITECTURE_DEVICE" />. Du kan prøve at gendanne denne container i en anden enhed, eller også kan du åbne filerne i containerbilledet i appen Filer.</translation>
 <translation id="1938351510777341717">Ekstern kommando</translation>

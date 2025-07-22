@@ -14,7 +14,7 @@
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="104491362976654916">Page hors connexion</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
-<translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, mots de passe et plus encore dans votre compte.</translation>
+<translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, mots de passe et plus dans votre compte.</translation>
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="1062138828266376352">Votre code n'a pas été modifié. Vérifiez votre connexion Internet, puis réessayez</translation>
@@ -255,7 +255,7 @@
 <translation id="1992055602764528852">Connectez-vous pour voir les onglets ouverts sur vos autres appareils.</translation>
 <translation id="1993126639825654370">Copier l'URL du lien</translation>
 <translation id="199425419756152024">Afficher le mot de passe</translation>
-<translation id="1996318269856535896">Vous pouvez toujours utiliser vos données de navigation existantes sur cet appareil. Pour les utiliser, déconnectez-vous de votre compte géré.</translation>
+<translation id="1996318269856535896">Vous pourrez toujours utiliser vos données de navigation existantes sur cet appareil. Pour cela, déconnectez-vous de votre compte géré.</translation>
 <translation id="2010008505735295285">Actualiser</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
@@ -539,7 +539,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3208260410153224535">Votre organisation a désactivé la connexion. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
 <translation id="3213807041830307252">Achetez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo et de votre galerie photo.</translation>
 <translation id="3214379938835224220">Vous avez été déconnecté lors de la réinitialisation de votre iPad. Appuyez sur "Continuer" ci-dessous pour vous connecter.</translation>
-<translation id="3218296450292600703">En vous connectant avec votre compte géré, vous pouvez séparer la navigation liée à votre organisation (onglets, historique et mots de passe, par exemple) de votre autre navigation</translation>
+<translation id="3218296450292600703">En vous connectant avec votre compte géré, vous pouvez séparer la navigation liée à votre organisation (onglets, historique et mots de passe, par exemple) de vos autres activités de navigation.</translation>
 <translation id="3224075676564434205">Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Pour exporter les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="3227137524299004712">Micro</translation>
@@ -947,7 +947,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4895540042460820904">Dernière ouverture</translation>
 <translation id="4896467949657706481">Les onglets ont été fermés. Vous avez été déconnecté.</translation>
 <translation id="4913626501929406101">Vous pouvez partager de façon sécurisée une copie de votre mot de passe avec un membre de votre groupe familial. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="4917025507570489430">Vous pouvez utiliser les données de navigation existantes lorsque vous êtes connecté en tant que <ph name="USER_EMAIL" />. Il est possible que votre organisation puisse voir ces données.</translation>
+<translation id="4917025507570489430">Vous pourrez utiliser vos données de navigation existantes lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />. Il est possible que votre organisation puisse voir ces données.</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4932733599132424254">Date</translation>
@@ -1488,7 +1488,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7004032350256606903">Votre organisation exige que vous utilisiez le mode navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Configurer par défaut dans les réglages…</translation>
-<translation id="7007970306646738803">Choisissez ce que vous souhaitez faire des données de navigation existantes sur cet appareil, telles que les onglets, l'historique et les mots de passe.</translation>
+<translation id="7007970306646738803">Choisissez comment gérer les données de navigation existantes sur cet appareil (onglets, historique ou mots de passe, par exemple).</translation>
 <translation id="7015418667643980944">Vue fractionnée</translation>
 <translation id="7016070607649558507">Vous avez 1 mot de passe peu sécurisé. Modifiez-le pour vous protéger.</translation>
 <translation id="7016958933495968912">Options pour Discover</translation>
@@ -1599,7 +1599,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7512909159512473473">Saisir la phrase secrète…</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514530647142300459">Continuez d'utiliser les mots de passe de votre compte Google <ph name="EMAIL" /></translation>
-<translation id="7522948500476882302">Lorsque vous téléchargez un fichier, choisissez de le supprimer automatiquement dans un mois</translation>
+<translation id="7522948500476882302">Lorsque vous téléchargez un fichier, choisissez de le supprimer automatiquement au bout d'un mois</translation>
 <translation id="7524055474074101597">Accédez à vos mots de passe et plus encore depuis vos différentes applis.</translation>
 <translation id="75362970626182391">Nouveau groupe d'onglets</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
@@ -1845,7 +1845,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8487667956631253959">Allumée</translation>
 <translation id="8487700953926739672">Disponible hors connexion</translation>
 <translation id="8490629238792920282">Impossible de créer le lien</translation>
-<translation id="8501469528283376592">Supprimez automatiquement les téléchargements</translation>
+<translation id="8501469528283376592">Supprimer automatiquement les téléchargements</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8505361906966222822">Enregistrer dans…</translation>
 <translation id="850600235656508448">Ouvrir en mode navigation privée</translation>

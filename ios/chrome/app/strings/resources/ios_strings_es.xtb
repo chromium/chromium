@@ -14,7 +14,7 @@
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
 <translation id="104491362976654916">Página sin conexión</translation>
 <translation id="1049743911850919806">Incógnito</translation>
-<translation id="1053651653201045802">Se ha cerrado la sesión. Vuelve a iniciar sesión para usar los marcadores, las contraseñas y más en tu cuenta.</translation>
+<translation id="1053651653201045802">Se ha cerrado la sesión. Vuelve a iniciarla para usar los marcadores, las contraseñas y más en tu cuenta.</translation>
 <translation id="1054745118061919935">Si continúas, confirmas que aceptas los <ph name="BEGIN_LINK" />Términos del Servicio<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Contraseñas que nunca se guardan</translation>
 <translation id="1062138828266376352">Tu PIN no se ha cambiado. Comprueba tu conexión a Internet y vuelve a intentarlo.</translation>
@@ -816,7 +816,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4405320213589929829">Usa direcciones en páginas web para obtener información local e indicaciones.</translation>
 <translation id="441218095371040430">Usar teclado</translation>
 <translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
-<translation id="4425365312778464779">Esta cuenta está gestionada</translation>
+<translation id="4425365312778464779">Esta es una cuenta gestionada</translation>
 <translation id="4430277756566635951">Se ha seleccionado <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="4430505936695785931">Obtén contraseñas guardadas en otras aplicaciones</translation>
 <translation id="4431224949908513835">Selecciona el método de pago que quieras rellenar.</translation>
@@ -2030,7 +2030,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9124387962554796433">Es posible que Google utilice tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="9124978074365039456">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos</translation>
 <translation id="9130317582644834675">Ocultar Ampliar texto</translation>
-<translation id="913036870884277353">Abre enlaces fácilmente en otras aplicaciones.</translation>
+<translation id="913036870884277353">Abre fácilmente los enlaces de otras aplicaciones.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9144230693397287797">Recibe actualizaciones de los recordatorios que hayas definido y de las pestañas de otros dispositivos</translation>
 <translation id="914781932147356857">Marcar todas…</translation>

@@ -65,7 +65,7 @@
 <translation id="1860536484129686729">Chrome ต้องการสิทธิ์เข้าถึงกล้องถ่ายรูปของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="1873233029667955273">Google Chrome ไม่ใช่เบราว์เซอร์เริ่มต้น</translation>
 <translation id="1874309113135274312">Google Chrome เบต้า (mDNS-In)</translation>
-<translation id="1877026089748256423">Chrome ล้าสมัย</translation>
+<translation id="1877026089748256423">Chrome ไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="1880677175115548835">เลือกข้อความ</translation>
 <translation id="1919130412786645364">อนุญาตให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1953553007165777902">กำลังดาวน์โหลด... เหลืออีก <ph name="MINUTE" /> นาที</translation>
@@ -609,7 +609,7 @@
 <translation id="8798550110818026746">องค์กรของคุณจะดูและจัดการข้อมูลการท่องเว็บได้ เช่น บุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่าน แต่จะไม่เห็นข้อมูลการท่องเว็บในโปรไฟล์ Chrome อื่นๆ</translation>
 <translation id="8801657293260363985">V8 เป็นเครื่องมือ JavaScript และ WebAssembly ของ Chrome ที่ใช้เพื่อปรับปรุงประสิทธิภาพของเว็บไซต์</translation>
 <translation id="8821043148920470810">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 7</translation>
-<translation id="8823341990149967727">Chrome ล้าสมัย</translation>
+<translation id="8823341990149967727">Chrome ไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="8825634023950448068">เราลบความสนใจที่เก่ากว่า 4 สัปดาห์โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ ความสนใจอาจกลับมาปรากฏในรายการอีกเมื่อคุณท่องเว็บต่อ และหาก Chrome คาดคะเนผิดหรือคุณไม่ต้องการเห็นโฆษณาบางรายการ คุณนำความสนใจออกได้</translation>
 <translation id="8834965163890861871">Google Chrome กำลังพยายามแก้ไขรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="8843516219908676469">Chrome เข้าใจแบบฟอร์มได้ดีขึ้นและสามารถป้อนข้อมูลอัตโนมัติให้คุณได้เร็วขึ้น</translation>
