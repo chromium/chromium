@@ -4093,6 +4093,9 @@ public class StripLayoutHelper
         boolean shouldShowCloseButton =
                 getCachedTabWidth() >= StripLayoutTabDelegate.TAB_WIDTH_MEDIUM;
         tab.setCanShowCloseButton(shouldShowCloseButton, false);
+
+        // This is an effective width of 0 due to how we overlap tabs.
+        tab.setWidth(TAB_OVERLAP_WIDTH_DP);
         tab.setHeight(mHeight);
         tab.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
     }
@@ -4435,16 +4438,11 @@ public class StripLayoutHelper
                 if (tab.isClosed()) continue;
                 // idealX represents where a tab should be placed in the tab strip.
                 view.setIdealX(startX);
-                if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) {
+                if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled() || !tab.isDying()) {
                     delta = (tab.getWidth() - TAB_OVERLAP_WIDTH_DP) * tab.getWidthWeight();
                 } else {
-                    delta =
-                            tab.isDying()
-                                    ? getEffectiveTabWidth()
-                                    : (tab.getWidth() - TAB_OVERLAP_WIDTH_DP)
-                                            * tab.getWidthWeight();
+                    delta = getEffectiveTabWidth();
                 }
-
             } else {
                 // Offset to "undo" the tab overlap width as that doesn't apply to non-tab views.
                 // Also applies the desired overlap with the previous tab.
