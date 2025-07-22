@@ -6,23 +6,70 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
+// Section identifiers in the BWG Location settings table view.
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierLocation = kSectionIdentifierEnumZero,
+};
+
+typedef NS_ENUM(NSInteger, ItemType) {
+  ItemTypeLocation = kItemTypeEnumZero,
+  ItemTypeLocationFooter,
+};
+
 // Table identifier.
 NSString* const kBWGLocationViewTableIdentifier =
     @"BWGLocationViewTableIdentifier";
 
+// Row identifiers.
+NSString* const kPreciseLocationCellId = @"PreciseLocationCellId";
+
 }  // namespace
 
-@implementation BWGLocationViewController
+@implementation BWGLocationViewController {
+  // Switch item for toggling precise location.
+  TableViewSwitchItem* _preciseLocationSwitchItem;
+  // Precise location preference value.
+  BOOL _preciseLocationEnabled;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kBWGLocationViewTableIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_TITLE);
+  [self loadModel];
+}
+
+- (void)loadModel {
+  [super loadModel];
+  TableViewModel* model = self.tableViewModel;
+  [model addSectionWithIdentifier:SectionIdentifierLocation];
+
+  _preciseLocationSwitchItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeLocation];
+  _preciseLocationSwitchItem.text =
+      l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_SWITCH_TITLE);
+  _preciseLocationSwitchItem.on = _preciseLocationEnabled;
+  _preciseLocationSwitchItem.accessibilityIdentifier = kPreciseLocationCellId;
+
+  TableViewLinkHeaderFooterItem* locationFooterItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemTypeLocationFooter];
+  locationFooterItem.text =
+      l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_FOOTER_TEXT);
+
+  [model addItem:_preciseLocationSwitchItem
+      toSectionWithIdentifier:SectionIdentifierLocation];
+  [model setFooter:locationFooterItem
+      forSectionWithIdentifier:SectionIdentifierLocation];
 }
 
 #pragma mark - SettingsControllerProtocol

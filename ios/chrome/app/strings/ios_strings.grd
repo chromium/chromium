@@ -1098,6 +1098,9 @@
       <message name="IDS_IOS_BWG_LOCATION_BACK_BUTTON_TITLE" desc="The back button text of BWG location settings page.">
         Gemini
       </message>
+      <message name="IDS_IOS_BWG_LOCATION_SWITCH_TITLE" desc="The switch title text of the BWG location settings page.">
+        Share precise location
+      </message>
       <message name="IDS_IOS_BWG_LOCATION_TITLE" desc="The title text of the BWG location settings page.">
         Precise Location
       </message>
