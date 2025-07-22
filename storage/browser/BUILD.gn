@@ -342,6 +342,10 @@ source_set("unittests") {
     "//third_party/leveldatabase",
     "//third_party/sqlite",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
