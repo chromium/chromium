@@ -48,6 +48,8 @@ constexpr std::string_view kKeyNickname = "nickname";
 constexpr auto kRecordTypeMapping =
     base::MakeFixedFlatMap<std::string_view, AutofillProfile::RecordType>(
         {{"account", AutofillProfile::RecordType::kAccount},
+         {"accountHome", AutofillProfile::RecordType::kAccountHome},
+         {"accountWork", AutofillProfile::RecordType::kAccountWork},
          {"localOrSyncable", AutofillProfile::RecordType::kLocalOrSyncable}});
 constexpr std::string_view kKeyInitialCreatorId = "initial_creator_id";
 
