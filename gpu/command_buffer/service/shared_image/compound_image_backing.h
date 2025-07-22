@@ -170,7 +170,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
-      std::unique_ptr<SharedMemoryImageBacking> shm_backing,
+      std::unique_ptr<SharedImageBacking> shm_backing,
       base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 

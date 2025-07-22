@@ -24,6 +24,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
@@ -454,23 +455,13 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     gfx::BufferUsage buffer_usage) {
   DCHECK(IsValidSharedMemoryBufferFormat(size, format));
 
-  auto buffer_format = ToBufferFormat(format);
-  gfx::GpuMemoryBufferHandle handle;
-  if (GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage)) {
-    handle = GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-        size, buffer_format, buffer_usage);
-  }
-
-  SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, buffer_format)) {
-    DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
+  auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
+      mailbox, format, kNullSurfaceHandle, size, color_space, surface_origin,
+      alpha_type, GetShmSharedImageUsage(usage), debug_label,
+      /*is_thread_safe=*/false, buffer_usage);
+  if (!shm_backing) {
     return nullptr;
   }
-
-  auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type,
-      GetShmSharedImageUsage(usage), debug_label, std::move(shm_wrapper),
-      std::move(handle));
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
@@ -488,7 +479,7 @@ CompoundImageBacking::CompoundImageBacking(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
-    std::unique_ptr<SharedMemoryImageBacking> shm_backing,
+    std::unique_ptr<SharedImageBacking> shm_backing,
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
     std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
