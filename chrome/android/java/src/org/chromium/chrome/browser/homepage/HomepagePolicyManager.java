@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -31,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
  * Provides information for the home page related policies. Monitors changes for the homepage
  * preference.
  */
+@NullMarked
 public class HomepagePolicyManager implements PrefObserver {
     /** An interface to receive updates from {@link HomepagePolicyManager}. */
     public interface HomepagePolicyStateListener {
@@ -188,7 +190,9 @@ public class HomepagePolicyManager implements PrefObserver {
      * Stop observing pref changes and destroy the singleton instance. Will be called from {@link
      * org.chromium.chrome.browser.ChromeActivitySessionTracker}.
      */
+    @SuppressWarnings("NullAway")
     public static void destroy() {
+        if (sInstance == null) return;
         sInstance.destroyInternal();
         sInstance = null;
     }
