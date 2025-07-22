@@ -526,6 +526,11 @@ void GpuServiceImpl::InitializeWithHostInternal(
 
   // Create and Initialize compositor gpu thread.
   if (features::IsDrDcEnabled(gpu_feature_info_)) {
+    // Add a crash key for DrDC.
+    static auto* drdc_crash_key = base::debug::AllocateCrashKeyString(
+        "is-drdc-enabled", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(drdc_crash_key, "1");
+
     CompositorGpuThread::CreateParams params;
     params.gpu_channel_manager = gpu_channel_manager_.get();
     params.display =
@@ -554,6 +559,8 @@ void GpuServiceImpl::InitializeWithHostInternal(
 
     compositor_gpu_thread_ = CompositorGpuThread::Create(params);
   }
+
+  UMA_HISTOGRAM_BOOLEAN("GPU.DrDcEnabled", !!compositor_gpu_thread_);
 
 #if BUILDFLAG(IS_WIN)
   // Add GpuServiceImpl to DirectCompositionOverlayCapsMonitor observer list for
@@ -1340,13 +1347,6 @@ gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
   // corresponding to a mailbox.
   const bool display_context_on_another_thread =
       features::IsDrDcEnabled(gpu_feature_info_);
-
-  // Record the crash key for DrDC.
-  if (display_context_on_another_thread) {
-    static auto* drdc_crash_key = base::debug::AllocateCrashKeyString(
-        "is-drdc-enabled", base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(drdc_crash_key, "1");
-  }
 
   // |display_context_on_another_thread|, features::IsUsingRawDraw(),
   // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
