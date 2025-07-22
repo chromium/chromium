@@ -113,7 +113,7 @@ GpuChannelTestCommon::GpuChannelTestCommon(
       task_environment_.GetMainThreadTaskRunner(), scheduler_.get(),
       sync_point_manager_.get(), shared_image_manager_.get(),
       nullptr, /* gpu_memory_buffer_factory */
-      std::move(feature_info), GpuProcessShmCount(),
+      std::move(feature_info), /*use_shader_cache_count_shm_=*/nullptr,
       gl::init::CreateOffscreenGLSurface(display_, gfx::Size()),
       nullptr /* image_decode_accelerator_worker */);
 }

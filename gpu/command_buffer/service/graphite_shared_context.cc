@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/PrecompileContext.h"
@@ -130,8 +131,10 @@ GraphiteSharedContext::AutoLock::~AutoLock() {
 
 GraphiteSharedContext::GraphiteSharedContext(
     std::unique_ptr<skgpu::graphite::Context> graphite_context,
+    GpuProcessShmCount* use_shader_cache_shm_count,
     bool is_thread_safe)
-    : graphite_context_(std::move(graphite_context)) {
+    : graphite_context_(std::move(graphite_context)),
+      use_shader_cache_shm_count_(use_shader_cache_shm_count) {
   DCHECK(graphite_context_);
   if (is_thread_safe) {
     lock_.emplace();
@@ -165,14 +168,17 @@ bool GraphiteSharedContext::insertRecording(
           ? base::SingleThreadTaskRunner::GetCurrentDefault()
           : nullptr;
 
+  const skgpu::graphite::InsertRecordingInfo* info_ptr = &info;
+
   // Ensure fFinishedProc is called on the original thread if there is only one
   // graphite::Context.
+  std::optional<skgpu::graphite::InsertRecordingInfo> info_copy;
   if (info.fFinishedProc && task_runner) {
-    skgpu::graphite::InsertRecordingInfo info_copy = info;
-    info_copy.fFinishedContext = new RecordingContext{
+    info_copy = info;
+    info_copy->fFinishedContext = new RecordingContext{
         info.fFinishedProc, info.fFinishedContext, std::move(task_runner)};
 
-    info_copy.fFinishedProc = [](void* ctx, skgpu::CallbackResult result) {
+    info_copy->fFinishedProc = [](void* ctx, skgpu::CallbackResult result) {
       auto context = base::WrapUnique(static_cast<RecordingContext*>(ctx));
       DCHECK(context->old_finished_proc);
       base::SingleThreadTaskRunner* task_runner = context->task_runner.get();
@@ -185,15 +191,39 @@ bool GraphiteSharedContext::insertRecording(
       context->old_finished_proc(context->old_context, result);
     };
 
-    return graphite_context_->insertRecording(info_copy);
+    info_ptr = &info_copy.value();
   }
 
-  return graphite_context_->insertRecording(info);
+  auto insert_status = graphite_context_->insertRecording(*info_ptr);
+
+  // Crash only if we're not simulating a failure for testing.
+  const bool simulating_insert_failure =
+      info_ptr->fSimulatedStatus != skgpu::graphite::InsertStatus::kSuccess;
+
+  // InsertStatus::kAddCommandsFailed indicates an unrecoverable error in Skia.
+  // Continuing to render would lead to severe graphical corruption.
+  CHECK(simulating_insert_failure ||
+        insert_status != skgpu::graphite::InsertStatus::kAddCommandsFailed);
+
+  // InsertStatus::kAsyncShaderCompilesFailed is also an unrecoverable error for
+  // which we should also clear the disk shader cache in case the error was due
+  // to a corrupted cached shader blob.
+  if (insert_status ==
+      skgpu::graphite::InsertStatus::kAsyncShaderCompilesFailed) {
+    GpuProcessShmCount::ScopedIncrement use_shader_cache(
+        use_shader_cache_shm_count_);
+    CHECK(simulating_insert_failure);
+  }
+
+  // All other failure modes are recoverable in the sense that future recordings
+  // will be rendered correctly, so merely return a boolean here so that callers
+  // can log the error.
+  return insert_status == skgpu::graphite::InsertStatus::kSuccess;
 }
 
-bool GraphiteSharedContext::submit(skgpu::graphite::SyncToCpu syncToCpu) {
+void GraphiteSharedContext::submit(skgpu::graphite::SyncToCpu syncToCpu) {
   AutoLock auto_lock(this);
-  return graphite_context_->submit(syncToCpu);
+  CHECK(graphite_context_->submit(syncToCpu));
 }
 
 bool GraphiteSharedContext::hasUnfinishedGpuWork() const {

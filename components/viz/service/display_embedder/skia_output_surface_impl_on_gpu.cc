@@ -1106,10 +1106,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
   }
 
   if (graphite_shared_context() && scoped_write->NeedGraphiteContextSubmit()) {
-    if (!graphite_shared_context()->submit()) {
-      DLOG(ERROR) << "CopyOutputRGBA graphite_shared_context->submit() failed";
-      return;
-    }
+    graphite_shared_context()->submit();
   }
 
   representation->SetCleared();
@@ -1517,10 +1514,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
   if (graphite_shared_context() &&
       mailbox_access_data.scoped_write->NeedGraphiteContextSubmit()) {
-    if (!graphite_shared_context()->submit()) {
-      DLOG(ERROR) << "CopyOutputNV12 graphite_shared_context->submit() failed";
-      return;
-    }
+    graphite_shared_context()->submit();
   }
 
   if (should_wait_for_gpu_work) {

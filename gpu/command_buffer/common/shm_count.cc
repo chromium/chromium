@@ -13,6 +13,7 @@ namespace gpu {
 
 ShmCountBase::ShmCountBase() = default;
 ShmCountBase::ShmCountBase(ShmCountBase&& other) = default;
+ShmCountBase& ShmCountBase::operator=(ShmCountBase&& other) = default;
 ShmCountBase::~ShmCountBase() = default;
 
 void ShmCountBase::Initialize(base::UnsafeSharedMemoryRegion region) {
@@ -29,7 +30,6 @@ volatile ShmCountBase::AtomicType* ShmCountBase::AsAtomic() {
 }
 
 GpuProcessShmCount::GpuProcessShmCount() = default;
-GpuProcessShmCount::GpuProcessShmCount(GpuProcessShmCount&& other) = default;
 
 GpuProcessShmCount::GpuProcessShmCount(base::UnsafeSharedMemoryRegion region) {
   // In cases where we are running without a GpuProcessHost, we may not

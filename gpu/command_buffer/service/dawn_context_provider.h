@@ -31,6 +31,7 @@
 namespace gpu {
 
 class DawnSharedContext;
+class GpuProcessShmCount;
 
 class GPU_GLES2_EXPORT DawnContextProvider {
  public:
@@ -79,8 +80,15 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   void SetCachingInterface(
       std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
 
+  bool use_thread_safe_shared_context() const;
+
+  void InitializeThreadSafeGraphiteContext(
+      const skgpu::graphite::ContextOptions& options,
+      GpuProcessShmCount* use_shader_cache_shm_count);
+
   bool InitializeGraphiteContext(
-      const skgpu::graphite::ContextOptions& context_options);
+      const skgpu::graphite::ContextOptions& options,
+      GpuProcessShmCount* use_shader_cache_shm_count);
 
   GraphiteSharedContext* GetGraphiteSharedContext() const;
 

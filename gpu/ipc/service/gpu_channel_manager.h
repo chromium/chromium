@@ -96,7 +96,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
       SharedImageManager* shared_image_manager,
       GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       const GpuFeatureInfo& gpu_feature_info,
-      GpuProcessShmCount use_shader_cache_shm_count,
+      GpuProcessShmCount* use_shader_cache_shm_count,
       scoped_refptr<gl::GLSurface> default_offscreen_surface,
       ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
       viz::VulkanContextProvider* vulkan_context_provider = nullptr,
@@ -179,7 +179,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   }
 
   GpuProcessShmCount* use_shader_cache_shm_count() {
-    return &use_shader_cache_shm_count_;
+    return use_shader_cache_shm_count_;
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -357,7 +357,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   // A count in shared memory that's non-zero for the duration of loading
   // shaders. Read by the browser process on GPU process crash.
-  GpuProcessShmCount use_shader_cache_shm_count_;
+  const raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count_;
 
   base::MemoryPressureListener memory_pressure_listener_;
 
