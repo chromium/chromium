@@ -50,6 +50,8 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('clear functionality', async () => {
     createComposeboxElement();
+    handler.setResultFor(
+        'addFile', Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // Check submit button disabled.
     assertEquals(
@@ -102,6 +104,8 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload image', async () => {
     createComposeboxElement();
+    handler.setResultFor(
+        'addFile', Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // Assert no files.
     assertEquals(composeboxElement.$.carousel.files.length, 0);
@@ -147,6 +151,8 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload pdf', async () => {
     createComposeboxElement();
+    handler.setResultFor(
+        'addFile', Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // Assert no files.
     assertEquals(composeboxElement.$.carousel.files.length, 0);
@@ -182,6 +188,12 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('delete file', async () => {
     createComposeboxElement();
+    let i = 0;
+    handler.setResultMapperFor('addFile', () => {
+      i += 1;
+      return Promise.resolve(
+          {token: {low: BigInt(i + 1), high: BigInt(i + 2)}});
+    });
 
     // Arrange.
     const dataTransfer = new DataTransfer();
@@ -254,6 +266,8 @@ suite('NewTabPageComposeboxTest', () => {
   test('file upload buttons disabled when max files uploaded', async () => {
     loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
     createComposeboxElement();
+    handler.setResultFor(
+        'addFile', Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // File upload buttons are not disabled when there are no files.
     assertFalse(composeboxElement.$.fileUploadButton.disabled);

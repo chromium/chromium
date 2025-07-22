@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+
 export interface ComposeboxFile {
-  // TODO(crbug.com/427994425): Keep uuid until we get base::Unguessable token
-  //   through a callback.
-  uuid: string;
+  uuid: UnguessableToken;
   name: string;
   objectUrl: string|null;
   type: string;
