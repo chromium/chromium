@@ -191,9 +191,6 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // or creates one if one does not already exist.
   HashRealTimeService* GetHashRealTimeService(Profile* profile);
 
-  // Type for subscriptions to SafeBrowsing service state.
-  typedef base::RepeatingClosureList::Subscription StateSubscription;
-
   // Adds a listener for when SafeBrowsing preferences might have changed.
   // To get the current state, the callback should call enabled_by_prefs().
   // Should only be called on the UI thread.

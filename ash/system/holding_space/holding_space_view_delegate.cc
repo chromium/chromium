@@ -415,7 +415,7 @@ void HoldingSpaceViewDelegate::OnHoldingSpaceTrayChildBubbleMousePressed(
   ClearSelection();
 }
 
-base::RepeatingClosureList::Subscription
+base::CallbackListSubscription
 HoldingSpaceViewDelegate::AddSelectionUiChangedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return selection_ui_changed_callbacks_.Add(std::move(callback));

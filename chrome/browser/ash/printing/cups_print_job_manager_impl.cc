@@ -533,7 +533,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
 
   base::RepeatingTimer timer_;
   std::unique_ptr<CupsWrapper> cups_wrapper_;
-  ::printing::PrintJobManager::DocDoneCallbackList::Subscription subscription_;
+  base::CallbackListSubscription subscription_;
   base::WeakPtrFactory<CupsPrintJobManagerImpl> weak_ptr_factory_;
 };
 

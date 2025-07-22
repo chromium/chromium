@@ -100,7 +100,7 @@ class FakePrintJobManagerWithDocDone : public ash::FakeCupsPrintJobManager {
   }
 
  private:
-  printing::PrintJobManager::DocDoneCallbackList::Subscription subscription_;
+  base::CallbackListSubscription subscription_;
 };
 
 std::unique_ptr<KeyedService> BuildFakeCupsPrintJobManagerWithDocDone(
