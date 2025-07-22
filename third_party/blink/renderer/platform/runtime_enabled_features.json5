@@ -3683,7 +3683,7 @@
       // The flag will enable us to land the feature over multiple CLs, and will
       // be enabled after the feature has been fully implemented.
       name: "PermissionElementIcon",
-      status: "test",
+      status: "experimental",
       depends_on: ["PermissionElement"],
     },
     {
