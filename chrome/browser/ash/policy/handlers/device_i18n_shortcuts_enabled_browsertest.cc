@@ -9,7 +9,6 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_features.h"
