@@ -47,9 +47,6 @@ static std::u16string GetConfirmButtonText(
     }
   }
 #elif BUILDFLAG(IS_IOS)
-  // CVC storage is not available on iOS as of now.
-  CHECK_NE(options.card_save_type, CardSaveType::kCardSaveWithCvc);
-  CHECK_NE(options.card_save_type, CardSaveType::kCvcSaveOnly);
   // TODO(crbug.com/407742057): Update confirm button's string id
   // `IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT` to not be UI specific.
   if (base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet) ||
@@ -254,26 +251,37 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     }
   }
 #elif BUILDFLAG(IS_IOS)
-  // CVC storage is not available on iOS as of now.
-  CHECK_NE(options.card_save_type, CardSaveType::kCardSaveWithCvc);
-  CHECK_NE(options.card_save_type, CardSaveType::kCvcSaveOnly);
-  if (is_google_pay_branding_enabled) {
-    save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
-    save_card_icon_description_text =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
-    save_card_prompt_title_id =
-        base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)
-            ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
-            : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3;
-    description_text =
-        base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)
-            ? l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
-            : l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
-  } else {
-    save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
-    save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD;
+  switch (options.card_save_type) {
+    case CardSaveType::kCardSaveOnly:
+    case CardSaveType::kCardSaveWithCvc: {
+      if (is_google_pay_branding_enabled) {
+        save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
+        save_card_icon_description_text = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
+        save_card_prompt_title_id =
+            base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)
+                ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
+                : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3;
+        description_text =
+            base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)
+                ? l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
+                : l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
+      } else {
+        save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
+        save_card_prompt_title_id =
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD;
+      }
+      break;
+    }
+    case CardSaveType::kCvcSaveOnly: {
+      save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
+      save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD;
+      description_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD);
+      break;
+    }
   }
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   NOTREACHED();
