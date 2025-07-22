@@ -135,15 +135,6 @@ void ChromeSecurityStateTabHelper::DidStartNavigation(
   if (!navigation_handle->IsFormSubmission()) {
     return;
   }
-  UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.FormSubmission",
-                            GetSecurityLevel(),
-                            security_state::SECURITY_LEVEL_COUNT);
-  if (navigation_handle->IsInMainFrame() &&
-      !security_state::IsSchemeCryptographic(GetVisibleSecurityState()->url)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Security.SecurityLevel.InsecureMainFrameFormSubmission",
-        GetSecurityLevel(), security_state::SECURITY_LEVEL_COUNT);
-  }
 
   if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme)) {
     ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();

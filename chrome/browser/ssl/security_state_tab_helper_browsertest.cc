@@ -1336,36 +1336,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
-// Tests that the security level form submission histogram is logged correctly.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, FormSecurityLevelHistogram) {
-  const char kHistogramName[] = "Security.SecurityLevel.FormSubmission";
-  SetUpMockCertVerifierForHttpsServer(0, net::OK);
-  base::HistogramTester histograms;
-  // Create a server with an expired certificate for the form to target.
-  net::EmbeddedTestServer broken_https_server(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  broken_https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  broken_https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(broken_https_server.Start());
-
-  // Make the form target the expired certificate server.
-  net::HostPortPair host_port_pair = net::HostPortPair::FromURL(
-      broken_https_server.GetURL("/ssl/google.html"));
-  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
-      "/ssl/page_with_form_targeting_insecure_url.html", host_port_pair);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(replacement_path)));
-  content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementById('submit').click();"));
-  navigation_observer.Wait();
-  // Check that the histogram count logs the security level of the page
-  // containing the form, not of the form target page.
-  histograms.ExpectUniqueSample(kHistogramName, security_state::SECURE, 1);
-}
-
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
                        MixedFormsShowLockIfWarningsAreEnabled) {
   SetUpMockCertVerifierForHttpsServer(0, net::OK);

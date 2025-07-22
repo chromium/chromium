@@ -814,31 +814,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.SecurityLevel.FormSubmission" enum="SecurityLevel"
-    expires_after="2023-11-12">
-  <owner>carlosil@chromium.org</owner>
-  <owner>cthomp@chromium.org</owner>
-  <summary>
-    Records the security level of a page when submitting a form. This histogram
-    is recorded whenever a form submission navigation begins. The recorded
-    security level is the level of the page the form was submitted from, not the
-    one that the form targets.
-  </summary>
-</histogram>
-
-<histogram name="Security.SecurityLevel.InsecureMainFrameFormSubmission"
-    enum="SecurityLevel" expires_after="2023-08-14">
-  <owner>estark@chromium.org</owner>
-  <owner>carlosil@chromium.org</owner>
-  <summary>
-    Records the security level of a page when submitting a form on a top-frame
-    navigation with a non-cryptographic scheme. This histogram is recorded
-    whenever a form submission navigation begins. The recorded security level is
-    the level of the page the form was submitted from, not the one that the form
-    targets.
-  </summary>
-</histogram>
-
 <histogram name="Security.SecurityLevel.OnCommit" enum="SecurityLevel"
     expires_after="2026-03-17">
   <owner>cthomp@chromium.org</owner>
