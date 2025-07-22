@@ -4,15 +4,20 @@
 
 #include "components/omnibox/composebox/composebox_query_controller.h"
 
+#include <limits>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/base64url.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_request_construction.h"
+#include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/search_engines/util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -31,6 +36,12 @@
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "components/omnibox/composebox/composebox_image_helper.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#endif  // !BUILDFLAG(IS_IOS)
 
 using endpoint_fetcher::CredentialsMode;
 using endpoint_fetcher::EndpointFetcher;
@@ -84,44 +95,59 @@ ComposeboxQueryController::FileInfo::~FileInfo() = default;
 
 namespace {
 // Creates a pdf file upload request payload.
-lens::Payload CreatPDFFileUploadPayload(const std::vector<uint8_t> bytes) {
+lens::Payload CreatePDFFileUploadPayload(
+    scoped_refptr<base::RefCountedBytes> file_data) {
   lens::Payload payload;
   auto* content = payload.mutable_content();
   auto* content_data = content->add_content_data();
   content_data->set_content_type(lens::ContentData::CONTENT_TYPE_PDF);
 
   // TODO(crbug.com/427618282): Add compression for PDF bytes.
+  auto bytes = file_data->as_vector();
   content_data->mutable_data()->assign(bytes.begin(), bytes.end());
-
   return payload;
 }
 
-// Creates the server request proto for the file upload request. Called
-// off the main thread after StartFileUploadFlow().
-lens::LensOverlayServerRequest CreateFileUploadRequestProto(
+// Creates the server request proto for the pdf file upload request. Called
+// on the main thread after the payload is ready.
+void CreateFileUploadRequestProtoWithPayloadAndContinue(
     lens::LensOverlayRequestId request_id,
-    lens::MimeType mime_type,
-    scoped_refptr<base::RefCountedBytes> file_data) {
+    lens::LensOverlayClientContext client_context,
+    RequestBodyProtoCreatedCallback callback,
+    lens::Payload payload) {
   lens::LensOverlayServerRequest request;
   auto* objects_request = request.mutable_objects_request();
   objects_request->mutable_request_context()->mutable_request_id()->CopyFrom(
       request_id);
   objects_request->mutable_request_context()
       ->mutable_client_context()
-      ->CopyFrom(lens::LensOverlayClientContext());
-
-  // TODO(crbug.com/426869060): Populate the request proto.
-  switch (mime_type) {
-    case lens::MimeType::kPdf:
-      objects_request->mutable_payload()->CopyFrom(
-          CreatPDFFileUploadPayload(file_data->as_vector()));
-      break;
-    default:
-      // TODO(crbug.com/427624839): Add support for image uploads.
-      break;
-  }
-  return request;
+      ->CopyFrom(client_context);
+  objects_request->mutable_payload()->CopyFrom(payload);
+  std::move(callback).Run(request);
 }
+
+#if !BUILDFLAG(IS_IOS)
+// Creates the server request proto for the image file upload request. Called
+// on the main thread after the image data is ready.
+void CreateFileUploadRequestProtoWithImageDataAndContinue(
+    lens::LensOverlayRequestId request_id,
+    lens::LensOverlayClientContext client_context,
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
+    RequestBodyProtoCreatedCallback callback,
+    lens::ImageData image_data) {
+  lens::LensOverlayServerRequest request;
+  auto* objects_request = request.mutable_objects_request();
+  objects_request->mutable_request_context()->mutable_request_id()->CopyFrom(
+      request_id);
+  objects_request->mutable_request_context()
+      ->mutable_client_context()
+      ->CopyFrom(client_context);
+  objects_request->mutable_image_data()->CopyFrom(image_data);
+  request.mutable_client_logs()->CopyFrom(client_logs->client_logs());
+  std::move(callback).Run(request);
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 ComposeboxQueryController::ComposeboxQueryController(
@@ -258,8 +284,8 @@ ComposeboxQueryController::CreateEndpointFetcher(
           .Build());
 }
 
-lens::LensOverlayClientContext
-ComposeboxQueryController::CreateClientContext() const {
+lens::LensOverlayClientContext ComposeboxQueryController::CreateClientContext()
+    const {
   lens::LensOverlayClientContext context;
   context.set_surface(lens::SURFACE_CHROME_NTP);
   context.set_platform(lens::PLATFORM_LENS_OVERLAY);
@@ -410,6 +436,29 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
   }
 }
 
+#if !BUILDFLAG(IS_IOS)
+void ComposeboxQueryController::ProcessDecodedImageAndContinue(
+    lens::LensOverlayRequestId request_id,
+    RequestBodyProtoCreatedCallback callback,
+    const SkBitmap& bitmap) {
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  // TODO(crbug.com/430053361): Add error handling for when the bitmap is null
+  // or empty.
+  if (!bitmap.isNull() && !bitmap.empty()) {
+    // Downscaling and encoding is done on a background thread to avoid blocking
+    // the main thread.
+    create_request_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&composebox::DownscaleAndEncodeBitmap, bitmap,
+                       ref_counted_logs),
+        base::BindOnce(&CreateFileUploadRequestProtoWithImageDataAndContinue,
+                       request_id, CreateClientContext(), ref_counted_logs,
+                       std::move(callback)));
+  }
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
     const base::UnguessableToken& file_token,
     scoped_refptr<base::RefCountedBytes> file_data,
@@ -419,13 +468,35 @@ void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
     return;
   }
 
-  // Call CreateFileUploadRequestProto off the main thread to avoid blocking
-  // the main thread on compression or image processing.
-  create_request_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&CreateFileUploadRequestProto, *file_info->request_id_,
-                     file_info->mime_type_, std::move(file_data)),
-      std::move(callback));
+  switch (file_info->mime_type_) {
+    case lens::MimeType::kPdf:
+      // Call CreatePDFFileUploadPayload off the main thread to avoid blocking
+      // the main thread on compression.
+      create_request_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&CreatePDFFileUploadPayload, std::move(file_data)),
+          base::BindOnce(&CreateFileUploadRequestProtoWithPayloadAndContinue,
+                         *file_info->request_id_, CreateClientContext(),
+                         std::move(callback)));
+      break;
+    case lens::MimeType::kImage:
+#if !BUILDFLAG(IS_IOS)
+      data_decoder::DecodeImageIsolated(
+          file_data->as_vector(), data_decoder::mojom::ImageCodec::kDefault,
+          /*shrink_to_fit=*/false,
+          /*max_size_in_bytes=*/std::numeric_limits<int64_t>::max(),
+          /*desired_image_frame_size=*/gfx::Size(),
+          base::BindOnce(
+              &ComposeboxQueryController::ProcessDecodedImageAndContinue,
+              weak_ptr_factory_.GetWeakPtr(), *file_info->request_id_,
+              std::move(callback)));
+#endif  // !BUILDFLAG(IS_IOS)
+      break;
+    default:
+      // TODO(crbug.com/430053361): Add error handling for unsupported file
+      // types.
+      break;
+  }
 }
 
 void ComposeboxQueryController::OnUploadFileRequestBodyReady(
