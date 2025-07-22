@@ -28,6 +28,8 @@ source_set("ui") {
     "//chrome/browser/resources/actor_overlay:resources",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//content/public/browser",

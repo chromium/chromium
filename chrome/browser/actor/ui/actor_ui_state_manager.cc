@@ -8,11 +8,18 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/variant_visitor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -21,6 +28,9 @@
 
 namespace actor::ui {
 namespace {
+// The maximum number of times the closing toast should be shown for a profile.
+constexpr int kToastShownMax = 2;
+
 using tabs::TabInterface;
 
 // TODO(crbug.com/424495020): Hardcoded states; Move this out to it's own file
@@ -88,6 +98,14 @@ void LogUiChangeError(bool result) {
     LOG(DFATAL)
         << "Unexpected error when trying to update actor ui components.";
   }
+}
+
+bool MaybeShowToastViaController(BrowserWindowInterface* bwi) {
+  if (auto* controller = bwi->GetFeatures().toast_controller()) {
+    return controller->MaybeShowToast(
+        ToastParams(ToastId::kGeminiWorkingOnTask));
+  }
+  return false;
 }
 
 }  // namespace
@@ -214,10 +232,11 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
 
 #if BUILDFLAG(ENABLE_GLIC)
 void ActorUiStateManager::OnGlicUpdateFloatyState(
-    glic::GlicWindowController::State floaty_state) {
+    glic::GlicWindowController::State floaty_state,
+    BrowserWindowInterface* bwi) {
   switch (floaty_state) {
     case glic::GlicWindowController::State::kClosed:
-      MaybeShowToast();
+      MaybeShowToast(bwi);
       break;
     case glic::GlicWindowController::State::kOpen:
     case glic::GlicWindowController::State::kWaitingForGlicToLoad:
@@ -235,8 +254,23 @@ ActorUiStateManager::RegisterFloatyTaskStateChange(
 }
 #endif
 
-void ActorUiStateManager::MaybeShowToast() {
-  // TODO(crbug.com/428014205): Implement this function.
+void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
+  PrefService* pref_service = actor_service_->GetProfile()->GetPrefs();
+  int toast_shown_count = pref_service->GetInteger(kToastShown);
+  if (toast_shown_count >= kToastShownMax) {
+    return;
+  }
+
+  const auto& active_tasks = actor_service_->GetActiveTasks();
+  const bool has_acting_or_reflecting_task = std::any_of(
+      active_tasks.begin(), active_tasks.end(), [](const auto& task_pair) {
+        return task_pair.second->GetState() == ActorTask::State::kActing ||
+               task_pair.second->GetState() == ActorTask::State::kReflecting;
+      });
+
+  if (has_acting_or_reflecting_task && MaybeShowToastViaController(bwi)) {
+    pref_service->SetInteger(kToastShown, toast_shown_count + 1);
+  }
 }
 
 void ActorUiStateManager::MaybeUpdateProfileScopedUiState() {

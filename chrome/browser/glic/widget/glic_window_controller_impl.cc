@@ -1483,10 +1483,11 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
   // TODO(crbug.com/431015299): Instead of piping events through the
   // ActorUiStateManager, consider calling the Toast and TaskIcon code directly
   // on state change.
-  if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
+  if (features::kGlicActorUiToast.Get()) {
+    Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
     actor::ActorKeyedService::Get(profile_)
         ->GetActorUiStateManager()
-        ->OnGlicUpdateFloatyState(state_);
+        ->OnGlicUpdateFloatyState(state_, last_active_browser);
   }
 
   if (IsWindowOpenAndReady()) {

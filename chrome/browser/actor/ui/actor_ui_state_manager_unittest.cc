@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/ui/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -143,10 +144,15 @@ class ActorUiStateManagerTest : public testing::Test {
     actor_ui_state_manager()->OnUiEvent(finished_task_event);
   }
 
+  MockBrowserWindowInterface* browser_window_interface() {
+    return browser_window_interface_.get();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
 };
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -165,7 +171,7 @@ TEST_F(ActorUiStateManagerTest, GlicUpdateFloatyState_NotifiesSubscribers) {
                           glic::GlicWindowController::State::kOpen);
               })));
   actor_ui_state_manager()->OnGlicUpdateFloatyState(
-      glic::GlicWindowController::State::kOpen);
+      glic::GlicWindowController::State::kOpen, browser_window_interface());
 }
 
 #endif
