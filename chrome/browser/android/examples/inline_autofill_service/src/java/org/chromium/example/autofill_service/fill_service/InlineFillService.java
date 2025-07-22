@@ -10,7 +10,6 @@ import android.service.autofill.FillCallback;
 import android.service.autofill.FillRequest;
 import android.service.autofill.SaveCallback;
 import android.service.autofill.SaveRequest;
-import android.widget.Toast;
 
 import org.chromium.example.autofill_service.fill_service.helpers.ResponseHelper;
 
@@ -28,7 +27,7 @@ public class InlineFillService extends AutofillService {
 
     @Override
     public void onSaveRequest(SaveRequest request, SaveCallback callback) {
-        Toast.makeText(this, "InlineFillService doesn't support Save", Toast.LENGTH_LONG).show();
+        ResponseHelper.handleSaveRequest(this, request);
         callback.onSuccess();
     }
 }

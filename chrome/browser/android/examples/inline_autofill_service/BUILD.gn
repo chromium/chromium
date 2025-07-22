@@ -51,6 +51,7 @@ android_apk("inline_autofill_service_example_apk") {
     "src/java/org/chromium/example/autofill_service/SettingsActivity.java",
     "src/java/org/chromium/example/autofill_service/fill_service/InlineFillService.java",
     "src/java/org/chromium/example/autofill_service/fill_service/helpers/AttributionDialogActivity.java",
+    "src/java/org/chromium/example/autofill_service/fill_service/helpers/CredentialStorage.java",
     "src/java/org/chromium/example/autofill_service/fill_service/helpers/InlineRequestHelper.java",
     "src/java/org/chromium/example/autofill_service/fill_service/helpers/ResponseHelper.java",
     "src/java/org/chromium/example/autofill_service/fill_service/helpers/ViewStructureParser.java",
@@ -63,6 +64,7 @@ android_apk("inline_autofill_service_example_apk") {
 
   deps = [
     ":inline_autofill_service_example_apk_resources",
+    "//build/android:build_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
