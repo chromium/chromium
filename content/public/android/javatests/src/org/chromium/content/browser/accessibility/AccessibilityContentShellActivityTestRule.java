@@ -30,6 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -38,6 +39,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /** Custom activity test rule for any content shell tests related to accessibility. */
 @SuppressLint("VisibleForTests")
@@ -312,6 +314,18 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     public void executeJS(String method) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> getWebContents().evaluateJavaScriptForTests(method, null));
+    }
+
+    public String executeJSAndGetResult(String method) throws TimeoutException {
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    javascriptHelper.evaluateJavaScriptForTests(getWebContents(), method);
+                });
+        javascriptHelper.waitUntilHasValue();
+        return javascriptHelper.getJsonResultAndClear();
     }
 
     /**
