@@ -600,21 +600,6 @@ void TemplateURLService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kDefaultSearchProviderEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
-
-  registry->RegisterInt64Pref(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
-  registry->RegisterStringPref(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
-      std::string());
-  registry->RegisterDictionaryPref(
-      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
-  registry->RegisterInt64Pref(
-      prefs::kDefaultSearchProviderChoiceInvalidationTimestamp, 0);
-
-#if BUILDFLAG(IS_IOS)
-  registry->RegisterIntegerPref(
-      prefs::kDefaultSearchProviderChoiceScreenSkippedCount, 0);
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

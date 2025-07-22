@@ -31,6 +31,7 @@ void RegisterPrefsForTemplateURLService(
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   regional_capabilities::prefs::RegisterProfilePrefs(registry);
   DefaultSearchManager::RegisterProfilePrefs(registry);
+  search_engines::SearchEngineChoiceService::RegisterProfilePrefs(registry);
 }
 
 // -- TemplateURLServiceLoadWaiter --------------------------------------------

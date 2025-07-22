@@ -77,4 +77,10 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return BuildSearchEngineChoiceService(context);
 }
+
+void SearchEngineChoiceServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  SearchEngineChoiceService::RegisterProfilePrefs(registry);
+}
+
 }  // namespace search_engines

@@ -55,4 +55,9 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
           profile)));
 }
 
+void SearchEngineChoiceServiceFactory::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  search_engines::SearchEngineChoiceService::RegisterProfilePrefs(registry);
+}
+
 }  // namespace ios

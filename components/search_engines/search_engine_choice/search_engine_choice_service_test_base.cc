@@ -30,6 +30,7 @@ SearchEngineChoiceServiceTestBase::SearchEngineChoiceServiceTestBase::
   TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
   DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
   TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+  SearchEngineChoiceService::RegisterProfilePrefs(pref_service_.registry());
   regional_capabilities::prefs::RegisterProfilePrefs(pref_service_.registry());
   local_state_.registry()->RegisterBooleanPref(
       metrics::prefs::kMetricsReportingEnabled, true);

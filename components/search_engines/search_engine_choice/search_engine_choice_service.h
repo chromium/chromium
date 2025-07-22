@@ -28,6 +28,10 @@ namespace TemplateURLPrepopulateData {
 class Resolver;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 class PrefRegistrySimple;
 class PrefService;
 class TemplateURLService;
@@ -175,6 +179,9 @@ class SearchEngineChoiceService : public KeyedService {
 
   // Register Local state preferences in `registry`.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  // Register profile preferences in `registry`.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
   // Checks if the search engine choice should be invalidated, based on pref

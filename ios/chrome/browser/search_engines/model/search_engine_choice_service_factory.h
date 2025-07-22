@@ -31,6 +31,8 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactoryIOS {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
+  void RegisterBrowserStatePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 }  // namespace ios
