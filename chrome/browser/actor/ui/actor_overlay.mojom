@@ -1,0 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module actor.ui.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Renderer -> Browser
+interface ActorOverlayPageHandler {
+  // Notifies the Actor UI Tab Controller that the user's hovering status has
+  // changed.
+  OnHoverStatusChanged(bool is_hovering);
+};

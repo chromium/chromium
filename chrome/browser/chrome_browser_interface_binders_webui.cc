@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #else
+#include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom.h"
@@ -139,6 +140,7 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
@@ -314,7 +316,6 @@
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "chromeos/ash/components/emoji/emoji_search.mojom.h"
 #include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom.h"
@@ -514,6 +515,12 @@ void PopulateChromeWebUIFrameBinders(
         lens::LensSidePanelUntrustedUI>(map);
     RegisterWebUIControllerInterfaceBinder<lens::mojom::LensPageHandlerFactory,
                                            lens::LensOverlayUntrustedUI>(map);
+  }
+
+  if (features::kGlicActorUiOverlay.Get()) {
+    RegisterWebUIControllerInterfaceBinder<
+        actor::ui::mojom::ActorOverlayPageHandler, actor::ui::ActorOverlayUI>(
+        map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

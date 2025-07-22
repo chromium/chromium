@@ -7,8 +7,11 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/actor/ui/actor_overlay.mojom.h"
+#include "chrome/browser/actor/ui/actor_overlay_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace actor {
 class ActorKeyedService;
@@ -32,6 +35,10 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
   void SetActorTaskPaused() override;
   void SetActorTaskResume() override;
+
+  void BindActorOverlay(
+      mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
+  void SetHandoffButtonVisibility(bool is_visible) override;
 
  private:
   // Called to propagate a UiTabState and tab status change to UI controllers.
@@ -62,7 +69,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   TaskId active_task_id_;
 
   raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;
-
+  std::unique_ptr<ActorOverlayViewController> actor_overlay_view_controller_;
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };
 

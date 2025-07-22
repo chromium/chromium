@@ -49,7 +49,7 @@ class ActorUiTabControllerTest : public testing::Test {
     base::RunLoop loop;
     actor_keyed_service()->GetTask(task_id_)->AddTab(
         mock_tab_.GetHandle(),
-        base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+        base::BindLambdaForTesting([&](::actor::mojom::ActionResultPtr result) {
           EXPECT_TRUE(IsOk(*result));
           loop.Quit();
         }));

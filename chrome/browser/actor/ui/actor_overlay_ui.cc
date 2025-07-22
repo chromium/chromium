@@ -4,7 +4,10 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 
+#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/actor_overlay_resources.h"
 #include "chrome/grit/actor_overlay_resources_map.h"
@@ -29,5 +32,15 @@ ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
 WEB_UI_CONTROLLER_TYPE_IMPL(ActorOverlayUI)
 
 ActorOverlayUI::~ActorOverlayUI() = default;
+
+void ActorOverlayUI::BindInterface(
+    mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  tabs::TabInterface* tab_interface = webui::GetTabInterface(web_contents);
+  ActorUiTabController* actor_ui_tab_controller =
+      tab_interface->GetTabFeatures()->actor_ui_tab_controller();
+  CHECK(actor_ui_tab_controller);
+  actor_ui_tab_controller->BindActorOverlay(std::move(receiver));
+}
 
 }  // namespace actor::ui

@@ -6,7 +6,6 @@
 
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
@@ -68,6 +67,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/ui/tabs/tab_group_home/tab_group_home_ui.h"
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/app_home/app_home_ui.h"

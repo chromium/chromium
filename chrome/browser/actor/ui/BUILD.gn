@@ -2,12 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 assert(!is_android)
+
+mojom("mojo_bindings") {
+  disable_variants = true
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  deps = [ "//ui/gfx/geometry/mojom" ]
+
+  sources = [ "actor_overlay.mojom" ]
+  webui_module_path = "/"
+}
 
 source_set("ui") {
   sources = [
     "actor_overlay_ui.cc",
     "actor_overlay_ui.h",
+    "actor_overlay_view_controller.cc",
+    "actor_overlay_view_controller.h",
     "actor_overlay_window_controller.cc",
     "actor_overlay_window_controller.h",
     "actor_ui_state_manager.cc",
@@ -37,6 +51,8 @@ source_set("ui") {
     "//ui/views/controls/webview:webview",
     "//ui/webui",
   ]
+
+  public_deps = [ ":mojo_bindings" ]
 }
 
 source_set("states") {
@@ -133,6 +149,7 @@ source_set("ui_event_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_overlay_view_controller_unittest.cc",
     "actor_ui_state_manager_unittest.cc",
     "actor_ui_tab_controller_unittest.cc",
     "event_dispatcher_unittest.cc",

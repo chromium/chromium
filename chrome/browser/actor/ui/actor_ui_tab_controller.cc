@@ -15,6 +15,8 @@ ActorUiTabController::ActorUiTabController(TabInterface& tab,
                                            ActorKeyedService* actor_service)
     : tab_(tab), actor_keyed_service_(actor_service) {
   CHECK(actor_keyed_service_);
+  actor_overlay_view_controller_ =
+      std::make_unique<ActorOverlayViewController>(&*tab_);
   tab_subscriptions_.push_back(tab.RegisterDidActivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/true)));
@@ -92,11 +94,22 @@ void ActorUiTabController::SetActorTaskPaused() {
     task->Pause();
   }
 }
+
 void ActorUiTabController::SetActorTaskResume() {
   if (auto* task = actor_keyed_service_->GetTask(active_task_id_)) {
     task->Resume();
   }
 }
+
+void ActorUiTabController::BindActorOverlay(
+    mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
+  actor_overlay_view_controller_->BindOverlay(std::move(receiver));
+}
+
+void ActorUiTabController::SetHandoffButtonVisibility(bool is_visible) {
+  // TODO(crbug.com/425952887): Implement this function.
+}
+
 base::WeakPtr<ActorUiTabControllerInterface>
 ActorUiTabController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

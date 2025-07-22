@@ -36,6 +36,7 @@ source_set("browser_tests") {
     sources += [
       "about_sys/about_sys_browsertest.cc",
       "access_code_cast/access_code_cast_browsertest.cc",
+      "actor_overlay/actor_overlay_browsertest.cc",
       "bookmarks/bookmarks_browsertest.cc",
       "chrome_timeticks_browsertest.cc",
       "commerce/product_specifications/product_specifications_browsertest.cc",
@@ -497,6 +498,7 @@ generate_grd("build_grd") {
     deps += [
       "about_sys:build_grdp",
       "access_code_cast:build_grdp",
+      "actor_overlay:build_grdp",
       "bookmarks:build_grdp",
       "commerce/product_specifications:build_grdp",
       "cr_components:build_grdp",
@@ -546,6 +548,7 @@ generate_grd("build_grd") {
     grdp_files += [
       "$target_gen_dir/about_sys/resources.grdp",
       "$target_gen_dir/access_code_cast/resources.grdp",
+      "$target_gen_dir/actor_overlay/resources.grdp",
       "$target_gen_dir/webview/resources.grdp",
       "$target_gen_dir/bookmarks/resources.grdp",
       "$target_gen_dir/commerce/product_specifications/resources.grdp",
