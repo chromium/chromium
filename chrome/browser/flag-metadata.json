@@ -1008,7 +1008,7 @@
   {
     "name": "back-forward-transitions",
     "owners": [ "liuwilliam@google.com", "acondor@google.com", "chrome-seamless-core@google.com" ],
-    "expiry_milestone": 139
+    "expiry_milestone": 142
   },
   {
     "name": "backdrop-filter-mirror-edge",
@@ -6629,7 +6629,7 @@
   {
     "name": "mirror-back-forward-gestures-in-rtl",
     "owners": ["bokan@chromium.org", "lazzzis@google.com", "acondor@google.com", "clank-performance-team@google.com", "chrome-seamless-core@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 142
   },
   {
     "name": "mixed-content-autoupgrade-ios",
