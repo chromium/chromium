@@ -6,17 +6,20 @@ import("//build/config/features.gni")
 
 assert(!is_android)
 
-source_set("delegate") {
-  sources = [ "actor_login_delegate.h" ]
+source_set("test_support") {
+  testonly = true
 
-  visibility = [
-    "//chrome/browser/password_manager/actor_login:*",
-    "//chrome/browser/password_manager/actor_login/internal:*",
-    "//components/password_manager/core/browser/actor_login/test:*",
+  sources = [
+    "mock_actor_login_delegate.cc",
+    "mock_actor_login_delegate.h",
   ]
+
+  visibility = [ "//chrome/browser/password_manager/actor_login:*" ]
 
   deps = [
     "//base",
     "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/actor_login/internal:delegate",
+    "//testing/gmock",
   ]
 }

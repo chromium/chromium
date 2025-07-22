@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_ACTOR_LOGIN_SERVICE_IMPL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_ACTOR_LOGIN_SERVICE_IMPL_H_
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
+#include "content/public/browser/web_contents.h"
 
 namespace actor_login {
 
@@ -24,6 +27,17 @@ class ActorLoginServiceImpl : public ActorLoginService {
   void AttemptLogin(tabs::TabInterface* tab,
                     const Credential& credential,
                     LoginStatusResultOrErrorReply callback) override;
+
+  void SetActorLoginDelegateFactoryForTesting(
+      base::RepeatingCallback<ActorLoginDelegate*(content::WebContents*)>
+          factory);
+
+ private:
+  // Factory callback returning a new instance of `ActorLoginDelegate` or
+  // an existing one if there is one already attached to the provided
+  // `WebContents`. Used to facilitate testing.
+  base::RepeatingCallback<ActorLoginDelegate*(content::WebContents*)>
+      actor_login_delegate_factory_;
 };
 
 }  // namespace actor_login

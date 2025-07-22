@@ -42,6 +42,11 @@ struct Credential {
   // associated with this `CredentialType` report that this login is available
   // on the provided Tab.
   bool immediatelyAvailableToLogin = false;
+
+#if defined(UNIT_TEST)
+  // An exact equality comparison of all the fields is only useful for tests.
+  friend bool operator==(const Credential&, const Credential&) = default;
+#endif
 };
 
 enum ActorLoginError {

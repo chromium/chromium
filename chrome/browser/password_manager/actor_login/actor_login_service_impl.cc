@@ -4,14 +4,28 @@
 
 #include "chrome/browser/password_manager/actor_login/actor_login_service_impl.h"
 
+#include "base/functional/bind.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate_impl.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace actor_login {
 
-ActorLoginServiceImpl::ActorLoginServiceImpl() = default;
+namespace {
+
+ActorLoginDelegate* GetOrCreateDelegate(content::WebContents* web_contents) {
+  return content::WebContentsUserData<
+      ActorLoginDelegateImpl>::GetOrCreateForWebContents(web_contents);
+}
+
+}  // namespace
+
+ActorLoginServiceImpl::ActorLoginServiceImpl() {
+  actor_login_delegate_factory_ = base::BindRepeating(&GetOrCreateDelegate);
+}
 
 ActorLoginServiceImpl::~ActorLoginServiceImpl() = default;
 
@@ -30,11 +44,11 @@ void ActorLoginServiceImpl::GetCredentials(tabs::TabInterface* tab,
 
   // A single instance per WebContents to ensure that all service method calls
   // for a tab are managed through the same delegate instance.
-  ActorLoginDelegateImpl* delegate_impl = content::WebContentsUserData<
-      ActorLoginDelegateImpl>::GetOrCreateForWebContents(web_contents);
+  ActorLoginDelegate* delegate =
+      actor_login_delegate_factory_.Run(web_contents);
 
   // Delegate the call to the `WebContents`-scoped delegate.
-  delegate_impl->GetCredentials(std::move(callback));
+  delegate->GetCredentials(std::move(callback));
 }
 
 void ActorLoginServiceImpl::AttemptLogin(
@@ -54,11 +68,17 @@ void ActorLoginServiceImpl::AttemptLogin(
 
   // A single instance per WebContents to ensure that all service method calls
   // for a tab are managed through the same delegate instance.
-  ActorLoginDelegateImpl* delegate_impl = content::WebContentsUserData<
-      ActorLoginDelegateImpl>::GetOrCreateForWebContents(web_contents);
+  ActorLoginDelegate* delegate =
+      actor_login_delegate_factory_.Run(web_contents);
 
   // Delegate the call to the `WebContents`-scoped delegate.
-  delegate_impl->AttemptLogin(credential, std::move(callback));
+  delegate->AttemptLogin(credential, std::move(callback));
+}
+
+void ActorLoginServiceImpl::SetActorLoginDelegateFactoryForTesting(
+    base::RepeatingCallback<ActorLoginDelegate*(content::WebContents*)>
+        factory) {
+  actor_login_delegate_factory_ = factory;
 }
 
 }  // namespace actor_login

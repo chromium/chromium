@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "//chrome/browser/password_manager/actor_login/internal:delegate",
     "//chrome/browser/password_manager/actor_login/internal:unit_tests",
     "//chrome/test:test_support",
+    "//components/password_manager/core/browser/actor_login/test:test_support",
     "//components/tabs:public",
     "//components/tabs:test_support",
     "//content/public/browser",
