@@ -13,7 +13,6 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 
 import androidx.activity.BackEventCompat;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -52,7 +51,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -99,7 +100,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")
 public class NavigationTransitionsTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private EmbeddedTestServer mTestServer;
 
@@ -126,6 +128,7 @@ public class NavigationTransitionsTest {
                             .name("Gestural"));
 
     private final int mTestNavigationMode;
+    private WebPageStation mPage;
 
     private static class ScreenshotCallback
             implements ScreenshotCaptureTestHelper.NavScreenshotCallback {
@@ -187,13 +190,11 @@ public class NavigationTransitionsTest {
 
     @Before
     public void setUp() {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+        mTestServer = mActivityTestRule.getTestServer();
 
         mScreenshotCaptureTestHelper = new ScreenshotCaptureTestHelper();
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityNativeInitializationComplete();
         BackPressManager backPressManager =
                 mActivityTestRule.getActivity().getBackPressManagerForTesting();
@@ -202,7 +203,7 @@ public class NavigationTransitionsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     GestureNavigationTestUtils utils =
-                            new GestureNavigationTestUtils(mActivityTestRule);
+                            new GestureNavigationTestUtils(mActivityTestRule::getActivity);
                     utils.enableGestureNavigationForTesting(three_button_mode);
                 });
         backPressManager.setIsGestureNavEnabledSupplier(() -> !three_button_mode);

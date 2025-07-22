@@ -292,7 +292,8 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
 
-        GestureNavigationTestUtils mNavUtils = new GestureNavigationTestUtils(mActivityTestRule);
+        GestureNavigationTestUtils mNavUtils =
+                new GestureNavigationTestUtils(mActivityTestRule::getActivity);
         mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
 
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -338,7 +339,7 @@ public class ScreenshotCaptureTest {
         FullscreenManagerTestUtils.scrollBrowserControls(activity, false);
 
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(activity, -browserControlsHeight);
-        GestureNavigationTestUtils mNavUtils = new GestureNavigationTestUtils(mActivityTestRule);
+        GestureNavigationTestUtils mNavUtils = new GestureNavigationTestUtils(mActivityTestRule::getActivity);
         mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
 
         CallbackHelper callbackHelper = new CallbackHelper();

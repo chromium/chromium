@@ -95,7 +95,7 @@ public class ViewTransitionPixelTest {
 
     @Before
     public void setUp() {
-        mViewportTestUtils = new ViewportTestUtils(mActivityTestRule.getActivityTestRule());
+        mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
         mViewportTestUtils.setUpForBrowserControls();
     }
 

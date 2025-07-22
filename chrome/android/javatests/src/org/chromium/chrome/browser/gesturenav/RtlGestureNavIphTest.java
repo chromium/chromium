@@ -31,7 +31,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
@@ -54,13 +56,15 @@ import org.chromium.ui.base.LocalizationUtils;
 @Batch(Batch.PER_CLASS)
 public class RtlGestureNavIphTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private EmbeddedTestServer mTestServer;
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/navigate/simple.html";
 
     private RtlGestureNavIphController mRtlGestureNavIphController;
+    private WebPageStation mPage;
 
     private static class TestTracker implements Tracker {
         private @Nullable String mEmittedEvent;
@@ -135,11 +139,9 @@ public class RtlGestureNavIphTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
+        mTestServer = mActivityTestRule.getTestServer();
         LocalizationUtils.setRtlForTesting(true);
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
+        mPage = mActivityTestRule.startOnTestServerUrl(TEST_PAGE);
 
         CompositorAnimationHandler.setTestingMode(true);
         TrackerFactory.setTrackerForTests(new TestTracker());
