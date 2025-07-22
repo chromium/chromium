@@ -1453,7 +1453,10 @@ void CollaborationController::Exit() {
     return;
   }
 
-  current_state_->OnExit();
+  // Transition to the cancel state while waiting for full deletion.
+  if (current_state_->id() != StateId::kCancel) {
+    TransitionTo(StateId::kCancel);
+  }
   delegate_->OnFlowFinished();
   is_deleting_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
