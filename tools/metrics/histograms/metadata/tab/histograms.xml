@@ -45,6 +45,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Inactive" summary="inactive"/>
 </variants>
 
+<variants name="TabContextMenuCommand">
+  <variant name="AddToReadLater" summary="the Add to Read Later command"/>
+  <variant name="CloseAllTabs" summary="the Close All Tabs command"/>
+  <variant name="CloseTab" summary="the Close Tab command"/>
+  <variant name="CopyURL" summary="the Copy URL command"/>
+  <variant name="Duplicate" summary="the Duplicate command"/>
+  <variant name="NewTabToRight" summary="the New Tab To Right command"/>
+  <variant name="Reload" summary="the Reload command"/>
+  <variant name="TogglePinned" summary="the Toggle Pinned command"/>
+</variants>
+
 <variants name="TabDiscardReason">
   <variant name=".External"
       summary="from outside of TabManager (e.g. by an extension)"/>
@@ -301,6 +312,17 @@ chromium-metrics-reviews@google.com.
     <variant name="Incognito"/>
     <variant name="NonIncognito"/>
   </token>
+</histogram>
+
+<histogram name="Tab.ContextMenu.{TabContextMenuCommand}.SelectedTabsCount"
+    units="tabs" expires_after="2025-07-28">
+  <owner>dpenning@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The number of selected tabs when the user selects {TabContextMenuCommand}
+    from the tab context menu.
+  </summary>
+  <token key="TabContextMenuCommand" variants="TabContextMenuCommand"/>
 </histogram>
 
 <histogram name="Tab.Count.Guest" units="units" expires_after="2025-12-28">

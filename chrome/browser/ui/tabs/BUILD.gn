@@ -638,6 +638,7 @@ if (!is_android) {
       "tab_menu_model_unittest.cc",
       "tab_model_unittest.cc",
       "tab_renderer_data_unittest.cc",
+      "tab_strip_model_context_menu_unittest.cc",
       "tab_strip_model_stats_recorder_unittest.cc",
       "tab_strip_model_unittest.cc",
     ]
