@@ -653,7 +653,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ixdtf"
-version = "0.5.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "displaydoc",
@@ -1059,7 +1059,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_capi"
-version = "0.0.10"
+version = "0.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat",
@@ -1073,7 +1073,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_rs"
-version = "0.0.10"
+version = "0.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "combine",
@@ -1099,9 +1099,10 @@ dependencies = [
 
 [[package]]
 name = "timezone_provider"
-version = "0.0.10"
+version = "0.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "tinystr",
  "zerotrie",
  "zerovec",
 ]

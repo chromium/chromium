@@ -1,0 +1,11 @@
+Name: ixdtf
+URL: https://crates.io/crates/ixdtf
+Version: 0.6.1
+Revision: 3a1f5a9cb8d3cd5054ab9f472b0ded35a543e931
+Update Mechanism: Manual
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/ixdtf-v0_6/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Parser for Internet eXtended DateTime Format
