@@ -2174,6 +2174,33 @@
       },
     },
 
+    'optimization_guide_gpu_isolated_scripts': {
+      'blink_wpt_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'blink_tests_write_run_histories',
+          ],
+          'args': [
+            '--num-retries=3',
+          ],
+          'merge': {
+            'script': '//third_party/blink/tools/merge_web_test_results.py',
+            'args': [
+              '--verbose',
+            ],
+          },
+        },
+        'results_handler': 'layout tests',
+        'args': [
+          '--additional-driver-flag=--disable-features=WebNNCoreML,WebNNDirectML,WebNNOnnxRuntime',
+          '--ignore-default-expectations',
+          '--additional-expectations=../../third_party/blink/web_tests/OptimizationGuideExpectations',
+          '--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/optimization_guide.filter',
+        ],
+      },
+    },
+
     'optimization_guide_ios_unittests': {
       'optimization_guide_gpu_unittests': {
         'args': [

@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] div float16 1D constant tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual -512 should be close enough to expected -0.63623046875 by ULP distance: expected a number less than or equal to 2 but got 9961
+[FAIL] div float16 1D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual 0 should be close enough to expected -0.63623046875 by ULP distance: expected a number less than or equal to 2 but got 47383
+[FAIL] div float16 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual 0 should be close enough to expected -0.63623046875 by ULP distance: expected a number less than or equal to 2 but got 47383
+[FAIL] div float16 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual 0 should be close enough to expected -0.63623046875 by ULP distance: expected a number less than or equal to 2 but got 47383
+[FAIL] div float16 4D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual 0 should be close enough to expected -0.63623046875 by ULP distance: expected a number less than or equal to 2 but got 47383
+[FAIL] div float16 broadcast 1D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual 0 should be close enough to expected -0.69189453125 by ULP distance: expected a number less than or equal to 2 but got 47497
+[FAIL] div float16 broadcast 2D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual 0 should be close enough to expected 0.62109375 by ULP distance: expected a number less than or equal to 2 but got 14584
+[FAIL] div float16 broadcast 3D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual 0 should be close enough to expected 0.80517578125 by ULP distance: expected a number less than or equal to 2 but got 14961
+[FAIL] div float16 broadcast 4D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test div float16 actual 0 should be close enough to expected -0.69189453125 by ULP distance: expected a number less than or equal to 2 but got 47497
+Harness: the test ran to completion.
+

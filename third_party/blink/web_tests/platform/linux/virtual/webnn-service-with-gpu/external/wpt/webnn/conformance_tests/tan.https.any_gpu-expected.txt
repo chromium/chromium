@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] tan float16 0D scalar
+  assert_array_approx_equals: test tan float16 property 0, expected -0.87646484375 +/- 0.001953125, expected -0.87646484375 but got 0
+[FAIL] tan float16 1D constant tensor
+  assert_array_approx_equals: test tan float16 property 0, expected -0.87646484375 +/- 0.001953125, expected -0.87646484375 but got 512
+[FAIL] tan float16 1D tensor
+  assert_array_approx_equals: test tan float16 property 0, expected -0.87646484375 +/- 0.001953125, expected -0.87646484375 but got 0
+[FAIL] tan float16 2D tensor
+  assert_array_approx_equals: test tan float16 property 0, expected -0.87646484375 +/- 0.001953125, expected -0.87646484375 but got 0
+[FAIL] tan float16 3D tensor
+  assert_array_approx_equals: test tan float16 property 0, expected -0.87646484375 +/- 0.001953125, expected -0.87646484375 but got 0
+[FAIL] tan float16 4D tensor
+  assert_array_approx_equals: test tan float16 property 0, expected -0.87646484375 +/- 0.001953125, expected -0.87646484375 but got 0
+Harness: the test ran to completion.
+

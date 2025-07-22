@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] sub float16 1D constant tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 512 should be close enough to expected 122.6875 by ULP distance: expected a number less than or equal to 1 but got 2133
+[FAIL] sub float16 1D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 0 should be close enough to expected 122.6875 by ULP distance: expected a number less than or equal to 1 but got 22443
+[FAIL] sub float16 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 0 should be close enough to expected 122.6875 by ULP distance: expected a number less than or equal to 1 but got 22443
+[FAIL] sub float16 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 0 should be close enough to expected 122.6875 by ULP distance: expected a number less than or equal to 1 but got 22443
+[FAIL] sub float16 4D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 0 should be close enough to expected 122.6875 by ULP distance: expected a number less than or equal to 1 but got 22443
+[FAIL] sub float16 broadcast 1D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 0 should be close enough to expected -170.625 by ULP distance: expected a number less than or equal to 1 but got 55637
+[FAIL] sub float16 broadcast 2D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 0 should be close enough to expected 62.8125 by ULP distance: expected a number less than or equal to 1 but got 21466
+[FAIL] sub float16 broadcast 3D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 0 should be close enough to expected 81.9375 by ULP distance: expected a number less than or equal to 1 but got 21791
+[FAIL] sub float16 broadcast 4D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sub float16 actual 0 should be close enough to expected -170.625 by ULP distance: expected a number less than or equal to 1 but got 55637
+[FAIL] sub int8 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type int8 must be one of [float32,float16,int32,int64]."
+[FAIL] sub uint8 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type uint8 must be one of [float32,float16,int32,int64]."
+[FAIL] sub uint32 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type uint32 must be one of [float32,float16,int32,int64]."
+[FAIL] sub uint64 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type uint64 must be one of [float32,float16,int32,int64]."
+Harness: the test ran to completion.
+

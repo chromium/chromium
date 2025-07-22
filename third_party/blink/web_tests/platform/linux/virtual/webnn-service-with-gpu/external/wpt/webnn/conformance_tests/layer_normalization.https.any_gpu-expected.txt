@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] layerNormalization float16 2D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual 0 should be close enough to expected -1.0224609375 by ULP distance: expected a number less than or equal to 14 but got 48151
+[FAIL] layerNormalization float16 3D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual 0 should be close enough to expected -1.4052734375 by ULP distance: expected a number less than or equal to 14 but got 48543
+[FAIL] layerNormalization float16 4D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual 0 should be close enough to expected -1.4052734375 by ULP distance: expected a number less than or equal to 14 but got 48543
+[FAIL] layerNormalization float16 4D tensor options.scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual NaN should be close enough to expected 5.37109375 by ULP distance: expected a number less than or equal to 14 but got 47265
+[FAIL] layerNormalization float16 4D tensor options.bias
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual NaN should be close enough to expected 6.45703125 by ULP distance: expected a number less than or equal to 14 but got 46987
+[FAIL] layerNormalization float16 4D tensor options.axes=[2]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual 0 should be close enough to expected -0.60107421875 by ULP distance: expected a number less than or equal to 14 but got 47311
+[FAIL] layerNormalization float16 4D tensor options.epsilon
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual 0 should be close enough to expected -1.4052734375 by ULP distance: expected a number less than or equal to 14 but got 48543
+[FAIL] layerNormalization float16 4D tensor options.scale and options.axes=[0, 2]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual NaN should be close enough to expected -3.37109375 by ULP distance: expected a number less than or equal to 14 but got 15170
+[FAIL] layerNormalization float16 4D tensor options.bias and options.axes=[3, 1, 2]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual NaN should be close enough to expected -1.544921875 by ULP distance: expected a number less than or equal to 14 but got 16338
+[FAIL] layerNormalization float16 4D tensor all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float16 actual NaN should be close enough to expected -15.484375 by ULP distance: expected a number less than or equal to 14 but got 12866
+Harness: the test ran to completion.
+

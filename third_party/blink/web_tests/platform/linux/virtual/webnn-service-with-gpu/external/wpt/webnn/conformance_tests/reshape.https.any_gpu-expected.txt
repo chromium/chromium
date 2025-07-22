@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+Found 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] reshape float16 tensor to a new shape (reorder all dimensions)
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape float16 tensor to a new shape (4D to 4D)
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape float16 tensor to 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (squeeze) float16 2D tensor by eliminating one dimension
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (squeeze) float16 3D tensor by eliminating one dimension
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (squeeze) float16 3D tensor by eliminating two dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (squeeze) float16 4D tensor by eliminating two dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (squeeze) float16 4D tensor by eliminating all dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -33.8125 by ULP distance: expected a number less than or equal to 0 but got 53306
+[FAIL] reshape (squeeze) float16 2D tensor by eliminating 1st dimension
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (squeeze) float16 3D tensor by eliminating 2nd and 3rd dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (squeeze) float16 4D tensor by eliminating 1st and 4th dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (unsqueeze) float16 0D tensor to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -33.8125 by ULP distance: expected a number less than or equal to 0 but got 53306
+[FAIL] reshape (unsqueeze) float16 1D tensor by adding one dimension
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (unsqueeze) float16 1D tensor by adding two dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (unsqueeze) float16 1D tensor by adding 2nd and 3rd dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (unsqueeze) float16 2D tensor by adding one dimension
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (unsqueeze) float16 2D tensor by adding two dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (unsqueeze) float16 2D tensor by adding 1st dimension
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (unsqueeze) float16 2D tensor by adding 1st and 4th dimensions
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (flatten) float16 3D tensor to 2D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (flatten) float16 4D to 2D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (flatten) float16 4D to 2D exclusive 1st dimension
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+[FAIL] reshape (flatten) float16 4D to 2D exclusive 4th dimension
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reshape float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+Harness: the test ran to completion.
+

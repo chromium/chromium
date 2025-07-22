@@ -5607,6 +5607,7 @@
   {
     "prefix": "webnn-service-with-gpu",
     "platforms": [
+      "Linux",
       "Win",
       "Mac"
     ],

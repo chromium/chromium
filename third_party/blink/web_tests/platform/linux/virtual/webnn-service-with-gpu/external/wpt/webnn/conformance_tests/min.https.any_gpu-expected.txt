@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] min float16 1D constant tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 512 should be close enough to expected -40.09375 by ULP distance: expected a number less than or equal to 0 but got 28931
+[FAIL] min float16 1D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 0 should be close enough to expected -40.09375 by ULP distance: expected a number less than or equal to 0 but got 53507
+[FAIL] min float16 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 0 should be close enough to expected -40.09375 by ULP distance: expected a number less than or equal to 0 but got 53507
+[FAIL] min float16 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 0 should be close enough to expected -40.09375 by ULP distance: expected a number less than or equal to 0 but got 53507
+[FAIL] min float16 4D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 0 should be close enough to expected -40.09375 by ULP distance: expected a number less than or equal to 0 but got 53507
+[FAIL] min float16 broadcast 1D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 0 should be close enough to expected -36.0625 by ULP distance: expected a number less than or equal to 0 but got 53378
+[FAIL] min float16 broadcast 2D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 0 should be close enough to expected -36.0625 by ULP distance: expected a number less than or equal to 0 but got 53378
+[FAIL] min float16 broadcast 3D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 0 should be close enough to expected -36.0625 by ULP distance: expected a number less than or equal to 0 but got 53378
+[FAIL] min float16 broadcast 4D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test min float16 actual 0 should be close enough to expected -36.0625 by ULP distance: expected a number less than or equal to 0 but got 53378
+Harness: the test ran to completion.
+

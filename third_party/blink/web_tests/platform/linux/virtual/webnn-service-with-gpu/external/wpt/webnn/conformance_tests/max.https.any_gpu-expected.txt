@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] max float16 1D constant tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual -512 should be close enough to expected 17.734375 by ULP distance: expected a number less than or equal to 0 but got 37777
+[FAIL] max float16 1D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual 0 should be close enough to expected 17.734375 by ULP distance: expected a number less than or equal to 0 but got 19567
+[FAIL] max float16 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual 0 should be close enough to expected 17.734375 by ULP distance: expected a number less than or equal to 0 but got 19567
+[FAIL] max float16 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual 0 should be close enough to expected 17.734375 by ULP distance: expected a number less than or equal to 0 but got 19567
+[FAIL] max float16 4D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual 0 should be close enough to expected 17.734375 by ULP distance: expected a number less than or equal to 0 but got 19567
+[FAIL] max float16 broadcast 1D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual 0 should be close enough to expected 48.25 by ULP distance: expected a number less than or equal to 0 but got 21000
+[FAIL] max float16 broadcast 2D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual 0 should be close enough to expected 49.53125 by ULP distance: expected a number less than or equal to 0 but got 21041
+[FAIL] max float16 broadcast 3D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual 0 should be close enough to expected 39.3125 by ULP distance: expected a number less than or equal to 0 but got 20714
+[FAIL] max float16 broadcast 4D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test max float16 actual 0 should be close enough to expected 48.25 by ULP distance: expected a number less than or equal to 0 but got 21000
+Harness: the test ran to completion.
+

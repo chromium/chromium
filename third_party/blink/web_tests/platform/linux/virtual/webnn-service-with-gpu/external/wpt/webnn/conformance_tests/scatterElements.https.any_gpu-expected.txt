@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] scatterElements float32 tensors along axis 0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+[FAIL] scatterElements float32 tensors along axis 1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+[FAIL] scatterElements float16 tensors along axis 0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+[FAIL] scatterElements float16 tensors along axis 0 and constant indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test scatterElements float16 actual 0 should be close enough to expected 2 by ULP distance: expected a number less than or equal to 0 but got 16384
+[FAIL] scatterElements float16 tensors along axis 1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': scatterElements only supports constant indices."
+[FAIL] scatterElements float16 tensors along axis 1 and constant indices
+  assert_less_than_equal: assert_array_approx_equals_ulp: test scatterElements float16 actual 2.00390625 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1026
+Harness: the test ran to completion.
+

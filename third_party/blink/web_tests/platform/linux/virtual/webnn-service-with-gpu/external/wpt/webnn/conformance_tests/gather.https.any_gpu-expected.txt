@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+[FAIL] gather float32 2D tensor and int32 0D negative indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float32 actual 0 should be close enough to expected -66.05901336669922 by ULP distance: expected a number less than or equal to 0n but got 1115954743n
+[FAIL] gather float32 2D tensor and int32 0D out-of-bound positive indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float32 actual 0 should be close enough to expected 90.2870101928711 by ULP distance: expected a number less than or equal to 0n but got 1119130355n
+[FAIL] gather float32 2D tensor and int32 0D out-of-bound negative indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float32 actual 0 should be close enough to expected -66.05901336669922 by ULP distance: expected a number less than or equal to 0n but got 1115954743n
+[FAIL] gather float16 1D tensor and uint32 0D scalar indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual Infinity should be close enough to expected 89.0625 by ULP distance: expected a number less than or equal to 0 but got 9839
+[FAIL] gather float16 1D tensor and int64 0D scalar indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual Infinity should be close enough to expected 89.0625 by ULP distance: expected a number less than or equal to 0 but got 9839
+[FAIL] gather float16 1D tensor and int32 0D scalar indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual Infinity should be close enough to expected 89.0625 by ULP distance: expected a number less than or equal to 0 but got 9839
+[FAIL] gather float16 1D tensor and int32 2D indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual 0 should be close enough to expected 44.90625 by ULP distance: expected a number less than or equal to 0 but got 20893
+[FAIL] gather float16 1D tensor and int32 3D indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual 0 should be close enough to expected -19.6875 by ULP distance: expected a number less than or equal to 0 but got 52460
+[FAIL] gather float16 1D tensor and int32 4D indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual 0 should be close enough to expected -37.6875 by ULP distance: expected a number less than or equal to 0 but got 53430
+[FAIL] gather float16 2D tensor and 0D scalar indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual 0 should be close enough to expected 25.765625 by ULP distance: expected a number less than or equal to 0 but got 20081
+[FAIL] gather float16 2D tensor and 2D indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual -Infinity should be close enough to expected 51.8125 by ULP distance: expected a number less than or equal to 0 but got 43398
+[FAIL] gather float16 2D tensor and 3D indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual 0 should be close enough to expected 10.828125 by ULP distance: expected a number less than or equal to 0 but got 18794
+[FAIL] gather float16 2D tensor and 4D indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual 0 should be close enough to expected 90.3125 by ULP distance: expected a number less than or equal to 0 but got 21925
+[FAIL] gather float16 3D tensor and 2D indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual 0 should be close enough to expected 10.828125 by ULP distance: expected a number less than or equal to 0 but got 18794
+[FAIL] gather float16 4D tensor and 2D indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual -Infinity should be close enough to expected -66.0625 by ULP distance: expected a number less than or equal to 0 but got 10207
+[FAIL] gather float16 3D tensor and 2D indices options.axis=2
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual -Infinity should be close enough to expected -66.0625 by ULP distance: expected a number less than or equal to 0 but got 10207
+[FAIL] gather float16 4D tensor and 2D indices explict options.axis=0
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual -Infinity should be close enough to expected -66.0625 by ULP distance: expected a number less than or equal to 0 but got 10207
+[FAIL] gather float16 5D tensor and 0D scalar indices options.axis=4
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual -512 should be close enough to expected -68.9375 by ULP distance: expected a number less than or equal to 0 but got 2993
+[FAIL] gather float16 2D tensor and int32 0D negative indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float16 actual 0 should be close enough to expected -66.0625 by ULP distance: expected a number less than or equal to 0 but got 54305
+Harness: the test ran to completion.
+

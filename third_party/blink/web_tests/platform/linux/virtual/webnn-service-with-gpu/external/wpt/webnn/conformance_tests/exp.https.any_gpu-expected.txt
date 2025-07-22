@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] exp float16 0D scalar
+  assert_less_than_equal: assert_array_approx_equals_ulp: test exp float16 actual 0 should be close enough to expected 1.408203125 by ULP distance: expected a number less than or equal to 1 but got 15778
+[FAIL] exp float16 1D constant tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test exp float16 actual 2 should be close enough to expected 1.408203125 by ULP distance: expected a number less than or equal to 1 but got 606
+[FAIL] exp float16 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test exp float16 actual 0 should be close enough to expected 1.408203125 by ULP distance: expected a number less than or equal to 1 but got 15778
+[FAIL] exp float16 2D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test exp float16 actual 0 should be close enough to expected 1.408203125 by ULP distance: expected a number less than or equal to 1 but got 15778
+[FAIL] exp float16 3D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test exp float16 actual 0 should be close enough to expected 1.408203125 by ULP distance: expected a number less than or equal to 1 but got 15778
+[FAIL] exp float16 4D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test exp float16 actual 0 should be close enough to expected 1.408203125 by ULP distance: expected a number less than or equal to 1 but got 15778
+Harness: the test ran to completion.
+

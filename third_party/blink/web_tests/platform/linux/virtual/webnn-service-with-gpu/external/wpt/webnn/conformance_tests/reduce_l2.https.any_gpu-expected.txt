@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+[FAIL] reduceL2 float16 0D constant tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 4.859375 by ULP distance: expected a number less than or equal to 4 but got 15140
+[FAIL] reduceL2 float16 0D constant tensor empty axes
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 4.859375 by ULP distance: expected a number less than or equal to 4 but got 15140
+[FAIL] reduceL2 float16 1D constant tensor all positive default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 1D tensor all positive default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 1D tensor all negative default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 292.5 by ULP distance: expected a number less than or equal to 50 but got 23698
+[FAIL] reduceL2 float16 1D tensor all positive integers default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 274.5 by ULP distance: expected a number less than or equal to 50 but got 23626
+[FAIL] reduceL2 float16 1D tensor all negative integers default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 300.5 by ULP distance: expected a number less than or equal to 50 but got 23730
+[FAIL] reduceL2 float16 2D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 3D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 4D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 5D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 3D tensor options.axes
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 122.375 by ULP distance: expected a number less than or equal to 10 but got 22438
+[FAIL] reduceL2 float16 4D tensor options.axes
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 114.4375 by ULP distance: expected a number less than or equal to 10 but got 22311
+[FAIL] reduceL2 float16 3D tensor options.keepDimensions=false
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 3D tensor options.keepDimensions=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 4D tensor options.keepDimensions=false
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 4D tensor options.keepDimensions=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 23616
+[FAIL] reduceL2 float16 4D tensor options.axes with options.keepDimensions=false
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 138.625 by ULP distance: expected a number less than or equal to 14 but got 22613
+[FAIL] reduceL2 float16 4D tensor options.axes with options.keepDimensions=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 0 should be close enough to expected 138.625 by ULP distance: expected a number less than or equal to 14 but got 22613
+Harness: the test ran to completion.
+

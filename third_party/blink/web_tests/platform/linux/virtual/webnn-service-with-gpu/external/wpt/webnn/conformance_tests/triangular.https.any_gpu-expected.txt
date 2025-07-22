@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] triangular float32 2D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float32 actual 24.678754806518555 should be close enough to expected 0 by ULP distance: expected a number less than or equal to 0n but got 1103457815n
+[FAIL] triangular float16 2D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 3D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor explict options.upper=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor options.upper=false
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor explict options.diagonal=0
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor options.diagonal=1
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual NaN should be close enough to expected -86.1875 by ULP distance: expected a number less than or equal to 0 but got 10845
+[FAIL] triangular float16 4D tensor options.diagonal=-1
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor fully zero options.diagonal=3
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual NaN should be close enough to expected 0 by ULP distance: expected a number less than or equal to 0 but got 65472
+[FAIL] triangular float16 4D tensor fully copied options.diagonal=-2
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor options.upper=true options.diagonal=1
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual NaN should be close enough to expected -86.1875 by ULP distance: expected a number less than or equal to 0 but got 10845
+[FAIL] triangular float16 4D tensor options.upper=false options.diagonal=1
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor options.upper=false options.diagonal=-1
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual NaN should be close enough to expected 0 by ULP distance: expected a number less than or equal to 0 but got 65472
+[FAIL] triangular float16 4D tensor fully copied options.upper=false options.diagonal=3
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual 0 should be close enough to expected 84.9375 by ULP distance: expected a number less than or equal to 0 but got 21839
+[FAIL] triangular float16 4D tensor fully zero options.upper=false options.diagonal=-2
+  assert_less_than_equal: assert_array_approx_equals_ulp: test triangular float16 actual NaN should be close enough to expected 0 by ULP distance: expected a number less than or equal to 0 but got 65472
+Harness: the test ran to completion.
+

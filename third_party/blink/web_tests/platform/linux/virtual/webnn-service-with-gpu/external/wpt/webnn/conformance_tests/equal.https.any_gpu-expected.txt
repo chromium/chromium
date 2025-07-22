@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] equal float32 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'equal' on 'MLGraphBuilder': Unsupported rank 5 for argument a (must be at most 4)."
+[FAIL] equal float16 0D scalar
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 1 should be close enough to expected 0 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 1D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 4D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'equal' on 'MLGraphBuilder': Unsupported rank 5 for argument a (must be at most 4)."
+[FAIL] equal float16 broadcast 0D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 broadcast 1D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 broadcast 2D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 broadcast 3D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] equal float16 broadcast 4D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test equal uint8 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+Harness: the test ran to completion.
+

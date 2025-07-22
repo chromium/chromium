@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] matmul float32 3D and 3D (broadcast) tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float32 actual 0 should be close enough to expected 13553.013671875 by ULP distance: expected a number less than or equal to 8n but got 1179894798n
+[FAIL] matmul float32 3D and 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float32 actual 0 should be close enough to expected 13553.013671875 by ULP distance: expected a number less than or equal to 8n but got 1179894798n
+[FAIL] matmul float32 4D and 4D (broadcast) tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float32 actual 0 should be close enough to expected 3733.946533203125 by ULP distance: expected a number less than or equal to 8n but got 1164533541n
+[FAIL] matmul float32 4D and 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float32 actual 0 should be close enough to expected 7885.7978515625 by ULP distance: expected a number less than or equal to 8n but got 1173778018n
+[FAIL] matmul float16 2D and 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 3340 by ULP distance: expected a number less than or equal to 8 but got 27270
+[FAIL] matmul float16 3D and 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 11008 by ULP distance: expected a number less than or equal to 8 but got 29024
+[FAIL] matmul float16 4D and 4D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 11008 by ULP distance: expected a number less than or equal to 8 but got 29024
+[FAIL] matmul float16 3D and 3D (broadcast) tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 15016 by ULP distance: expected a number less than or equal to 8 but got 29525
+[FAIL] matmul float16 3D and 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 15016 by ULP distance: expected a number less than or equal to 8 but got 29525
+[FAIL] matmul float16 4D and 4D (broadcast) tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 13352 by ULP distance: expected a number less than or equal to 8 but got 29317
+[FAIL] matmul float16 4D and 3D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual 0 should be close enough to expected 11432 by ULP distance: expected a number less than or equal to 8 but got 29077
+[FAIL] matmul float16 5D and 2D tensors
+  assert_less_than_equal: assert_array_approx_equals_ulp: test matmul float16 actual Infinity should be close enough to expected 13352 by ULP distance: expected a number less than or equal to 8 but got 2427
+Harness: the test ran to completion.
+

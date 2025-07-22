@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] slice float32 1D constant tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float32 actual 0 should be close enough to expected 0.5424534678459167 by ULP distance: expected a number less than or equal to 0n but got 1057676859n
+[FAIL] slice float16 1D constant tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float16 actual 0 should be close enough to expected 0.54248046875 by ULP distance: expected a number less than or equal to 0 but got 14423
+[FAIL] slice float16 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float16 actual 0 should be close enough to expected 0.54248046875 by ULP distance: expected a number less than or equal to 0 but got 14423
+[FAIL] slice float16 2D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float16 actual 0 should be close enough to expected 28.328125 by ULP distance: expected a number less than or equal to 0 but got 20245
+[FAIL] slice float16 3D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float16 actual 0 should be close enough to expected 57.4375 by ULP distance: expected a number less than or equal to 0 but got 21294
+[FAIL] slice float16 4D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float16 actual 0 should be close enough to expected -27.3125 by ULP distance: expected a number less than or equal to 0 but got 52948
+[FAIL] slice float16 2D tensor with strides
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float16 actual 0 should be close enough to expected -68.1875 by ULP distance: expected a number less than or equal to 0 but got 54339
+[FAIL] slice float16 3D tensor with strides
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float16 actual 0 should be close enough to expected 97.9375 by ULP distance: expected a number less than or equal to 0 but got 22047
+[FAIL] slice float16 4D tensor with strides
+  assert_less_than_equal: assert_array_approx_equals_ulp: test slice float16 actual 0 should be close enough to expected 79.8125 by ULP distance: expected a number less than or equal to 0 but got 21757
+Harness: the test ran to completion.
+

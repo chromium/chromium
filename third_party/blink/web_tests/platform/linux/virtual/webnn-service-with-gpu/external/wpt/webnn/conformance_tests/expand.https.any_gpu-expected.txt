@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] expand float16 0D scalar to 1D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 0D scalar to 2D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 0D scalar to 3D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 0D scalar to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 0D scalar to 5D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 1D constant tensor to 1D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual -2 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 1654
+[FAIL] expand float16 1D tensor to 1D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 1D tensor to 2D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 1D tensor to 3D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 1D tensor to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 1D tensor to 5D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 2D tensor to 2D (1st dimension)
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual -Infinity should be close enough to expected 10.8984375 by ULP distance: expected a number less than or equal to 0 but got 45709
+[FAIL] expand float16 2D tensor to 2D (2nd dimension)
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual Infinity should be close enough to expected 4.96484375 by ULP distance: expected a number less than or equal to 0 but got 14089
+[FAIL] expand float16 2D tensor to 2D (all dimensions)
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 2D tensor to 3D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual Infinity should be close enough to expected 4.96484375 by ULP distance: expected a number less than or equal to 0 but got 14089
+[FAIL] expand float16 2D tensor to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual -Infinity should be close enough to expected 10.8984375 by ULP distance: expected a number less than or equal to 0 but got 45709
+[FAIL] expand float16 2D tensor to 5D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual 0 should be close enough to expected -6.4609375 by ULP distance: expected a number less than or equal to 0 but got 18038
+[FAIL] expand float16 3D tensor to 3D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual -Infinity should be close enough to expected 21.6875 by ULP distance: expected a number less than or equal to 0 but got 44692
+[FAIL] expand float16 3D tensor to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual -Infinity should be close enough to expected 21.6875 by ULP distance: expected a number less than or equal to 0 but got 44692
+[FAIL] expand float16 3D tensor to 5D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual -Infinity should be close enough to expected 21.6875 by ULP distance: expected a number less than or equal to 0 but got 44692
+[FAIL] expand float16 4D tensor to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual -Infinity should be close enough to expected 12.796875 by ULP distance: expected a number less than or equal to 0 but got 45466
+[FAIL] expand float16 4D tensor to 5D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test expand float16 actual -Infinity should be close enough to expected 12.796875 by ULP distance: expected a number less than or equal to 0 but got 45466
+Harness: the test ran to completion.
+

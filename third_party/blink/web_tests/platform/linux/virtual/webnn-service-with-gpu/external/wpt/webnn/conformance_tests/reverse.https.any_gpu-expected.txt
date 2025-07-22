@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] reverse float16 2D input with default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reverse float16 actual 0 should be close enough to expected -64.4375 by ULP distance: expected a number less than or equal to 0 but got 54279
+[FAIL] reverse float16 3D input options.axes=[1, 2]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reverse float16 actual 0 should be close enough to expected -91.875 by ULP distance: expected a number less than or equal to 0 but got 54718
+[FAIL] reverse float16 4D input options.axes=[3, 1]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reverse float16 actual 0 should be close enough to expected -91.875 by ULP distance: expected a number less than or equal to 0 but got 54718
+[FAIL] reverse float16 4D input options.axes=[]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reverse float16 actual 0 should be close enough to expected -30.0625 by ULP distance: expected a number less than or equal to 0 but got 53124
+Harness: the test ran to completion.
+

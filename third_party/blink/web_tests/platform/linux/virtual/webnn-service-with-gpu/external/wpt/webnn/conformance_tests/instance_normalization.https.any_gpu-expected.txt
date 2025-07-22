@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] instanceNormalization float16 4D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test instanceNormalization float16 actual 0 should be close enough to expected -1.099609375 by ULP distance: expected a number less than or equal to 8400 but got 48230
+[FAIL] instanceNormalization float16 4D tensor options.scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test instanceNormalization float16 actual NaN should be close enough to expected 103.8125 by ULP distance: expected a number less than or equal to 8400 but got 42883
+[FAIL] instanceNormalization float16 4D tensor options.bias
+  assert_less_than_equal: assert_array_approx_equals_ulp: test instanceNormalization float16 actual NaN should be close enough to expected -34.15625 by ULP distance: expected a number less than or equal to 8400 but got 11707
+[FAIL] instanceNormalization float16 4D tensor options.epsilon
+  assert_less_than_equal: assert_array_approx_equals_ulp: test instanceNormalization float16 actual 0 should be close enough to expected -1.099609375 by ULP distance: expected a number less than or equal to 8400 but got 48230
+[FAIL] instanceNormalization float16 4D tensor explicit options.layout='nchw'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test instanceNormalization float16 actual 0 should be close enough to expected -1.099609375 by ULP distance: expected a number less than or equal to 8400 but got 48230
+[FAIL] instanceNormalization float16 4D tensor options.layout='nhwc'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test instanceNormalization float16 actual 0 should be close enough to expected -1.099609375 by ULP distance: expected a number less than or equal to 8400 but got 48230
+[FAIL] instanceNormalization float16 4D tensor all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test instanceNormalization float16 actual NaN should be close enough to expected 70.75 by ULP distance: expected a number less than or equal to 8400 but got 43412
+Harness: the test ran to completion.
+

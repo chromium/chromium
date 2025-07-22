@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] clamp int8 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16]."
+[FAIL] clamp uint8 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint8 must be one of [float32,float16]."
+[FAIL] clamp int32 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int32 must be one of [float32,float16]."
+[FAIL] clamp uint32 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint32 must be one of [float32,float16]."
+[FAIL] clamp int64 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16]."
+[FAIL] clamp uint64 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint64 must be one of [float32,float16]."
+[FAIL] clamp float16 0D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 0 should be close enough to expected -9.8203125 by ULP distance: expected a number less than or equal to 0 but got 51433
+[FAIL] clamp float16 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 0 should be close enough to expected NaN by ULP distance: expected a number less than or equal to 0 but got 31744
+[FAIL] clamp float16 1D constant tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 0.0078125 should be close enough to expected -9.8203125 by ULP distance: expected a number less than or equal to 0 but got 43241
+[FAIL] clamp float16 1D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual -2 should be close enough to expected -9.8203125 by ULP distance: expected a number less than or equal to 0 but got 2281
+[FAIL] clamp float16 2D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual -2 should be close enough to expected -9.8203125 by ULP distance: expected a number less than or equal to 0 but got 2281
+[FAIL] clamp float16 3D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual -2 should be close enough to expected -9.8203125 by ULP distance: expected a number less than or equal to 0 but got 2281
+[FAIL] clamp float16 4D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual -2 should be close enough to expected -9.8203125 by ULP distance: expected a number less than or equal to 0 but got 2281
+[FAIL] clamp float16 4D tensor default options.maxValue and specified negative options.minValue
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 0 should be close enough to expected -1 by ULP distance: expected a number less than or equal to 0 but got 48128
+[FAIL] clamp float16 3D tensor default options.maxValue and specified options.minValue=0.0
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual NaN should be close enough to expected 9.5234375 by ULP distance: expected a number less than or equal to 0 but got 14013
+[FAIL] clamp float16 2D tensor default options.maxValue and specified positive options.minValue
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 15360
+[FAIL] clamp float16 1D tensor default options.minValue and specified options.maxValue=0.0
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual -2 should be close enough to expected -9.8203125 by ULP distance: expected a number less than or equal to 0 but got 2281
+[FAIL] clamp float16 3D tensor default options.minValue and specified positive options.maxValue
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual -2 should be close enough to expected -9.8203125 by ULP distance: expected a number less than or equal to 0 but got 2281
+[FAIL] clamp float16 4D tensor specified negative options.minValue and options.maxValue=0.0
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 0 should be close enough to expected -6 by ULP distance: expected a number less than or equal to 0 but got 50688
+[FAIL] clamp float16 3D tensor specified negative options.minValue and positive options.maxValue
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 0 should be close enough to expected -3 by ULP distance: expected a number less than or equal to 0 but got 49664
+[FAIL] clamp float16 2D tensor specified options.minValue=0.0 and positive options.maxValue
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 2.375 should be close enough to expected 6 by ULP distance: expected a number less than or equal to 0 but got 1344
+[FAIL] clamp float16 1D tensor specified both positive options.minValue and options.maxValue
+  assert_less_than_equal: assert_array_approx_equals_ulp: test clamp float16 actual 0 should be close enough to expected 2 by ULP distance: expected a number less than or equal to 0 but got 16384
+Harness: the test ran to completion.
+

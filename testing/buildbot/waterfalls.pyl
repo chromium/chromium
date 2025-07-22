@@ -1196,6 +1196,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_gpu_gtests',
+           'isolated_scripts': 'optimization_guide_gpu_isolated_scripts',
         },
         'os_type': 'linux',
       },

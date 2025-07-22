@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] gruCell float16 tensors with options.bias, options.recurrentBias and options.activations=['relu', 'relu']
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gruCell float16 actual 0 should be close enough to expected -0.25 by ULP distance: expected a number less than or equal to 3 but got 46080
+[FAIL] gruCell float16 tensors with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and explicit options.layout='zrn'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gruCell float16 actual 0 should be close enough to expected -0.25 by ULP distance: expected a number less than or equal to 3 but got 46080
+[FAIL] gruCell float16 tensors with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and and options.layout='rzn'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gruCell float16 actual 0 should be close enough to expected -0.25 by ULP distance: expected a number less than or equal to 3 but got 46080
+[FAIL] gruCell float16 tensors with all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gruCell float16 actual 0 should be close enough to expected -0.25 by ULP distance: expected a number less than or equal to 3 but got 46080
+Harness: the test ran to completion.
+

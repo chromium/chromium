@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] sigmoid float16 1D constant tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sigmoid float16 actual 512 should be close enough to expected 0.406982421875 by ULP distance: expected a number less than or equal to 10 but got 10621
+[FAIL] sigmoid float16 0D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sigmoid float16 actual 0 should be close enough to expected 0.406982421875 by ULP distance: expected a number less than or equal to 10 but got 13955
+[FAIL] sigmoid float16 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sigmoid float16 actual 0 should be close enough to expected 0.406982421875 by ULP distance: expected a number less than or equal to 10 but got 13955
+[FAIL] sigmoid float16 2D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sigmoid float16 actual 0 should be close enough to expected 0.406982421875 by ULP distance: expected a number less than or equal to 10 but got 13955
+[FAIL] sigmoid float16 3D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sigmoid float16 actual 0 should be close enough to expected 0.406982421875 by ULP distance: expected a number less than or equal to 10 but got 13955
+[FAIL] sigmoid float16 4D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sigmoid float16 actual 0 should be close enough to expected 0.406982421875 by ULP distance: expected a number less than or equal to 10 but got 13955
+Harness: the test ran to completion.
+

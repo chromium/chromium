@@ -1,0 +1,8 @@
+# These tests should run on the internal.optimization_guide Official Linux
+# builder in order to test the behavior of the TFLite GPU delegate provided by
+# liboptimization_guide_internal.so.
+#
+# See //third_party/blink/web_tests/OptimizationGuideExpectations for the test
+# expectations for this configuration.
+
+virtual/webnn-service-with-gpu/*

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] sign float16 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test sign float16 actual 0 should be close enough to expected -1 by ULP distance: expected a number less than or equal to 0 but got 48128
+[FAIL] sign int64 3D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32]."
+[FAIL] sign int8 4D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16,int32]."
+Harness: the test ran to completion.
+
