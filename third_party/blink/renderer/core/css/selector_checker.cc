@@ -400,6 +400,37 @@ bool NeedsScopeActivation(
 
 }  // namespace
 
+SelectorChecker::FeaturelessMatch
+SelectorChecker::MatchesShadowHostInComplexSelector(
+    const SelectorCheckingContext& context,
+    MatchResult& result) const {
+  SelectorCheckingContext sub_context(context);
+  FeaturelessMatch match = kFeaturelessMatches;
+  while (sub_context.selector) {
+    if (sub_context.selector->Relation() != CSSSelector::kSubSelector) {
+      // We have a combinator left of a :host. Such selectors should evaluate to
+      // false, even when negated. For instance: :not(#foo > :host) { ... }
+      return kFeaturelessUnknown;
+    }
+    SubResult sub_result(result);
+    switch (MatchShadowHost(sub_context, sub_result)) {
+      case kFeaturelessMatches:
+        break;
+      case kFeaturelessFails:
+        // We need to keep matching within the compound for non-matching simple
+        // selectors since `:not(:not(:host))` should match,
+        // but `:not(:not(:host)#foo)` shouldn't, and we need to reach #foo to
+        // know that we need to return kFeaturelessUnknown.
+        match = kFeaturelessFails;
+        break;
+      case kFeaturelessUnknown:
+        return kFeaturelessUnknown;
+    }
+    sub_context.selector = sub_context.selector->NextSimpleSelector();
+  }
+  return match;
+}
+
 SelectorChecker::FeaturelessMatch SelectorChecker::MatchesShadowHostInList(
     const SelectorCheckingContext& context,
     const CSSSelector* selector_list,
@@ -408,21 +439,20 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchesShadowHostInList(
   sub_context.is_sub_selector = true;
   sub_context.in_nested_complex_selector = true;
   sub_context.pseudo_id = kPseudoIdNone;
-  FeaturelessMatch fail = kFeaturelessUnknown;
+  FeaturelessMatch match = kFeaturelessUnknown;
   for (sub_context.selector = selector_list; sub_context.selector;
        sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
-    SubResult sub_result(result);
-    switch (MatchShadowHost(sub_context, sub_result)) {
+    switch (MatchesShadowHostInComplexSelector(sub_context, result)) {
       case kFeaturelessMatches:
         return kFeaturelessMatches;
       case kFeaturelessFails:
-        fail = kFeaturelessFails;
+        match = kFeaturelessFails;
         break;
       case kFeaturelessUnknown:
         break;
     }
   }
-  return fail;
+  return match;
 }
 
 SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
