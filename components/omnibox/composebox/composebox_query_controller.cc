@@ -195,7 +195,8 @@ void ComposeboxQueryController::NotifySessionStarted() {
 void ComposeboxQueryController::NotifySessionAbandoned() {
   ClearFiles();
   ClearClusterInfo();
-  SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
+  SetQueryControllerState(QueryControllerState::kOff);
+  session_id_++;
 }
 
 GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
@@ -367,7 +368,11 @@ void ComposeboxQueryController::ClearClusterInfo() {
   request_id_generator_.ResetRequestId();
 }
 
-void ComposeboxQueryController::ResetRequestClusterInfoState() {
+void ComposeboxQueryController::ResetRequestClusterInfoState(int session_id) {
+  if (session_id != session_id_) {
+    // The session associated with this timer has been invalidated.
+    return;
+  }
   ClearClusterInfo();
   // Iterate through any existing files and mark them as expired.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
@@ -452,7 +457,6 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   }
 
   // Store the cluster info.
-  // TODO(crbug.com/425377511): Add TTL timer for the cluster info.
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->set_server_session_id(server_response.server_session_id());
   cluster_info_->set_search_session_id(server_response.search_session_id());
@@ -472,7 +476,7 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ComposeboxQueryController::ResetRequestClusterInfoState,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), session_id_),
       base::Seconds(
           lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
 }

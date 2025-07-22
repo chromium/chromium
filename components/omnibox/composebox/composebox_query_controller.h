@@ -228,8 +228,9 @@ class ComposeboxQueryController {
   void ClearClusterInfo();
 
   // Resets the request cluster info state. Protected to allow tests to
-  // override.
-  virtual void ResetRequestClusterInfoState();
+  // override. `session_id` is used to determine if the async timer is
+  // from an old, invalid session.
+  virtual void ResetRequestClusterInfoState(int session_id);
 
   // The internal state of the query controller. Protected to allow tests to
   // access the state. Do not modify this state directly, use
@@ -362,6 +363,11 @@ class ComposeboxQueryController {
   // TODO(crbug.com/430070871): Remove this once the server supports the
   // `lns_surface` parameter.
   bool send_lns_surface_ = false;
+
+  // The session counter, incremented when the session is stopped. This is used
+  // to determine if the session is active when handling cluster info
+  // expiration.
+  int session_id_ = 0;
 
   base::WeakPtrFactory<ComposeboxQueryController> weak_ptr_factory_{this};
 };

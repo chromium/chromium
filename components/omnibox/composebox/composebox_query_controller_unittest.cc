@@ -345,8 +345,7 @@ TEST_F(ComposeboxQueryControllerTest, NotifySessionAbandoned) {
 
   // Check that file is no longer in cache.
   EXPECT_FALSE(controller().GetFileInfo(file_token));
-  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
-            controller().query_controller_state());
+  EXPECT_EQ(QueryControllerState::kOff, controller().query_controller_state());
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
@@ -725,6 +724,112 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientContextHasCorrectValues) {
   EXPECT_EQ(client_context.locale_context().language(), kLocale);
   EXPECT_EQ(client_context.locale_context().region(), kRegion);
   EXPECT_EQ(client_context.locale_context().time_zone(), kTimeZone);
+}
+
+TEST_F(ComposeboxQueryControllerTest, AbandonSessionClearsFiles) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(
+      file_token,
+      /*file_data=*/base::MakeRefCounted<base::RefCountedBytes>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token);
+
+  // Act: Abandon the session.
+  controller().NotifySessionAbandoned();
+
+  // Assert: Validate the state change.
+  EXPECT_EQ(QueryControllerState::kOff, controller_state_future_.Take());
+
+  // Act: Start the session again.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate the state change.
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller_state_future_.Take());
+
+  // Assert: Validate the state change.
+  EXPECT_EQ(QueryControllerState::kClusterInfoReceived,
+            controller_state_future_.Take());
+
+  // Act: Generate the destination URL for the query.
+  GURL aim_url = controller().CreateAimUrl("test", kTestQueryStartTime);
+
+  // Assert: Lens request id is NOT added to unimodal text queries.
+  std::string vsrid_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                          &vsrid_value));
+
+  // Assert: Visual input type is NOT added to unimodal text queries.
+  std::string vit_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
+                                          &vit_value));
+
+  // Assert: Gsession id is NOT added to unimodal text queries.
+  std::string gsession_id_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
+                                          &gsession_id_value));
+
+  // Check that the timestamps are attached to the url.
+  std::string qsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
+
+  std::string pqsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kUserPerceivedQuerySubmissionTimeQueryParameter,
+      &pqsubts_value));
+  EXPECT_EQ(pqsubts_value, "1000");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       AbandonSessionPreventsMultipleClusterInfoFetch) {
+  // Enable cluster info TTL.
+  controller().set_enable_cluster_info_ttl(true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Abandon the session.
+  controller().NotifySessionAbandoned();
+
+  // Assert: Validate the state change.
+  EXPECT_EQ(QueryControllerState::kOff, controller_state_future_.Take());
+
+  // Act: Start the session again.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate the state change.
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller_state_future_.Take());
+
+  // Assert: Validate the state change.
+  EXPECT_EQ(QueryControllerState::kClusterInfoReceived,
+            controller_state_future_.Take());
+
+  // Wait 45 minutes, long enough for the cluster info to expire once.
+  task_environment().FastForwardBy(base::Minutes(45));
+
+  // Assert: Validate the state change sequence.
+  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
+            controller_state_future_.Take());
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller_state_future_.Take());
+  EXPECT_EQ(QueryControllerState::kClusterInfoReceived,
+            controller_state_future_.Take());
+
+  // Assert: The cluster info fetch request was only sent 3 times.
+  EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 3);
 }
 
 TEST_F(ComposeboxQueryControllerTest,
