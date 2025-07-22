@@ -88,8 +88,7 @@ class LocalNetworkAccessBrowserTest : public policy::PolicyTest {
     EXPECT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
   }
 
- private:
-  void SetUpCommandLine(base::CommandLine* command_line) final {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
     // Ignore cert errors when connecting to https_server()
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
@@ -284,4 +283,85 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                   content::JsReplace("fetch($1).then(response => response.ok)",
                                      https_server().GetURL("b.com", kLnaPath))),
               content::EvalJsResult::IsError());
+}
+
+// Test that using the LNA allow policy override on an HTTP url works in
+// conjuction with setting the kUnsafelyTreatInsecureOriginAsSecure command line
+// switch.
+class LocalNetworkAccessBrowserHttpCommandLineOverrideTest
+    : public LocalNetworkAccessBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) final {
+    LocalNetworkAccessBrowserTest::SetUpCommandLine(command_line);
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+    command_line->AppendSwitchASCII(
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+        embedded_test_server()->GetURL("a.com", "/").spec());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserHttpCommandLineOverrideTest,
+                       LocalNetworkAccessAllowedForHttpUrlsPolicy) {
+  policy::PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL(
+          "a.com",
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
+
+  // LNA fetch should pass.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kLnaPath))));
+}
+
+// Test that using the LNA allow policy override on an HTTP url works in
+// conjunction with setting the kOverrideSecurityRestrictionsOnInsecureOrigin
+// enterprise policy.
+class LocalNetworkAccessBrowserHttpPolicyOverrideTest
+    : public LocalNetworkAccessBrowserTest {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    LocalNetworkAccessBrowserTest::SetUpInProcessBrowserTestFixture();
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    policy::PolicyMap policies;
+    base::Value::List secureList;
+    secureList.Append(
+        base::Value(embedded_test_server()->GetURL("a.com", "/").spec()));
+    SetPolicy(&policies,
+              policy::key::kOverrideSecurityRestrictionsOnInsecureOrigin,
+              base::Value(std::move(secureList)));
+    base::Value::List allowlist;
+    allowlist.Append(base::Value("*"));
+    SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+              base::Value(std::move(allowlist)));
+    UpdateProviderPolicy(policies);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserHttpPolicyOverrideTest,
+                       LocalNetworkAccessAllowedForHttpUrlsPolicy) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL(
+          "a.com",
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
+
+  // LNA fetch should pass.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kLnaPath))));
 }
