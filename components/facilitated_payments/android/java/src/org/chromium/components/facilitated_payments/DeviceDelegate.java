@@ -99,6 +99,34 @@ public class DeviceDelegate {
                 paymentLinkUrl, windowAndroid, new PackageManagerDelegate(packageManager));
     }
 
+    /**
+     * Invokes a payment app by launching an intent.
+     *
+     * @param packageName The package name of the payment app.
+     * @param activityName The activity name of the payment app.
+     * @param paymentLinkUrl The payment link URL to be included as data in the intent.
+     * @param windowAndroid The {@link WindowAndroid} for launching the intent.
+     * @return True if the intent was shown successfully, false otherwise.
+     */
+    @CalledByNative
+    static boolean invokePaymentApp(
+            String packageName,
+            String activityName,
+            GURL paymentLinkUrl,
+            WindowAndroid windowAndroid) {
+        if (windowAndroid == null) {
+            return false;
+        }
+        Intent intent = new Intent();
+        intent.setAction(A2A_INTENT_ACTION_NAME);
+        intent.setData(Uri.parse(paymentLinkUrl.getSpec()));
+        intent.setClassName(packageName, activityName);
+        // showIntent returns true if the intent was shown successfully.
+        // TODO(crbug.com/432821264): Handle returned transaction result and specify the `errorId`.
+        return windowAndroid.showIntent(
+                intent, /* callback= */ (resultCode, data) -> {}, /* errorId= */ null);
+    }
+
     @VisibleForTesting
     static ResolveInfo[] getSupportedPaymentApps(
             GURL paymentLinkUrl,

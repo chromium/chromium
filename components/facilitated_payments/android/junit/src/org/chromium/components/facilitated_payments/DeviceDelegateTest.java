@@ -5,6 +5,7 @@
 package org.chromium.components.facilitated_payments;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -48,6 +49,8 @@ import java.util.List;
 @Batch(Batch.UNIT_TESTS)
 @SmallTest
 public class DeviceDelegateTest {
+    private static final String A2A_INTENT_ACTION_NAME =
+            "org.chromium.intent.action.FACILITATED_PAYMENT";
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
     private static final String EMAIL = "user@example.com";
     private static final GURL PAYMENT_LINK = new GURL("https://www.example.com");
@@ -267,5 +270,49 @@ public class DeviceDelegateTest {
         resolveInfo.activityInfo.packageName = packageName;
         resolveInfo.activityInfo.name = name;
         return resolveInfo;
+    }
+
+    @Test
+    public void testNullWindowAndroidCannotInvokePaymentApp() {
+        assertFalse(
+                DeviceDelegate.invokePaymentApp(
+                        "com.example.app",
+                        "com.example.app.Activity",
+                        PAYMENT_LINK,
+                        /* windowAndroid= */ null));
+    }
+
+    @Test
+    public void testInvokePaymentApp_launchesIntentSuccessfully() {
+        when(mMockWindowAndroid.showIntent(any(Intent.class), any(), any())).thenReturn(true);
+
+        assertTrue(
+                DeviceDelegate.invokePaymentApp(
+                        "com.example.app",
+                        "com.example.app.Activity",
+                        PAYMENT_LINK,
+                        mMockWindowAndroid));
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mMockWindowAndroid).showIntent(intentCaptor.capture(), any(), any());
+
+        Intent capturedIntent = intentCaptor.getValue();
+        assertEquals(A2A_INTENT_ACTION_NAME, capturedIntent.getAction());
+        assertEquals(Uri.parse(PAYMENT_LINK.getSpec()), capturedIntent.getData());
+        assertEquals("com.example.app", capturedIntent.getComponent().getPackageName());
+        assertEquals("com.example.app.Activity", capturedIntent.getComponent().getClassName());
+    }
+
+    @Test
+    public void testInvokePaymentApp_showIntentReturnsFalse() {
+        when(mMockWindowAndroid.showIntent(any(Intent.class), any(), any())).thenReturn(false);
+
+        assertFalse(
+                DeviceDelegate.invokePaymentApp(
+                        "com.example.app",
+                        "com.example.app.Activity",
+                        PAYMENT_LINK,
+                        mMockWindowAndroid));
+        verify(mMockWindowAndroid).showIntent(any(Intent.class), any(), any());
     }
 }

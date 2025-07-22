@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
@@ -38,6 +39,12 @@ class DeviceDelegate {
 
   virtual std::unique_ptr<FacilitatedPaymentsAppInfoList>
   GetSupportedPaymentApps(const GURL& payment_link_url) = 0;
+
+  // Invokes a payment app with the given `package_name`, `activity_name`, and
+  // `payment_link_url`. Returns `true` if the app was invoked successfully.
+  virtual bool InvokePaymentApp(std::string_view package_name,
+                                std::string_view activity_name,
+                                const GURL& payment_link_url) = 0;
 };
 
 }  // namespace payments::facilitated

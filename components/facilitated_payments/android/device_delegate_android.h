@@ -6,6 +6,7 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_ANDROID_DEVICE_DELEGATE_ANDROID_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/android/application_status_listener.h"
 #include "base/functional/callback.h"
@@ -44,6 +45,10 @@ class DeviceDelegateAndroid : public DeviceDelegate {
 
   std::unique_ptr<FacilitatedPaymentsAppInfoList> GetSupportedPaymentApps(
       const GURL& payment_link_url) override;
+
+  bool InvokePaymentApp(std::string_view package_name,
+                        std::string_view activity_name,
+                        const GURL& payment_link_url) override;
 
  private:
   friend class DeviceDelegateAndroidTestApi;

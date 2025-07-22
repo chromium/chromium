@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/android/device_delegate_android.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/android/application_status_listener.h"
 #include "base/android/jni_android.h"
@@ -95,6 +96,17 @@ DeviceDelegateAndroid::GetSupportedPaymentApps(const GURL& payment_link_url) {
           web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
   return std::make_unique<FacilitatedPaymentsAppInfoListAndroid>(
       std::move(raw_array));
+}
+
+bool DeviceDelegateAndroid::InvokePaymentApp(std::string_view package_name,
+                                             std::string_view activity_name,
+                                             const GURL& payment_link_url) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_DeviceDelegate_invokePaymentApp(
+      env, base::android::ConvertUTF8ToJavaString(env, package_name),
+      base::android::ConvertUTF8ToJavaString(env, activity_name),
+      url::GURLAndroid::FromNativeGURL(env, payment_link_url),
+      web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
 }
 
 }  // namespace payments::facilitated
