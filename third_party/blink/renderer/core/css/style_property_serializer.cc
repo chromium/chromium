@@ -1479,6 +1479,32 @@ String StylePropertySerializer::TextDecorationValue() const {
           continue;
         }
       }
+    } else if (RuntimeEnabledFeatures::
+                   TextDecorationShortSerializationEnabled()) {
+      if (longhand->PropertyID() == CSSPropertyID::kTextDecorationLine) {
+        if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+          // Skip the initial value.
+          if (identifier_value->GetValueID() == CSSValueID::kNone) {
+            continue;
+          }
+        }
+      } else if (longhand->PropertyID() ==
+                 CSSPropertyID::kTextDecorationStyle) {
+        if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+          // Skip the initial value.
+          if (identifier_value->GetValueID() == CSSValueID::kSolid) {
+            continue;
+          }
+        }
+      } else if (longhand->PropertyID() ==
+                 CSSPropertyID::kTextDecorationColor) {
+        if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+          // Skip the initial value.
+          if (identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
+            continue;
+          }
+        }
+      }
     }
     if (!result.empty()) {
       result.Append(" ");

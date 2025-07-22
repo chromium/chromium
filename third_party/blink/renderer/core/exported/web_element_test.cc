@@ -339,7 +339,9 @@ TEST_F(WebElementTest, ComputedStyleProperties) {
   // text-decoration
   {
     EXPECT_EQ(element.GetComputedValue("text-decoration"),
-              "none solid rgb(0, 0, 255)");
+              RuntimeEnabledFeatures::TextDecorationShortSerializationEnabled()
+                  ? "rgb(0, 0, 255)"
+                  : "none solid rgb(0, 0, 255)");
     element.SetAttribute("style", "text-decoration: line-through");
     EXPECT_EQ(element.GetComputedValue("text-decoration-line"), "line-through");
     EXPECT_EQ(element.GetComputedValue("-Webkit-text-decorations-in-effect"),
