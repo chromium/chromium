@@ -1584,6 +1584,12 @@ const char kEnableIsolatedWebAppManagedGuestSessionInstallName[] =
 const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[] =
     "Enables the installation of Isolated Web Apps for users that are logged "
     "into a managed guest session.";
+
+const char kWebAppManifestProtocolHandlersName[] =
+    "Enable web app manifest protocol handlers";
+const char kWebAppManifestProtocolHandlersDescription[] =
+    "Enables support for protocol handlers registered via the "
+    "`protocol_handlers` web app manifest field.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kEnableIsolatedWebAppAllowlistName[] =

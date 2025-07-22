@@ -5550,6 +5550,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallName,
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(features::kIsolatedWebAppUnmanagedInstall)},
+    {"web-app-manifest-protocol-handlers",
+     flag_descriptions::kWebAppManifestProtocolHandlersName,
+     flag_descriptions::kWebAppManifestProtocolHandlersDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kWebAppManifestProtocolHandlerSupport)},
 #endif
     {"enable-isolated-web-app-allowlist",
      flag_descriptions::kEnableIsolatedWebAppAllowlistName,

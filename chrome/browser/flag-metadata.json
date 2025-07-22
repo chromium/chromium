@@ -10131,6 +10131,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "web-app-manifest-protocol-handlers",
+    "owners": [ "greengrape@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "web-authentication-immediate-get",
     "owners": [
       "derinel@google.com",

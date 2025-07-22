@@ -49,6 +49,10 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace {
 
 GURL GetGoogleURL() {
@@ -97,7 +101,12 @@ class ExternalProtocolHandlerDelegate
 class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
  public:
   BrowserNavigatorIwaTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    std::vector<base::test::FeatureRef> features = {features::kIsolatedWebApps};
+#if BUILDFLAG(IS_CHROMEOS)
+    features.emplace_back(
+        chromeos::features::kWebAppManifestProtocolHandlerSupport);
+#endif
+    scoped_feature_list_.InitWithFeatures(features, {});
   }
 
   void SetUpOnMainThread() override {

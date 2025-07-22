@@ -396,7 +396,7 @@ BASE_FEATURE(kNotebookLmAppShelfPinReset,
 // Enables support for protocols handlers registered via web app manifest.
 BASE_FEATURE(kWebAppManifestProtocolHandlerSupport,
              "WebAppManifestProtocolHandlerSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kRoundedWindowsRadius[] = "window_radius";
 
