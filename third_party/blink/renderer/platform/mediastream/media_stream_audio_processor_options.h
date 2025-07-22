@@ -18,6 +18,9 @@ enum class EchoCancellationMode {
   kAll
 };
 
+extern PLATFORM_EXPORT const char kEchoCancellationModeAll[];
+extern PLATFORM_EXPORT const char kEchoCancellationModeRemoteOnly[];
+
 const char* EchoCancellationModeToString(EchoCancellationMode);
 
 // The result of parsing media stream constraints.

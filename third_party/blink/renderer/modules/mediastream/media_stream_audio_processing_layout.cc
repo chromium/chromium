@@ -238,8 +238,7 @@ MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSourceForTests(
   AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   if (platform_aec) {
     CHECK(available_platform_effects & media::AudioParameters::ECHO_CANCELLER);
-    // TODO(crbug.com/428856440): Use EchoCancellationMode::kAll when supported.
-    properties.echo_cancellation_mode = EchoCancellationMode::kBrowserDecides;
+    properties.echo_cancellation_mode = EchoCancellationMode::kAll;
   }
 
   return MakeForUnprocessedLocalSource(properties, available_platform_effects);

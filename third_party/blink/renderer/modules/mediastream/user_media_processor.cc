@@ -198,29 +198,27 @@ bool IsSameSource(MediaStreamSource* source, MediaStreamSource* other_source) {
 }
 
 void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
+  // TODO(http://crbug.com/428837201): Consolidate the logic for both types
+  // of sources.
   auto* source_impl =
       static_cast<blink::MediaStreamAudioSource*>(source->GetPlatformSource());
 
   // If the source is a processed source, get the properties from it.
-  if (auto* processed_source =
-          blink::ProcessedLocalAudioSource::From(source_impl)) {
-    std::optional<blink::AudioProcessingProperties> properties =
+  if (auto* processed_source = ProcessedLocalAudioSource::From(source_impl)) {
+    std::optional<AudioProcessingProperties> properties =
         processed_source->GetAudioProcessingProperties();
     CHECK(properties);
 
-    // TODO(crbug.com/428856440): Use properties->echo_cancellation_mode
-    // directly once we support all EchoCancellationMode values on the Web.
-    EchoCancellationMode source_echo_cancellation_mode =
-        properties->echo_cancellation_mode == EchoCancellationMode::kDisabled
-            ? EchoCancellationMode::kDisabled
-            : EchoCancellationMode::kBrowserDecides;
     source->SetAudioProcessingProperties(
-        source_echo_cancellation_mode, properties->auto_gain_control,
+        properties->echo_cancellation_mode, properties->auto_gain_control,
         properties->noise_suppression,
         properties->voice_isolation ==
             AudioProcessingProperties::VoiceIsolationType::
                 kVoiceIsolationEnabled);
-  } else {
+    return;
+  }
+
+  if (auto* platform_source = MediaStreamAudioSource::From(source)) {
     // TODO(http://crbug.com/428837201): this logic is broken:
     // LocalMediaStreamAudioSource does not take into account anything but echo
     // cancellation while configuring device effects. And here we look at echo
@@ -228,13 +226,21 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
     // unchanged, and we ignore possible gain control/noise suppression. If the
     // source is not a processed source, it could still support system echo
     // cancellation or voice. Surface that if it does.
+    EchoCancellationMode ec_mode;
+    std::optional<blink::AudioProcessingProperties> properties =
+        platform_source->GetAudioProcessingProperties();
     media::AudioParameters params = source_impl->GetAudioParameters();
+    if (RuntimeEnabledFeatures::GetUserMediaEchoCancellationModesEnabled() &&
+        properties) {
+      ec_mode = properties->echo_cancellation_mode;
+    } else {
+      ec_mode = params.IsValid() && (params.effects() &
+                                     media::AudioParameters::ECHO_CANCELLER)
+                    ? EchoCancellationMode::kBrowserDecides
+                    : EchoCancellationMode::kDisabled;
+    }
     source->SetAudioProcessingProperties(
-        (params.IsValid() &&
-                 (params.effects() & media::AudioParameters::ECHO_CANCELLER)
-             ? EchoCancellationMode::kBrowserDecides
-             : EchoCancellationMode::kDisabled),
-        false, false,
+        ec_mode, false, false,
         params.IsValid() &&
             (params.effects() &
              media::AudioParameters::VOICE_ISOLATION_SUPPORTED) &&
@@ -1800,6 +1806,8 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
 #endif  // DCHECK_IS_ON()
 
   MediaStreamSource::Capabilities capabilities;
+  // TODO(crbug.com/428856440): Support new echo cancellation modes for
+  // getCapabilities().
   capabilities.echo_cancellation = {EchoCancellationMode::kDisabled,
                                     EchoCancellationMode::kBrowserDecides};
   capabilities.auto_gain_control = {true, false};

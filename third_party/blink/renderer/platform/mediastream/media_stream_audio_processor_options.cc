@@ -11,6 +11,9 @@
 
 namespace blink {
 
+const char kEchoCancellationModeAll[] = "all";
+const char kEchoCancellationModeRemoteOnly[] = "remote-only";
+
 const char* EchoCancellationModeToString(EchoCancellationMode ec_mode) {
   switch (ec_mode) {
     case EchoCancellationMode::kDisabled:
@@ -18,9 +21,9 @@ const char* EchoCancellationModeToString(EchoCancellationMode ec_mode) {
     case EchoCancellationMode::kBrowserDecides:
       return "browser-decides";
     case EchoCancellationMode::kAll:
-      return "all";
+      return kEchoCancellationModeAll;
     case EchoCancellationMode::kRemoteOnly:
-      return "remote-only";
+      return kEchoCancellationModeRemoteOnly;
   }
 }
 

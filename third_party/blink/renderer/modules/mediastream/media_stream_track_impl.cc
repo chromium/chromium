@@ -29,7 +29,6 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
@@ -88,9 +87,12 @@ V8UnionBooleanOrString* EchoCancellationModeToBooleanOrString(
       return MakeGarbageCollected<V8UnionBooleanOrString>(false);
     case EchoCancellationMode::kBrowserDecides:
       return MakeGarbageCollected<V8UnionBooleanOrString>(true);
-    case EchoCancellationMode::kRemoteOnly:
     case EchoCancellationMode::kAll:
-      NOTREACHED();
+      return MakeGarbageCollected<V8UnionBooleanOrString>(
+          String(kEchoCancellationModeAll));
+    case EchoCancellationMode::kRemoteOnly:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(
+          String(kEchoCancellationModeRemoteOnly));
   }
 }
 

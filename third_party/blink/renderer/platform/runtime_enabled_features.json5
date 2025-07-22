@@ -2512,6 +2512,10 @@
       browser_process_read_write_access: true,
     },
     {
+      name: "GetUserMediaEchoCancellationModes",
+      status: "experimental",
+    },
+    {
       name: "GroupEffect",
       status: "test",
     },
