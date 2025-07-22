@@ -31,17 +31,30 @@ void FakeEndpointFetcher::PerformRequest(
   }
 }
 
+bool FakeVariationsClient::IsOffTheRecord() const {
+  return false;
+}
+
+variations::mojom::VariationsHeadersPtr
+FakeVariationsClient::GetVariationsHeaders() const {
+  base::flat_map<variations::mojom::GoogleWebVisibility, std::string> headers =
+      {{variations::mojom::GoogleWebVisibility::FIRST_PARTY, "123xyz"}};
+  return variations::mojom::VariationsHeaders::New(headers);
+}
+
 TestComposeboxQueryController::TestComposeboxQueryController(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     version_info::Channel channel,
     std::string locale,
-    TemplateURLService* template_url_service)
+    TemplateURLService* template_url_service,
+    variations::VariationsClient* variations_client)
     : ComposeboxQueryController(identity_manager,
                                 url_loader_factory,
                                 channel,
                                 locale,
-                                template_url_service) {}
+                                template_url_service,
+                                variations_client) {}
 TestComposeboxQueryController::~TestComposeboxQueryController() = default;
 
 std::unique_ptr<EndpointFetcher>
@@ -82,6 +95,11 @@ TestComposeboxQueryController::CreateEndpointFetcher(
 
     last_sent_file_upload_request_ = lens::LensOverlayServerRequest();
     last_sent_file_upload_request_->ParseFromString(request_string);
+  }
+
+  last_sent_cors_exempt_headers_.clear();
+  for (const auto& header : cors_exempt_headers) {
+    last_sent_cors_exempt_headers_.push_back(header);
   }
 
   // Create the fake endpoint fetcher to return the fake response.

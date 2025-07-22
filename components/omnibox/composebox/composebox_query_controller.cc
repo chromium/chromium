@@ -22,6 +22,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/variations_client.h"
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -155,12 +156,14 @@ ComposeboxQueryController::ComposeboxQueryController(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     version_info::Channel channel,
     std::string locale,
-    TemplateURLService* template_url_service)
+    TemplateURLService* template_url_service,
+    variations::VariationsClient* variations_client)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       channel_(channel),
       locale_(locale),
-      template_url_service_(template_url_service) {
+      template_url_service_(template_url_service),
+      variations_client_(variations_client) {
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -352,8 +355,8 @@ void ComposeboxQueryController::SendClusterInfoNetworkRequest(
   request_headers.push_back(kContentType);
 
   // Get client experiment variations to include in the request.
-  // TODO(crbug.com/425396482): Attach variations header.
-  std::vector<std::string> cors_exempt_headers;
+  std::vector<std::string> cors_exempt_headers =
+      lens::CreateVariationsHeaders(variations_client_);
 
   // Generate the URL to fetch.
   GURL fetch_url = GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
@@ -547,8 +550,8 @@ void ComposeboxQueryController::SendFileUploadNetworkRequest(
   CHECK(cluster_info_.has_value());
 
   // Get client experiment variations to include in the request.
-  // TODO(crbug.com/425396482): Attach variations header.
-  std::vector<std::string> cors_exempt_headers;
+  std::vector<std::string> cors_exempt_headers =
+      lens::CreateVariationsHeaders(variations_client_);
 
   // Generate the URL to fetch to and include the server session id if present.
   GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
