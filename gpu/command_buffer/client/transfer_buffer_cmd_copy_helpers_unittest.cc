@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/transfer_buffer_cmd_copy_helpers.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -76,7 +72,7 @@ class TransferBufferCmdCopyHelpersTest : public testing::Test {
     FakeScopedTransferBufferPtr transfer_buffer(BufferSize);
     ExpectedBuffers expected(count);
 
-    EXPECT_TRUE(::internal::TransferArraysAndExecute(
+    UNSAFE_TODO(EXPECT_TRUE(::internal::TransferArraysAndExecute(
         count, &transfer_buffer,
         [&](std::array<uint32_t, 4>& byte_offsets, uint32_t copy_offset,
             uint32_t copy_count) {
@@ -97,7 +93,7 @@ class TransferBufferCmdCopyHelpersTest : public testing::Test {
                     0);
         },
         expected.a.data(), expected.b.data(), expected.c.data(),
-        expected.d.data()));
+        expected.d.data())));
   }
 };
 

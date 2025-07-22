@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
@@ -307,12 +303,12 @@ TEST_F(GLES2DecoderPassthroughTest,
   // Our state should not be modified.
   GLboolean test_color_mask[4];
   glGetBooleanv(GL_COLOR_WRITEMASK, test_color_mask);
-  EXPECT_TRUE(0 ==
-              memcmp(test_color_mask, color_mask, sizeof(test_color_mask)));
+  UNSAFE_TODO(EXPECT_TRUE(
+      0 == memcmp(test_color_mask, color_mask, sizeof(test_color_mask))));
   GLfloat test_clear_color[4];
   glGetFloatv(GL_COLOR_CLEAR_VALUE, test_clear_color);
-  EXPECT_TRUE(0 ==
-              memcmp(test_clear_color, clear_color, sizeof(test_clear_color)));
+  UNSAFE_TODO(EXPECT_TRUE(
+      0 == memcmp(test_clear_color, clear_color, sizeof(test_clear_color))));
   GLint test_fbo;
   glGetIntegerv(GL_FRAMEBUFFER_BINDING, &test_fbo);
   EXPECT_EQ(test_fbo, static_cast<GLint>(dummy_fbo));

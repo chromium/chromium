@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/dawn_memory_transfer_handle.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
@@ -46,7 +42,7 @@ class ReadHandleImpl
     // Copy the data into the shared memory allocation.
     // In the case of buffer mapping, this is the mapped GPU memory which we
     // copy into client-visible shared memory.
-    memcpy(static_cast<uint8_t*>(ptr_) + offset, data, size);
+    UNSAFE_TODO(memcpy(static_cast<uint8_t*>(ptr_) + offset, data, size));
   }
 
  private:
@@ -84,8 +80,8 @@ class WriteHandleImpl
     // Copy from shared memory into the target buffer.
     // mTargetData will always be the starting address
     // of the backing buffer after the dawn side change.
-    memcpy(static_cast<uint8_t*>(mTargetData) + offset,
-           static_cast<const uint8_t*>(ptr_) + offset, size);
+    UNSAFE_TODO(memcpy(static_cast<uint8_t*>(mTargetData) + offset,
+                       static_cast<const uint8_t*>(ptr_) + offset, size));
     return true;
   }
 

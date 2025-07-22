@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -605,7 +601,7 @@ TEST_F(DecoderPerfTest, TextureDraw) {
     float xpos = 2.f * x / N - 1.f;
     for (int y = 0; y < N; ++y) {
       float ypos = 2.f * y / N - 1.f;
-      gl_->BindTexture(GL_TEXTURE_2D, textures[texture]);
+      gl_->BindTexture(GL_TEXTURE_2D, UNSAFE_TODO(textures[texture]));
       gl_->Uniform2f(offset_location, xpos, ypos);
       gl_->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
       texture = (texture + 1) % kTextures;

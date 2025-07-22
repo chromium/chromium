@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +47,7 @@ TEST_F(GLBGRAMipMapTest, GenerateMipmapsSucceeds) {
   glGenTextures(1, &tex);
   glBindTexture(GL_TEXTURE_2D, tex);
 
-  memset(pixels, 128, sizeof(pixels));
+  UNSAFE_TODO(memset(pixels, 128, sizeof(pixels)));
   glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA_EXT, kWidth, kHeight, 0,
                GL_BGRA_EXT, GL_UNSIGNED_BYTE, pixels);
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());

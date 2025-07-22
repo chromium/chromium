@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 
 #include <cstring>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -175,7 +171,7 @@ size_t DawnCachingBackend::Entry::ReadData(void* value_out,
   // Otherwise, verify that the size that is being copied out is identical.
   TRACE_EVENT0("gpu", "DawnCachingInterface::CacheHit");
   DCHECK(value_size == DataSize());
-  memcpy(value_out, data_.data(), value_size);
+  UNSAFE_TODO(memcpy(value_out, data_.data(), value_size));
   return value_size;
 }
 

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/shader_translator_cache.h"
+
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -19,19 +16,20 @@ TEST(ShaderTranslatorCacheTest, InitParamComparable) {
   // members does not affect the object equality or ordering.
 
   ShBuiltInResources a_resources;
-  memset(&a_resources, 88, sizeof(a_resources));
+  UNSAFE_TODO(memset(&a_resources, 88, sizeof(a_resources)));
   sh::InitBuiltInResources(&a_resources);
 
   ShBuiltInResources b_resources;
-  memset(&b_resources, 77, sizeof(b_resources));
+  UNSAFE_TODO(memset(&b_resources, 77, sizeof(b_resources)));
   sh::InitBuiltInResources(&b_resources);
 
-  EXPECT_TRUE(memcmp(&a_resources, &b_resources, sizeof(a_resources)) == 0);
+  UNSAFE_TODO(EXPECT_TRUE(
+      memcmp(&a_resources, &b_resources, sizeof(a_resources)) == 0));
 
   ShCompileOptions driver_bug_workarounds{};
 
   char a_storage[sizeof(ShaderTranslatorCache::ShaderTranslatorInitParams)];
-  memset(a_storage, 55, sizeof(a_storage));
+  UNSAFE_TODO(memset(a_storage, 55, sizeof(a_storage)));
   ShaderTranslatorCache::ShaderTranslatorInitParams* a =
       new (&a_storage) ShaderTranslatorCache::ShaderTranslatorInitParams(
           GL_VERTEX_SHADER, SH_GLES2_SPEC, a_resources, SH_ESSL_OUTPUT,
@@ -44,7 +42,7 @@ TEST(ShaderTranslatorCacheTest, InitParamComparable) {
   EXPECT_TRUE(*a == b);
   EXPECT_FALSE(*a < b || b < *a);
 
-  memset(a_storage, 55, sizeof(a_storage));
+  UNSAFE_TODO(memset(a_storage, 55, sizeof(a_storage)));
   a = new (&a_storage) ShaderTranslatorCache::ShaderTranslatorInitParams(b);
 
   EXPECT_TRUE(*a == b);

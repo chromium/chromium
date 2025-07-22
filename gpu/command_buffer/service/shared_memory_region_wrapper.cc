@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/system/sys_info.h"
@@ -124,7 +120,8 @@ bool SharedMemoryRegionWrapper::IsValid() const {
 
 const uint8_t* SharedMemoryRegionWrapper::GetMemory(int plane_index) const {
   DCHECK(IsValid());
-  return mapping_.GetMemoryAs<const uint8_t>() + planes_[plane_index].offset;
+  return UNSAFE_TODO(mapping_.GetMemoryAs<const uint8_t>() +
+                     planes_[plane_index].offset);
 }
 
 size_t SharedMemoryRegionWrapper::GetStride(int plane_index) const {
@@ -134,8 +131,8 @@ size_t SharedMemoryRegionWrapper::GetStride(int plane_index) const {
 
 base::span<const uint8_t> SharedMemoryRegionWrapper::GetMemoryPlanes() const {
   DCHECK(IsValid());
-  auto full_mapped_span =
-      base::span(mapping_.GetMemoryAs<const uint8_t>(), mapping_.mapped_size());
+  auto full_mapped_span = UNSAFE_TODO(base::span(
+      mapping_.GetMemoryAs<const uint8_t>(), mapping_.mapped_size()));
   // It is possible that the first plane starts at a non-zero offset. So we
   // subspan at this offset.
   return full_mapped_span.subspan(planes_[0].offset);

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <stdint.h>
 
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -42,10 +38,10 @@ class GLCubeMapTextureTest : public testing::TestWithParam<GLenum> {
     gl_.InitializeWithWorkarounds(GLManager::Options(), workarounds);
     DCHECK(gl_.workarounds().force_cube_complete);
     for (int i = 0; i < 256; i++) {
-      pixels_[i * 4] = 255u;
-      pixels_[(i * 4) + 1] = 0;
-      pixels_[(i * 4) + 2] = 0;
-      pixels_[(i * 4) + 3] = 255u;
+      UNSAFE_TODO(pixels_[i * 4]) = 255u;
+      UNSAFE_TODO(pixels_[(i * 4) + 1]) = 0;
+      UNSAFE_TODO(pixels_[(i * 4) + 2]) = 0;
+      UNSAFE_TODO(pixels_[(i * 4) + 3]) = 255u;
     }
 
     glGenTextures(1, &texture_);

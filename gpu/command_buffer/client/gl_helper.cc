@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/gl_helper.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -455,16 +451,17 @@ void GLHelper::CopyTextureToImpl::ReadbackDone(Request* finished_request) {
             std::min(request->row_stride_bytes, request->bytes_per_row);
         unsigned char* dst = request->pixels;
         if (request->flip_y && request->size.height() > 1) {
-          dst += dst_stride * (request->size.height() - 1);
+          UNSAFE_TODO(dst += dst_stride * (request->size.height() - 1));
           dst_stride = -dst_stride;
         }
         // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing
         // into memory observed by JS at the same time.
         for (int y = 0; y < request->size.height(); y++) {
           base::subtle::RelaxedAtomicWriteMemcpy(
-              base::span(dst, bytes_to_copy), base::span(src, bytes_to_copy));
-          dst += dst_stride;
-          src += src_stride;
+              UNSAFE_TODO(base::span(dst, bytes_to_copy)),
+              UNSAFE_TODO(base::span(src, bytes_to_copy)));
+          UNSAFE_TODO(dst += dst_stride);
+          UNSAFE_TODO(src += src_stride);
         }
         gl_->UnmapBufferCHROMIUM(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM);
       }
@@ -583,7 +580,7 @@ void GLHelper::CopyTextureToImpl::ReadbackPlane(
   const bool kFlipY = false;
   size_t bytes_per_row = paste_rect.width() >> size_shift;
   ReadbackAsync(gfx::Point(), texture_size, bytes_per_row, row_stride_bytes,
-                data + offset,
+                UNSAFE_TODO(data + offset),
                 (swizzle == kSwizzleBGRA) ? GL_BGRA_EXT : GL_RGBA,
                 GL_UNSIGNED_BYTE, 4, kFlipY, std::move(callback));
 }

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/client/client_font_manager.h"
 
 #include <bit>
 #include <type_traits>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 
@@ -38,7 +34,7 @@ class Serializer {
     if (bytes == 0)
       return;
 
-    memcpy(memory_, input, bytes);
+    UNSAFE_TODO(memcpy(memory_, input, bytes));
     memory_ += bytes;
     bytes_written_ += bytes;
   }

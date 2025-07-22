@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/gl_repack_utils.h"
 
 #include <vector>
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 
@@ -36,16 +32,17 @@ std::vector<uint8_t> RepackPixelDataAsRgb(const gfx::Size& size,
 
   for (int y = 0; y < size.height(); ++y) {
     for (int x = 0; x < size.width(); ++x) {
-      auto* src = &src_data[y * src_stride + x * kSrcBytesPerPixel];
+      auto* src =
+          &UNSAFE_TODO(src_data[y * src_stride + x * kSrcBytesPerPixel]);
       auto* dst = &dst_data[y * dst_stride + x * kDstBytesPerPixel];
       if (src_is_bgrx) {
-        dst[0] = src[2];
-        dst[1] = src[1];
-        dst[2] = src[0];
+        dst[0] = UNSAFE_TODO(src[2]);
+        UNSAFE_TODO(dst[1]) = UNSAFE_TODO(src[1]);
+        UNSAFE_TODO(dst[2]) = src[0];
       } else {
         dst[0] = src[0];
-        dst[1] = src[1];
-        dst[2] = src[2];
+        UNSAFE_TODO(dst[1]) = UNSAFE_TODO(src[1]);
+        UNSAFE_TODO(dst[2]) = UNSAFE_TODO(src[2]);
       }
     }
   }
@@ -91,7 +88,8 @@ void SwizzleRedAndBlue(const SkPixmap& pixmap) {
     size_t row_offset = y * stride;
     for (int x = 0; x < pixmap.width(); ++x) {
       size_t pixel_offset = row_offset + x * 4;
-      std::swap(data[pixel_offset], data[pixel_offset + 2]);
+      std::swap(UNSAFE_TODO(data[pixel_offset]),
+                UNSAFE_TODO(data[pixel_offset + 2]));
     }
   }
 }

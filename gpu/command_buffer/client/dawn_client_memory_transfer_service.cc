@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/client/dawn_client_memory_transfer_service.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/mapped_memory.h"
@@ -124,7 +120,7 @@ DawnClientMemoryTransferService::CreateWriteHandle(size_t size) {
     return nullptr;
   }
   // Zero-initialize the data.
-  memset(ptr, 0, handle.size);
+  UNSAFE_TODO(memset(ptr, 0, handle.size));
   return new WriteHandleImpl(ptr, handle, this);
 }
 

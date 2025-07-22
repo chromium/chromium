@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/dawn_platform.h"
 
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -166,7 +162,8 @@ uint64_t DawnPlatform::AddTraceEvent(
       std::is_trivial_v<base::trace_event::TraceEventHandle> &&
           std::is_standard_layout_v<base::trace_event::TraceEventHandle>,
       "TraceEventHandle must be memcpy'able");
-  memcpy(&result, &handle, sizeof(base::trace_event::TraceEventHandle));
+  UNSAFE_TODO(
+      memcpy(&result, &handle, sizeof(base::trace_event::TraceEventHandle)));
   return result;
 }
 

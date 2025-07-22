@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "cc/paint/decode_stashing_image_provider.h"
@@ -176,9 +172,10 @@ void RasterImplementationGLES::CopySharedImage(
     return;
   }
   GLbyte mailboxes[sizeof(source_mailbox.name) * 2];
-  memcpy(mailboxes, source_mailbox.name, sizeof(source_mailbox.name));
-  memcpy(mailboxes + sizeof(source_mailbox.name), dest_mailbox.name,
-         sizeof(dest_mailbox.name));
+  UNSAFE_TODO(
+      memcpy(mailboxes, source_mailbox.name, sizeof(source_mailbox.name)));
+  UNSAFE_TODO(memcpy(mailboxes + sizeof(source_mailbox.name), dest_mailbox.name,
+                     sizeof(dest_mailbox.name)));
   gl_->CopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height,
                                mailboxes);
 }

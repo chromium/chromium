@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/mock_transfer_buffer.h"
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,7 +59,7 @@ int MockTransferBuffer::GetShmId() {
 void* MockTransferBuffer::AcquireResultBuffer() {
   EXPECT_FALSE(outstanding_result_pointer_);
   outstanding_result_pointer_ = true;
-  return actual_buffer() + actual_buffer_index_ * alignment_;
+  return UNSAFE_TODO(actual_buffer() + actual_buffer_index_ * alignment_);
 }
 
 void MockTransferBuffer::ReleaseResultBuffer() {
@@ -101,7 +97,8 @@ void* MockTransferBuffer::AllocUpTo(unsigned int size,
   *size_allocated = size;
 
   // Make sure each buffer has a different offset.
-  last_alloc_ = actual_buffer() + offset + actual_buffer_index_ * alignment_;
+  last_alloc_ =
+      UNSAFE_TODO(actual_buffer() + offset + actual_buffer_index_ * alignment_);
   return last_alloc_;
 }
 
@@ -200,7 +197,7 @@ void* MockTransferBuffer::GetExpectedTransferAddressFromOffset(uint32_t offset,
                                                                uint32_t size) {
   EXPECT_GE(offset, expected_buffer_index_ * alignment_);
   EXPECT_LE(offset + size, size_ + expected_buffer_index_ * alignment_);
-  return expected_buffer() + offset;
+  return UNSAFE_TODO(expected_buffer() + offset);
 }
 
 int MockTransferBuffer::GetExpectedResultBufferId() {

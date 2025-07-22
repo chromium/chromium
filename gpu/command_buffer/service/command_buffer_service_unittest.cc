@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Tests for the command parser.
+
+#include "gpu/command_buffer/service/command_buffer_service.h"
 
 #include <stddef.h>
 
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
-#include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -85,7 +82,7 @@ class CommandBufferServiceTest : public testing::Test,
     CommandHeader header;
     header.size = entries;
     header.command = 1;
-    buffer()[put].value_header = header;
+    UNSAFE_TODO(buffer()[put]).value_header = header;
     put += entries;
     AddDoCommandsExpect(error::kNoError, entries, entries);
     EXPECT_EQ(error::kNoError, SetPutAndProcessAllCommands(put));
@@ -133,7 +130,7 @@ TEST_F(CommandBufferServiceTest, TestSimple) {
   // add a single command, no args
   header.size = 1;
   header.command = 123;
-  buffer()[put++].value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
 
   AddDoCommandsExpect(error::kNoError, 1, 1);
   EXPECT_EQ(error::kNoError, SetPutAndProcessAllCommands(put));
@@ -143,9 +140,9 @@ TEST_F(CommandBufferServiceTest, TestSimple) {
   // add a single command, 2 args
   header.size = 3;
   header.command = 456;
-  buffer()[put++].value_header = header;
-  buffer()[put++].value_int32 = 2134;
-  buffer()[put++].value_float = 1.f;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_int32 = 2134;
+  UNSAFE_TODO(buffer()[put++]).value_float = 1.f;
 
   AddDoCommandsExpect(error::kNoError, 3, 3);
   EXPECT_EQ(error::kNoError, SetPutAndProcessAllCommands(put));
@@ -162,13 +159,13 @@ TEST_F(CommandBufferServiceTest, TestMultipleCommands) {
   // add 2 commands, test with single ProcessAllCommands()
   header.size = 2;
   header.command = 789;
-  buffer()[put++].value_header = header;
-  buffer()[put++].value_int32 = 5151;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_int32 = 5151;
 
   header.size = 2;
   header.command = 876;
-  buffer()[put++].value_header = header;
-  buffer()[put++].value_int32 = 3434;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_int32 = 3434;
 
   // Process commands.  4 entries remaining.
   AddDoCommandsExpect(error::kNoError, 4, 4);
@@ -179,13 +176,13 @@ TEST_F(CommandBufferServiceTest, TestMultipleCommands) {
   // add 2 commands again, test with ProcessAllCommands()
   header.size = 2;
   header.command = 123;
-  buffer()[put++].value_header = header;
-  buffer()[put++].value_int32 = 5656;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_int32 = 5656;
 
   header.size = 2;
   header.command = 321;
-  buffer()[put++].value_header = header;
-  buffer()[put++].value_int32 = 7878;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_int32 = 7878;
 
   // 4 entries remaining.
   AddDoCommandsExpect(error::kNoError, 4, 4);
@@ -204,7 +201,7 @@ TEST_F(CommandBufferServiceTest, TestWrap) {
   for (unsigned int i = 0; i < 3; ++i) {
     header.size = 1;
     header.command = i;
-    buffer()[put++].value_header = header;
+    UNSAFE_TODO(buffer()[put++]).value_header = header;
   }
 
   // Process up to 10 commands.  3 entries remaining to put.
@@ -217,8 +214,8 @@ TEST_F(CommandBufferServiceTest, TestWrap) {
   // buffer.
   header.size = 2;
   header.command = 3;
-  buffer()[put++].value_header = header;
-  buffer()[put++].value_int32 = 5;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_int32 = 5;
 
   DCHECK_EQ(5, put);
   put = 0;
@@ -226,8 +223,8 @@ TEST_F(CommandBufferServiceTest, TestWrap) {
   // add 1 command with 1 arg (2 words).
   header.size = 2;
   header.command = 4;
-  buffer()[put++].value_header = header;
-  buffer()[put++].value_int32 = 6;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_int32 = 6;
 
   // 2 entries remaining to end of buffer.
   AddDoCommandsExpect(error::kNoError, 2, 2);
@@ -248,7 +245,7 @@ TEST_F(CommandBufferServiceTest, TestError) {
   // Generate a command with size 0.
   header.size = 0;
   header.command = 3;
-  buffer()[put++].value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
 
   AddDoCommandsExpect(error::kInvalidSize, 1, 0);
   EXPECT_CALL(*this, OnParseError()).Times(1);
@@ -263,7 +260,7 @@ TEST_F(CommandBufferServiceTest, TestError) {
   // Generate a command with size 6, extends beyond the end of the buffer.
   header.size = 6;
   header.command = 3;
-  buffer()[put++].value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
 
   AddDoCommandsExpect(error::kOutOfBounds, 1, 0);
   EXPECT_CALL(*this, OnParseError()).Times(1);
@@ -278,11 +275,11 @@ TEST_F(CommandBufferServiceTest, TestError) {
   // Generates 2 commands.
   header.size = 1;
   header.command = 3;
-  buffer()[put++].value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
   CommandBufferOffset put_post_fail = put;
   header.size = 1;
   header.command = 4;
-  buffer()[put++].value_header = header;
+  UNSAFE_TODO(buffer()[put++]).value_header = header;
 
   // have the first command fail to parse.
   AddDoCommandsExpect(error::kUnknownCommand, 2, 1);

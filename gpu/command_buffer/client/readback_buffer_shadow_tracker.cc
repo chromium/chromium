@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/readback_buffer_shadow_tracker.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
@@ -66,7 +62,7 @@ void* ReadbackBufferShadowTracker::Buffer::MapReadbackShm(uint32_t offset,
     return nullptr;
   }
   is_mapped_ = true;
-  return &static_cast<uint8_t*>(readback_shm_address_)[offset];
+  return &UNSAFE_TODO(static_cast<uint8_t*>(readback_shm_address_)[offset]);
 }
 
 bool ReadbackBufferShadowTracker::Buffer::UnmapReadbackShm() {

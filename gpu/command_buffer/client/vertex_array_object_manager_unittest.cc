@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/vertex_array_object_manager.h"
 
 #include <GLES2/gl2ext.h>
@@ -17,6 +12,7 @@
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -86,7 +82,7 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
   manager_->GenVertexArrays(std::size(ids), ids);
   // Bind buffers to attribs on 2 vaos.
   for (size_t ii = 0; ii < std::size(ids); ++ii) {
-    EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed));
+    UNSAFE_TODO(EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed)));
     EXPECT_TRUE(manager_->SetAttribPointer(
         kBufferToUnbind, 0, 4, GL_FLOAT, false, 0, 0, GL_FALSE));
     EXPECT_TRUE(manager_->SetAttribPointer(
@@ -127,13 +123,13 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
       kElementArray,
   });
   for (size_t ii = 0; ii < std::size(ids); ++ii) {
-    EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed));
+    UNSAFE_TODO(EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed)));
     for (size_t jj = 0; jj < 4; ++jj) {
       uint32_t param = 1;
       EXPECT_TRUE(manager_->GetVertexAttrib(
           jj, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &param));
       EXPECT_EQ(expected[ii][jj], param)
-          << "id: " << ids[ii] << ", attrib: " << jj;
+          << "id: " << UNSAFE_TODO(ids[ii]) << ", attrib: " << jj;
     }
     EXPECT_EQ(expected_element_array[ii],
               manager_->bound_element_array_buffer());

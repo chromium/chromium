@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "gpu/vulkan/drm_modifiers_filter_vulkan.h"
 
 #include <vulkan/vulkan_core.h>
 
 #include <memory>
 
-#include "gpu/vulkan/drm_modifiers_filter_vulkan.h"
+#include "base/compiler_specific.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
@@ -71,7 +68,8 @@ class DrmModifiersFilterVulkanTest : public testing::Test {
           EXPECT_EQ(kSupportedModifiers.size(),
                     modifiers->drmFormatModifierCount);
           for (size_t i = 0; i < kSupportedModifiers.size(); i++) {
-            auto& modifier = modifiers->pDrmFormatModifierProperties[i];
+            auto& modifier =
+                UNSAFE_TODO(modifiers->pDrmFormatModifierProperties[i]);
             modifier.drmFormatModifier = kSupportedModifiers[i];
             modifier.drmFormatModifierPlaneCount = 1;
             modifier.drmFormatModifierTilingFeatures = 0;

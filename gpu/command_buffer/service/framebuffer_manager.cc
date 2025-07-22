@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/notreached.h"
@@ -876,8 +872,8 @@ GLenum Framebuffer::GetDrawBuffer(GLenum draw_buffer) const {
 void Framebuffer::SetDrawBuffers(GLsizei n, const GLenum* bufs) {
   DCHECK(n <= static_cast<GLsizei>(manager_->max_draw_buffers_));
   for (GLsizei ii = 0; ii < n; ++ii) {
-    draw_buffers_[ii] = bufs[ii];
-    adjusted_draw_buffers_[ii] = bufs[ii];
+    draw_buffers_[ii] = UNSAFE_TODO(bufs[ii]);
+    adjusted_draw_buffers_[ii] = UNSAFE_TODO(bufs[ii]);
   }
   for (uint32_t ii = n; ii < manager_->max_draw_buffers_; ++ii) {
     draw_buffers_[ii] = GL_NONE;

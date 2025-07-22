@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/common/buffer.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <ostream>
 
 #include "base/atomic_sequence_num.h"
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
@@ -96,7 +93,7 @@ void* Buffer::GetDataAddress(uint32_t data_offset, uint32_t data_size) const {
   end += data_size;
   if (!end.IsValid() || end.ValueOrDie() > static_cast<uint32_t>(size_))
     return nullptr;
-  return static_cast<uint8_t*>(memory_) + data_offset;
+  return UNSAFE_TODO(static_cast<uint8_t*>(memory_) + data_offset);
 }
 
 void* Buffer::GetDataAddressAndSize(uint32_t data_offset,
@@ -104,7 +101,7 @@ void* Buffer::GetDataAddressAndSize(uint32_t data_offset,
   if (data_offset > static_cast<uint32_t>(size_))
     return nullptr;
   *data_size = GetRemainingSize(data_offset);
-  return static_cast<uint8_t*>(memory_) + data_offset;
+  return UNSAFE_TODO(static_cast<uint8_t*>(memory_) + data_offset);
 }
 
 uint32_t Buffer::GetRemainingSize(uint32_t data_offset) const {

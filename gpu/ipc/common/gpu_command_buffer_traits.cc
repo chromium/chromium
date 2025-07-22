@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/ipc/common/gpu_command_buffer_traits.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -90,13 +86,13 @@ bool ParamTraits<gpu::Mailbox>::Read(const base::Pickle* m,
   if (!iter->ReadBytes(&bytes, sizeof(p->name)))
     return false;
   DCHECK(bytes);
-  memcpy(p->name, bytes, sizeof(p->name));
+  UNSAFE_TODO(memcpy(p->name, bytes, sizeof(p->name)));
   return true;
 }
 
 void ParamTraits<gpu::Mailbox>::Log(const param_type& p, std::string* l) {
   for (size_t i = 0; i < sizeof(p.name); ++i)
-    *l += base::StringPrintf("%02x", p.name[i]);
+    *l += base::StringPrintf("%02x", UNSAFE_TODO(p.name[i]));
 }
 
 void ParamTraits<gpu::MailboxHolder>::Write(base::Pickle* m,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/buffer_manager.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -395,7 +391,7 @@ TEST_F(BufferManagerTest, GetRange) {
   ASSERT_TRUE(buf != nullptr);
   const char* buf1 =
       static_cast<const char*>(buffer->GetRange(1, kDataSize - 1));
-  EXPECT_EQ(buf + 1, buf1);
+  UNSAFE_TODO(EXPECT_EQ(buf + 1, buf1));
   EXPECT_TRUE(buffer->GetRange(kDataSize, 1) == nullptr);
   EXPECT_TRUE(buffer->GetRange(0, kDataSize + 1) == nullptr);
   EXPECT_TRUE(buffer->GetRange(-1, kDataSize) == nullptr);
@@ -464,7 +460,8 @@ TEST_F(BufferManagerClientSideArraysTest, StreamBuffersAreShadowed) {
   DoBufferData(
       buffer, kTarget, sizeof(data), GL_STREAM_DRAW, data, GL_NO_ERROR);
   EXPECT_TRUE(buffer->IsClientSideArray());
-  EXPECT_EQ(0, memcmp(data, buffer->GetRange(0, sizeof(data)), sizeof(data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(data, buffer->GetRange(0, sizeof(data)), sizeof(data))));
   DoBufferData(
       buffer, kTarget, sizeof(data), GL_DYNAMIC_DRAW, data, GL_NO_ERROR);
   EXPECT_FALSE(buffer->IsClientSideArray());

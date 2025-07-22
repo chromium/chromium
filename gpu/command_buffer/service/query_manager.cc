@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/query_manager.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include "base/atomicops.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -343,7 +339,7 @@ QueryManager::Query* QueryManager::CreateQuery(
 void QueryManager::GenQueries(GLsizei n, const GLuint* queries) {
   DCHECK_GE(n, 0);
   for (GLsizei i = 0; i < n; ++i) {
-    generated_query_ids_.insert(queries[i]);
+    generated_query_ids_.insert(UNSAFE_TODO(queries[i]));
   }
 }
 
