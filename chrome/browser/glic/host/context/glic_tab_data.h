@@ -34,6 +34,12 @@ class TabDataObserver : public content::WebContentsObserver,
   TabDataObserver(
       content::WebContents* web_contents,
       base::RepeatingCallback<void(glic::mojom::TabDataPtr)> tab_data_changed);
+
+  TabDataObserver(
+      tabs::TabInterface* tab,
+      content::WebContents* web_contents,
+      base::RepeatingCallback<void(glic::mojom::TabDataPtr)> tab_data_changed);
+
   ~TabDataObserver() override;
   TabDataObserver(const TabDataObserver&) = delete;
   TabDataObserver& operator=(const TabDataObserver&) = delete;

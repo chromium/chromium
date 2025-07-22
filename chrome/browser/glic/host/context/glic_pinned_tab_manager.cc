@@ -60,7 +60,7 @@ class GlicPinnedTabManager::PinnedTabObserver
             &PinnedTabObserver::OnWillDiscardContents, base::Unretained(this)));
     will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
         &PinnedTabObserver::OnWillDetach, base::Unretained(this)));
-    StartObservation(tab->GetContents());
+    StartObservation(tab, tab->GetContents());
     content::WebContents* web_contents = tab->GetContents();
     if (web_contents) {
       is_audible_ = web_contents->IsCurrentlyAudible();
@@ -102,7 +102,7 @@ class GlicPinnedTabManager::PinnedTabObserver
                              content::WebContents* old_contents,
                              content::WebContents* new_contents) {
     CHECK_EQ(web_contents(), old_contents);
-    StartObservation(new_contents);
+    StartObservation(tab, new_contents);
   }
 
   void FocusedTabDataChanged(mojom::TabDataPtr tab_data) {
@@ -118,11 +118,13 @@ class GlicPinnedTabManager::PinnedTabObserver
     tab_data_changed_.Run(tab_->GetHandle(), std::move(tab_data));
   }
 
-  void StartObservation(content::WebContents* contents) {
+  void StartObservation(tabs::TabInterface* tab,
+                        content::WebContents* contents) {
     Observe(contents);
     tab_data_observer_ = std::make_unique<TabDataObserver>(
-        contents, base::BindRepeating(&PinnedTabObserver::FocusedTabDataChanged,
-                                      base::Unretained(this)));
+        tab, contents,
+        base::BindRepeating(&PinnedTabObserver::FocusedTabDataChanged,
+                            base::Unretained(this)));
   }
 
   void ClearObservation() {
