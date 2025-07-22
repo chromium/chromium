@@ -485,35 +485,32 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   // The delta to be added to transform matrix if dynamic safe area is
   // supported.
   auto* property_trees = this->property_trees();
-  if (base::FeatureList::IsEnabled(
-          features::kDynamicSafeAreaInsetsSupportedByCC)) {
-    float blink_bottom_content_offset;
-    if (settings().dynamic_safe_area_insets_on_scroll_enabled) {
-      // Blink SAI is based on bottom controls shown ratio. Subtract the delta
-      // added by Blink SAI.
-      blink_bottom_content_offset =
-          bottom_content_offset -
-          bottom_controls_height() * bottom_controls_shown_ratio_->Delta();
-    } else {
-      // Blink did NOT update SAI based on bottom controls shown ratio.
-      blink_bottom_content_offset = bottom_controls_layout_height;
-    }
+  float blink_bottom_content_offset;
+  if (settings().dynamic_safe_area_insets_on_scroll_enabled) {
+    // Blink SAI is based on bottom controls shown ratio. Subtract the delta
+    // added by Blink SAI.
+    blink_bottom_content_offset =
+        bottom_content_offset -
+        bottom_controls_height() * bottom_controls_shown_ratio_->Delta();
+  } else {
+    // Blink did NOT update SAI based on bottom controls shown ratio.
+    blink_bottom_content_offset = bottom_controls_layout_height;
+  }
 
-    const float real_saib =
-        std::max(0.0f, max_safe_area_inset_bottom() - bottom_content_offset);
-    const float blink_saib = std::max(
-        0.0f, max_safe_area_inset_bottom() - blink_bottom_content_offset);
-    const float transform_delta_by_safe_area_inset_bottom =
-        -(real_saib - blink_saib);
+  const float real_saib =
+      std::max(0.0f, max_safe_area_inset_bottom() - bottom_content_offset);
+  const float blink_saib = std::max(
+      0.0f, max_safe_area_inset_bottom() - blink_bottom_content_offset);
+  const float transform_delta_by_safe_area_inset_bottom =
+      -(real_saib - blink_saib);
 
-    const float scaled_transform_delta_by_safe_area_inset_bottom =
-        transform_delta_by_safe_area_inset_bottom / min_page_scale_factor();
+  const float scaled_transform_delta_by_safe_area_inset_bottom =
+      transform_delta_by_safe_area_inset_bottom / min_page_scale_factor();
 
-    if (property_trees->transform_delta_by_safe_area_inset_bottom() !=
-        scaled_transform_delta_by_safe_area_inset_bottom) {
-      property_trees->SetTransformDeltaBySafeAreaInsetBottom(
-          scaled_transform_delta_by_safe_area_inset_bottom);
-    }
+  if (property_trees->transform_delta_by_safe_area_inset_bottom() !=
+      scaled_transform_delta_by_safe_area_inset_bottom) {
+    property_trees->SetTransformDeltaBySafeAreaInsetBottom(
+        scaled_transform_delta_by_safe_area_inset_bottom);
   }
 
   // Adjust the viewport layers by shrinking/expanding the container to account
