@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/safe_browsing/buildflags.h"
@@ -25,10 +26,6 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
-#endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
@@ -322,9 +319,7 @@ class TabsDetectLanguageFunction
 };
 
 class TabsCaptureVisibleTabFunction :
-#if BUILDFLAG(ENABLE_EXTENSIONS)
     public extensions::WebContentsCaptureClient,
-#endif
     public ExtensionFunction {
  public:
   TabsCaptureVisibleTabFunction();
@@ -342,16 +337,13 @@ class TabsCaptureVisibleTabFunction :
 
   // ExtensionFunction implementation.
   ResponseAction Run() override;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
   bool ShouldSkipQuotaLimiting() const override;
-#endif
 
  protected:
   ~TabsCaptureVisibleTabFunction() override = default;
 
  private:
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionFunctionDetails chrome_details_;
 
   content::WebContents* GetWebContentsForID(int window_id, std::string* error);
@@ -362,7 +354,6 @@ class TabsCaptureVisibleTabFunction :
   bool ClientAllowsTransparency() override;
   void OnCaptureSuccess(const SkBitmap& bitmap) override;
   void OnCaptureFailure(CaptureResult result) override;
-#endif
 
   void EncodeBitmapOnWorkerThread(
       scoped_refptr<base::TaskRunner> reply_task_runner,
@@ -372,9 +363,7 @@ class TabsCaptureVisibleTabFunction :
  private:
   DECLARE_EXTENSION_FUNCTION("tabs.captureVisibleTab", TABS_CAPTUREVISIBLETAB)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   static std::string CaptureResultToErrorMessage(CaptureResult result);
-#endif
 
   static bool disable_throttling_for_test_;
 };

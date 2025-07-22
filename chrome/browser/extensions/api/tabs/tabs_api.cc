@@ -5,6 +5,9 @@
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -17,13 +20,18 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/common/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/navigation_controller.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -592,6 +600,193 @@ void TabsDetectLanguageFunction::RespondWithLanguage(
 
   Respond(WithArguments(language));
   Release();  // Balanced in Run()
+}
+
+// static
+bool TabsCaptureVisibleTabFunction::disable_throttling_for_test_ = false;
+
+TabsCaptureVisibleTabFunction::TabsCaptureVisibleTabFunction()
+    : chrome_details_(this) {}
+
+WebContentsCaptureClient::ScreenshotAccess
+TabsCaptureVisibleTabFunction::GetScreenshotAccess(
+    content::WebContents* web_contents) const {
+  PrefService* service =
+      Profile::FromBrowserContext(browser_context())->GetPrefs();
+  if (service->GetBoolean(prefs::kDisableScreenshots)) {
+    return ScreenshotAccess::kDisabledByPreferences;
+  }
+
+  if (ExtensionsBrowserClient::Get()->IsScreenshotRestricted(web_contents)) {
+    return ScreenshotAccess::kDisabledByDlp;
+  }
+
+  return ScreenshotAccess::kEnabled;
+}
+
+bool TabsCaptureVisibleTabFunction::ClientAllowsTransparency() {
+  return false;
+}
+
+content::WebContents* TabsCaptureVisibleTabFunction::GetWebContentsForID(
+    int window_id,
+    std::string* error) {
+  WindowController* window_controller =
+      ExtensionTabUtil::GetControllerFromWindowID(chrome_details_, window_id,
+                                                  error);
+  if (!window_controller) {
+    return nullptr;
+  }
+
+  BrowserWindowInterface* browser =
+      window_controller->GetBrowserWindowInterface();
+  if (!browser) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
+    return nullptr;
+  }
+  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(*browser);
+  if (!tab_list) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
+    return nullptr;
+  }
+  ::tabs::TabInterface* tab = tab_list->GetActiveTab();
+  if (!tab) {
+    *error = "No active web contents to capture";
+    return nullptr;
+  }
+  content::WebContents* contents = tab->GetContents();
+
+  if (!extension()->permissions_data()->CanCaptureVisiblePage(
+          contents->GetLastCommittedURL(),
+          sessions::SessionTabHelper::IdForTab(contents).id(), error,
+          extensions::CaptureRequirement::kActiveTabOrAllUrls)) {
+    return nullptr;
+  }
+  return contents;
+}
+
+ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
+  using api::extension_types::ImageDetails;
+
+  EXTENSION_FUNCTION_VALIDATE(has_args());
+  int context_id = extension_misc::kCurrentWindowId;
+
+  if (args().size() > 0 && args()[0].is_int()) {
+    context_id = args()[0].GetInt();
+  }
+
+  std::optional<ImageDetails> image_details;
+  if (args().size() > 1) {
+    image_details = ImageDetails::FromValue(args()[1]);
+  }
+
+  std::string error;
+  content::WebContents* contents = GetWebContentsForID(context_id, &error);
+  if (!contents) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Get last committed URL.
+  std::string current_url = contents->GetLastCommittedURL().is_valid()
+                                ? contents->GetLastCommittedURL().spec()
+                                : std::string();
+  tabs_internal::NotifyExtensionTelemetry(
+      Profile::FromBrowserContext(browser_context()), extension(),
+      safe_browsing::TabsApiInfo::CAPTURE_VISIBLE_TAB, current_url,
+      /*new_url=*/std::string(), js_callstack());
+#endif
+
+  // NOTE: CaptureAsync() may invoke its callback from a background thread,
+  // hence the BindPostTask().
+  const CaptureResult capture_result = CaptureAsync(
+      contents, base::OptionalToPtr(image_details),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &TabsCaptureVisibleTabFunction::CopyFromSurfaceComplete, this)));
+  if (capture_result == OK) {
+    // CopyFromSurfaceComplete might have already responded.
+    return did_respond() ? AlreadyResponded() : RespondLater();
+  }
+
+  return RespondNow(Error(CaptureResultToErrorMessage(capture_result)));
+}
+
+void TabsCaptureVisibleTabFunction::GetQuotaLimitHeuristics(
+    QuotaLimitHeuristics* heuristics) const {
+  constexpr base::TimeDelta kSecond = base::Seconds(1);
+  QuotaLimitHeuristic::Config limit = {
+      tabs::MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND, kSecond};
+
+  heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
+      limit, std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),
+      "MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND"));
+}
+
+bool TabsCaptureVisibleTabFunction::ShouldSkipQuotaLimiting() const {
+  return user_gesture() || disable_throttling_for_test_;
+}
+
+void TabsCaptureVisibleTabFunction::OnCaptureSuccess(const SkBitmap& bitmap) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&TabsCaptureVisibleTabFunction::EncodeBitmapOnWorkerThread,
+                     this, base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     bitmap));
+}
+
+void TabsCaptureVisibleTabFunction::EncodeBitmapOnWorkerThread(
+    scoped_refptr<base::TaskRunner> reply_task_runner,
+    const SkBitmap& bitmap) {
+  std::optional<std::string> base64_result = EncodeBitmap(bitmap);
+  reply_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TabsCaptureVisibleTabFunction::OnBitmapEncodedOnUIThread,
+                     this, std::move(base64_result)));
+}
+
+void TabsCaptureVisibleTabFunction::OnBitmapEncodedOnUIThread(
+    std::optional<std::string> base64_result) {
+  if (!base64_result) {
+    OnCaptureFailure(FAILURE_REASON_ENCODING_FAILED);
+    return;
+  }
+
+  Respond(WithArguments(std::move(base64_result.value())));
+}
+
+void TabsCaptureVisibleTabFunction::OnCaptureFailure(CaptureResult result) {
+  Respond(Error(CaptureResultToErrorMessage(result)));
+}
+
+// static.
+std::string TabsCaptureVisibleTabFunction::CaptureResultToErrorMessage(
+    CaptureResult result) {
+  const char* reason_description = "internal error";
+  switch (result) {
+    case FAILURE_REASON_READBACK_FAILED:
+      reason_description = "image readback failed";
+      break;
+    case FAILURE_REASON_ENCODING_FAILED:
+      reason_description = "encoding failed";
+      break;
+    case FAILURE_REASON_VIEW_INVISIBLE:
+      reason_description = "view is invisible";
+      break;
+    case FAILURE_REASON_SCREEN_SHOTS_DISABLED:
+      return tabs_constants::kScreenshotsDisabled;
+    case FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP:
+      return tabs_constants::kScreenshotsDisabledByDlp;
+    case OK:
+      NOTREACHED() << "CaptureResultToErrorMessage should not be called with a "
+                      "successful result";
+  }
+  return ErrorUtils::FormatErrorMessage("Failed to capture tab: *",
+                                        reason_description);
+}
+
+void TabsCaptureVisibleTabFunction::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
 }
 
 ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {

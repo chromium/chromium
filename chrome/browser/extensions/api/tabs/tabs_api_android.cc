@@ -235,13 +235,6 @@ ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-TabsCaptureVisibleTabFunction::TabsCaptureVisibleTabFunction() = default;
-
-ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(has_args());
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExecuteCodeInTabFunction::ExecuteCodeInTabFunction() = default;
 ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
 
