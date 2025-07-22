@@ -42,7 +42,6 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
@@ -90,6 +89,7 @@ class ColorChooserClient;
 class DateTimeChooser;
 class DateTimeChooserClient;
 class Element;
+class ExternalDateTimeChooser;
 class FileChooser;
 class Frame;
 class FullscreenOptions;
