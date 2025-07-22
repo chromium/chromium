@@ -72,6 +72,9 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
   if (!device) {
     device = &gpu_info.active_gpu();
   }
+  if (device->IsSoftwareRenderer()) {
+    return GpuBlockedReason::kBlocklisted;
+  }
   if (device) {
     WGPUAdapterInfo adapter_info = {
         .description = {device->driver_version.c_str(),
