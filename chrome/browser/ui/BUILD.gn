@@ -2674,7 +2674,6 @@ static_library("ui") {
       "//chrome/browser/ash/base",
       "//chrome/browser/ash/boca",
       "//chrome/browser/ash/boca/on_task",
-      "//chrome/browser/ash/boot_times_recorder",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/browser_delegate:impl",
       "//chrome/browser/ash/camera_mic",
