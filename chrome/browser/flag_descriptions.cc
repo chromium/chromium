@@ -6723,10 +6723,6 @@ const char kEnablePalmSuppressionName[] =
 const char kEnablePalmSuppressionDescription[] =
     "If enabled, suppresses touch when a stylus is on a touchscreen.";
 
-const char kEnableEdgeDetectionName[] = "Enable Edge Detection.";
-const char kEnableEdgeDetectionDescription[] =
-    "If enabled, suppresses edge touch based on sensors' info.";
-
 const char kEnableFastTouchpadClickName[] = "Enable Fast Touchpad Click";
 const char kEnableFastTouchpadClickDescription[] =
     "If enabled, reduce the time after touchpad click before cursor can move.";

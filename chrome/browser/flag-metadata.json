@@ -3195,11 +3195,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-edge-detection",
-    "owners": ["cgzhang@chromium.org","robsc@chromium.org"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-edid-based-display-ids",
     "owners": [
       "gildekel@chromium.org",
