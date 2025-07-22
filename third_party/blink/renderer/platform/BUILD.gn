@@ -2269,6 +2269,7 @@ source_set("blink_platform_unittests_sources") {
     "graphics/gpu/webgpu_native_test_support.cc",
     "graphics/gpu/webgpu_native_test_support.h",
     "graphics/gpu/webgpu_resource_provider_cache_test.cc",
+    "graphics/gpu/webgpu_swap_buffer_provider_test.cc",
     "graphics/graphics_context_test.cc",
     "graphics/paint/cull_rect_test.cc",
     "graphics/paint/display_item_raster_invalidator_test.cc",
@@ -2401,10 +2402,6 @@ source_set("blink_platform_unittests_sources") {
     "widget/input/scroll_predictor_unittest.cc",
     "widget/input/widget_input_handler_manager_unittest.cc",
   ]
-
-  if (use_dawn) {
-    sources += [ "graphics/gpu/webgpu_swap_buffer_provider_test.cc" ]
-  }
 
   if (rtc_use_h265) {
     sources += [ "peerconnection/h265_parameter_sets_tracker_unittest.cc" ]
