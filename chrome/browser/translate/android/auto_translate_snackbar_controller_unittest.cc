@@ -184,8 +184,7 @@ TEST_F(AutoTranslateSnackbarControllerTest,
 
   // Click on Undo translation from Java
   auto j_string = base::android::ConvertUTF8ToJavaString(env, "tl");
-  auto_snackbar_controller_->OnUndoActionPressed(
-      env, base::android::JavaParamRef<jstring>(env, j_string.obj()));
+  auto_snackbar_controller_->OnUndoActionPressed(env, j_string);
   EXPECT_FALSE(bridge_->IsSnackbarShowing());
 
   // Check that the INFOBAR_REVERT histogram was recorded

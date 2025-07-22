@@ -79,6 +79,12 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
   // TODO(torne): replace usage and remove this.
   bool is_null() const { return obj_ == nullptr; }
 
+  // Create a JavaRef that is not automatically released. Used for JNI
+  // parameters (which should not be released).
+  static JavaRef<jobject> CreateLeaky(JNIEnv* env, jobject obj) {
+    return JavaRef<jobject>(env, obj);
+  }
+
  protected:
 // Takes ownership of the |obj| reference passed; requires it to be a local
 // reference type.
@@ -144,33 +150,14 @@ class JavaRef : public JavaRef<jobject> {
     return JavaObjectArrayReader<ElementType>(*this);
   }
 
+  // Create a JavaRef that is not automatically released. Used for JNI
+  // parameters (which should not be released).
+  static JavaRef<T> CreateLeaky(JNIEnv* env, T obj) {
+    return JavaRef<T>(env, obj);
+  }
+
  protected:
   JavaRef(JNIEnv* env, T obj) : JavaRef<jobject>(env, obj) {}
-};
-
-// Holds a local reference to a JNI method parameter.
-// Method parameters should not be deleted, and so this class exists purely to
-// wrap them as a JavaRef<T> in the JNI binding generator. Do not use in new
-// code.
-// TODO(crbug.com/40425392): Remove all uses of JavaParamRef to use JavaRef
-// instead.
-template <typename T>
-class JavaParamRef : public JavaRef<T> {
- public:
-  // Assumes that |obj| is a parameter passed to a JNI method from Java.
-  // Does not assume ownership as parameters should not be deleted.
-  JavaParamRef(JNIEnv* env, T obj) : JavaRef<T>(env, obj) {}
-
-  // Allow nullptr to be converted to JavaParamRef. Some unit tests call JNI
-  // methods directly from C++ and pass null for objects which are not actually
-  // used by the implementation (e.g. the caller object); allow this to keep
-  // working.
-  JavaParamRef(std::nullptr_t) {}
-
-  JavaParamRef(const JavaParamRef&) = delete;
-  JavaParamRef& operator=(const JavaParamRef&) = delete;
-
-  ~JavaParamRef() {}
 };
 
 // Holds a local reference to a Java object. The local reference is scoped
@@ -479,6 +466,11 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef : public JavaRef<T> {
         env, static_cast<T>(env->NewLocalRef(j_obj)));
   }
 };
+
+// TODO(crbug.com/40425392): Remove this alias.
+template <typename T>
+using JavaParamRef = JavaRef<T>;
+
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_JAVA_REFS_H_

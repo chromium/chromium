@@ -16,7 +16,7 @@ def _return_type_cpp(java_type):
   return f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
 
 
-def _param_type_cpp(java_type, use_param_type):
+def _param_type_cpp(java_type):
   if converted_type := java_type.converted_type:
     # Drop & when the type is obviously a pointer to avoid "const char *&".
     if not java_type.is_primitive() and not converted_type.endswith('*'):
@@ -26,10 +26,7 @@ def _param_type_cpp(java_type, use_param_type):
   ret = java_type.to_cpp()
   if java_type.is_primitive():
     return ret
-  if use_param_type:
-    return f'const jni_zero::JavaParamRef<{ret}>&'
-  else:
-    return f'const jni_zero::JavaRef<{ret}>&'
+  return f'const jni_zero::JavaRef<{ret}>&'
 
 
 def _impl_forward_declaration(sb, native, params):
@@ -40,8 +37,8 @@ def _impl_forward_declaration(sb, native, params):
     with sb.param_list() as plist:
       plist.append('JNIEnv* env')
       if not native.static:
-        plist.append('const jni_zero::JavaParamRef<jobject>& jcaller')
-      plist.extend(f'{_param_type_cpp(p.java_type, True)} {p.cpp_name()}'
+        plist.append('const jni_zero::JavaRef<jobject>& jcaller')
+      plist.extend(f'{_param_type_cpp(p.java_type)} {p.cpp_name()}'
                    for p in params)
 
 
@@ -61,7 +58,7 @@ def _entry_point_example(sb, native):
       plist.append('JNIEnv* env')
       if not native.static:
         plist.append('const jni_zero::JavaRef<jobject>& jcaller')
-      plist.extend(f'{_param_type_cpp(p.java_type, False)} {p.cpp_name()}'
+      plist.extend(f'{_param_type_cpp(p.java_type)} {p.cpp_name()}'
                    for p in params)
 
 
@@ -83,7 +80,7 @@ def _prep_param(sb, is_proxy, param):
   if is_proxy and java_type.to_cpp() != java_type.to_proxy().to_cpp():
     # E.g. jobject -> jstring
     orig_name = f'static_cast<{java_type.to_cpp()}>({orig_name})'
-  return f'jni_zero::JavaParamRef<{java_type.to_cpp()}>(env, {orig_name})'
+  return f'jni_zero::JavaRef<{java_type.to_cpp()}>::CreateLeaky(env, {orig_name})'
 
 
 def entry_point_declaration(sb, jni_mode, jni_obj, native, gen_jni_class):
@@ -148,7 +145,7 @@ def entry_point_method(sb,
       with sb.param_list() as plist:
         plist.append('env')
         if not native.static:
-          plist.append('jni_zero::JavaParamRef<jobject>(env, jcaller)')
+          plist.append('jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)')
         plist.extend(param_rvalues)
 
     if return_type.is_void():

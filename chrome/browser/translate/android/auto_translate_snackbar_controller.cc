@@ -132,7 +132,7 @@ void AutoTranslateSnackbarController::OnDismissNoAction(JNIEnv* env) {
 
 void AutoTranslateSnackbarController::OnUndoActionPressed(
     JNIEnv* env,
-    base::android::JavaParamRef<jstring> j_target_language) {
+    const base::android::JavaParamRef<jstring>& j_target_language) {
   const std::string target_language =
       base::android::ConvertJavaStringToUTF8(env, j_target_language);
 

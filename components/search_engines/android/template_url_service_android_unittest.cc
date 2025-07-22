@@ -42,11 +42,6 @@ class TemplateUrlServiceAndroidUnitTest
         std::make_unique<TemplateUrlServiceAndroid>(&template_url_service());
   }
 
-  base::android::JavaParamRef<jstring> ToParamRef(
-      base::android::ScopedJavaLocalRef<jstring> local_ref) {
-    return base::android::JavaParamRef<jstring>(env_, local_ref.obj());
-  }
-
   base::android::ScopedJavaLocalRef<jstring> ToLocalJavaString(
       std::string_view str) {
     return base::android::ConvertUTF8ToJavaString(env_, str);
@@ -91,12 +86,10 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, SetPlayAPISearchEngine) {
             keyword);
 
   template_url_service_android().SetPlayAPISearchEngine(
-      env(), ToParamRef(short_name), ToParamRef(jkeyword),
-      ToParamRef(search_url), ToParamRef(suggest_url), ToParamRef(favicon_url),
-      ToParamRef(new_tab_url), ToParamRef(image_url),
-      ToParamRef(image_url_post_params), ToParamRef(image_translate_url),
-      ToParamRef(image_translate_source_language_param_key),
-      ToParamRef(image_translate_target_language_param_key));
+      env(), short_name, jkeyword, search_url, suggest_url, favicon_url,
+      new_tab_url, image_url, image_url_post_params, image_translate_url,
+      image_translate_source_language_param_key,
+      image_translate_target_language_param_key);
 
   TemplateURL* t_url = template_url_service().GetTemplateURLForKeyword(keyword);
   EXPECT_TRUE(t_url);

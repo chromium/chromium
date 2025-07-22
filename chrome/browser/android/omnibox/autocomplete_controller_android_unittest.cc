@@ -95,11 +95,8 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_NTP) {
                   Property(&AutocompleteInput::focus_type,
                            Eq(OFT::INTERACTION_FOCUS)))));
 
-  controller()->OnOmniboxFocused(
-      env, base::android::JavaParamRef<jstring>(env, j_omnibox_text.obj()),
-      base::android::JavaParamRef<jstring>(env, j_current_url.obj()),
-      j_page_classification,
-      base::android::JavaParamRef<jstring>(env, j_current_title.obj()));
+  controller()->OnOmniboxFocused(env, j_omnibox_text, j_current_url,
+                                 j_page_classification, j_current_title);
 }
 
 TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
@@ -122,9 +119,6 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
                   Property(&AutocompleteInput::focus_type,
                            Eq(OFT::INTERACTION_FOCUS)))));
 
-  controller()->OnOmniboxFocused(
-      env, base::android::JavaParamRef<jstring>(env, j_omnibox_text.obj()),
-      base::android::JavaParamRef<jstring>(env, j_current_url.obj()),
-      j_page_classification,
-      base::android::JavaParamRef<jstring>(env, j_current_title.obj()));
+  controller()->OnOmniboxFocused(env, j_omnibox_text, j_current_url,
+                                 j_page_classification, j_current_title);
 }

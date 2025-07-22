@@ -24,7 +24,7 @@ base::android::ScopedJavaLocalRef<jobject> BindCallbackListener::Create(
 }
 
 void BindCallbackListener::OnResult(JNIEnv* env,
-                                    jni_zero::JavaParamRef<jobject> client) {
+                                    const jni_zero::JavaRef<jobject>& client) {
   std::move(callback_).Run(
       base::WrapUnique(new IpProtectionAuthClient(client)));
   delete this;

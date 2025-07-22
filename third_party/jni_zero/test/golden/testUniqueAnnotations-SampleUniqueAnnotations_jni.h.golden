@@ -41,15 +41,13 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
 }
 
 // Forward declaration. To be implemented by the including .cc file.
-static void JNI_SampleUniqueAnnotations_Baz(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& handle);
+static void JNI_SampleUniqueAnnotations_Baz(JNIEnv* env, const jni_zero::JavaRef<jobject>& handle);
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1baz(
     JNIEnv* env,
     jclass jcaller,
     jobject handle) {
-  JNI_SampleUniqueAnnotations_Baz(env, jni_zero::JavaParamRef<jobject>(env, handle));
+  JNI_SampleUniqueAnnotations_Baz(env, jni_zero::JavaRef<jobject>::CreateLeaky(env, handle));
 }
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1foo(
@@ -59,7 +57,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     jobject arg) {
   std::string arg_converted = jni_zero::FromJniType<std::string>(
       env,
-      jni_zero::JavaParamRef<jobject>(env, arg));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, arg));
   reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr)->Foo(env, arg_converted);
 }
 
@@ -69,7 +67,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeC
     jlong nativePtr) {
   reinterpret_cast<Foo::Bar*>(nativePtr)->CallWithQualifiedObject(
       env,
-      jni_zero::JavaParamRef<jobject>(env, jcaller));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));
 }
 
 

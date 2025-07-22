@@ -103,8 +103,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, UuidConversion) {
   auto* env = AttachCurrentThread();
   base::Uuid uuid = base::Uuid::ParseCaseInsensitive(kTestUuid);
   auto j_uuid = UuidToJavaString(env, uuid);
-  auto uuid2 =
-      JavaStringToUuid(env, JavaParamRef<jstring>(env, j_uuid.Release()));
+  auto uuid2 = JavaStringToUuid(env, j_uuid);
   EXPECT_EQ(uuid, uuid2);
 }
 
@@ -114,8 +113,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, TabGroupIdConversion) {
   auto j_tab_group_id = TabGroupSyncConversionsBridge::ToJavaTabGroupId(
       env, std::make_optional<LocalTabGroupID>(tab_group_id));
   auto retrieved_tab_group_id =
-      TabGroupSyncConversionsBridge::FromJavaTabGroupId(
-          env, JavaParamRef<jobject>(env, j_tab_group_id.Release()));
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_tab_group_id);
   EXPECT_EQ(retrieved_tab_group_id, tab_group_id);
 }
 

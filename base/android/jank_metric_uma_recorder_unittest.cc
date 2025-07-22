@@ -25,16 +25,6 @@ using ::testing::IsEmpty;
 namespace base::android {
 namespace {
 
-jlongArray GenerateJavaLongArray(JNIEnv* env, span<const int64_t> longs) {
-  ScopedJavaLocalRef<jlongArray> java_long_array = ToJavaLongArray(env, longs);
-  return java_long_array.Release();
-}
-
-jintArray GenerateJavaIntArray(JNIEnv* env, span<const int> ints) {
-  ScopedJavaLocalRef<jintArray> java_int_array = ToJavaIntArray(env, ints);
-  return java_int_array.Release();
-}
-
 // Durations are received in nanoseconds, but are recorded to UMA in
 // milliseconds.
 const int64_t kDurations[] = {
@@ -67,9 +57,10 @@ struct ScrollTestCase {
 TEST(JankMetricUMARecorder, TestUMARecording) {
   JNIEnv* env = AttachCurrentThread();
 
-  jlongArray java_durations = GenerateJavaLongArray(env, kDurations);
-
-  jintArray java_missed_vsyncs = GenerateJavaIntArray(env, kMissedVsyncs);
+  ScopedJavaLocalRef<jlongArray> java_durations =
+      ToJavaLongArray(env, kDurations);
+  ScopedJavaLocalRef<jintArray> java_missed_vsyncs =
+      ToJavaIntArray(env, kMissedVsyncs);
 
   const int kMinScenario = static_cast<int>(JankScenario::PERIODIC_REPORTING);
   const int kMaxScenario = static_cast<int>(JankScenario::MAX_VALUE);
@@ -86,15 +77,14 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
     // everything is scoped to just this iteration of the for loop.
     HistogramTester histogram_tester;
 
-    RecordJankMetrics(
-        env,
-        /* java_durations_ns= */
-        base::android::JavaParamRef<jlongArray>(env, java_durations),
-        /* java_missed_vsyncs = */
-        base::android::JavaParamRef<jintArray>(env, java_missed_vsyncs),
-        /* java_reporting_interval_start_time = */ 0,
-        /* java_reporting_interval_duration = */ 1000,
-        /* java_scenario_enum = */ i);
+    RecordJankMetrics(env,
+                      /* java_durations_ns= */
+                      java_durations,
+                      /* java_missed_vsyncs = */
+                      java_missed_vsyncs,
+                      /* java_reporting_interval_start_time = */ 0,
+                      /* java_reporting_interval_duration = */ 1000,
+                      /* java_scenario_enum = */ i);
 
     const std::string kDurationName =
         GetAndroidFrameTimelineDurationHistogramName(
@@ -130,19 +120,20 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
 TEST(JankMetricUMARecorder, TestWebviewScrollingScenario) {
   JNIEnv* env = AttachCurrentThread();
 
-  jlongArray java_durations = GenerateJavaLongArray(env, kDurations);
-  jintArray java_missed_vsyncs = GenerateJavaIntArray(env, kMissedVsyncs);
+  ScopedJavaLocalRef<jlongArray> java_durations =
+      ToJavaLongArray(env, kDurations);
+  ScopedJavaLocalRef<jintArray> java_missed_vsyncs =
+      ToJavaIntArray(env, kMissedVsyncs);
 
   const int scenario = static_cast<int>(JankScenario::WEBVIEW_SCROLLING);
   HistogramTester histogram_tester;
-  RecordJankMetrics(
-      env,
-      /* java_durations_ns= */
-      base::android::JavaParamRef<jlongArray>(env, java_durations),
-      /* java_missed_vsyncs = */
-      base::android::JavaParamRef<jintArray>(env, java_missed_vsyncs),
-      /* java_reporting_interval_start_time = */ 0,
-      /* java_reporting_interval_duration = */ 1000, scenario);
+  RecordJankMetrics(env,
+                    /* java_durations_ns= */
+                    java_durations,
+                    /* java_missed_vsyncs = */
+                    java_missed_vsyncs,
+                    /* java_reporting_interval_start_time = */ 0,
+                    /* java_reporting_interval_duration = */ 1000, scenario);
 
   const std::string kDurationName =
       "Android.FrameTimelineJank.Duration.WebviewScrolling";
@@ -155,20 +146,21 @@ TEST(JankMetricUMARecorder, TestWebviewScrollingScenario) {
 TEST(JankMetricUMARecorder, TestCombinedWebviewScrollingScenario) {
   JNIEnv* env = AttachCurrentThread();
 
-  jlongArray java_durations = GenerateJavaLongArray(env, kDurations);
-  jintArray java_missed_vsyncs = GenerateJavaIntArray(env, kMissedVsyncs);
+  ScopedJavaLocalRef<jlongArray> java_durations =
+      ToJavaLongArray(env, kDurations);
+  ScopedJavaLocalRef<jintArray> java_missed_vsyncs =
+      ToJavaIntArray(env, kMissedVsyncs);
 
   const int scenario =
       static_cast<int>(JankScenario::COMBINED_WEBVIEW_SCROLLING);
   HistogramTester histogram_tester;
-  RecordJankMetrics(
-      env,
-      /* java_durations_ns= */
-      base::android::JavaParamRef<jlongArray>(env, java_durations),
-      /* java_missed_vsyncs = */
-      base::android::JavaParamRef<jintArray>(env, java_missed_vsyncs),
-      /* java_reporting_interval_start_time = */ 0,
-      /* java_reporting_interval_duration = */ 1000, scenario);
+  RecordJankMetrics(env,
+                    /* java_durations_ns= */
+                    java_durations,
+                    /* java_missed_vsyncs = */
+                    java_missed_vsyncs,
+                    /* java_reporting_interval_start_time = */ 0,
+                    /* java_reporting_interval_duration = */ 1000, scenario);
 
   // |COMBINED_WEBVIEW_SCROLLING| scenario uses 'WebviewScrolling' suffix for
   // emitting the per frame metrics.
@@ -222,15 +214,15 @@ TEST_P(JankMetricUMARecorderPerScrollTests, EmitsPerScrollHistograms) {
     missed_vsyncs.push_back(0);
   }
 
-  jlongArray java_durations = GenerateJavaLongArray(env, durations);
-  jintArray java_missed_vsyncs = GenerateJavaIntArray(env, missed_vsyncs);
+  ScopedJavaLocalRef<jlongArray> java_durations =
+      ToJavaLongArray(env, durations);
+  ScopedJavaLocalRef<jintArray> java_missed_vsyncs =
+      ToJavaIntArray(env, missed_vsyncs);
 
-  RecordJankMetrics(
-      env, base::android::JavaParamRef<jlongArray>(env, java_durations),
-      base::android::JavaParamRef<jintArray>(env, java_missed_vsyncs),
-      /* java_reporting_interval_start_time = */ 0,
-      /* java_reporting_interval_duration = */ 1000,
-      static_cast<int>(params.scenario));
+  RecordJankMetrics(env, java_durations, java_missed_vsyncs,
+                    /* java_reporting_interval_start_time = */ 0,
+                    /* java_reporting_interval_duration = */ 1000,
+                    static_cast<int>(params.scenario));
 
   int expected_delayed_frames_percentage =
       (100 * expected_janky_frames) / params.num_frames;

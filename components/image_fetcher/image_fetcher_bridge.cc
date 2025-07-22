@@ -279,23 +279,21 @@ ScopedJavaLocalRef<jobject> ImageFetcherBridge::ConvertRequestMetadataToJava(
 // static
 ScopedJavaLocalRef<jobject> ImageFetcherBridge::CreateJavaImageDataFetchResult(
     JNIEnv* j_env,
-    jbyteArray j_image_data,
-    jobject j_request_metadata) {
+    const JavaRef<jbyteArray>& j_image_data,
+    const JavaRef<jobject>& j_request_metadata) {
   // Wrap raw JNI types with JavaParamRef for the jni_zero helper.
-  return Java_ImageFetcherBridge_createImageDataFetchResult(
-      j_env, JavaParamRef<jbyteArray>(j_env, j_image_data),
-      JavaParamRef<jobject>(j_env, j_request_metadata));
+  return Java_ImageFetcherBridge_createImageDataFetchResult(j_env, j_image_data,
+                                                            j_request_metadata);
 }
 
 // static
 ScopedJavaLocalRef<jobject> ImageFetcherBridge::CreateJavaImageFetchResult(
     JNIEnv* j_env,
-    jobject j_bitmap,
-    jobject j_request_metadata) {
+    const JavaRef<jobject>& j_bitmap,
+    const JavaRef<jobject>& j_request_metadata) {
   // Wrap raw JNI types with JavaParamRef for the jni_zero helper.
-  return Java_ImageFetcherBridge_createImageFetchResult(
-      j_env, JavaParamRef<jobject>(j_env, j_bitmap),
-      JavaParamRef<jobject>(j_env, j_request_metadata));
+  return Java_ImageFetcherBridge_createImageFetchResult(j_env, j_bitmap,
+                                                        j_request_metadata);
 }
 
 // static
@@ -311,8 +309,7 @@ void ImageFetcherBridge::OnImageDataFetched(
       ConvertRequestMetadataToJava(env, request_metadata);
 
   ScopedJavaLocalRef<jobject> j_image_data_result =
-      CreateJavaImageDataFetchResult(env, j_bytes.obj(),
-                                     j_request_metadata.obj());
+      CreateJavaImageDataFetchResult(env, j_bytes, j_request_metadata);
 
   base::android::RunObjectCallbackAndroid(callback, j_image_data_result);
 }
@@ -330,7 +327,7 @@ void ImageFetcherBridge::OnImageFetched(
   ScopedJavaLocalRef<jobject> j_request_metadata =
       ConvertRequestMetadataToJava(env, request_metadata);
   ScopedJavaLocalRef<jobject> j_image_fetch_result =
-      CreateJavaImageFetchResult(env, j_bitmap.obj(), j_request_metadata.obj());
+      CreateJavaImageFetchResult(env, j_bitmap, j_request_metadata);
 
   base::android::RunObjectCallbackAndroid(callback, j_image_fetch_result);
 }

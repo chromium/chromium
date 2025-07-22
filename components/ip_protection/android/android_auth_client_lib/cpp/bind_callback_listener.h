@@ -24,7 +24,7 @@ class BindCallbackListener {
           callback);
 
   // Called by Java.
-  void OnResult(JNIEnv* env, jni_zero::JavaParamRef<jobject> client);
+  void OnResult(JNIEnv* env, const jni_zero::JavaRef<jobject>& client);
 
   // Called by Java.
   void OnError(JNIEnv* env, std::string error);

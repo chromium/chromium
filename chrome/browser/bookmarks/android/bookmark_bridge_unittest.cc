@@ -450,18 +450,14 @@ TEST_F(BookmarkBridgeTest, GetUnreadCountLocalOrSyncable) {
   local_or_syncable_reading_list_manager()->Add(GURL("http://bar.com"), "bar");
 
   JNIEnv* const env = AttachCurrentThread();
-  ASSERT_EQ(2, bookmark_bridge()->GetUnreadCount(
-                   env, JavaParamRef<jobject>(
-                            env, bookmark_bridge()
-                                     ->GetLocalOrSyncableReadingListFolder(env)
-                                     .obj())));
+  ASSERT_EQ(
+      2, bookmark_bridge()->GetUnreadCount(
+             env, bookmark_bridge()->GetLocalOrSyncableReadingListFolder(env)));
 
   local_or_syncable_reading_list_manager()->SetReadStatus(url, true);
-  ASSERT_EQ(1, bookmark_bridge()->GetUnreadCount(
-                   env, JavaParamRef<jobject>(
-                            env, bookmark_bridge()
-                                     ->GetLocalOrSyncableReadingListFolder(env)
-                                     .obj())));
+  ASSERT_EQ(
+      1, bookmark_bridge()->GetUnreadCount(
+             env, bookmark_bridge()->GetLocalOrSyncableReadingListFolder(env)));
 }
 
 TEST_F(BookmarkBridgeTest, SetReadStatus) {

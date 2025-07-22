@@ -24,7 +24,7 @@ base::android::ScopedJavaLocalRef<jobject> ByteArrayCallbackListener::Create(
 
 void ByteArrayCallbackListener::OnResult(
     JNIEnv* env,
-    jni_zero::JavaParamRef<jbyteArray> response) {
+    const jni_zero::JavaRef<jbyteArray>& response) {
   std::string response_str;
   base::android::JavaByteArrayToString(base::android::AttachCurrentThread(),
                                        response, &response_str);

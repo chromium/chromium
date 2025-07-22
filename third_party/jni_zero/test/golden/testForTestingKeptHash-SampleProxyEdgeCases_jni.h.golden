@@ -17,8 +17,8 @@
 // Forward declaration. To be implemented by the including .cc file.
 static jint JNI_SampleProxyEdgeCases_AddStructB(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& caller,
-    const jni_zero::JavaParamRef<jobject>& b);
+    const jni_zero::JavaRef<jobject>& caller,
+    const jni_zero::JavaRef<jobject>& b);
 
 JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1addStructB(
     JNIEnv* env,
@@ -27,16 +27,16 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     jobject b) {
   auto _ret = JNI_SampleProxyEdgeCases_AddStructB(
       env,
-      jni_zero::JavaParamRef<jobject>(env, caller),
-      jni_zero::JavaParamRef<jobject>(env, b));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, b));
   return _ret;
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_ArrayTypes1(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jintArray>& a,
-    const jni_zero::JavaParamRef<jobjectArray>& b);
+    const jni_zero::JavaRef<jintArray>& a,
+    const jni_zero::JavaRef<jobjectArray>& b);
 
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes1(
     JNIEnv* env,
@@ -45,16 +45,16 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     jobject b) {
   auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes1(
       env,
-      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(a)),
-      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(b)));
+      jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)),
+      jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)));
   return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTypes2(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jintArray>& a,
-    const jni_zero::JavaParamRef<jobjectArray>& b);
+    const jni_zero::JavaRef<jintArray>& a,
+    const jni_zero::JavaRef<jobjectArray>& b);
 
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes2(
     JNIEnv* env,
@@ -63,8 +63,8 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     jobject b) {
   auto _ret = JNI_SampleProxyEdgeCases_ArrayTypes2(
       env,
-      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(a)),
-      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(b)));
+      jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(a)),
+      jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(b)));
   return _ret.ReleaseLocal();
 }
 
@@ -107,7 +107,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
 // Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobjectArray>& arg);
+    const jni_zero::JavaRef<jobjectArray>& arg);
 
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
     JNIEnv* env,
@@ -115,15 +115,15 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sa
     jobject arg) {
   auto _ret = JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
       env,
-      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(arg)));
+      jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(arg)));
   return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleProxyEdgeCases_SetBool(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& b,
-    const jni_zero::JavaParamRef<jobject>& i);
+    const jni_zero::JavaRef<jobject>& b,
+    const jni_zero::JavaRef<jobject>& i);
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setBool(
     JNIEnv* env,
@@ -132,14 +132,14 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     jobject i) {
   JNI_SampleProxyEdgeCases_SetBool(
       env,
-      jni_zero::JavaParamRef<jobject>(env, b),
-      jni_zero::JavaParamRef<jobject>(env, i));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, b),
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, i));
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static jboolean JNI_SampleProxyEdgeCases_SetStringBuilder(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& sb);
+    const jni_zero::JavaRef<jobject>& sb);
 
 JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setStringBuilder(
     JNIEnv* env,
@@ -147,7 +147,7 @@ JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1S
     jobject sb) {
   auto _ret = JNI_SampleProxyEdgeCases_SetStringBuilder(
       env,
-      jni_zero::JavaParamRef<jobject>(env, sb));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, sb));
   return _ret;
 }
 
@@ -168,7 +168,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInst
     jlong nativeInstance) {
   reinterpret_cast<Instance*>(nativeInstance)->InstanceMethod(
       env,
-      jni_zero::JavaParamRef<jobject>(env, jcaller));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));
 }
 
 // Forward declaration. To be implemented by the including .cc file.

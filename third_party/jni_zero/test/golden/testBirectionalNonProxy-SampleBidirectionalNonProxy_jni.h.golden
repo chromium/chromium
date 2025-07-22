@@ -34,7 +34,7 @@
       jobject jcaller) {                                                                           \
     auto _ret = JNI_SampleBidirectionalNonProxy_Init(                                              \
         env,                                                                                       \
-        jni_zero::JavaParamRef<jobject>(env, jcaller));                                            \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
@@ -43,7 +43,7 @@
       jobject jcaller) {                                                                           \
     auto _ret = JNI_SampleBidirectionalNonProxy_Init(                                              \
         env,                                                                                       \
-        jni_zero::JavaParamRef<jobject>(env, jcaller));                                            \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller));                                    \
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
@@ -54,7 +54,7 @@
       jint arg1) {                                                                                 \
     auto _ret = reinterpret_cast<Test*>(nativeTest)->Method(                                       \
         env,                                                                                       \
-        jni_zero::JavaParamRef<jobject>(env, jcaller),                                             \
+        jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller),                                     \
         arg1);                                                                                     \
     return _ret;                                                                                   \
   }                                                                                                \

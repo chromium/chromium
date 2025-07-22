@@ -62,20 +62,22 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jobject b) {
   reinterpret_cast<CPPClass*>(nativeCPPClass)->AddStructB(
       env,
-      jni_zero::JavaParamRef<jobject>(env, caller),
-      jni_zero::JavaParamRef<jobject>(env, b));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, b));
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleForTests_ClassUnderSamePackageTest(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& arg);
+    const jni_zero::JavaRef<jobject>& arg);
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1classUnderSamePackageTest(
     JNIEnv* env,
     jclass jcaller,
     jobject arg) {
-  JNI_SampleForTests_ClassUnderSamePackageTest(env, jni_zero::JavaParamRef<jobject>(env, arg));
+  JNI_SampleForTests_ClassUnderSamePackageTest(
+      env,
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, arg));
 }
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1destroy(
@@ -86,17 +88,17 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jobject bytes) {
   std::vector<uint8_t> bytes_converted = jni_zero::FromJniArray<std::vector<uint8_t>>(
       env,
-      jni_zero::JavaParamRef<jbyteArray>(env, static_cast<jbyteArray>(bytes)));
+      jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, static_cast<jbyteArray>(bytes)));
   reinterpret_cast<CPPClass*>(nativeCPPClass)->Destroy(
       env,
-      jni_zero::JavaParamRef<jobject>(env, caller),
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),
       bytes_converted);
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jclass>& _env);
+    const jni_zero::JavaRef<jclass>& _env);
 
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getClass(
     JNIEnv* env,
@@ -104,20 +106,22 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jobject _env) {
   auto _ret = JNI_SampleForTests_GetClass(
       env,
-      jni_zero::JavaParamRef<jclass>(env, static_cast<jclass>(_env)));
+      jni_zero::JavaRef<jclass>::CreateLeaky(env, static_cast<jclass>(_env)));
   return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static jdouble JNI_SampleForTests_GetDoubleFunction(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& ret);
+    const jni_zero::JavaRef<jobject>& ret);
 
 JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getDoubleFunction(
     JNIEnv* env,
     jclass jcaller,
     jobject ret) {
-  auto _ret = JNI_SampleForTests_GetDoubleFunction(env, jni_zero::JavaParamRef<jobject>(env, ret));
+  auto _ret = JNI_SampleForTests_GetDoubleFunction(
+      env,
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, ret));
   return _ret;
 }
 
@@ -134,7 +138,7 @@ JNI_ZERO_BOUNDARY_EXPORT jfloat Java_this_is_a_package_prefix_org_jni_1zero_GEN_
 // Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetNonPODDatatype(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& _jcaller);
+    const jni_zero::JavaRef<jobject>& _jcaller);
 
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getNonPODDatatype(
     JNIEnv* env,
@@ -142,14 +146,14 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jobject _jcaller) {
   auto _ret = JNI_SampleForTests_GetNonPODDatatype(
       env,
-      jni_zero::JavaParamRef<jobject>(env, _jcaller));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, _jcaller));
   return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jthrowable>& arg0);
+    const jni_zero::JavaRef<jthrowable>& arg0);
 
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1getThrowable(
     JNIEnv* env,
@@ -157,15 +161,15 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jobject arg0) {
   auto _ret = JNI_SampleForTests_GetThrowable(
       env,
-      jni_zero::JavaParamRef<jthrowable>(env, static_cast<jthrowable>(arg0)));
+      jni_zero::JavaRef<jthrowable>::CreateLeaky(env, static_cast<jthrowable>(arg0)));
   return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
 static jlong JNI_SampleForTests_Init(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& caller,
-    const jni_zero::JavaParamRef<jstring>& param,
+    const jni_zero::JavaRef<jobject>& caller,
+    const jni_zero::JavaRef<jstring>& param,
     jni_zero::ByteArrayView& bytes,
     jni_zero::tests::CPPClass* convertedType,
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& nonConvertedArray);
@@ -180,17 +184,17 @@ JNI_ZERO_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1
     jobject nonConvertedArray) {
   jni_zero::ByteArrayView bytes_converted = jni_zero::FromJniArray<jni_zero::ByteArrayView>(
       env,
-      jni_zero::JavaParamRef<jbyteArray>(env, static_cast<jbyteArray>(bytes)));
+      jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, static_cast<jbyteArray>(bytes)));
   jni_zero::tests::CPPClass* convertedType_converted = jni_zero::FromJniType<jni_zero::tests::CPPClass*>(
       env,
-      jni_zero::JavaParamRef<jobject>(env, convertedType));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, convertedType));
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> nonConvertedArray_converted = jni_zero::FromJniArray<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>(
       env,
-      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(nonConvertedArray)));
+      jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(nonConvertedArray)));
   auto _ret = JNI_SampleForTests_Init(
       env,
-      jni_zero::JavaParamRef<jobject>(env, caller),
-      jni_zero::JavaParamRef<jstring>(env, static_cast<jstring>(param)),
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),
+      jni_zero::JavaRef<jstring>::CreateLeaky(env, static_cast<jstring>(param)),
       bytes_converted,
       convertedType_converted,
       nonConvertedArray_converted);
@@ -204,7 +208,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jobject caller) {
   reinterpret_cast<CPPClass*>(nativeCPPClass)->IterateAndDoSomethingWithStructB(
       env,
-      jni_zero::JavaParamRef<jobject>(env, caller));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, caller));
 }
 
 // Forward declaration. To be implemented by the including .cc file.
@@ -218,7 +222,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jobject items) {
   std::vector<std::string> items_converted = jni_zero::FromJniCollection<std::vector<std::string>>(
       env,
-      jni_zero::JavaParamRef<jobject>(env, items));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, items));
   auto _ret = JNI_SampleForTests_ListTest2(env, items_converted);
   auto converted_ret = jni_zero::ToJniList(env, _ret).Release();
   return converted_ret;
@@ -235,7 +239,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jobject arg0) {
   std::map<std::string, std::string> arg0_converted = jni_zero::FromJniType<std::map<std::string, std::string>>(
       env,
-      jni_zero::JavaParamRef<jobject>(env, arg0));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, arg0));
   auto _ret = JNI_SampleForTests_MapTest2(env, arg0_converted);
   auto converted_ret = jni_zero::ToJniType(env, _ret).Release();
   return converted_ret;
@@ -249,10 +253,10 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jobject strings) {
   std::vector<std::string> strings_converted = jni_zero::FromJniArray<std::vector<std::string>>(
       env,
-      jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(strings)));
+      jni_zero::JavaRef<jobjectArray>::CreateLeaky(env, static_cast<jobjectArray>(strings)));
   auto _ret = reinterpret_cast<CPPClass*>(nativeCPPClass)->Method(
       env,
-      jni_zero::JavaParamRef<jobject>(env, caller),
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, caller),
       strings_converted);
   return _ret;
 }
@@ -264,7 +268,7 @@ JNI_ZERO_BOUNDARY_EXPORT jdouble Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jobject caller) {
   auto _ret = reinterpret_cast<CPPClass::InnerClass*>(nativePtr)->MethodOtherP0(
       env,
-      jni_zero::JavaParamRef<jobject>(env, caller));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, caller));
   return _ret;
 }
 
@@ -291,25 +295,25 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jobject d) {
   std::vector<uint8_t> b_converted = jni_zero::FromJniArray<std::vector<uint8_t>>(
       env,
-      jni_zero::JavaParamRef<jbyteArray>(env, static_cast<jbyteArray>(b)));
+      jni_zero::JavaRef<jbyteArray>::CreateLeaky(env, static_cast<jbyteArray>(b)));
   std::vector<uint16_t> c_converted = jni_zero::FromJniArray<std::vector<uint16_t>>(
       env,
-      jni_zero::JavaParamRef<jcharArray>(env, static_cast<jcharArray>(c)));
+      jni_zero::JavaRef<jcharArray>::CreateLeaky(env, static_cast<jcharArray>(c)));
   std::vector<int16_t> s_converted = jni_zero::FromJniArray<std::vector<int16_t>>(
       env,
-      jni_zero::JavaParamRef<jshortArray>(env, static_cast<jshortArray>(s)));
+      jni_zero::JavaRef<jshortArray>::CreateLeaky(env, static_cast<jshortArray>(s)));
   std::vector<int32_t> i_converted = jni_zero::FromJniArray<std::vector<int32_t>>(
       env,
-      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(i)));
+      jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(i)));
   std::vector<int64_t> l_converted = jni_zero::FromJniArray<std::vector<int64_t>>(
       env,
-      jni_zero::JavaParamRef<jlongArray>(env, static_cast<jlongArray>(l)));
+      jni_zero::JavaRef<jlongArray>::CreateLeaky(env, static_cast<jlongArray>(l)));
   std::vector<float> f_converted = jni_zero::FromJniArray<std::vector<float>>(
       env,
-      jni_zero::JavaParamRef<jfloatArray>(env, static_cast<jfloatArray>(f)));
+      jni_zero::JavaRef<jfloatArray>::CreateLeaky(env, static_cast<jfloatArray>(f)));
   std::vector<double> d_converted = jni_zero::FromJniArray<std::vector<double>>(
       env,
-      jni_zero::JavaParamRef<jdoubleArray>(env, static_cast<jdoubleArray>(d)));
+      jni_zero::JavaRef<jdoubleArray>::CreateLeaky(env, static_cast<jdoubleArray>(d)));
   auto _ret = JNI_SampleForTests_PrimitiveArrays(
       env,
       b_converted,
@@ -330,7 +334,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     jobject caller) {
   auto _ret = reinterpret_cast<CPPClass*>(nativeCPPClass)->ReturnAString(
       env,
-      jni_zero::JavaParamRef<jobject>(env, caller));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, caller));
   return _ret.ReleaseLocal();
 }
 
@@ -348,8 +352,8 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleForTests_SetNonPODDatatype(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& obj,
-    const jni_zero::JavaParamRef<jobject>& rect);
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& rect);
 
 JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForTests_1setNonPODDatatype(
     JNIEnv* env,
@@ -358,8 +362,8 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     jobject rect) {
   JNI_SampleForTests_SetNonPODDatatype(
       env,
-      jni_zero::JavaParamRef<jobject>(env, obj),
-      jni_zero::JavaParamRef<jobject>(env, rect));
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, obj),
+      jni_zero::JavaRef<jobject>::CreateLeaky(env, rect));
 }
 
 

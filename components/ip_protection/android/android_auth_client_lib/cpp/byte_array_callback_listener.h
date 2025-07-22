@@ -24,7 +24,7 @@ class ByteArrayCallbackListener {
           callback);
 
   // Called by Java.
-  void OnResult(JNIEnv* env, jni_zero::JavaParamRef<jbyteArray> response);
+  void OnResult(JNIEnv* env, const jni_zero::JavaRef<jbyteArray>& response);
 
   // Called by Java.
   void OnError(JNIEnv* env, jint authRequestError);

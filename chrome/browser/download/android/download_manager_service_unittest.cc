@@ -55,10 +55,8 @@ class DownloadManagerServiceTest : public testing::Test {
         &DownloadManagerServiceTest::OnResumptionDone, base::Unretained(this)));
     ProfileKeyAndroid profile_key_android(profile_.GetProfileKey());
 
-    service_->ResumeDownload(
-        env, download_guid,
-        JavaParamRef<jobject>(env,
-                              profile_key_android.GetJavaObject().Release()));
+    service_->ResumeDownload(env, download_guid,
+                             profile_key_android.GetJavaObject());
     EXPECT_FALSE(success_);
     service_->OnDownloadsInitialized(&coordinator_, false);
     run_loop_.Run();

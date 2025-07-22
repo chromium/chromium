@@ -76,13 +76,13 @@ class ImageFetcherBridge {
 
   static ScopedJavaLocalRef<jobject> CreateJavaImageDataFetchResult(
       JNIEnv* j_env,
-      jbyteArray j_image_data,
-      jobject j_request_metadata);
+      const JavaRef<jbyteArray>& j_image_data,
+      const JavaRef<jobject>& j_request_metadata);
 
   static ScopedJavaLocalRef<jobject> CreateJavaImageFetchResult(
       JNIEnv* j_env,
-      jobject j_bitmap,
-      jobject j_request_metadata);
+      const JavaRef<jobject>& j_bitmap,
+      const JavaRef<jobject>& j_request_metadata);
 
   static void OnImageDataFetched(ScopedJavaGlobalRef<jobject> callback,
                                  const std::string& image_data,

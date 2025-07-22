@@ -223,8 +223,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
       edited_profile.CreateJavaObject(
           g_browser_process->GetApplicationLocale());
 
-  controller_->OnUserEdited(env_, base::android::JavaParamRef<jobject>(
-                                      env_, edited_profile_java.obj()));
+  controller_->OnUserEdited(env_, edited_profile_java);
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
