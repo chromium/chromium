@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_navigation_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -32,7 +32,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 @interface BWGCoordinator () <UISheetPresentationControllerDelegate,
                               BWGMediatorDelegate,
-                              BWGNavigationControllerDelegate>
+                              BWGFREWrapperViewControllerDelegate>
 
 @end
 
@@ -40,8 +40,8 @@ const CGFloat kPromoMaxImpressionCount = 3;
   // Mediator for handling all logic related to BWG.
   BWGMediator* _mediator;
 
-  // Navigation view controller owning the promo and the consent UI.
-  BWGNavigationController* _navigationController;
+  // Wrapper view controller for the First Run Experience (FRE) UI.
+  BWGFREWrapperViewController* _FREWrapperViewController;
 
   // Handler for sending BWG commands.
   id<BWGCommands> _BWGCommandsHandler;
@@ -95,7 +95,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 #pragma mark - Public
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
-  _navigationController = nil;
+  _FREWrapperViewController = nil;
   _BWGCommandsHandler = nil;
   _helpCommandsHandler = nil;
   _mediator = nil;
@@ -126,19 +126,19 @@ const CGFloat kPromoMaxImpressionCount = 3;
         _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) + 1);
   }
 
-  _navigationController =
-      [[BWGNavigationController alloc] initWithPromo:showPromo
-                                    isAccountManaged:[self isManagedAccount]];
-  _navigationController.sheetPresentationController.delegate = self;
-  _navigationController.BWGNavigationDelegate = self;
-  _navigationController.mutator = _mediator;
+  _FREWrapperViewController = [[BWGFREWrapperViewController alloc]
+         initWithPromo:showPromo
+      isAccountManaged:[self isManagedAccount]];
+  _FREWrapperViewController.sheetPresentationController.delegate = self;
+  _FREWrapperViewController.BWGFREWrapperViewControllerDelegate = self;
+  _FREWrapperViewController.mutator = _mediator;
 
   BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
   BOOL shouldAnimatePresentation =
       BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : NO;
 
   __weak __typeof(self) weakSelf = self;
-  [self.baseViewController presentViewController:_navigationController
+  [self.baseViewController presentViewController:_FREWrapperViewController
                                         animated:shouldAnimatePresentation
                                       completion:^{
                                         BWGCoordinator* strongSelf = weakSelf;
@@ -154,7 +154,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 - (void)dismissBWGConsentUIWithCompletion:(void (^)())completion {
   [self dismissPresentedViewWithCompletion:completion];
-  _navigationController = nil;
+  _FREWrapperViewController = nil;
 }
 
 - (BOOL)shouldShowBWGConsent {
@@ -184,9 +184,9 @@ const CGFloat kPromoMaxImpressionCount = 3;
   [_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
 }
 
-#pragma mark - BWGNavigationControllerDelegate
+#pragma mark - BWGFREWrapperViewControllerDelegate
 
-- (void)promoWasDismissed:(BWGNavigationController*)navigationController {
+- (void)promoWasDismissed:(BWGFREWrapperViewController*)wrapperViewController {
   if (_entryPoint == bwg::EntryPoint::Promo) {
     [self.promosUIHandler promoWasDismissed];
   }

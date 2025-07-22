@@ -7,12 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_view_controller_protocol.h"
 
 @protocol BWGConsentMutator;
 
 // BWG consent View Controller (VC).
-@interface BWGConsentViewController : UIViewController
+@interface BWGConsentViewController
+    : UIViewController <BWGFREViewControllerProtocol>
 
 // Initializer for the VC whether the account is managed.
 - (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged;

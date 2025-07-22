@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/font/font_api.h"
@@ -22,7 +21,6 @@ namespace {
 
 // Main Stack view insets and spacing.
 const CGFloat kMainStackHorizontalInset = 24.0;
-const CGFloat kMainStackSpacing = 8.0;
 
 // Icons size.
 const CGFloat kIconSize = 20.0;
@@ -49,10 +47,10 @@ const CGFloat kOuterBoxSize = 64.0;
 const CGFloat kSeparatorHeight = 1.0;
 
 // Spacing between the scrollView and the buttons.
-const CGFloat kSpacingScrollViewAndButtons = 24.0;
+const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 
 // Spacing between primary and secondary buttons.
-const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
+const CGFloat kSpacingScrollViewAndButtons = 24.0;
 
 }  // namespace
 
@@ -60,12 +58,10 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 @end
 
 @implementation BWGPromoViewController {
-  // Main stack view containing all the others views.
+  // Main stack view. This view itself does not scroll.
   UIStackView* _mainStackView;
-  // Stack view for the scrollable content.
-  UIScrollView* _contentScrollView;
-  // Content stack view.
-  UIStackView* _contentStackView;
+  // View that contains the main title.
+  UIView* _titleContainerView;
 }
 
 #pragma mark - UIViewController
@@ -74,7 +70,7 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.navigationItem.hidesBackButton = YES;
-  [self setupStackViews];
+  [self configureMainStackView];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -82,28 +78,16 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
   [self.BWGPromoDelegate promoViewControllerWasDismissed];
 }
 
-#pragma mark - Public
+#pragma mark - BWGFREViewControllerProtocol
 
 - (CGFloat)contentHeight {
+  [self.view layoutIfNeeded];
   return
       [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height +
-      [_contentStackView
-          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
           .height;
 }
 
 #pragma mark - Private
-
-// Configures all the stacks.
-- (void)setupStackViews {
-  [self configureMainStackView];
-  [self configureContentStackView];
-  [_mainStackView addArrangedSubview:_contentScrollView];
-  [_mainStackView setCustomSpacing:kSpacingScrollViewAndButtons
-                         afterView:_contentScrollView];
-  [self configureButtons];
-}
 
 // Creates a tiny horizontal separator.
 - (UIView*)createSeparatorView {
@@ -122,46 +106,33 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
     [separator.trailingAnchor
         constraintEqualToAnchor:wrapperContainer.trailingAnchor],
     [separator.topAnchor constraintEqualToAnchor:wrapperContainer.topAnchor],
+    [separator.bottomAnchor
+        constraintEqualToAnchor:wrapperContainer.bottomAnchor]
   ]];
   return wrapperContainer;
 }
 
-// Configures the main stack view.
+// Configures the main stack view and contains all the content including the
+// buttons.
 - (void)configureMainStackView {
   _mainStackView = [[UIStackView alloc] init];
   _mainStackView.axis = UILayoutConstraintAxisVertical;
-  _mainStackView.spacing = kMainStackSpacing;
-
   _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
-
   [self.view addSubview:_mainStackView];
-  AddSameConstraintsWithInsets(
-      _mainStackView, self.view.safeAreaLayoutGuide,
-      NSDirectionalEdgeInsetsMake(0, kMainStackHorizontalInset, 0,
-                                  kMainStackHorizontalInset));
-}
 
-// Configures the content stack view.
-- (void)configureContentStackView {
-  _contentScrollView = [[UIScrollView alloc] init];
-  _contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  _contentScrollView.showsVerticalScrollIndicator = NO;
-
-  _contentStackView = [[UIStackView alloc] init];
-  _contentStackView.axis = UILayoutConstraintAxisVertical;
-  _contentStackView.spacing = kMainStackSpacing;
-  _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [_contentScrollView addSubview:_contentStackView];
-
-  AddSameConstraints(_contentStackView, _contentScrollView);
-
+  UILayoutGuide* safeArea = self.view.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
-    [_contentStackView.widthAnchor
-        constraintEqualToAnchor:_contentScrollView.widthAnchor]
+    [_mainStackView.topAnchor constraintEqualToAnchor:safeArea.topAnchor],
+    [_mainStackView.leadingAnchor
+        constraintEqualToAnchor:safeArea.leadingAnchor
+                       constant:kMainStackHorizontalInset],
+    [_mainStackView.trailingAnchor
+        constraintEqualToAnchor:safeArea.trailingAnchor
+                       constant:-kMainStackHorizontalInset],
   ]];
 
-  [_contentStackView addArrangedSubview:[self createMainTitle]];
+  [_mainStackView addArrangedSubview:[self createMainTitle]];
+  [_mainStackView setCustomSpacing:10 afterView:_titleContainerView];
 
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithPointSize:kIconSize
@@ -182,10 +153,10 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
       [self createContentHorizontalStackViewWithIconContainer:firstIconContainer
                                                titleBodyStack:
                                                    firstTitleBodyStackView];
-  [_contentStackView addArrangedSubview:firstContentHorizontalStackView];
+  [_mainStackView addArrangedSubview:firstContentHorizontalStackView];
 
   UIView* separatorView = [self createSeparatorView];
-  [_contentStackView addArrangedSubview:separatorView];
+  [_mainStackView addArrangedSubview:separatorView];
 
   UIImageView* secondIconImageView = [[UIImageView alloc]
       initWithImage:DefaultSymbolWithConfiguration(kListBulletSymbol, config)];
@@ -202,19 +173,23 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
       createContentHorizontalStackViewWithIconContainer:secondIconContainer
                                          titleBodyStack:
                                              secondTitleBodyStackView];
-  [_contentStackView addArrangedSubview:secondContentHorizontalStackView];
+  [_mainStackView addArrangedSubview:secondContentHorizontalStackView];
+  [_mainStackView setCustomSpacing:kSpacingScrollViewAndButtons
+                         afterView:secondContentHorizontalStackView];
+  [self configureButtons];
 }
 
 // Creates the main title.
 - (UIView*)createMainTitle {
   UILabel* mainTitleLabel = [self createGradientMainTitleLabel];
-  UIView* titleContainerView = [[UIView alloc] init];
-  titleContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  _titleContainerView = [[UIView alloc] init];
+  _titleContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [titleContainerView addSubview:mainTitleLabel];
+  [_titleContainerView addSubview:mainTitleLabel];
 
-  AddSameConstraints(mainTitleLabel, titleContainerView);
-  return titleContainerView;
+  AddSameConstraints(mainTitleLabel, _titleContainerView);
+  [_mainStackView setCustomSpacing:20 afterView:_titleContainerView];
+  return _titleContainerView;
 }
 
 // Create a gradient main title label.

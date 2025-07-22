@@ -2,31 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_NAVIGATION_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_NAVIGATION_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_FRE_WRAPPER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_FRE_WRAPPER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-@class BWGNavigationController;
+@class BWGFREWrapperViewController;
 @protocol BWGConsentMutator;
 
-// Delegate for `BWGNavigationController`.
-@protocol BWGNavigationControllerDelegate <NSObject>
+// Delegate for `BWGFREWrapperViewController`.
+@protocol BWGFREWrapperViewControllerDelegate <NSObject>
 
 // Informs the delegate that promo was dismissed.
-- (void)promoWasDismissed:(BWGNavigationController*)navigationController;
+- (void)promoWasDismissed:(BWGFREWrapperViewController*)wrapperViewController;
 
 @end
 
-// UINavigationController that owns BWGPromo and BWGConsent view controllers.
-@interface BWGNavigationController : UINavigationController
+// UIViewController that owns BWGPromo and BWGConsent view controllers and
+// manages their transitions.
+@interface BWGFREWrapperViewController : UIViewController
 
 // Initializes the navigation controller.
 // If `showPromo` is YES, the navigation controller will display the promo.
 // If NO, the navigation controller will display the consent view.
 // `isAccountManaged` indicates whether the account is managed.
 - (instancetype)initWithPromo:(BOOL)showPromo
-             isAccountManaged:(BOOL)isAccountManaged;
+             isAccountManaged:(BOOL)isAccountManaged NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRootViewController:(UIViewController*)rootViewController
@@ -41,9 +42,9 @@
 @property(nonatomic, weak) id<BWGConsentMutator> mutator;
 
 // The delegate for this view controller to communicate to `BWGCoordinator`.
-@property(nonatomic, weak) id<BWGNavigationControllerDelegate>
-    BWGNavigationDelegate;
+@property(nonatomic, weak) id<BWGFREWrapperViewControllerDelegate>
+    BWGFREWrapperViewControllerDelegate;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_NAVIGATION_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_FRE_WRAPPER_VIEW_CONTROLLER_H_
