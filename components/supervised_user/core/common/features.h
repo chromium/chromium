@@ -58,6 +58,7 @@ BASE_DECLARE_FEATURE(kAllowNonFamilyLinkUrlFilterMode);
 // Propagates the device settings about content filters to the supervised user
 // content filters.
 BASE_DECLARE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser);
+BASE_DECLARE_FEATURE(kSupervisedUserClearDeviceContentFiltersPrefsOnStartup);
 // Kill switches for the respective content filters.
 BASE_DECLARE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch);
 BASE_DECLARE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch);
