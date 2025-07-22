@@ -9,22 +9,28 @@
 
 namespace gin {
 
+namespace {
+// The context object allocates internal fields for each embedder type. This is
+// the index into the context object's internal field array for Gin.
+constexpr int kGinPerContextDataIndex =
+    int{kPerContextDataStartIndex} + kEmbedderNativeGin;
+}  // namespace
+
 PerContextData::PerContextData(ContextHolder* context_holder,
                                v8::Local<v8::Context> context)
     : context_holder_(context_holder), runner_(nullptr) {
-  context->SetAlignedPointerInEmbedderData(
-      int{kPerContextDataStartIndex} + kEmbedderNativeGin, this);
+  context->SetAlignedPointerInEmbedderData(kGinPerContextDataIndex, this);
 }
 
 PerContextData::~PerContextData() {
   context_holder_->context()->SetAlignedPointerInEmbedderData(
-      int{kPerContextDataStartIndex} + kEmbedderNativeGin, NULL);
+      kGinPerContextDataIndex, nullptr);
 }
 
 // static
 PerContextData* PerContextData::From(v8::Local<v8::Context> context) {
   return static_cast<PerContextData*>(
-      context->GetAlignedPointerFromEmbedderData(kEncodedValueIndex));
+      context->GetAlignedPointerFromEmbedderData(kGinPerContextDataIndex));
 }
 
 }  // namespace gin
