@@ -1114,6 +1114,8 @@ static_library("ui") {
       "sync/profile_signin_confirmation_helper.h",
       "tab_modal_confirm_dialog_delegate.cc",
       "tab_modal_confirm_dialog_delegate.h",
+      "tabs/glic_actor_task_icon_controller.cc",
+      "tabs/glic_actor_task_icon_controller.h",
       "tabs/glic_nudge_controller.cc",
       "tabs/glic_nudge_controller.h",
       "tabs/glic_nudge_delegate.cc",
@@ -5499,8 +5501,6 @@ static_library("ui") {
 
   if (enable_glic) {
     sources += [
-      "tabs/glic_actor_task_icon_controller.cc",
-      "tabs/glic_actor_task_icon_controller.h",
       "views/tabs/glic_actor_task_icon.cc",
       "views/tabs/glic_actor_task_icon.h",
       "views/tabs/glic_button.cc",
