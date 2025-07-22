@@ -637,12 +637,18 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (BOOL)canShowLargeContextualPanelEntrypoint:
     (ContextualPanelEntrypointCoordinator*)coordinator {
+  if (IsDiamondPrototypeEnabled()) {
+    return NO;
+  }
   return [self.viewController canShowLargeContextualPanelEntrypoint];
 }
 
 - (void)setLocationBarLabelCenteredBetweenContent:
             (ContextualPanelEntrypointCoordinator*)coordinator
                                          centered:(BOOL)centered {
+  if (IsDiamondPrototypeEnabled()) {
+    return;
+  }
   [self.viewController setLocationBarLabelCenteredBetweenContent:centered];
 }
 

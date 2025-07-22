@@ -134,6 +134,9 @@
 
 - (void)setContextualPanelEntrypointView:
     (UIView*)contextualPanelEntrypointView {
+  if (IsDiamondPrototypeEnabled()) {
+    return;
+  }
   if (_contextualPanelEntrypointView) {
     return;
   }
@@ -153,6 +156,9 @@
 }
 
 - (void)setReaderModeChipView:(UIView*)readerModeChipView {
+  if (IsDiamondPrototypeEnabled()) {
+    return;
+  }
   if (_readerModeChipView) {
     return;
   }
@@ -172,6 +178,9 @@
 }
 
 - (void)setPlaceholderView:(UIView*)placeholderView {
+  if (IsDiamondPrototypeEnabled()) {
+    return;
+  }
   if (_placeholderView == placeholderView) {
     return;
   }
