@@ -458,16 +458,6 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
     test_dirs_.push_back(std::move(dir));
   }
 
-  void OpenUrlInNewTab(const GURL& url) {
-#if BUILDFLAG(IS_ANDROID)
-    android_ui_test_utils::OpenUrlInNewTab(profile(), web_contents(), url);
-#else
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-#endif
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
   std::vector<TestExtensionDir> test_dirs_;
@@ -573,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   {
     ExtensionTestMessageListener listener1("iframe1 event");
     ExtensionTestMessageListener listener2("iframe2 event");
-    OpenUrlInNewTab(
+    NavigateToURLInNewTab(
         embedded_test_server()->GetURL("example.com", "/title1.html"));
     EXPECT_TRUE(listener1.WaitUntilSatisfied());
     EXPECT_TRUE(listener2.WaitUntilSatisfied());
@@ -6253,14 +6243,11 @@ class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
   ManifestV3WebRequestApiTest() = default;
   ~ManifestV3WebRequestApiTest() override = default;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Loads an extension contained within `test_dir` as a policy-installed
   // extension. This is useful because webRequestBlocking is restricted to
   // policy-installed extensions in Manifest V3.
   // This assumes the extension script will send a "ready" message once it's
   // done setting up.
-  // TODO(crbug.com/391921314): Enable on Android when InstallExtension() is
-  // supported.
   const Extension* LoadPolicyExtension(TestExtensionDir& test_dir) {
     // We need a "ready"-style listener here because `InstallExtension()`
     // doesn't automagically wait for the extension to finish setting up.
@@ -6278,7 +6265,6 @@ class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
 
     return extension;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   WebRequestEventRouter* web_request_router() {
     return WebRequestEventRouter::Get(profile());
@@ -7703,7 +7689,6 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                     profile(), "webRequest.onBeforeRequest"));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   TestExtensionDir test_dir1;
@@ -7733,7 +7718,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
                       "chrome.test.sendMessage('ready');");
   ASSERT_TRUE(LoadPolicyExtension(test_dir1));
 
+#if !BUILDFLAG(IS_ANDROID)
   // declarativeWebRequest is only supported by manifest version 2 or lower.
+  // Android doesn't support manifest version 2.
   TestExtensionDir test_dir2;
   test_dir2.WriteManifest(R"({
            "name": "MV2 WebRequest",
@@ -7757,6 +7744,15 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
   ExtensionTestMessageListener listener("ready");
   ASSERT_TRUE(LoadExtension(test_dir2.UnpackedPath()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// We don't support manifest version 2 on android, so only the first extension
+// will be loaded on android.
+#if BUILDFLAG(IS_ANDROID)
+  const size_t expected_entries = 1;
+#else
+  const size_t expected_entries = 2;
+#endif
 
   base::RunLoop ukm_loop;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -7766,16 +7762,18 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
         if (ukm_recorder
                 .GetMergedEntriesByName(
                     ukm::builders::Extensions_OnNavigation::kEntryName)
-                .size() == 2) {
+                .size() == expected_entries) {
           ukm_loop.Quit();
         }
       }));
 
   const GURL kUrlA = embedded_test_server()->GetURL("a.com", "/simple.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrlA));
+  EXPECT_TRUE(NavigateToURLInNewTab(kUrlA));
 
   const GURL kUrlB = embedded_test_server()->GetURL("b.com", "/simple.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrlB));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(NavigateToURLInNewTab(kUrlB));
+#endif
 
   // Waits until UKM data is recorded.
   ukm_loop.Run();
@@ -7783,7 +7781,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
   const double kBucketSpacing = 2;
   auto merged_entries = ukm_recorder.GetMergedEntriesByName(
       ukm::builders::Extensions_OnNavigation::kEntryName);
-  EXPECT_EQ(2u, merged_entries.size());
+  EXPECT_EQ(expected_entries, merged_entries.size());
   for (const auto& entry : merged_entries) {
     const ukm::mojom::UkmEntry* ukm_entry = entry.second.get();
     const GURL& url =
@@ -7791,10 +7789,10 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
     ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, url);
     ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
         ukm_entry, "EnabledExtensionCount",
-        ukm::GetExponentialBucketMin(2u, kBucketSpacing));
+        ukm::GetExponentialBucketMin(expected_entries, kBucketSpacing));
     ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
         ukm_entry, "EnabledExtensionCount.InjectContentScript",
-        ukm::GetExponentialBucketMin(2u, kBucketSpacing));
+        ukm::GetExponentialBucketMin(expected_entries, kBucketSpacing));
     ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
         ukm_entry, "EnabledExtensionCount.HaveHostPermissions",
         ukm::GetExponentialBucketMin(1u, kBucketSpacing));
@@ -7848,6 +7846,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Allows test to wait for the failure of a worker registration.
 class WorkerRegistrationFailureObserver
     : public ServiceWorkerTaskQueue::TestObserver {
