@@ -243,36 +243,33 @@
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  :host(:not([searchbox-chrome-refresh-theming])) #voiceSearchButton {
+  :host(:not([use-webkit-search-icons_])) #voiceSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
   }
 
-  :host(:not([searchbox-chrome-refresh-theming])) #lensSearchButton {
+  :host(:not([use-webkit-search-icons_])) #lensSearchButton {
     background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
   }
 
-  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton,
-  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
+  :host([use-webkit-search-icons_]) #voiceSearchButton {
+    -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+  }
+
+  :host([use-webkit-search-icons_]) #lensSearchButton {
+    -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+  }
+
+  :host([use-webkit-search-icons_]) #voiceSearchButton,
+  :host([use-webkit-search-icons_]) #lensSearchButton {
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 21px 21px;
     background-color: var(--color-searchbox-lens-voice-icon-background);
   }
 
-  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton {
-    -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
-  }
-
-  :host([searchbox-chrome-refresh-theming][color-source-is-baseline]) #voiceSearchButton {
-    background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
-  }
-
-  :host([searchbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
-    -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
-  }
-
-  :host([searchbox-chrome-refresh-theming][color-source-is-baseline]) #lensSearchButton {
-    background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+  :host([use-webkit-search-icons_][compose-button-enabled]) #voiceSearchButton,
+  :host([use-webkit-search-icons_][compose-button-enabled]) #lensSearchButton {
+    background-color: #1F1F1F;
   }
 
   :host([searchbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {

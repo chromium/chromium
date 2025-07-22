@@ -288,6 +288,14 @@ export class SearchboxElement extends SearchboxElementBase {
         type: String,
         computed: `computeInputAriaLive_(selectedMatch_)`,
       },
+
+      useWebkitSearchIcons_: {
+        type: Boolean,
+        computed: `computeUseWebkitSearchIcons_(composeButtonEnabled,
+                                                searchboxChromeRefreshTheming,
+                                                colorSourceIsBaseline)`,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -323,6 +331,7 @@ export class SearchboxElement extends SearchboxElementBase {
   declare private selectedMatchIndex_: number;
   declare private thumbnailUrl_: string;
   declare private isThumbnailDeletable_: boolean;
+  declare private useWebkitSearchIcons_: boolean;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
@@ -902,6 +911,11 @@ export class SearchboxElement extends SearchboxElementBase {
     }
     return this.showThumbnail ? this.i18n('searchBoxHintMultimodal') :
                                 this.i18n('searchBoxHint');
+  }
+
+  private computeUseWebkitSearchIcons_(): boolean {
+    return this.composeButtonEnabled ||
+        (this.searchboxChromeRefreshTheming && !this.colorSourceIsBaseline);
   }
 
   /**
