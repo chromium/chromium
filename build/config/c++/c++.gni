@@ -52,7 +52,6 @@ declare_args() {
 
 use_custom_libcxx =
     use_custom_libcxx || (use_custom_libcxx_for_host && !is_a_target_toolchain)
-use_custom_libcxx = use_custom_libcxx
 
 declare_args() {
   # WARNING: Setting this to a non-default value is highly discouraged.
