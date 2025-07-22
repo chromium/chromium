@@ -109,6 +109,11 @@ class PLATFORM_EXPORT FrameShapeCache
   template <typename E>
   void RemoveOldEntries(HeapHashMap<KeyType, E>& map, LruList& lru_list);
 
+  template <typename E>
+  void LimitCacheSize(HeapHashMap<KeyType, E>& map,
+                      LruList& lru_list,
+                      wtf_size_t limit);
+
   HeapHashMap<KeyType, NodeEntry> node_map_;
   LruList node_lru_list_;
 

@@ -818,6 +818,11 @@
     },
     {
       // crbug.com/389726691.
+      name: "CanvasTextCacheLimit",
+      status: "stable",
+    },
+    {
+      // crbug.com/389726691.
       name: "CanvasTextNg",
       origin_trial_feature_name: "CanvasTextNg",
       status: "stable",
