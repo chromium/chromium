@@ -3290,7 +3290,6 @@ TEST_F(NavigationControllerTest, HistoryNavigate) {
   NavigateAndCommit(url3);
   controller.GoBack();
   contents()->CommitPendingNavigation();
-  process()->sink().ClearMessages();
 
   // Simulate the page calling history.back(). It should create a pending entry.
   main_test_rfh()->GoToEntryAtOffset(-1, false, base::TimeTicks::Now(),
@@ -3301,7 +3300,6 @@ TEST_F(NavigationControllerTest, HistoryNavigate) {
   GURL nav_url = GetLastNavigationURL();
   EXPECT_EQ(url1, nav_url);
   contents()->CommitPendingNavigation();
-  process()->sink().ClearMessages();
 
   // Now test history.forward()
   main_test_rfh()->GoToEntryAtOffset(2, false, base::TimeTicks::Now(),
@@ -3311,7 +3309,6 @@ TEST_F(NavigationControllerTest, HistoryNavigate) {
   nav_url = GetLastNavigationURL();
   EXPECT_EQ(url3, nav_url);
   contents()->CommitPendingNavigation();
-  process()->sink().ClearMessages();
 
   controller.DiscardNonCommittedEntries();
 

@@ -423,25 +423,19 @@ TEST_F(RendererStartupHelperTest, LoadTheme) {
   scoped_refptr<const Extension> extension(CreateTheme("theme"));
   ASSERT_TRUE(extension->is_theme());
 
-  IPC::TestSink& sink = render_process_host_->sink();
-
   // Enable the theme. Verify it isn't loaded and activated in the renderer.
-  sink.ClearMessages();
   EXPECT_FALSE(IsExtensionLoaded(*extension));
   AddExtensionToRegistry(extension_);
   helper_->OnExtensionLoaded(*extension);
-  EXPECT_EQ(0u, sink.message_count());
   EXPECT_TRUE(IsExtensionLoaded(*extension));
   EXPECT_FALSE(
       IsExtensionLoadedInProcess(*extension, render_process_host_.get()));
 
   helper_->ActivateExtensionInProcess(*extension, render_process_host_.get());
-  EXPECT_EQ(0u, sink.message_count());
   EXPECT_FALSE(IsExtensionPendingActivationInProcess(
       *extension, render_process_host_.get()));
 
   helper_->OnExtensionUnloaded(*extension);
-  EXPECT_EQ(0u, sink.message_count());
   EXPECT_FALSE(IsExtensionLoaded(*extension));
 }
 

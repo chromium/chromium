@@ -231,8 +231,6 @@ static_library("test_sink") {
   sources = [
     "ipc_security_test_util.cc",
     "ipc_security_test_util.h",
-    "ipc_test_sink.cc",
-    "ipc_test_sink.h",
   ]
   public_deps = [ ":ipc" ]
   deps = [

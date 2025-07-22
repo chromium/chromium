@@ -2932,9 +2932,6 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
   // processes.  The message to A should be sent through the main frame's
   // RenderViewHost, and the message to B and C should be send through proxies
   // that the main frame has for B and C.
-  main_test_rfh()->GetProcess()->sink().ClearMessages();
-  host1->GetProcess()->sink().ClearMessages();
-  host3->GetProcess()->sink().ClearMessages();
   main_test_rfh()->GetRenderWidgetHost()->Focus();
   base::RunLoop().RunUntilIdle();
   VerifyPageFocusMessage(main_test_rfh()->GetRenderWidgetHost(), true);
@@ -2943,9 +2940,6 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
 
   // Similarly, simulate focus loss on main page, and verify that the focus
   // message was sent to all processes.
-  main_test_rfh()->GetProcess()->sink().ClearMessages();
-  host1->GetProcess()->sink().ClearMessages();
-  host3->GetProcess()->sink().ClearMessages();
   main_test_rfh()->GetRenderWidgetHost()->Blur();
   base::RunLoop().RunUntilIdle();
   VerifyPageFocusMessage(main_test_rfh()->GetRenderWidgetHost(), false);
@@ -3693,7 +3687,6 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
 
   // Check that the flag for the parent's proxy to the child is reset
   // when the child navigates.
-  main_test_rfh()->GetProcess()->sink().ClearMessages();
   NavigationSimulator::NavigateAndCommitFromDocument(kUrl3, child_host);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,

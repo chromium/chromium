@@ -75,7 +75,6 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_test_sink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -569,8 +568,6 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     site_instance_group_ =
         static_cast<SiteInstanceImpl*>(site_instance.get())->group();
 
-    sink_ = &process_host_->sink();
-
     web_contents_ = WebContents::Create(
         WebContents::CreateParams(browser_context_.get(), site_instance));
 
@@ -643,7 +640,6 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
   void TearDownEnvironment() {
     parent_host_ = nullptr;  // Owned indirectly by `view_`, destroyed below.
 
-    sink_ = nullptr;
     widget_host_ = nullptr;  // Owned by `view_` destroyed below:
     if (view_) {
       DestroyView(view_.ExtractAsDangling());
@@ -768,7 +764,6 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
   raw_ptr<FakeRenderWidgetHostViewAura> view_;
   raw_ptr<MockRenderWidgetHostImpl> widget_host_ = nullptr;  // Owned by `view_`
 
-  raw_ptr<IPC::TestSink> sink_ = nullptr;
   base::test::ScopedFeatureList mojo_feature_list_;
   base::test::ScopedFeatureList feature_list_;
 
@@ -863,7 +858,6 @@ class RenderWidgetHostViewAuraOverscrollTest
     view_->SetBounds(gfx::Rect(0, 0, 400, 200));
     view_->Show();
 
-    sink_->ClearMessages();
   }
 
   // TODO(jdduke): Simulate ui::Events, injecting through the view.
@@ -1802,7 +1796,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
   InitViewForFrame(nullptr);
   view_->Show();
-  sink_->ClearMessages();
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -1890,7 +1883,6 @@ TEST_F(RenderWidgetHostViewAuraTest, TimerBasedLatchingBreaksWithMouseMove) {
 
   InitViewForFrame(nullptr);
   view_->Show();
-  sink_->ClearMessages();
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -1956,7 +1948,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
   InitViewForFrame(nullptr);
   view_->Show();
-  sink_->ClearMessages();
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -2019,7 +2010,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
   InitViewForFrame(nullptr);
   view_->Show();
-  sink_->ClearMessages();
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -2073,7 +2063,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
   InitViewForFrame(nullptr);
   view_->Show();
-  sink_->ClearMessages();
 
   ui::MouseWheelEvent event(gfx::Vector2d(0, 5), gfx::Point(2, 2),
                             gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0);
@@ -2239,7 +2228,6 @@ TEST_F(RenderWidgetHostViewAuraTest, MouseWheelScrollingAfterGFCWithoutGFS) {
 
   InitViewForFrame(nullptr);
   view_->Show();
-  sink_->ClearMessages();
 
   // When the user puts their fingers down a GFC is received. This will change
   // the touchpad scroll state in mouse wheel phase handler to may_begin.
@@ -2294,7 +2282,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
   InitViewForFrame(nullptr);
   view_->Show();
-  sink_->ClearMessages();
 
   // When the user puts their fingers down a GFC is receieved.
   ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
@@ -2664,7 +2651,6 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
     static_cast<RenderFrameMetadataProvider::Observer*>(widget_host_)
         ->OnLocalSurfaceIdChanged(metadata);
   }
-  sink_->ClearMessages();
   widget_host_->ClearVisualProperties();
 
   // Device scale factor changes to 2, so the device pixel sizes should
@@ -2879,7 +2865,7 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithBrowserInitiatedResize) {
 TEST_F(RenderWidgetHostViewAuraTest, ChildAllocationAcceptedInParent) {
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  sink_->ClearMessages();
+
   viz::LocalSurfaceId local_surface_id1(view_->GetLocalSurfaceId());
   EXPECT_TRUE(local_surface_id1.is_valid());
 
@@ -2945,7 +2931,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 TEST_F(RenderWidgetHostViewAuraTest, ConflictingAllocationsResolve) {
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  sink_->ClearMessages();
   viz::LocalSurfaceId local_surface_id1(view_->GetLocalSurfaceId());
   EXPECT_TRUE(local_surface_id1.is_valid());
 
@@ -4296,7 +4281,6 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
   EXPECT_EQ(55.f, overscroll_delta_x());
   EXPECT_EQ(5.f, overscroll_delegate()->delta_x());
   EXPECT_EQ(0.f, overscroll_delegate()->delta_y());
-  EXPECT_EQ(0U, sink_->message_count());
 
   // Let the timer for the debounce queue fire. That should release the queued
   // scroll-end event. Since overscroll has started, but there hasn't been
@@ -4469,7 +4453,6 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
   EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
 
   SendNotConsumedAcks(events);
-  EXPECT_EQ(0U, sink_->message_count());
   EXPECT_EQ(OVERSCROLL_EAST, overscroll_mode());
   EXPECT_EQ(OverscrollSource::TOUCHSCREEN, overscroll_source());
   EXPECT_EQ(OVERSCROLL_EAST, overscroll_delegate()->current_mode());
@@ -5148,8 +5131,6 @@ TEST_F(RenderWidgetHostViewAuraTest, SetCanScrollForWebMouseWheelEvent) {
   InitViewForFrame(nullptr);
   view_->Show();
 
-  sink_->ClearMessages();
-
   // Simulates the mouse wheel event with ctrl modifier applied.
   ui::MouseWheelEvent event(gfx::Vector2d(1, 1), gfx::Point(), gfx::Point(),
                             ui::EventTimeForNow(), ui::EF_CONTROL_DOWN, 0);
@@ -5560,7 +5541,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
   InitViewForFrame(nullptr);
   view_->Show();
-  sink_->ClearMessages();
 
   ui::ScrollEvent begin_scroll(
       ui::EventType::kScroll, gfx::Point(2, 2), ui::EventTimeForNow(), 0, 2, 2,
@@ -6139,9 +6119,8 @@ class InputMethodResultAuraTest : public InputMethodAuraTestBase {
   const IPC::Message* RunAndReturnIPCSent(base::OnceClosure closure,
                                           MockRenderProcessHost* process,
                                           int32_t message_id) {
-    process->sink().ClearMessages();
     std::move(closure).Run();
-    return process->sink().GetFirstMessageMatching(message_id);
+    return nullptr;
   }
 };
 

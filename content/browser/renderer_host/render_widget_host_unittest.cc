@@ -609,7 +609,6 @@ class RenderWidgetHostTest : public testing::Test {
     site_instance_group_ =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             browser_context_.get(), process_.get()));
-    sink_ = &process_->sink();
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
@@ -674,7 +673,6 @@ class RenderWidgetHostTest : public testing::Test {
   }
 
   void TearDown() override {
-    sink_ = nullptr;
     view_.reset();
     host_.reset();
     delegate_.reset();
@@ -871,7 +869,6 @@ class RenderWidgetHostTest : public testing::Test {
   bool handle_mouse_event_ = false;
   base::TimeTicks last_simulated_event_time_;
   base::TimeDelta simulated_event_time_delta_;
-  raw_ptr<IPC::TestSink> sink_;
   std::unique_ptr<FakeRenderFrameMetadataObserver>
       renderer_render_frame_metadata_observer_;
   MockWidget widget_;
@@ -1038,7 +1035,6 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   // Sending out a new notification should NOT send out a new IPC message since
   // a visual properties ACK is pending.
   gfx::Rect third_size(0, 0, 120, 120);
-  process_->sink().ClearMessages();
   view_->SetBounds(third_size);
   EXPECT_FALSE(host_->SynchronizeVisualProperties());
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
@@ -1556,7 +1552,6 @@ TEST_F(RenderWidgetHostTest, HideShowMessages) {
   EXPECT_TRUE(widget_.IsHidden().value());
 
   // Send it an update as from the renderer.
-  process_->sink().ClearMessages();
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = gfx::Size(100, 100);
   metadata.local_surface_id = std::nullopt;
@@ -2438,8 +2433,6 @@ TEST_F(RenderWidgetHostTest, EventDispatchPostDetach) {
   auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
       HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
   host_->SetHasTouchEventConsumers(std::move(touch_event_consumers));
-  process_->sink().ClearMessages();
-
   host_->DetachDelegate();
 
   // Tests RIR::ForwardGestureEventWithLatencyInfo().

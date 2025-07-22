@@ -280,8 +280,6 @@ bool MockRenderProcessHost::IsReady() {
 }
 
 bool MockRenderProcessHost::Send(IPC::Message* msg) {
-  // Save the message in the sink.
-  sink_.OnMessageReceived(*msg);
   delete msg;
   return true;
 }

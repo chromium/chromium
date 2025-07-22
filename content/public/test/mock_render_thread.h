@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "content/public/common/widget_type.h"
 #include "content/public/renderer/render_thread.h"
-#include "ipc/ipc_test_sink.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
