@@ -219,9 +219,6 @@ GroupSuggestionsServiceAndroid::GroupSuggestionsServiceAndroid(
   java_obj_.Reset(env, Java_GroupSuggestionsServiceImpl_create(
                            env, reinterpret_cast<int64_t>(this))
                            .obj());
-
-  delegate_bridge_ = std::make_unique<SuggestionDelegateBridge>(
-      group_suggestions_service, this);
 }
 
 GroupSuggestionsServiceAndroid::~GroupSuggestionsServiceAndroid() {
