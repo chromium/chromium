@@ -17,9 +17,22 @@ const $Headers = require('safeMethods').SafeMethods.$Headers;
 const WebViewContextMenusImpl =
     require('chromeWebView').WebViewContextMenusImpl;
 const ControlledFrameInternal = getInternalApi('controlledFrameInternal');
+const WebUrlPatternNatives = requireNative('WebUrlPatternNatives');
 
 function identity(value) {
   return value;
+}
+
+function mapUrlPatternsToMatchPatterns(urlPatternsStrs) {
+  let matchPatterns = [];
+  for (const urlPatternStr of urlPatternsStrs) {
+    matchPatterns = $Array.concat(
+      matchPatterns,
+      WebUrlPatternNatives.URLPatternToMatchPatterns(
+        new URLPattern(urlPatternStr))
+    );
+  };
+  return matchPatterns;
 }
 
 function ensureString(value) {
@@ -138,10 +151,10 @@ function unwebifyContextMenusProperties(properties) {
   const unwebifiedProperties = extractAndMapValues(properties, {
     checked: identity,
     contexts: identity,
-    documentURLPatterns: identity,
+    documentURLPatterns: $Function.bind(mapUrlPatternsToMatchPatterns, null),
     enabled: identity,
     parentId: identity,
-    targetURLPatterns: identity,
+    targetURLPatterns: $Function.bind(mapUrlPatternsToMatchPatterns, null),
     title: identity,
     type: identity,
   });
@@ -159,10 +172,10 @@ function unwebifyContextMenusCreateProperties(properties) {
     id: identity,
     checked: identity,
     contexts: identity,
-    documentURLPatterns: identity,
+    documentURLPatterns: $Function.bind(mapUrlPatternsToMatchPatterns, null),
     enabled: identity,
     parentId: identity,
-    targetURLPatterns: identity,
+    targetURLPatterns: $Function.bind(mapUrlPatternsToMatchPatterns, null),
     title: identity,
     type: identity,
   });
