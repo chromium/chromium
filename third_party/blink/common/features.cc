@@ -497,10 +497,6 @@ BASE_FEATURE(kContentCaptureConstantStreaming,
              "ContentCaptureConstantStreaming",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCorrectFloatExtensionTestForWebGL,
-             "CorrectFloatExtensionTestForWebGL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, add a new option, {imageOrientation: 'none'}, to
 // createImageBitmap, which ignores the image orientation metadata of the source
 // and renders the image as encoded.
