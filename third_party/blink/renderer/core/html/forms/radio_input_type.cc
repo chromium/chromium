@@ -201,6 +201,46 @@ bool RadioInputType::IsKeyboardFocusableSlow(
   if (IsSpatialNavigationEnabled(GetElement().GetDocument().GetFrame()))
     return true;
 
+  // Optimize keyboard focusable for the radio button. Making the focus
+  // navigation of the radio group more reasonable and consistent with the
+  // Firefox. The focus navigation behavior:
+  // - If any radio button in the group is checked, tab navigation always
+  //   focuses the checked button, regardless of the group's current focus
+  //   state.
+  // - When focus is on a radio button in the group, tab navigation skips the
+  //   remaining buttons in the group.
+  // - Both forward and backward tab navigation  target the first
+  //   radio button in the group when entering the group.
+  if (RuntimeEnabledFeatures::RadioKeyboardFocusableOptimizeEnabled()) {
+    // Returns true when `GetElement()` is checked.
+    if (GetElement().Checked()) {
+      return true;
+    }
+    // Returns false if the group has the checked radio that is keyboard
+    // focusable.
+    HTMLInputElement* checked_radio_button = CheckedRadioButtonForGroup();
+    CHECK_NE(checked_radio_button, &GetElement());
+    if (checked_radio_button &&
+        checked_radio_button->IsKeyboardFocusableSlow(update_behavior)) {
+      return false;
+    }
+    // Ensures proper focus navigation within radio groups containing
+    // intermediate nodes:
+    // - Focusable elements between radios remain tabbable.
+    // - When any radio button within the group receives focus, tabbing
+    //   will skip over the entire rest of the group.
+    if (auto* scope = GetElement().GetRadioButtonGroupScope()) {
+      HTMLInputElement* last_focused_radio_button =
+          scope->LastFocusedButtonForGroup(GetElement().GetName());
+      if (last_focused_radio_button &&
+          last_focused_radio_button != &GetElement()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   // Never allow keyboard tabbing to leave you in the same radio group. Always
   // skip any other elements in the group.
   Element* current_focused_element =

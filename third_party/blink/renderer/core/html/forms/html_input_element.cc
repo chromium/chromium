@@ -2473,6 +2473,12 @@ void HTMLInputElement::SetFocused(bool is_focused,
       UserHasEditedTheField()) {
     SetUserHasEditedTheFieldAndBlurred();
   }
+
+  if (RuntimeEnabledFeatures::RadioKeyboardFocusableOptimizeEnabled()) {
+    if (RadioButtonGroupScope* scope = GetRadioButtonGroupScope()) {
+      scope->UpdateLastFocusedState(this);
+    }
+  }
 }
 
 bool HTMLInputElement::IsFirstTextInputInAncestorSelect() const {
