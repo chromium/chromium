@@ -27,6 +27,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -67,16 +68,17 @@ namespace {
 constexpr size_t kTimestampCacheSize = 128;
 
 std::optional<VideoPixelFormat> GetPixelFormatForBitDepth(uint8_t bit_depth) {
-  constexpr auto kSupportedBitDepthAndGfxFormats = base::MakeFixedFlatMap<
-      uint8_t, gfx::BufferFormat>({
-    {8u, gfx::BufferFormat::YUV_420_BIPLANAR}, {10u, gfx::BufferFormat::P010},
-  });
-  if (!base::Contains(kSupportedBitDepthAndGfxFormats, bit_depth)) {
+  constexpr auto kSupportedBitDepthAndVizFormats =
+      base::MakeFixedFlatMap<uint8_t, viz::SharedImageFormat>({
+          {8u, viz::MultiPlaneFormat::kNV12},
+          {10u, viz::MultiPlaneFormat::kP010},
+      });
+  if (!base::Contains(kSupportedBitDepthAndVizFormats, bit_depth)) {
     VLOGF(1) << "Unsupported bit depth: " << base::strict_cast<int>(bit_depth);
     return std::nullopt;
   }
-  return GfxBufferFormatToVideoPixelFormat(
-      kSupportedBitDepthAndGfxFormats.at(bit_depth));
+  return SharedImageFormatToVideoPixelFormat(
+      kSupportedBitDepthAndVizFormats.at(bit_depth));
 }
 
 inline int RoundDownToEven(int x) {

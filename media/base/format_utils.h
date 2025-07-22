@@ -20,6 +20,9 @@ MEDIA_EXPORT std::optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
 MEDIA_EXPORT std::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
     VideoPixelFormat pixel_format);
 
+MEDIA_EXPORT std::optional<VideoPixelFormat>
+SharedImageFormatToVideoPixelFormat(viz::SharedImageFormat format);
+
 MEDIA_EXPORT std::optional<viz::SharedImageFormat>
 VideoPixelFormatToSharedImageFormat(VideoPixelFormat pixel_format);
 

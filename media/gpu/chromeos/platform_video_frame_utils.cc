@@ -591,32 +591,4 @@ scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf(
   return native_pixmap;
 }
 
-bool CanImportGpuMemoryBufferHandle(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    const gfx::GpuMemoryBufferHandle& gmb_handle) {
-  if (gmb_handle.type != gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
-    VLOGF(1) << "The handle type (" << gmb_handle.type << ") is unsupported";
-    return false;
-  }
-  const auto pixel_format = GfxBufferFormatToVideoPixelFormat(format);
-  if (!pixel_format) {
-    VLOGF(1) << "Unsupported buffer format: "
-             << gfx::BufferFormatToString(format);
-    return false;
-  }
-  if (!VerifyGpuMemoryBufferHandle(*pixel_format, size, gmb_handle)) {
-    VLOGF(1) << "Invalid GpuMemoryBufferHandle provided";
-    return false;
-  }
-  gfx::NativePixmapHandle native_pixmap_handle =
-      gfx::CloneHandleForIPC(gmb_handle.native_pixmap_handle());
-  if (native_pixmap_handle.planes.empty()) {
-    VLOGF(1) << "Could not duplicate the NativePixmapHandle";
-    return false;
-  }
-  return !!GbmDeviceWrapper::Get()->ImportGpuMemoryBuffer(
-      format, size, std::move(native_pixmap_handle));
-}
-
 }  // namespace media
