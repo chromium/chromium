@@ -162,7 +162,7 @@ ProfileOAuth2TokenServiceDelegateAndroid::
   base::android::ScopedJavaLocalRef<jobject> local_java_ref =
       signin::Java_ProfileOAuth2TokenServiceDelegate_Constructor(
           env, reinterpret_cast<intptr_t>(this));
-  java_ref_.Reset(env, local_java_ref.obj());
+  java_ref_.Reset(env, local_java_ref);
 }
 
 ProfileOAuth2TokenServiceDelegateAndroid::

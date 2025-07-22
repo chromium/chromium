@@ -90,8 +90,7 @@ SegmentationPlatformServiceAndroid::SegmentationPlatformServiceAndroid(
   DCHECK(segmentation_platform_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_SegmentationPlatformServiceImpl_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
+                           env, reinterpret_cast<int64_t>(this)));
 }
 
 SegmentationPlatformServiceAndroid::~SegmentationPlatformServiceAndroid() {

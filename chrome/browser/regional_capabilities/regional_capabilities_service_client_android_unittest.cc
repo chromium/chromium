@@ -30,7 +30,7 @@ class TestSupportAndroid {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::ScopedJavaLocalRef<jobject> java_ref =
         Java_RegionalCapabilitiesServiceTestUtil_Constructor(env);
-    java_test_util_ref_.Reset(env, java_ref.obj());
+    java_test_util_ref_.Reset(env, java_ref);
   }
 
   ~TestSupportAndroid() {

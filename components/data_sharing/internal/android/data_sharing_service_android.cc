@@ -159,8 +159,7 @@ DataSharingServiceAndroid::DataSharingServiceAndroid(
   DCHECK(data_sharing_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_DataSharingServiceImpl_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
+                           env, reinterpret_cast<int64_t>(this)));
   observer_bridge_ =
       std::make_unique<GroupDataObserverBridge>(data_sharing_service, this);
 }

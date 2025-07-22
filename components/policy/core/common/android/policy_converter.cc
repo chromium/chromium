@@ -58,8 +58,7 @@ PolicyConverter::PolicyConverter(const Schema* policy_schema)
     : policy_schema_(policy_schema) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(
-      env,
-      Java_PolicyConverter_create(env, reinterpret_cast<intptr_t>(this)).obj());
+      env, Java_PolicyConverter_create(env, reinterpret_cast<intptr_t>(this)));
   DCHECK(!java_obj_.is_null());
 }
 

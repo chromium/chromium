@@ -40,8 +40,7 @@ ContextMenuHelper::ContextMenuHelper(content::WebContents* web_contents)
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(
       env, Java_ContextMenuHelper_create(env, reinterpret_cast<int64_t>(this),
-                                         web_contents->GetJavaWebContents())
-               .obj());
+                                         web_contents->GetJavaWebContents()));
   DCHECK(!java_obj_.is_null());
 }
 

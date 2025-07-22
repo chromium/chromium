@@ -52,8 +52,7 @@ void DataSharingSDKDelegateAndroid::LazyInitializeIfNeeded() {
   auto sdk_delegate = std::move(sdk_delegate_callback_).Run();
   JNIEnv* env = AttachCurrentThread();
   java_obj_.Reset(env, Java_DataSharingSDKDelegateBridge_create(
-                           env, reinterpret_cast<int64_t>(this), sdk_delegate)
-                           .obj());
+                           env, reinterpret_cast<int64_t>(this), sdk_delegate));
   CHECK(network_loader_);
   Java_DataSharingSDKDelegateBridge_initialize(
       env, java_obj_, network_loader_->GetJavaObject());

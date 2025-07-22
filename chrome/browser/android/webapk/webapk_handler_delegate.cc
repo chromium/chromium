@@ -18,8 +18,7 @@ WebApkHandlerDelegate::WebApkHandlerDelegate(const WebApkInfoCallback& callback)
     : callback_(callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   j_obj_.Reset(env, Java_WebApkHandlerDelegate_create(
-                        env, reinterpret_cast<intptr_t>(this))
-                        .obj());
+                        env, reinterpret_cast<intptr_t>(this)));
 }
 
 WebApkHandlerDelegate::~WebApkHandlerDelegate() {

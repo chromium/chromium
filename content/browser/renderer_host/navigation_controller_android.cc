@@ -129,8 +129,7 @@ NavigationControllerAndroid::NavigationControllerAndroid(
     : navigation_controller_(navigation_controller) {
   JNIEnv* env = AttachCurrentThread();
   obj_.Reset(env, Java_NavigationControllerImpl_create(
-                      env, reinterpret_cast<intptr_t>(this))
-                      .obj());
+                      env, reinterpret_cast<intptr_t>(this)));
 }
 
 NavigationControllerAndroid::~NavigationControllerAndroid() {

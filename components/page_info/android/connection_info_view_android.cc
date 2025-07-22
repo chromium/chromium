@@ -58,7 +58,7 @@ ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
   if (nav_entry->IsInitialEntry())
     return;
 
-  popup_jobject_.Reset(env, java_page_info_pop.obj());
+  popup_jobject_.Reset(env, java_page_info_pop);
 
   presenter_ = std::make_unique<PageInfo>(
       page_info_client_->CreatePageInfoDelegate(web_contents), web_contents,

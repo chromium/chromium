@@ -32,8 +32,7 @@ DataSharingNetworkLoaderAndroid::DataSharingNetworkLoaderAndroid(
     : data_sharing_network_loader_(data_sharing_network_loader) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_DataSharingNetworkLoaderImpl_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
+                           env, reinterpret_cast<int64_t>(this)));
 }
 
 DataSharingNetworkLoaderAndroid::~DataSharingNetworkLoaderAndroid() {

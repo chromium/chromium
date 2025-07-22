@@ -39,7 +39,7 @@ AccountCapabilitiesFetcherAndroid::AccountCapabilitiesFetcherAndroid(
       signin::Java_AccountCapabilitiesFetcher_Constructor(
           env, account_info,
           reinterpret_cast<intptr_t>(heap_callback.release()));
-  java_ref_.Reset(env, local_java_ref.obj());
+  java_ref_.Reset(env, local_java_ref);
 }
 
 AccountCapabilitiesFetcherAndroid::~AccountCapabilitiesFetcherAndroid() =

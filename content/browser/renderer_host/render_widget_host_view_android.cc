@@ -1007,8 +1007,7 @@ RenderWidgetHostViewAndroid::GetJavaObject() {
   if (!obj_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     obj_.Reset(env, Java_RenderWidgetHostViewImpl_create(
-                        env, reinterpret_cast<intptr_t>(this))
-                        .obj());
+                        env, reinterpret_cast<intptr_t>(this)));
   }
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
 }
@@ -2227,7 +2226,7 @@ void RenderWidgetHostViewAndroid::OnFinishGetContentBitmap(
         FROM_HERE, base::BindOnce(&CompressAndSaveBitmap, path, bitmap),
         base::BindOnce(
             &base::android::RunStringCallbackAndroid,
-            base::android::ScopedJavaGlobalRef<jobject>(env, callback.obj())));
+            base::android::ScopedJavaGlobalRef<jobject>(env, callback)));
     return;
   }
   // If readback failed, call empty callback

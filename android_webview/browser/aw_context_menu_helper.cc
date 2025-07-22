@@ -18,8 +18,7 @@ AwContextMenuHelper::AwContextMenuHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<AwContextMenuHelper>(*web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_AwContextMenuHelper_create(
-                           env, web_contents->GetJavaWebContents())
-                           .obj());
+                           env, web_contents->GetJavaWebContents()));
   DCHECK(!java_obj_.is_null());
 }
 

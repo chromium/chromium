@@ -94,8 +94,8 @@ void InputHintChecker::SetView(
     // separate non-Java thread is required to obtain a reference to
     // j.l.reflect.Method via double-reflection.
     TransitionToState(InitState::kInProgress);
-    view_class_ =
-        ScopedJavaGlobalRef<jobject>(env, env->GetObjectClass(root_view.obj()));
+    view_class_ = ScopedJavaGlobalRef<jobject>(
+        env, ScopedJavaLocalRef(env, env->GetObjectClass(root_view.obj())));
     pthread_t new_thread;
     if (pthread_create(&new_thread, nullptr, OffThreadInitInvoker::Run,
                        nullptr) != 0) {

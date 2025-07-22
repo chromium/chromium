@@ -27,7 +27,7 @@ DomDistillerServiceAndroid::DomDistillerServiceAndroid(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> local_java_ref =
       Java_DomDistillerService_create(env, reinterpret_cast<intptr_t>(this));
-  java_ref_.Reset(env, local_java_ref.obj());
+  java_ref_.Reset(env, local_java_ref);
 }
 
 DomDistillerServiceAndroid::~DomDistillerServiceAndroid() = default;

@@ -21,7 +21,7 @@ ProfileKeyAndroid::ProfileKeyAndroid(ProfileKey* key) : key_(key) {
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jkey =
       Java_ProfileKey_create(env, reinterpret_cast<intptr_t>(this));
-  obj_.Reset(env, jkey.obj());
+  obj_.Reset(env, jkey);
 }
 
 ProfileKeyAndroid::~ProfileKeyAndroid() {

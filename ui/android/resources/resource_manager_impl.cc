@@ -73,8 +73,7 @@ ResourceManagerImpl::ResourceManagerImpl(gfx::NativeWindow native_window)
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(
       env, Java_ResourceManager_create(env, native_window->GetJavaObject(),
-                                       reinterpret_cast<intptr_t>(this))
-               .obj());
+                                       reinterpret_cast<intptr_t>(this)));
   DCHECK(!java_obj_.is_null());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "android::ResourceManagerImpl",

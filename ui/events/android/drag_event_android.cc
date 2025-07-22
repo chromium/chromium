@@ -19,11 +19,11 @@ DragEventAndroid::DragEventAndroid(
     const gfx::PointF& location,
     const gfx::PointF& screen_location,
     const std::vector<std::u16string>& mime_types,
-    jstring content,
-    jobjectArray filenames,
-    jstring text,
-    jstring html,
-    jstring url)
+    const base::android::JavaRef<jstring>& content,
+    const base::android::JavaRef<jobjectArray>& filenames,
+    const base::android::JavaRef<jstring>& text,
+    const base::android::JavaRef<jstring>& html,
+    const base::android::JavaRef<jstring>& url)
     : action_(action),
       location_(location),
       screen_location_(screen_location),
@@ -63,8 +63,8 @@ std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
       new_location + (screen_location() - location());
   JNIEnv* env = AttachCurrentThread();
   return std::make_unique<DragEventAndroid>(
-      env, action_, new_location, new_screen_location, *mime_types_,
-      content_.obj(), filenames_.obj(), text_.obj(), html_.obj(), url_.obj());
+      env, action_, new_location, new_screen_location, *mime_types_, content_,
+      filenames_, text_, html_, url_);
 }
 
 }  // namespace ui

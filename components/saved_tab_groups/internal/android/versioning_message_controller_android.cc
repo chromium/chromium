@@ -19,8 +19,7 @@ VersioningMessageControllerAndroid::VersioningMessageControllerAndroid(
     : versioning_message_controller_(versioning_message_controller) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_VersioningMessageControllerImpl_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
+                           env, reinterpret_cast<int64_t>(this)));
 }
 
 VersioningMessageControllerAndroid::~VersioningMessageControllerAndroid() {

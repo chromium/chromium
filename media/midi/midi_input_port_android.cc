@@ -14,9 +14,10 @@ using base::android::JavaParamRef;
 
 namespace midi {
 
-MidiInputPortAndroid::MidiInputPortAndroid(JNIEnv* env,
-                                           jobject raw,
-                                           Delegate* delegate)
+MidiInputPortAndroid::MidiInputPortAndroid(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& raw,
+    Delegate* delegate)
     : raw_port_(env, raw), delegate_(delegate) {}
 
 MidiInputPortAndroid::~MidiInputPortAndroid() {

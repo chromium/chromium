@@ -39,7 +39,7 @@ ByteBufferWithIOBuffer::ByteBufferWithIOBuffer(
   // reference created by env->NewDirectByteBuffer().
   base::android::ScopedJavaLocalRef<jobject> java_buffer(
       env, env->NewDirectByteBuffer(io_buffer_->data(), io_buffer_len_));
-  byte_buffer_.Reset(env, java_buffer.obj());
+  byte_buffer_.Reset(env, java_buffer);
 }
 
 ByteBufferWithIOBuffer::~ByteBufferWithIOBuffer() = default;

@@ -72,8 +72,7 @@ TrackerImplAndroid::TrackerImplAndroid(Tracker* tracker, FeatureVector features)
   JNIEnv* env = base::android::AttachCurrentThread();
 
   java_obj_.Reset(
-      env,
-      Java_TrackerImpl_create(env, reinterpret_cast<intptr_t>(this)).obj());
+      env, Java_TrackerImpl_create(env, reinterpret_cast<intptr_t>(this)));
 }
 
 TrackerImplAndroid::~TrackerImplAndroid() {
@@ -236,8 +235,7 @@ DisplayLockHandleAndroid::DisplayLockHandleAndroid(
   java_obj_.Reset(
       base::android::AttachCurrentThread(),
       Java_DisplayLockHandleAndroid_create(base::android::AttachCurrentThread(),
-                                           reinterpret_cast<intptr_t>(this))
-          .obj());
+                                           reinterpret_cast<intptr_t>(this)));
 }
 
 DisplayLockHandleAndroid::~DisplayLockHandleAndroid() {

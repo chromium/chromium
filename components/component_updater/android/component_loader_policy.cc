@@ -139,8 +139,7 @@ AndroidComponentLoaderPolicy::AndroidComponentLoaderPolicy(
     : loader_policy_(std::move(loader_policy)) {
   JNIEnv* env = base::android::AttachCurrentThread();
   obj_.Reset(env, Java_ComponentLoaderPolicyBridge_Constructor(
-                      env, reinterpret_cast<intptr_t>(this))
-                      .obj());
+                      env, reinterpret_cast<intptr_t>(this)));
 }
 
 AndroidComponentLoaderPolicy::~AndroidComponentLoaderPolicy() = default;

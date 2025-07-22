@@ -13,7 +13,9 @@ using base::android::ScopedJavaLocalRef;
 
 namespace midi {
 
-MidiOutputPortAndroid::MidiOutputPortAndroid(JNIEnv* env, jobject raw)
+MidiOutputPortAndroid::MidiOutputPortAndroid(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& raw)
     : raw_port_(env, raw) {}
 MidiOutputPortAndroid::~MidiOutputPortAndroid() {
   Close();

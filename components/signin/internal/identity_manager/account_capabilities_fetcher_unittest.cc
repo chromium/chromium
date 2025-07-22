@@ -71,7 +71,7 @@ class TestSupportAndroid {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::ScopedJavaLocalRef<jobject> java_ref =
         signin::Java_AccountCapabilitiesFetcherTestUtil_Constructor(env);
-    java_test_util_ref_.Reset(env, java_ref.obj());
+    java_test_util_ref_.Reset(env, java_ref);
   }
 
   ~TestSupportAndroid() {

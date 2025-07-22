@@ -61,8 +61,7 @@ CollaborationServiceAndroid::CollaborationServiceAndroid(
   DCHECK(collaboration_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_CollaborationServiceImpl_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
+                           env, reinterpret_cast<int64_t>(this)));
 }
 
 CollaborationServiceAndroid::~CollaborationServiceAndroid() {

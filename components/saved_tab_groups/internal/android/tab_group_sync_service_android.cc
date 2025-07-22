@@ -64,8 +64,7 @@ TabGroupSyncServiceAndroid::TabGroupSyncServiceAndroid(
       std::make_unique<VersioningMessageControllerAndroid>(
           tab_group_sync_service_->GetVersioningMessageController());
   java_obj_.Reset(env, Java_TabGroupSyncServiceImpl_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
+                           env, reinterpret_cast<int64_t>(this)));
   tab_group_sync_service_->AddObserver(this);
 }
 

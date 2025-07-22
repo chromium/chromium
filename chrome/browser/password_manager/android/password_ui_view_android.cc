@@ -240,12 +240,11 @@ void PasswordUiViewAndroid::HandleSerializePasswords(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&SerializePasswords, base::FilePath(java_target_directory),
                      std::move(credentials)),
-      base::BindOnce(&PasswordUiViewAndroid::PostSerializedPasswords,
-                     base::Unretained(this),
-                     base::android::ScopedJavaGlobalRef<jobject>(
-                         env, success_callback.obj()),
-                     base::android::ScopedJavaGlobalRef<jobject>(
-                         env, error_callback.obj())));
+      base::BindOnce(
+          &PasswordUiViewAndroid::PostSerializedPasswords,
+          base::Unretained(this),
+          base::android::ScopedJavaGlobalRef<jobject>(env, success_callback),
+          base::android::ScopedJavaGlobalRef<jobject>(env, error_callback)));
 }
 
 void PasswordUiViewAndroid::HandleShowPasswordEntryEditingView(
