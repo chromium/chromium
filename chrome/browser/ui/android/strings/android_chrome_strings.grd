@@ -7234,6 +7234,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_HUB_SEARCH_STATUS_VIEW_BACK_BUTTON_ICON_DESCRIPTION" desc="Accessibility string describing the back icon in the search box to exit hub search.">
         Back
       </message>
+      <message name="IDS_ACCESSIBILITY_SEARCH_LOUPE_TOOLTIP_TEXT" desc="Content description for opening up the tab search window, which allows users to search their tabs.">
+        Open tab search
+      </message>
 
       <!-- Default browser promo -->
       <message name="IDS_DEFAULT_BROWSER_PROMO_CARD_TITLE" desc="Title of a promotion about setting Chrome the default browser.">
