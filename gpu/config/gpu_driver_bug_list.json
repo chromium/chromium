@@ -827,9 +827,13 @@
     },
     {
       "id": 147,
-      "description": "Limit max texure size to 4096 on all of Android",
+      "description": "Limit max texure size to 4096 on older Android devices.",
       "os": {
-        "type": "android"
+        "type": "android",
+        "version": {
+          "op": "<",
+          "value": "14.0"
+        }
       },
       "features": [
         "webgl_or_caps_max_texture_size_limit_4096"
@@ -3649,6 +3653,16 @@
       },
       "features": [
         "disable_d3d12_hevc_encoding"
+      ]
+    },
+    {
+      "id": 456,
+      "description": "Limit max texure size to 8192 on Android.",
+      "os": {
+        "type": "android"
+      },
+      "features": [
+        "webgl_or_caps_max_texture_size_limit_8192"
       ]
     }
   ]
