@@ -21,6 +21,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -123,14 +125,27 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
 
 DiceMigrationService::DiceMigrationService(Profile* profile)
     : profile_(profile) {
-  if (IsUserEligibleForDiceMigration(profile_) &&
-      GetDialogShownCount() < kMaxDialogShownCount) {
-    dialog_trigger_timer_.Start(
-        FROM_HERE, user_education::features::GetSessionStartGracePeriod(),
-        base::BindOnce(
-            &DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible,
-            base::Unretained(this)));
+  if (!IsUserEligibleForDiceMigration(profile_) ||
+      GetDialogShownCount() >= kMaxDialogShownCount) {
+    return;
   }
+
+  dialog_trigger_timer_.Start(
+      FROM_HERE, user_education::features::GetSessionStartGracePeriod(),
+      base::BindOnce(
+          &DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown,
+          base::Unretained(this)));
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  account_managed_status_finder_ =
+      std::make_unique<signin::AccountManagedStatusFinder>(
+          identity_manager,
+          identity_manager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin),
+          base::BindOnce(
+              &DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown,
+              base::Unretained(this)));
 }
 
 DiceMigrationService::~DiceMigrationService() {
@@ -257,6 +272,29 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
       break;
   }
   browser_.reset();
+}
+
+void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
+  if (dialog_trigger_timer_.IsRunning() ||
+      !IsUserEligibleForDiceMigration(profile_)) {
+    return;
+  }
+  switch (account_managed_status_finder_->GetOutcome()) {
+    case signin::AccountManagedStatusFinderOutcome::kPending:
+    case signin::AccountManagedStatusFinderOutcome::kError:
+    case signin::AccountManagedStatusFinderOutcome::kTimeout:
+      return;
+    // Consumer accounts.
+    case signin::AccountManagedStatusFinderOutcome::kConsumerGmail:
+    case signin::AccountManagedStatusFinderOutcome::kConsumerWellKnown:
+    case signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown:
+      ShowDiceMigrationOfferDialogIfUserEligible();
+      break;
+    // Managed accounts are not shown the migration dialog.
+    case signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom:
+    case signin::AccountManagedStatusFinderOutcome::kEnterprise:
+      return;
+  }
 }
 
 int DiceMigrationService::GetDialogShownCount() const {

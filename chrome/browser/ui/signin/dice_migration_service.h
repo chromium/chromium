@@ -15,6 +15,9 @@
 
 class Browser;
 class Profile;
+namespace signin {
+class AccountManagedStatusFinder;
+}  // namespace signin
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -48,6 +51,8 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
   // `views::WidgetObserver`:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  void OnTimerFinishOrAccountManagedStatusKnown();
+
   // Shows the Dice migration offer dialog if the user is eligible for it.
   void ShowDiceMigrationOfferDialogIfUserEligible();
 
@@ -56,6 +61,8 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
 
   raw_ptr<Profile> profile_ = nullptr;
   base::OneShotTimer dialog_trigger_timer_;
+  std::unique_ptr<signin::AccountManagedStatusFinder>
+      account_managed_status_finder_;
 
   raw_ptr<views::Widget> dialog_widget_ = nullptr;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
