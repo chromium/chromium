@@ -793,9 +793,6 @@ inline constexpr char kIOSBWGPageContentSetting[] =
 inline constexpr char kIOSBWGPromoImpressionCount[] =
     "ios.bwg.promo_impressions";
 
-// A boolean specifying whether the BWG floaty has been started.
-inline constexpr char kIOSBWGFloatyShown[] = "ios.bwg.floaty_shown";
-
 // A time object storing the first browser startup with a managed primary
 // identity in the personal profile after multi-profile becomes supported. Used
 // to trigger forced migration after some grace period.

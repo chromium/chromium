@@ -108,15 +108,15 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 - (BOOL)maybePresentBWGFRE {
   // TODO(crbug.com/414768296): Move business logic to the mediator.
-  BOOL showPromo = [self shouldShowBWGPromo];
   BOOL showConsent = [self shouldShowBWGConsent];
-
-  if (!showPromo && !showConsent) {
+  if (!showConsent) {
     // Record the entry point metrics for the non-FRE case.
     base::UmaHistogramEnumeration(kEntryPointHistogram, _entryPoint);
 
     return NO;
   }
+
+  BOOL showPromo = [self shouldShowBWGPromo];
 
   base::UmaHistogramEnumeration(kFREEntryPointHistogram, _entryPoint);
 
@@ -204,12 +204,12 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // If YES, BWG Promo should be shown.
 - (BOOL)shouldShowBWGPromo {
-  BOOL forcePromo = ShouldForceBWGPromo();
   BOOL promoImpressionsExhausted =
       _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) >=
       kPromoMaxImpressionCount;
 
-  return forcePromo || !promoImpressionsExhausted;
+  return ShouldForceBWGPromo() ||
+         ([self shouldShowBWGConsent] && !promoImpressionsExhausted);
 }
 
 // Presents the page action menu IPH.
