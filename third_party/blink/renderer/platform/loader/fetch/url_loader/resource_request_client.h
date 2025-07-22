@@ -33,7 +33,7 @@ namespace blink {
 // conditions in which they will be called are identical. See url_request.h
 // for more information.
 class BLINK_PLATFORM_EXPORT ResourceRequestClient
-    : public WTF::RefCounted<ResourceRequestClient> {
+    : public RefCounted<ResourceRequestClient> {
  public:
   // Called as upload progress is made.
   // note: only for requests with upload progress enabled.
@@ -73,7 +73,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestClient
 
   virtual ~ResourceRequestClient() = default;
 
-  friend class WTF::RefCounted<ResourceRequestClient>;
+  friend class RefCounted<ResourceRequestClient>;
 };
 
 }  // namespace blink

@@ -234,13 +234,13 @@ class DummyRefCounted : public RefCounted<DummyRefCounted> {
 
   void AddRef() {
     DCHECK(!is_deleted_);
-    WTF::RefCounted<DummyRefCounted>::AddRef();
+    RefCounted<DummyRefCounted>::AddRef();
     ++ref_invokes_count_;
   }
 
   void Release() {
     DCHECK(!is_deleted_);
-    WTF::RefCounted<DummyRefCounted>::Release();
+    RefCounted<DummyRefCounted>::Release();
   }
 
   static int ref_invokes_count_;

@@ -63,7 +63,7 @@ static float calculateDeviceScaleAdjustment(int width,
 namespace blink {
 
 class DevToolsEmulator::ScopedGlobalOverrides
-    : public WTF::RefCounted<ScopedGlobalOverrides> {
+    : public RefCounted<ScopedGlobalOverrides> {
  public:
   static scoped_refptr<ScopedGlobalOverrides> AssureInstalled() {
     return g_instance_ ? g_instance_
@@ -71,7 +71,7 @@ class DevToolsEmulator::ScopedGlobalOverrides
   }
 
  private:
-  friend class WTF::RefCounted<ScopedGlobalOverrides>;
+  friend class RefCounted<ScopedGlobalOverrides>;
 
   ScopedGlobalOverrides()
       : overlay_scrollbars_enabled_(

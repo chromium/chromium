@@ -377,7 +377,7 @@ shows a number of useful things:
 
 It identifies C++ objects by their vtables, so it can't identify vtable-less
 classes, including a lot of the lower-level WebCore ones like StringImpl. To
-work around, temporarily added the `virtual` keyword to `WTF::RefCounted`'s
+work around, temporarily added the `virtual` keyword to `blink::RefCounted`'s
 destructor method, which forces every ref-counted object to include a vtable
 pointer identifying its class.
 

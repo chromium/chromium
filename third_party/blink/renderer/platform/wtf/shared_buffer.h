@@ -252,7 +252,7 @@ inline std::vector<uint8_t> SegmentedBuffer::CopyAs() const {
 
 // This is a RefCounted version of the SegmentedBuffer class.
 class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
-                                public RefCounted<SharedBuffer> {
+                                public blink::RefCounted<SharedBuffer> {
  public:
   static scoped_refptr<SharedBuffer> Create() {
     return base::AdoptRef(new SharedBuffer);
@@ -274,7 +274,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
   static scoped_refptr<SharedBuffer> Create(Vector<char>&&);
 
  private:
-  friend class RefCounted<SharedBuffer>;
+  friend class blink::RefCounted<SharedBuffer>;
   ~SharedBuffer();
 
   SharedBuffer();

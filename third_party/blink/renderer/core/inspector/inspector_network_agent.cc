@@ -311,8 +311,7 @@ static void ResponseBodyFileReaderLoaderDone(
   }
 }
 
-class InspectorPostBodyParser
-    : public WTF::RefCounted<InspectorPostBodyParser> {
+class InspectorPostBodyParser : public RefCounted<InspectorPostBodyParser> {
  public:
   InspectorPostBodyParser(
       std::unique_ptr<GetRequestPostDataCallback> callback,
@@ -348,7 +347,7 @@ class InspectorPostBodyParser
   }
 
  private:
-  friend class WTF::RefCounted<InspectorPostBodyParser>;
+  friend class RefCounted<InspectorPostBodyParser>;
 
   ~InspectorPostBodyParser() {
     if (error_)

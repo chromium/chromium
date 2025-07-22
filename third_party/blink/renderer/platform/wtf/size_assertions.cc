@@ -67,11 +67,11 @@ struct SameSizeAsVectorWithInlineCapacity {
 };
 
 #if !DCHECK_IS_ON()
-ASSERT_SIZE(RefCounted<int>, SameSizeAsRefCounted);
+ASSERT_SIZE(blink::RefCounted<int>, SameSizeAsRefCounted);
 #endif
 
 ASSERT_SIZE(std::unique_ptr<int>, int*);
-ASSERT_SIZE(scoped_refptr<RefCounted<int>>, int*);
+ASSERT_SIZE(scoped_refptr<blink::RefCounted<int>>, int*);
 ASSERT_SIZE(Vector<int>, SameSizeAsVectorWithInlineCapacity<int>);
 // This is to avoid problem of comma in macro parameters.
 #define INLINE_CAPACITY_PARAMS(i) int, i

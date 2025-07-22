@@ -1967,8 +1967,8 @@ _CONFIG = [
         # Suppress almost all checks on platform since code in this directory is
         # meant to be a bridge between Blink and non-Blink code. However,
         # base::RefCounted and base::RefCountedThreadSafe should still be
-        # explicitly blocked.
-        # WTF::RefCounted and blink::ThreadSafeRefCounted should be used instead.
+        # explicitly blocked. blink::RefCounted and blink::ThreadSafeRefCounted
+        # should be used instead.
         'allowed': ['.+'],
         'inclass_allowed': ['.+'],
         'disallowed': [

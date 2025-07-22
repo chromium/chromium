@@ -58,7 +58,7 @@ namespace scheduler {
 // This is not correct in terms of the standards conformance, and we'll
 // eventually merge the queues so both Blink and V8 can use the microtask queue
 // allocated in the correct granularity.
-class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
+class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
   USING_FAST_MALLOC(EventLoop);
 
  public:
@@ -103,7 +103,7 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   bool IsSchedulerAttachedForTest(FrameOrWorkerScheduler*);
 
  private:
-  friend class WTF::RefCounted<EventLoop>;
+  friend class RefCounted<EventLoop>;
   friend blink::Agent;
 
   EventLoop(Delegate* delegate,

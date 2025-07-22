@@ -60,7 +60,7 @@ class PodArena final : public RefCounted<PodArena> {
 
    protected:
     virtual ~Allocator() = default;
-    friend class WTF::RefCounted<Allocator>;
+    friend class RefCounted<Allocator>;
   };
 
   // The Arena's default allocator, which uses fastMalloc and
@@ -108,7 +108,7 @@ class PodArena final : public RefCounted<PodArena> {
   enum { kDefaultChunkSize = 16384 };
 
  protected:
-  friend class WTF::RefCounted<PodArena>;
+  friend class RefCounted<PodArena>;
 
   PodArena()
       : allocator_(FastMallocAllocator::Create()),
