@@ -169,10 +169,11 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<Drawable> TITLE_ICON =
             new WritableObjectPropertyKey<>();
 
-    /** Deprecated for MESSAGE_PARAGRAPHS. The message paragraph 1 of the dialog. */
+    /** Deprecated for MESSAGE_PARAGRAPHS. The only paragraph of the dialog. */
     public static final WritableObjectPropertyKey<CharSequence> MESSAGE_PARAGRAPH_1 =
             new WritableObjectPropertyKey<>();
 
+    /** A list of the paragraphs of the dialog. */
     public static final WritableObjectPropertyKey<ArrayList<CharSequence>> MESSAGE_PARAGRAPHS =
             new WritableObjectPropertyKey<>();
 

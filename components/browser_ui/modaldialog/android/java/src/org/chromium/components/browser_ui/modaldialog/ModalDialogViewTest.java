@@ -165,7 +165,6 @@ public class ModalDialogViewTest {
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_title_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
         onView(withId(R.id.message_paragraphs_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.custom_view_not_in_scrollable)).check(matches(not(isDisplayed())));
         onView(withId(R.id.button_bar)).check(matches(not(isDisplayed())));
@@ -221,7 +220,7 @@ public class ModalDialogViewTest {
         onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.scrollable_title_container)).check(matches(isDisplayed()));
         onView(withId(R.id.modal_dialog_title_scroll_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraphs_container)).check(matches(not(isDisplayed())));
 
         // Set title to not scrollable and verify that non-scrollable title is displayed.
         ThreadUtils.runOnUiThreadBlocking(
@@ -231,7 +230,7 @@ public class ModalDialogViewTest {
         onView(withId(R.id.title_container)).check(matches(isDisplayed()));
         onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_title_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraphs_container)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -265,35 +264,52 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
-    public void testMessageParagraph1() {
-        // Verify that the message_paragraph_1 set from builder is displayed.
+    public void testMessageParagraph1_Convenience() {
+        // Verify that the message set via MESSAGE_PARAGRAPH_1 is displayed in the paragraphs
+        // container.
         String msg = sResources.getString(R.string.more);
         PropertyModel model =
                 createModel(mModelBuilder.with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, msg));
-        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_title_scroll_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.message_paragraph_1))
-                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
+        onView(withId(R.id.message_paragraphs_container)).check(matches(isDisplayed()));
 
-        // Set an empty message_paragraph_1 and verify that message_paragraph_1 is not shown.
+        // Check that the text is displayed and is the only paragraph.
+        onView(withText(msg)).check(matches(isDisplayed()));
+        Assert.assertEquals(
+                "The container should have exactly one paragraph.",
+                1,
+                ((ViewGroup) mModalDialogView.getMessageParagraphAtIndexForTesting(0).getParent())
+                        .getChildCount());
+        Assert.assertEquals(
+                "The message text is incorrect.",
+                msg,
+                mModalDialogView.getMessageParagraphAtIndexForTesting(0).getText().toString());
+
+        // Set an empty message and verify that the paragraphs container is not shown.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(ModalDialogProperties.MESSAGE_PARAGRAPH_1, ""));
-        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_title_scroll_view)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.message_paragraph_1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.message_paragraphs_container)).check(matches(not(isDisplayed())));
 
-        // Use CharSequence for the message_paragraph_1.
+        // Use CharSequence for the message.
         SpannableStringBuilder sb = new SpannableStringBuilder(msg);
         sb.setSpan(new ForegroundColorSpan(0xffff0000), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(ModalDialogProperties.MESSAGE_PARAGRAPH_1, sb));
-        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
         onView(withId(R.id.modal_dialog_title_scroll_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.message_paragraph_1))
-                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
+        onView(withId(R.id.message_paragraphs_container)).check(matches(isDisplayed()));
+
+        // Check that the styled text is displayed correctly.
+        onView(withText(msg)).check(matches(isDisplayed()));
+        Assert.assertEquals(
+                "The container should still have exactly one paragraph.",
+                1,
+                ((ViewGroup) mModalDialogView.getMessageParagraphAtIndexForTesting(0).getParent())
+                        .getChildCount());
+        Assert.assertEquals(
+                "The CharSequence text is incorrect.",
+                sb.toString(),
+                mModalDialogView.getMessageParagraphAtIndexForTesting(0).getText().toString());
     }
 
     @Test

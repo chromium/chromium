@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.subresource_filter;
 
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.espresso.Espresso;
@@ -36,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -196,14 +196,14 @@ public final class SubresourceFilterTest {
 
         // Trigger the Ads Blocked dialog and simulate the "Learn more" link click.
         createAdsBlockedDialog(message);
-        View dialogView =
+        ModalDialogView dialogView =
                 ((TabModalPresenter)
                                 mActivityTestRule
                                         .getActivity()
                                         .getModalDialogManager()
                                         .getCurrentPresenterForTest())
-                        .getDialogContainerForTest();
-        TextView messageView = dialogView.findViewById(R.id.message_paragraph_1);
+                        .getDialogViewForTest();
+        TextView messageView = dialogView.getMessageParagraphAtIndexForTesting(0);
         Spanned spannedMessage = (Spanned) messageView.getText();
         ClickableSpan[] spans =
                 spannedMessage.getSpans(0, spannedMessage.length(), ClickableSpan.class);
