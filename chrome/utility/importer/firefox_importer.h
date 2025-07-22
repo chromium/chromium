@@ -64,7 +64,8 @@ class FirefoxImporter : public Importer {
   void ImportBookmarks();
 
   void OnBookmarksParsed(
-      user_data_importer::BookmarkParser::BookmarkParsingResult result);
+      user_data_importer::BookmarkParser::BookmarkParsingResult
+          default_bookmarks);
 
 #if !BUILDFLAG(IS_MAC)
   void ImportPasswords();

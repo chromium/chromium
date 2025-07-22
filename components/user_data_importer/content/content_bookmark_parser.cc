@@ -353,6 +353,15 @@ void ContentBookmarkParser::Parse(
 
   std::string content;
   base::ReadFileToString(file, &content);
+  // ReadFileToString can return false, but still populate something into
+  // content. As such, check if content is not empty, instead of the return
+  // value of ReadFileToString. If it is empty, return an error. If not, try to
+  // parse it to recover as much data as possible.
+  if (content.empty()) {
+    std::move(callback).Run(base::unexpected(
+        BookmarkParser::BookmarkParsingError::kFailedToReadFile));
+    return;
+  }
   std::vector<std::string> lines = base::SplitString(
       content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 

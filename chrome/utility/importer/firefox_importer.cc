@@ -218,7 +218,8 @@ void FirefoxImporter::ImportBookmarks() {
 }
 
 void FirefoxImporter::OnBookmarksParsed(
-    user_data_importer::BookmarkParser::BookmarkParsingResult result) {
+    user_data_importer::BookmarkParser::BookmarkParsingResult
+        default_bookmarks) {
   base::FilePath file = GetCopiedSourcePath("places.sqlite");
   if (!base::PathExists(file))
     return;
@@ -244,12 +245,11 @@ void FirefoxImporter::OnBookmarksParsed(
   LoadLivemarkIDs(&db, &livemark_id);
 
   // Load the default bookmarks.
-  ASSIGN_OR_RETURN(user_data_importer::BookmarkParser::ParsedBookmarks value,
-                   std::move(result), [] {});
-
   std::set<GURL> default_urls;
-  for (const auto& bookmark : value.bookmarks) {
-    default_urls.insert(bookmark.url);
+  if (default_bookmarks.has_value()) {
+    for (const auto& bookmark : default_bookmarks->bookmarks) {
+      default_urls.insert(bookmark.url);
+    }
   }
 
   BookmarkList list;

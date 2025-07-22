@@ -46,6 +46,9 @@ class BookmarkParser {
 
   // Failure reason for an unsuccessful invocation of `ParseBookmarks` below.
   enum class BookmarkParsingError {
+    // Failed to read file, e.g. no such file exists.
+    kFailedToReadFile,
+
     // The file was larger than the maximum supported by this manager.
     kTooBig,
 

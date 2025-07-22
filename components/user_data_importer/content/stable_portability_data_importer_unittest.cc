@@ -364,6 +364,13 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
   // <A>Google Reader</A> was skipped for lack of URL.
 }
 
-// TODO(crbug.com/431223262): Test importing invalid files that do not exist.
+// Tests importing invalid files that do not exist.
+TEST_F(StablePortabilityDataImporterTest, CallbacksAreCalled) {
+  ImportBookmarksFile(
+      base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/bookmarks/file")));
+
+  ImportReadingListFile(
+      base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/reading_list/file")));
+}
 
 }  // namespace user_data_importer
