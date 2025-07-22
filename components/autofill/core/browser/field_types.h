@@ -694,16 +694,6 @@ constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
   return fields;
 }();
 
-constexpr FieldTypeSet FieldTypesOfGroup(FieldTypeGroup group) {
-  FieldTypeSet fields_matching_group;
-  for (FieldType field_type : kAllFieldTypes) {
-    if (GroupTypeOfFieldType(field_type) == group) {
-      fields_matching_group.insert(field_type);
-    }
-  }
-  return fields_matching_group;
-}
-
 constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
   switch (field_type) {
     case NAME_HONORIFIC_PREFIX:
@@ -868,6 +858,19 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
       break;
   }
   NOTREACHED();
+}
+
+constexpr FieldTypeSet FieldTypesOfGroup(FieldTypeGroup group) {
+  constexpr auto kMaxValue = base::to_underlying(FieldTypeGroup::kMaxValue);
+  constexpr auto kMap = []() constexpr {
+    std::array<FieldTypeSet, kMaxValue + 1> map{};
+    for (FieldType field_type : kAllFieldTypes) {
+      auto index = base::to_underlying(GroupTypeOfFieldType(field_type));
+      map[index].insert(field_type);
+    }
+    return map;
+  }();
+  return kMap[base::to_underlying(group)];
 }
 
 }  // namespace autofill
