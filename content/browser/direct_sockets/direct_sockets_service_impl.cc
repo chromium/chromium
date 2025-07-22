@@ -692,14 +692,14 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket(
     OpenTCPSocketCallback callback,
     int result,
     const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults&) {
   if (result != net::OK) {
     FulfillWithError(std::move(callback), result);
     return;
   }
 
-  DCHECK(resolved_addresses && !resolved_addresses->empty());
+  DCHECK(!resolved_addresses.empty());
 
   auto socket_options = network::mojom::TCPConnectedSocketOptions::New();
   if (options->send_buffer_size.has_value()) {
@@ -714,8 +714,8 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket(
     socket_options->keep_alive_options = std::move(options->keep_alive_options);
   }
 
-  if (!RequiresPrivateNetworkAccess(*resolved_addresses)) {
-    CreateTCPConnectedSocketImpl(*resolved_addresses, std::move(socket_options),
+  if (!RequiresPrivateNetworkAccess(resolved_addresses)) {
+    CreateTCPConnectedSocketImpl(resolved_addresses, std::move(socket_options),
                                  std::move(socket), std::move(observer),
                                  std::move(callback));
     return;
@@ -725,7 +725,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTCPSocket(
       context_,
       /*create_socket_callback=*/
       base::BindOnce(&DirectSocketsServiceImpl::CreateTCPConnectedSocketImpl,
-                     weak_factory_.GetWeakPtr(), *resolved_addresses,
+                     weak_factory_.GetWeakPtr(), resolved_addresses,
                      std::move(socket_options), std::move(socket),
                      std::move(observer)),
       /*finish_callback=*/std::move(callback));
@@ -757,14 +757,14 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
     OpenConnectedUDPSocketCallback callback,
     int result,
     const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults&) {
   if (result != net::OK) {
     FulfillWithError(std::move(callback), result);
     return;
   }
 
-  DCHECK(resolved_addresses && !resolved_addresses->empty());
+  DCHECK(!resolved_addresses.empty());
 
   auto socket_options = network::mojom::UDPSocketOptions::New();
   if (options->send_buffer_size.has_value()) {
@@ -777,7 +777,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
   auto params = network::mojom::RestrictedUDPSocketParams::New();
   params->socket_options = std::move(socket_options);
 
-  const auto& peer_addr = resolved_addresses->front();
+  const auto& peer_addr = resolved_addresses.front();
   auto finish_callback = base::BindOnce(
       [](OpenConnectedUDPSocketCallback callback, net::IPEndPoint peer_addr,
          int result, const std::optional<net::IPEndPoint>& local_addr) {
@@ -785,9 +785,9 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
       },
       std::move(callback), peer_addr);
 
-  if (!RequiresPrivateNetworkAccess(*resolved_addresses)) {
+  if (!RequiresPrivateNetworkAccess(resolved_addresses)) {
     CreateRestrictedUDPSocketImpl(
-        resolved_addresses->front(),
+        resolved_addresses.front(),
         network::mojom::RestrictedUDPSocketMode::CONNECTED, std::move(params),
         std::move(restricted_udp_socket_receiver), std::move(listener),
         std::move(finish_callback));

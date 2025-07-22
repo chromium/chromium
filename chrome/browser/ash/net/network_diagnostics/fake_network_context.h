@@ -23,17 +23,16 @@ class FakeNetworkContext : public network::TestNetworkContext {
  public:
   struct DnsResult {
    public:
-    DnsResult(
-        int32_t result,
-        net::ResolveErrorInfo resolve_error_info,
-        std::optional<net::AddressList> resolved_addresses,
-        std::optional<net::HostResolverEndpointResults> alternative_endpoints);
+    DnsResult(int32_t result,
+              net::ResolveErrorInfo resolve_error_info,
+              net::AddressList resolved_addresses,
+              net::HostResolverEndpointResults alternative_endpoints);
     ~DnsResult();
 
     int result_;
     net::ResolveErrorInfo resolve_error_info_;
-    std::optional<net::AddressList> resolved_addresses_;
-    std::optional<net::HostResolverEndpointResults> alternative_endpoints_;
+    net::AddressList resolved_addresses_;
+    net::HostResolverEndpointResults alternative_endpoints_;
   };
   FakeNetworkContext();
   FakeNetworkContext(const FakeNetworkContext&) = delete;

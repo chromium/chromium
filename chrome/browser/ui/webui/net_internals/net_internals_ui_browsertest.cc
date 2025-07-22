@@ -97,21 +97,20 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
     receiver_.set_disconnect_handler(base::BindOnce(
         &DnsLookupClient::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*alternative_endpoints=*/std::nullopt));
+        net::AddressList(), net::HostResolverEndpointResults()));
   }
   ~DnsLookupClient() override = default;
 
   // network::mojom::ResolveHostClient:
-  void OnComplete(int32_t error,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      alternative_endpoints) override {
+  void OnComplete(
+      int32_t error,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     std::string result;
     if (error == net::OK) {
-      CHECK(resolved_addresses->size() == 1);
-      result = resolved_addresses.value()[0].ToStringWithoutPort();
+      CHECK(resolved_addresses.size() == 1);
+      result = resolved_addresses[0].ToStringWithoutPort();
     } else {
       result = net::ErrorToString(resolve_error_info.error);
     }
@@ -152,8 +151,8 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       response_client->OnComplete(
           net::ERR_NAME_NOT_RESOLVED,
           net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-          /*resolved_addresses=*/std::nullopt,
-          /*alternative_endpoints=*/std::nullopt);
+          /*resolved_addresses=*/{},
+          /*alternative_endpoints=*/{});
     }
 
     const net::IPAddress first_localhost{127, 0, 0, 1};
@@ -180,7 +179,7 @@ class NetworkContextForTesting : public network::TestNetworkContext {
     } else {
       response_client->OnComplete(0, net::ResolveErrorInfo(net::OK),
                                   net::AddressList(first_ip_endpoint),
-                                  /*alternative_endpoints=*/std::nullopt);
+                                  /*alternative_endpoints=*/{});
     }
 
     if (hostname == "multihost.com") {

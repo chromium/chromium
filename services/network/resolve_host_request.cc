@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
-#include "base/types/optional_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -71,8 +70,8 @@ ResolveHostRequest::~ResolveHostRequest() {
   if (response_client_.is_bound()) {
     response_client_->OnComplete(net::ERR_NAME_NOT_RESOLVED,
                                  net::ResolveErrorInfo(net::ERR_FAILED),
-                                 /*resolved_addresses=*/std::nullopt,
-                                 /*alternative_endpoints=*/std::nullopt);
+                                 /*resolved_addresses=*/{},
+                                 /*alternative_endpoints=*/{});
     response_client_.reset();
   }
 }
@@ -94,8 +93,7 @@ int ResolveHostRequest::Start(
   mojo::Remote<mojom::ResolveHostClient> response_client(
       std::move(pending_response_client));
   if (rv != net::ERR_IO_PENDING) {
-    response_client->OnComplete(rv, GetResolveErrorInfo(),
-                                base::OptionalFromPtr(GetAddressResults()),
+    response_client->OnComplete(rv, GetResolveErrorInfo(), GetAddressResults(),
                                 GetAlternativeEndpoints());
     return rv;
   }
@@ -133,8 +131,7 @@ void ResolveHostRequest::OnComplete(int error) {
   control_handle_receiver_.reset();
   SignalNonAddressResults();
   response_client_->OnComplete(error, GetResolveErrorInfo(),
-                               base::OptionalFromPtr(GetAddressResults()),
-                               GetAlternativeEndpoints());
+                               GetAddressResults(), GetAlternativeEndpoints());
 
   response_client_.reset();
   // Invoke completion callback last as it may delete |this|.
@@ -150,19 +147,20 @@ net::ResolveErrorInfo ResolveHostRequest::GetResolveErrorInfo() const {
   return internal_request_->GetResolveErrorInfo();
 }
 
-const net::AddressList* ResolveHostRequest::GetAddressResults() const {
+net::AddressList ResolveHostRequest::GetAddressResults() const {
   if (cancelled_) {
-    return nullptr;
+    return net::AddressList();
   }
 
   DCHECK(internal_request_);
-  return internal_request_->GetAddressResults();
+  const net::AddressList* ret = internal_request_->GetAddressResults();
+  return ret ? *ret : net::AddressList();
 }
 
-std::optional<net::HostResolverEndpointResults>
-ResolveHostRequest::GetAlternativeEndpoints() const {
+net::HostResolverEndpointResults ResolveHostRequest::GetAlternativeEndpoints()
+    const {
   if (cancelled_) {
-    return std::nullopt;
+    return {};
   }
 
   DCHECK(internal_request_);
@@ -170,7 +168,7 @@ ResolveHostRequest::GetAlternativeEndpoints() const {
       internal_request_->GetEndpointResults();
 
   if (!endpoints) {
-    return std::nullopt;
+    return {};
   }
 
   // `endpoints` contains both alternative endpoints (from HTTPS/SVCB) and
@@ -184,9 +182,7 @@ ResolveHostRequest::GetAlternativeEndpoints() const {
   std::ranges::copy_if(
       *endpoints, std::back_inserter(alternative_endpoints),
       [](const auto& endpoint) { return endpoint.metadata.IsAlternative(); });
-  return alternative_endpoints.empty()
-             ? std::nullopt
-             : std::make_optional(alternative_endpoints);
+  return alternative_endpoints;
 }
 
 void ResolveHostRequest::SignalNonAddressResults() {

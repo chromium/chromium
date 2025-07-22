@@ -119,10 +119,8 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtension) {
       network::BlockingDnsLookup(network_context, host_port_pair,
                                  std::move(params), network_anonymization_key);
   EXPECT_EQ(net::OK, result1.error);
-  ASSERT_TRUE(result1.resolved_addresses.has_value());
-  ASSERT_EQ(1u, result1.resolved_addresses->size());
-  EXPECT_EQ("127.0.0.1",
-            result1.resolved_addresses.value()[0].ToStringWithoutPort());
+  ASSERT_EQ(1u, result1.resolved_addresses.size());
+  EXPECT_EQ("127.0.0.1", result1.resolved_addresses[0].ToStringWithoutPort());
 
   // Check that the entry isn't present in the cache with the empty
   // NetworkAnonymizationKey.

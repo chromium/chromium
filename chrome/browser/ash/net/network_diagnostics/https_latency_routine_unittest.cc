@@ -190,14 +190,13 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedDnsResolution) {
           std::make_unique<FakeNetworkContext::DnsResult>(
               net::ERR_NAME_NOT_RESOLVED,
               net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-              /*resolved_addresses=*/std::nullopt,
-              /*alternative_endpoints=*/std::nullopt));
+              net::AddressList(), net::HostResolverEndpointResults()));
     } else {
       fake_dns_results.emplace_back(
           std::make_unique<FakeNetworkContext::DnsResult>(
               net::OK, net::ResolveErrorInfo(net::OK),
               net::AddressList(FakeIPAddress()),
-              /*alternative_endpoints=*/std::nullopt));
+              net::HostResolverEndpointResults()));
     }
   }
 
@@ -220,7 +219,7 @@ TEST_F(HttpsLatencyRoutineTest, TestLowLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*alternative_endpoints=*/std::nullopt));
+            net::HostResolverEndpointResults()));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -241,7 +240,7 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedHttpRequest) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*alternative_endpoints=*/std::nullopt));
+            net::HostResolverEndpointResults()));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -263,7 +262,7 @@ TEST_F(HttpsLatencyRoutineTest, TestHighLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*alternative_endpoints=*/std::nullopt));
+            net::HostResolverEndpointResults()));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =
@@ -285,7 +284,7 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
         std::make_unique<FakeNetworkContext::DnsResult>(
             net::OK, net::ResolveErrorInfo(net::OK),
             net::AddressList(FakeIPAddress()),
-            /*alternative_endpoints=*/std::nullopt));
+            net::HostResolverEndpointResults()));
   }
 
   std::unique_ptr<FakeTickClock> fake_tick_clock =

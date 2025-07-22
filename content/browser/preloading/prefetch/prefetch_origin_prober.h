@@ -60,7 +60,7 @@ class CONTENT_EXPORT PrefetchOriginProber {
                      OnProbeResultCallback callback,
                      bool also_do_tls_connect,
                      int net_error,
-                     const std::optional<net::AddressList>& resolved_addresses);
+                     const net::AddressList& resolved_addresses);
 
   // Both DNS and TLS probes need to resolve DNS. This starts the TLS probe with
   // the |addresses| from the DNS resolution.

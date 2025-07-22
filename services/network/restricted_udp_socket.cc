@@ -69,15 +69,14 @@ void RestrictedUDPSocket::OnResolveCompleteForSendTo(
     SendToCallback callback,
     int result,
     const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults&) {
   if (result != net::OK) {
     std::move(callback).Run(result);
     return;
   }
 
-  DCHECK(resolved_addresses);
-  udp_socket_->SendTo(resolved_addresses->front(), std::move(data),
+  udp_socket_->SendTo(resolved_addresses.front(), std::move(data),
                       traffic_annotation_, std::move(callback));
 }
 

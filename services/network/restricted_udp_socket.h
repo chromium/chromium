@@ -46,13 +46,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedUDPSocket
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
-  void OnResolveCompleteForSendTo(
-      std::vector<uint8_t> data,
-      SendToCallback callback,
-      int result,
-      const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&);
+  void OnResolveCompleteForSendTo(std::vector<uint8_t> data,
+                                  SendToCallback callback,
+                                  int result,
+                                  const net::ResolveErrorInfo&,
+                                  const net::AddressList& resolved_addresses,
+                                  const net::HostResolverEndpointResults&);
 
   std::unique_ptr<UDPSocket> udp_socket_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;

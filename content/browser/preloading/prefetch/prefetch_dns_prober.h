@@ -21,8 +21,8 @@ namespace content {
 // performs DNS resolution and invokes a callback upon completion.
 class PrefetchDNSProber : public network::mojom::ResolveHostClient {
  public:
-  using OnDNSResultsCallback = base::OnceCallback<
-      void(int, const std::optional<net::AddressList>& resolved_addresses)>;
+  using OnDNSResultsCallback =
+      base::OnceCallback<void(int, const net::AddressList& resolved_addresses)>;
 
   explicit PrefetchDNSProber(OnDNSResultsCallback callback);
   ~PrefetchDNSProber() override;
@@ -30,11 +30,11 @@ class PrefetchDNSProber : public network::mojom::ResolveHostClient {
   // network::mojom::ResolveHostClient:
   void OnTextResults(const std::vector<std::string>&) override {}
   void OnHostnameResults(const std::vector<net::HostPortPair>&) override {}
-  void OnComplete(int32_t error,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      alternative_endpoints) override;
+  void OnComplete(
+      int32_t error,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override;
 
  private:
   OnDNSResultsCallback callback_;

@@ -174,8 +174,7 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
     receiver_.set_disconnect_handler(base::BindOnce(
         &PortForwardingHostResolver::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*alternative_endpoints=*/std::nullopt));
+        net::AddressList(), net::HostResolverEndpointResults()));
   }
 
   PortForwardingHostResolver(const PortForwardingHostResolver&) = delete;
@@ -188,18 +187,18 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
   }
 
   // network::mojom::ResolveHostClient:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      alternative_endpoints) override {
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     if (result < 0) {
       std::move(resolve_host_callback_).Run(net::AddressList());
     } else {
-      DCHECK(resolved_addresses && !resolved_addresses->empty());
-      std::move(resolve_host_callback_).Run(resolved_addresses.value());
+      DCHECK(!resolved_addresses.empty());
+      std::move(resolve_host_callback_).Run(resolved_addresses);
     }
 
     delete this;

@@ -61,11 +61,10 @@ class TlsProber {
   virtual ~TlsProber();
 
   // Processes the results of the DNS resolution done by |host_resolver_|.
-  void OnHostResolutionComplete(
-      int result,
-      const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&);
+  void OnHostResolutionComplete(int result,
+                                const net::ResolveErrorInfo&,
+                                const net::AddressList& resolved_addresses,
+                                const net::HostResolverEndpointResults&);
 
  protected:
   // Test-only constructor.

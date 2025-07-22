@@ -142,8 +142,7 @@ class DnsLatencyRoutineTest : public ::testing::Test {
 TEST_F(DnsLatencyRoutineTest, TestSuccessfulResolutions) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(FakeIPAddress()),
-      /*alternative_endpoints=*/std::nullopt);
+      net::AddressList(FakeIPAddress()), net::HostResolverEndpointResults());
   SetUpAndRunRoutine(std::move(fake_dns_result),
                      kSuccessfulDnsResolutionDelayMs,
                      mojom::RoutineVerdict::kNoProblem, {});
@@ -154,9 +153,8 @@ TEST_F(DnsLatencyRoutineTest, TestSuccessfulResolutions) {
 TEST_F(DnsLatencyRoutineTest, TestUnsuccessfulResolution) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
-      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-      /*resolved_addresses=*/std::nullopt,
-      /*alternative_endpoints=*/std::nullopt);
+      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList(),
+      net::HostResolverEndpointResults());
   // The time taken to complete the resolution is not important for this test,
   // because a failed resolution attempt already results in a problem.
   SetUpAndRunRoutine(std::move(fake_dns_result),
@@ -171,8 +169,7 @@ TEST_F(DnsLatencyRoutineTest, TestUnsuccessfulResolution) {
 TEST_F(DnsLatencyRoutineTest, TestLatencySlightlyAboveThreshold) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(FakeIPAddress()),
-      /*alternative_endpoints=*/std::nullopt);
+      net::AddressList(FakeIPAddress()), net::HostResolverEndpointResults());
   SetUpAndRunRoutine(std::move(fake_dns_result), kSlightlyAboveThresholdDelayMs,
                      mojom::RoutineVerdict::kProblem,
                      {mojom::DnsLatencyProblem::kSlightlyAboveThreshold});
@@ -184,8 +181,7 @@ TEST_F(DnsLatencyRoutineTest, TestLatencySlightlyAboveThreshold) {
 TEST_F(DnsLatencyRoutineTest, TestLatencySignificantlyAboveThreshold) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(FakeIPAddress()),
-      /*alternative_endpoints=*/std::nullopt);
+      net::AddressList(FakeIPAddress()), net::HostResolverEndpointResults());
   SetUpAndRunRoutine(std::move(fake_dns_result),
                      kSignificantlyAboveThresholdDelayMs,
                      mojom::RoutineVerdict::kProblem,

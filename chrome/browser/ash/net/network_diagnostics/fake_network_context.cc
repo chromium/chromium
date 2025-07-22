@@ -27,12 +27,12 @@ net::IPEndPoint FakeIPAddress() {
 FakeNetworkContext::DnsResult::DnsResult(
     int32_t result,
     net::ResolveErrorInfo resolve_error_info,
-    std::optional<net::AddressList> resolved_addresses,
-    std::optional<net::HostResolverEndpointResults> alternative_endpoints)
+    net::AddressList resolved_addresses,
+    net::HostResolverEndpointResults alternative_endpoints)
     : result_(result),
-      resolve_error_info_(resolve_error_info),
-      resolved_addresses_(resolved_addresses),
-      alternative_endpoints_(alternative_endpoints) {}
+      resolve_error_info_(std::move(resolve_error_info)),
+      resolved_addresses_(std::move(resolved_addresses)),
+      alternative_endpoints_(std::move(alternative_endpoints)) {}
 
 FakeNetworkContext::DnsResult::~DnsResult() = default;
 

@@ -140,8 +140,7 @@ interface ResolveHostClient {
   // ERR_NAME_NOT_RESOLVED) is sufficient.
   //
   // If results are not in address form, e.g. for a TXT request,
-  // `resolved_addresses` and `alternative_endpoints` may be either empty or
-  // null.
+  // `resolved_addresses` and `alternative_endpoints` will be empty.
   //
   // Always called last to signal completion of the ResolveHost() request.
   // Unless the ResolveHostClient is closed, this method will always be called
@@ -155,8 +154,8 @@ interface ResolveHostClient {
   // concerns of passing redundant data.
   OnComplete(int32 result,
              ResolveErrorInfo resolve_error_info,
-             AddressList? resolved_addresses,
-             array<HostResolverEndpointResult>? alternative_endpoints);
+             AddressList resolved_addresses,
+             array<HostResolverEndpointResult> alternative_endpoints);
 
   // One or more On...Results() methods may be called when non-address results
   // are available and non-empty. Always called before OnComplete().

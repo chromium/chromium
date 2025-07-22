@@ -131,8 +131,8 @@ class MockNetworkContext : public network::TestNetworkContext {
       return;
     }
     it->second->OnComplete(result, net::ResolveErrorInfo(result),
-                           /*resolved_addresses=*/std::nullopt,
-                           /*alternative_endpoints=*/std::nullopt);
+                           /*resolved_addresses=*/{},
+                           /*alternative_endpoints=*/{});
     resolve_host_clients_.erase(it);
     // Wait for OnComplete() to be executed on the UI thread.
     base::RunLoop().RunUntilIdle();

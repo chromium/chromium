@@ -95,17 +95,17 @@ TlsProber::~TlsProber() = default;
 void TlsProber::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults&) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   host_resolver_.reset();
   if (result != net::OK) {
-    CHECK(!resolved_addresses);
+    CHECK(resolved_addresses.empty());
     OnDone(result, ProbeExitEnum::kDnsFailure);
     return;
   }
-  CHECK(resolved_addresses);
+  CHECK(!resolved_addresses.empty());
 
   network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
       completion_callback = base::BindOnce(&TlsProber::OnConnectComplete,
@@ -121,7 +121,7 @@ void TlsProber::OnHostResolutionComplete(
   CHECK(network_context);
 
   network_context->CreateTCPConnectedSocket(
-      /*local_addr=*/std::nullopt, resolved_addresses.value(),
+      /*local_addr=*/std::nullopt, resolved_addresses,
       /*tcp_connected_socket_options=*/nullptr,
       net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag()),
       std::move(pending_receiver), /*observer=*/mojo::NullRemote(),

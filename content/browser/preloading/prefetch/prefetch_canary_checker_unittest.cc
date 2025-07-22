@@ -58,13 +58,11 @@ class FakeNetworkContext : public network::TestNetworkContext {
   void MakeDNSResolveSuccess(const GURL& url) {
     const net::IPEndPoint kFakeIPAddress{
         net::IPEndPoint(net::IPAddress::IPv4Localhost(), /*port=*/1234)};
-    std::optional<net::AddressList> resolved_addresses =
-        net::AddressList(kFakeIPAddress);
     auto it = pending_requests_.find(net::HostPortPair::FromURL(url));
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
-    it->second->OnComplete(net::OK, resolved_addresses,
-                           /*alternative_endpoints=*/std::nullopt);
+    it->second->OnComplete(net::OK, net::AddressList(kFakeIPAddress),
+                           /*alternative_endpoints=*/{});
     pending_requests_.erase(it);
   }
 
@@ -77,8 +75,8 @@ class FakeNetworkContext : public network::TestNetworkContext {
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
 
-    it->second->OnComplete(err, /*resolved_addresses=*/std::nullopt,
-                           /*alternative_endpoints=*/std::nullopt);
+    it->second->OnComplete(err, /*resolved_addresses=*/{},
+                           /*alternative_endpoints=*/{});
     pending_requests_.erase(it);
   }
 
@@ -105,10 +103,9 @@ class FakeNetworkContext : public network::TestNetworkContext {
                                             static_cast<net::Error>(error));
     }
 
-    void OnComplete(
-        net::Error err,
-        std::optional<net::AddressList> resolved_addresses,
-        std::optional<net::HostResolverEndpointResults> alternative_endpoints) {
+    void OnComplete(net::Error err,
+                    net::AddressList resolved_addresses,
+                    net::HostResolverEndpointResults alternative_endpoints) {
       response_client_->OnComplete(err, net::ResolveErrorInfo(),
                                    resolved_addresses, alternative_endpoints);
     }

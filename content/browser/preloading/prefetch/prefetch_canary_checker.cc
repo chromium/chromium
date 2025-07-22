@@ -415,14 +415,13 @@ void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
 
 void PrefetchCanaryChecker::OnDNSResolved(
     int net_error,
-    const std::optional<net::AddressList>& resolved_addresses) {
+    const net::AddressList& resolved_addresses) {
   TRACE_EVENT0("loading", "PrefetchCanaryChecker::OnDNSResolved");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timeout_timer_.reset();
   resolver_control_handle_.reset();
-  bool successful = net_error == net::OK && resolved_addresses &&
-                    !resolved_addresses->empty();
+  bool successful = net_error == net::OK && !resolved_addresses.empty();
   if (successful) {
     ProcessSuccess();
   } else {

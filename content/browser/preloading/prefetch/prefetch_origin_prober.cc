@@ -241,9 +241,8 @@ void PrefetchOriginProber::OnDNSResolved(
     OnProbeResultCallback callback,
     bool also_do_tls_connect,
     int net_error,
-    const std::optional<net::AddressList>& resolved_addresses) {
-  bool successful = net_error == net::OK && resolved_addresses &&
-                    !resolved_addresses->empty();
+    const net::AddressList& resolved_addresses) {
+  bool successful = net_error == net::OK && !resolved_addresses.empty();
 
   // A TLS connection needs the resolved addresses, so it also fails here.
   if (!successful) {
@@ -256,7 +255,7 @@ void PrefetchOriginProber::OnDNSResolved(
     return;
   }
 
-  DoTLSProbeAfterDNSResolution(url, std::move(callback), *resolved_addresses);
+  DoTLSProbeAfterDNSResolution(url, std::move(callback), resolved_addresses);
 }
 
 void PrefetchOriginProber::DoTLSProbeAfterDNSResolution(

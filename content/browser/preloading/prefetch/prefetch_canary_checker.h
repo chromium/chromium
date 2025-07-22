@@ -123,8 +123,7 @@ class CONTENT_EXPORT PrefetchCanaryChecker {
  private:
   void ResetState();
   void StartDNSResolution(const GURL& url);
-  void OnDNSResolved(int net_error,
-                     const std::optional<net::AddressList>& resolved_addresses);
+  void OnDNSResolved(int net_error, const net::AddressList& resolved_addresses);
   void ProcessTimeout();
   void ProcessFailure(int net_error);
   void ProcessSuccess();
