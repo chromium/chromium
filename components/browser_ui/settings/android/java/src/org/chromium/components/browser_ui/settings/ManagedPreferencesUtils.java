@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -25,11 +26,31 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.Toast;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /** Utilities and common methods to handle settings managed by policies. */
 @NullMarked
 public class ManagedPreferencesUtils {
+
+    /** Represents possible state of a managed boolean preference. */
+    @IntDef({
+        BooleanPolicyState.UNMANAGED,
+        BooleanPolicyState.MANAGED_BY_POLICY_ON,
+        BooleanPolicyState.MANAGED_BY_POLICY_OFF,
+        BooleanPolicyState.RECOMMENDED_IS_FOLLOWED,
+        BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BooleanPolicyState {
+        int UNMANAGED = 0;
+        int MANAGED_BY_POLICY_ON = 1;
+        int MANAGED_BY_POLICY_OFF = 2;
+        int RECOMMENDED_IS_FOLLOWED = 3;
+        int RECOMMENDED_IS_NOT_FOLLOWED = 4;
+    }
+
     private static Toast showToastWithResourceId(Context context, @StringRes int resId) {
         Toast toast = Toast.makeText(context, context.getString(resId), Toast.LENGTH_LONG);
         toast.show();
@@ -49,10 +70,11 @@ public class ManagedPreferencesUtils {
 
     /**
      * Shows a toast indicating that the previous action is managed by the parent(s) of the
-     * supervised user.
-     * This is usually used to explain to the user why a given control is disabled in the settings.
+     * supervised user. This is usually used to explain to the user why a given control is disabled
+     * in the settings.
      *
      * @param context The context where the Toast will be shown.
+     * @param delegate The delegate that controls whether the preference is managed.
      */
     public static Toast showManagedByParentToast(
             Context context, @Nullable ManagedPreferenceDelegate delegate) {
@@ -63,7 +85,6 @@ public class ManagedPreferencesUtils {
      * Shows a toast indicating that a setting is recommended by the administrator.
      *
      * @param context The context where the Toast will be shown.
-     * @param isFollowing Whether the user is currently following the recommendation.
      */
     public static Toast showRecommendationToast(Context context) {
         return showToastWithResourceId(context, R.string.recommended_by_your_organization);

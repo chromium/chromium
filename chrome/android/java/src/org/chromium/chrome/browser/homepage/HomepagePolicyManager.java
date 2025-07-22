@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.homepage;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
@@ -19,14 +18,12 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils.BooleanPolicyState;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Provides information for the home page related policies. Monitors changes for the homepage
@@ -43,26 +40,6 @@ public class HomepagePolicyManager implements PrefObserver {
         void onHomepagePolicyUpdate();
     }
 
-    /**
-     * Represents the policy state of the ShowHomeButton preference. Used for persistence in
-     * ChromePreferenceKeys.
-     */
-    @IntDef({
-        ShowHomeButtonPolicyState.UNMANAGED,
-        ShowHomeButtonPolicyState.MANAGED_BY_POLICY_ON,
-        ShowHomeButtonPolicyState.MANAGED_BY_POLICY_OFF,
-        ShowHomeButtonPolicyState.RECOMMENDED_IS_FOLLOWED,
-        ShowHomeButtonPolicyState.RECOMMENDED_IS_NOT_FOLLOWED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ShowHomeButtonPolicyState {
-        int UNMANAGED = 0;
-        int MANAGED_BY_POLICY_ON = 1;
-        int MANAGED_BY_POLICY_OFF = 2;
-        int RECOMMENDED_IS_FOLLOWED = 3;
-        int RECOMMENDED_IS_NOT_FOLLOWED = 4;
-    }
-
     private static @Nullable HomepagePolicyManager sInstance;
 
     private static @Nullable PrefService sPrefServiceForTesting;
@@ -70,7 +47,7 @@ public class HomepagePolicyManager implements PrefObserver {
     private boolean mIsHomepageLocationManaged;
     private GURL mHomepageUrl;
 
-    @ShowHomeButtonPolicyState private int mHomeButtonPolicyState;
+    @BooleanPolicyState private int mHomeButtonPolicyState;
 
     private boolean mHomepageIsNtpManaged;
     private boolean mHomepageIsNtpPolicyValue;
@@ -236,7 +213,7 @@ public class HomepagePolicyManager implements PrefObserver {
             mHomeButtonPolicyState =
                     mSharedPreferenceManager.readInt(
                             ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
-                            ShowHomeButtonPolicyState.UNMANAGED);
+                            BooleanPolicyState.UNMANAGED);
         }
 
         if (ChromeFeatureList.sHomepageIsNewTabPagePolicyAndroid.isEnabled()) {
@@ -312,18 +289,18 @@ public class HomepagePolicyManager implements PrefObserver {
             homepage = new GURL(homepagePref);
         }
 
-        @ShowHomeButtonPolicyState int homeButtonPolicyState = ShowHomeButtonPolicyState.UNMANAGED;
+        @BooleanPolicyState int homeButtonPolicyState = BooleanPolicyState.UNMANAGED;
         if (ChromeFeatureList.sShowHomeButtonPolicyAndroid.isEnabled()) {
             boolean isManaged = prefService.isManagedPreference(Pref.SHOW_HOME_BUTTON);
             if (isManaged) {
                 homeButtonPolicyState =
                         prefService.getBoolean(Pref.SHOW_HOME_BUTTON)
-                                ? ShowHomeButtonPolicyState.MANAGED_BY_POLICY_ON
-                                : ShowHomeButtonPolicyState.MANAGED_BY_POLICY_OFF;
+                                ? BooleanPolicyState.MANAGED_BY_POLICY_ON
+                                : BooleanPolicyState.MANAGED_BY_POLICY_OFF;
             } else if (prefService.isFollowingRecommendation(Pref.SHOW_HOME_BUTTON)) {
-                homeButtonPolicyState = ShowHomeButtonPolicyState.RECOMMENDED_IS_FOLLOWED;
+                homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
             } else if (prefService.hasRecommendation(Pref.SHOW_HOME_BUTTON)) {
-                homeButtonPolicyState = ShowHomeButtonPolicyState.RECOMMENDED_IS_NOT_FOLLOWED;
+                homeButtonPolicyState = BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED;
             }
         }
 
@@ -418,26 +395,26 @@ public class HomepagePolicyManager implements PrefObserver {
 
     @VisibleForTesting
     public boolean isShowHomeButtonPolicyManaged() {
-        return mHomeButtonPolicyState == ShowHomeButtonPolicyState.MANAGED_BY_POLICY_ON
-                || mHomeButtonPolicyState == ShowHomeButtonPolicyState.MANAGED_BY_POLICY_OFF;
+        return mHomeButtonPolicyState == BooleanPolicyState.MANAGED_BY_POLICY_ON
+                || mHomeButtonPolicyState == BooleanPolicyState.MANAGED_BY_POLICY_OFF;
     }
 
     @VisibleForTesting
     public boolean getShowHomeButtonPolicyValue() {
         assert isShowHomeButtonPolicyManaged();
-        return mHomeButtonPolicyState == ShowHomeButtonPolicyState.MANAGED_BY_POLICY_ON;
+        return mHomeButtonPolicyState == BooleanPolicyState.MANAGED_BY_POLICY_ON;
     }
 
     @VisibleForTesting
     public boolean isShowHomeButtonPolicyRecommended() {
-        return mHomeButtonPolicyState == ShowHomeButtonPolicyState.RECOMMENDED_IS_FOLLOWED
-                || mHomeButtonPolicyState == ShowHomeButtonPolicyState.RECOMMENDED_IS_NOT_FOLLOWED;
+        return mHomeButtonPolicyState == BooleanPolicyState.RECOMMENDED_IS_FOLLOWED
+                || mHomeButtonPolicyState == BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED;
     }
 
     @VisibleForTesting
     public boolean isFollowingHomepageButtonPolicyRecommendation() {
         assert isShowHomeButtonPolicyRecommended();
-        return mHomeButtonPolicyState == ShowHomeButtonPolicyState.RECOMMENDED_IS_FOLLOWED;
+        return mHomeButtonPolicyState == BooleanPolicyState.RECOMMENDED_IS_FOLLOWED;
     }
 
     @VisibleForTesting

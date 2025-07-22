@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils.BooleanPolicyState;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.url.GURL;
@@ -175,7 +176,7 @@ public class HomepagePolicyManagerTest {
         // Test reading each state from SharedPreferences during construction.
         mSharedPreferenceManager.writeInt(
                 ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
-                HomepagePolicyManager.ShowHomeButtonPolicyState.MANAGED_BY_POLICY_ON);
+                BooleanPolicyState.MANAGED_BY_POLICY_ON);
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertTrue(
                 "Policy should be managed for MANAGED_BY_POLICY_ON state.",
@@ -185,7 +186,7 @@ public class HomepagePolicyManagerTest {
                 mHomepagePolicyManager.getShowHomeButtonPolicyValue());
         mSharedPreferenceManager.writeInt(
                 ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
-                HomepagePolicyManager.ShowHomeButtonPolicyState.MANAGED_BY_POLICY_OFF);
+                BooleanPolicyState.MANAGED_BY_POLICY_OFF);
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertTrue(
                 "Policy should be managed for MANAGED_BY_POLICY_OFF state.",
@@ -196,7 +197,7 @@ public class HomepagePolicyManagerTest {
 
         mSharedPreferenceManager.writeInt(
                 ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
-                HomepagePolicyManager.ShowHomeButtonPolicyState.RECOMMENDED_IS_FOLLOWED);
+                BooleanPolicyState.RECOMMENDED_IS_FOLLOWED);
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertFalse(
                 "Policy should not be managed for RECOMMENDED_IS_FOLLOWED state.",
@@ -210,7 +211,7 @@ public class HomepagePolicyManagerTest {
 
         mSharedPreferenceManager.writeInt(
                 ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
-                HomepagePolicyManager.ShowHomeButtonPolicyState.RECOMMENDED_IS_NOT_FOLLOWED);
+                BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED);
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertFalse(
                 "Policy should not be managed for RECOMMENDED_IS_NOT_FOLLOWED state.",
@@ -224,8 +225,7 @@ public class HomepagePolicyManagerTest {
                 mHomepagePolicyManager.isFollowingHomepageButtonPolicyRecommendation());
 
         mSharedPreferenceManager.writeInt(
-                ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
-                HomepagePolicyManager.ShowHomeButtonPolicyState.UNMANAGED);
+                ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE, BooleanPolicyState.UNMANAGED);
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertFalse(
                 "Policy should not be managed for UNMANAGED state.",
@@ -246,7 +246,7 @@ public class HomepagePolicyManagerTest {
         mHomepagePolicyManager.onPreferenceChange();
         Assert.assertEquals(
                 "State should be UNMANAGED",
-                HomepagePolicyManager.ShowHomeButtonPolicyState.UNMANAGED,
+                BooleanPolicyState.UNMANAGED,
                 mSharedPreferenceManager.readInt(
                         ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE));
 
@@ -258,7 +258,7 @@ public class HomepagePolicyManagerTest {
         mHomepagePolicyManager.onPreferenceChange();
         Assert.assertEquals(
                 "State should be MANAGED_BY_POLICY_ON",
-                HomepagePolicyManager.ShowHomeButtonPolicyState.MANAGED_BY_POLICY_ON,
+                BooleanPolicyState.MANAGED_BY_POLICY_ON,
                 mSharedPreferenceManager.readInt(
                         ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE));
 
@@ -270,7 +270,7 @@ public class HomepagePolicyManagerTest {
         mHomepagePolicyManager.onPreferenceChange();
         Assert.assertEquals(
                 "State should be MANAGED_BY_POLICY_OFF",
-                HomepagePolicyManager.ShowHomeButtonPolicyState.MANAGED_BY_POLICY_OFF,
+                BooleanPolicyState.MANAGED_BY_POLICY_OFF,
                 mSharedPreferenceManager.readInt(
                         ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE));
 
@@ -282,7 +282,7 @@ public class HomepagePolicyManagerTest {
         mHomepagePolicyManager.onPreferenceChange();
         Assert.assertEquals(
                 "State should be RECOMMENDED_IS_FOLLOWED",
-                HomepagePolicyManager.ShowHomeButtonPolicyState.RECOMMENDED_IS_FOLLOWED,
+                BooleanPolicyState.RECOMMENDED_IS_FOLLOWED,
                 mSharedPreferenceManager.readInt(
                         ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE));
 
@@ -294,7 +294,7 @@ public class HomepagePolicyManagerTest {
         mHomepagePolicyManager.onPreferenceChange();
         Assert.assertEquals(
                 "State should be RECOMMENDED_IS_NOT_FOLLOWED",
-                HomepagePolicyManager.ShowHomeButtonPolicyState.RECOMMENDED_IS_NOT_FOLLOWED,
+                BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED,
                 mSharedPreferenceManager.readInt(
                         ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE));
 
@@ -307,7 +307,7 @@ public class HomepagePolicyManagerTest {
         mHomepagePolicyManager.onPreferenceChange();
         Assert.assertEquals(
                 "State should be MANAGED_BY_POLICY_ON when both are present",
-                HomepagePolicyManager.ShowHomeButtonPolicyState.MANAGED_BY_POLICY_ON,
+                BooleanPolicyState.MANAGED_BY_POLICY_ON,
                 mSharedPreferenceManager.readInt(
                         ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE));
     }
