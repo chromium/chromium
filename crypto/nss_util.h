@@ -61,18 +61,6 @@ CRYPTO_EXPORT void InitializeTPMTokenAndSystemSlot(
 // that no TPM system slot will be available.
 CRYPTO_EXPORT void FinishInitializingTPMTokenAndSystemSlot();
 
-// TODO(crbug.com/1163303) Remove when the bug is fixed.
-// Can be used to collect additional information when public slot fails to open.
-// Mainly checks the access permissions on the files and tries to read them.
-// Crashes Chrome because it will crash anyway when it tries to instantiate
-// NSSCertDatabase with a nullptr public slot, crashing early can provide better
-// logs/stacktraces for diagnosing.
-// Takes `nss_path` where NSS is supposed to be (or created). Will attempt
-// creating the path if it doesn't exist (to check that it can be done).
-// Theoretically the path should already exist because it's created when Chrome
-// tries to open the public slot.
-CRYPTO_EXPORT void DiagnosePublicSlotAndCrash(const base::FilePath& nss_path);
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Convert a NSS PRTime value into a base::Time object.

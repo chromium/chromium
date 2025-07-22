@@ -18,7 +18,6 @@
 
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -611,87 +610,6 @@ void CloseChromeOSUserForTesting(const std::string& username_hash) {
 void SetPrivateSoftwareSlotForChromeOSUserForTesting(ScopedPK11Slot slot) {
   g_token_manager.Get().SetPrivateSoftwareSlotForChromeOSUserForTesting(
       std::move(slot));
-}
-
-namespace {
-void PrintDirectoryInfo(const base::FilePath& path) {
-  base::stat_wrapper_t file_stat;
-
-  if (base::File::Stat(path, &file_stat) == -1) {
-    base::File::Error error_code = base::File::OSErrorToFileError(errno);
-    LOG(ERROR) << "Failed to collect directory info, error: " << error_code;
-  }
-
-  LOG(ERROR) << path << ", " << std::oct << file_stat.st_mode << std::dec
-             << ", "
-             << "uid " << file_stat.st_uid << ", "
-             << "gid " << file_stat.st_gid << std::endl;
-}
-}  // namespace
-
-// TODO(crbug.com/1163303): Remove when the bug is fixed.
-void DiagnosePublicSlotAndCrash(const base::FilePath& nss_path) {
-  LOG(ERROR) << "Public slot is invalid. Start collecting stats.";
-  // Should be something like /home/chronos/u-<hash>/.pki/nssdb .
-  LOG(ERROR) << "NSS path: " << nss_path;
-
-  {
-    // NSS files like pkcs11.txt, cert9.db, key4.db .
-    base::FileEnumerator files(
-        nss_path, /*recursive=*/false,
-        /*file_type=*/base::FileEnumerator::FILES,
-        /*pattern=*/base::FilePath::StringType(),
-        base::FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
-        base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
-    LOG(ERROR) << "Public slot database files:";
-    for (base::FilePath path = files.Next(); !path.empty();
-         path = files.Next()) {
-      base::FileEnumerator::FileInfo file_info = files.GetInfo();
-
-      char buf[16];
-      int read_result = base::ReadFile(path, buf, sizeof(buf) - 1);
-
-      LOG(ERROR) << file_info.GetName() << ", " << std::oct
-                 << file_info.stat().st_mode << std::dec << ", "
-                 << "uid " << file_info.stat().st_uid << ", "
-                 << "gid " << file_info.stat().st_gid << ", "
-                 << file_info.stat().st_size << " bytes, "
-                 << ((read_result > 0) ? "readable" : "not readable");
-    }
-    LOG(ERROR) << "Enumerate error code: " << files.GetError();
-  }
-
-  // NSS directory might not be created yet, also check parent directories.
-  // Use u-hash directory as a comparison point for user and group ids and
-  // access permissions.
-
-  base::FilePath nssdb_path = nss_path.Append(base::FilePath::kParentDirectory);
-  PrintDirectoryInfo(nssdb_path);
-
-  base::FilePath pki_path = nssdb_path.Append(base::FilePath::kParentDirectory);
-  PrintDirectoryInfo(pki_path);
-
-  base::FilePath u_hash_path =
-      pki_path.Append(base::FilePath::kParentDirectory);
-  PrintDirectoryInfo(u_hash_path);
-
-  {
-    // Check whether the NSS path exists, and if not, check whether it's
-    // possible to create it.
-    if (base::DirectoryExists(nss_path)) {
-      LOG(ERROR) << "NSS path exists (as expected).";
-    } else {
-      base::File::Error error = base::File::Error::FILE_OK;
-      if (base::CreateDirectoryAndGetError(nss_path, &error)) {
-        LOG(ERROR) << "NSS path didn't exist. Created successfully.";
-      } else {
-        LOG(ERROR) << "NSS path didn't exist. Failed to create, error: "
-                   << error;
-      }
-    }
-  }
-
-  NOTREACHED() << "Public slot is invalid.";
 }
 
 }  // namespace crypto

@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -232,22 +231,18 @@ class NssService::NSSCertDatabaseChromeOSManager {
 
     auto public_slot = crypto::GetPublicSlotForChromeOSUser(username_hash_);
 
-#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
     if (!public_slot) {
-      // This is a "for testing" branch. The code below will intentionally crash
-      // when the public slot fails to load. By default prevent this from
-      // happening in tests that simply don't properly fake NSS. Consider using
-      // FakeNssService if a specific NSS behavior is required in tests.
+      // The public slot can be null in tests. Consider using FakeNssService if
+      // a specific NSS behavior is required in tests.
+      // Sometimes the slot also fails to load. This will prevent importing new
+      // client certificates into it and the owner key won't be found, but
+      // overall this is not a critical error and should resolve itself after a
+      // reboot. The existing certificates should keep working. Other slots are
+      // unaffected and certificates for the public slot are currently
+      // dual-written into the private slot as well.
+      // Initialize the slot with the read-only internal NSS slot to prevent
+      // ChromeOS from crashing on the CHECK in the NSSCertDatabase constructor.
       public_slot = crypto::ScopedPK11Slot(PK11_GetInternalKeySlot());
-    }
-#endif
-
-    // TODO(crbug.com/1163303): Remove when the bug is fixed.
-    if (!public_slot) {
-      Profile* profile = ProfileManager::GetActiveUserProfile();
-      CHECK(profile);
-      crypto::DiagnosePublicSlotAndCrash(
-          crypto::GetSoftwareNSSDBPath(profile->GetPath()));
     }
 
     nss_cert_database_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
