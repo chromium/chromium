@@ -146,10 +146,6 @@
 	path = third_party/apache-portable-runtime/src
 	url = https://chromium.googlesource.com/external/apache-portable-runtime
 	gclient-condition = checkout_android
-[submodule "third_party/barhopper"]
-	path = third_party/barhopper
-	url = https://chrome-internal.googlesource.com/chrome/deps/barhopper
-	gclient-condition = checkout_src_internal and checkout_chromeos
 [submodule "third_party/google_benchmark/src"]
 	path = third_party/google_benchmark/src
 	url = https://chromium.googlesource.com/external/github.com/google/benchmark

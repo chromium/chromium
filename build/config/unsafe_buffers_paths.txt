@@ -19,6 +19,7 @@
 -components/optimization_guide/internal/
 -ios/third_party/
 -net/third_party/
+-services/shape_detection/internal/barhopper/
 -testing/iossim/
 -third_party/
 +third_party/blink/
@@ -27,4 +28,3 @@
 -ui/gl/  # Unsafe generated files.
 -url/third_party/
 -v8/
-
