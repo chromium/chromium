@@ -481,34 +481,37 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
     return;
   }
 
-  // Disable first tier cache for grid layouts, as grid allows for out-of-flow
-  // items to be placed in grid areas, which is complex to maintain a cache for.
+  const ConstraintSpace& space = GetConstraintSpace();
+  const WritingDirectionMode writing_direction = space.GetWritingDirection();
+  const bool is_scroll_container =
+      container_builder->Node().IsScrollContainer();
+  const bool is_hidden_for_paint = space.IsHiddenForPaint();
+
   const BoxStrut border_scrollbar =
       container_builder->Borders() + container_builder->Scrollbar();
-  default_containing_block_info_for_absolute_.writing_direction =
-      GetConstraintSpace().GetWritingDirection();
-  default_containing_block_info_for_fixed_.writing_direction =
-      GetConstraintSpace().GetWritingDirection();
-  default_containing_block_info_for_absolute_.is_scroll_container =
-      container_builder_->Node().IsScrollContainer();
-  default_containing_block_info_for_fixed_.is_scroll_container =
-      container_builder_->Node().IsScrollContainer();
-  default_containing_block_info_for_absolute_.is_hidden_for_paint =
-      container_builder_->GetConstraintSpace().IsHiddenForPaint();
-  default_containing_block_info_for_fixed_.is_hidden_for_paint =
-      container_builder_->GetConstraintSpace().IsHiddenForPaint();
+  const LogicalOffset container_offset = border_scrollbar.StartOffset();
+
+  LogicalSize absolute_size;
+  LogicalSize fixed_size;
   if (container_builder_->HasBlockSize()) {
-    default_containing_block_info_for_absolute_.rect.size =
+    absolute_size =
         ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
-    default_containing_block_info_for_fixed_.rect.size = ShrinkLogicalSize(
+    fixed_size = ShrinkLogicalSize(
         InitialContainingBlockFixedSize(container_builder->Node())
             .value_or(container_builder_->Size()),
         border_scrollbar);
   }
-  LogicalOffset container_offset = {border_scrollbar.inline_start,
-                                    border_scrollbar.block_start};
-  default_containing_block_info_for_absolute_.rect.offset = container_offset;
-  default_containing_block_info_for_fixed_.rect.offset = container_offset;
+
+  default_containing_block_info_for_absolute_ = {
+      .writing_direction = writing_direction,
+      .is_scroll_container = is_scroll_container,
+      .is_hidden_for_paint = is_hidden_for_paint,
+      .rect = {container_offset, absolute_size}};
+  default_containing_block_info_for_fixed_ = {
+      .writing_direction = writing_direction,
+      .is_scroll_container = is_scroll_container,
+      .is_hidden_for_paint = is_hidden_for_paint,
+      .rect = {container_offset, fixed_size}};
 }
 
 void OutOfFlowLayoutPart::Run() {
