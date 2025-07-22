@@ -246,6 +246,8 @@ source_set("test_support") {
   sources = [
     "mock_chooser_controller_view.cc",
     "mock_chooser_controller_view.h",
+    "test/aivx_modelhandler_utils.cc",
+    "test/aivx_modelhandler_utils.h",
     "test/enums_to_string.cc",
     "test/enums_to_string.h",
     "test/mock_permission_prompt.cc",
@@ -287,6 +289,7 @@ source_set("test_support") {
     "//components/vector_icons",
     "//content/public/browser",
     "//services/device/public/cpp:test_support",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx",

@@ -5,6 +5,7 @@
 #include "components/permissions/test/enums_to_string.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 
@@ -90,4 +91,21 @@ std::string_view ToString(permissions::RequestType request_type) {
   auto it = map.find(request_type);
   return (it == map.end()) ? "Unknown" : it->second;
 }
+
+std::string_view ToString(
+    permissions::PermissionRequestRelevance request_relevance) {
+  using RequestRelevance = ::permissions::PermissionRequestRelevance;
+  static constexpr auto map =
+      base::MakeFixedFlatMap<RequestRelevance, std::string_view>({
+          {RequestRelevance::kVeryLow, "VeryLow"},
+          {RequestRelevance::kLow, "Low"},
+          {RequestRelevance::kMedium, "Medium"},
+          {RequestRelevance::kHigh, "High"},
+          {RequestRelevance::kVeryHigh, "VeryHigh"},
+      });
+
+  auto it = map.find(request_relevance);
+  return (it == map.end()) ? "Unknown" : it->second;
+}
+
 }  // namespace test

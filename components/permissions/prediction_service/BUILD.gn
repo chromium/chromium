@@ -40,6 +40,8 @@ source_set("prediction_service") {
 
   if (build_with_tflite_lib) {
     sources += [
+      "permissions_ai_encoder_base.cc",
+      "permissions_ai_encoder_base.h",
       "permissions_aiv3_encoder.cc",
       "permissions_aiv3_encoder.h",
       "permissions_aiv3_handler.cc",
@@ -94,6 +96,7 @@ source_set("unit_tests") {
     deps += [
       ":unit_tests_bundle_data",
       "//base",
+      "//components/permissions:test_support",
     ]
     data = [ "//components/test/data/permissions/" ]
   }

@@ -15,8 +15,11 @@
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/test_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/permissions/prediction_service/permissions_ai_encoder_base.h"
 #include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
 #include "components/permissions/prediction_service/permissions_aiv3_model_metadata.pb.h"
+#include "components/permissions/test/aivx_modelhandler_utils.h"
+#include "components/permissions/test/enums_to_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -40,18 +43,8 @@ constexpr std::string_view kOneReturnModel = "aiv3_ret_1.tflite";
 
 constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 
-auto& kModelInputWidth = PermissionsAiv3Encoder::kModelInputWidth;
-auto& kModelInputHeight = PermissionsAiv3Encoder::kModelInputHeight;
-
-base::FilePath ModelFilePath(std::string_view file_name) {
-  base::FilePath source_root_dir;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
-  return source_root_dir.AppendASCII("components")
-      .AppendASCII("test")
-      .AppendASCII("data")
-      .AppendASCII("permissions")
-      .AppendASCII(file_name);
-}
+auto& kImageInputWidth = PermissionsAiv3Encoder::kImageInputWidth;
+auto& kImageInputHeight = PermissionsAiv3Encoder::kImageInputHeight;
 
 PermissionsAiv3ModelMetadata BuildMetadataFromValues(
     const std::array<float, 4>& thresholds) {
@@ -65,30 +58,6 @@ PermissionsAiv3ModelMetadata BuildMetadataFromValues(
   metadata.mutable_relevance_thresholds()->set_min_very_high_relevance(
       thresholds[3]);
   return metadata;
-}
-
-std::string RelevanceToString(PermissionRequestRelevance relevance) {
-  switch (relevance) {
-    case PermissionRequestRelevance::kVeryLow:
-      return "VeryLow";
-    case PermissionRequestRelevance::kLow:
-      return "Low";
-    case PermissionRequestRelevance::kMedium:
-      return "Medium";
-    case PermissionRequestRelevance::kHigh:
-      return "High";
-    case PermissionRequestRelevance::kVeryHigh:
-      return "VeryHigh";
-    default:
-      NOTREACHED();
-  }
-}
-
-std::unique_ptr<SkBitmap> BuildBitmap(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(kDefaultColor);
-  return std::make_unique<SkBitmap>(std::move(bitmap));
 }
 
 class PermissionsAiv3EncoderFake : public PermissionsAiv3Encoder {
@@ -217,31 +186,31 @@ INSTANTIATE_TEST_SUITE_P(
     ModelResults,
     RelevanceAiv3HandlerTest,
     testing::ValuesIn<RelevanceTestCase>({
-        {kOptTargetGeolocation, ModelFilePath(kZeroReturnModel),
+        {kOptTargetGeolocation, test::ModelFilePath(kZeroReturnModel),
          PermissionRequestRelevance::kVeryLow, /*metadata=*/std::nullopt},
-        {kOptTargetGeolocation, ModelFilePath(kZeroDotFiveReturnModel),
+        {kOptTargetGeolocation, test::ModelFilePath(kZeroDotFiveReturnModel),
          PermissionRequestRelevance::kHigh, /*metadata=*/std::nullopt},
-        {kOptTargetGeolocation, ModelFilePath(kOneReturnModel),
+        {kOptTargetGeolocation, test::ModelFilePath(kOneReturnModel),
          PermissionRequestRelevance::kVeryHigh, /*metadata=*/std::nullopt},
-        {kOptTargetNotification, ModelFilePath(kZeroReturnModel),
+        {kOptTargetNotification, test::ModelFilePath(kZeroReturnModel),
          PermissionRequestRelevance::kVeryLow, /*metadata=*/std::nullopt},
-        {kOptTargetNotification, ModelFilePath(kZeroDotFiveReturnModel),
+        {kOptTargetNotification, test::ModelFilePath(kZeroDotFiveReturnModel),
          PermissionRequestRelevance::kMedium, /*metadata=*/std::nullopt},
-        {kOptTargetNotification, ModelFilePath(kOneReturnModel),
+        {kOptTargetNotification, test::ModelFilePath(kOneReturnModel),
          PermissionRequestRelevance::kVeryHigh, /*metadata=*/std::nullopt},
-        {kOptTargetGeolocation, ModelFilePath(kZeroDotFiveReturnModel),
+        {kOptTargetGeolocation, test::ModelFilePath(kZeroDotFiveReturnModel),
          PermissionRequestRelevance::kVeryLow,
          BuildMetadataFromValues({0.6, 0.7, 0.8, 0.9})},
-        {kOptTargetNotification, ModelFilePath(kZeroDotFiveReturnModel),
+        {kOptTargetNotification, test::ModelFilePath(kZeroDotFiveReturnModel),
          PermissionRequestRelevance::kLow,
          BuildMetadataFromValues({0.5, 0.6, 0.7, 0.8})},
-        {kOptTargetNotification, ModelFilePath(kZeroDotFiveReturnModel),
+        {kOptTargetNotification, test::ModelFilePath(kZeroDotFiveReturnModel),
          PermissionRequestRelevance::kMedium,
          BuildMetadataFromValues({0.4, 0.5, 0.6, 0.7})},
-        {kOptTargetGeolocation, ModelFilePath(kZeroDotFiveReturnModel),
+        {kOptTargetGeolocation, test::ModelFilePath(kZeroDotFiveReturnModel),
          PermissionRequestRelevance::kHigh,
          BuildMetadataFromValues({0.3, 0.4, 0.5, 0.6})},
-        {kOptTargetNotification, ModelFilePath(kZeroDotFiveReturnModel),
+        {kOptTargetNotification, test::ModelFilePath(kZeroDotFiveReturnModel),
          PermissionRequestRelevance::kVeryHigh,
          BuildMetadataFromValues({0.2, 0.3, 0.4, 0.5})},
     }),
@@ -254,7 +223,7 @@ INSTANTIATE_TEST_SUITE_P(
            info.param.optimization_target == kOptTargetGeolocation
                ? "Geolocation"
                : "Notifications",
-           "ModelReturns" + RelevanceToString(info.param.expected_relevance)});
+           "ModelReturns", test::ToString(info.param.expected_relevance)});
     });
 
 TEST_P(RelevanceAiv3HandlerTest,
@@ -267,15 +236,17 @@ TEST_P(RelevanceAiv3HandlerTest,
   ModelCallbackFuture future;
   aiv3_handler->ExecuteModel(
       future.GetCallback(),
-      /*snapshot=*/BuildBitmap(kModelInputWidth, kModelInputHeight));
+      /*snapshot=*/test::BuildBitmap(kImageInputWidth, kImageInputHeight,
+                                     kDefaultColor));
   EXPECT_EQ(future.Take(), GetParam().expected_relevance);
 }
 
 TEST_F(Aiv3HandlerTest, BitmapGetsCopiedToTensor) {
   PushModelFileToModelExecutor(kOptTargetGeolocation,
-                               ModelFilePath(kZeroReturnModel));
+                               test::ModelFilePath(kZeroReturnModel));
 
-  auto snapshot = BuildBitmap(kModelInputWidth, kModelInputHeight);
+  auto snapshot =
+      test::BuildBitmap(kImageInputWidth, kImageInputHeight, kDefaultColor);
 
   bool flag = false;
   geolocation_encoder_mock_->set_preprocess_hook(base::BindOnce(
@@ -283,8 +254,8 @@ TEST_F(Aiv3HandlerTest, BitmapGetsCopiedToTensor) {
         std::vector<float> data;
         if (tflite::task::core::PopulateVector<float>(input_tensors[0], &data)
                 .ok()) {
-          EXPECT_THAT(data, SizeIs(kModelInputWidth * kModelInputHeight * 3));
-          for (int i = 0; i < kModelInputWidth * kModelInputHeight; i += 3) {
+          EXPECT_THAT(data, SizeIs(kImageInputWidth * kImageInputHeight * 3));
+          for (int i = 0; i < kImageInputWidth * kImageInputHeight; i += 3) {
             EXPECT_FLOAT_EQ(data[i], SkColorGetR(kDefaultColor) / 255.0f);
             EXPECT_FLOAT_EQ(data[i + 1], SkColorGetG(kDefaultColor) / 255.0f);
             EXPECT_FLOAT_EQ(data[i + 2], SkColorGetB(kDefaultColor) / 255.0f);
@@ -303,9 +274,9 @@ TEST_F(Aiv3HandlerTest, BitmapGetsCopiedToTensor) {
 
 TEST_F(Aiv3HandlerTest, HandlesEmptyInputSnapshot) {
   PushModelFileToModelExecutor(kOptTargetGeolocation,
-                               ModelFilePath(kZeroReturnModel));
+                               test::ModelFilePath(kZeroReturnModel));
 
-  auto snapshot = BuildBitmap(/*width=*/0, /*height=*/0);
+  auto snapshot = test::BuildBitmap(/*width=*/0, /*height=*/0, kDefaultColor);
 
   ModelCallbackFuture future;
   auto* aiv3_handler = model_handler(kOptTargetGeolocation);
@@ -342,9 +313,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(ResizeAiv3HandlerTest, ResizesBitmapsForModelInput) {
   PushModelFileToModelExecutor(kOptTargetGeolocation,
-                               ModelFilePath(kZeroReturnModel));
+                               test::ModelFilePath(kZeroReturnModel));
 
-  auto snapshot = BuildBitmap(GetParam().input_width, GetParam().input_height);
+  auto snapshot = test::BuildBitmap(GetParam().input_width,
+                                    GetParam().input_height, kDefaultColor);
 
   bool flag = false;
   geolocation_encoder_mock_->set_preprocess_hook(base::BindOnce(
@@ -352,8 +324,8 @@ TEST_P(ResizeAiv3HandlerTest, ResizesBitmapsForModelInput) {
         std::vector<float> data;
         if (tflite::task::core::PopulateVector<float>(input_tensors[0], &data)
                 .ok()) {
-          EXPECT_THAT(data, SizeIs(kModelInputWidth * kModelInputHeight * 3));
-          for (int i = 0; i < kModelInputWidth * kModelInputHeight * 3; ++i) {
+          EXPECT_THAT(data, SizeIs(kImageInputWidth * kImageInputHeight * 3));
+          for (int i = 0; i < kImageInputWidth * kImageInputHeight * 3; ++i) {
             EXPECT_FALSE(std::isnan(data[i]));
           }
         }
