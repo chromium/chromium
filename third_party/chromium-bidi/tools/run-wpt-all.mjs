@@ -20,7 +20,7 @@
 import {spawnSync} from 'child_process';
 import {join} from 'path';
 
-import {packageDirectorySync} from 'pkg-dir';
+import {packageDirectorySync} from 'package-directory';
 
 function getNpmArgs() {
   const args = ['run', 'wpt'];

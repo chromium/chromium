@@ -21,7 +21,7 @@ import {spawnSync, spawn} from 'child_process';
 import {mkdirSync, existsSync} from 'fs';
 import {join, resolve} from 'path';
 
-import {packageDirectorySync} from 'pkg-dir';
+import {packageDirectorySync} from 'package-directory';
 
 import {
   installAndGetChromeDriverPath,

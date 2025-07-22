@@ -20,7 +20,7 @@
 import {spawn} from 'child_process';
 import {writeFile} from 'fs/promises';
 
-import {packageDirectorySync} from 'pkg-dir';
+import {packageDirectorySync} from 'package-directory';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 

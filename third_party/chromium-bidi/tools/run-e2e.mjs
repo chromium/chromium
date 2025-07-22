@@ -21,7 +21,7 @@ import child_process from 'child_process';
 import {createWriteStream} from 'fs';
 import {Transform, PassThrough} from 'stream';
 
-import {packageDirectorySync} from 'pkg-dir';
+import {packageDirectorySync} from 'package-directory';
 
 import {
   createBiDiServerProcess,

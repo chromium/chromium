@@ -209,7 +209,7 @@
     "globals": "16.3.0",
     "gts": "6.0.2",
     "mocha": "11.7.1",
-    "pkg-dir": "9.0.0",
+    "package-directory": "8.1.0",
     "prettier": "3.6.2",
     "rimraf": "6.0.1",
     "rollup": "4.45.1",

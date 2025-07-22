@@ -18,7 +18,7 @@ import child_process from 'child_process';
 import {mkdirSync} from 'fs';
 import {basename, join, resolve} from 'path';
 
-import {packageDirectorySync} from 'pkg-dir';
+import {packageDirectorySync} from 'package-directory';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
