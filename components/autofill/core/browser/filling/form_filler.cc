@@ -79,42 +79,57 @@ FillDataType GetFillDataTypeFromFillingPayload(
 // classifications.
 std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
     FillingProduct filling_product) {
-  FieldTypeSet field_types;
   switch (filling_product) {
-    case FillingProduct::kAddress:
-      for (FieldType field_type : kAllFieldTypes) {
-        if (IsAddressType(field_type)) {
-          field_types.insert(field_type);
+    case FillingProduct::kAddress: {
+      static constexpr FieldTypeSet kFieldTypes = []() {
+        FieldTypeSet field_types;
+        for (FieldType field_type : kAllFieldTypes) {
+          if (IsAddressType(field_type)) {
+            field_types.insert(field_type);
+          }
         }
-      }
-      return field_types;
-    case FillingProduct::kCreditCard:
-      for (FieldType field_type : kAllFieldTypes) {
-        if (FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
-                               FieldTypeGroup::kStandaloneCvcField})
-                .contains(GroupTypeOfFieldType(field_type))) {
-          field_types.insert(field_type);
+        return field_types;
+      }();
+      return kFieldTypes;
+    }
+    case FillingProduct::kCreditCard: {
+      static constexpr FieldTypeSet kFieldTypes = []() {
+        FieldTypeSet field_types;
+        for (FieldType field_type : kAllFieldTypes) {
+          if (FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
+                                 FieldTypeGroup::kStandaloneCvcField})
+                  .contains(GroupTypeOfFieldType(field_type))) {
+            field_types.insert(field_type);
+          }
         }
-      }
-      return field_types;
-    case FillingProduct::kAutofillAi:
-      static constexpr auto kAutofillAiFieldTypes = []() {
+        return field_types;
+      }();
+      return kFieldTypes;
+    }
+    case FillingProduct::kAutofillAi: {
+      static constexpr auto kFieldTypes = []() {
         DenseSet<FieldType> result;
         for (AttributeType type : DenseSet<AttributeType>::all()) {
           result.insert_all(type.field_subtypes());
         }
         return result;
       }();
-      return kAutofillAiFieldTypes;
-    case FillingProduct::kPassword:
-      for (FieldType field_type : kAllFieldTypes) {
-        if (FieldTypeGroupSet({FieldTypeGroup::kUsernameField,
-                               FieldTypeGroup::kPasswordField})
-                .contains(GroupTypeOfFieldType(field_type))) {
-          field_types.insert(field_type);
+      return kFieldTypes;
+    }
+    case FillingProduct::kPassword: {
+      static constexpr FieldTypeSet kFieldTypes = []() {
+        FieldTypeSet field_types;
+        for (FieldType field_type : kAllFieldTypes) {
+          if (FieldTypeGroupSet({FieldTypeGroup::kUsernameField,
+                                 FieldTypeGroup::kPasswordField})
+                  .contains(GroupTypeOfFieldType(field_type))) {
+            field_types.insert(field_type);
+          }
         }
-      }
-      return field_types;
+        return field_types;
+      }();
+      return kFieldTypes;
+    }
     case FillingProduct::kMerchantPromoCode:
       return FieldTypeSet{MERCHANT_PROMO_CODE};
     case FillingProduct::kIban:

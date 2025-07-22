@@ -30,30 +30,6 @@ bool TypeOfFieldIsPossibleType(const AutofillField& field) {
   return field.possible_types().contains(field.Type().GetStorableType());
 }
 
-bool IsAddressType(FieldType type) {
-  switch (GroupTypeOfFieldType(type)) {
-    case FieldTypeGroup::kName:
-    case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kAddress:
-    case FieldTypeGroup::kPhone:
-      return true;
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kCreditCard:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kIban:
-    case FieldTypeGroup::kStandaloneCvcField:
-    case FieldTypeGroup::kAutofillAi:
-    case FieldTypeGroup::kLoyaltyCard:
-    case FieldTypeGroup::kOneTimePassword:
-      return false;
-  }
-  NOTREACHED();
-}
-
 size_t AddressLineIndex(FieldType type) {
   static constexpr auto kAddressLineIndex =
       base::MakeFixedFlatMap<FieldType, size_t>({{ADDRESS_HOME_LINE1, 0},
