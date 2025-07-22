@@ -30,15 +30,29 @@ class SearchStringTestClient : public TestClient {
 
 }  // namespace
 
-using PDFiumTextFragmentFinderTest = PDFiumTestBase;
+class PDFiumTextFragmentFinderTest : public PDFiumTestBase {
+ public:
+  [[nodiscard]] PDFiumEngine* CreateEngine(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    return engine_.get();
+  }
+
+  void TearDown() override {
+    engine_.reset();
+    PDFiumTestBase::TearDown();
+  }
+
+ private:
+  SearchStringTestClient client_;
+  std::unique_ptr<PDFiumEngine> engine_;
+};
 
 TEST_P(PDFiumTextFragmentFinderTest, OnlyTextStart) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"Google"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -51,12 +65,10 @@ TEST_P(PDFiumTextFragmentFinderTest, OnlyTextStart) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartAndEnd) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"spanner,database"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -70,12 +82,10 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartAndEnd) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartAndTextSuffix) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"how,-many"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -88,12 +98,10 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartAndTextSuffix) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartEndAndSuffix) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"this,api,-and"});
   ASSERT_EQ(highlights.size(), 1u);
   const auto& range = highlights[0];
@@ -109,12 +117,10 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartEndAndSuffix) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixAndTextStart) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"is-,Google"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -127,12 +133,10 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixAndTextStart) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndSuffix) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"of-,Google,-'s"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -145,12 +149,10 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndSuffix) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndEnd) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights =
       finder.FindTextFragments({"time-,api,implementation"});
   ASSERT_EQ(highlights.size(), 1u);
@@ -166,12 +168,10 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndEnd) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartEndAndSuffix) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights =
       finder.FindTextFragments({"and-,applications,old,-timestamps"});
   ASSERT_EQ(highlights.size(), 1u);
@@ -186,12 +186,10 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartEndAndSuffix) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, MultipleTextFragments) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights =
       finder.FindTextFragments({"Google", "is-,Google", "of-,Google,-'s",
                                 "and-,applications,old,-timestamps"});
@@ -226,12 +224,10 @@ TEST_P(PDFiumTextFragmentFinderTest, MultipleTextFragments) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, MultiPage) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights =
       finder.FindTextFragments({"link", "1-,link,-with", "page,-in",
                                 "second-,page", "second-,page,in,-document"});
@@ -273,11 +269,9 @@ TEST_P(PDFiumTextFragmentFinderTest, MultiPage) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, FragmentNotInPDF) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
 
   // Start is not present in PDF.
   auto highlights = finder.FindTextFragments({"apples"});
@@ -313,24 +307,20 @@ TEST_P(PDFiumTextFragmentFinderTest, FragmentNotInPDF) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, EmptyList) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({});
   EXPECT_TRUE(highlights.empty());
 }
 
 TEST_P(PDFiumTextFragmentFinderTest,
        TextStartAndEnd_FindsCorrectInstanceOfStart) {
-  SearchStringTestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   // "second" appears on both pages of the PDF.
   const auto highlights = finder.FindTextFragments({"second,document"});
   ASSERT_EQ(highlights.size(), 1u);
