@@ -702,7 +702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PrimaryUserType" enum="UserType"
-    expires_after="2025-11-16">
+    expires_after="2026-01-18">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -950,7 +950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.NumEventsInUpload" units="count"
-    expires_after="2025-11-16">
+    expires_after="2026-01-18">
   <owner>troywang@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
