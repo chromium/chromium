@@ -1930,6 +1930,43 @@ Google Chrome is unable to recover your settings.
           Search with Google Lens
         </message>
 
+        <message name="IDS_LENS_OVERLAY_ENTRYPOINT_LABEL_ALT1"
+          desc="Label for the Lens overlay command, through which the user can ask Google questions about the page.">
+          Ask Google about this page
+        </message>
+        <message name="IDS_LENS_OVERLAY_ENTRYPOINT_LABEL_ALT2"
+          desc="Label for the Lens overlay command, through which the user can ask Google Lens questions about the page.">
+          Ask Google Lens about this page
+        </message>
+        <message name="IDS_LENS_OVERLAY_ENTRYPOINT_LABEL_ALT3"
+          desc="Label for the Lens overlay command, through which the page will be searched using Google Lens.">
+          Search this page with Google Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT1"
+          desc="Label for the Lens overlay command, through which the user can ask Google questions about the image.">
+          Ask Google about this image
+        </message>
+        <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT2"
+          desc="Label for the Lens overlay command, through which the user can ask Google Lens questions about the image.">
+          Ask Google Lens about this image
+        </message>
+        <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT3"
+          desc="Label for the Lens overlay command, through which the image will be searched using Google Lens.">
+          Search this image with Google Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT1"
+          desc="Label for the Lens overlay command, through which the user can ask Google questions about the video.">
+          Ask Google about this video
+        </message>
+        <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT2"
+          desc="Label for the Lens overlay command, through which the user can ask Google Lens questions about the video.">
+          Ask Google Lens about this video
+        </message>
+        <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT3"
+          desc="Label for the Lens overlay command, through which the video will be searched using Google Lens.">
+          Search this video with Google Lens
+        </message>
+
         <!-- Lens Side Panel Error Page -->
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE"
             desc="Text shown on the side panel for the Lens feature when there is a network or other server error. The texts informs the user that an error has occured.">

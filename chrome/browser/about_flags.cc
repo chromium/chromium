@@ -4629,6 +4629,28 @@ const FeatureEntry::FeatureVariation kLensOverlayEduActionChipVariations[] = {
     {"force trigger all pages", kLensOverlayEduActionChipAllPages,
      std::size(kLensOverlayEduActionChipAllPages), nullptr},
 };
+
+const FeatureEntry::FeatureParam kLensOverlayEntrypointLabelAlt1[] = {
+    {"id", "1"},
+};
+
+const FeatureEntry::FeatureParam kLensOverlayEntrypointLabelAlt2[] = {
+    {"id", "2"},
+};
+
+const FeatureEntry::FeatureParam kLensOverlayEntrypointLabelAlt3[] = {
+    {"id", "3"},
+};
+
+const FeatureEntry::FeatureVariation
+    kLensOverlayEntrypointLabelAltVariations[] = {
+        {"Ask Google about this page", kLensOverlayEntrypointLabelAlt1,
+         std::size(kLensOverlayEntrypointLabelAlt1), nullptr},
+        {"Ask Google Lens about this page", kLensOverlayEntrypointLabelAlt2,
+         std::size(kLensOverlayEntrypointLabelAlt2), nullptr},
+        {"Search this page with Google Lens", kLensOverlayEntrypointLabelAlt3,
+         std::size(kLensOverlayEntrypointLabelAlt3), nullptr},
+};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kActFeaturesChoices[] = {
@@ -11449,8 +11471,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayUpdatedVisualsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayVisualSelectionUpdates)},
 
-    {"enable-lens-search-aim-m3",
-     flag_descriptions::kLensSearchAimM3Name,
+    {"enable-lens-search-aim-m3", flag_descriptions::kLensSearchAimM3Name,
      flag_descriptions::kLensSearchAimM3Description, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensSearchAimM3)},
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -12806,6 +12827,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensOverlayEduActionChip,
                                     kLensOverlayEduActionChipVariations,
                                     "LensOverlayEduActionChip")},
+
+    {"enable-lens-overlay-entrypoint-label-alt",
+     flag_descriptions::kLensOverlayEntrypointLabelAltName,
+     flag_descriptions::kLensOverlayEntrypointLabelAltDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         lens::features::kLensOverlayEntrypointLabelAlt,
+         kLensOverlayEntrypointLabelAltVariations,
+         "LensOverlayEntrypointLabelAltVariations")},
 #endif
 
     {"safety-hub-disruptive-notification-revocation",

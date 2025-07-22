@@ -149,6 +149,11 @@ BASE_DECLARE_FEATURE(kLensOverlayStraightToSrp);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchAimM3);
 
+// Enables overriding the Lens overlay entrypoint label with an alternate
+// string.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayEntrypointLabelAlt);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -202,6 +207,11 @@ extern const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic;
 // The default width of the Lens search side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<int> kLensSearchSidePanelDefaultWidth;
+
+// Value representing the string to use to override the Lens overlay entrypoint
+// label.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId;
 
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)

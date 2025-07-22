@@ -13782,6 +13782,7 @@ from previous Chrome versions.
   <int value="-107856449"
       label="RequestDesktopSiteExceptionsDowngrade:enabled"/>
   <int value="-107735009" label="AndroidGoogleSansText:disabled"/>
+  <int value="-106676514" label="LensOverlayEntrypointLabelAlt:enabled"/>
   <int value="-106631643" label="TurnOffStreamingMediaCachingAlways:disabled"/>
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>
   <int value="-106128305" label="DragDropTabTearing:disabled"/>
@@ -16654,6 +16655,7 @@ from previous Chrome versions.
   <int value="957191538" label="EcheSWADebugMode:enabled"/>
   <int value="957333504" label="OmniboxSteadyStateHeight:enabled"/>
   <int value="957458620" label="MediaRouterOTRInstance:enabled"/>
+  <int value="958310554" label="LensOverlayEntrypointLabelAlt:disabled"/>
   <int value="960413971" label="GlanceablesV2CalendarView:disabled"/>
   <int value="960821568"
       label="AutofillDropNamesWithInvalidCharactersForCardUpload:enabled"/>

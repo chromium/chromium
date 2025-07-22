@@ -2482,6 +2482,11 @@ const char kLensOverlayEduActionChipDescription[] =
     "Enables Lens Overlay EDU action chip. Intended for testing the chip "
     "itself, not its triggering criteria.";
 
+const char kLensOverlayEntrypointLabelAltName[] =
+    "Lens overlay entrypoint label";
+const char kLensOverlayEntrypointLabelAltDescription[] =
+    "Replaces the string used for the Lens overlay entrypoint label.";
+
 const char kLensOverlayImageContextMenuActionsName[] =
     "Lens overlay image context menu actions";
 const char kLensOverlayImageContextMenuActionsDescription[] =

@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/lens/lens_string_utils.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
@@ -273,9 +274,12 @@ void BrowserActions::InitializeBrowserActions() {
     root_action_item_->AddChild(
         actions::ActionItem::Builder(callback)
             .SetActionId(kActionSidePanelShowLensOverlayResults)
-            .SetText(l10n_util::GetStringUTF16(IDS_SHOW_LENS_OVERLAY))
+            .SetText(l10n_util::GetStringUTF16(
+                lens::GetLensOverlayEntrypointLabelAltIds(
+                    IDS_SHOW_LENS_OVERLAY)))
             .SetTooltipText(l10n_util::GetStringUTF16(
-                IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP))
+                lens::GetLensOverlayEntrypointLabelAltIds(
+                    IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP)))
             .SetImage(ui::ImageModel::FromVectorIcon(
                 icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
             .SetProperty(actions::kActionItemPinnableKey,

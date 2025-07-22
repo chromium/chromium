@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_string_utils.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
@@ -1977,7 +1978,9 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
         vector_icons::kSearchChromeRefreshIcon;
 #endif
     menu_model_.AddItemWithStringIdAndIcon(
-        search_for_image_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
+        search_for_image_idc,
+        lens::GetLensOverlayImageEntrypointLabelAltIds(
+            IDS_CONTENT_CONTEXT_LENS_OVERLAY),
         ui::ImageModel::FromVectorIcon(icon));
   } else {
     menu_model_.AddItem(
@@ -2054,7 +2057,9 @@ void RenderViewContextMenu::AppendVideoItems() {
           vector_icons::kSearchChromeRefreshIcon;
 #endif
       menu_model_.AddItemWithStringIdAndIcon(
-          search_for_video_frame_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
+          search_for_video_frame_idc,
+          lens::GetLensOverlayVideoEntrypointLabelAltIds(
+              IDS_CONTENT_CONTEXT_LENS_OVERLAY),
           ui::ImageModel::FromVectorIcon(icon));
     } else {
       const auto* provider = GetImageSearchProvider();
@@ -2646,7 +2651,9 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
 #endif
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
-        IDS_CONTENT_CONTEXT_LENS_OVERLAY, ui::ImageModel::FromVectorIcon(icon));
+        lens::GetLensOverlayEntrypointLabelAltIds(
+            IDS_CONTENT_CONTEXT_LENS_OVERLAY),
+        ui::ImageModel::FromVectorIcon(icon));
     const int command_index =
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)
             .value();

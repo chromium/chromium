@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/lens/lens_string_utils.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
@@ -1953,8 +1954,9 @@ void AppMenuModel::Build() {
 #else
         vector_icons::kSearchChromeRefreshIcon;
 #endif
-    AddItemWithStringIdAndVectorIcon(this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
-                                     IDS_SHOW_LENS_OVERLAY, icon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
+        lens::GetLensOverlayEntrypointLabelAltIds(IDS_SHOW_LENS_OVERLAY), icon);
     const int lens_command_index =
         GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value();
     SetElementIdentifierAt(lens_command_index, kShowLensOverlay);

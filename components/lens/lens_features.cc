@@ -147,6 +147,10 @@ BASE_FEATURE(kLensSearchAimM3,
              "LensSearchAimM3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayEntrypointLabelAlt,
+             "LensOverlayEntrypointLabelAlt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -571,6 +575,9 @@ constexpr base::FeatureParam<std::string> kLensOverlayStraightToSrpQuery{
 
 constexpr base::FeatureParam<bool> kOpenAimInSidePanel{
     &kLensSearchAimM3, "open-aim-in-side-panel", true};
+
+const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId{
+    &kLensOverlayEntrypointLabelAlt, "id", 0};
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
