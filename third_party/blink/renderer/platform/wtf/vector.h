@@ -585,7 +585,7 @@ class VectorBufferBase {
 
 template <typename T,
           wtf_size_t InlineCapacity,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class VectorBuffer;
 
 template <typename T, typename Allocator>

@@ -249,7 +249,7 @@ class DequeIteratorBase {
 
 template <typename T,
           wtf_size_t InlineCapacity = 0,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class DequeIterator : public DequeIteratorBase<T, InlineCapacity, Allocator> {
  private:
   typedef DequeIteratorBase<T, InlineCapacity, Allocator> Base;
@@ -303,7 +303,7 @@ class DequeIterator : public DequeIteratorBase<T, InlineCapacity, Allocator> {
 
 template <typename T,
           wtf_size_t InlineCapacity = 0,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class DequeConstIterator
     : public DequeIteratorBase<T, InlineCapacity, Allocator> {
  private:

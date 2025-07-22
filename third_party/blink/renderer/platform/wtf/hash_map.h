@@ -89,7 +89,7 @@ template <typename KeyArg,
           typename MappedArg,
           typename KeyTraitsArg = HashTraits<KeyArg>,
           typename MappedTraitsArg = HashTraits<MappedArg>,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class HashMap {
   USE_ALLOCATOR(HashMap, Allocator);
   template <typename T, typename U, typename V>

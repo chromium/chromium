@@ -55,7 +55,7 @@ class PLATFORM_EXPORT HeapAllocator {
     // arbitrary sized allocations. Delegate to PA to keep limits in sync which
     // may be enforced for security reasons. E.g. PA may cap the limit below
     // 32-bit sizes to avoid integer overflows in old code.
-    return WTF::PartitionAllocator::MaxElementCountInBackingStore<T>();
+    return PartitionAllocator::MaxElementCountInBackingStore<T>();
   }
 
   template <typename T>

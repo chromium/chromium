@@ -131,7 +131,7 @@ class LiteralBufferBase {
 
  private:
   size_t AllocationSize(size_t capacity) {
-    return WTF::PartitionAllocator::QuantizedSize<T>(capacity);
+    return blink::PartitionAllocator::QuantizedSize<T>(capacity);
   }
 
   ALWAYS_INLINE size_t capacity() const { return end_of_storage_ - begin_; }

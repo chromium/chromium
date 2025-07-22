@@ -48,7 +48,7 @@ struct IdentityExtractor;
 // See hash_traits.h for how to define hash traits.
 template <typename ValueArg,
           typename TraitsArg = HashTraits<ValueArg>,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class HashSet {
   USE_ALLOCATOR(HashSet, Allocator);
 

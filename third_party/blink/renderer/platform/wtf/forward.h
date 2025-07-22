@@ -29,13 +29,10 @@
 template <typename T>
 class scoped_refptr;
 
-namespace WTF {
-class PartitionAllocator;
-}
-
 namespace blink {
 
 class AtomicString;
+class PartitionAllocator;
 class String;
 class StringBuilder;
 class StringImpl;
@@ -43,13 +40,13 @@ class StringView;
 
 template <typename T,
           wtf_size_t inlineBuffer = 0,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class Deque;
 template <typename T>
 class StringBuffer;
 template <typename T,
           wtf_size_t inlineCapacity = 0,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class Vector;
 
 }  // namespace blink

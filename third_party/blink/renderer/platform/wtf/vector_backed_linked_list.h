@@ -173,7 +173,7 @@ class ConstructTraits<blink::VectorBackedLinkedListNode<ValueType, Allocator>,
 // Unlike normal linked-list implementations, keeping a pointer to an element is
 // unsafe because elements would be moved by vector buffer reallocation. Use
 // index numbers instead.
-template <typename ValueType, typename Allocator = WTF::PartitionAllocator>
+template <typename ValueType, typename Allocator = PartitionAllocator>
 class VectorBackedLinkedList {
   USE_ALLOCATOR(VectorBackedLinkedList, Allocator);
 

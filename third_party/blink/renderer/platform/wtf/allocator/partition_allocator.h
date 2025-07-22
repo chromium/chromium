@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 class WTF_EXPORT PartitionAllocator {
  public:
@@ -124,7 +124,7 @@ class WTF_EXPORT PartitionAllocator {
 template <>
 WTF_EXPORT char* PartitionAllocator::AllocateVectorBacking<char>(size_t);
 
-}  // namespace WTF
+}  // namespace blink
 
 #define USE_ALLOCATOR(ClassName, Allocator)                      \
  public:                                                         \
