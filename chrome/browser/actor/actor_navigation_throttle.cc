@@ -48,7 +48,7 @@ void ActorNavigationThrottle::MaybeCreateAndAdd(
   const auto& tasks = actor_service->GetActiveTasks();
   auto task_it = std::ranges::find_if(tasks, [tab_handle](const auto& t) {
     const ActorTask* task = t.second;
-    return task->HasActedOnTab(tab_handle);
+    return task->IsActingOnTab(tab_handle);
   });
   if (task_it == tasks.end()) {
     return;

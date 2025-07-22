@@ -124,6 +124,11 @@ void ActorTask::Stop() {
         mojom::ActionResultCode::kTaskWentAway);
   }
   end_time_ = base::Time::Now();
+  // Remove all the tabs from the task.
+  auto tabs_to_remove = tab_handles_;
+  for (auto& tab : tabs_to_remove) {
+    RemoveTab(tab);
+  }
   SetState(State::kFinished);
 }
 
@@ -168,7 +173,19 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
                                 std::move(callback)));
 }
 
-bool ActorTask::HasActedOnTab(tabs::TabHandle tab) const {
+void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
+  auto num_removed = tab_handles_.erase(tab_handle);
+  if (num_removed > 0) {
+    // Notify the UI of the tab removal.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ui::UiEventDispatcher::OnActorTaskSyncChange,
+                                  ui_weak_ptr_factory_.GetWeakPtr(),
+                                  ui::UiEventDispatcher::RemoveTab{
+                                      .task_id = id_, .handle = tab_handle}));
+  }
+}
+
+bool ActorTask::IsActingOnTab(tabs::TabHandle tab) const {
   return tab_handles_.contains(tab);
 }
 

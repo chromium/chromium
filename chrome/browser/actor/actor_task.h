@@ -86,13 +86,14 @@ class ActorTask {
 
   ExecutionEngine* GetExecutionEngine() const;
 
-  // Add the given TabHandle to the set of tabs this task is operating over
-  // and notify the UI if this is a new tab for the task.
+  // Add/remove the given TabHandle to the set of tabs this task is operating
+  // over and notify the UI if this is a new tab for the task.
   using AddTabCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   void AddTab(tabs::TabHandle tab, AddTabCallback callback);
+  void RemoveTab(tabs::TabHandle tab);
 
   // Returns true if the given tab is part of this task's acting set.
-  bool HasActedOnTab(tabs::TabHandle tab) const;
+  bool IsActingOnTab(tabs::TabHandle tab) const;
 
   // Returns the tab to use to capture new context observations after an
   // execution turn. In the future this will be extended to multiple tabs and

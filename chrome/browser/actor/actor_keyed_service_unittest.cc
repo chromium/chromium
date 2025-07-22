@@ -7,9 +7,11 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/bind.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -64,6 +66,18 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
       std::make_unique<ExecutionEngine>(profile());
   TaskId id = actor_service->AddActiveTask(
       std::make_unique<ActorTask>(profile(), std::move(execution_engine)));
+
+  // Add a tab to the task
+  ActorTask* task = actor_service->GetTask(id);
+  base::RunLoop loop;
+  task->AddTab(tabs::TabHandle(123),
+               base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+                 EXPECT_TRUE(IsOk(*result));
+                 loop.Quit();
+               }));
+  loop.Run();
+
+  EXPECT_TRUE(task->IsActingOnTab(tabs::TabHandle(123)));
   actor_service->StopTask(id);
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 0u);
   ASSERT_EQ(actor_service->GetInactiveTasks().size(), 1u);
@@ -71,6 +85,7 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
             ActorTask::State::kFinished);
   EXPECT_EQ(actor_service->GetInactiveTasks().begin()->second->GetEndTime(),
             base::Time::Now());
+  EXPECT_FALSE(task->IsActingOnTab(tabs::TabHandle(123)));
 }
 
 }  // namespace

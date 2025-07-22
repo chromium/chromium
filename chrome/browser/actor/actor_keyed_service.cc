@@ -286,7 +286,7 @@ bool ActorKeyedService::IsAnyTaskActingOnTab(
     const tabs::TabInterface& tab) const {
   tabs::TabHandle handle = tab.GetHandle();
   for (auto task_pair : GetActiveTasks()) {
-    if (task_pair.second->HasActedOnTab(handle)) {
+    if (task_pair.second->IsActingOnTab(handle)) {
       return true;
     }
   }
