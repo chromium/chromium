@@ -116,6 +116,10 @@ export class HistoryToolbarElement extends CrLitElement {
     this.fire('delete-selected');
   }
 
+  openSelectedItems() {
+    this.fire('open-selected');
+  }
+
   clearSelectedItems() {
     this.fire('unselect-all');
     getAnnouncerInstance().announce(loadTimeData.getString('itemsUnselected'));

@@ -381,6 +381,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     this.addEventListener('cr-toolbar-menu-click', this.onCrToolbarMenuClick_);
     this.addEventListener('delete-selected', this.deleteSelected);
+    this.addEventListener('open-selected', this.openSelected);
     this.addEventListener('history-checkbox-select', this.checkboxSelected);
     this.addEventListener('history-close-drawer', this.closeDrawer_);
     this.addEventListener('history-view-changed', this.historyViewChanged_);
@@ -498,6 +499,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   deleteSelected() {
     this.$.history.deleteSelectedWithPrompt();
+  }
+
+  openSelected() {
+    this.$.history.openSelected();
   }
 
   private onQueryFinished_(e: CustomEvent<{result: QueryResult}>) {

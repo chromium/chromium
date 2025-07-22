@@ -66,6 +66,7 @@ content::WebUIDataSource* HistoryUtil::PopulateSourceForSidePanelHistory(
       {"menu", IDS_MENU},
       {"moreFromSite", IDS_HISTORY_MORE_FROM_SITE},
       {"openAll", IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL},
+      {"openSelected", IDS_HISTORY_OPEN},
       {"openTabsMenuItem", IDS_HISTORY_OPEN_TABS_MENU_ITEM},
       {"noResults", IDS_HISTORY_NO_RESULTS},
       {"noSearchResults", IDS_HISTORY_NO_SEARCH_RESULTS},

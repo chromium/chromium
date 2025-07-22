@@ -17,8 +17,15 @@
     cancel-label="$i18n{cancel}"
     selection-label="${this.numberOfItemsSelected_(this.count)}"
     @clear-selected-items="${this.clearSelectedItems}">
+
+  <cr-button
+      @click="${this.openSelectedItems}" ?disabled="${this.pendingDelete}">
+    $i18n{openSelected}
+  </cr-button>
+
   <cr-button
       @click="${this.deleteSelectedItems}" ?disabled="${this.pendingDelete}">
     $i18n{delete}
   </cr-button>
+
 </cr-toolbar-selection-overlay>

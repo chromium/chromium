@@ -464,6 +464,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_HISTORY_DELETE" desc="Text for delete button contained in the history page toolbar">
         Delete
       </message>
+      <message name="IDS_HISTORY_OPEN" desc="Text for open button contained in the history page toolbar. Opens selected history items as new tabs.">
+        Open
+      </message>
       <message name="IDS_HISTORY_ITEMS_SELECTED" desc="Label displayed in history toolbar telling the user how many items they have selected.">
         <ph name="NUMBER_OF_ITEMS_SELECTED">$1</ph> selected
       </message>

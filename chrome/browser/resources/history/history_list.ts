@@ -327,6 +327,14 @@ export class HistoryListElement extends HistoryListElementBase {
     this.$.infiniteList.fillCurrentViewport();
   }
 
+  openSelected() {
+    const selected = this.getSelectedEntries_();
+
+    for (const entry of selected) {
+      window.open(entry.url, '_blank');
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // Private methods:
 
@@ -357,8 +365,7 @@ export class HistoryListElement extends HistoryListElementBase {
   private deleteSelected_() {
     assert(!this.pendingDelete);
 
-    const toBeRemoved = Array.from(this.selectedItems.values())
-                            .map((index) => this.historyData_[index]);
+    const toBeRemoved = this.getSelectedEntries_();
 
     this.deleteItems_(toBeRemoved).then(() => {
       this.pendingDelete = false;
@@ -681,6 +688,11 @@ export class HistoryListElement extends HistoryListElementBase {
 
   protected onListBlurredChanged_(e: CustomEvent<{value: boolean}>) {
     this.listBlurred_ = e.detail.value;
+  }
+
+  private getSelectedEntries_(): HistoryEntry[] {
+    // `selectedItems` is a Set<number> of row-indexes.
+    return Array.from(this.selectedItems, idx => this.historyData_[idx]);
   }
 }
 
