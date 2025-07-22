@@ -106,10 +106,8 @@ bool IsValidCustomHandlerScheme(std::string_view scheme,
   if (base::Contains(kProtocolSafelist, lower_scheme)) {
     return true;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kSafelistFTPToRegisterProtocolHandler) &&
-      (lower_scheme == "ftp" || lower_scheme == "ftps" ||
-       lower_scheme == "sftp")) {
+  if (lower_scheme == "ftp" || lower_scheme == "ftps" ||
+      lower_scheme == "sftp") {
     return true;
   }
   if (base::FeatureList::IsEnabled(

@@ -1172,10 +1172,8 @@ TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
 namespace {
 
 enum class ProtocolTestMode {
-  kFtpOffPaytoOn,
-  kFtpOnPaytoOff,
-  kFtpOnPaytoOn,
-  kFtpOffPaytoOff,
+  kPaytoOff,
+  kPaytoOn,
 };
 
 }  // namespace
@@ -1190,27 +1188,14 @@ class ProtocolHandlerRegistrySchemeTest
   void SetUp() override {
     ProtocolHandlerRegistryTest::SetUp();
     switch (GetParam()) {
-    case ProtocolTestMode::kFtpOffPaytoOn:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistPaytoToRegisterProtocolHandler},
-          {blink::features::kSafelistFTPToRegisterProtocolHandler});
-      break;
-    case ProtocolTestMode::kFtpOnPaytoOff:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistFTPToRegisterProtocolHandler},
-          {blink::features::kSafelistPaytoToRegisterProtocolHandler});
-      break;
-    case ProtocolTestMode::kFtpOnPaytoOn:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistFTPToRegisterProtocolHandler,
-          blink::features::kSafelistPaytoToRegisterProtocolHandler}, {});
-      break;
-    case ProtocolTestMode::kFtpOffPaytoOff:
-    default:
-      scoped_feature_list_.InitWithFeatures({},
-          {blink::features::kSafelistFTPToRegisterProtocolHandler,
-          blink::features::kSafelistPaytoToRegisterProtocolHandler});
-      break;
+      case ProtocolTestMode::kPaytoOff:
+        scoped_feature_list_.InitWithFeatures(
+            {}, {blink::features::kSafelistPaytoToRegisterProtocolHandler});
+        break;
+      case ProtocolTestMode::kPaytoOn:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kSafelistPaytoToRegisterProtocolHandler}, {});
+        break;
     }
   }
 
@@ -1218,10 +1203,8 @@ class ProtocolHandlerRegistrySchemeTest
 };
 INSTANTIATE_TEST_SUITE_P(All,
                          ProtocolHandlerRegistrySchemeTest,
-                         testing::Values(ProtocolTestMode::kFtpOffPaytoOn,
-                                         ProtocolTestMode::kFtpOnPaytoOff,
-                                         ProtocolTestMode::kFtpOnPaytoOn,
-                                         ProtocolTestMode::kFtpOffPaytoOff));
+                         testing::Values(ProtocolTestMode::kPaytoOff,
+                                         ProtocolTestMode::kPaytoOn));
 // See
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 TEST_P(ProtocolHandlerRegistrySchemeTest, SafelistedSchemes) {
@@ -1241,20 +1224,14 @@ TEST_P(ProtocolHandlerRegistrySchemeTest, SafelistedSchemes) {
   for (auto& scheme : kFtpSchemes) {
     registry()->OnAcceptRegisterProtocolHandler(
         CreateProtocolHandler(scheme, GURL("https://example.com/url=%s")));
-    if (GetParam() == ProtocolTestMode::kFtpOnPaytoOff ||
-        GetParam() == ProtocolTestMode::kFtpOnPaytoOn) {
-      ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
-    } else {
-      ASSERT_FALSE(registry()->IsHandledProtocol(scheme));
-    }
+    ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
   }
   registry()->OnAcceptRegisterProtocolHandler(
     CreateProtocolHandler(kPaytoScheme, GURL("https://example.com/url=%s")));
-  if (GetParam() == ProtocolTestMode::kFtpOffPaytoOn ||
-      GetParam() == ProtocolTestMode::kFtpOnPaytoOn) {
-     ASSERT_TRUE(registry()->IsHandledProtocol(kPaytoScheme));
+  if (GetParam() == ProtocolTestMode::kPaytoOn) {
+    ASSERT_TRUE(registry()->IsHandledProtocol(kPaytoScheme));
   } else {
-     ASSERT_FALSE(registry()->IsHandledProtocol(kPaytoScheme));
+    ASSERT_FALSE(registry()->IsHandledProtocol(kPaytoScheme));
   }
 }
 

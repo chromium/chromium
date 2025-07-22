@@ -1569,12 +1569,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kResourceFetcherStoresStrongReferences);
 
-// When enabled, it adds FTP / FTPS / SFTP to the safe list for
-// registerProtocolHandler. This feature is enabled by default and meant to
-// be used as a killswitch.
-// https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSafelistFTPToRegisterProtocolHandler);
-
 // When enabled, it adds Payto URI Scheme to the safe list for
 // registerProtocolHandler. This feature is disabled by default
 // Payto URI Scheme explanation https://datatracker.ietf.org/doc/html/rfc8905

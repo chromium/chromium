@@ -2329,11 +2329,6 @@ BASE_FEATURE(kResourceFetcherStoresStrongReferences,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
-BASE_FEATURE(kSafelistFTPToRegisterProtocolHandler,
-             "SafelistFTPToRegisterProtocolHandler",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 BASE_FEATURE(kSafelistPaytoToRegisterProtocolHandler,
              "SafelistPaytoToRegisterProtocolHandler",
              base::FEATURE_DISABLED_BY_DEFAULT);

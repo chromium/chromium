@@ -247,7 +247,6 @@ TEST(ProtocolHandlerUtilTest, CustomHandlerSchemePrefixed) {
 }
 
 TEST(ProtocolHandlerUtilTest, CustomHandlerFTPIncludedInSafelist) {
-  // The kSafelistFTPToRegisterProtocolHandler feature is enabled by default.
   static constexpr const char* const kProtocolSafelist[] = {"ftp", "ftps",
                                                             "sftp"};
   for (const auto* scheme : kProtocolSafelist) {
