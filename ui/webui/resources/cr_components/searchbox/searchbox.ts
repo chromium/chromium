@@ -395,6 +395,10 @@ export class SearchboxElement extends SearchboxElementBase {
     this.queryAutocomplete_(this.$.input.value);
   }
 
+  setInputText(text: string) {
+    this.onSetInputText_(text);
+  }
+
   //============================================================================
   // Callbacks
   //============================================================================

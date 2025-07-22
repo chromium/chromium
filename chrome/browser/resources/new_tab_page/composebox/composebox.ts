@@ -184,6 +184,14 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  getText() {
+    return this.$.input.value;
+  }
+
+  resetText() {
+    this.$.input.value = '';
+  }
+
   private computeInputsDisabled_() {
     this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
   }
@@ -265,7 +273,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.submitEnabled_ = false;
       this.pageHandler_.clearFiles();
     } else {
-      this.notifySessionAbandoned_();
+      this.closeComposebox_();
     }
   }
 
@@ -278,13 +286,12 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Escape' && this.composeboxCloseByEscape_) {
-      this.notifySessionAbandoned_();
+      this.closeComposebox_();
     }
   }
 
-  private notifySessionAbandoned_() {
-    this.pageHandler_.notifySessionAbandoned();
-    this.fire('toggle-composebox');
+  private closeComposebox_() {
+    this.fire('close-composebox', {composeboxText: this.$.input.value});
   }
 
   protected onSubmitClick_(e: KeyboardEvent|MouseEvent) {

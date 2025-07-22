@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
+import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -29,6 +30,7 @@ import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mo
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
+import type {ComposeboxElement} from './composebox/composebox.js';
 import {ComposeboxProxyImpl} from './composebox/composebox_proxy.js';
 import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from './customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
@@ -138,6 +140,8 @@ export interface AppElement {
     customizeButtons: CustomizeButtonsElement,
     oneGoogleBarClipPath: HTMLElement,
     logo: LogoElement,
+    searchbox: SearchboxElement,
+    composebox: ComposeboxElement,
   };
 }
 
@@ -662,10 +666,26 @@ export class AppElement extends AppElementBase {
     this.showComposebox_ = !this.showComposebox_;
   }
 
-  protected closeComposebox_() {
+  protected onComposeboxClickOutside_() {
+    this.closeComposebox_(this.$.composebox.getText());
+  }
+
+  protected closeComposebox_(e: CustomEvent|string) {
+    let composeboxText: string;
+
+    if (typeof e === 'string') {
+      composeboxText = e;
+    } else {
+      composeboxText = e.detail.uuid;
+    }
+
+    if (composeboxText && composeboxText.trim()) {
+      this.$.searchbox.setInputText(composeboxText);
+    }
+    this.$.composebox.resetText();
+    this.toggleComposebox_();
     const composeboxHandler = ComposeboxProxyImpl.getInstance().handler;
     composeboxHandler.notifySessionAbandoned();
-    this.toggleComposebox_();
   }
 
   protected onOpenVoiceSearch_() {

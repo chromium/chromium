@@ -1144,6 +1144,8 @@ suite('NewTabPageAppTest', () => {
       loadTimeData.overrideValues({
         searchboxShowComposeEntrypoint: true,
         searchboxShowComposebox: true,
+        composeboxCloseByEscape: true,
+        composeboxCloseByClickOutside: true,
       });
       // Needed so `.click()` calls don't navigate.
       window.open = () => null;
@@ -1223,6 +1225,31 @@ suite('NewTabPageAppTest', () => {
           assertEquals(
               composeboxHandler.getCallCount('notifySessionAbandoned'), 1);
         });
+
+    test('Propogate composebox text when closed', async () => {
+      composeboxHandler.reset();
+      assertEquals(composeboxHandler.getCallCount('notifySessionAbandoned'), 0);
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
+      await microtasksFinished();
+      const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
+      ntpComposebox!.shadowRoot.querySelector<HTMLInputElement>(
+                                   '#input')!.value = 'hello';
+      const composeboxScrim =
+          app.shadowRoot.querySelector<HTMLElement>('#composeboxScrim');
+      assertTrue(!!composeboxScrim);
+      composeboxScrim.click();
+      await microtasksFinished();
+
+      const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+
+      assertEquals(
+          'hello',
+          searchboxContainer!.shadowRoot!
+              .querySelector<HTMLInputElement>('#input')!.value);
+
+      // Assert.
+      assertEquals(composeboxHandler.getCallCount('notifySessionAbandoned'), 1);
+    });
     suite('Close options disabled', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({

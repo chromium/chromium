@@ -171,10 +171,10 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(composeboxElement.$.carousel.files.length, 0);
 
     // Close composebox.
-    const whenToggleComposebox =
-        eventToPromise('toggle-composebox', composeboxElement);
+    const whenCloseComposebox =
+        eventToPromise('close-composebox', composeboxElement);
     $$<HTMLElement>(composeboxElement, '#cancelIcon')!.click();
-    await whenToggleComposebox;
+    await whenCloseComposebox;
   });
 
   test('upload image', async () => {
@@ -405,31 +405,34 @@ suite('NewTabPageComposeboxTest', () => {
     // Arrange.
     createComposeboxElement();
 
-    // Assert call has not occurred.
-    assertEquals(handler.getCallCount('notifySessionAbandoned'), 0);
+    composeboxElement.$.input.value = 'test';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    const whenCloseComposebox =
+        eventToPromise('close-composebox', composeboxElement);
 
     // Assert call occurs.
     composeboxElement.$.composebox.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Escape'}));
     await microtasksFinished();
-    assertEquals(handler.getCallCount('notifySessionAbandoned'), 1);
+    const event = await whenCloseComposebox;
+    assertEquals(event.detail.composeboxText, 'test');
   });
 
   test('session abandoned on cancel button click', async () => {
     // Arrange.
     createComposeboxElement();
 
-    // Assert call has not occurred.
-    assertEquals(handler.getCallCount('notifySessionAbandoned'), 0);
+    await microtasksFinished();
 
     // Close composebox.
-    const whenToggleComposebox =
-        eventToPromise('toggle-composebox', composeboxElement);
+    const whenCloseComposebox =
+        eventToPromise('close-composebox', composeboxElement);
     const cancelIcon = $$<HTMLElement>(composeboxElement, '#cancelIcon');
     assertTrue(!!cancelIcon);
     cancelIcon.click();
-    await whenToggleComposebox;
-    assertEquals(handler.getCallCount('notifySessionAbandoned'), 1);
+    await whenCloseComposebox;
   });
 
   test('submit button click leads to handler called', async () => {
