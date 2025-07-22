@@ -152,7 +152,6 @@ void EventGenerator::PressButton(int flag) {
     gfx::Point location = GetLocationInCurrentRoot();
     ui::MouseEvent mouseev(ui::EventType::kMousePressed, location, location,
                            ui::EventTimeForNow(), flags_, flag);
-    mouseev.set_source_device_id(mouse_source_device_id_);
     Dispatch(&mouseev);
   }
 }
@@ -162,7 +161,6 @@ void EventGenerator::ReleaseButton(int flag) {
     gfx::Point location = GetLocationInCurrentRoot();
     ui::MouseEvent mouseev(ui::EventType::kMouseReleased, location, location,
                            ui::EventTimeForNow(), flags_, flag);
-    mouseev.set_source_device_id(mouse_source_device_id_);
     Dispatch(&mouseev);
     flags_ ^= flag;
   }
@@ -207,7 +205,6 @@ void EventGenerator::MoveMouseWheel(int delta_x, int delta_y) {
   gfx::Point location = GetLocationInCurrentRoot();
   ui::MouseWheelEvent wheelev(gfx::Vector2d(delta_x, delta_y), location,
                               location, ui::EventTimeForNow(), flags_, 0);
-  wheelev.set_source_device_id(mouse_source_device_id_);
   Dispatch(&wheelev);
 }
 
@@ -216,7 +213,6 @@ void EventGenerator::SendMouseEnter() {
   delegate()->ConvertPointToTarget(current_target_, &enter_location);
   ui::MouseEvent mouseev(ui::EventType::kMouseEntered, enter_location,
                          enter_location, ui::EventTimeForNow(), flags_, 0);
-  mouseev.set_source_device_id(mouse_source_device_id_);
   Dispatch(&mouseev);
 }
 
@@ -225,7 +221,6 @@ void EventGenerator::SendMouseExit() {
   delegate()->ConvertPointToTarget(current_target_, &exit_location);
   ui::MouseEvent mouseev(ui::EventType::kMouseExited, exit_location,
                          exit_location, ui::EventTimeForNow(), flags_, 0);
-  mouseev.set_source_device_id(mouse_source_device_id_);
   Dispatch(&mouseev);
 }
 
@@ -240,7 +235,6 @@ void EventGenerator::MoveMouseToWithNative(const gfx::Point& point_in_host,
       new ui::MouseEvent(ui::EventType::kMouseMoved, point_in_host,
                          point_in_host, ui::EventTimeForNow(), flags_, 0));
   ui::MouseEvent mouseev(native_event.get());
-  mouseev.set_source_device_id(mouse_source_device_id_);
   native_event->set_location(point_for_native);
   Dispatch(&mouseev);
 
@@ -255,7 +249,6 @@ void EventGenerator::MoveMouseToInHost(const gfx::Point& point_in_host) {
                                        : ui::EventType::kMouseMoved;
   ui::MouseEvent mouseev(event_type, point_in_host, point_in_host,
                          ui::EventTimeForNow(), flags_, 0);
-  mouseev.set_source_device_id(mouse_source_device_id_);
   Dispatch(&mouseev);
 
   SetCurrentScreenLocation(point_in_host);
@@ -280,7 +273,6 @@ void EventGenerator::MoveMouseTo(const gfx::Point& point_in_screen,
     delegate()->ConvertPointToTarget(current_target_, &move_point);
     ui::MouseEvent mouseev(event_type, move_point, move_point,
                            ui::EventTimeForNow(), flags_, 0);
-    mouseev.set_source_device_id(mouse_source_device_id_);
     Dispatch(&mouseev);
   }
   SetCurrentScreenLocation(point_in_screen);
@@ -641,22 +633,25 @@ void EventGenerator::ScrollSequence(const gfx::Point& start,
   UpdateCurrentDispatcher(start);
 
   base::TimeTicks timestamp = ui::EventTimeForNow();
-  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, start,
-                               timestamp, 0, 0, 0, 0, 0, num_fingers);
-  Dispatch(&fling_cancel);
+  if (end_state != ScrollSequenceType::ScrollOnly) {
+    ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, start,
+                                 timestamp, 0, 0, 0, 0, 0, num_fingers);
+    Dispatch(&fling_cancel);
+    timestamp += step_delay;
+  }
 
   float dx = x_offset / steps;
   float dy = y_offset / steps;
   for (int i = 0; i < steps; ++i) {
-    timestamp += step_delay;
     ui::ScrollEvent move(ui::EventType::kScroll, start, timestamp, 0, dx, dy,
                          dx, dy, num_fingers);
     Dispatch(&move);
+    timestamp += step_delay;
   }
 
   // End the scroll sequence early if we want to end with the fingers rested on
   // the trackpad.
-  if (end_state == ScrollSequenceType::ScrollOnly) {
+  if (end_state != ScrollSequenceType::UpToFling) {
     return;
   }
 
@@ -743,6 +738,10 @@ void EventGenerator::PressAndReleaseKeyAndModifierKeys(KeyboardCode key_code,
 }
 
 void EventGenerator::Dispatch(ui::Event* event) {
+  if (event->IsMouseEvent() || event->IsScrollEvent()) {
+    event->set_source_device_id(mouse_source_device_id_);
+  }
+
   if (event->IsTouchEvent()) {
     ui::TouchEvent* touch_event = static_cast<ui::TouchEvent*>(event);
     touch_pointer_details_.id = touch_event->pointer_details().id;

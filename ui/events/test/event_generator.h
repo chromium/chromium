@@ -166,11 +166,15 @@ class EventGenerator {
 
   // Determines the end state of a scroll sequence.
   enum class ScrollSequenceType {
-    // Create an "incomplete" scroll sequence, meaning that it ends with the
-    // fingers resting on the trackpad.
+    // Create an scroll sequence with trackpoint, which only generates scroll
+    // events.
     ScrollOnly,
-    // Create a "complete" scroll sequence, meaning that it ends with the
-    // fingers being lifted off of the trackpad.
+    // Create an "incomplete" touchpad scroll sequence, meaning that it starts
+    // with a fling cancel, then generates scroll events without generating
+    // fling start at the end.
+    StartAndScroll,
+    // Create a "complete" touchpad scroll sequence, meaning that it ends with
+    // the fingers being lifted off of the trackpad.
     UpToFling,
   };
 

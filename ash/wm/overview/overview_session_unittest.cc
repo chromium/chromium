@@ -4622,7 +4622,7 @@ class ContinuousOverviewAnimationTest
         /*end_state=*/
         complete_scroll
             ? ui::test::EventGenerator::ScrollSequenceType::UpToFling
-            : ui::test::EventGenerator::ScrollSequenceType::ScrollOnly);
+            : ui::test::EventGenerator::ScrollSequenceType::StartAndScroll);
   }
 
   void SetShowDeskButton(bool visible) {
