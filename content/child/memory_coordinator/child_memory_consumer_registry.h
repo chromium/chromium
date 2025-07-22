@@ -30,7 +30,9 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
     : public base::MemoryConsumerRegistry,
       public mojom::ChildMemoryConsumer {
  public:
-  ChildMemoryConsumerRegistry();
+  explicit ChildMemoryConsumerRegistry(
+      mojo::PendingRemote<mojom::BrowserMemoryConsumerRegistry>
+          browser_memory_consumer_registry);
   ~ChildMemoryConsumerRegistry() override;
 
   // mojom::ChildMemoryConsumer:
@@ -54,15 +56,6 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
 
   // Returns the number of consumers with different IDs.
   size_t size() const { return consumer_groups_.size(); }
-
-  // Allows connecting this process's global instance with the browser process.
-  static mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
-  BindAndPassReceiver();
-
-  // Non-static version of the above, allowing to connect the browser and child
-  // registries if the caller has a pointer to the registry.
-  mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
-  BindAndPassReceiverForTesting();
 
  private:
   // An implementation of MemoryConsumer that groups all consumers with the same
@@ -98,9 +91,6 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
   void OnMemoryConsumerRemoved(
       std::string_view consumer_id,
       base::RegisteredMemoryConsumer consumer) override;
-
-  mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
-  BindAndPassReceiverImpl();
 
   // Used to register consumers in the child process with the browser process.
   mojo::Remote<mojom::BrowserMemoryConsumerRegistry> browser_registry_;
