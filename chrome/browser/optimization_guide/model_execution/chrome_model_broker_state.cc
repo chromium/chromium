@@ -115,7 +115,7 @@ ChromeModelBrokerState::ChromeModelBrokerState() {
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
   component_state_manager_->OnStartup();
 
-  service_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+  service_controller_ = std::make_unique<OnDeviceModelServiceController>(
       std::make_unique<OnDeviceModelAccessController>(
           *g_browser_process->local_state()),
       component_state_manager_->GetWeakPtr(),

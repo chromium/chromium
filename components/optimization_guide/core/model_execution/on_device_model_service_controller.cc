@@ -807,7 +807,7 @@ void OnDeviceModelServiceController::EnsurePerformanceClassAvailable(
                     .Then(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                         base::BindOnce(&OnDeviceModelServiceController::
                                            PerformanceClassUpdated,
-                                       base::RetainedRef(this)),
+                                       weak_ptr_factory_.GetWeakPtr()),
                         OnDeviceModelPerformanceClass::kServiceCrash))));
 }
 
@@ -836,17 +836,19 @@ void OnDeviceModelServiceController::PerformanceClassUpdated(
       perf_class);
 
   auto complete = base::BindOnce(
-      [](scoped_refptr<OnDeviceModelServiceController> controller) {
-        controller->performance_class_state_ = PerformanceClassState::kComplete;
-        controller->performance_class_callbacks_.Notify();
-      },
-      base::RetainedRef(this));
+      &OnDeviceModelServiceController::NotifyPerformanceClassAvailable,
+      weak_ptr_factory_.GetWeakPtr());
   if (on_device_component_state_manager_) {
     on_device_component_state_manager_->DevicePerformanceClassChanged(
         std::move(complete), perf_class);
   } else {
     std::move(complete).Run();
   }
+}
+
+void OnDeviceModelServiceController::NotifyPerformanceClassAvailable() {
+  performance_class_state_ = PerformanceClassState::kComplete;
+  performance_class_callbacks_.Notify();
 }
 
 }  // namespace optimization_guide

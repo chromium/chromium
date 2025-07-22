@@ -42,7 +42,7 @@ class FakeModelBroker {
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
   on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
   TestOnDeviceModelComponentStateManager component_manager_{&local_state_};
-  scoped_refptr<OnDeviceModelServiceController> test_controller_;
+  std::unique_ptr<OnDeviceModelServiceController> test_controller_;
 };
 
 }  // namespace optimization_guide

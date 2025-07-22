@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
@@ -175,14 +176,14 @@ void OptimizationGuideKeyedService::BindModelBroker(
           optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
     return;
   }
-  chrome_model_broker_state_->service_controller()->BindBroker(
+  chrome_model_broker_state_->service_controller().BindBroker(
       std::move(receiver));
 }
 
 std::unique_ptr<optimization_guide::ModelBrokerClient>
 OptimizationGuideKeyedService::CreateModelBrokerClient() {
   mojo::PendingRemote<optimization_guide::mojom::ModelBroker> remote;
-  chrome_model_broker_state_->service_controller()->BindBroker(
+  chrome_model_broker_state_->service_controller().BindBroker(
       remote.InitWithNewPipeAndPassReceiver());
   return std::make_unique<optimization_guide::ModelBrokerClient>(
       std::move(remote), optimization_guide::CreateSessionArgs(
@@ -342,11 +343,12 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
         "HistorySearch");
   }
 
-  scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+  base::WeakPtr<optimization_guide::OnDeviceModelServiceController>
       service_controller;
   if (base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
-    service_controller = chrome_model_broker_state_->service_controller();
+    service_controller =
+        chrome_model_broker_state_->service_controller().GetWeakPtr();
     on_device_asset_manager_ =
         chrome_model_broker_state_->CreateAssetManager(this);
   }
@@ -502,7 +504,7 @@ void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(
     return;
   }
   chrome_model_broker_state_->service_controller()
-      ->AddOnDeviceModelAvailabilityChangeObserver(feature, observer);
+      .AddOnDeviceModelAvailabilityChangeObserver(feature, observer);
 }
 
 void OptimizationGuideKeyedService::
@@ -513,7 +515,7 @@ void OptimizationGuideKeyedService::
     return;
   }
   chrome_model_broker_state_->service_controller()
-      ->RemoveOnDeviceModelAvailabilityChangeObserver(feature, observer);
+      .RemoveOnDeviceModelAvailabilityChangeObserver(feature, observer);
 }
 
 on_device_model::Capabilities
@@ -734,7 +736,7 @@ OptimizationGuideKeyedService::GetFeatureMetadata(
 void OptimizationGuideKeyedService::EnsurePerformanceClassAvailable(
     base::OnceClosure complete) {
   chrome_model_broker_state_->service_controller()
-      ->EnsurePerformanceClassAvailable(std::move(complete));
+      .EnsurePerformanceClassAvailable(std::move(complete));
 }
 
 void OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility(

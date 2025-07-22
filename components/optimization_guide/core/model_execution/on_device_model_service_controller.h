@@ -70,20 +70,16 @@ class ModelController {
 };
 
 // Controls the lifetime of the on-device model service, loading and unloading
-// of the models, and executing them via the service.
-//
-// As all OnDeviceModelServiceController's share the same model, and we do not
-// want to load duplicate models (would consume excessive amounts of memory), at
-// most one instance of OnDeviceModelServiceController is created.
-class OnDeviceModelServiceController final
-    : public base::RefCounted<OnDeviceModelServiceController>,
-      public mojom::ModelBroker {
+// of the models, and executing them via the service. There is normally only
+// a single instance of this object.
+class OnDeviceModelServiceController final : public mojom::ModelBroker {
  public:
   OnDeviceModelServiceController(
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager,
       on_device_model::ServiceClient::LaunchFn launch_fn);
+  ~OnDeviceModelServiceController() override;
 
   // Initializes OnDeviceModelServiceController. This should be called once
   // after creation.
@@ -161,8 +157,6 @@ class OnDeviceModelServiceController final
   }
 
  private:
-  ~OnDeviceModelServiceController() override;
-
   // A set of (references to) compatible, versioned dependencies that implement
   // a ModelBasedCapability.
   // e.g. "You can summarize with this model by building the prompt this way."
@@ -343,7 +337,6 @@ class OnDeviceModelServiceController final
   friend class SolutionProvider;
   friend class OnDeviceModelAdaptationController;
   friend class OnDeviceModelClient;
-  friend class base::RefCounted<OnDeviceModelServiceController>;
 
   // Called when the service disconnects unexpectedly.
   void OnServiceDisconnected(on_device_model::ServiceDisconnectReason reason);
@@ -369,6 +362,9 @@ class OnDeviceModelServiceController final
 
   // Called when performance class has finished updating.
   void PerformanceClassUpdated(OnDeviceModelPerformanceClass perf_class);
+
+  // Notify observers that the performance class is available.
+  void NotifyPerformanceClassAvailable();
 
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;

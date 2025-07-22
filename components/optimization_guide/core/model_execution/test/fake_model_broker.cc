@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 
+#include <memory>
+
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
@@ -30,7 +32,7 @@ FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
   UpdatePerformanceClassPref(&local_state_, OnDeviceModelPerformanceClass::kHigh);
   auto access_controller =
       std::make_unique<OnDeviceModelAccessController>(local_state_);
-  test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+  test_controller_ = std::make_unique<OnDeviceModelServiceController>(
       std::move(access_controller), component_manager_.get()->GetWeakPtr(),
       fake_launcher_.LaunchFn());
   test_controller_->Init();

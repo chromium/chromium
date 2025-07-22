@@ -32,8 +32,8 @@ class ChromeModelBrokerState final
     return *component_state_manager_;
   }
 
-  scoped_refptr<OnDeviceModelServiceController> service_controller() {
-    return service_controller_;
+  OnDeviceModelServiceController& service_controller() {
+    return *service_controller_;
   }
 
   ChromePredictionModelStore& prediction_model_store() {
@@ -50,7 +50,7 @@ class ChromeModelBrokerState final
   ~ChromeModelBrokerState();
 
   std::unique_ptr<OnDeviceModelComponentStateManager> component_state_manager_;
-  scoped_refptr<OnDeviceModelServiceController> service_controller_;
+  std::unique_ptr<OnDeviceModelServiceController> service_controller_;
 
   ChromePredictionModelStore prediction_model_store_;
 

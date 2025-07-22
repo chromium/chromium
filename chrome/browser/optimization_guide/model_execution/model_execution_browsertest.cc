@@ -704,7 +704,7 @@ class OnDeviceModelExecutionEnabledBrowserTest
 
   // Set up assets which are registered per-profile.
   void SetUpProfileAssets() {
-    compose_asset_.SendTo(*broker_state()->service_controller());
+    compose_asset_.SendTo(broker_state()->service_controller());
   }
 
  private:

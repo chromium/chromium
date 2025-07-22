@@ -42,7 +42,7 @@ class ModelExecutionManager final {
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<OnDeviceModelServiceController>
+      base::WeakPtr<OnDeviceModelServiceController>
           on_device_model_service_controller,
       OptimizationGuideLogger* optimization_guide_logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
@@ -140,7 +140,7 @@ class ModelExecutionManager final {
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Controller for the on-device service.
-  scoped_refptr<OnDeviceModelServiceController>
+  base::WeakPtr<OnDeviceModelServiceController>
       on_device_model_service_controller_;
 
   SEQUENCE_CHECKER(sequence_checker_);

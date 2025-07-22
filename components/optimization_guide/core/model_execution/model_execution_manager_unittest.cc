@@ -65,11 +65,12 @@ class ModelExecutionManagerTest : public testing::Test {
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    service_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+    service_controller_ = std::make_unique<OnDeviceModelServiceController>(
         nullptr, nullptr, base::DoNothing());
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
         url_loader_factory_, identity_test_env_.identity_manager(),
-        service_controller_, &optimization_guide_logger_, nullptr);
+        service_controller_->GetWeakPtr(), &optimization_guide_logger_,
+        nullptr);
   }
 
   bool SimulateResponse(const std::string& content,
@@ -128,7 +129,7 @@ class ModelExecutionManagerTest : public testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  scoped_refptr<OnDeviceModelServiceController> service_controller_;
+  std::unique_ptr<OnDeviceModelServiceController> service_controller_;
   OptimizationGuideLogger optimization_guide_logger_;
   std::unique_ptr<ModelExecutionManager> model_execution_manager_;
 };

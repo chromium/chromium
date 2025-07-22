@@ -226,7 +226,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     auto access_controller =
         std::make_unique<OnDeviceModelAccessController>(pref_service_);
     access_controller_ = access_controller.get();
-    test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+    test_controller_ = std::make_unique<OnDeviceModelServiceController>(
         std::move(access_controller),
         on_device_component_state_manager_.get()->GetWeakPtr(),
         fake_launcher_.LaunchFn());
@@ -267,7 +267,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
       &pref_service_};
-  scoped_refptr<OnDeviceModelServiceController> test_controller_;
+  std::unique_ptr<OnDeviceModelServiceController> test_controller_;
   // Owned by OnDeviceModelServiceController.
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   ResponseHolder response_;
@@ -2412,7 +2412,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   auto access_controller =
       std::make_unique<OnDeviceModelAccessController>(pref_service_);
   access_controller_ = access_controller.get();
-  test_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+  test_controller_ = std::make_unique<OnDeviceModelServiceController>(
       std::move(access_controller),
       on_device_component_state_manager_.get()->GetWeakPtr(),
       fake_launcher_.LaunchFn());

@@ -77,7 +77,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
     model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
     UpdatePerformanceClassPref(&local_state_,
                                OnDeviceModelPerformanceClass::kHigh);
-    service_controller_ = base::MakeRefCounted<OnDeviceModelServiceController>(
+    service_controller_ = std::make_unique<OnDeviceModelServiceController>(
         nullptr, nullptr, base::DoNothing());
   }
 
@@ -114,7 +114,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple local_state_;
   FakeBaseModelAsset base_model_asset_;
-  scoped_refptr<OnDeviceModelServiceController> service_controller_;
+  std::unique_ptr<OnDeviceModelServiceController> service_controller_;
   TestOnDeviceModelComponentStateManager component_manager_{&local_state_};
   FakeModelProvider model_provider_;
   std::unique_ptr<OnDeviceAssetManager> asset_manager_;
