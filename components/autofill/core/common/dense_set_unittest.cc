@@ -16,6 +16,223 @@ using ::testing::ElementsAre;
 
 namespace autofill {
 
+namespace internal {
+
+template <typename Word, size_t kNumWords>
+void PrintTo(Bitset<Word, kNumWords> b, std::ostream* os) {
+  for (size_t i = 0; i < kNumWords * 8; ++i) {
+    *os << b.get_bit(i);
+  }
+}
+
+namespace {
+
+template <typename WordT, size_t kNumWordsT>
+struct BitsetTestParam {
+  using Word = WordT;
+  static constexpr size_t kNumWords = kNumWordsT;
+  static constexpr size_t kNumBits = kNumWords * sizeof(Word) * 8;
+  using Bitset = Bitset<Word, kNumWords>;
+};
+
+class BitsetTestNameGenerator {
+ public:
+  template <typename T>
+  static std::string GetName(int) {
+    using Word = typename T::Word;
+    constexpr size_t kNumWords = T::kNumWords;
+    if constexpr (std::same_as<Word, uint8_t>) {
+      if constexpr (kNumWords == 1) {
+        return "uint8_tX1";
+      }
+      if constexpr (kNumWords == 2) {
+        return "uint8_tX2";
+      }
+      if constexpr (kNumWords == 3) {
+        return "uint8_tX3";
+      }
+    }
+    if constexpr (std::same_as<Word, uint16_t>) {
+      if constexpr (kNumWords == 1) {
+        return "uint16_tX1";
+      }
+      if constexpr (kNumWords == 2) {
+        return "uint16_tX2";
+      }
+      if constexpr (kNumWords == 3) {
+        return "uint16_tX3";
+      }
+    }
+    if constexpr (std::same_as<Word, uint32_t>) {
+      if constexpr (kNumWords == 1) {
+        return "uint32_tX1";
+      }
+      if constexpr (kNumWords == 2) {
+        return "uint32_tX2";
+      }
+      if constexpr (kNumWords == 3) {
+        return "uint32_tX3";
+      }
+    }
+    if constexpr (std::same_as<Word, uint64_t>) {
+      if constexpr (kNumWords == 1) {
+        return "uint64_tX1";
+      }
+      if constexpr (kNumWords == 2) {
+        return "uint64_tX2";
+      }
+      if constexpr (kNumWords == 3) {
+        return "uint64_tX3";
+      }
+    }
+  }
+};
+
+// Test fixture for Bitset<Word, kNumWords>.
+template <typename T>
+class DenseSetTest_BitsetTest : public testing::Test {};
+
+using BitsetTestParams = testing::Types<BitsetTestParam<uint8_t, 1>,
+                                        BitsetTestParam<uint8_t, 2>,
+                                        BitsetTestParam<uint8_t, 3>,
+                                        BitsetTestParam<uint16_t, 1>,
+                                        BitsetTestParam<uint16_t, 2>,
+                                        BitsetTestParam<uint16_t, 3>,
+                                        BitsetTestParam<uint32_t, 1>,
+                                        BitsetTestParam<uint32_t, 2>,
+                                        BitsetTestParam<uint32_t, 3>,
+                                        BitsetTestParam<uint64_t, 1>,
+                                        BitsetTestParam<uint64_t, 2>,
+                                        BitsetTestParam<uint64_t, 3>>;
+
+TYPED_TEST_SUITE(DenseSetTest_BitsetTest,
+                 BitsetTestParams,
+                 BitsetTestNameGenerator);
+
+// Test that Bitset::set_bit(), Bitset::get_bit(), and Bitset::num_set_bits()
+// are plausible.
+TYPED_TEST(DenseSetTest_BitsetTest, SetBit) {
+  using Bitset = typename TypeParam::Bitset;
+  constexpr size_t kNumBits = TypeParam::kNumBits;
+  Bitset b;
+
+  EXPECT_EQ(b.num_set_bits(), 0u);
+  EXPECT_FALSE(b.get_bit(0));
+  EXPECT_FALSE(b.get_bit(kNumBits - 1));
+
+  b.set_bit(0);
+  EXPECT_EQ(b.num_set_bits(), 1u);
+  EXPECT_TRUE(b.get_bit(0));
+  EXPECT_FALSE(b.get_bit(kNumBits - 1));
+
+  b.set_bit(0);
+  EXPECT_EQ(b.num_set_bits(), 1u);
+  EXPECT_TRUE(b.get_bit(0));
+  EXPECT_FALSE(b.get_bit(kNumBits - 1));
+
+  b.set_bit(kNumBits - 1);
+  EXPECT_EQ(b.num_set_bits(), 2u);
+  EXPECT_TRUE(b.get_bit(0));
+  EXPECT_TRUE(b.get_bit(kNumBits - 1));
+}
+
+// Test that Bitset::set_bit() also works at the word boundaries.
+TYPED_TEST(DenseSetTest_BitsetTest, SetBitAtBoundary) {
+  using Bitset = typename TypeParam::Bitset;
+  constexpr size_t kNumBits = TypeParam::kNumBits;
+  Bitset b;
+  EXPECT_EQ(b.num_set_bits(), 0u);
+  EXPECT_FALSE(b.get_bit(kNumBits / 2 - 1));
+  EXPECT_FALSE(b.get_bit(kNumBits / 2));
+
+  b.set_bit(kNumBits / 2 - 1u);
+  EXPECT_EQ(b.num_set_bits(), 1u);
+  EXPECT_TRUE(b.get_bit(kNumBits / 2 - 1));
+  EXPECT_FALSE(b.get_bit(kNumBits / 2));
+
+  b.set_bit(kNumBits / 2);
+  EXPECT_EQ(b.num_set_bits(), 2u);
+  EXPECT_TRUE(b.get_bit(kNumBits / 2 - 1));
+  EXPECT_TRUE(b.get_bit(kNumBits / 2));
+}
+
+// Test that Bitset::unset_bit() clears bits.
+TYPED_TEST(DenseSetTest_BitsetTest, UnsetBit) {
+  using Bitset = typename TypeParam::Bitset;
+  Bitset b;
+
+  EXPECT_FALSE(b.get_bit(3));
+  b.set_bit(3);
+  EXPECT_TRUE(b.get_bit(3));
+  b.unset_bit(3);
+  EXPECT_FALSE(b.get_bit(3));
+}
+
+// Tests the comparison and bitwise operators of Bitset.
+TYPED_TEST(DenseSetTest_BitsetTest, Operators) {
+  using Bitset = typename TypeParam::Bitset;
+  constexpr size_t kNumBits = TypeParam::kNumBits;
+
+  Bitset b;
+  b.set_bit(0);
+  b.set_bit(1);
+  b.set_bit(4);
+
+  Bitset c;
+  c.set_bit(4);
+  c.set_bit(7);
+
+  EXPECT_EQ(b, b);
+  EXPECT_NE(b, c);
+
+  EXPECT_EQ((b & c).num_set_bits(), 1u);
+  EXPECT_TRUE((b & c).get_bit(4));
+  {
+    Bitset d = b;
+    d &= c;
+    EXPECT_EQ(b & c, d);
+  }
+
+  {
+    Bitset d = b;
+    d |= c;
+    Bitset e;
+    e.set_bit(0);
+    e.set_bit(1);
+    e.set_bit(4);
+    e.set_bit(7);
+    EXPECT_EQ(d, e);
+  }
+
+  EXPECT_EQ((~b).num_set_bits(), kNumBits - b.num_set_bits());
+  {
+    Bitset d;
+    d = ~d;
+    d.unset_bit(0);
+    d.unset_bit(1);
+    d.unset_bit(4);
+    EXPECT_EQ(~b, d);
+  }
+  EXPECT_EQ(~~b, b);
+}
+
+// Tests that Bitset::data() returns a raw representation of the bitset.
+TEST(DenseSetTest_BitsetTest_Data, Data) {
+  Bitset<uint8_t, 3> b;
+  b.set_bit(0 * 8 + 1);
+  b.set_bit(1 * 8 + 2);
+  b.set_bit(2 * 8 + 3);
+  EXPECT_THAT(b.data(), ElementsAre(static_cast<uint8_t>(1 << 1),
+                                    static_cast<uint8_t>(1 << 2),
+                                    static_cast<uint8_t>(1 << 3)));
+}
+
+}  // namespace
+
+}  // namespace internal
+
+namespace {
+
 template <typename T, T kMinValue, T kMaxValue>
 using IntDenseSet =
     DenseSet<T, IntegralDenseSetTraits<T, kMinValue, kMaxValue>>;
@@ -700,4 +917,5 @@ TEST(DenseSetTest, std_set) {
   expect_equivalence();
 }
 
+}  // namespace
 }  // namespace autofill

@@ -147,7 +147,7 @@ class Bitset<Word, 1u> {
   }
 
  private:
-  Word word_;
+  Word word_{};
 };
 
 template <typename T, typename Traits>
