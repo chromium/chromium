@@ -104,6 +104,9 @@ UIView* SecondaryToolbarLocationBarContainerView(
   UIVisualEffectView* _visualEffectView;
   // Content view to hold the main toolbar content above the visual effect view.
   UIView* _contentView;
+
+  // Stack view for the location bar in Diamond.
+  UIStackView* _diamondLocationBarStackView;
 }
 
 @synthesize allButtons = _allButtons;
@@ -192,6 +195,11 @@ UIView* SecondaryToolbarLocationBarContainerView(
   _contentView.backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
 
+  if (IsDiamondPrototypeEnabled()) {
+    _diamondLocationBarStackView = [[UIStackView alloc] init];
+    _diamondLocationBarStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+
   UIView* contentView = _contentView;
 
   if (IsDiamondPrototypeEnabled()) {
@@ -210,6 +218,20 @@ UIView* SecondaryToolbarLocationBarContainerView(
         [UIColor colorNamed:kGrey50Color];
     self.diamondPrototypeButton.layer.cornerRadius = 13;
     [self addSubview:self.self.diamondPrototypeButton];
+
+    self.backButton = [self.buttonFactory backButton];
+    [self.backButton
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisHorizontal];
+    [self.backButton updateHiddenInCurrentSizeClass];
+    self.forwardButton = [self.buttonFactory forwardButton];
+    [self.forwardButton
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisHorizontal];
+    [self.forwardButton updateHiddenInCurrentSizeClass];
+
+    [_diamondLocationBarStackView addArrangedSubview:self.backButton];
+    [_diamondLocationBarStackView addArrangedSubview:self.forwardButton];
 
     self.allButtons = @[ self.diamondPrototypeButton, self.toolsMenuButton ];
 
@@ -256,6 +278,12 @@ UIView* SecondaryToolbarLocationBarContainerView(
     self.collapsedToolbarButton = SecondaryToolbarCollapsedToolbarButton();
     self.locationBarContainer =
         SecondaryToolbarLocationBarContainerView(self.buttonFactory);
+
+    if (IsDiamondPrototypeEnabled()) {
+      [self.locationBarContainer addSubview:_diamondLocationBarStackView];
+      AddSameConstraints(self.locationBarContainer,
+                         _diamondLocationBarStackView);
+    }
 
     // Add locationBarContainer below buttons as it might move under the
     // buttons.
@@ -413,8 +441,14 @@ UIView* SecondaryToolbarLocationBarContainerView(
     return;
   }
 
-  [self.locationBarContainer addSubview:locationBarView];
-  AddSameConstraints(self.locationBarView, self.locationBarContainer);
+  if (IsDiamondPrototypeEnabled()) {
+    // Insert between the two back/foward buttons.
+    [_diamondLocationBarStackView insertArrangedSubview:locationBarView
+                                                atIndex:1];
+  } else {
+    [self.locationBarContainer addSubview:locationBarView];
+    AddSameConstraints(self.locationBarView, self.locationBarContainer);
+  }
 }
 
 - (void)updateTabGroupState:(ToolbarTabGroupState)tabGroupState {

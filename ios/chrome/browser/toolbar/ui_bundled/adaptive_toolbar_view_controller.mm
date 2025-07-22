@@ -260,10 +260,16 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
 - (void)setCanGoForward:(BOOL)canGoForward {
   self.view.forwardButton.enabled = canGoForward;
+  if (IsDiamondPrototypeEnabled()) {
+    self.view.forwardButton.hidden = !canGoForward;
+  }
 }
 
 - (void)setCanGoBack:(BOOL)canGoBack {
   self.view.backButton.enabled = canGoBack;
+  if (IsDiamondPrototypeEnabled()) {
+    self.view.backButton.hidden = !canGoBack;
+  }
 }
 
 - (void)setLoadingState:(BOOL)loading {
@@ -496,6 +502,11 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 // change.
 - (void)updateAllButtonsVisibility {
   for (ToolbarButton* button in self.view.allButtons) {
+    if (IsDiamondPrototypeEnabled()) {
+      if (button == self.view.backButton || button == self.view.forwardButton) {
+        continue;
+      }
+    }
     [button updateHiddenInCurrentSizeClass];
   }
 }
