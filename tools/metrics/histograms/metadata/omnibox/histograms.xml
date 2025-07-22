@@ -642,8 +642,15 @@ Keep consistent with active providers. Doesn't need to include every provider in
     (d), but if neither Omnibox.CharTypedToRepaintLatency.ToPaint nor
     Omnibox.PaintTime regressed, then the regression must be in (d).
 
-    Note: The semantics of this metric on views platforms changed in M62, as
+    Note #1: The semantics of this metric on views platforms changed in M62, as
     previously time (d) was not included in the metric.
+
+    Note #2: The semantics of this metric changed in M130, due to switching over
+    from the `OnCompositingAckDeprecated()` compositor lifecycle function to
+    `OnDidPresentCompositorFrame()`. The new function provides more accurate
+    timings, which also happen to be larger in magnitude than values that were
+    logged prior to M130. For more details, please refer to crbug.com/347322940
+    and crrev.com/c/5857101.
   </summary>
 </histogram>
 
