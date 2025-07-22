@@ -627,7 +627,7 @@ message IframeData {
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 9
+// Next ID: 11
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1 [features = { field_presence: EXPLICIT }];
@@ -653,6 +653,17 @@ message FrameData {
   // Only one frame can control the media session at a time via the media
   // session web API.
   MediaData media_data = 8 [features = { field_presence: EXPLICIT }];
+
+  // The set of tools supported by this Document.
+  repeated ScriptTool script_tools = 9;
+
+  // The set of responses from tools executed in this Document since the last
+  // time page content was requested.
+  //
+  // TODO(khushalsagar): Ideally this should be on ActionsResult, it's not
+  // necessary to fetch an APC just to get the result of an invocation. Make
+  // the switch once all consumers are migrated to use ActionsResult.
+  repeated ScriptToolResponse script_tool_responses = 10;
 
   reserved 7;
 }
@@ -742,6 +753,39 @@ message MediaTranscript {
 
   // Non-negative time since the start of the media.
   int64 start_timestamp_milliseconds = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// The data for tools exposed by the Document.
+message ScriptTool {
+  // The name of the tool. This must be unique within the source Document's
+  // scope.
+  string name = 2 [features = { field_presence: EXPLICIT }];
+
+  // A description of the tool used to understand the capabilities of the tool.
+  string description = 3 [features = { field_presence: EXPLICIT }];
+
+  // A JSON schema string describing the input expected by the tool.
+  string input_schema = 4 [features = { field_presence: EXPLICIT }];
+
+  // Annotations for the tool.
+  ScriptToolAnnotations annotations = 5
+      [features = { field_presence: EXPLICIT }];
+}
+
+// Annotations for the script tool.
+message ScriptToolAnnotations {
+  bool read_only = 1 [features = { field_presence: EXPLICIT }];
+}
+
+message ScriptToolResponse {
+  // The tool which was executed in the last request.
+  ScriptTool source_tool = 1 [features = { field_presence: EXPLICIT }];
+
+  // The set of arguments provided in the execution request.
+  string input_arguments = 2 [features = { field_presence: EXPLICIT }];
+
+  // The result from executing the tool, if the execution was successful.
+  string result = 3 [features = { field_presence: EXPLICIT }];
 }
 
 message TableRowData {

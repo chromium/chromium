@@ -397,6 +397,8 @@ ExperimentalActorPerformActionsFunction::Run() {
       case optimization_guide::proto::Action::kCloseWindow:
       case optimization_guide::proto::Action::kActivateWindow:
       case optimization_guide::proto::Action::kYieldToUser:
+      case optimization_guide::proto::Action::kScriptTool:
+      case optimization_guide::proto::Action::kScrollTo:
       case optimization_guide::proto::Action::ACTION_NOT_SET:
         // No tab id to convert.
         break;

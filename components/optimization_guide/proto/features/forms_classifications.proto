@@ -32,9 +32,13 @@ message FormsClassificationsLoggingData {
   ModelExecutionInfo model_execution_info = 4 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 7
+// Next ID: 8
 message AutofillAiTypeRequest {
   // The context of the page that the form is on.
+  // In practice, only the PageContext::url is set. Notably, annotated page
+  // content is passed through AutofillAiTypeRequest::annotated_page_content.
+  // TODO(crbug.com/389625970): Remove in favor of `url` once most clients set
+  // it.
   PageContext page_context = 1 [features = { field_presence: EXPLICIT }];
 
   // The form to predict values for. It is expected that the values for each
@@ -51,6 +55,10 @@ message AutofillAiTypeRequest {
   // Should include reasoning for debugging purposes.
   bool include_reasoning = 6 [features = { field_presence: IMPLICIT }];
 
+  // The URL of the page that the form is on. This field should replace
+  // `page_context` once most clients set it.
+  string url = 7 [features = { field_presence: IMPLICIT }];
+
   reserved 4;
 }
 
@@ -64,13 +72,15 @@ message AutofillAiTypeResponse {
   repeated FieldTypeResponse field_responses = 1;
 }
 
-// Next ID: 7
+// Next ID: 8
 message FieldTypeResponse {
   // The (zero-based) index of the field among those passed in the request that
   // this prediction refers to.
   int32 field_index = 5 [features = { field_presence: EXPLICIT }];
 
-  // The predicted type for the field.
+  // The predicted type for the field. For backwards compatibility, this will
+  // contain the first or most confident prediction from the model.
+  // This field is deprecated in favor of `all_field_types`.
   int32 field_type = 2 [features = { field_presence: EXPLICIT }];
 
   // Optional formatting metadata for downstream use.
@@ -80,6 +90,10 @@ message FieldTypeResponse {
   // The confidence score for the prediction, ranging from 0.0 to 1.0.
   // Higher values indicate greater confidence in the predicted type.
   float confidence = 4 [features = { field_presence: IMPLICIT }];
+
+  // All predicted types for the field, including the one in `field_type`.
+  // This is the field that should be used for all new multi-type logic.
+  repeated int32 all_field_types = 7;
 
   reserved 1, 6;
 }

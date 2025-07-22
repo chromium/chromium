@@ -251,9 +251,35 @@ message AttemptLoginAction {
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
 
+// Scrolls the DOM element into viewport.
+// Next ID: 5
+message ScrollToAction {
+  ActionTarget target = 3 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 4 [features = { field_presence: EXPLICIT }];
+
+  reserved 1, 2;
+}
+
+// Executes a script tool.
+// Next ID: 5
+message ScriptToolAction {
+  // The Document which provides the associated Tool.
+  DocumentIdentifier document_identifier = 1
+      [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
+
+  // The name of the tool to execute.
+  string tool_name = 3 [features = { field_presence: EXPLICIT }];
+
+  // A serialized JSON string containing the arguments to pass to the tool.
+  string input_arguments = 4 [features = { field_presence: EXPLICIT }];
+}
+
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 19
+// Next ID: 21
 message Action {
   oneof action {
     ClickAction click = 1;
@@ -291,6 +317,10 @@ message Action {
     YieldToUserAction yield_to_user = 17;
 
     AttemptLoginAction attempt_login = 18;
+
+    ScrollToAction scroll_to = 19;
+
+    ScriptToolAction script_tool = 20;
   }
 }
 
