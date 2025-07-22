@@ -6,7 +6,6 @@ package org.chromium.ui.listmenu;
 
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
@@ -29,9 +28,6 @@ import java.util.Set;
 
 @NullMarked
 public class ListMenuUtils {
-
-    private static final int INVALID_ITEM_ID = -1;
-
     /**
      * Creates and configures a {@link ModelListAdapter} for the context menu.
      *
@@ -61,27 +57,7 @@ public class ListMenuUtils {
     @NonNull
     public static ModelListAdapter createAdapter(
             ModelList listItems, Collection<Integer> disabledTypes) {
-        ModelListAdapter adapter =
-                new ModelListAdapter(listItems) {
-                    @Override
-                    public boolean areAllItemsEnabled() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isEnabled(int position) {
-                        int type = getItemViewType(position);
-                        return type != ListItemType.DIVIDER && !disabledTypes.contains(type);
-                    }
-
-                    @Override
-                    public long getItemId(int position) {
-                        if (!isEnabled(position)) return INVALID_ITEM_ID;
-                        ListItem item = (ListItem) getItem(position);
-                        if (!item.model.containsKey(MENU_ITEM_ID)) return INVALID_ITEM_ID;
-                        return item.model.get(MENU_ITEM_ID);
-                    }
-                };
+        ModelListAdapter adapter = new ListMenuItemAdapter(listItems, disabledTypes);
 
         adapter.registerType(
                 ListItemType.DIVIDER,
