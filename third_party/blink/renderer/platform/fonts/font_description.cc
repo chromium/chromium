@@ -78,7 +78,7 @@ FontDescription FontDescription::CreateHashTableEmptyValue() {
   return result;
 }
 
-FontDescription::FontDescription(WTF::HashTableDeletedValueType) {
+FontDescription::FontDescription(HashTableDeletedValueType) {
   UNSAFE_TODO(memset(this, 0, sizeof(FontDescription)));
   fields_.hash_category_ = kHashDeletedValue;
 }

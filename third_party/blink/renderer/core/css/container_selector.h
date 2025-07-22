@@ -25,7 +25,7 @@ class Element;
 class CORE_EXPORT ContainerSelector {
  public:
   ContainerSelector() = default;
-  explicit ContainerSelector(WTF::HashTableDeletedValueType) {
+  explicit ContainerSelector(HashTableDeletedValueType) {
     HashTraits<AtomicString>::ConstructDeletedValue(name_);
   }
   // Used for the purpose of finding the closest container for container units.

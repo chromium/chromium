@@ -68,7 +68,7 @@ class PLATFORM_EXPORT FontPlatformData
   // to this "Deleted" one. It expects the Deleted one to be differentiable
   // from the 0 one (created with the empty constructor), so we can't just
   // set everything to 0.
-  FontPlatformData(WTF::HashTableDeletedValueType);
+  FontPlatformData(HashTableDeletedValueType);
   FontPlatformData();
   FontPlatformData(const FontPlatformData&);
   FontPlatformData(const FontPlatformData& src, float text_size);

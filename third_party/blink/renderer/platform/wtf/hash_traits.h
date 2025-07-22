@@ -409,7 +409,7 @@ struct SimpleClassHashTraits : GenericHashTraits<T> {
     static constexpr bool value = false;
   };
   static void ConstructDeletedValue(T& slot) {
-    new (base::NotNullTag::kNotNull, &slot) T(WTF::kHashTableDeletedValue);
+    new (base::NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const T& value) {
     return value.IsHashTableDeletedValue();

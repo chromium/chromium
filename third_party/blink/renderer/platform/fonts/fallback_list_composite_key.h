@@ -51,7 +51,7 @@ struct FallbackListCompositeKey {
         word_spacing_(0),
         bitmap_fields_(0),
         auxiliary_bitmap_fields_(0) {}
-  FallbackListCompositeKey(WTF::HashTableDeletedValueType)
+  FallbackListCompositeKey(HashTableDeletedValueType)
       : hash_(kDeletedValueHash),
         computed_size_(0),
         letter_spacing_(0),

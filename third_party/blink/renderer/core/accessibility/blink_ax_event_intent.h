@@ -65,7 +65,7 @@ class CORE_EXPORT BlinkAXEventIntent final {
                      ax::mojom::blink::MoveDirection move_direction);
 
   // Used by HashCountedSet to create a deleted BlinkAXEventIntent instance.
-  explicit BlinkAXEventIntent(WTF::HashTableDeletedValueType type);
+  explicit BlinkAXEventIntent(HashTableDeletedValueType type);
 
   ~BlinkAXEventIntent();
 

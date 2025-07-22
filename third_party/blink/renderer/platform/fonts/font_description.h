@@ -130,7 +130,7 @@ class PLATFORM_EXPORT FontDescription {
   FontDescription(const FontDescription&);
 
   static FontDescription CreateHashTableEmptyValue();
-  explicit FontDescription(WTF::HashTableDeletedValueType);
+  explicit FontDescription(HashTableDeletedValueType);
 
   FontDescription& operator=(const FontDescription&);
 

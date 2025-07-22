@@ -49,7 +49,7 @@
 #endif
 
 namespace blink {
-FontPlatformData::FontPlatformData(WTF::HashTableDeletedValueType)
+FontPlatformData::FontPlatformData(HashTableDeletedValueType)
     : is_hash_table_deleted_value_(true) {}
 
 FontPlatformData::FontPlatformData() = default;

@@ -33,7 +33,7 @@ struct IdentifiableTokenKey {
   IdentifiableTokenKey() : is_empty_value(true) {}
   explicit IdentifiableTokenKey(const IdentifiableToken& token)
       : token(token) {}
-  explicit IdentifiableTokenKey(WTF::HashTableDeletedValueType)
+  explicit IdentifiableTokenKey(HashTableDeletedValueType)
       : is_deleted_value(true) {}
 
   bool IsHashTableDeletedValue() const { return is_deleted_value; }

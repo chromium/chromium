@@ -24,8 +24,7 @@ class MasonryItemGroupProperties {
 
  public:
   MasonryItemGroupProperties() = default;
-  MasonryItemGroupProperties(WTF::HashTableDeletedValueType)
-      : is_deleted_(true) {}
+  MasonryItemGroupProperties(HashTableDeletedValueType) : is_deleted_(true) {}
 
   explicit MasonryItemGroupProperties(const GridSpan& item_span)
       : item_span_(item_span) {}

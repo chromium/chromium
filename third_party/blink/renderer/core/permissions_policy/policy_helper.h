@@ -70,7 +70,7 @@ struct FeatureNameMapCacheKey {
   FeatureNameMapCacheKey() : is_empty_value(true) {}
   explicit FeatureNameMapCacheKey(const bool& IsIsolatedContext)
       : IsIsolatedContext(IsIsolatedContext) {}
-  explicit FeatureNameMapCacheKey(WTF::HashTableDeletedValueType)
+  explicit FeatureNameMapCacheKey(HashTableDeletedValueType)
       : is_deleted_value(true) {}
 
   bool IsHashTableDeletedValue() const { return is_deleted_value; }

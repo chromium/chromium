@@ -469,7 +469,7 @@ class ThreadMarker {
   ThreadMarker() : creating_thread_(reinterpret_cast<ThreadState*>(0)) {}
   explicit ThreadMarker(unsigned i)
       : creating_thread_(ThreadState::Current()), num_(i) {}
-  explicit ThreadMarker(WTF::HashTableDeletedValueType deleted)
+  explicit ThreadMarker(HashTableDeletedValueType deleted)
       : creating_thread_(reinterpret_cast<ThreadState*>(-1)) {}
   ~ThreadMarker() {
     EXPECT_TRUE((creating_thread_ == ThreadState::Current()) ||
@@ -3128,7 +3128,7 @@ class KeyWithCopyingMoveConstructor final {
   unsigned GetHash() const { return hash_; }
 
   KeyWithCopyingMoveConstructor() = default;
-  explicit KeyWithCopyingMoveConstructor(WTF::HashTableDeletedValueType)
+  explicit KeyWithCopyingMoveConstructor(HashTableDeletedValueType)
       : hash_(-1) {}
   ~KeyWithCopyingMoveConstructor() = default;
   KeyWithCopyingMoveConstructor(unsigned hash, const String& string)

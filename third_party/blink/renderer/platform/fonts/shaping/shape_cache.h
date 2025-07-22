@@ -55,7 +55,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
         : length_(kEmptyValueLength),
           direction_(static_cast<unsigned>(TextDirection::kLtr)) {}
 
-    SmallStringKey(WTF::HashTableDeletedValueType)
+    SmallStringKey(HashTableDeletedValueType)
         : length_(kDeletedValueLength),
           direction_(static_cast<unsigned>(TextDirection::kLtr)) {}
 

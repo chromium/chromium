@@ -332,7 +332,7 @@ struct FontSelectionRequestKey {
 
   FontSelectionRequestKey(FontSelectionRequest request) : request(request) {}
 
-  explicit FontSelectionRequestKey(WTF::HashTableDeletedValueType)
+  explicit FontSelectionRequestKey(HashTableDeletedValueType)
       : isDeletedValue(true) {}
 
   bool IsHashTableDeletedValue() const { return isDeletedValue; }
@@ -358,7 +358,7 @@ struct FontSelectionCapabilities {
                             FontSelectionRange weight)
       : width(width), slope(slope), weight(weight), is_deleted_value_(false) {}
 
-  FontSelectionCapabilities(WTF::HashTableDeletedValueType)
+  FontSelectionCapabilities(HashTableDeletedValueType)
       : is_deleted_value_(true) {}
 
   bool IsHashTableDeletedValue() const { return is_deleted_value_; }
