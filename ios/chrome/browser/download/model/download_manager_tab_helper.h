@@ -108,6 +108,9 @@ class DownloadManagerTabHelper
   // Checks if the move has been completed.
   void MoveComplete(bool move_completed);
 
+  // Schedules the downloaded file for Auto-deletion if enabled.
+  void MaybeScheduleFileForAutoDeletion();
+
   raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
   __weak id<SnackbarCommands> snackbar_handler_ = nil;
