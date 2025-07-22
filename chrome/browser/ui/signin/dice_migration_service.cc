@@ -55,8 +55,8 @@ bool IsUserEligibleForDiceMigration(Profile* profile) {
     // The user is not implicitly signed in.
     return false;
   }
-  // TODO(crbug.com/399838468): Add more eligibility checks, for example, when
-  // was the last time the user was shown the migration dialog.
+  // TODO(crbug.com/399838468): Add more eligibility checks, for example,
+  // whether there is a persistent auth error.
   return true;
 }
 
@@ -115,8 +115,15 @@ void MaybeShowToast(Browser* browser) {
 const char kDiceMigrationDialogShownCount[] =
     "signin.dice_migration.dialog_shown_count";
 
+const char kDiceMigrationDialogLastShownTime[] =
+    "signin.dice_migration.dialog_last_shown_time";
+
 // static
 const int DiceMigrationService::kMaxDialogShownCount = 3;
+
+// static
+const base::TimeDelta DiceMigrationService::kMinTimeBetweenDialogInDays =
+    base::Days(7);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
                                       kAcceptButtonElementId);
@@ -126,7 +133,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DiceMigrationService,
 DiceMigrationService::DiceMigrationService(Profile* profile)
     : profile_(profile) {
   if (!IsUserEligibleForDiceMigration(profile_) ||
-      GetDialogShownCount() >= kMaxDialogShownCount) {
+      // Show the dialog at most `kMaxDialogShownCount` times.
+      GetDialogShownCount() >= kMaxDialogShownCount ||
+      // Show the dialog at least one week after the last time it was shown.
+      GetDialogLastShownTime() >
+          base::Time::Now() - kMinTimeBetweenDialogInDays) {
     return;
   }
 
@@ -159,12 +170,15 @@ DiceMigrationService::~DiceMigrationService() {
 void DiceMigrationService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(kDiceMigrationDialogShownCount, 0);
+  registry->RegisterTimePref(kDiceMigrationDialogLastShownTime, base::Time());
 }
 
 void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   CHECK(!dialog_trigger_timer_.IsRunning());
   CHECK(!dialog_widget_);
   CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount);
+  CHECK_LT(GetDialogLastShownTime(),
+           base::Time::Now() - kMinTimeBetweenDialogInDays);
 
   if (!IsUserEligibleForDiceMigration(profile_)) {
     return;
@@ -231,7 +245,7 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   // minimized browser window should not increment the count.
   // TODO(crbug.com/399838468): Consider instead tracking the number of times
   // the user actually interacts with the dialog and using that for limiting.
-  IncrementDialogShownCount();
+  UpdateDialogShownCountAndTime();
 
   // TODO(crbug.com/399838468): Close the dialog when the avatar pill is
   // clicked.
@@ -303,8 +317,15 @@ int DiceMigrationService::GetDialogShownCount() const {
   return prefs->GetInteger(kDiceMigrationDialogShownCount);
 }
 
-void DiceMigrationService::IncrementDialogShownCount() {
+base::Time DiceMigrationService::GetDialogLastShownTime() const {
+  PrefService* prefs = profile_->GetPrefs();
+  CHECK(prefs);
+  return prefs->GetTime(kDiceMigrationDialogLastShownTime);
+}
+
+void DiceMigrationService::UpdateDialogShownCountAndTime() {
   PrefService* prefs = profile_->GetPrefs();
   CHECK(prefs);
   prefs->SetInteger(kDiceMigrationDialogShownCount, GetDialogShownCount() + 1);
+  prefs->SetTime(kDiceMigrationDialogLastShownTime, base::Time::Now());
 }

@@ -255,6 +255,80 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetProfile()->GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 2);
 }
 
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      UpdateDialogLastShownTime) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  base::Time time_now = base::Time::Now();
+  ASSERT_LT(
+      GetProfile()->GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime),
+      time_now);
+
+  // Show the migration bubble.
+  base::OneShotTimer& timer =
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting();
+  ASSERT_TRUE(timer.IsRunning());
+  timer.FireNow();
+
+  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  // The dialog last shown time is updated.
+  EXPECT_GE(
+      GetProfile()->GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime),
+      time_now);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       PRE_DoNotShowDialogIfShownLessThanWeekAgo) {
+  ImplicitlySignIn();
+
+  // Set the dialog last shown time to (`kMinTimeBetweenDialogInDays` - 1) days
+  // ago.
+  GetProfile()->GetPrefs()->SetTime(
+      kDiceMigrationDialogLastShownTime,
+      base::Time::Now() -
+          (DiceMigrationService::kMinTimeBetweenDialogInDays - base::Days(1)));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       DoNotShowDialogIfShownLessThanWeekAgo) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  EXPECT_FALSE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       PRE_ShowDialogIfShownMoreThanAWeekAgo) {
+  ImplicitlySignIn();
+
+  // Set the dialog last shown time to (`kMinTimeBetweenDialogInDays` + 1) days
+  // ago.
+  GetProfile()->GetPrefs()->SetTime(
+      kDiceMigrationDialogLastShownTime,
+      base::Time::Now() -
+          (DiceMigrationService::kMinTimeBetweenDialogInDays + base::Days(1)));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
+                       ShowDialogIfShownMoreThanAWeekAgo) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  EXPECT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+}
+
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, ConsumerAccount) {
   // The account managed status is known.
   signin::AccountManagedStatusFinder account_managed_status_finder(

@@ -28,10 +28,15 @@ class Widget;
 // Tracks the number of times the DICe migration dialog has been shown.
 extern const char kDiceMigrationDialogShownCount[];
 
+// Tracks the last time the DICe migration dialog has been shown.
+extern const char kDiceMigrationDialogLastShownTime[];
+
 class DiceMigrationService : public KeyedService, public views::WidgetObserver {
  public:
   // The maximum number of times the dialog can be shown.
   static const int kMaxDialogShownCount;
+  // The minimum time between dialogs.
+  static const base::TimeDelta kMinTimeBetweenDialogInDays;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAcceptButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
@@ -57,7 +62,8 @@ class DiceMigrationService : public KeyedService, public views::WidgetObserver {
   void ShowDiceMigrationOfferDialogIfUserEligible();
 
   int GetDialogShownCount() const;
-  void IncrementDialogShownCount();
+  base::Time GetDialogLastShownTime() const;
+  void UpdateDialogShownCountAndTime();
 
   raw_ptr<Profile> profile_ = nullptr;
   base::OneShotTimer dialog_trigger_timer_;
