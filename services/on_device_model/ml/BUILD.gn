@@ -50,10 +50,11 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       "session_accessor.cc",
       "ts_model.cc",
     ]
-    if (is_ios) {
-      sources += [ "gpu_blocklist_ios.cc" ]
-    } else {
+    if (use_blink) {
       sources += [ "gpu_blocklist.cc" ]
+    } else {
+      assert(is_ios)
+      sources += [ "gpu_blocklist_ios.cc" ]
     }
 
     deps = [

@@ -10,13 +10,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "gpu/config/webgpu_blocklist_impl.h"
-#include "third_party/dawn/include/dawn/webgpu_cpp.h"
-
-#if !BUILDFLAG(IS_IOS)
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_util.h"
-#endif
+#include "gpu/config/webgpu_blocklist_impl.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"
 
 namespace ml {
 
@@ -65,7 +62,6 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
       WebGPUBlocklistReason::Consteval22ndBit |
       WebGPUBlocklistReason::WindowsARM;
 
-#if !BUILDFLAG(IS_IOS)
   // Take a first pass at checking the blocklist. Creating a wgpu::Adapter can
   // crash in some situations, so use gpu::GPUInfo to avoid this. Using
   // wgpu::Adapter should be more accurate, so also check that later.
@@ -93,7 +89,6 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
       return GpuBlockedReason::kBlocklisted;
     }
   }
-#endif
 
   QueryData query_data;
   if (!api.QueryGPUAdapter(
