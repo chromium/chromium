@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "crypto/keypair.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
@@ -67,18 +68,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     virtual ~PrivateKey();
 
     // Sign returns a signature over |message|.
-    virtual std::vector<uint8_t> Sign(base::span<const uint8_t> message) = 0;
+    virtual std::vector<uint8_t> Sign(base::span<const uint8_t> message);
 
     // GetX962PublicKey returns the elliptic-curve public key encoded in X9.62
     // format. Only elliptic-curve based private keys can be represented in this
     // format and calling this function on other types of keys will crash.
-    virtual std::vector<uint8_t> GetX962PublicKey() const;
+    std::vector<uint8_t> GetX962PublicKey() const;
 
     // GetPKCS8PrivateKey returns the private key encoded in ASN.1, DER, PKCS#8
     // format.
-    virtual std::vector<uint8_t> GetPKCS8PrivateKey() const = 0;
+    std::vector<uint8_t> GetPKCS8PrivateKey() const;
 
     virtual std::unique_ptr<PublicKey> GetPublicKey() const = 0;
+
+   protected:
+    explicit PrivateKey(crypto::keypair::PrivateKey key);
+
+    crypto::keypair::PrivateKey key_;
   };
 
   // Encapsulates information corresponding to one registered key on the virtual
