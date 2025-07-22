@@ -34,6 +34,7 @@ export interface ComposeboxElement {
     imageUploadButton: CrIconButtonElement,
     input: HTMLInputElement,
     composebox: HTMLElement,
+    submitIcon: CrIconButtonElement,
   };
 }
 
@@ -180,7 +181,8 @@ export class ComposeboxElement extends I18nMixinLit
         changedProperties as Map<PropertyKey, unknown>;
 
     if (changedPrivateProperties.has('files_')) {
-      this.computeInputsDisabled_();
+      this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
+      this.submitEnabled_ = this.submitEnabled_ || this.files_.size > 0;
     }
   }
 
@@ -190,10 +192,6 @@ export class ComposeboxElement extends I18nMixinLit
 
   resetText() {
     this.$.input.value = '';
-  }
-
-  private computeInputsDisabled_() {
-    this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
   }
 
   protected onDeleteFile_(e: CustomEvent) {

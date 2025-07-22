@@ -12,7 +12,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from '../test_support.js';
+import {assertStyle, installMock} from '../test_support.js';
 
 function generateZeroId(): string {
   // Generate 128 bit unique identifier.
@@ -126,13 +126,7 @@ suite('NewTabPageComposeboxTest', () => {
         'addFile', Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // Check submit button disabled.
-    assertEquals(
-        window
-            .getComputedStyle(
-                $$<HTMLElement>(composeboxElement, '#submitIcon')!)
-            .cursor,
-        'default');
-
+    assertStyle(composeboxElement.$.submitIcon, 'cursor', 'default');
     // Add input.
     composeboxElement.$.input.value = 'test';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
@@ -146,12 +140,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Check submit button enabled and file uploaded.
-    assertEquals(
-        window
-            .getComputedStyle(
-                $$<HTMLElement>(composeboxElement, '#submitIcon')!)
-            .cursor,
-        'pointer');
+    assertStyle(composeboxElement.$.submitIcon, 'cursor', 'pointer');
     assertEquals(composeboxElement.$.carousel.files.length, 1);
 
     // Clear input.
@@ -162,12 +151,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(handler.getCallCount('clearFiles'), 1);
 
     // Check submit button disabled and files empty.
-    assertEquals(
-        window
-            .getComputedStyle(
-                $$<HTMLElement>(composeboxElement, '#submitIcon')!)
-            .cursor,
-        'default');
+    assertStyle(composeboxElement.$.submitIcon, 'cursor', 'default');
     assertEquals(composeboxElement.$.carousel.files.length, 0);
 
     // Close composebox.
@@ -179,9 +163,11 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload image', async () => {
     createComposeboxElement();
+    assertStyle(composeboxElement.$.submitIcon, 'cursor', 'default');
     const token = {low: BigInt(1), high: BigInt(2)};
     await uploadFileAndVerify(
         token, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+    assertStyle(composeboxElement.$.submitIcon, 'cursor', 'pointer');
   });
 
   test('upload empty file fails', async () => {
@@ -444,9 +430,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.input.value = 'test';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     await microtasksFinished();
-    const submitIcon = $$<HTMLElement>(composeboxElement, '#submitIcon');
-    assertTrue(!!submitIcon);
-    submitIcon.click();
+    composeboxElement.$.submitIcon.click();
     await microtasksFinished();
 
     // Assert call occurs.
@@ -462,9 +446,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.input.value = '';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     await microtasksFinished();
-    const submitIcon = $$<HTMLElement>(composeboxElement, '#submitIcon');
-    assertTrue(!!submitIcon);
-    submitIcon.click();
+    composeboxElement.$.submitIcon.click();
     await microtasksFinished();
 
     // Assert call does not occur.
@@ -476,11 +458,9 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.input.value = ' ';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     await microtasksFinished();
-    const submitIcon = $$<HTMLElement>(composeboxElement, '#submitIcon');
-    assertTrue(!!submitIcon);
 
     // Assert.
-    assertTrue(submitIcon.hasAttribute('disabled'));
+    assertTrue(composeboxElement.$.submitIcon.hasAttribute('disabled'));
   });
 
   test('keydown submit only works for enter', async () => {
