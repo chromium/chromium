@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/image_annotation/public/cpp/image_processor.h"
 
 #include <cmath>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -44,8 +40,8 @@ SkBitmap GenCheckerboardBitmap(const int dim) {
   for (int row = 0; row < dim; ++row) {
     for (int col = 0; col < dim; ++col) {
       const bool black = ((row / check_dim + col / check_dim) % 2) == 1;
-      uint8_t* const byte_pos =
-          pixels + row * out.rowBytes() + col * out.bytesPerPixel();
+      uint8_t* const byte_pos = UNSAFE_TODO(pixels + row * out.rowBytes() +
+                                            col * out.bytesPerPixel());
 
       *reinterpret_cast<uint32_t*>(byte_pos) =
           black ? SK_ColorBLACK : SK_ColorWHITE;
@@ -68,7 +64,8 @@ double CalcImageError(const SkBitmap& orig, const SkBitmap& comp) {
       const auto comp_col = SkColor4f::FromColor(comp.getColor(col, row));
 
       for (int i = 0; i < 4; ++i) {
-        sum += std::pow(orig_col.vec()[i] - comp_col.vec()[i], 2);
+        sum += std::pow(
+            UNSAFE_TODO(orig_col.vec()[i]) - UNSAFE_TODO(comp_col.vec()[i]), 2);
       }
     }
   }

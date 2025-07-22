@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/pattern.h"
@@ -132,9 +128,10 @@ auto kMetadataAllowlist = std::to_array<const char*>({
 
 bool IsTraceArgumentNameAllowlisted(const char* const* granular_filter,
                                     const char* arg_name) {
-  for (int i = 0; granular_filter[i] != nullptr; ++i) {
-    if (base::MatchPattern(arg_name, granular_filter[i]))
+  for (int i = 0; UNSAFE_TODO(granular_filter[i]) != nullptr; ++i) {
+    if (base::MatchPattern(arg_name, UNSAFE_TODO(granular_filter[i]))) {
       return true;
+    }
   }
 
   return false;
@@ -146,8 +143,8 @@ bool IsTraceEventArgsAllowlisted(
     base::trace_event::ArgumentNameFilterPredicate* arg_name_filter) {
   DCHECK(arg_name_filter);
   base::CStringTokenizer category_group_tokens(
-      category_group_name, category_group_name + strlen(category_group_name),
-      ",");
+      category_group_name,
+      UNSAFE_TODO(category_group_name + strlen(category_group_name)), ",");
   while (category_group_tokens.GetNext()) {
     std::string_view category_group_token = category_group_tokens.token_piece();
     for (int i = 0; kEventArgsAllowlist[i].category_name != nullptr; ++i) {

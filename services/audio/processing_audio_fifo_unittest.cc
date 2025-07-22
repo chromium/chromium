@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/audio/processing_audio_fifo.h"
 
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -57,8 +53,8 @@ void VerifyAudioDataEqual(const media::AudioBus& first,
   DCHECK_EQ(first.channels(), second.channels());
   DCHECK_EQ(first.frames(), second.frames());
   for (int ch = 0; ch < first.channels(); ++ch) {
-    EXPECT_EQ(0, memcmp(first.channel(ch), second.channel(ch),
-                        sizeof(float) * first.frames()));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(first.channel(ch), second.channel(ch),
+                                    sizeof(float) * first.frames())));
   }
 }
 

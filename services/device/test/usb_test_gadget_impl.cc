@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -104,7 +99,7 @@ bool ReadFile(const base::FilePath& file_path, std::string* content) {
   int rv;
   do {
     char buf[4096];
-    rv = file.ReadAtCurrentPos(buf, sizeof buf);
+    rv = UNSAFE_TODO(file.ReadAtCurrentPos(buf, sizeof buf));
     if (rv == -1) {
       LOG(ERROR) << "Cannot read " << file_path.MaybeAsASCII() << ": "
                  << base::File::ErrorToString(file.error_details());

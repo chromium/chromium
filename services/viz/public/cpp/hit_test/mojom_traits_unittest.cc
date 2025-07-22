@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -81,9 +77,9 @@ TEST(StructTraitsTest, TransformImmutable) {
   auto t = gfx::Transform::RowMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
                                     14, 15, 16);
   uint8_t mem[sizeof(t)];
-  std::memcpy(&mem, &t, sizeof(t));
+  UNSAFE_TODO(std::memcpy(&mem, &t, sizeof(t)));
   EXPECT_FALSE(t.IsIdentity());
-  EXPECT_EQ(0, std::memcmp(&t, &mem, sizeof(t)));
+  UNSAFE_TODO(EXPECT_EQ(0, std::memcmp(&t, &mem, sizeof(t))));
 }
 
 }  // namespace viz

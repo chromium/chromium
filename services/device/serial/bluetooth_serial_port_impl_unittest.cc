@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 
 #include <string>
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -235,7 +231,7 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
             // EXPECT_EQ only does a shallow comparison, so it's necessary to
             // iterate through both objects and compare each character.
             for (int i = 0; i < buffer_size; i++) {
-              EXPECT_EQ(buf->data()[i], kBuffer[i])
+              UNSAFE_TODO(EXPECT_EQ(buf->data()[i], kBuffer[i]))
                   << "buffer comparison failed at index " << i;
             }
             std::move(success_callback).Run(buffer_size);
@@ -276,7 +272,7 @@ TEST_F(BluetoothSerialPortImplTest, StartReadingTest) {
   EXPECT_EQ(MOJO_RESULT_OK, ReadConsumerData(consumer, &consumer_data));
   ASSERT_EQ(kBufferNumBytes, consumer_data.size());
   for (size_t i = 0; i < consumer_data.size(); i++) {
-    EXPECT_EQ(consumer_data[i], kBuffer[i])
+    UNSAFE_TODO(EXPECT_EQ(consumer_data[i], kBuffer[i]))
         << "buffer comparison failed at index " << i;
   }
 
@@ -483,7 +479,7 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
               EXPECT_EQ(buffer_size, static_cast<int>(actually_written_bytes1));
               DCHECK(!pre_flush_send_callback);
               for (int i = 0; i < buffer_size; i++) {
-                EXPECT_EQ(buf->data()[i], pre_flush_data[i])
+                UNSAFE_TODO(EXPECT_EQ(buf->data()[i], pre_flush_data[i]))
                     << "buffer comparison failed at index " << i;
               }
               pre_flush_send_callback = std::move(callback);
@@ -544,7 +540,7 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
             EXPECT_EQ(buffer_size, static_cast<int>(actually_written_bytes1));
             DCHECK(!pre_flush_send_callback);
             for (int i = 0; i < buffer_size; i++) {
-              EXPECT_EQ(buf->data()[i], post_flush_data[i])
+              UNSAFE_TODO(EXPECT_EQ(buf->data()[i], post_flush_data[i]))
                   << "buffer comparison failed at index " << i;
             }
             std::move(callback).Run(buffer_size);

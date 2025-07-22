@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/geolocation/wifi_data_provider_common.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
@@ -21,9 +17,10 @@ std::string MacAddressAsString(const uint8_t mac_as_int[6]) {
   // |mac_as_int| is big-endian. Write in byte chunks.
   // Format is XX-XX-XX-XX-XX-XX.
   static constexpr char kMacFormatString[] = "%02x-%02x-%02x-%02x-%02x-%02x";
-  return base::StringPrintf(kMacFormatString, mac_as_int[0], mac_as_int[1],
-                            mac_as_int[2], mac_as_int[3], mac_as_int[4],
-                            mac_as_int[5]);
+  return base::StringPrintf(
+      kMacFormatString, mac_as_int[0], UNSAFE_TODO(mac_as_int[1]),
+      UNSAFE_TODO(mac_as_int[2]), UNSAFE_TODO(mac_as_int[3]),
+      UNSAFE_TODO(mac_as_int[4]), UNSAFE_TODO(mac_as_int[5]));
 }
 
 WifiDataProviderCommon::WifiDataProviderCommon() = default;

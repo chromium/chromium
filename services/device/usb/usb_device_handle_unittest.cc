@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/usb/usb_device_handle.h"
 
 #include <stddef.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
@@ -185,7 +181,7 @@ TEST_F(UsbDeviceHandleTest, InterruptTransfer) {
   EXPECT_EQ(static_cast<size_t>(in_buffer->size()),
             in_completion.transferred());
   for (size_t i = 0; i < in_completion.transferred(); ++i) {
-    EXPECT_EQ(out_buffer->front()[i], in_buffer->front()[i])
+    UNSAFE_TODO(EXPECT_EQ(out_buffer->front()[i], in_buffer->front()[i]))
         << "Mismatch at index " << i << ".";
   }
 
@@ -251,7 +247,7 @@ TEST_F(UsbDeviceHandleTest, BulkTransfer) {
   EXPECT_EQ(static_cast<size_t>(in_buffer->size()),
             in_completion.transferred());
   for (size_t i = 0; i < in_completion.transferred(); ++i) {
-    EXPECT_EQ(out_buffer->front()[i], in_buffer->front()[i])
+    UNSAFE_TODO(EXPECT_EQ(out_buffer->front()[i], in_buffer->front()[i]))
         << "Mismatch at index " << i << ".";
   }
 
@@ -286,7 +282,7 @@ TEST_F(UsbDeviceHandleTest, ControlTransfer) {
   const char expected_str[] = "\x18\x03G\0o\0o\0g\0l\0e\0 \0I\0n\0c\0.\0";
   EXPECT_EQ(sizeof(expected_str) - 1, completion.transferred());
   for (size_t i = 0; i < completion.transferred(); ++i) {
-    EXPECT_EQ(expected_str[i], buffer->front()[i])
+    UNSAFE_TODO(EXPECT_EQ(expected_str[i], buffer->front()[i]))
         << "Mismatch at index " << i << ".";
   }
 

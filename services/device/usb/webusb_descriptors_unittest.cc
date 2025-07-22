@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/usb/webusb_descriptors.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "services/device/usb/mock_usb_device_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -207,11 +203,11 @@ TEST_F(WebUsbDescriptorsTest, UrlDescriptor) {
 
 TEST_F(WebUsbDescriptorsTest, EntireUrlDescriptor) {
   GURL url;
-  ASSERT_TRUE(ParseWebUsbUrlDescriptor(
+  UNSAFE_TODO(ASSERT_TRUE(ParseWebUsbUrlDescriptor(
       std::vector<uint8_t>(
           kExampleUrlDescriptor255,
           kExampleUrlDescriptor255 + sizeof(kExampleUrlDescriptor255)),
-      &url));
+      &url)));
   EXPECT_EQ(GURL("chrome-extension://extensionid/example.html"), url);
 }
 

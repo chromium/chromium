@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/common/frame_sinks/copy_output_result.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
@@ -1397,8 +1393,9 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
   expected_bitmap.allocPixels(SkImageInfo::MakeN32Premul(7, 8, adobe_rgb));
   expected_bitmap.eraseARGB(123, 213, 77, 33);
   EXPECT_EQ(expected_bitmap.computeByteSize(), out_bitmap.computeByteSize());
-  EXPECT_EQ(0, std::memcmp(expected_bitmap.getPixels(), out_bitmap.getPixels(),
-                           expected_bitmap.computeByteSize()));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, std::memcmp(expected_bitmap.getPixels(), out_bitmap.getPixels(),
+                     expected_bitmap.computeByteSize())));
   EXPECT_TRUE(SkColorSpace::Equals(expected_bitmap.colorSpace(),
                                    out_bitmap.colorSpace()));
 }

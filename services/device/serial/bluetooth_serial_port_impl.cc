@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 
 #include <limits.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
@@ -292,7 +288,8 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceive(
   DCHECK(out_stream_);
   size_t bytes_to_copy = std::min(pending_write_buffer_.size(),
                                   static_cast<size_t>(num_bytes_received));
-  std::copy(receive_buffer->data(), receive_buffer->data() + bytes_to_copy,
+  std::copy(receive_buffer->data(),
+            UNSAFE_TODO(receive_buffer->data() + bytes_to_copy),
             pending_write_buffer_.data());
   out_stream_->EndWriteData(bytes_to_copy);
   if (pending_write_buffer_.size() < static_cast<size_t>(num_bytes_received)) {

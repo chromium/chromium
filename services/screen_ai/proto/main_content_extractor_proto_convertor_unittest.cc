@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 
 #include <array>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -49,9 +45,10 @@ ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(int root_id,
 
   for (int i = 0; i < nodes_count; i++) {
     ui::AXNodeData node;
-    node.id = nodes_template[i].node_id;
-    for (int j = 0; j < nodes_template[i].child_count; j++)
-      node.child_ids.push_back(nodes_template[i].child_ids[j]);
+    node.id = UNSAFE_TODO(nodes_template[i]).node_id;
+    for (int j = 0; j < UNSAFE_TODO(nodes_template[i]).child_count; j++) {
+      node.child_ids.push_back(UNSAFE_TODO(nodes_template[i]).child_ids[j]);
+    }
     node.relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
     update.nodes.push_back(node);
   }

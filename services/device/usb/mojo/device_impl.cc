@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/device/usb/mojo/device_impl.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -96,7 +92,7 @@ bool IsAndroidSecurityKeyRequest(
   return params->type == mojom::UsbControlTransferType::VENDOR &&
          params->request == 52 && params->index == 1 &&
          data.size() >= strlen(magic) &&
-         memcmp(data.data(), magic, strlen(magic)) == 0;
+         UNSAFE_TODO(memcmp(data.data(), magic, strlen(magic))) == 0;
 }
 
 // Returns the sum of `packet_lengths`, or nullopt if the sum would overflow.

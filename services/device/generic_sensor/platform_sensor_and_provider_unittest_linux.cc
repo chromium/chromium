@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -276,7 +272,7 @@ class PlatformSensorAndProviderLinuxTest : public ::testing::Test {
         // other entries in any of the existing tests. This could be changed and
         // parameterized in the future if necessary.
         const auto sensor_file = base::FilePath(sensor_dir).Append(paths[0]);
-        WriteValueToFile(sensor_file, values[i]);
+        WriteValueToFile(sensor_file, UNSAFE_TODO(values[i]));
       }
     }
   }

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/serial/serial_io_handler_posix.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -32,7 +28,8 @@ class SerialIoHandlerPosixTest : public testing::Test {
     serial_io_handler_posix_->parity_check_enabled_ = parity_check_enabled;
     serial_io_handler_posix_->num_chars_stashed_ = num_chars_stashed;
     for (size_t i = 0; i < num_chars_stashed; ++i) {
-      serial_io_handler_posix_->chars_stashed_[i] = chars_stashed[i];
+      serial_io_handler_posix_->chars_stashed_[i] =
+          UNSAFE_TODO(chars_stashed[i]);
     }
   }
 
@@ -49,20 +46,21 @@ class SerialIoHandlerPosixTest : public testing::Test {
     bool break_detected = false;
     bool parity_error_detected = false;
     size_t new_bytes_read = serial_io_handler_posix_->CheckReceiveError(
-        base::span(reinterpret_cast<uint8_t*>(buffer), buffer_len), bytes_read,
-        break_detected, parity_error_detected);
+        UNSAFE_TODO(base::span(reinterpret_cast<uint8_t*>(buffer), buffer_len)),
+        bytes_read, break_detected, parity_error_detected);
 
     EXPECT_EQ(error_detect_state_expected,
               serial_io_handler_posix_->error_detect_state_);
     EXPECT_EQ(num_chars_stashed_expected,
               serial_io_handler_posix_->num_chars_stashed_);
     for (size_t i = 0; i < num_chars_stashed_expected; ++i) {
-      EXPECT_EQ(chars_stashed_expected[i],
-                static_cast<char>(serial_io_handler_posix_->chars_stashed_[i]));
+      UNSAFE_TODO(EXPECT_EQ(
+          chars_stashed_expected[i],
+          static_cast<char>(serial_io_handler_posix_->chars_stashed_[i])));
     }
     EXPECT_EQ(new_bytes_read_expected, new_bytes_read);
     for (size_t i = 0; i < new_bytes_read_expected; ++i) {
-      EXPECT_EQ(buffer_expected[i], buffer[i]);
+      UNSAFE_TODO(EXPECT_EQ(buffer_expected[i], buffer[i]));
     }
     EXPECT_EQ(break_detected_expected, break_detected);
     EXPECT_EQ(parity_error_detected_expected, parity_error_detected);

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 
 namespace tracing {
@@ -31,7 +27,7 @@ std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
     const uint8_t* data,
     size_t size) {
   std::vector<perfetto::TracePacket> packets;
-  const uint8_t* data_end = data + size;
+  const uint8_t* data_end = UNSAFE_TODO(data + size);
   const uint8_t* packet_ptr = data;
 
   // Only one fragmented packet can be finalized per call to Parse(), so clear
@@ -47,7 +43,7 @@ std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
       size_t bytes_to_copy = kMaxHeaderSize - prev_header_size;
       next_packet_.header.insert(
           next_packet_.header.end(), packet_ptr,
-          std::min(packet_ptr + bytes_to_copy, data_end));
+          std::min(UNSAFE_TODO(packet_ptr + bytes_to_copy), data_end));
       DCHECK(next_packet_.header.size() <= kMaxHeaderSize);
       if (next_packet_.header.size() < kMinHeaderSize) {
         // Not enough data -- try again later.
@@ -65,7 +61,8 @@ std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
         return packets;
       }
       // Find the start of the packet data after the size field.
-      packet_ptr += sizeof(kPacketTag) + size_field_size - prev_header_size;
+      UNSAFE_TODO(packet_ptr +=
+                  sizeof(kPacketTag) + size_field_size - prev_header_size);
     }
 
     // We've now parsed the the proto preamble and the size field for our
@@ -73,7 +70,7 @@ std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
     DCHECK(next_packet_.parsed_size);
     size_t remaining_size =
         next_packet_.parsed_size - next_packet_.partial_data.size();
-    if (packet_ptr + remaining_size > data_end) {
+    if (UNSAFE_TODO(packet_ptr + remaining_size) > data_end) {
       // Save remaining bytes into overflow buffer and try again later.
       next_packet_.partial_data.insert(next_packet_.partial_data.end(),
                                        packet_ptr, data_end);
@@ -89,9 +86,9 @@ std::vector<perfetto::TracePacket> TracePacketTokenizer::Parse(
       packets.back().AddSlice(&assembled_packet_.partial_data[0],
                               assembled_packet_.partial_data.size());
     }
-    CHECK_LE(packet_ptr + remaining_size, data_end);
+    UNSAFE_TODO(CHECK_LE(packet_ptr + remaining_size, data_end));
     packets.back().AddSlice(packet_ptr, remaining_size);
-    packet_ptr += remaining_size;
+    UNSAFE_TODO(packet_ptr += remaining_size);
 
     // Start a new packet.
     next_packet_ = Packet();

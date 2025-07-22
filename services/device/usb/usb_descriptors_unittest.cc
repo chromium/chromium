@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/usb/usb_descriptors.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/usb/mock_usb_device_handle.h"
@@ -224,11 +220,11 @@ class UsbDescriptorsTest : public ::testing::Test {};
 TEST_F(UsbDescriptorsTest, ParseDescriptor) {
   std::vector<uint8_t> buffer;
   buffer.insert(buffer.end(), kDeviceDescriptor,
-                kDeviceDescriptor + sizeof(kDeviceDescriptor));
+                UNSAFE_TODO(kDeviceDescriptor + sizeof(kDeviceDescriptor)));
   buffer.insert(buffer.end(), kConfig1Descriptor,
-                kConfig1Descriptor + sizeof(kConfig1Descriptor));
+                UNSAFE_TODO(kConfig1Descriptor + sizeof(kConfig1Descriptor)));
   buffer.insert(buffer.end(), kConfig2Descriptor,
-                kConfig2Descriptor + sizeof(kConfig2Descriptor));
+                UNSAFE_TODO(kConfig2Descriptor + sizeof(kConfig2Descriptor)));
 
   UsbDeviceDescriptor descriptor;
   ASSERT_TRUE(descriptor.Parse(buffer));
@@ -293,20 +289,22 @@ TEST_F(UsbDescriptorsTest, InterfaceAssociations) {
 
   mojom::UsbConfigurationInfoPtr config =
       BuildUsbConfigurationInfoPtr(1, false, false, 0);
-  config->extra_data.assign(kIAD1, kIAD1 + sizeof(kIAD1));
+  config->extra_data.assign(kIAD1, UNSAFE_TODO(kIAD1 + sizeof(kIAD1)));
   config->extra_data.insert(config->extra_data.end(), kIAD2,
-                            kIAD2 + sizeof(kIAD2));
+                            UNSAFE_TODO(kIAD2 + sizeof(kIAD2)));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(0, 0, 255, 255, 255));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(1, 0, 255, 255, 255));
   mojom::UsbInterfaceInfoPtr iface1a =
       BuildUsbInterfaceInfoPtr(1, 1, 255, 255, 255);
-  iface1a->alternates[0]->extra_data.assign(kIAD3, kIAD3 + sizeof(kIAD3));
+  iface1a->alternates[0]->extra_data.assign(kIAD3,
+                                            UNSAFE_TODO(kIAD3 + sizeof(kIAD3)));
   config->interfaces.push_back(std::move(iface1a));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(2, 0, 255, 255, 255));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(3, 0, 255, 255, 255));
   mojom::UsbInterfaceInfoPtr iface4 =
       BuildUsbInterfaceInfoPtr(4, 0, 255, 255, 255);
-  iface4->alternates[0]->extra_data.assign(kIAD4, kIAD4 + sizeof(kIAD4));
+  iface4->alternates[0]->extra_data.assign(kIAD4,
+                                           UNSAFE_TODO(kIAD4 + sizeof(kIAD4)));
   config->interfaces.push_back(std::move(iface4));
   config->interfaces.push_back(BuildUsbInterfaceInfoPtr(5, 0, 255, 255, 255));
   AssignFirstInterfaceNumbers(config.get());
@@ -338,7 +336,7 @@ TEST_F(UsbDescriptorsTest, CorruptInterfaceAssociations) {
     static const uint8_t kIAD[] = {0x01};
     mojom::UsbConfigurationInfoPtr config =
         BuildUsbConfigurationInfoPtr(1, false, false, 0);
-    config->extra_data.assign(kIAD, kIAD + sizeof(kIAD));
+    config->extra_data.assign(kIAD, UNSAFE_TODO(kIAD + sizeof(kIAD)));
     AssignFirstInterfaceNumbers(config.get());
   }
   {
@@ -347,7 +345,7 @@ TEST_F(UsbDescriptorsTest, CorruptInterfaceAssociations) {
                                    0x00, 0x00, 0x00, 0x00};
     mojom::UsbConfigurationInfoPtr config =
         BuildUsbConfigurationInfoPtr(1, false, false, 0);
-    config->extra_data.assign(kIAD, kIAD + sizeof(kIAD));
+    config->extra_data.assign(kIAD, UNSAFE_TODO(kIAD + sizeof(kIAD)));
     AssignFirstInterfaceNumbers(config.get());
   }
   {
@@ -357,7 +355,7 @@ TEST_F(UsbDescriptorsTest, CorruptInterfaceAssociations) {
     mojom::UsbConfigurationInfoPtr config =
         BuildUsbConfigurationInfoPtr(1, false, false, 0);
     config->interfaces.push_back(BuildUsbInterfaceInfoPtr(0, 0, 255, 255, 255));
-    config->extra_data.assign(kIAD, kIAD + sizeof(kIAD));
+    config->extra_data.assign(kIAD, UNSAFE_TODO(kIAD + sizeof(kIAD)));
     AssignFirstInterfaceNumbers(config.get());
 
     EXPECT_EQ(0, config->interfaces[0]->interface_number);
