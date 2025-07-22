@@ -829,7 +829,7 @@ ci.thin_tester(
                 swarming = targets.swarming(
                     expiration_sec = 18000,
                     hard_timeout_sec = 14400,
-                    shards = 10,
+                    shards = 20,
                 ),
             ),
             "content_browsertests": targets.mixin(
