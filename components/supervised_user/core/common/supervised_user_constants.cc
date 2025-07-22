@@ -67,7 +67,6 @@ const char kSkipParentApprovalToInstallExtensions[] =
     "SkipParentApprovalToInstallExtensions";
 
 const char kChildAccountSUID[] = "ChildAccountSUID";
-const char kSupervisedProfileSUID[] = "SupervisedProfileSUID";
 
 const char kChromeAvatarIndex[] = "chrome-avatar-index";
 const char kChromeOSAvatarIndex[] = "chromeos-avatar-index";

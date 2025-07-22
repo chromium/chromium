@@ -125,18 +125,6 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
                                     /*expected_count=*/2);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Death tests tend to be flaky on Android or ChromeOS.
-TEST_F(SupervisedUserServiceTest, CantEnableFilteringUsingUserControls) {
-  GTEST_FLAG_SET(death_test_style, "threadsafe");
-  EXPECT_DEATH_IF_SUPPORTED(
-      EnableBrowserContentFilters(
-          *supervised_user_test_environment_.pref_service()),
-      "Users who are subject to Family Link parental controls cannot change "
-      "browser content filters");
-}
-#endif
-
 // Tests that changes to the allow or blocklist of the parent configuration are
 // recorded.
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
@@ -196,6 +184,13 @@ class SupervisedUserServiceTestUnsupervised
  public:
   SupervisedUserServiceTestUnsupervised()
       : SupervisedUserServiceTestBase(/*is_supervised=*/false) {}
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kPropagateDeviceContentFiltersToSupervisedUser};
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 // Tests that web approvals are not enabled for unsupervised users.
@@ -241,18 +236,22 @@ TEST_F(SupervisedUserServiceTestUnsupervised, CyclesThroughFilteringSettings) {
   ASSERT_EQ(WebFilterType::kDisabled,
             supervised_user_test_environment_.url_filter()->GetWebFilterType());
 
+#if BUILDFLAG(IS_ANDROID)
   // Browser content filtering is functionally equivalent to
   // WebFilterType::kTryToBlockMatureSites with empty manual allow and
   // blocklists.
-  EnableBrowserContentFilters(
-      *supervised_user_test_environment_.pref_service());
+  supervised_user_test_environment_.service()
+      ->browser_content_filters_observer_weak_ptr()
+      ->SetEnabled(true);
   EXPECT_EQ(WebFilterType::kTryToBlockMatureSites,
             supervised_user_test_environment_.url_filter()->GetWebFilterType());
 
-  DisableBrowserContentFilters(
-      *supervised_user_test_environment_.pref_service());
+  supervised_user_test_environment_.service()
+      ->browser_content_filters_observer_weak_ptr()
+      ->SetEnabled(false);
   EXPECT_EQ(WebFilterType::kDisabled,
             supervised_user_test_environment_.url_filter()->GetWebFilterType());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // "Try to block mature sites" is the default setting for child accounts
   // (profiles supervised by the Family Link).

@@ -11,6 +11,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
@@ -19,8 +20,10 @@
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -70,6 +73,34 @@ class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
               (const GURL& url, ResultCallback callback));
 };
 
+std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess();
+  return std::make_unique<supervised_user::TestSupervisedUserService>(
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      *profile->GetPrefs(),
+      *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()),
+      SyncServiceFactory::GetInstance()->GetForProfile(profile),
+      std::make_unique<MockSupervisedUserURLFilter>(
+          *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
+          std::make_unique<
+              supervised_user::KidsChromeManagementURLCheckerClient>(
+              identity_manager, url_loader_factory, *profile->GetPrefs(),
+              platform_delegate->GetCountryCode(),
+              platform_delegate->GetChannel())),
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile));
+}
+
 class ClassifyUrlNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
  protected:
@@ -81,9 +112,7 @@ class ClassifyUrlNavigationThrottleTest
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
         SupervisedUserServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &supervised_user_test_util::BuildSupervisedUserService<
-                MockSupervisedUserURLFilter>)}};
+        base::BindRepeating(&BuildTestSupervisedUserService)}};
   }
 
   std::unique_ptr<content::MockNavigationThrottleRegistry>
@@ -137,10 +166,17 @@ class ClassifyUrlNavigationThrottleTest
   }
 
   MockSupervisedUserURLFilter* GetSupervisedUserURLFilter() {
-    // Cast is safe, see this::GetTestingFactories() to see how the object was
-    // created.
+    // Cast is safe: MockSupervisedUserURLFilter is created with TestingProfile,
+    // as a component of TestSupervisedUserService.
     return static_cast<MockSupervisedUserURLFilter*>(
         SupervisedUserServiceFactory::GetForProfile(profile())->GetURLFilter());
+  }
+
+  TestSupervisedUserService* GetSupervisedUserService() {
+    // Cast is safe: TestSupervisedUserService is created with TestingProfile
+    // (see ::GetTestingFactories()).
+    return static_cast<TestSupervisedUserService*>(
+        SupervisedUserServiceFactory::GetForProfile(profile()));
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -245,7 +281,9 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
 enum class SupervisionMode {
   kSupervisedByFamilyLink,
+#if BUILDFLAG(IS_ANDROID)
   kLocalSupervision,
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 struct AsyncCheckerTestCase {
@@ -258,15 +296,28 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
       public ::testing::WithParamInterface<AsyncCheckerTestCase> {
  protected:
   void SetUp() override {
-    // Consciously bypasses direct superclass SetUp to avoid enabling parental
-    // controls.
+    // Consciously bypasses direct superclass SetUp to avoid enabling Family
+    // Link parental controls for all requested supervision modes.
     ChromeRenderViewHostTestHarness::SetUp();
-    if (GetParam().mode == SupervisionMode::kSupervisedByFamilyLink) {
-      EnableParentalControls(*profile()->GetPrefs());
-    } else {
-      EnableBrowserContentFilters(*profile()->GetPrefs());
+    switch (GetParam().mode) {
+      case SupervisionMode::kSupervisedByFamilyLink:
+        EnableParentalControls(*profile()->GetPrefs());
+        break;
+#if BUILDFLAG(IS_ANDROID)
+      case SupervisionMode::kLocalSupervision:
+        GetSupervisedUserService()
+            ->browser_content_filters_observer_weak_ptr()
+            ->SetEnabled(true);
+        break;
+#endif  // BUILDFLAG(IS_ANDROID)
     }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kPropagateDeviceContentFiltersToSupervisedUser};
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,

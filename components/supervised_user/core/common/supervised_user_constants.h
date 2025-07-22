@@ -173,8 +173,6 @@ extern const char kSkipParentApprovalToInstallExtensions[];
 
 // A special supervised user ID used for child accounts.
 extern const char kChildAccountSUID[];
-// A special supervised user ID used for self-managed supervised profiles.
-extern const char kSupervisedProfileSUID[];
 
 // Keys for supervised user shared settings. These can be configured remotely or
 // SupervisedUserPrefMappingService.

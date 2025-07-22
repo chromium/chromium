@@ -185,19 +185,8 @@ SupervisedUserService::SupervisedUserService(
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       url_filter_(std::move(url_filter)),
-      // From here, the callbacks and observers can be added.
-      controls_state_(
-          user_prefs,
-          base::BindRepeating(
-              &SupervisedUserService::OnFamilyLinkParentalControlsEnabled,
-              base::Unretained(this)),
-          base::BindRepeating(
-              &SupervisedUserService::OnLocalParentalControlsEnabled,
-              base::Unretained(this)),
-          base::BindRepeating(
-              &SupervisedUserService::OnParentalControlsDisabled,
-              base::Unretained(this))),
       platform_delegate_(std::move(platform_delegate))
+// From here, the callbacks and observers can be added.
 #if BUILDFLAG(IS_ANDROID)
       ,
       browser_content_filters_observer_(
@@ -229,8 +218,13 @@ SupervisedUserService::SupervisedUserService(
   search_content_filters_observer_->Init();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Bumps this instance to read the current state of parental controls.
-  controls_state_.Notify();
+  main_pref_change_registrar_.Init(&user_prefs_.get());
+  main_pref_change_registrar_.Add(
+      prefs::kSupervisedUserId,
+      base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
+                          base::Unretained(this)));
+
+  OnSupervisedUserIdChanged();
 }
 
 void SupervisedUserService::SetSettingsServiceActive(bool active) {
@@ -261,7 +255,28 @@ void SupervisedUserService::SetUserSettingsActive(bool active) {
   }
 }
 
+void SupervisedUserService::OnSupervisedUserIdChanged() {
+  if (IsSubjectToParentalControls(user_prefs_.get())) {
+    OnFamilyLinkParentalControlsEnabled();
+  } else {
+    OnFamilyLinkParentalControlsDisabled();
+  }
+}
+
 void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
+  // If this trap catches change from AccountTrackerService, then this means
+  // that the profile is being preloaded from disk or cache, but since the
+  // browser's last use the status of family link parental controls and local
+  // controls have changed. In this case it would be just enough to clear
+  // browser's data. However, if this is triggered from ChildAccountService,
+  // then it means that regular profile was turned to supervised while the
+  // device was also locally supervised. In this case, next start of the browser
+  // should be clean because it is expected that family link and device controls
+  // are mutually exclusive and device controls are just being disabled.
+  CHECK(!IsSupervisedLocally())
+      << "Family link parental controls cannot be manipulated with local "
+         "supervision.";
+
   // Remove the handlers of the disabled parental controls mode.
   RemoveURLFilterPrefChangeHandlers();
 
@@ -281,7 +296,21 @@ void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
   UpdateURLFilter();
 }
 
-void SupervisedUserService::OnLocalParentalControlsEnabled() {
+void SupervisedUserService::OnFamilyLinkParentalControlsDisabled() {
+  // Start with removing handlers, to avoid multiple notifications from pref
+  // status changes from the settings service.
+  RemoveURLFilterPrefChangeHandlers();
+  RemoveCustodianPrefChangeHandlers();
+
+  // All disabling operations are idempotent.
+  SetSettingsServiceActive(false);
+  remote_web_approvals_manager_.ClearApprovalRequestsCreators();
+
+  // Synchronize the filter.
+  UpdateURLFilter();
+}
+
+void SupervisedUserService::EnableLocalParentalControls() {
   // Remove the handlers of the disabled parental controls mode. Note that user
   // controls won't listen to any url filter pref changes - these are static for
   // this type of controls.
@@ -295,16 +324,13 @@ void SupervisedUserService::OnLocalParentalControlsEnabled() {
   UpdateURLFilter();
 }
 
-void SupervisedUserService::OnParentalControlsDisabled() {
+void SupervisedUserService::DisableLocalParentalControls() {
   // Start with removing handlers, to avoid multiple notifications from pref
   // status changes from the settings service.
   RemoveURLFilterPrefChangeHandlers();
-  RemoveCustodianPrefChangeHandlers();
 
   // All disabling operations are idempotent.
-  SetSettingsServiceActive(false);
   SetUserSettingsActive(false);
-  remote_web_approvals_manager_.ClearApprovalRequestsCreators();
 
   // Synchronize the filter.
   UpdateURLFilter();
@@ -399,7 +425,21 @@ void SupervisedUserService::Shutdown() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
+namespace {
+bool IsEligibleForContentFilters(const PrefService& user_prefs) {
+  bool subject_to_parental_controls = IsSubjectToParentalControls(user_prefs);
+  CHECK(!subject_to_parental_controls, base::NotFatalUntil::M150)
+      << "Content filters cannot be manipulated for Family Link users.";
+  return !subject_to_parental_controls;
+}
+}  // namespace
+
 void SupervisedUserService::EnableSearchContentFilters() {
+  if (!IsEligibleForContentFilters(user_prefs_.get())) {
+    return;
+  }
+
   ::supervised_user::EnableSearchContentFilters(user_prefs_.get());
   ::supervised_user::DisableIncognitoMode(user_prefs_.get());
   platform_delegate_->CloseIncognitoTabs();
@@ -418,7 +458,11 @@ void SupervisedUserService::DisableSearchContentFilters() {
       &SupervisedUserServiceObserver::OnSearchContentFiltersChanged);
 }
 void SupervisedUserService::EnableBrowserContentFilters() {
-  ::supervised_user::EnableBrowserContentFilters(user_prefs_.get());
+  if (!IsEligibleForContentFilters(user_prefs_.get())) {
+    return;
+  }
+
+  EnableLocalParentalControls();
   ::supervised_user::DisableIncognitoMode(user_prefs_.get());
   platform_delegate_->CloseIncognitoTabs();
 
@@ -426,7 +470,8 @@ void SupervisedUserService::EnableBrowserContentFilters() {
       &SupervisedUserServiceObserver::OnBrowserContentFiltersChanged);
 }
 void SupervisedUserService::DisableBrowserContentFilters() {
-  ::supervised_user::DisableBrowserContentFilters(user_prefs_.get());
+  DisableLocalParentalControls();
+
   if (!IsSupervisedLocally()) {
     // Restore incognito mode iff all of the local parental controls are
     // disabled.

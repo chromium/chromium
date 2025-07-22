@@ -184,14 +184,17 @@ class SupervisedUserService : public KeyedService {
   void SetUserSettingsActive(bool active);
 
   void OnCustodianInfoChanged();
+  void OnSupervisedUserIdChanged();
 
   // Handles the change of supervision status driven by Family Link parental
   // controls.
   void OnFamilyLinkParentalControlsEnabled();
+  // Handler when supervision is disabled. Intentionally idempotent.
+  void OnFamilyLinkParentalControlsDisabled();
+
   // Handles the change of supervision status self-set by user.
-  void OnLocalParentalControlsEnabled();
-  // Common handler when supervision is disabled. Intentionally idempotent.
-  void OnParentalControlsDisabled();
+  void EnableLocalParentalControls();
+  void DisableLocalParentalControls();
 
   // Single handler for all url filter changes.
   // If present, `pref_name` indicates the actual pref that changed and might
@@ -234,12 +237,10 @@ class SupervisedUserService : public KeyedService {
 
   std::unique_ptr<SupervisedUserURLFilter> url_filter_;
 
-  // Manages the status of parental controls and notifies this instance when the
-  // state changes.
-  SupervisedControlsState controls_state_;
-
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 
+  // Registrar for core prefs that drive this service.
+  PrefChangeRegistrar main_pref_change_registrar_;
   // Registrar for preferences that drive URL filtering. All prefs except for
   // the safe sites mode are observed only when the profile is subject to
   // parental controls. The safe sites pref is observed at all times, with

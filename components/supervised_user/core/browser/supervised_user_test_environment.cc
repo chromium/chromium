@@ -272,7 +272,7 @@ void SupervisedUserTestEnvironment::SetManualFilterForUrl(
 SupervisedUserURLFilter* SupervisedUserTestEnvironment::url_filter() const {
   return service()->GetURLFilter();
 }
-SupervisedUserService* SupervisedUserTestEnvironment::service() const {
+TestSupervisedUserService* SupervisedUserTestEnvironment::service() const {
   return service_.get();
 }
 PrefService* SupervisedUserTestEnvironment::pref_service() {

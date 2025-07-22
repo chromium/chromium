@@ -162,30 +162,6 @@ SupervisedUserURLFilter::ResultCallback WrapCallbackWithMetrics(
                         context, transition_type);
 }
 
-// Tells if url filtering settings are configured by family link. See
-// supervised_user::SupervisedUserPrefStore to understand how the prefs are
-// organized.
-bool IsConfiguredByFamilyLink(const PrefService& pref_service) {
-  return IsSubjectToParentalControls(pref_service) &&
-         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
-             ->IsManagedByCustodian() &&
-         pref_service
-             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-             ->IsManagedByCustodian();
-}
-
-// Tells if url filtering settings are configured locally. See
-// supervised_user::SupervisedUserService::SetUserSettingsActive to understand
-// how the prefs are organized.
-bool IsConfiguredLocally(const PrefService& pref_service) {
-  return IsSubjectToUserControls(pref_service) &&
-         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
-             ->HasUserSetting() &&
-         pref_service
-             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-             ->HasUserSetting();
-}
-
 bool AreUrlFilterPrefsDefault(const PrefService& pref_service) {
   return pref_service.FindPreference(prefs::kSupervisedUserManualHosts)
              ->IsDefaultValue() &&
@@ -199,13 +175,9 @@ bool AreUrlFilterPrefsDefault(const PrefService& pref_service) {
 }
 
 // Returns true when the pref configuration suggests that filtering settings are
-// unset. Validates whether the preferences configuration is consistent state:
-// filter is either disabled, configured by family link or locally.
+// unset.
 bool FilterIsDisabled(const PrefService& pref_service) {
-  bool is_disabled = AreUrlFilterPrefsDefault(pref_service);
-  CHECK_NE(is_disabled, IsConfiguredByFamilyLink(pref_service) ||
-                            IsConfiguredLocally(pref_service));
-  return is_disabled;
+  return AreUrlFilterPrefsDefault(pref_service);
 }
 
 FilteringBehavior GetDefaultFilteringBehavior(const PrefService& pref_service) {

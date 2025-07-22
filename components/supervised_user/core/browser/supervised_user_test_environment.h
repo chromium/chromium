@@ -163,7 +163,7 @@ class SupervisedUserTestEnvironment {
   ~SupervisedUserTestEnvironment();
 
   SupervisedUserURLFilter* url_filter() const;
-  SupervisedUserService* service() const;
+  TestSupervisedUserService* service() const;
   PrefService* pref_service();
   sync_preferences::TestingPrefServiceSyncable* pref_service_syncable();
   safe_search_api::FakeURLCheckerClient* url_checker_client();
