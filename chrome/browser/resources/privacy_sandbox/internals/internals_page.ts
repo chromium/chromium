@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import './content_setting_pattern_source.js';
-import './pref_display.js';
-import './mojo_timedelta.js';
 import './cr_frame_list.js';
+import './mojo_timedelta.js';
+import './pref_display.js';
+import './pref_page.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './privacy_sandbox_internals.mojom-webui.js';
 
@@ -14,6 +15,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {ContentSettingsType} from './content_settings_types.mojom-webui.js';
 import type {CrFrameListElement} from './cr_frame_list.js';
 import {getTemplate} from './internals_page.html.js';
+import type {PrivacySandboxInternalsPrefPageConfig} from './pref_page.js';
 import type {PrivacySandboxInternalsPref} from './privacy_sandbox_internals.mojom-webui.js';
 import {PrivacySandboxInternalsBrowserProxy} from './privacy_sandbox_internals_browser_proxy.js';
 import {Router} from './router.js';
@@ -36,9 +38,40 @@ const advertisingPrefPrefixes: string[] = [
   'privacy_sandbox.',
 ];
 
+const prefPagesToCreate: PrivacySandboxInternalsPrefPageConfig[] = [
+  {
+    id: 'tracking-protection',
+    title: 'Tracking Protection / 3PCD Prefs',
+    prefGroups: [
+      {
+        id: 'tracking-protection',
+        title: 'Tracking Protection Service Prefs',
+        prefPrefixes: trackingProtectionPrefPrefixes,
+      },
+      {
+        id: 'tpcd-experiment',
+        title: '3PCD Experiment Prefs',
+        prefPrefixes: tpcdExperimentPrefPrefixes,
+      },
+    ],
+  },
+  {
+    id: 'advertising',
+    title: 'Advertising Prefs',
+    prefGroups: [
+      {
+        id: 'advertising',
+        title: 'Advertising Prefs',
+        prefPrefixes: advertisingPrefPrefixes,
+      },
+    ],
+  },
+];
+
 export class InternalsPage extends CustomElement implements RouteObserver {
   private browserProxy_: PrivacySandboxInternalsBrowserProxy =
       PrivacySandboxInternalsBrowserProxy.getInstance();
+  private tabBox_: HTMLElement|null = null;
 
   static get is() {
     return 'internals-page';
@@ -56,6 +89,14 @@ export class InternalsPage extends CustomElement implements RouteObserver {
         this.shadowRoot!.querySelector<HTMLElement>('[slot="tab"][selected]')
             ?.dataset['pageName']!;
     Router.getInstance().processInitialRoute(defaultPage);
+  }
+
+  get tabBox(): HTMLElement {
+    if (!this.tabBox_) {
+      this.tabBox_ =
+          this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page')!;
+    }
+    return this.tabBox_;
   }
 
   static override get template() {
@@ -112,36 +153,35 @@ export class InternalsPage extends CustomElement implements RouteObserver {
     }
   }
 
+  // Create the DOM elements needed for the pref pages
+  createLayoutForPrefPages() {
+    prefPagesToCreate.forEach((pageToCreate) => {
+      const prefPage = document.createElement('pref-page');
+      prefPage.pageConfig = pageToCreate;
+      this.tabBox.append(prefPage);
+    });
+  }
+
+  // Fetch pref data and populate the pref pages
   loadAndDisplayPrefs() {
-    this.browserProxy_.handler
-        .readPrefsWithPrefixes([
-          ...advertisingPrefPrefixes,
-          ...trackingProtectionPrefPrefixes,
-          ...tpcdExperimentPrefPrefixes,
-        ])
-        .then(({prefs}) => {
+    const allPrefGroups =
+        prefPagesToCreate.flatMap((prefPage) => prefPage.prefGroups);
+    const allPrefPrefixes = [...new Set(
+        allPrefGroups.flatMap((prefGroup) => prefGroup.prefPrefixes))];
+
+    this.browserProxy_.handler.readPrefsWithPrefixes(allPrefPrefixes)
+        .then(({prefs}) => allPrefGroups.forEach((prefGroup) => {
           this.maybeAddPrefsToDom(
               this.shadowRoot!.querySelector<HTMLElement>(
-                  '#advertising-prefs-panel'),
-              advertisingPrefPrefixes, prefs);
-          this.maybeAddPrefsToDom(
-              this.shadowRoot!.querySelector<HTMLElement>(
-                  '#tracking-protection-prefs-panel'),
-              trackingProtectionPrefPrefixes, prefs);
-          this.maybeAddPrefsToDom(
-              this.shadowRoot!.querySelector<HTMLElement>(
-                  '#tpcd-experiment-prefs-panel'),
-              tpcdExperimentPrefPrefixes, prefs);
-        });
+                  '#' + prefGroup.id + '-prefs-panel'),
+              prefGroup.prefPrefixes, prefs);
+        }));
   }
 
   setupEventListeners() {
-    const tabBox =
-        this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page')!;
-
-    tabBox.addEventListener('selected-index-change', () => {
+    this.tabBox.addEventListener('selected-index-change', () => {
       const selectedTab =
-          tabBox.querySelector<HTMLElement>('[slot="tab"][selected]');
+          this.tabBox.querySelector<HTMLElement>('[slot="tab"][selected]');
 
       if (selectedTab?.dataset['pageName']) {
         Router.getInstance().navigateTo(selectedTab.dataset['pageName']);
@@ -150,8 +190,7 @@ export class InternalsPage extends CustomElement implements RouteObserver {
   }
 
   async load() {
-    const tabBox =
-        this.shadowRoot!.querySelector<CrFrameListElement>('#ps-page')!;
+    this.createLayoutForPrefPages();
     this.loadAndDisplayPrefs();
     const csPanelContainers = new Map<string, HTMLElement>();
     const handler = this.browserProxy_.handler;
@@ -169,7 +208,7 @@ export class InternalsPage extends CustomElement implements RouteObserver {
       tab.innerText = ContentSettingsType[i];
       tab.setAttribute('slot', 'tab');
       tab.dataset['pageName'] = ContentSettingsType[i].toLowerCase();
-      tabBox.appendChild(tab);
+      this.tabBox.appendChild(tab);
 
       const panel = document.createElement('div');
       panel.setAttribute('slot', 'panel');
@@ -180,7 +219,7 @@ export class InternalsPage extends CustomElement implements RouteObserver {
       contentSettingsContainer.classList.add('content-settings');
       panel.appendChild(panelTitle);
       panel.appendChild(contentSettingsContainer);
-      tabBox.appendChild(panel);
+      this.tabBox.appendChild(panel);
 
       csPanelContainers.set(ContentSettingsType[i], contentSettingsContainer);
     }

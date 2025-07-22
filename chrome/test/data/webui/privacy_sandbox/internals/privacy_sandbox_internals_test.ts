@@ -14,6 +14,7 @@ import type {CrFrameListElement} from 'chrome://privacy-sandbox-internals/cr_fra
 import type {ExpandableJsonViewerElement} from 'chrome://privacy-sandbox-internals/expandable_json_viewer.js';
 import type {InternalsPage} from 'chrome://privacy-sandbox-internals/internals_page.js';
 import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
+import type {PrivacySandboxInternalsPrefGroup, PrivacySandboxInternalsPrefPageConfig} from 'chrome://privacy-sandbox-internals/pref_page.js';
 import type {PrivacySandboxInternalsPref} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals.mojom-webui.js';
 import {PrivacySandboxInternalsBrowserProxy} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals_browser_proxy.js';
 import {Router} from 'chrome://privacy-sandbox-internals/router.js';
@@ -28,7 +29,7 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestPrivacySandboxInternalsBrowserProxy} from './test_privacy_sandbox_internals_browser_proxy.js';
 
 async function waitForElement(
-    root: ShadowRoot, selector: string): Promise<HTMLElement> {
+    root: Element|ShadowRoot, selector: string): Promise<HTMLElement> {
   return new Promise(resolve => {
     const check = () => {
       const element = root.querySelector<HTMLElement>(selector);
@@ -898,5 +899,122 @@ suite('TextCopyButton', function() {
 
 
     mockTimer.uninstall();
+  });
+});
+
+
+// Test the <pref-page> element
+suite('PrefPageTest', function() {
+  let prefPageParentElement: HTMLElement;
+
+  const kPrefPageId = 'page-1';
+  const kPrefPageTitle = 'Page 1';
+  const kPrefGroup1Id = 'pref-group-1';
+  const kPrefGroup2Id = 'pref-group-1';
+  const kPrefGroup1Title = 'Group 1';
+  const kPrefGroup2Title = 'Group 2';
+
+  function createPrefGroup(id: string, title: string, prefPrefixes: string[]):
+      PrivacySandboxInternalsPrefGroup {
+    return {
+      id,
+      title,
+      prefPrefixes,
+    };
+  }
+
+  function createPrefPageConfig(
+      id: string, title: string,
+      prefGroups: PrivacySandboxInternalsPrefGroup[]):
+      PrivacySandboxInternalsPrefPageConfig {
+    return {
+      id,
+      title,
+      prefGroups,
+    };
+  }
+
+  const kPrefPageConfig = createPrefPageConfig(kPrefPageId, kPrefPageTitle, [
+    createPrefGroup(kPrefGroup1Id, kPrefGroup1Title, []),
+    createPrefGroup(kPrefGroup2Id, kPrefGroup2Title, []),
+  ]);
+
+  const kPrefPageConfigWithNoPrefGroups =
+      createPrefPageConfig(kPrefPageId, kPrefPageTitle, []);
+
+  suiteSetup(async function() {
+    await customElements.whenDefined('pref-page');
+  });
+
+  async function setupPrefPageWithConfig(
+      pageConfig: PrivacySandboxInternalsPrefPageConfig) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    prefPageParentElement = document.createElement('div');
+    const prefPage = document.createElement('pref-page');
+    prefPage.pageConfig = pageConfig;
+    prefPageParentElement.appendChild(prefPage);
+    document.body.appendChild(prefPageParentElement);
+
+    // Wait for the <pref-page> to be removed from the DOM
+    await waitForCondition(
+        () => prefPageParentElement.querySelector('pref-page') === null);
+  }
+
+  test('createsTabSlotInParent', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfig);
+
+    const page1TabSlot = await waitForElement(
+        prefPageParentElement, `div[slot="tab"]#${kPrefPageId}-prefs-tab`);
+    assertTrue(
+        !!page1TabSlot,
+        'A slot="tab" element should be created in the parent of pref-page');
+    assertEquals(page1TabSlot.textContent, kPrefPageTitle);
+    assertEquals(page1TabSlot.dataset['pageName'], kPrefPageId);
+  });
+
+  test('createsPanelSlotInParent', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfig);
+
+    const page1PanelSlot =
+        await waitForElement(prefPageParentElement, 'div[slot="panel"]');
+    assertTrue(
+        !!page1PanelSlot,
+        'A slot="panel" element should be created in the parent of pref-page');
+  });
+
+  test('createsHeadingInParentForAllPrefGroups', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfig);
+
+    const allHeadings = prefPageParentElement.querySelectorAll('h3');
+    assertTrue(
+        allHeadings.length === 2, 'A header should be created for each page');
+    assertEquals(allHeadings[0]!.textContent, kPrefGroup1Title);
+    assertEquals(allHeadings[1]!.textContent, kPrefGroup2Title);
+  });
+
+  test('createsPrefGroupPanelInParentForAllPrefGroups', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfig);
+
+    const allPrefGroupPanels =
+        prefPageParentElement.querySelectorAll('.pref-group-panel');
+    assertTrue(
+        allPrefGroupPanels.length === 2,
+        'A pref-group-panel should be created for each pref group');
+    assertEquals(allPrefGroupPanels[0]!.id, kPrefGroup1Id + '-prefs-panel');
+    assertEquals(allPrefGroupPanels[1]!.id, kPrefGroup2Id + '-prefs-panel');
+  });
+
+  test('createsNoHeadingOrPrefGroupPanelWhenPrefGroupsIsEmpty', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfigWithNoPrefGroups);
+
+    const allHeadings = prefPageParentElement.querySelectorAll('h3');
+    assertTrue(
+        allHeadings.length === 0,
+        'No header should be created when prefGroups is empty');
+    const allPrefGroupPanels =
+        prefPageParentElement.querySelectorAll('.pref-group-panel');
+    assertTrue(
+        allPrefGroupPanels.length === 0,
+        'No pref group panel should be created for each pref group');
   });
 });
