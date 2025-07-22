@@ -14525,6 +14525,7 @@ from previous Chrome versions.
   <int value="171273307" label="SystemEmojiPickerClipboard:disabled"/>
   <int value="171751855"
       label="AutofillEnableCardBenefitsForCapitalOne:enabled"/>
+  <int value="172797653" label="StylusHandwritingWin:enabled"/>
   <int value="172878751"
       label="OmniboxRemoveSuggestionHeaderCapitalization:enabled"/>
   <int value="173156626" label="TabletTabStripAnimation:disabled"/>
@@ -16459,6 +16460,7 @@ from previous Chrome versions.
   <int value="877257918"
       label="InterestFeedV2ClickAndViewActionsConditionalUpload:enabled"/>
   <int value="877432034" label="DisableQuickAnswersV2Translation:enabled"/>
+  <int value="877591544" label="StylusHandwritingWin:disabled"/>
   <int value="877907263" label="StrictExtensionIsolation:disabled"/>
   <int value="878493795" label="SideBySideSessionRestore:enabled"/>
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>

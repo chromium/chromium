@@ -9144,6 +9144,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "stylus-handwriting-win",
+    "owners": ["arakeri@microsoft.com", "gerchiko@microsoft.com", "flackr@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "subframe-process-reuse-thresholds",
     "owners": [
       "alexmos@google.com",

@@ -631,6 +631,7 @@ specific_include_rules = {
     "+content/common/content_navigation_policy.h",
   ],
   r"about_flags\.cc" : [
+    "+components/stylus_handwriting/win/features.h",
     "+mojo/core/embedder/features.h",
     "+sandbox/policy/features.h",
     "+skia/rusty_png_feature.h",

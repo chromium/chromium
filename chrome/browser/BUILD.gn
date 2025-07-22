@@ -7913,7 +7913,10 @@ static_library("browser") {
       "media/media_foundation_service_monitor.cc",
       "media/media_foundation_service_monitor.h",
     ]
-    deps += [ "//components/live_caption:utils" ]
+    deps += [
+      "//components/live_caption:utils",
+      "//components/stylus_handwriting/win",
+    ]
 
     if (enable_media_foundation_widevine_cdm) {
       sources += [

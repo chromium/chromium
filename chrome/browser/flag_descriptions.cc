@@ -330,6 +330,14 @@ const char kCrosSwitcherDescription[] =
     "Enable/Disable ChromeOS Switcher feature.";
 #endif  // IS_CHROMEOS
 
+#if BUILDFLAG(IS_WIN)
+const char kStylusHandwritingWinName[] = "Stylus Handwriting for Windows.";
+const char kStylusHandwritingWinDescription[] =
+    "Enables an experimental feature that lets users handwrite into text "
+    "fields using a compatible stylus. Only supported on Windows builds "
+    "greater than or equal to 26100.3624";
+#endif  // BUILDFLAG(IS_WIN)
+
 const char kCssGamutMappingName[] = "CSS Gamut Mapping";
 const char kCssGamutMappingDescription[] =
     "Enable experimental CSS gamut mapping implementation.";

@@ -323,6 +323,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/tracing/tracing_features.h"
 #include "chrome/browser/win/mica_titlebar.h"
+#include "components/stylus_handwriting/win/features.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -7834,6 +7835,12 @@ const FeatureEntry kFeatureEntries[] = {
          features::kSubframeProcessReuseThresholds,
          kSubframeProcessReuseThresholdsVariations,
          "SubframeProcessReuseThresholds" /* trial name */)},
+
+#if BUILDFLAG(IS_WIN)
+    {"stylus-handwriting-win", flag_descriptions::kStylusHandwritingWinName,
+     flag_descriptions::kStylusHandwritingWinDescription, kOsWin,
+     FEATURE_VALUE_TYPE(stylus_handwriting::win::kStylusHandwritingWin)},
+#endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-live-caption-multilang",

@@ -754,6 +754,11 @@ extern const char kExperimentalAccessibilityLanguageDetectionDynamicName[];
 extern const char
     kExperimentalAccessibilityLanguageDetectionDynamicDescription[];
 
+#if BUILDFLAG(IS_WIN)
+extern const char kStylusHandwritingWinName[];
+extern const char kStylusHandwritingWinDescription[];
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kFillRecoveryPasswordName[];
 extern const char kFillRecoveryPasswordDescription[];
