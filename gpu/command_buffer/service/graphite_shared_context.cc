@@ -132,9 +132,11 @@ GraphiteSharedContext::AutoLock::~AutoLock() {
 GraphiteSharedContext::GraphiteSharedContext(
     std::unique_ptr<skgpu::graphite::Context> graphite_context,
     GpuProcessShmCount* use_shader_cache_shm_count,
-    bool is_thread_safe)
+    bool is_thread_safe,
+    FlushCallback backend_flush_callback)
     : graphite_context_(std::move(graphite_context)),
-      use_shader_cache_shm_count_(use_shader_cache_shm_count) {
+      use_shader_cache_shm_count_(use_shader_cache_shm_count),
+      backend_flush_callback_(std::move(backend_flush_callback)) {
   DCHECK(graphite_context_);
   if (is_thread_safe) {
     lock_.emplace();
@@ -163,6 +165,24 @@ GraphiteSharedContext::makePrecompileContext() {
 bool GraphiteSharedContext::insertRecording(
     const skgpu::graphite::InsertRecordingInfo& info) {
   AutoLock auto_lock(this);
+  if (!InsertRecordingImpl(info)) {
+    return false;
+  }
+
+  num_pending_recordings_++;
+
+  // Force submitting if there are too many pending recordings.
+  // TODO(407062399): Change this to reflect the common number in the wild.
+  static constexpr size_t kMaxPendingRecordings = 1000;
+  if (num_pending_recordings_ >= kMaxPendingRecordings) {
+    SubmitAndFlushBackendImpl(skgpu::graphite::SyncToCpu::kNo);
+  }
+
+  return true;
+}
+
+bool GraphiteSharedContext::InsertRecordingImpl(
+    const skgpu::graphite::InsertRecordingInfo& info) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       IsThreadSafe() && base::SingleThreadTaskRunner::HasCurrentDefault()
           ? base::SingleThreadTaskRunner::GetCurrentDefault()
@@ -223,7 +243,28 @@ bool GraphiteSharedContext::insertRecording(
 
 void GraphiteSharedContext::submit(skgpu::graphite::SyncToCpu syncToCpu) {
   AutoLock auto_lock(this);
-  CHECK(graphite_context_->submit(syncToCpu));
+  CHECK(SubmitImpl(syncToCpu));
+}
+
+bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SyncToCpu syncToCpu) {
+  num_pending_recordings_ = 0;
+
+  return graphite_context_->submit(syncToCpu);
+}
+
+void GraphiteSharedContext::submitAndFlushBackend(
+    skgpu::graphite::SyncToCpu syncToCpu) {
+  AutoLock auto_lock(this);
+  SubmitAndFlushBackendImpl(syncToCpu);
+}
+
+void GraphiteSharedContext::SubmitAndFlushBackendImpl(
+    skgpu::graphite::SyncToCpu syncToCpu) {
+  CHECK(SubmitImpl(syncToCpu));
+
+  if (backend_flush_callback_) {
+    backend_flush_callback_.Run();
+  }
 }
 
 bool GraphiteSharedContext::hasUnfinishedGpuWork() const {
@@ -281,7 +322,7 @@ bool GraphiteSharedContext::asyncRescaleAndReadPixelsAndSubmit(
       src, dstImageInfo, srcRect, rescaleGamma, rescaleMode,
       &ReadPixelsCallbackThreadSafe, new_callbackContext);
 
-  return graphite_context_->submit(skgpu::graphite::SyncToCpu::kYes);
+  return SubmitImpl(skgpu::graphite::SyncToCpu::kYes);
 }
 
 bool GraphiteSharedContext::asyncRescaleAndReadPixelsAndSubmit(
@@ -300,7 +341,7 @@ bool GraphiteSharedContext::asyncRescaleAndReadPixelsAndSubmit(
       src, dstImageInfo, srcRect, rescaleGamma, rescaleMode,
       &ReadPixelsCallbackThreadSafe, new_callbackContext);
 
-  return graphite_context_->submit(skgpu::graphite::SyncToCpu::kYes);
+  return SubmitImpl(skgpu::graphite::SyncToCpu::kYes);
 }
 
 void GraphiteSharedContext::asyncRescaleAndReadPixelsYUV420(

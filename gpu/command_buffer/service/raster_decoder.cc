@@ -360,9 +360,7 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
         info.fFinishedContext = new base::WeakPtr<RasterCommandsCompletedQuery>(
             weak_ptr_factory_.GetWeakPtr());
         shared_context_state_->graphite_shared_context()->insertRecording(info);
-        shared_context_state_->graphite_shared_context()->submit();
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(SKIA_USE_DAWN)
         // Canvas typically uses Commands Completed query to implement
         // backpressures. We need to flush any delayed commands to make sure the
         // query can be completed in finite time.
@@ -371,9 +369,8 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
         // redrawn multiple times. Flushing here ensures that we send the draw
         // commands to GPU earlier, reducing the chance the canvas' rate limiter
         // kicks in.
-        shared_context_state_->dawn_context_provider()
-            ->FlushD3D11CommandsIfDelayed();
-#endif
+        shared_context_state_->graphite_shared_context()
+            ->submitAndFlushBackend();
       } else {
         finished_ = true;
       }

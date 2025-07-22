@@ -14,6 +14,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -500,9 +501,9 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
       return nullptr;
     }
 
-    return std::make_unique<GraphiteSharedContext>(std::move(graphite_context),
-                                                   use_shader_cache_shm_count,
-                                                   is_thread_safe);
+    return std::make_unique<GraphiteSharedContext>(
+        std::move(graphite_context), use_shader_cache_shm_count, is_thread_safe,
+        GetBackendFlushCallback());
   }
 
   bool use_thread_safe_graphite_context() const {
@@ -582,6 +583,15 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   }
 
   ~DawnSharedContext() override;
+
+  GraphiteSharedContext::FlushCallback GetBackendFlushCallback() {
+#if BUILDFLAG(IS_WIN)
+    return base::BindRepeating(&DawnSharedContext::FlushD3D11CommandsIfDelayed,
+                               base::RetainedRef(this));
+#else
+    return {};
+#endif
+  }
 
   void OnError(wgpu::ErrorType error_type, wgpu::StringView message);
 
@@ -1178,10 +1188,6 @@ void DawnContextProvider::SetCachingInterface(
 Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
     const {
   return dawn_shared_context_->GetD3D11Device();
-}
-
-void DawnContextProvider::FlushD3D11CommandsIfDelayed() const {
-  dawn_shared_context_->FlushD3D11CommandsIfDelayed();
 }
 #endif
 
