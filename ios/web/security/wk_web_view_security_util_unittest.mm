@@ -13,7 +13,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
 #import "base/containers/span.h"
-#import "crypto/rsa_private_key.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
@@ -32,15 +31,11 @@ NSString* const kTestHost = @"www.example.com";
 // Returns an autoreleased certificate chain for testing. Chain will contain a
 // single self-signed cert with `subject` as a subject.
 NSArray* MakeTestCertChain(const std::string& subject) {
-  std::unique_ptr<crypto::RSAPrivateKey> private_key;
-  std::string der_cert;
-  net::x509_util::CreateKeyAndSelfSignedCert(
-      "CN=" + subject, 1, base::Time::Now(), base::Time::Now() + base::Days(1),
-      &private_key, &der_cert);
+  std::vector<uint8_t> cert_der =
+      net::x509_util::CreateUnusableCert("CN=" + subject);
 
   base::apple::ScopedCFTypeRef<SecCertificateRef> cert(
-      net::x509_util::CreateSecCertificateFromBytes(
-          base::as_byte_span(der_cert)));
+      net::x509_util::CreateSecCertificateFromBytes(cert_der));
   if (!cert) {
     return nullptr;
   }

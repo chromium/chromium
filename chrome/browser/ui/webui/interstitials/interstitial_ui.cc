@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/atomic_sequence_num.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
@@ -62,7 +61,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
@@ -95,23 +93,11 @@ InterstitialUIConfig::InterstitialUIConfig()
 
 namespace {
 
-// NSS requires that serial numbers be unique even for the same issuer;
-// as all fake certificates will contain the same issuer name, it's
-// necessary to ensure the serial number is unique, as otherwise
-// NSS will fail to parse.
-base::AtomicSequenceNumber g_serial_number;
-
 scoped_refptr<net::X509Certificate> CreateFakeCert() {
-  std::unique_ptr<crypto::RSAPrivateKey> unused_key;
-  std::string cert_der;
-  if (!net::x509_util::CreateKeyAndSelfSignedCert(
-          "CN=Error", static_cast<uint32_t>(g_serial_number.GetNext()),
-          base::Time::Now() - base::Minutes(5),
-          base::Time::Now() + base::Minutes(5), &unused_key, &cert_der)) {
-    return nullptr;
-  }
+  std::vector<uint8_t> cert_der =
+      net::x509_util::CreateUnusableCert("CN=Error");
 
-  return net::X509Certificate::CreateFromBytes(base::as_byte_span(cert_der));
+  return net::X509Certificate::CreateFromBytes(cert_der);
 }
 
 // Implementation of chrome://interstitials demonstration pages. This code is

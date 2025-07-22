@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -20,8 +21,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
@@ -281,31 +282,16 @@ bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
   return true;
 }
 
-// RSA keys created by CreateKeyAndSelfSignedCert will be of this length.
-static const uint16_t kRSAKeyLength = 1024;
+std::vector<uint8_t> CreateUnusableCert(std::string_view subject) {
+  const uint32_t kSerial = 1;
+  const base::Time not_valid_before = base::Time::Now() - base::Minutes(5);
+  const base::Time not_valid_after = base::Time::Now() + base::Hours(1);
+  auto key = crypto::keypair::PrivateKey::GenerateEcP256();
+  std::string der_cert;
+  CHECK(CreateSelfSignedCert(key.key(), DIGEST_SHA256, subject, kSerial,
+                             not_valid_before, not_valid_after, {}, &der_cert));
 
-// Certificates made by CreateKeyAndSelfSignedCert will be signed using this
-// digest algorithm.
-static const DigestAlgorithm kSignatureDigestAlgorithm = DIGEST_SHA256;
-
-bool CreateKeyAndSelfSignedCert(std::string_view subject,
-                                uint32_t serial_number,
-                                base::Time not_valid_before,
-                                base::Time not_valid_after,
-                                std::unique_ptr<crypto::RSAPrivateKey>* key,
-                                std::string* der_cert) {
-  std::unique_ptr<crypto::RSAPrivateKey> new_key(
-      crypto::RSAPrivateKey::Create(kRSAKeyLength));
-  if (!new_key)
-    return false;
-
-  bool success = CreateSelfSignedCert(new_key->key(), kSignatureDigestAlgorithm,
-                                      subject, serial_number, not_valid_before,
-                                      not_valid_after, {}, der_cert);
-  if (success)
-    *key = std::move(new_key);
-
-  return success;
+  return base::ToVector(base::as_byte_span(der_cert));
 }
 
 Extension::Extension(base::span<const uint8_t> in_oid,
