@@ -207,6 +207,14 @@ void LogSaveCardCardholderNamePrefilled(bool prefilled);
 // from its prefilled value or not.
 void LogSaveCardCardholderNameWasEdited(bool edited);
 
+// Logs whether the save credit card prompt is shown or not. The metric logged
+// is platform-agnostic. Should not be called for prompt re-shows (e.g., prompt
+// reshown from the omnibox icon on desktop).
+void LogSaveCreditCardPromptOfferMetric(SaveCardPromptOffer metric,
+                                        bool is_upload_save);
+
+// TODO(crbug.com/430588721): Clean up this function once refactored save card
+// metrics have rolled out.
 void LogSaveCardPromptOfferMetric(
     SaveCardPromptOffer metric,
     bool is_uploading,

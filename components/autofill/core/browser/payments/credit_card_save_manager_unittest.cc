@@ -4108,6 +4108,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
   // The flow aborting due to missing CVC should also be logged.
+
+  // Verify that platform-agnostic save card metric for prompt not shown is
+  // logged.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Server",
+      autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
+
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
       autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate, 1);
@@ -5475,7 +5482,13 @@ TEST_F(CreditCardSaveManagerTest,
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify that no histogram entry was logged.
+  // Verify that histogram for local save card prompt shown is logged.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Local",
+      autofill_metrics::SaveCardPromptOffer::kShown, 1);
+
+  // Verify that histogram entry for card save not offered due to max strikes is
+  // not logged.
   histogram_tester.ExpectTotalCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes", 0);
 }
@@ -5525,7 +5538,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify that no histogram entry was logged.
+  // Verify that histogram for server save card prompt shown is logged.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Server",
+      autofill_metrics::SaveCardPromptOffer::kShown, 1);
+
+  // Verify that histogram entry for card save not offered due to max strikes is
+  // not logged.
   histogram_tester.ExpectTotalCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes", 0);
 }
@@ -5567,10 +5586,14 @@ TEST_F(CreditCardSaveManagerTest,
 
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify that the correct histogram entry was logged.
+  // Verify that the correct histogram entries for card save not offered due to
+  // max strikes were logged.
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
       AutofillMetrics::SaveTypeMetric::LOCAL, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Local",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
 }
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
@@ -5619,13 +5642,17 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesDisallowsSave) {
 
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify that the correct histogram entries were logged.
+  // Verify that the correct histogram entries for card save not offered due to
+  // max strikes were logged.
   ExpectCardUploadDecision(
       histogram_tester,
       autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE);
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
       AutofillMetrics::SaveTypeMetric::SERVER, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Server",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
   // Verify that the correct UKM was logged.
   ExpectCardUploadDecisionUkm(
       autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE);
@@ -5668,10 +5695,14 @@ TEST_F(CreditCardSaveManagerTest,
   FormSubmitted(credit_card_form);
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify that the correct histogram entry was logged.
+  // Verify that the correct histogram entries for card save not offered due to
+  // max strikes were logged.
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
       AutofillMetrics::SaveTypeMetric::LOCAL, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Local",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
 }
 
 // Tests that a card with max strikes should still offer to save on Desktop via
@@ -5720,10 +5751,14 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesStillAllowsSave) {
 
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
-  // Verify that the correct histogram entry was logged.
+  // Verify that the correct histogram entries for card save not offered due to
+  // max strikes were logged.
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
       AutofillMetrics::SaveTypeMetric::SERVER, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Server",
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
 }
 #endif
 

@@ -410,6 +410,10 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       upload_request_.cvc.empty() &&
       base::FeatureList::IsEnabled(
           features::kAutofillRequireCvcForPossibleCardUpdate)) {
+    autofill_metrics::LogSaveCreditCardPromptOfferMetric(
+        autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate,
+        /*is_upload_save=*/true);
+
     autofill_metrics::LogSaveCardPromptOfferMetric(
         autofill_metrics::SaveCardPromptOffer::kCvcMissingForPotentialUpdate,
         /*is_upload_save=*/true, /*is_reshow=*/false,
@@ -767,9 +771,18 @@ void CreditCardSaveManager::OfferCardLocalSave() {
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnLocalSave,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-  if (show_save_prompt_.has_value() && !show_save_prompt_.value()) {
-    autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
-        AutofillMetrics::SaveTypeMetric::LOCAL);
+  if (show_save_prompt_.has_value()) {
+    if (show_save_prompt_.value()) {
+      autofill_metrics::LogSaveCreditCardPromptOfferMetric(
+          autofill_metrics::SaveCardPromptOffer::kShown,
+          /*is_upload_save=*/false);
+    } else if (!show_save_prompt_.value()) {
+      autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+          AutofillMetrics::SaveTypeMetric::LOCAL);
+      autofill_metrics::LogSaveCreditCardPromptOfferMetric(
+          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+          /*is_upload_save=*/false);
+    }
   }
 }
 
@@ -850,9 +863,18 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
         autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE;
   }
   LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
-  if (show_save_prompt_.has_value() && !show_save_prompt_.value()) {
-    autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
-        AutofillMetrics::SaveTypeMetric::SERVER);
+  if (show_save_prompt_.has_value()) {
+    if (show_save_prompt_.value()) {
+      autofill_metrics::LogSaveCreditCardPromptOfferMetric(
+          autofill_metrics::SaveCardPromptOffer::kShown,
+          /*is_upload_save=*/true);
+    } else if (!show_save_prompt_.value()) {
+      autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+          AutofillMetrics::SaveTypeMetric::SERVER);
+      autofill_metrics::LogSaveCreditCardPromptOfferMetric(
+          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+          /*is_upload_save=*/true);
+    }
   }
 }
 
