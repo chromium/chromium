@@ -208,7 +208,10 @@ if (use_blink) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tracking_protection_onboarding_unittest.cc" ]
+  sources = [
+    "tracking_protection_onboarding_unittest.cc",
+    "tracking_protection_settings_unittest.cc",
+  ]
 
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
 
@@ -219,7 +222,9 @@ source_set("unit_tests") {
     ":tracking_protection_prefs",
     ":tracking_protection_settings",
     "//base/test:test_support",
+    "//components/content_settings/core/browser:browser",
     "//components/content_settings/core/common",
+    "//components/content_settings/core/test:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
@@ -233,15 +238,12 @@ source_set("unit_tests") {
       "privacy_sandbox_settings_impl_unittest.cc",
       "privacy_sandbox_test_util_unittest.cc",
       "tpcd_experiment_eligibility_unittest.cc",
-      "tracking_protection_settings_unittest.cc",
     ]
 
     deps += [
       ":privacy_sandbox",
       ":test_support",
       "//components/browsing_topics:test_support",
-      "//components/content_settings/core/browser:browser",
-      "//components/content_settings/core/test:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/strings:components_strings_grit",
