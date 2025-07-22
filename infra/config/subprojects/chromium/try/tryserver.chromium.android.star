@@ -616,6 +616,7 @@ try_.builder(
             "components/grpc_support/.+",
             "build/android/.+",
             "build/config/android/.+",
+            "third_party/jni_zero/.+",
         ],
     ),
 )
@@ -704,6 +705,7 @@ try_.builder(
             "components/grpc_support/.+",
             "build/android/.+",
             "build/config/android/.+",
+            "third_party/jni_zero/.+",
         ],
     ),
 )
@@ -1253,6 +1255,7 @@ try_.builder(
             "components/cast_receiver/.+",
             "components/cast_streaming/.+",
             "third_party/cast_core/.+",
+            "third_party/jni_zero/.+",
             "third_party/openscreen/.+",
         ],
     ),
@@ -1276,6 +1279,7 @@ try_.builder(
             "components/cast_receiver/.+",
             "components/cast_streaming/.+",
             "third_party/cast_core/.+",
+            "third_party/jni_zero/.+",
             "third_party/openscreen/.+",
         ],
     ),
