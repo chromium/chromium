@@ -409,32 +409,44 @@ bool AutocompleteTableLabelSensitive::AddFormFieldValueTime(
   if (!db()->is_open()) {
     return false;
   }
-  sql::Statement statement;
-  if (GetAutocompleteEntryLabelSensitive(element.name(), element.label(),
-                                         element.value())
-          .has_value()) {
-    statement.Assign(db()->GetUniqueStatement(
-        "UPDATE autocomplete SET date_last_used = ?, count = count + 1 "
-        "WHERE (name = ? OR (label_normalized = ? AND label_normalized != '')) "
-        "AND value = ?"));
-    statement.BindInt64(0, time.ToTimeT());
-    statement.BindString16(1, element.name());
-    statement.BindString16(2, NormalizeLabel(element.label()));
-    statement.BindString16(3, element.value());
-  } else {
-    InsertBuilder(db(), statement, kAutocompleteTableLabelSensitive,
+
+  // The following UPDATE and INSERT statements do not require a transaction.
+  // If the INSERT statement fails, result of the UPDATE statement is still
+  // valid.
+
+  // Always try to update counts of all entries that would contribute to correct
+  // suggestion.
+  sql::Statement update_statement(db()->GetUniqueStatement(
+      "UPDATE autocomplete SET date_last_used = ?, count = count + 1 "
+      "WHERE (name = ? OR (label_normalized = ? AND label_normalized != '')) "
+      "AND value = ?"));
+  update_statement.BindInt64(0, time.ToTimeT());
+  update_statement.BindString16(1, element.name());
+  update_statement.BindString16(2, NormalizeLabel(element.label()));
+  update_statement.BindString16(3, element.value());
+  if (!update_statement.Run()) {
+    return false;
+  }
+
+  // If the entry doesn't exist, insert it.
+  if (!GetAutocompleteEntryLabelSensitive(element.name(), element.label(),
+                                          element.value())
+           .has_value()) {
+    sql::Statement create_statement;
+    InsertBuilder(db(), create_statement, kAutocompleteTableLabelSensitive,
                   {kName, kLabel, kLabelNormalized, kValue, kValueLower,
                    kDateCreated, kDateLastUsed, kCount});
-    statement.BindString16(0, element.name());
-    statement.BindString16(1, element.label());
-    statement.BindString16(2, NormalizeLabel(element.label()));
-    statement.BindString16(3, element.value());
-    statement.BindString16(4, base::i18n::ToLower(element.value()));
-    statement.BindInt64(5, time.ToTimeT());
-    statement.BindInt64(6, time.ToTimeT());
-    statement.BindInt(7, 1);
+    create_statement.BindString16(0, element.name());
+    create_statement.BindString16(1, element.label());
+    create_statement.BindString16(2, NormalizeLabel(element.label()));
+    create_statement.BindString16(3, element.value());
+    create_statement.BindString16(4, base::i18n::ToLower(element.value()));
+    create_statement.BindInt64(5, time.ToTimeT());
+    create_statement.BindInt64(6, time.ToTimeT());
+    create_statement.BindInt(7, 1);
+    return create_statement.Run();
   }
-  return statement.Run();
+  return true;
 }
 
 bool AutocompleteTableLabelSensitive::InitMainTable() {

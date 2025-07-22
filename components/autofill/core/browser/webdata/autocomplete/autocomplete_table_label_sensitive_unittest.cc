@@ -241,6 +241,79 @@ TEST_F(AddFormFieldValuesTest, UpdatesExistingEntryCount) {
             2);
 }
 
+// If we add a new entry, we should update counts of all existing entries which
+// have the same LABEL and VALUE as the new entry. This is done to ensure that
+// all entry counters' that would contribute to a correct suggestion get
+// reinforced.
+TEST_F(AddFormFieldValuesTest,
+       CreatesNewEntryAndUpdatesCountOfExistingEntryOnIdenticalLabelAndValue) {
+  FormFieldData field1 = CreateDefaultField();
+  FormFieldData field2 = CreateTestFormField(
+      kDefaultLabel, u"name", kDefaultValue, FormControlType::kInputText);
+
+  ASSERT_TRUE(SubmitFormField(field1));
+  ASSERT_TRUE(SubmitFormField(field2));
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                field1.name(), field1.label(), field1.value()),
+            2);
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                field2.name(), field2.label(), field2.value()),
+            1);
+}
+
+// If we add a new entry, we should update counts of all existing entries which
+// have the same NAME and VALUE as the new entry. This is done to ensure that
+// all entry counters' that would contribute to a correct suggestion get
+// reinforced.
+TEST_F(AddFormFieldValuesTest,
+       CreatesNewEntryAndUpdatesCountOfExistingEntryOnIdenticalNameAndValue) {
+  FormFieldData field1 = CreateDefaultField();
+  FormFieldData field2 = CreateTestFormField(
+      u"Some label", kDefaultName, kDefaultValue, FormControlType::kInputText);
+
+  ASSERT_TRUE(SubmitFormField(field1));
+  ASSERT_TRUE(SubmitFormField(field2));
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                field1.name(), field1.label(), field1.value()),
+            2);
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                field2.name(), field2.label(), field2.value()),
+            1);
+}
+
+// Check that AddFormFieldValues updates counts of relevant existing entries
+// when several fields with identical label and value but different names are
+// submitted.
+TEST_F(AddFormFieldValuesTest, UpdatesCountsOfSeveralExistingEntries) {
+  FormFieldData field1 = CreateTestFormField(
+      kDefaultLabel, u"your_name", kDefaultValue, FormControlType::kInputText);
+  FormFieldData field2 = CreateTestFormField(
+      kDefaultLabel, u"name", kDefaultValue, FormControlType::kInputText);
+  FormFieldData field3 = CreateTestFormField(
+      kDefaultLabel, u"yn", kDefaultValue, FormControlType::kInputText);
+
+  // Should insert entry 1
+  ASSERT_TRUE(SubmitFormField(field1));
+
+  // Should increase count of entry 1 and add entry 2
+  ASSERT_TRUE(SubmitFormField(field2));
+
+  // Should increase count of entry 1 and 2 and add entry 3
+  ASSERT_TRUE(SubmitFormField(field3));
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                field1.name(), field1.label(), field1.value()),
+            3);
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                field2.name(), field2.label(), field2.value()),
+            2);
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
+                field3.name(), field3.label(), field3.value()),
+            1);
+}
+
 // Check if AddFormFieldValues stores the value of autocomplete entry in
 // case-sensitive manner.
 TEST_F(AddFormFieldValuesTest, StoresDataCaseSensitive) {
