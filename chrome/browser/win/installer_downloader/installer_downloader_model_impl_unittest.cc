@@ -332,21 +332,26 @@ TEST_F(InstallerDownloaderModelTest, DestinationMatchMetricTrue) {
   const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp\\installer.exe"));
   const GURL url("https://example.com/installer.exe");
   content::FakeDownloadItem fake_item;
-  fake_item.SetDummyFilePath(destination);
+
+  // The observer compares against the target file path.
+  fake_item.SetTargetFilePath(destination);
+  fake_item.SetState(download::DownloadItem::IN_PROGRESS);
 
   EXPECT_CALL(mock_download_manager_, DownloadUrlMock(_))
       .WillOnce([&](download::DownloadUrlParameters* params) {
         std::move(params->callback())
-            .Run(&fake_item,
-                 DownloadInterruptReason::DOWNLOAD_INTERRUPT_REASON_NONE);
+            .Run(&fake_item, download::DOWNLOAD_INTERRUPT_REASON_NONE);
       });
 
   model_->StartDownload(url, destination, mock_download_manager_,
                         base::DoNothing());
 
+  fake_item.SetState(download::DownloadItem::COMPLETE);
+  fake_item.NotifyDownloadUpdated();
+
   histograms.ExpectUniqueSample(
       "Windows.InstallerDownloader.DestinationMatches",
-      /*value=*/true, /*expected_count=*/1);
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
 TEST_F(InstallerDownloaderModelTest, DestinationMatchMetricFalse) {
@@ -357,21 +362,26 @@ TEST_F(InstallerDownloaderModelTest, DestinationMatchMetricFalse) {
   const GURL url("https://example.com/installer.exe");
 
   content::FakeDownloadItem fake_item;
-  fake_item.SetDummyFilePath(actual);
+  // The actual path is different from what was requested, simulating a
+  // path change by the download manager.
+  fake_item.SetTargetFilePath(actual);
+  fake_item.SetState(download::DownloadItem::IN_PROGRESS);
 
   EXPECT_CALL(mock_download_manager_, DownloadUrlMock(_))
       .WillOnce([&](download::DownloadUrlParameters* params) {
         std::move(params->callback())
-            .Run(&fake_item,
-                 DownloadInterruptReason::DOWNLOAD_INTERRUPT_REASON_NONE);
+            .Run(&fake_item, download::DOWNLOAD_INTERRUPT_REASON_NONE);
       });
 
   model_->StartDownload(url, requested, mock_download_manager_,
                         base::DoNothing());
 
+  fake_item.SetState(download::DownloadItem::COMPLETE);
+  fake_item.NotifyDownloadUpdated();
+
   histograms.ExpectUniqueSample(
       "Windows.InstallerDownloader.DestinationMatches",
-      /*value=*/false, /*expected_count=*/1);
+      /*sample=*/false, /*expected_bucket_count=*/1);
 }
 
 }  // namespace

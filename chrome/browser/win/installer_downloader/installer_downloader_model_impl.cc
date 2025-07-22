@@ -34,8 +34,10 @@ class InstallerDownloaderObserver final
     : public download::DownloadItem::Observer {
  public:
   InstallerDownloaderObserver(download::DownloadItem* item,
+                              base::FilePath expected_path,
                               CompletionCallback completion_callback)
-      : completion_callback_(std::move(completion_callback)) {
+      : completion_callback_(std::move(completion_callback)),
+        expected_path_(expected_path) {
     observation_.Observe(item);
   }
 
@@ -49,6 +51,11 @@ class InstallerDownloaderObserver final
 
     switch (item->GetState()) {
       case download::DownloadItem::COMPLETE:
+        // Did DownloadManager keep exactly the path we requested?
+        base::UmaHistogramBoolean(
+            "Windows.InstallerDownloader.DestinationMatches",
+            item->GetTargetFilePath() == expected_path_);
+
         // `this` is deleted by `completion_callback_`, so nothing below this
         // point may access it.
         std::move(completion_callback_).Run(/*succeeded=*/true);
@@ -75,6 +82,9 @@ class InstallerDownloaderObserver final
                           download::DownloadItem::Observer>
       observation_{this};
   CompletionCallback completion_callback_;
+
+  // Stores the expected destination path of the downloaded file.
+  const base::FilePath expected_path_;
 };
 
 InstallerDownloaderModelImpl::InstallerDownloaderModelImpl(
@@ -189,17 +199,14 @@ void InstallerDownloaderModelImpl::OnInstallerDownloadCreated(
     return;
   }
 
-  // Did DownloadManager keep exactly the path we requested?
-  base::UmaHistogramBoolean("Windows.InstallerDownloader.DestinationMatches",
-                            item->GetFullPath() == expected_path);
-
   // The InstallerDownloaderController that hold this model is a browser global
   // feature. Therefore, it is safe to use base::Unretained here.
   installer_downloader_observer_ =
       std::make_unique<InstallerDownloaderObserver>(
-          item, base::BindOnce(
-                    &InstallerDownloaderModelImpl::OnInstallerDownloadFinished,
-                    base::Unretained(this), std::move(completion_callback)));
+          item, expected_path,
+          base::BindOnce(
+              &InstallerDownloaderModelImpl::OnInstallerDownloadFinished,
+              base::Unretained(this), std::move(completion_callback)));
 }
 
 void InstallerDownloaderModelImpl::OnInstallerDownloadFinished(
