@@ -245,6 +245,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @DisableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOYALTY_CARDS_FILLING})
     public void testAccountSettingsView() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -294,7 +295,7 @@ public class ManageSyncSettingsTest {
 
         scrollToAndVerifyPresence(R.string.account_section_passwords_toggle);
 
-        scrollToAndVerifyPresence(R.string.account_section_payments_toggle);
+        scrollToAndVerifyPresence(R.string.account_section_payments_and_info_toggle);
 
         scrollToAndVerifyPresence(R.string.account_section_settings_toggle);
 

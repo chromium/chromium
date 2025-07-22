@@ -263,6 +263,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
     expected_types.Put(syncer::PRODUCT_COMPARISON);
   }
 
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+    expected_types.Put(syncer::AUTOFILL_VALUABLE);
+  }
+
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
 #else
