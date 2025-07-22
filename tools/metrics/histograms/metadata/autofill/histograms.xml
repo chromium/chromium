@@ -4375,6 +4375,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.LoyaltyCard.StoredCardsCount" units="units"
+    expires_after="2026-06-01">
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of loyalty cards stored in Chrome, measured at Chrome profile
+    launch.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ManageCardsPrompt" enum="AutofillManageCardsPrompt"
     expires_after="2026-06-01">
   <owner>osaul@google.com</owner>
