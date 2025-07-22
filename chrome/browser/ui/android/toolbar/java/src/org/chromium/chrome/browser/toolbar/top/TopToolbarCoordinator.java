@@ -670,6 +670,7 @@ public class TopToolbarCoordinator implements Toolbar {
     public void setIncognitoStateProvider(
             IncognitoStateProvider provider,
             @Nullable ObservableSupplier<Integer> overviewColorSupplier) {
+        mToolbarLayout.setIncognitoStateProvider(provider);
         if (overviewColorSupplier == null) {
             assert mToolbarLayout != null;
             cleanUpIncognitoStateObserver();

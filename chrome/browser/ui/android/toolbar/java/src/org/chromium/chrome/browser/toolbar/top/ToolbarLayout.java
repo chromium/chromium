@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
@@ -92,6 +93,7 @@ public abstract class ToolbarLayout extends FrameLayout
     private boolean mFindInPageToolbarShowing;
 
     protected ThemeColorProvider mThemeColorProvider;
+    protected IncognitoStateProvider mIncognitoStateProvider;
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
 
@@ -219,6 +221,15 @@ public abstract class ToolbarLayout extends FrameLayout
         mThemeColorProvider = themeColorProvider;
         mThemeColorProvider.addTintObserver(this);
         mThemeColorProvider.addThemeColorObserver(this);
+    }
+
+    /**
+     * @param incognitoStateProvider The {@link IncognitoStateProvider} for observing incognito
+     *     state.
+     */
+    @Initializer
+    void setIncognitoStateProvider(IncognitoStateProvider incognitoStateProvider) {
+        mIncognitoStateProvider = incognitoStateProvider;
     }
 
     /**
