@@ -22,12 +22,22 @@ class MultiCaptureNotificationDetailsView : public views::View {
 
  public:
   MultiCaptureNotificationDetailsView(
-      const std::vector<std::string>& app_names);
+      const std::vector<std::string>& app_names_with_notification,
+      const std::vector<std::string>& app_names_without_notification);
   ~MultiCaptureNotificationDetailsView() override;
 
-  static void ShowCaptureDetails(const std::vector<std::string>& app_names);
+  static void ShowCaptureDetails(
+      const std::vector<std::string>& app_names_with_notification,
+      const std::vector<std::string>& app_names_without_notification);
 
  private:
+  void ShowAppListAllWithNotification(
+      const std::vector<std::string>& app_names_with_notification);
+  void ShowAppListNoneWithNotification(
+      const std::vector<std::string>& app_names_without_notification);
+  void ShowAppListsWitMixedhNotifications(
+      const std::vector<std::string>& app_names_with_notification,
+      const std::vector<std::string>& app_names_without_notification);
   void CloseWidget();
 
   base::WeakPtrFactory<MultiCaptureNotificationDetailsView> weak_ptr_factory_{

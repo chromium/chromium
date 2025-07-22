@@ -19022,8 +19022,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_NO_APP_ON_ALLOWLIST_MESSAGE" desc="Message for the multi capture details view where no app is on the allowlist that enables an app not to show a notification.">
         These apps will be used to record your screen:
       </message>
+      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_SOME_APPS_ON_ALLOWLIST_FIRST_MESSAGE" desc="First message for the multi capture details view where some apps are allowlisted.">
+        You will be notified when these apps are used to record your screen:
+      </message>
+      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_SOME_APPS_ON_ALLOWLIST_SECOND_MESSAGE" desc="First message for the multi capture details view where some apps are allowlisted.">
+        You will not be notified when these apps are used to record your screen:
+      </message>
       <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_NO_APP_ON_ALLOWLIST_FOOTER_MESSAGE" desc="Footer for the multi capture details view where no app is on the allowlist that enables an app not to show a notification.">
         You will be notified when the recording starts.
+      </message>
+      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_ALL_APPS_ON_ALLOWLIST_FOOTER_MESSAGE" desc="Footer for the multi capture details view where all apps is on the notification bypass allowlist.">
+        You will not be notified when the recording starts.
       </message>
       <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_CLOSE_BUTTON_TEXT" desc="Close button text for the multi capture details view.">
         Got it
