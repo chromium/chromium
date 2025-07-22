@@ -12,6 +12,7 @@ namespace chrome_pdf {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 class MockPDFAnnogationAgentContainer : public PDFAnnotationAgent::Container {
@@ -47,7 +48,7 @@ class PDFAnnotationAgentTest : public ::testing::Test {
   }
 
  protected:
-  MockPDFAnnogationAgentContainer mock_container_;
+  NiceMock<MockPDFAnnogationAgentContainer> mock_container_;
   std::unique_ptr<FakeAnnotationAgentHost> fake_annotation_agent_host_;
 
  private:

@@ -981,7 +981,7 @@ TEST_F(DocumentLoaderImplTest, PartialConnectionErrorOnRead) {
 }
 
 TEST_F(DocumentLoaderImplTest, ClientCompleteCallbacks) {
-  MockClient client;
+  NiceMock<MockClient> client;
   client.SetCanUsePartialLoading();
   client.full_page_loader_data()->set_content_length(kDefaultRequestSize * 20);
   DocumentLoaderImpl loader(&client);
@@ -998,7 +998,7 @@ TEST_F(DocumentLoaderImplTest, ClientCompleteCallbacks) {
 }
 
 TEST_F(DocumentLoaderImplTest, ClientCompleteCallbacksNoContentLength) {
-  MockClient client;
+  NiceMock<MockClient> client;
   DocumentLoaderImpl loader(&client);
   loader.Init(client.CreateFullPageLoader(), "http://url.com");
 
@@ -1015,7 +1015,7 @@ TEST_F(DocumentLoaderImplTest, ClientCompleteCallbacksNoContentLength) {
 }
 
 TEST_F(DocumentLoaderImplTest, ClientCancelCallback) {
-  MockClient client;
+  NiceMock<MockClient> client;
   client.SetCanUsePartialLoading();
   client.full_page_loader_data()->set_content_length(kDefaultRequestSize * 20);
   DocumentLoaderImpl loader(&client);
@@ -1054,7 +1054,7 @@ TEST_F(DocumentLoaderImplTest, NewDataAvailable) {
 }
 
 TEST_F(DocumentLoaderImplTest, ClientPendingRequestCompleteFullLoader) {
-  MockClient client;
+  NiceMock<MockClient> client;
   client.SetCanUsePartialLoading();
   DocumentLoaderImpl loader(&client);
   loader.Init(client.CreateFullPageLoader(), "http://url.com");
@@ -1067,7 +1067,7 @@ TEST_F(DocumentLoaderImplTest, ClientPendingRequestCompleteFullLoader) {
 }
 
 TEST_F(DocumentLoaderImplTest, ClientPendingRequestCompletePartialLoader) {
-  MockClient client;
+  NiceMock<MockClient> client;
   client.SetCanUsePartialLoading();
   DocumentLoaderImpl loader(&client);
   loader.Init(client.CreateFullPageLoader(), "http://url.com");
@@ -1084,7 +1084,7 @@ TEST_F(DocumentLoaderImplTest, ClientPendingRequestCompletePartialLoader) {
 
 TEST_F(DocumentLoaderImplTest,
        ClientPendingRequestCompletePartialAndFullLoader) {
-  MockClient client;
+  NiceMock<MockClient> client;
   client.SetCanUsePartialLoading();
   DocumentLoaderImpl loader(&client);
   loader.Init(client.CreateFullPageLoader(), "http://url.com");

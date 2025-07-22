@@ -3043,7 +3043,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, FragmentNotInPDF) {
 
 // Assert that the second highlight should clear the existing highlight.
 TEST_P(PDFiumEngineHighlightTextFragmentTest, ConsecutiveHighlights) {
-  SearchStringTestClient client;
+  NiceMock<SearchStringTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3058,7 +3058,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, ConsecutiveHighlights) {
 // highlight.
 TEST_P(PDFiumEngineHighlightTextFragmentTest,
        ClearExistingHighlightOnFailedFind) {
-  SearchStringTestClient client;
+  NiceMock<SearchStringTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3070,7 +3070,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest,
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
-  SearchStringTestClient client;
+  NiceMock<SearchStringTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3082,7 +3082,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {
-  SearchStringTestClient client;
+  NiceMock<SearchStringTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
   engine->PluginSizeUpdated({200, 400});
