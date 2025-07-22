@@ -176,6 +176,10 @@
     name: 'hard-lcp (entry)'
   });
 
+  // There's no principled way to wait for the trace events to arrive,
+  // so we give it a second here, before we stop tracing.
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   const unfilteredEvents = await tracingHelper.stopTracing();
 
   const traceEntries = [];
@@ -221,20 +225,15 @@
       'Trace events and performance entries can be joined by navigationId.');
   while (perfEntries.length > 0 || traceEntries.length > 0) {
     const entries = [];
-    if (perfEntries.length === 0) {
-      entries.push(traceEntries.shift());
-    } else if (traceEntries.length === 0) {
+    const navigationId = perfEntries.length > 0 ? perfEntries[0].navigationId :
+                                                  traceEntries[0].navigationId;
+    while (perfEntries.length > 0 &&
+           perfEntries[0].navigationId === navigationId) {
       entries.push(perfEntries.shift());
-    } else {
-      const navigationId = perfEntries[0].navigationId;
-      while (perfEntries.length > 0 &&
-             perfEntries[0].navigationId === navigationId) {
-        entries.push(perfEntries.shift());
-      }
-      while (traceEntries.length > 0 &&
-             traceEntries[0].navigationId === navigationId) {
-        entries.push(traceEntries.shift());
-      }
+    }
+    while (traceEntries.length > 0 &&
+           traceEntries[0].navigationId === navigationId) {
+      entries.push(traceEntries.shift());
     }
     for (const {navigationId, name} of entries) {
       testRunner.log('-> ' + ids.map(navigationId) + ' ' + name);
