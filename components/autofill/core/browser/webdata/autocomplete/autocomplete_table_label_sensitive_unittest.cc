@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/346507576): After launch, this file should replace existing
-// autocomplete_table_unittest.cc. The "LabelSensitive" suffix should be dropped
-// everywhere.
+// TODO(crbug.com/346507576): After launch, this file should replace the
+// existing autocomplete_table_unittest.cc. The "LabelSensitive" suffix should
+// be dropped everywhere.
 
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 
@@ -53,8 +53,8 @@ bool CompareAutocompleteEntries(const AutocompleteEntryLabelSensitive& a,
   time_t b_created = b.date_created().ToTimeT();
   time_t b_used = b.date_last_used().ToTimeT();
 
-  // Tie requires lvalues, so a_created, a_used, b_created, and b_used cannot be
-  // inlined.
+  // 'Tie' requires lvalues, so a_created, a_used, b_created, and b_used cannot
+  // be inlined.
   return std::tie(a.key().name(), a.key().label(), a.key().value(), a_created,
                   a_used) < std::tie(b.key().name(), b.key().label(),
                                      b.key().value(), b_created, b_used);
@@ -129,19 +129,19 @@ class AutocompleteTableLabelSensitiveTest : public testing::Test {
     return CreateDefaultFieldWithValue(kDefaultValue);
   }
 
-  // Submits a vector of form fields to the table, returns true if successful.
+  // Submits a vector of form fields to the table; returns true if successful.
   [[nodiscard]] bool SubmitFormFields(
       const std::vector<FormFieldData>& elements) {
     return table().AddFormFieldValues(elements);
   }
 
-  // Submits a single form field to the table, returns true if successful.
+  // Submits a single form field to the table; returns true if successful.
   [[nodiscard]] bool SubmitFormField(const FormFieldData& field) {
     return SubmitFormFields({field});
   }
 
-  // Will return optional field on successful submission, or std::nullopt if
-  // submission fails
+  // Will return an optional field on successful submission, or std::nullopt if
+  // submission fails.
   [[nodiscard]] std::optional<FormFieldData>
   CreateAndSubmitDefaultFieldWithValue(std::u16string_view value) {
     FormFieldData field = CreateDefaultFieldWithValue(value);
@@ -151,15 +151,15 @@ class AutocompleteTableLabelSensitiveTest : public testing::Test {
     return field;
   }
 
-  // Will return optional field on successful submission, or std::nullopt if
-  // submission fails
+  // Will return an optional field on successful submission, or std::nullopt if
+  // submission fails.
   [[nodiscard]] std::optional<FormFieldData> CreateAndSubmitDefaultField() {
     return CreateAndSubmitDefaultFieldWithValue(kDefaultValue);
   }
 
   [[nodiscard]] bool DoesAutocompleteEntryExist(const std::u16string& name,
-                                                const std::u16string& label,
-                                                const std::u16string& value) {
+                                                  const std::u16string& label,
+                                                  const std::u16string& value) {
     sql::Statement s(db().GetSQLConnection()->GetUniqueStatement(
         "SELECT COUNT(*) FROM autocomplete WHERE name = ? AND label = ? AND "
         "value = ?"));
@@ -210,11 +210,11 @@ class AutocompleteTableLabelSensitiveTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-// TODO(crbug.com/346507576): Add happy path tests
+// TODO(crbug.com/346507576): Add happy path tests.
 
 using AddFormFieldValuesTest = AutocompleteTableLabelSensitiveTest;
 
-// Check that AddFormFieldValues correctly creates a new entry in the database.
+// Checks that AddFormFieldValues correctly creates a new entry in the database.
 TEST_F(AddFormFieldValuesTest, InsertsNewEntry) {
   ASSERT_FALSE(
       DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, kDefaultValue));
@@ -224,16 +224,16 @@ TEST_F(AddFormFieldValuesTest, InsertsNewEntry) {
       DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, kDefaultValue));
 }
 
-// Check that AddFormFieldValues modifies the underlying database by inserting
-// an entry and later incrementing the use count of the previously inserting
+// Checks that AddFormFieldValues modifies the underlying database by inserting
+// an entry and later incrementing the use count of the previously inserted
 // entry.
 TEST_F(AddFormFieldValuesTest, UpdatesExistingEntryCount) {
   FormFieldData field = CreateDefaultField();
 
-  // Add new entry
+  // Add new entry.
   ASSERT_TRUE(SubmitFormField(field));
 
-  // Update existing entry
+  // Update existing entry.
   ASSERT_TRUE(SubmitFormField(field));
 
   EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
@@ -241,9 +241,9 @@ TEST_F(AddFormFieldValuesTest, UpdatesExistingEntryCount) {
             2);
 }
 
-// If we add a new entry, we should update counts of all existing entries which
-// have the same LABEL and VALUE as the new entry. This is done to ensure that
-// all entry counters' that would contribute to a correct suggestion get
+// If we add a new entry, we should update the counts of all existing entries
+// that have the same LABEL and VALUE as the new entry. This is done to ensure
+// that all entry counters that would contribute to a correct suggestion are
 // reinforced.
 TEST_F(AddFormFieldValuesTest,
        CreatesNewEntryAndUpdatesCountOfExistingEntryOnIdenticalLabelAndValue) {
@@ -262,9 +262,9 @@ TEST_F(AddFormFieldValuesTest,
             1);
 }
 
-// If we add a new entry, we should update counts of all existing entries which
-// have the same NAME and VALUE as the new entry. This is done to ensure that
-// all entry counters' that would contribute to a correct suggestion get
+// If we add a new entry, we should update the counts of all existing entries
+// that have the same NAME and VALUE as the new entry. This is done to ensure
+// that all entry counters that would contribute to a correct suggestion are
 // reinforced.
 TEST_F(AddFormFieldValuesTest,
        CreatesNewEntryAndUpdatesCountOfExistingEntryOnIdenticalNameAndValue) {
@@ -283,8 +283,8 @@ TEST_F(AddFormFieldValuesTest,
             1);
 }
 
-// Check that AddFormFieldValues updates counts of relevant existing entries
-// when several fields with identical label and value but different names are
+// Checks that AddFormFieldValues updates counts of relevant existing entries
+// when several fields with identical labels and values but different names are
 // submitted.
 TEST_F(AddFormFieldValuesTest, UpdatesCountsOfSeveralExistingEntries) {
   FormFieldData field1 = CreateTestFormField(
@@ -294,13 +294,13 @@ TEST_F(AddFormFieldValuesTest, UpdatesCountsOfSeveralExistingEntries) {
   FormFieldData field3 = CreateTestFormField(
       kDefaultLabel, u"yn", kDefaultValue, FormControlType::kInputText);
 
-  // Should insert entry 1
+  // Should insert entry 1.
   ASSERT_TRUE(SubmitFormField(field1));
 
-  // Should increase count of entry 1 and add entry 2
+  // Should increase count of entry 1 and add entry 2.
   ASSERT_TRUE(SubmitFormField(field2));
 
-  // Should increase count of entry 1 and 2 and add entry 3
+  // Should increase count of entry 1 and 2 and add entry 3.
   ASSERT_TRUE(SubmitFormField(field3));
 
   EXPECT_EQ(GetAutocompleteEntryLabelSensitiveCount(
@@ -314,8 +314,8 @@ TEST_F(AddFormFieldValuesTest, UpdatesCountsOfSeveralExistingEntries) {
             1);
 }
 
-// Check if AddFormFieldValues stores the value of autocomplete entry in
-// case-sensitive manner.
+// Checks if AddFormFieldValues stores and queries the value of an autocomplete
+// entry in a case-sensitive manner.
 TEST_F(AddFormFieldValuesTest, StoresDataCaseSensitive) {
   ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
   ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark KENT").has_value());
@@ -328,7 +328,7 @@ TEST_F(AddFormFieldValuesTest, StoresDataCaseSensitive) {
       DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, u"clark kent"));
 }
 
-// Check if AddFormFieldValues stores empty and whitespace values as is.
+// Checks if AddFormFieldValues stores empty and whitespace values as is.
 TEST_F(AddFormFieldValuesTest, StoresEmptyValuesAsIs) {
   std::optional<FormFieldData> optional_empty_field =
       CreateAndSubmitDefaultFieldWithValue(u"");
@@ -347,7 +347,7 @@ TEST_F(AddFormFieldValuesTest, StoresEmptyValuesAsIs) {
             1);
 }
 
-// Check if AddFormFieldValues stores null terminated values as is in the
+// Checks if AddFormFieldValues inserts null-terminated values as is in the
 // database.
 TEST_F(AddFormFieldValuesTest, InsertsNullTerminatedValuesAsIs) {
   const std::u16string kValueNullTerminated(kDefaultValue,
@@ -364,7 +364,7 @@ TEST_F(AddFormFieldValuesTest, InsertsNullTerminatedValuesAsIs) {
             1);
 }
 
-// Check if AddFormFieldValues ignores a field if the name AND/OR label
+// Checks if AddFormFieldValues ignores a field if the name AND/OR label
 // of the field already appeared in the form before.
 TEST_F(AddFormFieldValuesTest, IgnoresIdenticalNameOrLabel) {
   // Will be added to the database.
@@ -386,10 +386,10 @@ TEST_F(AddFormFieldValuesTest, IgnoresIdenticalNameOrLabel) {
   ASSERT_TRUE(SubmitFormFields({field1, field2, field3, field4}));
 
   EXPECT_TRUE(DoesAutocompleteEntryExist(field1.name(), field1.label(),
-                                         field1.value()));
+                                           field1.value()));
 }
 
-// Check if AddFormFieldValues inserts at most 256 entries.
+// Checks if AddFormFieldValues inserts at most 256 entries.
 TEST_F(AddFormFieldValuesTest, InsertsAtMost256Entries) {
   std::vector<FormFieldData> elements;
   for (int i = 0; i < 300; ++i) {
@@ -421,16 +421,16 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsSuggestion) {
 }
 
 // When asked for 1 result, GetFormValuesForElementNameAndLabel returns the top
-// suggestion for given name/label and empty value prefix.
+// suggestion for the given name/label and empty value prefix.
 TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsTopSuggestion) {
-  // Add 3 entries
+  // Add 3 entries.
   std::optional<FormFieldData> optional_field = CreateAndSubmitDefaultField();
   ASSERT_TRUE(CreateAndSubmitDefaultFieldWithValue(u"Clark Kent").has_value());
   ASSERT_TRUE(optional_field.has_value());
   ASSERT_TRUE(
       CreateAndSubmitDefaultFieldWithValue(u"Clark Sutter").has_value());
 
-  // Reinforce the first entry which should make it the top suggestion
+  // Reinforce the first entry, which should make it the top suggestion.
   ASSERT_TRUE(SubmitFormField(optional_field.value()));
 
   std::vector<AutocompleteSearchResultLabelSensitive> entries;
@@ -442,12 +442,12 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsTopSuggestion) {
 }
 
 // When asked for multiple results, GetFormValuesForElementNameAndLabel returns
-// them in correct order based on frequency of previous submissions.
+// them in the correct order based on the frequency of previous submissions.
 TEST_F(GetFormValuesForElementNameAndLabelTest,
        ReturnsMultipleSuggestionsInCorrectOrder) {
   FormFieldData field1 = CreateDefaultFieldWithValue(u"Clark Kent");
   FormFieldData field2 = CreateDefaultFieldWithValue(u"Clark Sutter");
-  // Add 2 entries, one with count 1, the other with count 2
+  // Add 2 entries: one with count 1, the other with count 2.
   ASSERT_TRUE(SubmitFormField(field1));
   ASSERT_TRUE(SubmitFormField(field2));
   ASSERT_TRUE(SubmitFormField(field2));
@@ -509,7 +509,7 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, PrefixNarrowsDownResults) {
 using GetCountOfValuesContainedBetweenTest =
     AutocompleteTableLabelSensitiveTest;
 
-// Add several entries to the database with different timestamps and expect
+// Adds several entries to the database with different timestamps and expects
 // GetCountOfValuesContainedBetween to return all of them if the time interval
 // is large enough.
 TEST_F(GetCountOfValuesContainedBetweenTest, ReturnsCorrectCount) {
@@ -528,7 +528,7 @@ TEST_F(GetCountOfValuesContainedBetweenTest, ReturnsCorrectCount) {
       3);
 }
 
-// Add several entries to the database with different timestamps and expect
+// Adds several entries to the database with different timestamps and expects
 // GetCountOfValuesContainedBetween to return nothing if the time interval
 // provided does not contain any of the entries.
 TEST_F(GetCountOfValuesContainedBetweenTest,
@@ -544,10 +544,10 @@ TEST_F(GetCountOfValuesContainedBetweenTest,
             0);
 }
 
-// Add several entries to the database with different timestamps. Call
-// GetCountOfValuesContainedBetween with such an interval that some entries are
-// contained and some are not. Expect to return the number of entries that are
-// contained in the time interval provided.
+// Adds several entries to the database with different timestamps. Calls
+// GetCountOfValuesContainedBetween with an interval such that some entries are
+// contained and some are not. Expects the number of entries contained in the
+// time interval provided to be returned.
 TEST_F(GetCountOfValuesContainedBetweenTest,
        ReturnsCountOfEntriesOnlyInTheInterval) {
   const Time begin = base::Time::Now();
@@ -565,9 +565,9 @@ TEST_F(GetCountOfValuesContainedBetweenTest,
             1);
 }
 
-// Add several entries to the database with different timestamps. Call
-// GetCountOfValuesContainedBetween with interval [0, MAX_VALUE) interval.
-// Expect to return all the entries.
+// Adds several entries to the database with different timestamps. Calls
+// GetCountOfValuesContainedBetween with the interval [0, MAX_VALUE).
+// Expects all entries to be returned.
 TEST_F(GetCountOfValuesContainedBetweenTest,
        ReturnsEverythingForUnboundedInterval) {
   ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
@@ -583,10 +583,11 @@ TEST_F(GetCountOfValuesContainedBetweenTest,
             3);
 }
 
-// GetCountOfValuesContainedBetween should treat provided interval as
-// closed-open, e.g. include begin and exclude end. Both entry's creation and
-// update time, should be in the interval to be counted. Interval [1, 5) should
-// not contain an entry with creation/update timespan [0, 1].
+// GetCountOfValuesContainedBetween should treat the provided interval as
+// closed-open (i.e., include the beginning and exclude the end). Both the
+// entry's creation and update time should be in the interval to be counted. An
+// interval [1, 5) should not contain an entry with a creation/update timespan
+// of [0, 1].
 TEST_F(GetCountOfValuesContainedBetweenTest,
        ShouldNotIncludeIfUpdateEqualsBegin) {
   const Time begin = base::Time::Now();
@@ -600,10 +601,11 @@ TEST_F(GetCountOfValuesContainedBetweenTest,
             0);
 }
 
-// GetCountOfValuesContainedBetween should treat provided interval as
-// closed-open, e.g. include begin and exclude end. Both entry's creation and
-// update time, should be in the interval to be counted. Interval [1, 5) should
-// contain an entry with creation/update timespan [1, 1].
+// GetCountOfValuesContainedBetween should treat the provided interval as
+// closed-open (i.e., include the beginning and exclude the end). Both the
+// entry's creation and update time should be in the interval to be counted. An
+// interval [1, 5) should contain an entry with a creation/update timespan of
+// [1, 1].
 TEST_F(GetCountOfValuesContainedBetweenTest,
        ShouldIncludeIfCreateAndUpdateEqualsBegin) {
   const Time begin = base::Time::Now();
@@ -616,10 +618,11 @@ TEST_F(GetCountOfValuesContainedBetweenTest,
             1);
 }
 
-// GetCountOfValuesContainedBetween should treat provided interval as
-// closed-open, e.g. include begin and exclude end. Both entry's creation and
-// update time, should be in the interval to be counted. Interval [1, 5) should
-// contain an entry with creation/update timespan [1, 5].
+// GetCountOfValuesContainedBetween should treat the provided interval as
+// closed-open (i.e., include the beginning and exclude the end). Both the
+// entry's creation and update time should be in the interval to be counted. An
+// interval [1, 5) should contain an entry with a creation/update timespan of
+// [1, 5].
 TEST_F(GetCountOfValuesContainedBetweenTest,
        ShouldNotIncludeIfCreateEqualsBeginAndUpdateEqualsEnd) {
   const Time begin = base::Time::Now();
@@ -634,10 +637,11 @@ TEST_F(GetCountOfValuesContainedBetweenTest,
             0);
 }
 
-// GetCountOfValuesContainedBetween should treat provided interval as
-// closed-open, e.g. include begin and exclude end. Both entry's creation and
-// update time, should be in the interval to be counted. Interval [1, 5) should
-// not contain an entry with creation/update timespan [5, 5].
+// GetCountOfValuesContainedBetween should treat the provided interval as
+// closed-open (i.e., include the beginning and exclude the end). Both the
+// entry's creation and update time should be in the interval to be counted. An
+// interval [1, 5) should not contain an entry with a creation/update timespan
+// of [5, 5].
 TEST_F(GetCountOfValuesContainedBetweenTest,
        ShouldNotIncludeIfCreateAndUpdateEqualsEnd) {
   const Time begin = base::Time::Now();
@@ -650,10 +654,11 @@ TEST_F(GetCountOfValuesContainedBetweenTest,
             0);
 }
 
-// GetCountOfValuesContainedBetween should treat provided interval as
-// closed-open, e.g. include begin and exclude end. Both entry's creation and
-// update time, should be in the interval to be counted. Interval [1, 5) should
-// not contain an entry with creation/update timespan [5, 6].
+// GetCountOfValuesContainedBetween should treat the provided interval as
+// closed-open (i.e., include the beginning and exclude the end). Both the
+// entry's creation and update time should be in the interval to be counted. An
+// interval [1, 5) should not contain an entry with a creation/update timespan
+// of [5, 6].
 TEST_F(GetCountOfValuesContainedBetweenTest,
        ShouldNotIncludeIfCreateEqualsEnd) {
   const Time begin = base::Time::Now();
@@ -670,7 +675,7 @@ TEST_F(GetCountOfValuesContainedBetweenTest,
 
 using RemoveFormElementsAddedBetweenTest = AutocompleteTableLabelSensitiveTest;
 
-// Add an entry to the database at a specified timestamp and expect it to be
+// Adds an entry to the database at a specified timestamp and expects it to be
 // removed by RemoveFormElementsAddedBetween when the entry's timestamp is in
 // the time range provided.
 TEST_F(RemoveFormElementsAddedBetweenTest,
@@ -687,8 +692,8 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
       DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, kDefaultValue));
 }
 
-// Add an entry to the database at a specified timestamp and expect it not to be
-// removed by RemoveFormElementsAddedBetween when the entry's timestamp is
+// Adds an entry to the database at a specified timestamp and expects it not to
+// be removed by RemoveFormElementsAddedBetween when the entry's timestamp is
 // outside the time range provided.
 TEST_F(RemoveFormElementsAddedBetweenTest,
        DoesNotRemoveEntryAddedOutsideTheRange) {
@@ -702,7 +707,7 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
       DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, kDefaultValue));
 }
 
-// Add multiple entries to the database with specified timestamps and expect
+// Adds multiple entries to the database with specified timestamps and expects
 // them all to be removed by RemoveFormElementsAddedBetween when the entries'
 // timestamps are in the time range provided.
 TEST_F(RemoveFormElementsAddedBetweenTest,
@@ -742,8 +747,8 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
       DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, kDefaultValue));
 }
 
-// RemoveFormElementsAddedBetween should update entry's last update time when it
-// was added outside of the provided time range, but was updated during the
+// RemoveFormElementsAddedBetween should update an entry's last update time when
+// it was added outside of the provided time range, but was updated during the
 // provided time range.
 TEST_F(RemoveFormElementsAddedBetweenTest,
        UpdatesEntryAddedBeforeAndUpdatedDuringTheRange) {
@@ -754,7 +759,8 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
   AdvanceClock(base::Seconds(10));
   ASSERT_TRUE(SubmitFormField(optional_field.value()));
 
-  // Assert that the entry was created with last update timestamp equal to 10s.
+  // Asserts that the entry was created with a last update timestamp equal to
+  // 10s.
   ASSERT_THAT(table().GetAutocompleteEntryLabelSensitive(
                   kDefaultName, kDefaultLabel, kDefaultValue),
               MakeAutocompleteEntryLabelSensitiveForTest(
@@ -765,9 +771,9 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
   ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
       begin + base::Seconds(5), begin + base::Seconds(15)));
 
-  // Expect that the entry's last update time was updated to 4s (5s is a start
-  // of the removal time range minus 1s due to removal time range being
-  // closed-open).
+  // Expects that the entry's last update time was updated to 4s (5s is the
+  // start of the removal time range minus 1s due to the removal time range
+  // being closed-open).
   EXPECT_THAT(table().GetAutocompleteEntryLabelSensitive(
                   kDefaultName, kDefaultLabel, kDefaultValue),
               MakeAutocompleteEntryLabelSensitiveForTest(
@@ -776,7 +782,7 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
                   /*date_last_used=*/begin + base::Seconds(4)));
 }
 
-// RemoveFormElementsAddedBetween should update entry's creation time when it
+// RemoveFormElementsAddedBetween should update an entry's creation time when it
 // was added inside of the provided time range, but was updated outside of the
 // provided time range.
 TEST_F(RemoveFormElementsAddedBetweenTest,
@@ -790,7 +796,7 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
   AdvanceClock(base::Seconds(10));
   ASSERT_TRUE(SubmitFormField(optional_field.value()));
 
-  // Assert that the entry was created with creation timestamp equal to 10s.
+  // Asserts that the entry was created with a creation timestamp equal to 10s.
   ASSERT_THAT(table().GetAutocompleteEntryLabelSensitive(
                   kDefaultName, kDefaultLabel, kDefaultValue),
               MakeAutocompleteEntryLabelSensitiveForTest(
@@ -801,7 +807,7 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
   ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
       begin + base::Seconds(5), begin + base::Seconds(15)));
 
-  // Expect that the entry's creation time was updated to 15s.
+  // Expects that the entry's creation time was updated to 15s.
   EXPECT_THAT(table().GetAutocompleteEntryLabelSensitive(
                   kDefaultName, kDefaultLabel, kDefaultValue),
               MakeAutocompleteEntryLabelSensitiveForTest(
@@ -810,10 +816,10 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
                   /*date_last_used=*/begin + base::Seconds(20)));
 }
 
-// Add two entries to the database. Call RemoveFormElementsAddedBetween with
-// such range that first entry is fully inside of the range, second entry is
-// partially inside of the range. Expect one entry to be REMOVED and another
-// one to be UPDATED.
+// Adds two entries to the database. Calls RemoveFormElementsAddedBetween with
+// a range such that the first entry is fully inside the range, and the second
+// entry is partially inside the range. Expects one entry to be REMOVED and the
+// other one to be UPDATED.
 TEST_F(RemoveFormElementsAddedBetweenTest, RemovesAndUpdatesAtTheSameTime) {
   const Time begin = base::Time::Now();
   std::optional<FormFieldData> optional_field1 = CreateAndSubmitDefaultField();
@@ -834,7 +840,7 @@ TEST_F(RemoveFormElementsAddedBetweenTest, RemovesAndUpdatesAtTheSameTime) {
       table().RemoveFormElementsAddedBetween(begin, begin + base::Seconds(12)));
 
   EXPECT_FALSE(DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel,
-                                          optional_field1.value().value()));
+                                            optional_field1.value().value()));
   EXPECT_THAT(table().GetAutocompleteEntryLabelSensitive(
                   kDefaultName, kDefaultLabel, optional_field2.value().value()),
               MakeAutocompleteEntryLabelSensitiveForTest(
@@ -843,9 +849,10 @@ TEST_F(RemoveFormElementsAddedBetweenTest, RemovesAndUpdatesAtTheSameTime) {
                   /*date_last_used=*/begin + base::Seconds(15)));
 }
 
-// Add and update entry every X seconds. Call RemoveFormElementsAddedBetween
-// with such range that covers half of the entry's [create, last_update] span.
-// Expect the use counter to be interpolated to half of the original number.
+// Adds and updates an entry every X seconds. Calls
+// RemoveFormElementsAddedBetween with a range that covers half of the entry's
+// [create, last_update] span. Expects the use counter to be interpolated to
+// half of the original number.
 TEST_F(RemoveFormElementsAddedBetweenTest, UpdatesCountCorrectly) {
   const Time begin = base::Time::Now();
   FormFieldData field = CreateDefaultField();
@@ -857,14 +864,14 @@ TEST_F(RemoveFormElementsAddedBetweenTest, UpdatesCountCorrectly) {
     AdvanceClock(base::Seconds(1));
   }
 
-  // Sanity check
+  // Sanity check.
   ASSERT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
                                                     kDefaultValue),
             10);
 
   // The element had 10 uses between timestamp 10 (exclusive) and 19
-  // (inclusive). Remove entries that were submitted between 5th second
-  // (inclusive) and 15th second (exclusive). This corresponds to 5 uses in
+  // (inclusive). Remove entries that were submitted between the 5th second
+  // (inclusive) and the 15th second (exclusive). This corresponds to 5 uses in
   // reality. The database applies linear interpolation and also decreases the
   // use counter by 5.
   ASSERT_TRUE(table().RemoveFormElementsAddedBetween(
@@ -877,13 +884,13 @@ TEST_F(RemoveFormElementsAddedBetweenTest, UpdatesCountCorrectly) {
 }
 
 // As we store only creation and last update timestamps,
-// RemoveFormElementsAddedBetween assumes that all updates during given time
-// range appeared uniformly distributed in time. This test adds and update the
-// same entry multiple times with the same timestamp than makes another update X
-// seconds later. This means that all except the last update happened in the
-// beginning of [create, last_update] timespan. Nevertheless, call of
-// RemoveFormElementsAddedBetween with the time range that covers the half of
-// aforementioned timespan would still half the count instead of decreasing it
+// RemoveFormElementsAddedBetween assumes that all updates during a given time
+// range appeared uniformly distributed in time. This test adds and updates the
+// same entry multiple times with the same timestamp, then makes another update
+// X seconds later. This means that all except the last update happened at the
+// beginning of the [create, last_update] timespan. Nevertheless, a call to
+// RemoveFormElementsAddedBetween with a time range that covers half of the
+// aforementioned timespan would still halve the count instead of decreasing it
 // to 1.
 TEST_F(RemoveFormElementsAddedBetweenTest,
        AssumesUniformallyDistributedTimestampsOnUpdate) {
@@ -901,7 +908,7 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
   AdvanceClock(base::Seconds(3));
   ASSERT_TRUE(SubmitFormField(field));
 
-  // Sanity check
+  // Sanity check.
   ASSERT_EQ(GetAutocompleteEntryLabelSensitiveCount(kDefaultName, kDefaultLabel,
                                                     kDefaultValue),
             4);
@@ -931,7 +938,7 @@ TEST_F(RemoveFormElementsAddedBetweenTest,
     AdvanceClock(base::Seconds(1));
   }
 
-  // Sanity check
+  // Sanity check.
   ASSERT_EQ(10, GetAutocompleteEntryLabelSensitiveCount(
                     kDefaultName, kDefaultLabel, kDefaultValue));
 
@@ -1001,7 +1008,7 @@ TEST_F(RemoveFormElementTest, DoesNothingIfEntryDoesNotExist) {
 
 using RemoveExpiredFormElementsTest = AutocompleteTableLabelSensitiveTest;
 
-// Add an entry and advance the clock to make it expired.
+// Adds an entry and advances the clock to make it expired.
 // RemoveExpiredFormElements should remove the entry.
 TEST_F(RemoveExpiredFormElementsTest, RemovesExpiredEntries) {
   ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
@@ -1013,7 +1020,7 @@ TEST_F(RemoveExpiredFormElementsTest, RemovesExpiredEntries) {
       DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, kDefaultValue));
 }
 
-// Add an entry and advance the clock but not enough to make it expired.
+// Adds an entry and advances the clock but not enough to make it expired.
 // RemoveExpiredFormElements should not remove the entry.
 TEST_F(RemoveExpiredFormElementsTest, DoesNotRemoveNonExpiredEntries) {
   ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
@@ -1028,7 +1035,7 @@ TEST_F(RemoveExpiredFormElementsTest, DoesNotRemoveNonExpiredEntries) {
 
 using GetAllAutocompleteEntriesTest = AutocompleteTableLabelSensitiveTest;
 
-// If database is empty, GetAllAutocompleteEntries should return no results.
+// If the database is empty, GetAllAutocompleteEntries should return no results.
 TEST_F(GetAllAutocompleteEntriesTest, ReturnsNoResults) {
   std::vector<AutocompleteEntryLabelSensitive> entries;
 
@@ -1037,7 +1044,8 @@ TEST_F(GetAllAutocompleteEntriesTest, ReturnsNoResults) {
   EXPECT_EQ(entries.size(), 0U);
 }
 
-// If database contains one entry, GetAllAutocompleteEntries should return it.
+// If the database contains one entry, GetAllAutocompleteEntries should return
+// it.
 TEST_F(GetAllAutocompleteEntriesTest, ReturnsOneResult) {
   AutocompleteEntryLabelSensitive entry(
       {kDefaultName, kDefaultLabel, kDefaultValue}, base::Time::Now(),
@@ -1060,8 +1068,8 @@ TEST_F(GetAllAutocompleteEntriesTest, ReturnsOneResult) {
       CompareAutocompleteEntryLabelSensitiveSets(entry_set, expected_entries));
 }
 
-// If database contains two distinct entries, GetAllAutocompleteEntries should
-// return both of them.
+// If the database contains two distinct entries, GetAllAutocompleteEntries
+// should return both of them.
 TEST_F(GetAllAutocompleteEntriesTest, ReturnsTwoDistinct) {
   std::optional<FormFieldData> optional_field1 = CreateAndSubmitDefaultField();
   ASSERT_TRUE(optional_field1.has_value());
@@ -1158,13 +1166,13 @@ TEST_F(GetAutocompleteEntryLabelSensitiveTest,
   EXPECT_FALSE(entry.has_value());
 }
 
-// Poison the database and check that we don't crash when adding a value.
+// Poisons the database and checks that we don't crash when adding a value.
 TEST_F(AutocompleteTableLabelSensitiveTest,
        DontCrashWhenAddingValueToPoisonedDB) {
-  // Simulate a preceding fatal error.
+  // Simulates a preceding fatal error.
   db().GetSQLConnection()->Poison();
 
-  // Simulate the submission of a form.
+  // Simulates the submission of a form.
   FormFieldData field = CreateDefaultField();
   EXPECT_FALSE(table().AddFormFieldValues({field}));
 }
