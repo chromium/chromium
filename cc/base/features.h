@@ -231,6 +231,9 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlimDirectReceiverIpc);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kOverscrollBehaviorRespectedOnAllScrollContainers);
 
+// A kill switch in case skipping finish causes unexpected issues.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

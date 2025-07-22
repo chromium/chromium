@@ -4395,11 +4395,12 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
     ClearUIResources();
   }
 
-  bool should_finish = true;
+  bool should_finish = !base::FeatureList::IsEnabled(
+      features::kSkipFinishDuringReleaseLayerTreeFrameSink);
 #if BUILDFLAG(IS_WIN)
   // Windows does not have stability issues that require calling Finish.
   // To minimize risk, only avoid waiting for the UI layer tree.
-  should_finish = !settings_.is_layer_tree_for_ui;
+  should_finish &= !settings_.is_layer_tree_for_ui;
 #endif
 
   if (should_finish && layer_tree_frame_sink_->context_provider()) {
