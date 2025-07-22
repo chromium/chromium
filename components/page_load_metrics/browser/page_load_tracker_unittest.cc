@@ -278,12 +278,11 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
-          /*is_main_frame=*/true)) {
-    EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDefaultSiteInstanceGroups)) {
+  if (base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
     EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
+  } else if (content::WillSameSiteNavigationChangeRenderFrameHosts(
+                 /*is_main_frame=*/true)) {
+    EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
   }
@@ -297,12 +296,11 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   content::RenderFrameHostTester::For(rfh_c)->Detach();
 
 #if BUILDFLAG(IS_ANDROID)
-  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
-          /*is_main_frame=*/true)) {
-    EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDefaultSiteInstanceGroups)) {
+  if (base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
     EXPECT_EQ(3u, GetEvents().render_frame_deleted_count);
+  } else if (content::WillSameSiteNavigationChangeRenderFrameHosts(
+                 /*is_main_frame=*/true)) {
+    EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
   }
@@ -314,12 +312,11 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   content::RenderFrameHostTester::For(rfh_b)->Detach();
 
 #if BUILDFLAG(IS_ANDROID)
-  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
-          /*is_main_frame=*/true)) {
-    EXPECT_EQ(3u, GetEvents().render_frame_deleted_count);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDefaultSiteInstanceGroups)) {
+  if (base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
     EXPECT_EQ(4u, GetEvents().render_frame_deleted_count);
+  } else if (content::WillSameSiteNavigationChangeRenderFrameHosts(
+                 /*is_main_frame=*/true)) {
+    EXPECT_EQ(3u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
   }
