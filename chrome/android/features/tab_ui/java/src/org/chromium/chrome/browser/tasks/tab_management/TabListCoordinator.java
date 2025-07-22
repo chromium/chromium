@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.Size;
+import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -144,8 +145,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     private @Nullable OnLayoutChangeListener mListLayoutListener;
     private boolean mLayoutListenerRegistered;
     private @Nullable TabStripSnapshotter mTabStripSnapshotter;
-    private ItemTouchHelper2 mItemTouchHelper;
-    private @Nullable OnItemTouchListener mOnItemTouchListener;
+    private @Nullable ItemTouchHelper2 mItemTouchHelper;
+    private @Nullable OnItemTouchListener mOnBeforeItemTouchHelperItemTouchListener;
+    private @Nullable OnItemTouchListener mOnAfterItemTouchHelperItemTouchListener;
     private @Nullable TabListEmptyCoordinator mTabListEmptyCoordinator;
     private boolean mIsEmptyViewInitialized;
     private @Nullable Runnable mAwaitingLayoutRunnable;
@@ -251,6 +253,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                             for (DragObserver observer : mDragObserverList) {
                                 observer.onDragStart();
                             }
+                            assumeNonNull(mItemTouchHelper);
                             mItemTouchHelper.onExternalDragStart(
                                     xPx, yPx, /* hideItemWhileDragging= */ true);
                             return true;
@@ -258,6 +261,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
                         @Override
                         public boolean handleDragLocation(float xPx, float yPx) {
+                            assumeNonNull(mItemTouchHelper);
                             mItemTouchHelper.onExternalDragLocation(xPx, yPx);
                             return true;
                         }
@@ -267,6 +271,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                             for (DragObserver observer : mDragObserverList) {
                                 observer.onDragEnd();
                             }
+                            assumeNonNull(mItemTouchHelper);
                             mItemTouchHelper.onExternalDragStop(/* recoverItem= */ false);
                             return true;
                         }
@@ -586,7 +591,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         boolean modeAllowsDragAndDrop = mMode == TabListMode.GRID;
         boolean actionStateAllowsDragAndDrop = mTabActionState != TabActionState.SELECTABLE;
         if (mAllowDragAndDrop && modeAllowsDragAndDrop && actionStateAllowsDragAndDrop) {
-            if (mItemTouchHelper == null || mOnItemTouchListener == null) {
+            if (mOnBeforeItemTouchHelperItemTouchListener == null
+                    || mItemTouchHelper == null
+                    || mOnAfterItemTouchHelperItemTouchListener == null) {
                 TabGridItemTouchHelperCallback callback =
                         (TabGridItemTouchHelperCallback)
                                 mMediator.getItemTouchHelperCallback(
@@ -604,8 +611,29 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     longPressHandler = new LongPressHandler();
                 }
 
+                // Detects if inputs are coming from a mouse or not. This is used to modify
+                // behaviors of the TabGridItemTouchHelperCallback.
+                mOnBeforeItemTouchHelperItemTouchListener =
+                        new OnItemTouchListener() {
+                            @Override
+                            public boolean onInterceptTouchEvent(
+                                    RecyclerView recyclerView, MotionEvent event) {
+                                callback.setIsMouseInputSource(
+                                        event.getSource() == InputDevice.SOURCE_MOUSE);
+                                return false;
+                            }
+
+                            @Override
+                            public void onTouchEvent(
+                                    RecyclerView recyclerView, MotionEvent event) {}
+
+                            @Override
+                            public void onRequestDisallowInterceptTouchEvent(
+                                    boolean disallowIntercept) {}
+                        };
+
                 // Creates an instance of the ItemTouchHelper using TabGridItemTouchHelperCallback
-                // and attach a downsteam mOnItemTouchListener that watches for
+                // and attach a downstream mOnAfterItemTouchHelperItemTouchListener that watches for
                 // TabGridItemTouchHelperCallback#shouldBlockAction() to occur. This determines if
                 // on a longpress the final MOTION_UP event should be intercepted if it should have
                 // been filtered in the ItemTouchHelper, but was not handled. This then allows
@@ -614,7 +642,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                 //
                 // See similar comments in TabGridItemTouchHelperCallback for more details.
                 mItemTouchHelper = new ItemTouchHelper2(callback, longPressHandler);
-                mOnItemTouchListener =
+                mOnAfterItemTouchHelperItemTouchListener =
                         new OnItemTouchListener() {
                             @Override
                             public boolean onInterceptTouchEvent(
@@ -655,12 +683,16 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                             }
                         };
             }
+            mRecyclerView.addOnItemTouchListener(mOnBeforeItemTouchHelperItemTouchListener);
             mItemTouchHelper.attachToRecyclerView(mRecyclerView);
-            mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);
+            mRecyclerView.addOnItemTouchListener(mOnAfterItemTouchHelperItemTouchListener);
         } else {
-            if (mItemTouchHelper != null && mOnItemTouchListener != null) {
+            if (mOnBeforeItemTouchHelperItemTouchListener != null
+                    && mItemTouchHelper != null
+                    && mOnAfterItemTouchHelperItemTouchListener != null) {
+                mRecyclerView.addOnItemTouchListener(mOnBeforeItemTouchHelperItemTouchListener);
                 mItemTouchHelper.attachToRecyclerView(null);
-                mRecyclerView.removeOnItemTouchListener(mOnItemTouchListener);
+                mRecyclerView.removeOnItemTouchListener(mOnAfterItemTouchHelperItemTouchListener);
             }
         }
     }
@@ -826,11 +858,14 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         if (mTabStripSnapshotter != null) {
             mTabStripSnapshotter.destroy();
         }
+        if (mOnBeforeItemTouchHelperItemTouchListener != null) {
+            mRecyclerView.removeOnItemTouchListener(mOnBeforeItemTouchHelperItemTouchListener);
+        }
         if (mItemTouchHelper != null) {
             mItemTouchHelper.attachToRecyclerView(null);
         }
-        if (mOnItemTouchListener != null) {
-            mRecyclerView.removeOnItemTouchListener(mOnItemTouchListener);
+        if (mOnAfterItemTouchHelperItemTouchListener != null) {
+            mRecyclerView.removeOnItemTouchListener(mOnAfterItemTouchHelperItemTouchListener);
         }
         if (mTabSwitcherDragHandler != null) {
             mTabSwitcherDragHandler.destroy();

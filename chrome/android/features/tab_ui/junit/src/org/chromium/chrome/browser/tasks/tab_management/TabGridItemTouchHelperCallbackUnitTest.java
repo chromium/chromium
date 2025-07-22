@@ -1165,12 +1165,25 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     public void orchestratorCancelledOnClearView() {
         mItemTouchHelperCallback.setTabGridItemLongPressOrchestrator(
                 mTabGridItemLongPressOrchestrator);
-        mItemTouchHelperCallback.onSelectedChanged(
-                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
-        verify(mTabGridItemLongPressOrchestrator)
-                .onSelectedChanged(
-                        mMockViewHolder1.getBindingAdapterPosition(),
-                        ItemTouchHelper.ACTION_STATE_IDLE);
+        mItemTouchHelperCallback.setCurrentActionStateForTesting(ItemTouchHelper.ACTION_STATE_DRAG);
+        mItemTouchHelperCallback.clearView(mRecyclerView, mMockViewHolder1);
+        verify(mTabGridItemLongPressOrchestrator).cancel();
+    }
+
+    @Test
+    public void getMovementFlags_mouseInput_disablesSwipe() {
+        mItemTouchHelperCallback.setIsMouseInputSource(true);
+        assertFalse(mItemTouchHelperCallback.hasSwipeFlag(mRecyclerView, mMockViewHolder1));
+        assertTrue(mItemTouchHelperCallback.hasDragFlagForTesting(mRecyclerView, mMockViewHolder1));
+    }
+
+    @Test
+    public void interpolateOutOfBoundsScroll_mouseInput_returnsZero() {
+        mItemTouchHelperCallback.setIsMouseInputSource(true);
+        assertEquals(
+                0,
+                mItemTouchHelperCallback.interpolateOutOfBoundsScroll(
+                        mRecyclerView, 100, 10, 1000, 100));
     }
 
     private void verifyDrag(

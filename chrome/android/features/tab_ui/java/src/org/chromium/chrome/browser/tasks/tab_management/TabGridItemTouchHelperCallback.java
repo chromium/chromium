@@ -81,8 +81,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final ObservableSupplierImpl<RecyclerView> mRecyclerViewSupplier =
             new ObservableSupplierImpl<>();
-    private float mSwipeToDismissThreshold;
     private final float mLongPressDpCancelThreshold;
+    private float mSwipeToDismissThreshold;
     private float mMergeThreshold;
     private float mUngroupThreshold;
     // A bool to track whether an action such as swiping, group/ungroup and drag past a certain
@@ -94,6 +94,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     private boolean mActionsOnAllRelatedTabs;
     private boolean mIsSwipingToDismiss;
     private boolean mShouldBlockAction;
+    private boolean mIsMouseInputSource;
     private int mDragFlags;
     private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
@@ -213,14 +214,12 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         final int dragFlags = isMessageType(viewHolder) ? 0 : mDragFlags;
-        int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        // The archived tabs message can't be dismissed.
-        if (viewHolder.getItemViewType() == UiType.ARCHIVED_TABS_MESSAGE) {
-            SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
-                    (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
-            PropertyModel model = simpleViewHolder.model;
-            assumeNonNull(model);
+        final int swipeFlags;
+        if (viewHolder.getItemViewType() == UiType.ARCHIVED_TABS_MESSAGE || mIsMouseInputSource) {
+            // The archived tabs message can't be dismissed.
             swipeFlags = 0;
+        } else {
+            swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
         }
 
         mRecyclerViewSupplier.set(recyclerView);
@@ -285,6 +284,21 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         RecordUserAction.record("TabGrid.Drag.Reordered." + mComponentName);
         mActionAttempted = true;
         return true;
+    }
+
+    @Override
+    public void onMoved(
+            final RecyclerView recyclerView,
+            final RecyclerView.ViewHolder viewHolder,
+            int fromPos,
+            final RecyclerView.ViewHolder target,
+            int toPos,
+            int x,
+            int y) {
+        // If this is a mouse input we don't want to force the auto-scroll behavior that happens
+        // inside the default super implementation. Early returning here will just cancel the drag.
+        if (mIsMouseInputSource) return;
+        super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
     }
 
     @Override
@@ -685,6 +699,19 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         return 0.f;
     }
 
+    @Override
+    public int interpolateOutOfBoundsScroll(
+            RecyclerView recyclerView,
+            int viewSize,
+            int viewSizeOutOfBounds,
+            int totalSize,
+            long msSinceStartScroll) {
+        if (mIsMouseInputSource) return 0;
+
+        return super.interpolateOutOfBoundsScroll(
+                recyclerView, viewSize, viewSizeOutOfBounds, totalSize, msSinceStartScroll);
+    }
+
     private List<Tab> getRelatedTabsForId(int id) {
         return mCurrentTabGroupModelFilterSupplier.get().getRelatedTabList(id);
     }
@@ -721,6 +748,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         boolean out = mShouldBlockAction;
         mShouldBlockAction = false;
         return out;
+    }
+
+    void setIsMouseInputSource(boolean isMouseInputSource) {
+        mIsMouseInputSource = isMouseInputSource;
     }
 
     void setActionsOnAllRelatedTabsForTesting(boolean flag) {
