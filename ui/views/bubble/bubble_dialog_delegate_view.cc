@@ -587,18 +587,18 @@ BubbleDialogDelegate::CreateNonClientFrameView(Widget* widget) {
 }
 
 ClientView* BubbleDialogDelegate::CreateClientView(Widget* widget) {
-  client_view_ = DialogDelegate::CreateClientView(widget);
+  auto* client_view = DialogDelegate::CreateClientView(widget);
 
   // In order for the `client_view`'s content view hierarchy to respect its
   // rounded corner clip we must paint the client view to a layer. This is
   // necessary because layers do not respect the clip of a non-layer backed
   // parent.
-  client_view_->SetPaintToLayer(layer_type());
-  client_view_->layer()->SetRoundedCornerRadius(
+  client_view->SetPaintToLayer(layer_type());
+  client_view->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(GetCornerRadius()));
-  client_view_->layer()->SetIsFastRoundedCorner(true);
+  client_view->layer()->SetIsFastRoundedCorner(true);
 
-  return client_view_;
+  return client_view;
 }
 
 Widget* BubbleDialogDelegateView::GetWidget() {
