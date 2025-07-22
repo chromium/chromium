@@ -192,10 +192,13 @@ void PdfInfoBarController::MaybeShowInfoBarCallback(
       higher_priority_infobar_shown_.value()) {
     return;
   }
-
-  // Show the PDF infobar.
   content::WebContents* web_contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  // Show the PDF infobar.
   infobar_manager_ =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   infobar_manager_->AddObserver(this);
