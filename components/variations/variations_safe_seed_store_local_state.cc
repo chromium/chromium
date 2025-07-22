@@ -94,6 +94,7 @@ void VariationsSafeSeedStoreLocalState::SetSeedReaderWriterForTesting(
 void VariationsSafeSeedStoreLocalState::ClearState() {
   // Seed and other related information is cleared by the SeedReaderWriter.
   seed_reader_writer_->ClearSeedInfo();
+  seed_reader_writer_->ClearSessionCountry();
   seed_reader_writer_->ClearPermanentConsistencyCountryAndVersion();
   local_state_->ClearPref(prefs::kVariationsSafeSeedLocale);
 }

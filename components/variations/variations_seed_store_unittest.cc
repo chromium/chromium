@@ -533,6 +533,9 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidSignature) {
                                       LoadSeedResult::kInvalidSignature, 1);
   CheckRegularSeedAndSeedPrefsAreCleared(prefs_, seed_store);
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
+
+  // Verify session country is not cleared.
+  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidProto) {
@@ -563,6 +566,9 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_InvalidProto) {
                                       LoadSeedResult::kCorruptProtobuf, 1);
   CheckRegularSeedAndSeedPrefsAreCleared(prefs_, seed_store);
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
+
+  // Verify session country is not cleared.
+  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_RejectEmptySignature) {
@@ -741,6 +747,9 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_CorruptGzip) {
                                       LoadSeedResult::kCorruptGzip, 1);
   CheckRegularSeedAndSeedPrefsAreCleared(prefs_, seed_store);
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
+
+  // Verify session country is not cleared.
+  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ExceedsUncompressedSizeLimit) {
@@ -774,6 +783,9 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ExceedsUncompressedSizeLimit) {
       LoadSeedResult::kExceedsUncompressedSizeLimit, 1);
   CheckRegularSeedAndSeedPrefsAreCleared(prefs_, seed_store);
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
+
+  // Verify session country is not cleared.
+  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -809,6 +821,9 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest,
                                       LoadSeedResult::kCorruptBase64, 1);
   CheckRegularSeedAndSeedPrefsAreCleared(prefs_, seed_store);
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
+
+  // Verify session country is not cleared.
+  EXPECT_THAT(GetSeedData(seed_store).session_country_code, Not(IsEmpty()));
 }
 
 TEST_F(VariationsSeedStoreTest, ApplyDeltaPatch) {

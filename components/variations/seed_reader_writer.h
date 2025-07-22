@@ -147,10 +147,14 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void StoreValidatedSeedInfo(ValidatedSeedInfo seed_info);
 
   // Clears seed data and other seed-related info. The following fields are
-  // cleared: seed data, signature, milestone, seed_date, client_fetch_time and
-  // session_country_code. To clear permanent_country_code and version, use
+  // cleared: seed data, signature, milestone, seed_date and client_fetch_time.
+  // To clear the session_country_code, use ClearSessionCountry() instead.
+  // To clear permanent_country_code and version, use
   // ClearPermanentConsistencyCountryAndVersion() instead.
   void ClearSeedInfo();
+
+  // Clears the session country code.
+  void ClearSessionCountry();
 
   // Returns stored seed data.
   StoredSeed GetSeedData() const;
@@ -185,7 +189,8 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // ScheduleSeedFileClear() instead.
   void ScheduleSeedFileWrite(ValidatedSeedInfo seed_info);
 
-  // Schedules `seed_info` to be cleared using `seed_writer_`.
+  // Schedules `seed_info_` to be cleared using `seed_writer_`. See
+  // VariationsSeedStore::ClearPrefs() .
   void ScheduleSeedFileClear();
 
   // Schedules the deletion of a seed file.

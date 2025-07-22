@@ -248,7 +248,6 @@ void SeedReaderWriter::ClearSeedInfo() {
     local_state_->ClearPref(fields_prefs_->milestone);
     local_state_->ClearPref(fields_prefs_->seed_date);
     local_state_->ClearPref(fields_prefs_->client_fetch_time);
-    local_state_->ClearPref(fields_prefs_->session_country_code);
     // Although only clients in the treatment group write seeds to dedicated
     // seed files, attempt to delete the seed file for clients with
     // Local-State-based seeds. If a client switches experiment groups or
@@ -257,6 +256,14 @@ void SeedReaderWriter::ClearSeedInfo() {
       DeleteSeedFile();
     }
   }
+}
+
+void SeedReaderWriter::ClearSessionCountry() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ShouldUseSeedFile()) {
+    seed_info_.clear_session_country_code();
+  }
+  local_state_->ClearPref(fields_prefs_->session_country_code);
 }
 
 StoredSeed SeedReaderWriter::GetSeedData() const {
@@ -429,7 +436,6 @@ void SeedReaderWriter::ScheduleSeedFileClear() {
   seed_info_.clear_milestone();
   seed_info_.clear_seed_date();
   seed_info_.clear_client_fetch_time();
-  seed_info_.clear_session_country_code();
   // `seed_writer_` will eventually call
   // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
   // a callback that will be run asynchronously. This callback will be used to
@@ -446,7 +452,6 @@ void SeedReaderWriter::ScheduleSeedFileClear() {
   local_state_->ClearPref(fields_prefs_->milestone);
   local_state_->ClearPref(fields_prefs_->seed_date);
   local_state_->ClearPref(fields_prefs_->client_fetch_time);
-  local_state_->ClearPref(fields_prefs_->session_country_code);
 }
 
 void SeedReaderWriter::DeleteSeedFile() {

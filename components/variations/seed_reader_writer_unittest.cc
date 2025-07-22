@@ -277,6 +277,8 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   local_state_.SetInteger(GetParam().seed_fields_prefs.milestone, 92);
   local_state_.SetTime(GetParam().seed_fields_prefs.seed_date,
                        base::Time::Now());
+  local_state_.SetString(GetParam().seed_fields_prefs.session_country_code,
+                         "us");
 
   // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
@@ -290,6 +292,8 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   ASSERT_THAT(seed_reader_writer.GetSeedData().signature, Not(IsEmpty()));
   ASSERT_NE(seed_reader_writer.GetSeedData().milestone, 0);
   ASSERT_FALSE(seed_reader_writer.GetSeedData().seed_date.is_null());
+  ASSERT_THAT(seed_reader_writer.GetSeedData().session_country_code,
+              Not(IsEmpty()));
 
   // Clear seed and force write.
   seed_reader_writer.ClearSeedInfo();
@@ -306,6 +310,9 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   EXPECT_THAT(seed_reader_writer.GetSeedData().signature, IsEmpty());
   EXPECT_EQ(seed_reader_writer.GetSeedData().milestone, 0);
   EXPECT_TRUE(seed_reader_writer.GetSeedData().seed_date.is_null());
+  // Session country code is not cleared.
+  EXPECT_THAT(seed_reader_writer.GetSeedData().session_country_code,
+              Not(IsEmpty()));
   // Local state prefs should be cleared.
   EXPECT_THAT(local_state_.GetString(GetParam().seed_fields_prefs.seed),
               IsEmpty());
@@ -314,7 +321,38 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   EXPECT_EQ(local_state_.GetInteger(GetParam().seed_fields_prefs.milestone), 0);
   EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
             base::Time());
+  // Session country code is not cleared.
+  EXPECT_THAT(
+      local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
+      Not(IsEmpty()));
 }
+
+// Verifies that session country code is cleared from a seed file for clients in
+// the SeedFiles group.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSessionCountryCode) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  local_state_.SetString(GetParam().seed_fields_prefs.session_country_code,
+                         "us");
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+
+  ASSERT_THAT(seed_reader_writer.GetSeedData().session_country_code,
+              Not(IsEmpty()));
+
+  seed_reader_writer.ClearSessionCountry();
+
+  // Session country code is cleared.
+  EXPECT_THAT(seed_reader_writer.GetSeedData().session_country_code, IsEmpty());
+  // Local state pref should be cleared.
+  EXPECT_THAT(
+      local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
+      IsEmpty());
+}
+
 
 // Verifies clients in SeedFiles group read seeds from the seed file.
 TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedFileBasedSeed) {
@@ -477,6 +515,8 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
   local_state_.SetInteger(GetParam().seed_fields_prefs.milestone, 92);
   local_state_.SetTime(GetParam().seed_fields_prefs.seed_date,
                        base::Time::Now());
+  local_state_.SetString(GetParam().seed_fields_prefs.session_country_code,
+                         "us");
 
   // Clear seed and force file delete.
   seed_reader_writer.ClearSeedInfo();
@@ -487,6 +527,10 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
   EXPECT_THAT(seed_reader_writer.GetSeedData().signature, IsEmpty());
   EXPECT_EQ(seed_reader_writer.GetSeedData().milestone, 0);
   EXPECT_TRUE(seed_reader_writer.GetSeedData().seed_date.is_null());
+  // Session country code is not cleared.
+  EXPECT_THAT(seed_reader_writer.GetSeedData().session_country_code,
+              Not(IsEmpty()));
+
   // Verify seed cleared correctly in Local State prefs and that seed file is
   // deleted.
   EXPECT_THAT(local_state_.GetString(GetParam().seed_fields_prefs.seed),
@@ -496,9 +540,39 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
   EXPECT_EQ(local_state_.GetInteger(GetParam().seed_fields_prefs.milestone), 0);
   EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
             base::Time());
-  EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.client_fetch_time),
-            base::Time());
+  EXPECT_EQ(
+      local_state_.GetTime(GetParam().seed_fields_prefs.client_fetch_time),
+      base::Time());
+  // Session country code is not cleared.
+  EXPECT_THAT(
+      local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
+      Not(IsEmpty()));
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+}
+
+// Verifies that session country code is cleared from Local State for clients
+// using local state to store seeds.
+TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSessionCountryCode) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+
+  // Create and store seed.
+  local_state_.SetString(GetParam().seed_fields_prefs.session_country_code,
+                         "us");
+
+  // Clear seed and force file delete.
+  seed_reader_writer.ClearSessionCountry();
+  file_writer_thread_.FlushForTesting();
+
+  EXPECT_THAT(seed_reader_writer.GetSeedData().session_country_code, IsEmpty());
+  EXPECT_THAT(
+      local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
+      IsEmpty());
 }
 
 // Verifies clients using local state to store seeds read seeds from local

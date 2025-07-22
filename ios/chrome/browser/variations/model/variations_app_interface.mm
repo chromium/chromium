@@ -23,12 +23,16 @@
   variations::VariationsSeedStore* seed_store =
       GetApplicationContext()->GetVariationsService()->GetSeedStoreForTesting();
   seed_store->GetSeedReaderWriterForTesting()->ClearSeedInfo();
+  // Here session country is cleared for testing, but it should not be cleared
+  // for the regular seed.
+  seed_store->GetSeedReaderWriterForTesting()->ClearSessionCountry();
   seed_store->ClearPermanentConsistencyCountryAndVersion();
   prefService->ClearPref(
       variations::prefs::kVariationsPermanentOverriddenCountry);
 
   // Clear variations safe seed prefs.
   seed_store->GetSafeSeedReaderWriterForTesting()->ClearSeedInfo();
+  seed_store->GetSafeSeedReaderWriterForTesting()->ClearSessionCountry();
   seed_store->GetSafeSeedReaderWriterForTesting()
       ->ClearPermanentConsistencyCountryAndVersion();
   prefService->ClearPref(variations::prefs::kVariationsSafeSeedLocale);
