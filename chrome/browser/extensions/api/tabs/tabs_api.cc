@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -49,6 +51,7 @@ namespace windows = api::windows;
 
 constexpr char kCannotDetermineLanguageOfUnloadedTab[] =
     "Cannot determine language: tab not loaded";
+constexpr char kFrameNotFoundError[] = "No frame with id * in tab *.";
 
 namespace tabs_internal {
 
@@ -787,6 +790,173 @@ std::string TabsCaptureVisibleTabFunction::CaptureResultToErrorMessage(
 void TabsCaptureVisibleTabFunction::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
+}
+
+ExecuteCodeInTabFunction::ExecuteCodeInTabFunction()
+    : chrome_details_(this), execute_tab_id_(-1) {}
+
+ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
+
+ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
+  if (init_result_) {
+    return init_result_.value();
+  }
+
+  if (args().size() < 2) {
+    return set_init_result(VALIDATION_FAILURE);
+  }
+
+  const auto& tab_id_value = args()[0];
+  // |tab_id| is optional so it's ok if it's not there.
+  int tab_id = -1;
+  if (tab_id_value.is_int()) {
+    // But if it is present, it needs to be non-negative.
+    tab_id = tab_id_value.GetInt();
+    if (tab_id < 0) {
+      return set_init_result(VALIDATION_FAILURE);
+    }
+  }
+
+  // |details| are not optional.
+  const base::Value& details_value = args()[1];
+  if (!details_value.is_dict()) {
+    return set_init_result(VALIDATION_FAILURE);
+  }
+  auto details =
+      api::extension_types::InjectDetails::FromValue(details_value.GetDict());
+  if (!details) {
+    return set_init_result(VALIDATION_FAILURE);
+  }
+
+  // If the tab ID wasn't given then it needs to be converted to the
+  // currently active tab's ID.
+  if (tab_id == -1) {
+    if (WindowController* window_controller =
+            chrome_details_.GetCurrentWindowController()) {
+      content::WebContents* web_contents = window_controller->GetActiveTab();
+      if (!web_contents) {
+        // Can happen during shutdown.
+        return set_init_result_error(
+            tabs_constants::kNoTabInBrowserWindowError);
+      }
+      tab_id = ExtensionTabUtil::GetTabId(web_contents);
+    } else {
+      // Can happen during shutdown.
+      return set_init_result_error(ExtensionTabUtil::kNoCurrentWindowError);
+    }
+  }
+
+  execute_tab_id_ = tab_id;
+  details_ = std::move(details);
+  set_host_id(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()));
+  return set_init_result(SUCCESS);
+}
+
+bool ExecuteCodeInTabFunction::ShouldInsertCSS() const {
+  return false;
+}
+
+bool ExecuteCodeInTabFunction::ShouldRemoveCSS() const {
+  return false;
+}
+
+bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
+  content::WebContents* contents = nullptr;
+
+  // If |tab_id| is specified, look for the tab. Otherwise default to selected
+  // tab in the current window.
+  CHECK_GE(execute_tab_id_, 0);
+  if (!tabs_internal::GetTabById(execute_tab_id_, browser_context(),
+                                 include_incognito_information(), nullptr,
+                                 &contents, nullptr, error)) {
+    return false;
+  }
+
+  CHECK(contents);
+
+  int frame_id = details_->frame_id ? *details_->frame_id
+                                    : ExtensionApiFrameIdMap::kTopFrameId;
+  content::RenderFrameHost* render_frame_host =
+      ExtensionApiFrameIdMap::GetRenderFrameHostById(contents, frame_id);
+  if (!render_frame_host) {
+    *error = ErrorUtils::FormatErrorMessage(
+        kFrameNotFoundError, base::NumberToString(frame_id),
+        base::NumberToString(execute_tab_id_));
+    return false;
+  }
+
+  // Content scripts declared in manifest.json can access frames at about:-URLs
+  // if the extension has permission to access the frame's origin, so also allow
+  // programmatic content scripts at about:-URLs for allowed origins.
+  GURL effective_document_url(render_frame_host->GetLastCommittedURL());
+  bool is_about_url = effective_document_url.SchemeIs(url::kAboutScheme);
+  if (is_about_url && details_->match_about_blank &&
+      *details_->match_about_blank) {
+    effective_document_url =
+        GURL(render_frame_host->GetLastCommittedOrigin().Serialize());
+  }
+
+  if (!effective_document_url.is_valid()) {
+    // Unknown URL, e.g. because no load was committed yet. Allow for now, the
+    // renderer will check again and fail the injection if needed.
+    return true;
+  }
+
+  // NOTE: This can give the wrong answer due to race conditions, but it is OK,
+  // we check again in the renderer.
+  if (!extension()->permissions_data()->CanAccessPage(effective_document_url,
+                                                      execute_tab_id_, error)) {
+    if (is_about_url &&
+        extension()->permissions_data()->active_permissions().HasAPIPermission(
+            mojom::APIPermissionID::kTab)) {
+      *error = ErrorUtils::FormatErrorMessage(
+          manifest_errors::kCannotAccessAboutUrl,
+          render_frame_host->GetLastCommittedURL().spec(),
+          render_frame_host->GetLastCommittedOrigin().Serialize());
+    }
+    return false;
+  }
+
+  return true;
+}
+
+ScriptExecutor* ExecuteCodeInTabFunction::GetScriptExecutor(
+    std::string* error) {
+  WindowController* window = nullptr;
+  content::WebContents* contents = nullptr;
+
+  bool success =
+      tabs_internal::GetTabById(execute_tab_id_, browser_context(),
+                                include_incognito_information(), &window,
+                                &contents, nullptr, error) &&
+      contents && window;
+
+  if (!success) {
+    return nullptr;
+  }
+
+  return TabHelper::FromWebContents(contents)->script_executor();
+}
+
+bool ExecuteCodeInTabFunction::IsWebView() const {
+  return false;
+}
+
+int ExecuteCodeInTabFunction::GetRootFrameId() const {
+  return ExtensionApiFrameIdMap::kTopFrameId;
+}
+
+const GURL& ExecuteCodeInTabFunction::GetWebViewSrc() const {
+  return GURL::EmptyGURL();
+}
+
+bool TabsInsertCSSFunction::ShouldInsertCSS() const {
+  return true;
+}
+
+bool TabsRemoveCSSFunction::ShouldRemoveCSS() const {
+  return true;
 }
 
 ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {

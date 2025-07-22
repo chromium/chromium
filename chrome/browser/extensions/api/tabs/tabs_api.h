@@ -387,12 +387,10 @@ class ExecuteCodeInTabFunction : public ExecuteCodeFunction {
   const GURL& GetWebViewSrc() const override;
 
  private:
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   const ChromeExtensionFunctionDetails chrome_details_;
 
   // Id of tab which executes code.
   int execute_tab_id_;
-#endif
 };
 
 class TabsExecuteScriptFunction : public ExecuteCodeInTabFunction {

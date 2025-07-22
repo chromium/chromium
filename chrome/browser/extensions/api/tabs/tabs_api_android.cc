@@ -235,55 +235,6 @@ ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-ExecuteCodeInTabFunction::ExecuteCodeInTabFunction() = default;
-ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
-
-ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
-  NOTIMPLEMENTED();
-  return set_init_result(VALIDATION_FAILURE);
-}
-
-bool ExecuteCodeInTabFunction::ShouldInsertCSS() const {
-  return false;
-}
-
-bool ExecuteCodeInTabFunction::ShouldRemoveCSS() const {
-  return false;
-}
-
-bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-ScriptExecutor* ExecuteCodeInTabFunction::GetScriptExecutor(
-    std::string* error) {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-bool ExecuteCodeInTabFunction::IsWebView() const {
-  return false;
-}
-
-int ExecuteCodeInTabFunction::GetRootFrameId() const {
-  NOTIMPLEMENTED();
-  return ExtensionApiFrameIdMap::kTopFrameId;
-}
-
-const GURL& ExecuteCodeInTabFunction::GetWebViewSrc() const {
-  NOTIMPLEMENTED();
-  return GURL::EmptyGURL();
-}
-
-bool TabsInsertCSSFunction::ShouldInsertCSS() const {
-  return true;
-}
-
-bool TabsRemoveCSSFunction::ShouldRemoveCSS() const {
-  return true;
-}
-
 ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
   std::optional<tabs::SetZoom::Params> params =
       tabs::SetZoom::Params::Create(args());
