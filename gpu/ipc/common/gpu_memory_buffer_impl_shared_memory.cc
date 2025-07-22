@@ -202,7 +202,15 @@ base::OnceClosure GpuMemoryBufferImplSharedMemory::AllocateForTesting(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  *handle = CreateGpuMemoryBuffer(size, format, usage);
+  auto shared_memory_region = base::UnsafeSharedMemoryRegion::Create(
+      gfx::BufferSizeForBufferFormat(size, format));
+  CHECK(shared_memory_region.IsValid());
+
+  *handle = gfx::GpuMemoryBufferHandle(std::move(shared_memory_region));
+  handle->type = gfx::SHARED_MEMORY_BUFFER;
+  handle->offset = 0;
+  handle->stride = static_cast<uint32_t>(
+      gfx::RowSizeForBufferFormat(size.width(), format, 0));
   return base::DoNothing();
 }
 
