@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sandbox/linux/bpf_dsl/dump_bpf.h"
 
 #include <inttypes.h>
@@ -16,6 +11,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
@@ -151,7 +147,7 @@ void AppendInstruction(std::string* dst, size_t pc, const sock_filter& insn) {
 }  // namespace
 
 void DumpBPF::PrintProgram(const CodeGen::Program& program) {
-  fputs(StringPrintProgram(program).c_str(), stderr);
+  UNSAFE_TODO(fputs(StringPrintProgram(program).c_str(), stderr));
 }
 
 std::string DumpBPF::StringPrintProgram(const CodeGen::Program& program) {

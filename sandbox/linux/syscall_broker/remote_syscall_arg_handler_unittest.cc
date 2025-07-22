@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/syscall_broker/remote_syscall_arg_handler.h"
 
 #include <sys/mman.h>
@@ -16,6 +11,7 @@
 #include <cstring>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -39,13 +35,13 @@ void FillBufferWithPath(char* buf, size_t size, bool null_terminate) {
   char* curr_buf_pos = buf;
   while (len_left_to_write > 0) {
     size_t bytes_to_write = std::min(str_len, len_left_to_write);
-    memcpy(curr_buf_pos, kPathPart, bytes_to_write);
-    curr_buf_pos += bytes_to_write;
+    UNSAFE_TODO(memcpy(curr_buf_pos, kPathPart, bytes_to_write));
+    UNSAFE_TODO(curr_buf_pos += bytes_to_write);
     len_left_to_write -= bytes_to_write;
   }
 
   if (null_terminate) {
-    buf[size - 1] = '\0';
+    UNSAFE_TODO(buf[size - 1]) = '\0';
   }
 }
 
@@ -53,7 +49,7 @@ void VerifyCorrectString(std::string str, size_t size) {
   SANDBOX_ASSERT_EQ(str.size(), size);
   size_t curr_path_part_pos = 0;
   for (char ch : str) {
-    SANDBOX_ASSERT(ch == kPathPart[curr_path_part_pos]);
+    UNSAFE_TODO(SANDBOX_ASSERT(ch == kPathPart[curr_path_part_pos]));
     curr_path_part_pos++;
     curr_path_part_pos %= strlen(kPathPart);
   }
@@ -100,7 +96,7 @@ void ReadTest(const ReadTestConfig& test_config) {
                         base::GetPageSize() - 1) /
                        base::GetPageSize();
   char* mmap_addr = static_cast<char*>(TestUtils::MapPagesOrDie(total_pages));
-  char* addr = mmap_addr + test_config.start_at;
+  char* addr = UNSAFE_TODO(mmap_addr + test_config.start_at);
   FillBufferWithPath(addr, test_config.total_size,
                      test_config.include_null_byte);
 
@@ -245,7 +241,8 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, BasicWrite) {
       ForkWaitingChild(base::BindLambdaForTesting([=](int child_sync_fd) {
                          // Check correct result received and tell parent about
                          // success.
-                         int res = memcmp(read_from, write_to, write_size);
+                         int res = UNSAFE_TODO(
+                             memcmp(read_from, write_to, write_size));
 
                          base::UnixDomainSocket::SendMsg(
                              child_sync_fd, &res, sizeof(res), empty_fd_vec);
@@ -255,7 +252,7 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, BasicWrite) {
 
   RemoteProcessIOResult result = WriteRemoteData(
       pid, reinterpret_cast<uintptr_t>(write_to), write_size,
-      base::span<char>(static_cast<char*>(read_from), write_size));
+      UNSAFE_TODO(base::span<char>(static_cast<char*>(read_from), write_size)));
   SANDBOX_ASSERT_EQ(result, RemoteProcessIOResult::kSuccess);
 
   // Release child.
@@ -281,10 +278,10 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteToInvalidAddress) {
   munmap(write_to, base::GetPageSize());
 
   char buf[5];
-  memset(buf, 'a', sizeof(buf));
+  UNSAFE_TODO(memset(buf, 'a', sizeof(buf)));
   RemoteProcessIOResult result =
       WriteRemoteData(pid, reinterpret_cast<uintptr_t>(write_to), sizeof(buf),
-                      base::span<char>(buf, sizeof(buf)));
+                      UNSAFE_TODO(base::span<char>(buf, sizeof(buf))));
   SANDBOX_ASSERT_EQ(result, RemoteProcessIOResult::kRemoteMemoryInvalid);
 }
 
@@ -294,7 +291,7 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WritePartiallyToInvalidAddress) {
   FillBufferWithPath(static_cast<char*>(read_from), write_size, false);
   char* write_to = static_cast<char*>(TestUtils::MapPagesOrDie(2));
   TestUtils::MprotectLastPageOrDie(write_to, 2);
-  write_to += base::GetPageSize() / 2;
+  UNSAFE_TODO(write_to += base::GetPageSize() / 2);
   base::ScopedFD parent_signal_fd;
   const std::vector<int> empty_fd_vec;
 
@@ -303,7 +300,7 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WritePartiallyToInvalidAddress) {
 
   RemoteProcessIOResult result =
       WriteRemoteData(pid, reinterpret_cast<uintptr_t>(write_to), write_size,
-                      base::span<char>(read_from, write_size));
+                      UNSAFE_TODO(base::span<char>(read_from, write_size)));
   SANDBOX_ASSERT_EQ(result, RemoteProcessIOResult::kRemoteMemoryInvalid);
 }
 
@@ -329,10 +326,10 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteChildExited) {
                                   &empty_fd_vec);
 
   std::string out_str;
-  SANDBOX_ASSERT_EQ(
+  UNSAFE_TODO(SANDBOX_ASSERT_EQ(
       WriteRemoteData(pid, reinterpret_cast<uintptr_t>(addr), strlen(kPathPart),
                       base::span<char>(addr, strlen(kPathPart))),
-      RemoteProcessIOResult::kRemoteExited);
+      RemoteProcessIOResult::kRemoteExited));
 }
 
 }  // namespace syscall_broker

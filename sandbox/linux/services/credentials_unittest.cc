@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sandbox/linux/services/credentials.h"
 
 #include <errno.h>
@@ -24,6 +19,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -63,8 +59,9 @@ bool WorkingDirectoryIsRoot() {
   // as returning ENOENT when the directory has been unlinked since at least
   // 2004 (man-pages commit fea681daf).
   if (cwd) {
-    if (strcmp("/", cwd))
+    if (UNSAFE_TODO(strcmp("/", cwd))) {
       return false;
+    }
   } else {
     PCHECK(errno == ENOENT);
   }
@@ -90,9 +87,8 @@ SANDBOX_TEST(Credentials, DropAllCaps) {
 SANDBOX_TEST(Credentials, MoveToNewUserNS) {
   CHECK(Credentials::DropAllCapabilities());
   bool moved_to_new_ns = Credentials::MoveToNewUserNS();
-  fprintf(stdout,
-          "Unprivileged CLONE_NEWUSER supported: %s\n",
-          moved_to_new_ns ? "true." : "false.");
+  UNSAFE_TODO(fprintf(stdout, "Unprivileged CLONE_NEWUSER supported: %s\n",
+                      moved_to_new_ns ? "true." : "false."));
   fflush(stdout);
   if (!moved_to_new_ns) {
     fprintf(stdout, "This kernel does not support unprivileged namespaces. "

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/tests/scoped_temporary_file.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +30,7 @@ bool FullWrite(int fd, const char* buffer, size_t count) {
       return false;
     }
     count -= transfered;
-    buffer += transfered;
+    UNSAFE_TODO(buffer += transfered);
   }
   return true;
 }
@@ -46,7 +42,7 @@ bool FullRead(int fd, char* buffer, size_t count) {
       return false;
     }
     count -= transfered;
-    buffer += transfered;
+    UNSAFE_TODO(buffer += transfered);
   }
   return true;
 }
@@ -67,7 +63,8 @@ TEST(ScopedTemporaryFile, Basics) {
     char test_string_read[sizeof(kTestString)] = {};
     ASSERT_TRUE(FullRead(
         temp_file_2.get(), test_string_read, sizeof(test_string_read)));
-    ASSERT_EQ(0, memcmp(kTestString, test_string_read, sizeof(kTestString)));
+    UNSAFE_TODO(ASSERT_EQ(
+        0, memcmp(kTestString, test_string_read, sizeof(kTestString))));
   }
 
   errno = 0;

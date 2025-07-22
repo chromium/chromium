@@ -2,14 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/tests/test_utils.h"
 
-#include <cstdint>
 #include <errno.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -17,7 +11,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <cstdint>
+
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
 
@@ -56,8 +53,8 @@ void* TestUtils::MapPagesOrDie(size_t num_pages) {
 
 void TestUtils::MprotectLastPageOrDie(char* addr, size_t num_pages) {
   size_t last_page_offset = (num_pages - 1) * base::GetPageSize();
-  PCHECK(mprotect(addr + last_page_offset, base::GetPageSize(), PROT_NONE) >=
-         0);
+  UNSAFE_TODO(PCHECK(
+      mprotect(addr + last_page_offset, base::GetPageSize(), PROT_NONE) >= 0));
 }
 
 }  // namespace sandbox

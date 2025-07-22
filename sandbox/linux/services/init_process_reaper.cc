@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sandbox/linux/services/init_process_reaper.h"
 
 #include <signal.h>
@@ -16,6 +11,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -50,7 +46,7 @@ bool CreateInitProcessReaper(base::OnceClosure post_fork_parent_callback) {
     // once all of our childs are dead. Since we're init we need to reap childs
     // as they come.
     struct sigaction action;
-    memset(&action, 0, sizeof(action));
+    UNSAFE_TODO(memset(&action, 0, sizeof(action)));
     action.sa_handler = &DoNothingSignalHandler;
     CHECK(sigaction(SIGCHLD, &action, NULL) == 0);
 
