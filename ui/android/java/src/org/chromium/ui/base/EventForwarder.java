@@ -289,10 +289,7 @@ public class EventForwarder {
                 }
             }
 
-            int gestureClassification = 0;
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                gestureClassification = event.getClassification();
-            }
+            int gestureClassification = event.getClassification();
 
             final boolean consumed =
                     EventForwarderJni.get()
