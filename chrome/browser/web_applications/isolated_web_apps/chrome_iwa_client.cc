@@ -12,7 +12,8 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "content/public/browser/isolated_web_apps_policy.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition_config.h"
 
 namespace web_app {
 
@@ -52,6 +53,15 @@ void ChromeIwaClient::RunWhenAppCloses(
           IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id)
               .app_id(),
           std::move(callback));
+}
+
+content::StoragePartition* ChromeIwaClient::GetStoragePartition(
+    content::BrowserContext* browser_context,
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  return browser_context->GetStoragePartition(
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id)
+          .storage_partition_config(browser_context),
+      /*can_create=*/false);
 }
 
 }  // namespace web_app

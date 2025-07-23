@@ -22,6 +22,10 @@ source_set("isolated_web_apps") {
     "reading/signed_web_bundle_reader.h",
     "reading/validator.cc",
     "reading/validator.h",
+    "url_loading/url_loader.cc",
+    "url_loading/url_loader.h",
+    "url_loading/utils.cc",
+    "url_loading/utils.h",
 
     # TODO(crbug.com/431980377): Move update_channel to types/.
     "update_channel.cc",

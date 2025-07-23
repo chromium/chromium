@@ -343,31 +343,6 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   EXPECT_THAT(ResponseInfo(), IsNull());
 }
 
-TEST_F(IsolatedWebAppURLLoaderFactoryTest,
-       RequestFailsWithErrFailedIfAppNotLocallyInstalled) {
-  std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kDevAppStartUrl, IsolationData::Builder(IwaStorageProxy{kProxyOrigin},
-                                              base::Version("1.0.0"))
-                           .Build());
-  iwa->SetInstallState(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
-  RegisterWebApp(std::move(iwa));
-
-  // Verify that a PWA is installed at kAppStartUrl's origin, but only
-  // suggested.
-  std::optional<webapps::AppId> installed_app =
-      fake_provider().registrar_unsafe().FindBestAppWithUrlInScope(
-          kDevAppStartUrl, web_app::WebAppFilter::IsSuggestedApp());
-  EXPECT_THAT(installed_app.has_value(), IsTrue());
-
-  CreateFactoryForFrame();
-
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = kDevAppStartUrl;
-  EXPECT_THAT(CreateLoaderAndRun(std::move(request)),
-              IsNetError(net::ERR_FAILED));
-  EXPECT_THAT(ResponseInfo(), IsNull());
-}
-
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, GetRequestsSucceed) {
   RegisterWebApp(CreateIsolatedWebApp(
       kDevAppStartUrl, IsolationData::Builder(IwaStorageProxy{kProxyOrigin},

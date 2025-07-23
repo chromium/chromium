@@ -32,6 +32,10 @@ class ChromeIwaClient : public IwaClient {
                         const web_package::SignedWebBundleId& web_bundle_id,
                         base::OnceClosure callback) override;
 
+  content::StoragePartition* GetStoragePartition(
+      content::BrowserContext* browser_context,
+      const web_package::SignedWebBundleId& web_bundle_id) override;
+
  private:
   ChromeIwaClient() = default;
   ~ChromeIwaClient() override = default;

@@ -16,6 +16,7 @@
 
 namespace content {
 class BrowserContext;
+class StoragePartition;
 }  // namespace content
 
 namespace web_app {
@@ -58,6 +59,11 @@ class IwaClient {
       content::BrowserContext* browser_context,
       const web_package::SignedWebBundleId& web_bundle_id,
       base::OnceClosure callback) = 0;
+
+  // TODO
+  virtual content::StoragePartition* GetStoragePartition(
+      content::BrowserContext* browser_context,
+      const web_package::SignedWebBundleId& web_bundle_id) = 0;
 
  protected:
   IwaClient();

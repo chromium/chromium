@@ -8,8 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,13 +32,8 @@ namespace network {
 struct ResourceRequest;
 }
 
-namespace web_package {
-class SignedWebBundleId;
-}
-
 namespace web_app {
 
-class IwaSourceProxy;
 class IwaSourceWithMode;
 class IsolatedWebAppUrlInfo;
 
@@ -84,22 +77,6 @@ class IsolatedWebAppURLLoaderFactory
       std::optional<url::Origin> app_origin,
       std::optional<content::FrameTreeNodeId> frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
-
-  void HandleSignedBundle(
-      const base::FilePath& path,
-      bool dev_mode,
-      const web_package::SignedWebBundleId& web_bundle_id,
-      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-      const network::ResourceRequest& resource_request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client);
-
-  void HandleProxy(
-      const IsolatedWebAppUrlInfo& url_info,
-      const IwaSourceProxy& proxy,
-      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-      const network::ResourceRequest& resource_request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   void LogErrorAndFail(
       const std::string& error_message,
