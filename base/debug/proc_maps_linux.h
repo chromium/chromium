@@ -101,6 +101,7 @@ BASE_EXPORT bool ReadProcMaps(std::string* proc_maps);
 BASE_EXPORT bool ParseProcMaps(const std::string& input,
                                std::vector<MappedMemoryRegion>* regions);
 
+// All values are in bytes.
 struct SmapsRollup {
   size_t rss = 0;
   size_t pss = 0;

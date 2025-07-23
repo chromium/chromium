@@ -307,7 +307,7 @@ uint32_t CountMappings(base::ProcessId pid) {
 }
 
 // Get values from smaps_rollup for the current process.
-void GetSmapsRollup(uint32_t* pss, uint32_t* swap_pss) {
+void GetSmapsRollup(size_t* pss, size_t* swap_pss) {
   auto value = base::debug::ReadAndParseSmapsRollup();
   if (!value) {
     *pss = 0;
@@ -346,7 +346,10 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
     dump->mappings_count = CountMappings(handle);
   }
   if (flags.Has(mojom::MemDumpFlags::MEM_DUMP_PSS)) {
-    GetSmapsRollup(&dump->pss_kb, &dump->swap_pss_kb);
+    size_t pss, swap_pss;
+    GetSmapsRollup(&pss, &swap_pss);
+    dump->pss_kb = pss / 1024;
+    dump->swap_pss_kb = swap_pss / 1024;
   }
 
 #if BUILDFLAG(IS_ANDROID)

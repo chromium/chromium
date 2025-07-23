@@ -331,14 +331,18 @@ TEST(OSMetricsTest, Pss) {
     GTEST_SKIP() << "smaps_rollup not supported";
   }
 
+  // Make sure that this process has at least several MiB of PSS.
+  std::vector<uint8_t> array(16 * 1 << 20, 1);
+  size_t array_size_in_kb = array.size() / 1024;
+
   mojom::RawOSMemDump dump;
   dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
   ASSERT_TRUE(OSMetrics::FillOSMemoryDump(
       base::kNullProcessHandle, {mojom::MemDumpFlags::MEM_DUMP_PSS}, &dump));
   uint32_t pss = dump.pss_kb;
 
-  // We don't know the exact value here, but it should be greater than 0.
-  EXPECT_GT(pss, 0u);
+  // Should be at least larger than the array.
+  EXPECT_GT(pss, array_size_in_kb);
 }
 
 TEST(OSMetricsTest, PssDisabled) {

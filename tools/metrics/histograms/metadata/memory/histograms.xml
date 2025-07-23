@@ -3488,16 +3488,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory{ProfiledProcess}.Pss" units="MiB"
+<histogram name="Memory{ProfiledProcess}.Pss2" units="MiB"
     expires_after="2026-07-13">
   <owner>thiabaud@google.com</owner>
   <summary>
     PSS metric for the process. Recorded on Android, Linux, and ChromeOS only.
+    The value &quot;0&quot; is expected on kernels that don't support
+    /proc/self/smaps_rollup.
   </summary>
   <token key="ProfiledProcess" variants="ProfiledProcess"/>
 </histogram>
 
-<histogram name="Memory{ProfiledProcess}.SwapPss" units="MiB"
+<histogram name="Memory{ProfiledProcess}.SwapPss2" units="MiB"
     expires_after="2026-07-13">
   <owner>thiabaud@google.com</owner>
   <summary>

@@ -156,9 +156,9 @@ OSMemDumpPtr GetFakeOSMemDump(MetricMap& metrics_mb) {
       /* mappings_count= */ metrics_mb.contains("MappingsCount")
           ? metrics_mb["MappingsCount"]
           : 0,
-      /*pss_kb=*/metrics_mb.contains("Pss") ? metrics_mb["Pss"] * 1024 : 0,
-      /*swap_pss_kb=*/metrics_mb.contains("SwapPss")
-          ? metrics_mb["SwapPss"] * 1024
+      /*pss_kb=*/metrics_mb.contains("Pss2") ? metrics_mb["Pss2"] * 1024 : 0,
+      /*swap_pss_kb=*/metrics_mb.contains("SwapPss2")
+          ? metrics_mb["SwapPss2"] * 1024
           : 0
 #endif
   );
@@ -941,8 +941,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   constexpr size_t kTestPss = 100;
   constexpr size_t kTestSwapPss = 57;
   expected_metrics["MappingsCount"] = kTestMappingsCount;
-  expected_metrics["Pss"] = kTestPss;
-  expected_metrics["SwapPss"] = kTestSwapPss;
+  expected_metrics["Pss2"] = kTestPss;
+  expected_metrics["SwapPss2"] = kTestSwapPss;
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid201);
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
 
@@ -1018,8 +1018,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   histograms.ExpectUniqueSample("Memory.Renderer.MappingsCount",
                                 kTestMappingsCount, 2);
-  histograms.ExpectUniqueSample("Memory.Renderer.Pss", kTestPss, 2);
-  histograms.ExpectUniqueSample("Memory.Renderer.SwapPss", kTestSwapPss, 2);
+  histograms.ExpectUniqueSample("Memory.Renderer.Pss2", kTestPss, 2);
+  histograms.ExpectUniqueSample("Memory.Renderer.SwapPss2", kTestSwapPss, 2);
 #endif
   histograms.ExpectUniqueSample("Memory.Total.HibernatedCanvas.Size", 12 + 22,
                                 1);
