@@ -14,8 +14,6 @@ struct PinSet {
   array<SHA256HashValue> static_spki_hashes;
   // Optional set of forbidden SPKIs hashes
   array<SHA256HashValue> bad_static_spki_hashes;
-  // Optional URI to send bad pin reports to.
-  string report_uri;
 };
 
 struct PinSetInfo {

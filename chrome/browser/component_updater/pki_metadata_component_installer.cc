@@ -484,7 +484,6 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
         SHA256HashValueArrayFromProtoBytes(pinset.static_spki_hashes_sha256());
     pinset_ptr->bad_static_spki_hashes = SHA256HashValueArrayFromProtoBytes(
         pinset.bad_static_spki_hashes_sha256());
-    pinset_ptr->report_uri = pinset.report_uri();
     pinlist_ptr->pinsets.push_back(std::move(pinset_ptr));
   }
 
