@@ -28,6 +28,9 @@ namespace base {
 //   ByteCount quota = GetQuota();
 //   SetMetadataSize(base::KiB(10));
 //   SetDatabaseSize(quota - base::KiB(10));
+//
+// KiB(), MiB() and GiB() can take float parameters. This will return the
+// nearest integral number of bytes, rounding towards zero.
 class ByteCount {
  public:
   constexpr ByteCount() = default;
@@ -57,6 +60,7 @@ class ByteCount {
   constexpr int64_t InGiB() const { return bytes_ / 1024 / 1024 / 1024; }
 
   // Conversion to floating point values.
+  constexpr double InBytesF() const { return bytes_; }
   constexpr double InKiBF() const { return bytes_ / 1024.0; }
   constexpr double InMiBF() const { return bytes_ / 1024.0 / 1024.0; }
   constexpr double InGiBF() const { return bytes_ / 1024.0 / 1024.0 / 1024.0; }
@@ -98,10 +102,21 @@ class ByteCount {
   int64_t bytes_ = 0;
 };
 
+// Templated functions to construct from various types. Note that integers must
+// be converted to CheckedNumeric<int64_t> BEFORE multiplying to detect
+// overflows, while floats must be converted AFTER multiplying to avoid
+// premature truncation.
+
 template <typename T>
   requires std::is_integral_v<T>
 constexpr ByteCount KiB(T kib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(kib) * 1024);
+}
+
+template <typename T>
+  requires std::is_floating_point_v<T>
+constexpr ByteCount KiB(T kib) {
+  return ByteCount::FromChecked(CheckedNumeric<int64_t>(kib * 1024.0));
 }
 
 template <typename T>
@@ -111,10 +126,23 @@ constexpr ByteCount MiB(T mib) {
 }
 
 template <typename T>
+  requires std::is_floating_point_v<T>
+constexpr ByteCount MiB(T mib) {
+  return ByteCount::FromChecked(CheckedNumeric<int64_t>(mib * 1024.0 * 1024.0));
+}
+
+template <typename T>
   requires std::is_integral_v<T>
 constexpr ByteCount GiB(T gib) {
   return ByteCount::FromChecked(CheckedNumeric<int64_t>(gib) * 1024 * 1024 *
                                 1024);
+}
+
+template <typename T>
+  requires std::is_floating_point_v<T>
+constexpr ByteCount GiB(T gib) {
+  return ByteCount::FromChecked(
+      CheckedNumeric<int64_t>(gib * 1024.0 * 1024.0 * 1024.0));
 }
 
 }  // namespace base
