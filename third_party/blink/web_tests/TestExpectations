@@ -6864,6 +6864,9 @@ crbug.com/1347675 virtual/fenced-frame-mparch/external/wpt/fenced-frame/fragment
 # TODO(crbug.com/1225773): Re-enable this test
 crbug.com/1225773 external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse.html [ Failure ]
 
+# Temporarily disabled to land https://crrev.com/c/6772976
+crbug.com/433162438 http/tests/devtools/sources/debugger-ui/async-call-stack-worker.js [ Failure Pass ]
+
 # Flaky timeouts on Linux MSAN
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Pass Timeout ]
 
