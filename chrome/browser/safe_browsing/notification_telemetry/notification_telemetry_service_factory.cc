@@ -46,15 +46,28 @@ NotificationTelemetryServiceFactory::BuildServiceInstanceForBrowserContext(
 // The ClientIncidentReport proto used to send these reports increases the
 // Android binary size by more than the arm32 threshold.
 #if !BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
-  if (!g_browser_process || !g_browser_process->safe_browsing_service() ||
-      !g_browser_process->safe_browsing_service()->database_manager()) {
+  if (!g_browser_process) {
     return nullptr;
   }
 
-  return std::make_unique<NotificationTelemetryService>(
-      Profile::FromBrowserContext(context),
-      g_browser_process->shared_url_loader_factory(),
-      g_browser_process->safe_browsing_service()->database_manager());
+  if (base::FeatureList::IsEnabled(
+          kGlobalCacheListForGatingNotificationProtections)) {
+    return std::make_unique<NotificationTelemetryService>(
+        Profile::FromBrowserContext(context),
+        g_browser_process->shared_url_loader_factory(), nullptr);
+  } else {
+    // TODO(crbug.com/433543634): Clean up the use of `database_manager` post
+    // GlobalCacheListForGatingNotificationProtections launch.
+    if (!g_browser_process->safe_browsing_service() ||
+        !g_browser_process->safe_browsing_service()->database_manager()) {
+      return nullptr;
+    }
+    return std::make_unique<NotificationTelemetryService>(
+        Profile::FromBrowserContext(context),
+        g_browser_process->shared_url_loader_factory(),
+        g_browser_process->safe_browsing_service()->database_manager());
+  }
+
 #else
   return nullptr;
 #endif  // !(!BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) &&

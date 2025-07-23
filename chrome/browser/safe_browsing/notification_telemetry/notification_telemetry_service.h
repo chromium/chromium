@@ -79,6 +79,14 @@ class NotificationTelemetryService
                            SendsTelemetryReport);
   FRIEND_TEST_ALL_PREFIXES(NotificationTelemetryServiceTest,
                            EnforcesServiceWorkerInfoCacheSize);
+  // TODO(crbug.com/433543634): Clean up post
+  // GlobalCacheListForGatingNotificationProtections launch.
+  FRIEND_TEST_ALL_PREFIXES(
+      NotificationTelemetryServiceFactoryTest,
+      CreatedWithoutDatabaseManagerWhenGlobalCacheListEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      NotificationTelemetryServiceFactoryTest,
+      CreatedWithDatabaseManagerWhenGlobalCacheListDisabled);
 
   // Callback used for checking the Safe Browsing allowlist.
   void DatabaseCheckDone(
@@ -87,6 +95,11 @@ class NotificationTelemetryService
       std::optional<SafeBrowsingDatabaseManager::
                         HighConfidenceAllowlistCheckLoggingDetails>
           logging_details);
+
+  // Store the service work info if the scope URL is not allowlisted.
+  void MaybeStoreServiceWorkerInfo(
+      ServiceWorkerTelemetryInfo service_worker_info,
+      bool allowlisted);
 
   // Used for logging after an upload.
   void UploadComplete(std::unique_ptr<std::string> response_body);
@@ -105,6 +118,8 @@ class NotificationTelemetryService
   // Accessor for an URLLoaderFactory with which reports will be sent.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
+  // TODO(crbug.com/433543634): Remove `database_manager_` post
+  // GlobalCacheListForGatingNotificationProtections launch.
   // Used to preform the Safe Browsing allowlist lookup.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
 

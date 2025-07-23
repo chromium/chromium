@@ -7125,6 +7125,7 @@ test("unit_tests") {
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/browser:client_side_detection_images_cache",
     "//components/safe_browsing/content/browser/notification_content_detection",
+    "//components/safe_browsing/content/browser/notification_content_detection:notifications_global_cache_list",
     "//components/safe_browsing/content/browser/notification_content_detection:test_utils",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/content/browser/password_protection:mock_password_protection",

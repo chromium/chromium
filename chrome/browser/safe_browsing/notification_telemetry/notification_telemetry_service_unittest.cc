@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/mock_safe_browsing_database_manager.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notifications_global_cache_list.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/service_worker_registration_information.h"
@@ -34,24 +35,45 @@ namespace safe_browsing {
 const char kSbIncidentReportUrl[] =
     "https://sb-ssl.google.com/safebrowsing/clientreport/incident";
 
-class NotificationTelemetryServiceTest : public ::testing::Test {
+class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
  public:
   NotificationTelemetryServiceTest() = default;
 
+  bool IsGlobalCacheListFeatureEnabled() { return GetParam(); }
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(kNotificationTelemetry);
-    database_manager_ = new MockSafeBrowsingDatabaseManager();
     profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-    notification_telemetry_service_ =
-        std::make_unique<NotificationTelemetryService>(
-            &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
-            database_manager_);
+
+    if (IsGlobalCacheListFeatureEnabled()) {
+      notification_telemetry_service_ =
+          std::make_unique<NotificationTelemetryService>(
+              &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
+              nullptr);
+
+    } else {
+      // TODO(crbug.com/433543634): Cleanup the use of `database_manager_` post
+      // GlobalCacheListForGatingNotificationProtections launch.
+      database_manager_ = new MockSafeBrowsingDatabaseManager();
+      notification_telemetry_service_ =
+          std::make_unique<NotificationTelemetryService>(
+              &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
+              database_manager_);
+    }
   }
 
   void TearDown() override { notification_telemetry_service_.reset(); }
 
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager() {
     return database_manager_;
+  }
+
+  void SetAllowlistInfoForUrl(const GURL& scope, bool allowlisted) {
+    if (IsGlobalCacheListFeatureEnabled() && allowlisted) {
+      SetNotificationsGlobalCacheListDomainsForTesting({scope.host()});
+    } else if (!IsGlobalCacheListFeatureEnabled()) {
+      database_manager()->SetAllowlistLookupDetailsForUrl(scope, allowlisted);
+    }
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -67,11 +89,11 @@ class NotificationTelemetryServiceTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(NotificationTelemetryServiceTest, Initializes) {
+TEST_P(NotificationTelemetryServiceTest, Initializes) {
   ASSERT_NE(notification_telemetry_service_.get(), nullptr);
 }
 
-TEST_F(NotificationTelemetryServiceTest, SendsTelemetryReport) {
+TEST_P(NotificationTelemetryServiceTest, SendsTelemetryReport) {
   const GURL scope("https://nonallowlisted_url.com/");
   const GURL scope2("https://allowlisted_url.com/");
   const GURL scope3("https://nonallowlisted_url_2.com/");
@@ -95,13 +117,13 @@ TEST_F(NotificationTelemetryServiceTest, SendsTelemetryReport) {
   content::ServiceWorkerRegistrationInformation service_worker_info_3;
   service_worker_info_3.resources.push_back(scope3);
 
-  database_manager()->SetAllowlistLookupDetailsForUrl(scope2, /*match=*/true);
+  SetAllowlistInfoForUrl(scope2, /*allowlisted=*/true);
   notification_telemetry_service_->OnRegistrationStored(
       registration_id_2, scope2, service_worker_info_2);
-  database_manager()->SetAllowlistLookupDetailsForUrl(scope, /*match=*/false);
+  SetAllowlistInfoForUrl(scope, /*allowlisted=*/false);
   notification_telemetry_service_->OnRegistrationStored(
       registration_id_1, scope, service_worker_info_1);
-  database_manager()->SetAllowlistLookupDetailsForUrl(scope3, /*match=*/false);
+  SetAllowlistInfoForUrl(scope3, /*allowlisted=*/false);
   notification_telemetry_service_->OnRegistrationStored(
       registration_id_3, scope3, service_worker_info_3);
 
@@ -136,7 +158,7 @@ TEST_F(NotificationTelemetryServiceTest, SendsTelemetryReport) {
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(NotificationTelemetryServiceTest, EnforcesServiceWorkerInfoCacheSize) {
+TEST_P(NotificationTelemetryServiceTest, EnforcesServiceWorkerInfoCacheSize) {
   const GURL scope("https://nonallowlisted_url.com/");
   const GURL scope2("https://nonallowlisted_url_2.com/");
   const GURL import_URL("https://import_script.com/script.js");
@@ -148,12 +170,12 @@ TEST_F(NotificationTelemetryServiceTest, EnforcesServiceWorkerInfoCacheSize) {
   content::ServiceWorkerRegistrationInformation service_worker_info_1;
   service_worker_info_1.resources.push_back(import_URL);
 
-  database_manager()->SetAllowlistLookupDetailsForUrl(scope, /*match=*/false);
+  SetAllowlistInfoForUrl(scope, /*allowlisted=*/false);
   notification_telemetry_service_->OnRegistrationStored(
       registration_id_1, scope, service_worker_info_1);
 
   // Second valid service worker info
-  database_manager()->SetAllowlistLookupDetailsForUrl(scope2, /*match=*/false);
+  SetAllowlistInfoForUrl(scope2, /*allowlisted=*/false);
   content::ServiceWorkerRegistrationInformation service_worker_info_2;
   service_worker_info_2.resources.push_back(import_URL);
 
@@ -173,5 +195,9 @@ TEST_F(NotificationTelemetryServiceTest, EnforcesServiceWorkerInfoCacheSize) {
       registration_id_1);
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         NotificationTelemetryServiceTest,
+                         ::testing::Bool());
 
 }  // namespace safe_browsing

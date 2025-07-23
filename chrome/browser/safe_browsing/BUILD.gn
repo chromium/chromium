@@ -260,6 +260,7 @@ static_library("safe_browsing") {
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/content/browser/download:download_stats",
+      "//components/safe_browsing/content/browser/notification_content_detection:notifications_global_cache_list",
       "//components/safe_browsing/content/browser/password_protection",
       "//components/safe_browsing/content/browser/triggers",
       "//components/safe_browsing/content/browser/triggers:ad_sampler_trigger",

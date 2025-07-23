@@ -12,6 +12,7 @@
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_service_factory.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notifications_global_cache_list.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -155,9 +156,18 @@ void NotificationTelemetryService::OnRegistrationStored(
     service_worker_info.scope = scope;
     service_worker_info.registration_id = registration_id;
     service_worker_info.resources = service_worker_registration_info.resources;
-    database_manager_->CheckUrlForHighConfidenceAllowlist(
-        scope, base::BindOnce(&NotificationTelemetryService::DatabaseCheckDone,
-                              weak_factory_.GetWeakPtr(), service_worker_info));
+
+    // TODO(crbug.com/433543634): Clean up the use of `database_manager_` post
+    // GlobalCacheListForGatingNotificationProtections launch.
+    if (database_manager_ == nullptr) {
+      MaybeStoreServiceWorkerInfo(
+          service_worker_info, IsDomainInNotificationsGlobalCacheList(scope));
+    } else {
+      database_manager_->CheckUrlForHighConfidenceAllowlist(
+          scope,
+          base::BindOnce(&NotificationTelemetryService::DatabaseCheckDone,
+                         weak_factory_.GetWeakPtr(), service_worker_info));
+    }
   }
 }
 
@@ -172,6 +182,12 @@ void NotificationTelemetryService::DatabaseCheckDone(
     std::optional<
         SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
         logging_details) {
+  MaybeStoreServiceWorkerInfo(service_worker_info, allow_listed);
+}
+
+void NotificationTelemetryService::MaybeStoreServiceWorkerInfo(
+    ServiceWorkerTelemetryInfo service_worker_info,
+    bool allow_listed) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.NotificationTelemetry.ServiceWorkerScopeURL.IsAllowlisted",
       allow_listed);
