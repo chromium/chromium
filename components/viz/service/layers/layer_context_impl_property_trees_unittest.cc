@@ -950,6 +950,75 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
             "Invalid closest_ancestor_with_shared_element_id for effect node");
 }
 
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       BackdropMaskElementIdValid) {
+  auto update = CreateDefaultUpdate();
+  // Create a TileDisplayLayer to serve as the mask.
+  int mask_layer_id =
+      AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kTileDisplay);
+  cc::ElementId mask_element_id(mask_layer_id);
+  update->layers.back()->element_id = mask_element_id;
+
+  // Create an EffectNode that references this layer.
+  auto node_update = CreateDefaultSecondaryRootEffectNode();
+  node_update->backdrop_mask_element_id = mask_element_id;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  cc::EffectNode* node_impl =
+      GetEffectNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->backdrop_mask_element_id, mask_element_id);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       BackdropMaskElementIdLayerNotFound) {
+  auto update = CreateDefaultUpdate();
+  cc::ElementId non_existent_element_id(999);
+
+  auto node_update = CreateDefaultSecondaryRootEffectNode();
+  node_update->backdrop_mask_element_id = non_existent_element_id;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid backdrop_mask_element_id: layer not found");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       BackdropMaskElementIdNotTileDisplayLayer) {
+  auto update = CreateDefaultUpdate();
+  // Create a regular Layer (not TileDisplayLayer).
+  int mask_layer_id =
+      AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kLayer);
+  cc::ElementId mask_element_id(mask_layer_id);
+  update->layers.back()->element_id = mask_element_id;
+
+  auto node_update = CreateDefaultSecondaryRootEffectNode();
+  node_update->backdrop_mask_element_id = mask_element_id;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid backdrop_mask_element_id: layer is not a "
+            "TileDisplayLayer");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       BackdropMaskElementIdZeroIsValid) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = CreateDefaultSecondaryRootEffectNode();
+  node_update->backdrop_mask_element_id = cc::ElementId();  // Zero ID
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+}
+
 class LayerContextImplUpdateDisplayTreeScrollNodeTest
     : public LayerContextImplPropertyTreesTestBase {
  protected:

@@ -1718,6 +1718,23 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   RETURN_IF_ERROR(CreateOrUpdateLayers(
       *(this->host_impl_.get()), update->layers, update->layer_order, layers));
 
+  // After layers are updated, validate backdrop_mask_element_id.
+  for (const auto& wire : update->effect_nodes) {
+    if (wire->backdrop_mask_element_id) {
+      if (auto* layer =
+              layers.LayerByElementId(wire->backdrop_mask_element_id)) {
+        if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
+          return base::unexpected(
+              "Invalid backdrop_mask_element_id: layer is not a "
+              "TileDisplayLayer");
+        }
+      } else {
+        return base::unexpected(
+            "Invalid backdrop_mask_element_id: layer not found");
+      }
+    }
+  }
+
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
     if (update->new_local_surface_id_request) {
