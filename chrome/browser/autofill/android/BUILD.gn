@@ -247,6 +247,7 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/bottom_sheet_utils/DetailScreenScrollListenerTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/AddressEditorTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/DropdownFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/TextFieldViewUnitTest.java",
@@ -254,6 +255,7 @@ robolectric_library("junit") {
   ]
 
   deps = [
+    ":bottom_sheet_utils_java",
     ":java",
     ":java_resources",
     ":third_party_provider_java",
@@ -270,6 +272,7 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/autofill/android:autofill_features_java",
     "//components/autofill/android:main_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
