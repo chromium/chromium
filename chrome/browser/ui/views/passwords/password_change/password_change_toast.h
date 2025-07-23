@@ -19,7 +19,7 @@ class Throbber;
 }  // namespace views
 
 // Toast view displaying the progress of password change. Displayed content can
-// be updated using UpdateConfiguration() without closing the toast.
+// be updated using `UpdateLayout()` without closing the toast.
 class PasswordChangeToast : public views::View {
   METADATA_HEADER(PasswordChangeToast, views::View)
  public:
@@ -68,8 +68,6 @@ class PasswordChangeToast : public views::View {
   views::ImageButton* close_button() { return close_button_; }
 
  private:
-  void UpdateConfiguration(ToastOptions configuration);
-
   // Calculates interior margins based on currently visible child views.
   gfx::Insets CalculateInteriorMargin();
 
