@@ -161,12 +161,6 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
   NOTREACHED();
 }
 
-bool HanKerning::MayApply(StringView text) {
-  return !text.Is8Bit() && !text.IsAllSpecialCharacters<[](UChar ch) {
-    return !Character::MaybeHanKerningOpenOrCloseFast(ch);
-  }>();
-}
-
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
   return type == CharType::kOpen &&
          (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
@@ -182,29 +176,34 @@ inline bool HanKerning::ShouldKernLast(CharType type, CharType last_type) {
 // Compute kerning and apply features.
 // See Fullwidth Punctuation Collapsing:
 // https://drafts.csswg.org/css-text-4/#fullwidth-collapsing
-void HanKerning::Compute(const String& text,
-                         wtf_size_t start,
-                         wtf_size_t end,
-                         const SimpleFontData& font,
-                         const FontDescription& font_description,
-                         Options options,
-                         FontFeatureRanges* features) {
+void HanKerning::AppendFontFeatures(const String& text,
+                                    wtf_size_t start,
+                                    wtf_size_t end,
+                                    const SimpleFontData& font,
+                                    const LayoutLocale& locale,
+                                    Options options,
+                                    FontFeatureRanges& features) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
   DCHECK_GT(end, start);
-  if (!MayApply(StringView(text, start, end - start))) {
-    return;
+  DCHECK_GE(start, segment_start_);
+  DCHECK_LE(end, segment_end_);
+  // Caller should check `MayApply`.
+  DCHECK(MayApply(
+      StringView(text, segment_start_, segment_end_ - segment_start_)));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+
+  if (start != segment_start_ || end != segment_end_) {
+    if (!MayApply(StringView(text, start, end - start))) {
+      return;
+    }
   }
-  const LayoutLocale& locale = font_description.LocaleOrDefault();
   const FontData& font_data =
       font.HanKerningData(locale, options.is_horizontal);
   if (!font_data.has_alternate_spacing) {
     return;
   }
-  if (font_description.GetTextSpacingTrim() == TextSpacingTrim::kSpaceAll)
-      [[unlikely]] {
-    return;
-  }
-  for (const FontFeatureRange& feature : *features) {
-    if (feature.value && IsExclusiveFeature(feature.tag)) {
+  for (const FontFeatureRange& feature : features) {
+    if (feature.value && IsExclusiveFeature(feature.tag)) [[unlikely]] {
       return;
     }
   }
@@ -273,12 +272,14 @@ void HanKerning::Compute(const String& text,
   if (indices.empty()) {
     return;
   }
+#if EXPENSIVE_DCHECKS_ARE_ON()
   DCHECK(std::is_sorted(indices.begin(), indices.end(), std::less_equal<>()));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
   const hb_tag_t tag = options.is_horizontal ? HB_TAG('h', 'a', 'l', 't')
                                              : HB_TAG('v', 'h', 'a', 'l');
-  features->reserve(features->size() + indices.size());
+  features.reserve(features.size() + indices.size());
   for (const wtf_size_t i : indices) {
-    features->push_back(FontFeatureRange{{tag, 1}, i, i + 1});
+    features.push_back(FontFeatureRange{{tag, 1}, i, i + 1});
   }
 }
 
