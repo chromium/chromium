@@ -271,6 +271,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingRemote<network::mojom::URLLoaderClient>
           dest_url_loader_client) override;
 
+  void DecodeContentEncoding(
+      const std::vector<net::SourceStreamType>& content_encoding_types,
+      mojo::ScopedDataPipeConsumerHandle source_body,
+      mojo::ScopedDataPipeProducerHandle dest_body,
+      DecodeContentEncodingCallback callback) override;
+
   void SetTLS13EarlyDataEnabled(bool enabled) override;
 
   void StartNetLogBounded(base::File file,

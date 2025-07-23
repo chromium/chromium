@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
+#include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/mock_url_loader_client.h"
@@ -80,6 +82,23 @@ ContentDecodingInterceptor::DataPipePair CreateDataPipePair() {
       ContentDecodingInterceptor::ClientType::kTest);
   CHECK(result.has_value());
   return std::move(*result);
+}
+
+// Reads the content of the given test file, writes it to a new data pipe, and
+// returns the consumer handle for that pipe.
+mojo::ScopedDataPipeConsumerHandle ReadFileAndWriteToNewPipe(
+    std::string_view file_name) {
+  const std::string test_data = ReadTestData(file_name);
+  mojo::ScopedDataPipeProducerHandle source_producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  CreatePipe(test_data.size(), source_producer, consumer);
+
+  // Write the data.
+  CHECK_EQ(source_producer->WriteAllData(base::as_byte_span(test_data)),
+           MOJO_RESULT_OK);
+  // Finish the data by closing the producer.
+  source_producer.reset();
+  return consumer;
 }
 
 // Reads data from a data pipe using DataPipeDrainer.
@@ -186,7 +205,8 @@ void TestSimpleDecodeTest(const std::string_view file_name,
 // Test fixture for ContentDecodingInterceptor tests.
 class ContentDecodingInterceptorTest : public testing::Test {
  public:
-  ContentDecodingInterceptorTest() = default;
+  ContentDecodingInterceptorTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
   ~ContentDecodingInterceptorTest() override = default;
 
  protected:
@@ -519,6 +539,87 @@ TEST_F(ContentDecodingInterceptorTest, CreateDataPipeFailure) {
   auto data_pipe_pair = ContentDecodingInterceptor::CreateDataPipePair(
       ContentDecodingInterceptor::ClientType::kTest);
   EXPECT_FALSE(data_pipe_pair.has_value());
+}
+
+// Tests the successful decoding of a Brotli-compressed stream using
+// DecodeOnNetworkService.
+TEST_F(ContentDecodingInterceptorTest, DecodeOnNetworkService) {
+  auto body = ReadFileAndWriteToNewPipe(kBrotliTestFile);
+  auto network_service = NetworkService::CreateForTesting();
+
+  base::test::TestFuture<net::Error> future;
+  ContentDecodingInterceptor::DecodeOnNetworkService(
+      *network_service, {net::SourceStreamType::kBrotli}, body,
+      ContentDecodingInterceptor::ClientType::kTest, future.GetCallback());
+  // Wait for the decoding to finish. The TestFuture will be set to net::OK
+  // when the decoding is successful.
+  EXPECT_EQ(future.Get(), net::OK);
+  // Read the decoded output from the data pipe.
+  EXPECT_EQ(ReadDataPipe(std::move(body)), ReadTestData(kOriginalTestFile));
+}
+
+// Tests decoding on the network service with an incorrect content encoding
+// type. This should result in a decoding failure.
+TEST_F(ContentDecodingInterceptorTest, DecodeOnNetworkServiceWrongType) {
+  auto body = ReadFileAndWriteToNewPipe(kBrotliTestFile);
+  auto network_service = NetworkService::CreateForTesting();
+
+  base::test::TestFuture<net::Error> future;
+  ContentDecodingInterceptor::DecodeOnNetworkService(
+      *network_service, {net::SourceStreamType::kZstd}, body,
+      ContentDecodingInterceptor::ClientType::kTest, future.GetCallback());
+  // Expect the decoding to fail since the content type is wrong.
+  EXPECT_EQ(future.Get(), net::ERR_CONTENT_DECODING_FAILED);
+  // There should be no data in the `body`.
+  EXPECT_TRUE(ReadDataPipe(std::move(body)).empty());
+}
+
+// Tests decoding on the network service but simulating a failure to create a
+// data pipe, which can happen due to resource exhaustion. The decoding should
+// fail in this scenario.
+TEST_F(ContentDecodingInterceptorTest,
+       DecodeOnNetworkServiceCreateDataPipeFailure) {
+  auto body = ReadFileAndWriteToNewPipe(kBrotliTestFile);
+  auto network_service = NetworkService::CreateForTesting();
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{network::features::kRendererSideContentDecoding,
+        {{"RendererSideContentDecodingForceMojoFailureForTesting", "true"}}}},
+      {});
+  base::test::TestFuture<net::Error> future;
+  ContentDecodingInterceptor::DecodeOnNetworkService(
+      *network_service, {net::SourceStreamType::kBrotli}, body,
+      ContentDecodingInterceptor::ClientType::kTest, future.GetCallback());
+  // Expect the decoding to fail since the datapipe could not be created.
+  EXPECT_EQ(future.Get(), net::ERR_INSUFFICIENT_RESOURCES);
+
+  // Even if the data pipe creation failed, the data in the original pipe
+  // should remain unchanged. Verify that the data in the original pipe `body`
+  // is still the brotli encoded data.
+  EXPECT_EQ(ReadDataPipe(std::move(body)), ReadTestData(kBrotliTestFile));
+}
+
+// Tests decoding on the network service, but simulating a disconnect from the
+// network service. The decoding should fail in this scenario since the
+// decoding depends on the network service.
+TEST_F(ContentDecodingInterceptorTest, DecodeOnNetworkServiceDisconnected) {
+  auto body = ReadFileAndWriteToNewPipe(kBrotliTestFile);
+
+  mojo::Remote<mojom::NetworkService> network_service_remote;
+  mojo::PendingReceiver<mojom::NetworkService> network_service_receiver =
+      network_service_remote.BindNewPipeAndPassReceiver();
+
+  base::test::TestFuture<net::Error> future;
+  ContentDecodingInterceptor::DecodeOnNetworkService(
+      *network_service_remote, {net::SourceStreamType::kBrotli}, body,
+      ContentDecodingInterceptor::ClientType::kTest, future.GetCallback());
+  network_service_receiver.reset();
+  // Expect the decoding to fail because the network service is disconnected
+  // before the decoding completes.
+  EXPECT_EQ(future.Get(), net::ERR_FAILED);
+  // There should be no data in the `body`.
+  EXPECT_TRUE(ReadDataPipe(std::move(body)).empty());
 }
 
 }  // namespace network

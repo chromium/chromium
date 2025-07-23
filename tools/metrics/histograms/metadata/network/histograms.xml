@@ -53,6 +53,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ContentDecodingInterceptorClientType">
   <variant name="CommitNavigation"/>
+  <variant name="DevTools"/>
   <variant name="Download"/>
   <variant name="NavigationPreload"/>
   <variant name="SignedExchange"/>

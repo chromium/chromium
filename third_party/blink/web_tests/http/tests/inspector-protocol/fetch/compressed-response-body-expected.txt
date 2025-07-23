@@ -1,0 +1,7 @@
+Test that Fetch.getResponseBody returns decompressed response body
+Intercepted response 200
+Intercepted response body: Hello World.
+
+Received response body: Hello World.
+
+

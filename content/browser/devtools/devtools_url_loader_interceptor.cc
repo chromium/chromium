@@ -28,6 +28,7 @@
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -41,6 +42,7 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -526,6 +528,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   std::unique_ptr<BodyReader> body_reader_;
   std::unique_ptr<ResponseMetadata> response_metadata_;
+  std::vector<net::SourceStreamType> client_side_content_decoding_types_;
   mojo::ScopedDataPipeConsumerHandle body_;
   bool registered_in_global_request_map_;
 
@@ -1373,6 +1376,7 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
     DCHECK_EQ(0u, res);
     DCHECK_EQ(actually_written_bytes, bytes_to_write.size());
   }
+  response_metadata_->head->client_side_content_decoding_types.clear();
   client_->OnReceiveResponse(std::move(response_metadata_->head),
                              std::move(consumer_handle),
                              std::move(response_metadata_->cached_metadata));
@@ -1660,6 +1664,8 @@ void InterceptionJob::OnReceiveResponse(
   }
   client_receiver_.Pause();
   body_ = std::move(body);
+  client_side_content_decoding_types_ =
+      head->client_side_content_decoding_types;
 
   auto request_info = BuildRequestInfo(head);
   const network::ResourceRequest& request = create_loader_params_->request;
@@ -1720,6 +1726,12 @@ void InterceptionJob::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 
 void InterceptionJob::StartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
+  if (!client_side_content_decoding_types_.empty()) {
+    network::ContentDecodingInterceptor::DecodeOnNetworkService(
+        *GetNetworkService(), client_side_content_decoding_types_, body,
+        network::ContentDecodingInterceptor::ClientType::kDevTools,
+        base::DoNothing());
+  }
   if (pending_response_body_pipe_callback_) {
     DCHECK_EQ(State::kResponseTaken, state_);
     DCHECK(!body_reader_);
