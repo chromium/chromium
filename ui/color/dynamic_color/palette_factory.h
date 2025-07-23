@@ -21,6 +21,10 @@ std::unique_ptr<Palette> GeneratePalette(
     SkColor seed_color,
     ColorProviderKey::SchemeVariant variant);
 
+// Represents the number of shades needed to be generated for each hue specified
+// in the `tab_group_color_palette` key of `theme` key in manifest.json.
+inline constexpr size_t kGeneratedShadesCount = 11;
+
 }  // namespace ui
 
 #endif  // UI_COLOR_DYNAMIC_COLOR_PALETTE_FACTORY_H_
