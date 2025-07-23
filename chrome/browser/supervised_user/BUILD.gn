@@ -280,6 +280,10 @@ if (is_android) {
         "//net:test_support",
         "//net/android:net_java_test_support_enums_srcjar",
       ]
+
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     }
   }
 }

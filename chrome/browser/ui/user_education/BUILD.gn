@@ -87,6 +87,10 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_chromeos_device) {
@@ -110,5 +114,9 @@ if (!is_chromeos_device) {
       "//ui/base",
       "//url",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
