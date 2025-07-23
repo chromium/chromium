@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "v8/include/cppgc/garbage-collected.h"
 
 namespace blink {
 
@@ -39,6 +40,12 @@ RuleSet* RuleSetDiff::CreateDiffRuleset() const {
   ruleset->AddFilteredRulesFromOtherSet(*new_ruleset_, changed_rules_);
   ruleset->CompactRulesIfNeeded();
   return ruleset;
+}
+
+void RuleSetDiff::Trace(Visitor* visitor) const {
+  visitor->Trace(old_ruleset_);
+  visitor->Trace(new_ruleset_);
+  visitor->Trace(changed_rules_);
 }
 
 }  // namespace blink

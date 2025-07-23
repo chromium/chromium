@@ -25,9 +25,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/rule_set_diff.h"
-#include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
@@ -43,10 +42,13 @@
 namespace blink {
 
 class CSSStyleSheet;
+class CSSStyleSheetResource;
 class Document;
+class MediaQueryEvaluator;
 class Node;
 class StyleRuleBase;
 class StyleRuleFontFace;
+class RuleSet;
 class RuleSetDiff;
 class StyleRuleImport;
 class StyleRuleNamespace;
