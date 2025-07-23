@@ -619,6 +619,10 @@ const base::FeatureParam<bool> kGlicScrollToEnforceDocumentId{
 // Expand the scrollTo capability to PDF documents.
 const base::FeatureParam<bool> kGlicScrollToPDF{&kGlicScrollTo,
                                                 "glic-scroll-to-pdf", false};
+// Controls whether we enforce that url (an optional parameter) is set when
+// trying to scroll a PDF document (and fail the request if it's not set).
+const base::FeatureParam<bool> kGlicScrollToEnforceURLForPDF{
+    &kGlicScrollTo, "glic-scroll-to-enforce-url-for-pdf", true};
 
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -1301,17 +1301,20 @@ class GlicAnnotationManagerTestForPDF
       public ::testing::WithParamInterface<bool> {
  public:
   GlicAnnotationManagerTestForPDF() {
-    InitFeatureParams(/*enable_scroll_to_pdf=*/true);
+    InitFeatureParams(/*enable_scroll_to_pdf=*/true,
+                      /*enforce_url_for_pdf=*/true);
   }
   ~GlicAnnotationManagerTestForPDF() override = default;
 
   bool UseOopif() const { return GetParam(); }
 
-  void InitFeatureParams(bool enable_scroll_to_pdf) {
+  void InitFeatureParams(bool enable_scroll_to_pdf, bool enforce_url_for_pdf) {
     scoped_feature_list_.Reset();
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicScrollTo,
-         {{"glic-scroll-to-pdf", base::ToString(enable_scroll_to_pdf)}}}};
+         {{"glic-scroll-to-pdf", base::ToString(enable_scroll_to_pdf)},
+          {"glic-scroll-to-enforce-url-for-pdf",
+           base::ToString(enforce_url_for_pdf)}}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (UseOopif()) {
       enabled_features.push_back({chrome_pdf::features::kPdfOopif, {}});
@@ -1493,7 +1496,8 @@ class GlicAnnotationManagerTestForPDFFeatureDisabled
     : public GlicAnnotationManagerTestForPDF {
  public:
   GlicAnnotationManagerTestForPDFFeatureDisabled() {
-    InitFeatureParams(/*enable_scroll_to_pdf=*/false);
+    InitFeatureParams(/*enable_scroll_to_pdf=*/false,
+                      /*enforce_url_for_pdf=*/false);
   }
   ~GlicAnnotationManagerTestForPDFFeatureDisabled() override = default;
 };
@@ -1512,6 +1516,31 @@ INSTANTIATE_TEST_SUITE_P(
     GlicAnnotationManagerTestForPDFFeatureDisabled,
     ::testing::Bool(),
     &GlicAnnotationManagerTestForPDF::PrintTestVariant);
+
+class GlicAnnotationManagerTestForPDFWithEnforceURLDisabled
+    : public GlicAnnotationManagerTestForPDF {
+ public:
+  GlicAnnotationManagerTestForPDFWithEnforceURLDisabled() {
+    InitFeatureParams(/*enable_scroll_to_pdf=*/true,
+                      /*enforce_url_for_pdf=*/false);
+  }
+  ~GlicAnnotationManagerTestForPDFWithEnforceURLDisabled() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDFWithEnforceURLDisabled,
+                       ScrollToSucceedsWithoutURL) {
+  NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),  //
+                  SetTabContextPermission(true),              //
+                  ScrollTo(ExactTextSelector("test")));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GlicAnnotationManagerTestForPDFWithEnforceURLDisabled,
+    ::testing::Bool(),
+    &GlicAnnotationManagerTestForPDF::PrintTestVariant);
+
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace glic::test

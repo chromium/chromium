@@ -73,10 +73,11 @@ GetVerifiedAnnotationTargetFrameForPDF(const mojom::ScrollToParams& params,
 
   // Verifies that the `url` parameter is set and that it matches the
   // currently focused tab's url.
-  if (!params.url) {
+  const bool fail_without_url = features::kGlicScrollToEnforceURLForPDF.Get();
+  if (fail_without_url && !params.url) {
     return mojom::ScrollToErrorReason::kNotSupported;
   }
-  if (params.url != focused_contents->GetLastCommittedURL()) {
+  if (params.url && params.url != focused_contents->GetLastCommittedURL()) {
     return mojom::ScrollToErrorReason::kNoMatchingDocument;
   }
 
