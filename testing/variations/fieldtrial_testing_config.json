@@ -19980,7 +19980,8 @@
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
                         "AvoidUnnecessaryShouldRenderRichAnimation",
                         "ReducePPMs",
-                        "ScreenWinDisplayLookupByHMONITOR"
+                        "ScreenWinDisplayLookupByHMONITOR",
+                        "UpdateDirectManipulationHelperOnParentChange"
                     ]
                 }
             ]
