@@ -178,10 +178,6 @@ class MediaSessionImpl : public MediaSession,
   // Creates a binding between |this| and |request|.
   mojo::PendingRemote<media_session::mojom::MediaSession> AddRemote();
 
-  // Returns information about the MediaSession.
-  CONTENT_EXPORT media_session::mojom::MediaSessionInfoPtr
-  GetMediaSessionInfoSync();
-
   // Returns if the session can be controlled by the user.
   CONTENT_EXPORT bool IsControllable() const;
 
@@ -214,7 +210,21 @@ class MediaSessionImpl : public MediaSession,
 
   // Returns the `RenderFrameHost` for the currently MediaSession routed
   // service.
+  // TODO(crbug.com/409427125): Also return a frame if no service is created for
+  // a player.
   RenderFrameHost* GetRoutedFrame() override;
+
+  // Returns the current media session info synchronously for a one-off request.
+  CONTENT_EXPORT media_session::mojom::MediaSessionInfoPtr
+  GetMediaSessionInfoSync() override;
+
+  // Returns the current media session position for a one-off request.
+  CONTENT_EXPORT std::optional<media_session::MediaPosition>
+  GetMediaSessionPosition() override;
+
+  // Returns the current media session metadata for a one-off request.
+  CONTENT_EXPORT const media_session::MediaMetadata& GetMediaSessionMetadata()
+      override;
 
   // Suspend the media session.
   // |type| represents the origin of the request.

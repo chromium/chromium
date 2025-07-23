@@ -29,6 +29,18 @@ class MockMediaSession : public MediaSession {
               (const base::UnguessableToken& group_id),
               (override));
   MOCK_METHOD(content::RenderFrameHost*, GetRoutedFrame, (), (override));
+  MOCK_METHOD(media_session::mojom::MediaSessionInfoPtr,
+              GetMediaSessionInfoSync,
+              (),
+              (override));
+  MOCK_METHOD(std::optional<media_session::MediaPosition>,
+              GetMediaSessionPosition,
+              (),
+              (override));
+  MOCK_METHOD(const media_session::MediaMetadata&,
+              GetMediaSessionMetadata,
+              (),
+              (override));
   MOCK_METHOD(void, Suspend, (SuspendType suspend_type), (override));
   MOCK_METHOD(void, Resume, (SuspendType suspend_type), (override));
   MOCK_METHOD(void, StartDucking, (), (override));

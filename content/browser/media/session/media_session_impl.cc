@@ -803,6 +803,16 @@ RenderFrameHost* MediaSessionImpl::GetRoutedFrame() {
   return routed_service_->GetRenderFrameHost();
 }
 
+std::optional<media_session::MediaPosition>
+MediaSessionImpl::GetMediaSessionPosition() {
+  return position_;
+}
+
+const media_session::MediaMetadata&
+MediaSessionImpl::GetMediaSessionMetadata() {
+  return metadata_;
+}
+
 void MediaSessionImpl::StartDucking() {
   should_unduck_on_focus_gained_ = false;
   if (is_ducking_)

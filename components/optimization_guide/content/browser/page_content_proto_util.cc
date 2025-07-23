@@ -641,6 +641,10 @@ void ConvertFrameData(
         mojom_frame_data.contains_paid_content.value());
   }
 
+  if (render_frame_info.media_data) {
+    *proto_frame_data->mutable_media_data() = *render_frame_info.media_data;
+  }
+
   for (const auto& tool : mojom_frame_data.script_tools) {
     ConvertScriptTool(*tool, proto_frame_data->add_script_tools());
   }
@@ -721,7 +725,6 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
       if (!ConvertNode(render_frame_info->global_frame_token,
                        *frame_page_content.root_node, page_content_map,
                        frame_token_set, get_render_frame_info, metadata,
-
                        proto_child_frame_node)) {
         return false;
       }
@@ -971,5 +974,6 @@ std::optional<TargetNodeInfo> FindNodeWithID(
 
 RenderFrameInfo::RenderFrameInfo() = default;
 RenderFrameInfo::RenderFrameInfo(const RenderFrameInfo& other) = default;
+RenderFrameInfo::~RenderFrameInfo() = default;
 
 }  // namespace optimization_guide

@@ -76,6 +76,8 @@ BASE_DECLARE_FEATURE(kPrivacyGuideAiSettings);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithActionableElements);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kAnnotatedPageContentWithMediaData);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideProactivePersonalizedHintsFetching);
 
 // Allows setting feature params for model download configuration, such as

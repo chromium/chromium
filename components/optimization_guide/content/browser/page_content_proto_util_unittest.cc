@@ -47,6 +47,14 @@ blink::mojom::AIPageContentPtr CreatePageContent() {
   return page_content;
 }
 
+optimization_guide::proto::MediaData CreateMediaData() {
+  optimization_guide::proto::MediaData media_data;
+  media_data.set_media_data_type(
+      optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_AUDIO);
+  media_data.set_duration_milliseconds(10000);
+  return media_data;
+}
+
 blink::mojom::AIPageContentNodePtr CreateTextNode(
     std::string text,
     blink::mojom::AIPageContentTextSize text_size,
@@ -90,6 +98,7 @@ bool ConvertAIPageContentToProto(blink::mojom::AIPageContentPtr& root_content,
           render_frame_info.url = GURL("https://example.com");
           render_frame_info.serialized_server_token =
               main_frame_token.frame_token.ToString();
+          render_frame_info.media_data = CreateMediaData();
           return render_frame_info;
         }
         return std::nullopt;
@@ -436,6 +445,14 @@ TEST(PageContentProtoUtilTest, TitleSet) {
   EXPECT_EQ("Page Title", page_content.proto.main_frame_data().title());
 }
 
+TEST(PageContentProtoUtilTest, MediaDataSet) {
+  auto root_content = CreatePageContent();
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content));
+  EXPECT_TRUE(page_content.proto.main_frame_data().has_media_data());
+}
+
 TEST(PageContentProtoUtilTest, ConvertTableData) {
   auto root_content = CreatePageContent();
   auto table_node =
@@ -582,6 +599,7 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
           render_frame_info.global_frame_token = main_frame_token;
         } else {
           render_frame_info.global_frame_token = iframe_token;
+          render_frame_info.media_data = CreateMediaData();
         }
         render_frame_info.source_origin =
             url::Origin::Create(GURL("https://example.com"));
@@ -620,6 +638,9 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
   EXPECT_EQ(selection.end_node_id(), 2);
   EXPECT_EQ(selection.start_offset(), 3);
   EXPECT_EQ(selection.end_offset(), 4);
+
+  EXPECT_FALSE(page_content.proto.main_frame_data().has_media_data());
+  EXPECT_TRUE(proto_iframe_data.frame_data().has_media_data());
 }
 
 TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Form) {

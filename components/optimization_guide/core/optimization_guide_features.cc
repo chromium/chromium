@@ -178,6 +178,10 @@ BASE_FEATURE(kAnnotatedPageContentWithActionableElements,
              "AnnotatedPageContentWithActionableElements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAnnotatedPageContentWithMediaData,
+             "AnnotatedPageContentWithMediaData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
     &kOnDeviceModelPerformanceParams,
     "compatible_on_device_performance_classes", "3,4,5,6"};

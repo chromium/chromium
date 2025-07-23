@@ -22,12 +22,13 @@ struct RenderFrameInfo {
  public:
   RenderFrameInfo();
   RenderFrameInfo(const RenderFrameInfo& other);
-  ~RenderFrameInfo() = default;
+  ~RenderFrameInfo();
 
   content::GlobalRenderFrameHostToken global_frame_token;
   url::Origin source_origin;
   GURL url;
   std::string serialized_server_token;
+  std::optional<optimization_guide::proto::MediaData> media_data;
 };
 
 struct TargetNodeInfo {

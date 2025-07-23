@@ -23,6 +23,9 @@
 //components/test/data/optimization_guide/iframe_same_site.html
 //components/test/data/optimization_guide/invalid_model.crx3
 //components/test/data/optimization_guide/label_not_actionable.html
+//components/test/data/optimization_guide/media_data/video.html
+//components/test/data/optimization_guide/media_data/video.webm
+//components/test/data/optimization_guide/media_data/video_in_iframe.html
 //components/test/data/optimization_guide/page_topics_128_model.tflite
 //components/test/data/optimization_guide/paid_content.html
 //components/test/data/optimization_guide/paragraph.html

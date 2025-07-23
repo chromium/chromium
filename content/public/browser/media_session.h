@@ -78,6 +78,17 @@ class MediaSession : public media_session::mojom::MediaSession {
   // service, if the routed service exists, nullptr otherwise.
   virtual RenderFrameHost* GetRoutedFrame() = 0;
 
+  // Returns the current media session info synchronously for a one-off request.
+  virtual media_session::mojom::MediaSessionInfoPtr
+  GetMediaSessionInfoSync() = 0;
+
+  // Returns the current media session position for a one-off request.
+  virtual std::optional<media_session::MediaPosition>
+  GetMediaSessionPosition() = 0;
+
+  // Returns the current media session metadata for a one-off request.
+  virtual const media_session::MediaMetadata& GetMediaSessionMetadata() = 0;
+
   // Report to all players that information related to automatic picture in
   // picture has changed.
   virtual void ReportAutoPictureInPictureInfoChanged() = 0;

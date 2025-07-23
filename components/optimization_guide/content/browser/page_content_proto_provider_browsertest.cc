@@ -10,6 +10,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -17,9 +18,11 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/media_start_stop_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/display/display_switches.h"
@@ -1171,6 +1174,136 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestScriptTools, Basic) {
             "{\"type\":\"object\",\"properties\":{\"text\":{\"description\":"
             "\"Value to echo\",\"type\":\"string\"}},\"required\":[\"text\"]}");
   EXPECT_TRUE(tool.annotations().read_only());
+}
+
+class PageContentProtoProviderBrowserTestMediaData
+    : public PageContentProtoProviderBrowserTest {
+ public:
+  PageContentProtoProviderBrowserTestMediaData()
+      : features_(features::kAnnotatedPageContentWithMediaData) {}
+
+  void WaitForMediaPlaybackStart(content::WebContents* web_contents) {
+    content::MediaStartStopObserver observer(
+        web_contents, content::MediaStartStopObserver::Type::kStart);
+    ASSERT_EQ(base::Value(), content::EvalJs(web_contents, "play()"));
+    observer.Wait();
+  }
+
+  void WaitForMediaPlaybackStop(content::WebContents* web_contents) {
+    content::MediaStartStopObserver observer(
+        web_contents, content::MediaStartStopObserver::Type::kStop);
+    ASSERT_EQ(base::Value(), content::EvalJs(web_contents, "pause()"));
+    observer.Wait();
+  }
+
+  media_session::MediaMetadata GetExpectedMetadata() {
+    media_session::MediaMetadata metadata;
+    metadata.title = u"test title";
+    metadata.artist = u"test artist";
+    metadata.album = u"test album";
+    metadata.source_title = base::ASCIIToUTF16(base::StringPrintf(
+        "%s:%u", https_server()->GetIPLiteralString().c_str(),
+        https_server()->port()));
+    return metadata;
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
+                       NoDataForEmptyDuration) {
+  LoadPage(https_server()->GetURL("/media_data/video.html"));
+  EXPECT_FALSE(page_content().main_frame_data().has_media_data());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
+                       VideoInMainFrame) {
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(web_contents()));
+  LoadPage(https_server()->GetURL("/media_data/video.html"), nullptr);
+
+  WaitForMediaPlaybackStart(web_contents());
+  ASSERT_EQ(base::Value(), content::EvalJs(web_contents(), "setupPosition()"));
+  media_session::MediaPosition position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  observer.WaitForExpectedPosition(position);
+  LoadData();
+
+  // Check that the main frame has media data.
+  EXPECT_TRUE(page_content().main_frame_data().has_media_data());
+  const auto& media_data = page_content().main_frame_data().media_data();
+  EXPECT_EQ(media_data.media_data_type(),
+            optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_VIDEO);
+  EXPECT_EQ(media_data.duration_milliseconds(), 10000);
+  EXPECT_TRUE(media_data.is_playing());
+
+  // The metadata title is default to the page title if not set.
+  EXPECT_EQ(media_data.title(), "Test page showing a video");
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
+                       UpdateVideoInMainFrame) {
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(web_contents()));
+  LoadPage(https_server()->GetURL("/media_data/video.html"));
+
+  // Start the media playback to ensure the media player is added to the media
+  // session and then stop playing.
+  WaitForMediaPlaybackStart(web_contents());
+  WaitForMediaPlaybackStop(web_contents());
+
+  // Update the video with media session API calls.
+  ASSERT_EQ(base::Value(), content::EvalJs(web_contents(), "setupMetadata()"));
+  observer.WaitForExpectedMetadata(GetExpectedMetadata());
+  ASSERT_EQ(base::Value(), content::EvalJs(web_contents(), "setupPosition()"));
+  media_session::MediaPosition position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  observer.WaitForExpectedPosition(position);
+  LoadData();
+
+  // Check that the main frame has media data with updated fields.
+  EXPECT_TRUE(page_content().main_frame_data().has_media_data());
+  const auto& media_data = page_content().main_frame_data().media_data();
+  EXPECT_EQ(media_data.media_data_type(),
+            optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_VIDEO);
+  EXPECT_EQ(media_data.duration_milliseconds(), 10000);
+  EXPECT_FALSE(media_data.is_playing());
+  EXPECT_EQ(media_data.title(), "test title");
+  EXPECT_EQ(media_data.artist(), "test artist");
+  EXPECT_EQ(media_data.album(), "test album");
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestMediaData,
+                       VideoInIframe) {
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(web_contents()));
+  LoadPage(https_server()->GetURL("/media_data/video_in_iframe.html"), nullptr);
+  WaitForMediaPlaybackStart(web_contents());
+  ASSERT_EQ(base::Value(), content::EvalJs(web_contents(), "setupPosition()"));
+  media_session::MediaPosition position(
+      /*playback_rate=*/1.0, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  observer.WaitForExpectedPosition(position);
+  LoadData();
+
+  EXPECT_FALSE(page_content().main_frame_data().has_media_data());
+
+  // Check that the iframe has media data.
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  const auto& iframe = page_content().root_node().children_nodes()[0];
+  EXPECT_EQ(iframe.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& iframe_data = iframe.content_attributes().iframe_data();
+  EXPECT_TRUE(iframe_data.frame_data().has_media_data());
+  const auto& media_data = iframe_data.frame_data().media_data();
+
+  EXPECT_EQ(media_data.media_data_type(),
+            optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_VIDEO);
+  EXPECT_EQ(media_data.duration_milliseconds(), 10000);
+  EXPECT_TRUE(media_data.is_playing());
 }
 
 }  // namespace
