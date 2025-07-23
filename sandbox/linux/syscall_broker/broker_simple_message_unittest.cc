@@ -10,7 +10,9 @@
 #include <algorithm>
 #include <array>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -83,9 +85,9 @@ class BrokerSimpleMessageTestHelper {
 
   static void SendMsg(int write_fd, BrokerSimpleMessage* message, int fd);
 
-  static void RecvMsg(BrokerChannel::EndPoint* ipc_reader,
-                      ExpectedResultValue** expected_values,
-                      int expected_values_length);
+  static void RecvMsg(
+      BrokerChannel::EndPoint* ipc_reader,
+      base::span<ExpectedResultValue*> expected_values);
 
   static void RecvMsgAndReply(BrokerChannel::EndPoint* ipc_reader,
                               ExpectedResultValue** expected_values,
@@ -168,8 +170,7 @@ void BrokerSimpleMessageTestHelper::SendMsg(int write_fd,
 // static
 void BrokerSimpleMessageTestHelper::RecvMsg(
     BrokerChannel::EndPoint* ipc_reader,
-    ExpectedResultValue** expected_values,
-    int expected_values_length) {
+    base::span<ExpectedResultValue*> expected_values) {
   base::ScopedFD return_fd;
   BrokerSimpleMessage message;
   ssize_t len = message.RecvMsgWithFlags(ipc_reader->get(), 0, &return_fd);
@@ -177,8 +178,7 @@ void BrokerSimpleMessageTestHelper::RecvMsg(
   EXPECT_LE(0, len) << "RecvMsgWithFlags response invalid";
 
   size_t expected_message_size = 0;
-  for (int i = 0; i < expected_values_length; i++) {
-    ExpectedResultValue* expected_result = UNSAFE_TODO(expected_values[i]);
+  for (ExpectedResultValue* expected_result : expected_values) {
     EXPECT_TRUE(expected_result->NextMessagePieceMatches(&message));
     expected_message_size += expected_result->Size();
   }
@@ -413,7 +413,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
 
     PostWaitableEventToThread(&message_thread, &wait_event);
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, nullptr, 0);
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, {});
 
     wait_event.Wait();
   }
@@ -436,8 +436,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultDataValue data1_value(data1, strlen(data1) + 1);
     ExpectedResultValue* expected_results[] = {&data1_value};
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           std::size(expected_results));
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results);
 
     wait_event.Wait();
   }
@@ -460,8 +459,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultIntValue int1_value(int1);
     ExpectedResultValue* expected_results[] = {&int1_value};
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           std::size(expected_results));
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results);
 
     wait_event.Wait();
   }
@@ -488,8 +486,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultIntValue int1_value(int1);
     ExpectedResultValue* expected_results[] = {&data1_value, &int1_value};
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           std::size(expected_results));
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results);
 
     wait_event.Wait();
   }
@@ -521,8 +518,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultValue* expected_results[] = {&int1_value, &data1_value,
                                                &data2_value, &int2_value};
 
-    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           std::size(expected_results));
+    BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results);
 
     wait_event.Wait();
   }

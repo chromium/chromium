@@ -30,6 +30,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -612,9 +613,9 @@ SANDBOX_TEST_ALLOW_NOISE(BrokerProcess, MAYBE_RecvMsgDescriptorLeak) {
   LOG(INFO) << "Ensure Android LOG socket is allocated";
 
   // Find the four lowest available file descriptors.
-  int available_fds[4];
-  SANDBOX_ASSERT(0 == pipe(available_fds));
-  SANDBOX_ASSERT(0 == pipe(available_fds + 2));
+  std::array<int, 4> available_fds;
+  SANDBOX_ASSERT(0 == pipe(available_fds.data()));
+  SANDBOX_ASSERT(0 == pipe(base::span(available_fds).subspan(2u).data()));
 
   // Save one FD to send to the broker later, and close the others.
   base::ScopedFD message_fd(available_fds[0]);
@@ -627,8 +628,10 @@ SANDBOX_TEST_ALLOW_NOISE(BrokerProcess, MAYBE_RecvMsgDescriptorLeak) {
   // descriptors a process can have: it only limits the highest value that can
   // be assigned to newly-created descriptors allocated by the process.)
   const rlim_t fd_limit =
-      1 + *std::max_element(available_fds,
-                            available_fds + std::size(available_fds));
+      1 + *std::max_element(available_fds.data(),
+                            base::span<int>(available_fds)
+                                .subspan(std::size(available_fds))
+                                .data());
 
   struct rlimit rlim;
   SANDBOX_ASSERT(0 == getrlimit(RLIMIT_NOFILE, &rlim));

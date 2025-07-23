@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <string_view>
 #include <tuple>
 
 #include "base/compiler_specific.h"
@@ -26,16 +27,16 @@ namespace sandbox {
 namespace syscall_broker {
 
 namespace {
-const char kPathPart[] = "/i/am/path";
+const std::string_view kPathPart = "/i/am/path";
 
 void FillBufferWithPath(char* buf, size_t size, bool null_terminate) {
   SANDBOX_ASSERT_LE(size, static_cast<size_t>(PATH_MAX));
-  size_t str_len = strlen(kPathPart);
+  size_t str_len = strlen(kPathPart.data());
   size_t len_left_to_write = size;
   char* curr_buf_pos = buf;
   while (len_left_to_write > 0) {
     size_t bytes_to_write = std::min(str_len, len_left_to_write);
-    UNSAFE_TODO(memcpy(curr_buf_pos, kPathPart, bytes_to_write));
+    UNSAFE_TODO(memcpy(curr_buf_pos, kPathPart.data(), bytes_to_write));
     UNSAFE_TODO(curr_buf_pos += bytes_to_write);
     len_left_to_write -= bytes_to_write;
   }
@@ -51,7 +52,7 @@ void VerifyCorrectString(std::string str, size_t size) {
   for (char ch : str) {
     UNSAFE_TODO(SANDBOX_ASSERT(ch == kPathPart[curr_path_part_pos]));
     curr_path_part_pos++;
-    curr_path_part_pos %= strlen(kPathPart);
+    curr_path_part_pos %= strlen(kPathPart.data());
   }
 }
 
@@ -84,7 +85,7 @@ pid_t ForkWaitingChild(base::OnceCallback<void(int)>
 
 struct ReadTestConfig {
   size_t start_at = 0;
-  size_t total_size = strlen(kPathPart) + 1;
+  size_t total_size = strlen(kPathPart.data()) + 1;
   bool include_null_byte = true;
   bool last_page_inaccessible = false;
   RemoteProcessIOResult result = RemoteProcessIOResult::kSuccess;
@@ -203,7 +204,8 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, ReadChunkPlus1EndingOnePastPage) {
 
 SANDBOX_TEST(BrokerRemoteSyscallArgHandler, ReadChildExited) {
   void* addr = TestUtils::MapPagesOrDie(1);
-  FillBufferWithPath(static_cast<char*>(addr), strlen(kPathPart) + 1, true);
+  FillBufferWithPath(static_cast<char*>(addr), strlen(kPathPart.data()) + 1,
+                     true);
 
   base::ScopedFD parent_sync, child_sync;
   base::CreateSocketPair(&parent_sync, &child_sync);
@@ -306,7 +308,8 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WritePartiallyToInvalidAddress) {
 
 SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteChildExited) {
   char* addr = static_cast<char*>(TestUtils::MapPagesOrDie(1));
-  FillBufferWithPath(static_cast<char*>(addr), strlen(kPathPart) + 1, true);
+  FillBufferWithPath(static_cast<char*>(addr), strlen(kPathPart.data()) + 1,
+                     true);
 
   base::ScopedFD parent_sync, child_sync;
   base::CreateSocketPair(&parent_sync, &child_sync);
@@ -327,8 +330,9 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteChildExited) {
 
   std::string out_str;
   UNSAFE_TODO(SANDBOX_ASSERT_EQ(
-      WriteRemoteData(pid, reinterpret_cast<uintptr_t>(addr), strlen(kPathPart),
-                      base::span<char>(addr, strlen(kPathPart))),
+      WriteRemoteData(pid, reinterpret_cast<uintptr_t>(addr),
+                      strlen(kPathPart.data()),
+                      base::span<char>(addr, strlen(kPathPart.data()))),
       RemoteProcessIOResult::kRemoteExited));
 }
 
