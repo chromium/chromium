@@ -214,7 +214,10 @@ extern NSString* const kAccountsOnDevice;
 extern NSString* const kEmail;
 extern NSString* const kFullName;
 // Key used to save info for widgets when no account is signed-in.
-extern NSString* const kDefaultAccount;
+extern NSString* const kNoAccount;
+// Key used to save info for widgets when used with default account (the same
+// account used in the app).
+extern NSString* const kDefault;
 
 // Supported bundle IDs for opening incognito links in Chrome.
 extern NSString* const kYoutubeBundleID;

@@ -270,9 +270,6 @@ const char kContextsToOpen[] = "IOS.NumberOfContextsToOpen";
 // The App Store page for Google Chrome.
 NSString* const kChromeAppStoreURL = @"https://apps.apple.com/app/id535886823";
 
-// String passed in the URL context to request to open it in a sign-out state.
-NSString* const kNoAccountId = @"No account";
-
 // Enum for IOS.NumberOfContextsToOpen histogram.
 // Keep in sync with "ContextsToOpen" in tools/metrics/histograms/enums.xml.
 enum class ContextsToOpen {
@@ -917,7 +914,7 @@ void OnListFamilyMembersResponse(
 
       std::optional<std::string> profileName;
 
-      if ([context.gaiaID isEqualToString:kNoAccountId]) {
+      if ([context.gaiaID isEqualToString:app_group::kNoAccount]) {
         // Use the personal profile name if there is no GaiaID (this happens in
         // the sign-out scenario).
         profileName = GetApplicationContext()
@@ -1009,14 +1006,14 @@ void OnListFamilyMembersResponse(
       continue;
     }
 
-    if ([newGaiaID isEqualToString:kNoAccountId] && gaiaInApp) {
+    if ([newGaiaID isEqualToString:app_group::kNoAccount] && gaiaInApp) {
       return
           [[WidgetContext alloc] initWithContext:context
                                           gaiaID:newGaiaID
                                             type:AccountSwitchType::kSignOut];
     }
     if (![newGaiaID isEqualToString:gaiaInApp] &&
-        ![newGaiaID isEqualToString:kNoAccountId]) {
+        ![newGaiaID isEqualToString:app_group::kNoAccount]) {
       return [[WidgetContext alloc] initWithContext:context
                                              gaiaID:newGaiaID
                                                type:AccountSwitchType::kSignIn];

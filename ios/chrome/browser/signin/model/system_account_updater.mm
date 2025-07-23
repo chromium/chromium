@@ -199,7 +199,8 @@ void SystemAccountUpdater::UpdateLoadedAccounts() {
     NSMutableDictionary* updated_dates = [NSMutableDictionary dictionary];
 
     for (NSString* gaia in urls_info) {
-      if (accounts[gaia] || [gaia isEqualToString:app_group::kDefaultAccount]) {
+      if (accounts[gaia] || [gaia isEqualToString:app_group::kNoAccount] ||
+          [gaia isEqualToString:app_group::kDefault]) {
         updated_urls[gaia] = urls_info[gaia];
         updated_dates[gaia] = last_modification_dates_info[gaia];
       }

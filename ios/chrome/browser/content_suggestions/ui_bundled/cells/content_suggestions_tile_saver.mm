@@ -260,12 +260,17 @@ void WriteSavedMostVisited(
                                         ->GetPersonalProfileName();
 
   if (profileName == personalProfileName) {
-    // If we are in personal profile, data is saved also to "Default". This will
-    // be used to retrieve data for a widget with no signed-in account.
-    [suggested_items setObject:data forKey:app_group::kDefaultAccount];
+    // If we are in personal profile, data is saved also to "No account". This
+    // will be used to retrieve data for a widget with no signed-in account.
+    [suggested_items setObject:data forKey:app_group::kNoAccount];
     [last_modification_dates setObject:last_modification_date
-                                forKey:app_group::kDefaultAccount];
+                                forKey:app_group::kNoAccount];
   }
+
+  // Always update last modification date for "Default" scenario.
+  [suggested_items setObject:data forKey:app_group::kDefault];
+  [last_modification_dates setObject:last_modification_date
+                              forKey:app_group::kDefault];
 
   // Update stored info for all identities in the current profile.
   for (id<SystemIdentity> identity in account_manager_service

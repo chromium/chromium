@@ -113,7 +113,8 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItems) {
   // Add fake data about fakeIdentity1 to kSuggestedItemsForMultiprofile.
   NSMutableDictionary* fake_info = [NSMutableDictionary dictionary];
   [fake_info setObject:@"test_info" forKey:fake_identity.gaiaID];
-  [fake_info setObject:@"test_info" forKey:app_group::kDefaultAccount];
+  [fake_info setObject:@"test_info" forKey:app_group::kDefault];
+  [fake_info setObject:@"test_info" forKey:app_group::kNoAccount];
 
   [shared_defaults setObject:fake_info
                       forKey:app_group::kSuggestedItemsForMultiprofile];
@@ -135,7 +136,8 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItems) {
   {
     NSDictionary* items = [shared_defaults
         objectForKey:app_group::kSuggestedItemsForMultiprofile];
-    EXPECT_TRUE([[items allKeys] containsObject:app_group::kDefaultAccount]);
+    EXPECT_TRUE([[items allKeys] containsObject:app_group::kDefault]);
+    EXPECT_TRUE([[items allKeys] containsObject:app_group::kNoAccount]);
     EXPECT_FALSE([[items allKeys] containsObject:fake_identity.gaiaID]);
   }
 }
@@ -156,7 +158,8 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItemsLastModificationDate) {
   // Add fake data about fakeIdentity1 to kSuggestedItemsForMultiprofile.
   NSMutableDictionary* fake_info = [NSMutableDictionary dictionary];
   [fake_info setObject:@"test_info" forKey:fake_identity.gaiaID];
-  [fake_info setObject:@"test_info" forKey:app_group::kDefaultAccount];
+  [fake_info setObject:@"test_info" forKey:app_group::kDefault];
+  [fake_info setObject:@"test_info" forKey:app_group::kNoAccount];
 
   [shared_defaults setObject:fake_info
                       forKey:app_group::kSuggestedItemsForMultiprofile];
@@ -180,7 +183,8 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItemsLastModificationDate) {
     NSDictionary* items = [shared_defaults
         objectForKey:app_group::
                          kSuggestedItemsLastModificationDateForMultiprofile];
-    EXPECT_TRUE([[items allKeys] containsObject:app_group::kDefaultAccount]);
+    EXPECT_TRUE([[items allKeys] containsObject:app_group::kDefault]);
+    EXPECT_TRUE([[items allKeys] containsObject:app_group::kNoAccount]);
     EXPECT_FALSE([[items allKeys] containsObject:fake_identity.gaiaID]);
   }
 }
