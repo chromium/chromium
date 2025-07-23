@@ -189,13 +189,6 @@ class ControlledFrameWebRequest {
     }
     return new WebRequestInterceptor(this.#webRequest, options);
   }
-
-  interceptorBehaviorChanged() {
-    return new $Promise.self((resolve) => {
-      // TODO(crbug.com/421986167): handlerBehaviorChanged is undefined.
-      this.#webRequest.handlerBehaviorChanged(resolve);
-    });
-  }
 }
 
 function createEventInfo(webRequestEventName) {
