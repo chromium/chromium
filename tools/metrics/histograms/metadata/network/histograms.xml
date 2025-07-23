@@ -5575,10 +5575,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of IP Protection auth tokens involved in a specific event
     for {ProxyLayer}. The histogram indicates that {Event}. Allows calculation
-    of tokens lost to other causes (e.g. shutdown) by comparing Requested vs.
+    of tokens lost to other causes (e.g. shutdown) by comparing Issued vs.
     (Spent + Expired). Recorded when tokens are successfully fetched, spent, or
     garbage-collected. Expected counts are typically 1 for Spent, and
-    potentially higher for Requested/Expired (up to batch size or cache size).
+    potentially higher for Issued/Expired (up to batch size or cache size).
   </summary>
   <token key="ProxyLayer">
     <variant name="ProxyA"/>
@@ -5586,8 +5586,7 @@ chromium-metrics-reviews@google.com.
   </token>
   <token key="Event">
     <variant name="Expired" summary="Token removed from cache due to expiry."/>
-    <variant name="Requested"
-        summary="Tokens successfully fetched and cached."/>
+    <variant name="Issued" summary="Tokens successfully fetched and cached."/>
     <variant name="Spent" summary="Token used for a proxy connection."/>
   </token>
 </histogram>
