@@ -19,3 +19,20 @@ h1 {
   font-size: 1.5rem;
   margin-bottom: 0px;
 }
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1;
+  overflow: hidden;
+}

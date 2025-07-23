@@ -21,6 +21,7 @@
     background: var(--tabs-background-color);
     border-right: 1px solid var(--tabs-border-color);
     transition: min-width 0.2s ease-in-out;
+    overflow-y: auto;
   }
 
   :host([collapsed]) #sidebar-container {
@@ -57,27 +58,50 @@
     display: none;
   }
 
-  #tablist ::slotted(.group-header) {
+  #tablist ::slotted(.settings-category-header)::before,
+  #tablist ::slotted(.setting-header)::before {
+    content: '';
+    display: inline-block;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    background-color: var(--tabs-unselected-text-color);
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5v10z"></path></svg>');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  #tablist ::slotted(.settings-category-header:not([collapsed]))::before,
+  #tablist ::slotted(.setting-header:not([collapsed]))::before {
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"></path></svg>');
+  }
+
+  #tablist ::slotted(.settings-category-header) {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
     font-weight: 900;
     text-transform: uppercase;
     color: var(--cr-primary-text-color);
-    padding: 16px 24px 8px 24px;
-    pointer-events: none;
+    padding: 16px 24px 8px;
   }
 
-  #tablist ::slotted(.sub-group-header) {
+  #tablist ::slotted(.setting-header) {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
     font-weight: 700;
     color: var(--cr-primary-text-color);
     padding: 12px 24px 4px 32px;
-    pointer-events: none;
   }
 
   #tablist ::slotted(:not([role='heading'])) {
-    padding: 0 24px 0 32px;
+    padding: 0 24px 0 56px;
     height: 32px;
     display: flex;
     align-items: center;
-    border-radius: 0 16px 16px 0;
     border-inline-start: 4px solid transparent;
   }
 
@@ -97,14 +121,21 @@
     border-inline-start-color: var(--cr-active-text-color);
   }
 
+  #tablist ::slotted(.hidden-by-group) {
+    display: none;
+  }
+
   #tablist:focus {
     outline: none;
   }
 
   #tabpanels {
+    box-shadow: none;
+    display: inline-block;
     flex-grow: 1;
     overflow: auto;
-    padding: 12px 24px;
+    vertical-align: top;
+    padding: 4px 9px 4px 10px;
   }
 
   #tabpanels ::slotted(*) {
@@ -113,9 +144,9 @@
 
   #tabpanels ::slotted([selected]) {
     display: block;
+    padding: 12px 24px;
   }
 </style>
-
 <div id="sidebar-container">
   <button id="sidebar-visibility-button" aria-label="Toggle Sidebar Visibility">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

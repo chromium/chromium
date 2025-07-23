@@ -115,6 +115,91 @@ suite('SidebarToggleTest', function() {
   });
 });
 
+// Test suite for Sidebar behavior within the live InternalsPage.
+suite('PrivacySandboxInternalsFrameListTest', function() {
+  let page: InternalsPage;
+  let shadowRoot: ShadowRoot;
+  let browserProxy: TestPrivacySandboxInternalsBrowserProxy;
+
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    browserProxy.testHandler.setPrefs([]);
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
+    Router.resetInstanceForTesting();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('internals-page');
+    document.body.appendChild(page);
+    shadowRoot = page.shadowRoot!;
+    await waitForElement(shadowRoot, '[data-page-name="cookies"]');
+    await microtasksFinished();
+  });
+
+  test('SettingsCategoryHeaderCollapsesAndExpandsOnClick', async () => {
+    const prefsHeader = shadowRoot.querySelector<HTMLElement>(
+        'div[role="heading"].settings-category-header');
+    assertTrue(!!prefsHeader, 'The "Prefs" header should exist.');
+
+    assertFalse(
+        prefsHeader.hasAttribute('collapsed'),
+        'Prefs header should be expanded initially.');
+
+    prefsHeader.click();
+    await microtasksFinished();
+    assertTrue(
+        prefsHeader.hasAttribute('collapsed'),
+        'Prefs header should collapse after click.');
+  });
+
+  test('clickingGroupHeaderTogglesCollapseAndHidesSubGroup', async () => {
+    const groupHeaders = shadowRoot.querySelectorAll<HTMLElement>(
+        'div[role="heading"].settings-category-header');
+    assertEquals(2, groupHeaders.length, 'Should find two main group headers');
+    const contentSettingsHeader = groupHeaders[1]!;
+    const subGroupHeader = shadowRoot.querySelector<HTMLElement>(
+        'div[role="heading"].setting-header');
+    assertTrue(!!subGroupHeader, 'Sub-group header should exist.');
+
+    assertFalse(
+        contentSettingsHeader.hasAttribute('collapsed'),
+        'Content Settings header should be expanded by default.');
+    assertFalse(
+        subGroupHeader.hasAttribute('collapsed'),
+        'Sub-group header should be expanded by default.');
+
+    assertTrue(
+        !!subGroupHeader.offsetParent,
+        'Sub-group should be rendered initially.');
+
+    contentSettingsHeader.click();
+    await microtasksFinished();
+
+    assertTrue(
+        contentSettingsHeader.hasAttribute('collapsed'),
+        'Content Settings header should collapse after click.');
+    assertEquals(
+        null, subGroupHeader.offsetParent,
+        'Sub-group should become hidden when parent collapses.');
+
+    contentSettingsHeader.click();
+    await microtasksFinished();
+
+    assertFalse(
+        contentSettingsHeader.hasAttribute('collapsed'),
+        'Content Settings header should re-expand.');
+    assertTrue(
+        !!subGroupHeader.offsetParent, 'Sub-group should be visible again.');
+    assertFalse(
+        subGroupHeader.hasAttribute('collapsed'),
+        'Sub-group header should have retained its expanded state.');
+
+    subGroupHeader.click();
+    await microtasksFinished();
+    assertTrue(
+        subGroupHeader.hasAttribute('collapsed'),
+        'Sub-group header should collapse after its own click.');
+  });
+});
+
 // Test suite for routing within the Privacy Sandbox Internals page.
 suite('PrivacySandboxInternalsRoutingTest', function() {
   let page: InternalsPage;
@@ -145,8 +230,13 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('defaultsToFirstTabOnLoad', async function() {
+    const allTabs =
+        Array.from(shadowRoot.querySelectorAll<HTMLElement>('[slot="tab"]'));
+    const firstSelectableTab =
+        allTabs.find((tab) => tab.getAttribute('role') !== 'heading');
+    const expectedIndex = allTabs.indexOf(firstSelectableTab!).toString();
     await waitForCondition(
-        () => tabContainer.getAttribute('selected-index') === '0');
+        () => tabContainer.getAttribute('selected-index') === expectedIndex);
     const params = new URLSearchParams(window.location.search);
     assertEquals(Page.TRACKING_PROTECTION, params.get('page'));
   });
@@ -191,8 +281,16 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
     shadowRoot = page.shadowRoot!;
     tabContainer = await waitForElement(shadowRoot, '#ps-page');
 
+    const allTabs =
+        Array.from(shadowRoot.querySelectorAll<HTMLElement>('[slot="tab"]'));
+    const firstSelectableTab =
+        allTabs.find((tab) => tab.getAttribute('role') !== 'heading');
+
+    const expectedIndex = allTabs.indexOf(firstSelectableTab!).toString();
+
     await waitForCondition(
-        () => tabContainer.getAttribute('selected-index') === '0');
+        () => tabContainer.getAttribute('selected-index') === expectedIndex);
+
     const params = new URLSearchParams(window.location.search);
     assertEquals(
         Page.TRACKING_PROTECTION, params.get('page'),
@@ -200,8 +298,15 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('defaultsToFirstTabWhenNoPageInUrl', async function() {
+    const allTabs =
+        Array.from(shadowRoot.querySelectorAll<HTMLElement>('[slot="tab"]'));
+    const firstSelectableTab =
+        allTabs.find((tab) => tab.getAttribute('role') !== 'heading');
+
+    const expectedIndex = allTabs.indexOf(firstSelectableTab!).toString();
+
     await waitForCondition(
-        () => tabContainer.getAttribute('selected-index') === '0');
+        () => tabContainer.getAttribute('selected-index') === expectedIndex);
     const params = new URLSearchParams(window.location.search);
     assertEquals(
         Page.TRACKING_PROTECTION, params.get('page'),

@@ -12,6 +12,7 @@ import './privacy_sandbox_internals.mojom-webui.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
+import {contentSettingGroups} from './content_settings_groups.js';
 import {ContentSettingsType} from './content_settings_types.mojom-webui.js';
 import type {CrFrameListElement} from './cr_frame_list.js';
 import {getTemplate} from './internals_page.html.js';
@@ -143,21 +144,43 @@ export class InternalsPage extends CustomElement implements RouteObserver {
 
     const allTabsInDom =
         Array.from(frameList.querySelectorAll<HTMLElement>('[slot="tab"]'));
-    const index = allTabsInDom.findIndex(
+    let index = allTabsInDom.findIndex(
         (tab: HTMLElement) => tab.dataset['pageName'] === pageName);
 
+    // If no direct match, fall back to the pre-selected tab.
+    if (index === -1) {
+      index = allTabsInDom.findIndex(
+          (tab: HTMLElement) => tab.hasAttribute('selected'));
+    }
+
+    // If a match is found, update the UI. Otherwise, do nothing.
     if (index !== -1) {
       frameList.setAttribute('selected-index', index.toString());
-    } else {
-      frameList.setAttribute('selected-index', '0');
     }
   }
 
   // Create the DOM elements needed for the pref pages
   createLayoutForPrefPages() {
+    const headerTab = document.createElement('div');
+    headerTab.innerText = 'Prefs';
+    headerTab.className = 'settings-category-header';
+    headerTab.setAttribute('role', 'heading');
+    headerTab.setAttribute('slot', 'tab');
+    this.tabBox.appendChild(headerTab);
+
+    const headerPanel = document.createElement('div');
+    headerPanel.setAttribute('slot', 'panel');
+    this.tabBox.appendChild(headerPanel);
+
     prefPagesToCreate.forEach((pageToCreate) => {
       const prefPage = document.createElement('pref-page');
       prefPage.pageConfig = pageToCreate;
+
+      // The specific pref-page instance to be the default.
+      if (pageToCreate.id === 'tracking-protection') {
+        prefPage.isDefault = true;
+      }
+
       this.tabBox.append(prefPage);
     });
   }
@@ -192,42 +215,80 @@ export class InternalsPage extends CustomElement implements RouteObserver {
   async load() {
     this.createLayoutForPrefPages();
     this.loadAndDisplayPrefs();
-    const csPanelContainers = new Map<string, HTMLElement>();
+    const csPanels = new Map<ContentSettingsType, HTMLElement>();
     const handler = this.browserProxy_.handler;
     const shouldShowTpcdMetadataGrants =
         this.browserProxy_.shouldShowTpcdMetadataGrants();
 
-    for (let i = ContentSettingsType.MIN_VALUE;
-         i <= ContentSettingsType.MAX_VALUE; i++) {
+    const addHeaderToTabBox = (name: string, className: string) => {
+      const headerTab = document.createElement('div');
+      headerTab.innerText = name;
+      headerTab.className = className;
+      headerTab.setAttribute('role', 'heading');
+      headerTab.setAttribute('slot', 'tab');
+      this.tabBox.appendChild(headerTab);
+
+      const headerPanel = document.createElement('div');
+      headerPanel.setAttribute('slot', 'panel');
+      this.tabBox.appendChild(headerPanel);
+    };
+
+    const addContentSetting = (setting: ContentSettingsType) => {
       // Controls the visibility of the TPCD_METADATA_GRANTS tab.
-      if (ContentSettingsType[i] === 'TPCD_METADATA_GRANTS' &&
+      if (setting === ContentSettingsType.TPCD_METADATA_GRANTS &&
           !shouldShowTpcdMetadataGrants) {
-        continue;
+        return;
+      }
+      if (setting === ContentSettingsType.DEFAULT) {
+        return;
       }
       const tab = document.createElement('div');
-      tab.innerText = ContentSettingsType[i];
+      tab.innerText = ContentSettingsType[setting];
       tab.setAttribute('slot', 'tab');
-      tab.dataset['pageName'] = ContentSettingsType[i].toLowerCase();
+      tab.dataset['pageName'] = ContentSettingsType[setting].toLowerCase();
       this.tabBox.appendChild(tab);
 
       const panel = document.createElement('div');
       panel.setAttribute('slot', 'panel');
-      panel.setAttribute('title', ContentSettingsType[i]);
+      panel.setAttribute('title', ContentSettingsType[setting]);
+
       const panelTitle = document.createElement('h2');
-      panelTitle.innerText = ContentSettingsType[i];
+      panelTitle.innerText = ContentSettingsType[setting];
+      panel.appendChild(panelTitle);
+
       const contentSettingsContainer = document.createElement('div');
       contentSettingsContainer.classList.add('content-settings');
-      panel.appendChild(panelTitle);
       panel.appendChild(contentSettingsContainer);
       this.tabBox.appendChild(panel);
 
-      csPanelContainers.set(ContentSettingsType[i], contentSettingsContainer);
-    }
+      csPanels.set(setting, contentSettingsContainer);
+    };
 
+    addHeaderToTabBox('Content Settings', 'settings-category-header');
+
+    const otherSettings = new Set<ContentSettingsType>();
     for (let i = ContentSettingsType.MIN_VALUE;
          i <= ContentSettingsType.MAX_VALUE; i++) {
+      if (i !== ContentSettingsType.DEFAULT) {
+        otherSettings.add(i);
+      }
+    }
+
+    contentSettingGroups.forEach(group => {
+      addHeaderToTabBox(group.name, 'setting-header');
+      group.settings.forEach(setting => {
+        addContentSetting(setting);
+        otherSettings.delete(setting);
+      });
+    });
+
+    if (otherSettings.size > 0) {
+      otherSettings.forEach(setting => addContentSetting(setting));
+    }
+
+    for (const [setting, panel] of csPanels.entries()) {
       let mojoResponse;
-      if (i === ContentSettingsType.TPCD_METADATA_GRANTS) {
+      if (setting === ContentSettingsType.TPCD_METADATA_GRANTS) {
         // Prevents the TPCD Metadata Grants tab from loading and rendering if
         // its flag is disabled.
         if (!shouldShowTpcdMetadataGrants) {
@@ -236,10 +297,9 @@ export class InternalsPage extends CustomElement implements RouteObserver {
         // This one is special and can't be read through readContentSettings().
         mojoResponse = await handler.getTpcdMetadataGrants();
       } else {
-        mojoResponse = await handler.readContentSettings(i);
+        mojoResponse = await handler.readContentSettings(setting);
       }
       mojoResponse.contentSettings.forEach((cs: any) => {
-        const panel = csPanelContainers.get(ContentSettingsType[i])!;
         const item = document.createElement('content-setting-pattern-source');
         panel.appendChild(item);
         item.configure(handler, cs);
