@@ -205,7 +205,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                 accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   NSArray<UIColor*>* colors = @[
     [UIColor colorNamed:kTextSecondaryColor],
-    [UIColor colorNamed:kUpdatedTertiaryBackgroundColor]
+    [UIColor colorNamed:kTertiaryBackgroundColor]
   ];
 
   UIImage* image = SymbolWithPalette(

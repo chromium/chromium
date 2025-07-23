@@ -217,8 +217,7 @@ const CGFloat kLeadingPadding = 61;
   if (!highlighted) {
     UIBackgroundConfiguration* backgroundConfig =
         [UIBackgroundConfiguration clearConfiguration];
-    backgroundConfig.backgroundColor =
-        [UIColor colorNamed:kTertiaryBackgroundColor];
+    backgroundConfig.backgroundColor = [UIColor colorNamed:kGrey100Color];
     configuration.background = backgroundConfig;
   }
 

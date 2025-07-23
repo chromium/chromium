@@ -379,7 +379,7 @@ CGFloat const kAvatarImageDimension = 30.0;
   CHECK(innerView);
   [mainView addSubview:innerView];
 
-  mainView.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
+  mainView.backgroundColor = [UIColor colorNamed:kGrey100Color];
   mainView.layer.cornerRadius = kMainViewCornerRadius;
 
   innerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -400,8 +400,7 @@ CGFloat const kAvatarImageDimension = 30.0;
 
 - (UIStackView*)createUnderTitleViewWithMIM {
   UIView* mainView = [self configureMainView];
-  mainView.backgroundColor =
-      [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+  mainView.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
   mainView.layer.cornerRadius = kMIMViewCornerRadius;
 
   _accountTableView = [self createSelectedAccountTableView];

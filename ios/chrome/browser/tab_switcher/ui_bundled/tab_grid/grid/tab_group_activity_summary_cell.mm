@@ -34,7 +34,7 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
+    self.backgroundColor = [UIColor colorNamed:kGrey100Color];
     self.layer.cornerRadius = kCornerRadius;
 
     UIView* contentView = self.contentView;

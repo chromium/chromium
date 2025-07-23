@@ -341,7 +341,7 @@ bool TooNarrowForBanner(UIView* view) {
     switch (incomingButton.state) {
       case UIControlStateDisabled: {
         updatedConfig.background.backgroundColor =
-            [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+            [UIColor colorNamed:kTertiaryBackgroundColor];
         updatedConfig.baseForegroundColor =
             [UIColor colorNamed:kTextTertiaryColor];
         break;

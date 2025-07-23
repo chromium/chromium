@@ -2619,7 +2619,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                      cellForRowAtIndexPath:indexPath];
   UIView* selectedBackgroundView = [[UIView alloc] init];
   selectedBackgroundView.backgroundColor =
-      [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+      [UIColor colorNamed:kTertiaryBackgroundColor];
   cell.selectedBackgroundView = selectedBackgroundView;
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
 

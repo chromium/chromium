@@ -314,8 +314,7 @@ constexpr CGFloat kIconSize = 16;
                   UIUserInterfaceStyleDark;
 
   self.view.backgroundColor =
-      darkMode ? [UIColor colorNamed:kTertiaryBackgroundColor]
-               : UIColor.clearColor;
+      darkMode ? [UIColor colorNamed:kGrey100Color] : UIColor.clearColor;
 
   if (darkMode && self.blurBackgroundView.superview) {
     // Remove blurred background in dark mode if it has been added.

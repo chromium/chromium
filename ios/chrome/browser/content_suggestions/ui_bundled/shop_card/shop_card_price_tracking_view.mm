@@ -209,7 +209,7 @@ const CGFloat kVerticalStackSpacing = 6.0f;
 - (void)addProductImageEmptyGray {
   _productAndFaviconContainer = [[UIView alloc] init];
   _productImage = [[UIImageView alloc] init];
-  _productImage.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
+  _productImage.backgroundColor = [UIColor colorNamed:kGrey100Color];
   _productImage.contentMode = UIViewContentModeScaleAspectFill;
   _productImage.translatesAutoresizingMaskIntoConstraints = NO;
   _productImage.layer.borderWidth = 0;

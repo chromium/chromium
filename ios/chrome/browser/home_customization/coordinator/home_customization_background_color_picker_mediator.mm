@@ -58,7 +58,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   // The first choice should be the "no background" option (default appearance
   // colors).
   defaultColorPalette.lightColor =
-      DynamicNamedColor(@"ntp_background_color", kTertiaryBackgroundColor);
+      DynamicNamedColor(@"ntp_background_color", kGrey100Color);
   defaultColorPalette.mediumColor =
       [UIColor colorNamed:@"fake_omnibox_solid_background_color"];
   defaultColorPalette.darkColor =

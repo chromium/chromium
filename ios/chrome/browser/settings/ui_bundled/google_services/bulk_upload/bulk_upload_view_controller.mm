@@ -164,7 +164,7 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
         [UIColor colorNamed:kSolidButtonTextColor];
   } else {
     buttonConfiguration.background.backgroundColor =
-        [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+        [UIColor colorNamed:kTertiaryBackgroundColor];
     buttonConfiguration.baseForegroundColor =
         [UIColor colorNamed:kDisabledTintColor];
   }

@@ -408,7 +408,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
           : [UIColor colorNamed:kBackgroundColor];
 
   _entrypointContainer.backgroundColor =
-      _entrypointTapped ? [UIColor colorNamed:kTertiaryBackgroundColor]
+      _entrypointTapped ? [UIColor colorNamed:kGrey100Color]
                         : untappedEntrypointColor;
 
   // Separator visibility.

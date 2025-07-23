@@ -157,8 +157,7 @@ const CGFloat kShareSymbolPointSize = 12.5;
     return;
   }
   if (isDarkMode) {
-    _nonAvatarContainer.backgroundColor =
-        [UIColor colorNamed:kTertiaryBackgroundColor];
+    _nonAvatarContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
     _peopleWaitingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     _plusXLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   } else {

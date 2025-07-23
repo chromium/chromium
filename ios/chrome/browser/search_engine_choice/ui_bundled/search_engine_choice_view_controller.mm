@@ -117,7 +117,7 @@ void EnableSetAsDefaultButton(UIButton* button, BOOL is_enabled) {
     button.accessibilityHint = nil;
   } else {
     button_configuration.background.backgroundColor =
-        [UIColor colorNamed:kTertiaryBackgroundColor];
+        [UIColor colorNamed:kGrey100Color];
     button_configuration.baseForegroundColor =
         [UIColor colorNamed:kDisabledTintColor];
     button.accessibilityHint =

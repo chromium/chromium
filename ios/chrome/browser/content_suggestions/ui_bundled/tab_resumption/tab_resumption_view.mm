@@ -338,8 +338,7 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
     [containerView addSubview:salientView];
     AddSameConstraints(salientView, containerView);
   } else {
-    containerView.backgroundColor =
-        [UIColor colorNamed:kTertiaryBackgroundColor];
+    containerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
     containerSize = kImageEmptyContainerSize;
   }
 

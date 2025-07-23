@@ -40,7 +40,6 @@ extern NSString* const kBWGSeparatorColor;
 extern NSString* const kSolidButtonTextColor;
 extern NSString* const kTableViewRowHighlightColor;
 extern NSString* const kTertiaryBackgroundColor;
-extern NSString* const kUpdatedTertiaryBackgroundColor;
 extern NSString* const kTextPrimaryColor;
 // Primary text color when the background color is inverted.
 extern NSString* const kInvertedTextPrimaryColor;
