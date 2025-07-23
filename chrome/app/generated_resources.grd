@@ -8502,8 +8502,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT" desc="The placeholder for the input in the compose box.">
         Ask anything
       </message>
-      <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL" desc="The accessibility label for the cancel button on the compose box.">
+      <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL" desc="The accessibility label for the cancel button on the compose box when there is no input.">
         Dismiss
+      </message>
+      <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL_INPUT" desc="The accessibility label for the cancel button on the compose box when there is input." translateable="false">
+        Dismiss entry
       </message>
       <message name="IDS_NTP_COMPOSE_IMAGE_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the image upload button on the compose box.">
         Upload an image

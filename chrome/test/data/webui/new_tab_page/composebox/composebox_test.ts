@@ -495,4 +495,20 @@ suite('NewTabPageComposeboxTest', () => {
     // Assert call occurs.
     assertEquals(handler.getCallCount('submitQuery'), 1);
   });
+
+  test('clear button title changes with input', async () => {
+    createComposeboxElement();
+    assertEquals(
+        composeboxElement.$.cancelIcon.getAttribute('title'),
+        loadTimeData.getString('composeboxCancelButtonTitle'));
+    // Arrange.
+    composeboxElement.$.input.value = 'Test';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(
+        composeboxElement.$.cancelIcon.getAttribute('title'),
+        loadTimeData.getString('composeboxCancelButtonTitleInput'));
+  });
 });

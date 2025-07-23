@@ -27,6 +27,7 @@ import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
 export interface ComposeboxElement {
   $: {
+    cancelIcon: CrIconButtonElement,
     fileInput: HTMLInputElement,
     fileUploadButton: CrIconButtonElement,
     carousel: ComposeboxFileCarouselElement,
@@ -67,6 +68,7 @@ export class ComposeboxElement extends I18nMixinLit
     return {
       attachmentFileTypes_: {type: String},
       files_: {type: Object},
+      input_: {type: String},
       imageFileTypes_: {type: String},
       inputsDisabled_: {
         reflect: true,
@@ -95,6 +97,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
+  protected accessor input_: string = '';
   protected accessor inputsDisabled_: boolean = false;
   protected accessor submitEnabled_: boolean = false;
   protected accessor submitting_: boolean = false;
@@ -194,6 +197,12 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.input.value = '';
   }
 
+  protected computeCancelButtonTitle_() {
+    return this.input_.trim().length > 0 || this.files_.size > 0 ?
+        this.i18n('composeboxCancelButtonTitleInput') :
+        this.i18n('composeboxCancelButtonTitle');
+  }
+
   protected onDeleteFile_(e: CustomEvent) {
     if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
       return;
@@ -202,6 +211,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.files_ = new Map([...this.files_.entries()].filter(
         ([uuid, _]) => uuid !== e.detail.uuid));
     this.pageHandler_.deleteFile(e.detail.uuid);
+    this.$.input.focus();
   }
 
   protected onDismissErrorButtonClick_() {
@@ -265,14 +275,22 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onCancelClick_() {
-    if (this.$.input.value.trim().length > 0) {
+    if (this.$.input.value.trim().length > 0 || this.files_.size > 0) {
       this.$.input.value = '';
       this.files_ = new Map();
       this.submitEnabled_ = false;
       this.pageHandler_.clearFiles();
+      this.$.input.focus();
     } else {
       this.closeComposebox_();
     }
+  }
+
+  // Sets the input property to compute the cancel button title without using
+  // "$." syntax  as this is not allowed in WillUpdate().
+  protected handleInput_(e: Event) {
+    const inputElement = e.target as HTMLInputElement;
+    this.input_ = inputElement.value;
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {

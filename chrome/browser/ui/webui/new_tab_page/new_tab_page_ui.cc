@@ -476,6 +476,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
       // Composebox.
       {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},
+      {"composeboxCancelButtonTitleInput",
+       IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL_INPUT},
       {"composeboxImageUploadButtonTitle",
        IDS_NTP_COMPOSE_IMAGE_UPLOAD_BUTTON_A11Y_LABEL},
       {"composeboxFileUploadButtonTitle",
