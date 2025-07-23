@@ -10,6 +10,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class FlexLayout;
 class ImageButton;
 class ImageView;
 class Label;
@@ -60,8 +61,6 @@ class PasswordChangeToast : public views::View {
   // `configuration`.
   void UpdateLayout(ToastOptions configuration);
 
-  gfx::Insets CalculateMargins();
-
   views::Throbber* throbber() { return throbber_; }
   views::ImageView* icon_view() { return icon_view_; }
   views::Label* label() { return label_; }
@@ -70,6 +69,9 @@ class PasswordChangeToast : public views::View {
 
  private:
   void UpdateConfiguration(ToastOptions configuration);
+
+  // Calculates interior margins based on currently visible child views.
+  gfx::Insets CalculateInteriorMargin();
 
   // views::View
   void OnThemeChanged() override;
@@ -80,6 +82,7 @@ class PasswordChangeToast : public views::View {
   std::optional<raw_ref<const gfx::VectorIcon>> icon_;
   base::OnceClosure action_button_closure_;
 
+  raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
   raw_ptr<views::Throbber> throbber_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;

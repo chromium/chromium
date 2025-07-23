@@ -183,10 +183,9 @@ std::unique_ptr<ui::DialogModel> CreatePasswordChangeFailedDialog(
 // toast widget. This frame view provides rounded corners and a custom
 // background color.
 std::unique_ptr<views::NonClientFrameView> CreateToastFrameView(
-    const gfx::Insets& content_margins,
     views::Widget* widget) {
-  auto frame_view =
-      std::make_unique<views::BubbleFrameView>(gfx::Insets(), content_margins);
+  auto frame_view = std::make_unique<views::BubbleFrameView>(
+      /*title_margins=*/gfx::Insets(), /*content_margins=*/gfx::Insets());
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::Arrow::NONE,
       views::BubbleBorder::Shadow::STANDARD_SHADOW);
@@ -365,8 +364,8 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
   toast_delegate->SetAccessibleWindowRole(ax::mojom::Role::kAlert);
   toast_delegate->SetAccessibleTitle(title);
   toast_delegate->SetShowCloseButton(false);
-  toast_delegate->SetNonClientFrameViewFactory(base::BindRepeating(
-      &CreateToastFrameView, toast_view_->CalculateMargins()));
+  toast_delegate->SetNonClientFrameViewFactory(
+      base::BindRepeating(&CreateToastFrameView));
   toast_delegate_ = std::move(toast_delegate);
 
   auto* tab_dialog_manager =
