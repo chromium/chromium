@@ -406,6 +406,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2542268842667970959">Oculta Comprobación de seguranza</translation>
 <translation id="2551153019974022505">Erro da conta</translation>
 <translation id="2559843230610279254">Grupo de pestanas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanas.</translation>
+<translation id="2573117291489209663">Feito</translation>
 <translation id="2577522251608256362">Barrio</translation>
 <translation id="2579713773888829241">Unidades compartidas</translation>
 <translation id="2583688836549072561">Grupo de pestanas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanas, actividade nova.</translation>
@@ -502,6 +503,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2962516096219646456">Consultar todos os datos da función de autocompletar</translation>
 <translation id="2969979262385602596">Erro ao iniciar sesión. Téntao de novo máis tarde.</translation>
 <translation id="297667759942911166">Colabora en grupos de pestanas</translation>
+<translation id="2987670534697681860">Verifica a túa identidade para acceder a todos os teus contrasinais neste dispositivo.</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989805286512600854">Abrir nunha pestana nova</translation>
 <translation id="2996291259634659425">Crear contrasinal</translation>
@@ -693,6 +695,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3850952228519377137">Ocultar Facer un seguimento dos prezos das túas pestanas</translation>
 <translation id="3851938967634752633">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="NUMBER_OF_ACCOUNTS" /> sitios web máis. Non se eliminarán as túas contas.</translation>
 <translation id="3853162385423733133">Sigue utilizando e gardando contrasinais na túa Conta de Google (<ph name="EMAIL" />)</translation>
+<translation id="3853873210696342070">Importar</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostrar o URL completo</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
@@ -925,6 +928,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4742407542027196863">Xestionar contrasinais…</translation>
 <translation id="4744428388659507035">Activa na configuración a opción Marcadores para poder acceder a eles en todos os teus dispositivos.</translation>
 <translation id="4746926359847517643">Sempre podes recuperalas no historial.</translation>
+<translation id="4749529195026091676">{count,plural, =1{{count} tarxeta importada}other{{count} tarxetas importadas}}</translation>
 <translation id="4751645464639803239">Nova pestana do modo de incógnito</translation>
 <translation id="4752348350801431746">Desactivar notificacións de Comprobación de seguranza…</translation>
 <translation id="4764612367328936189">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -989,6 +993,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="496392417432935267">Opción aberta noutro lugar</translation>
 <translation id="4970724460420203313">Usar Chrome coa túa conta xestionada axudarache a separar a navegación relacionada coa túa organización, como as pestanas, o historial e os contrasinais, da outra navegación que fagas</translation>
 <translation id="4971735654804503942">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos. Móstrache unha advertencia en caso de violacións da seguranza do contrasinal. Para utilizar este modo débenselle enviar a Google os datos de navegación.</translation>
+<translation id="4975364841282576329">{count,plural, =1{{count} elemento do historial dos perfís privado e de traballo de Safari}other{{count} elementos do historial dos perfís privado e de traballo de Safari}}</translation>
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="4985921635659180565">Unha vez programada, a eliminación dun ficheiro non se pode cancelar.</translation>
 <translation id="498624032394115435">Calquera persoa que teña a ligazón poderá editar todas as pestanas.</translation>
@@ -1071,6 +1076,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5295239312320826323">Queres quitar a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5311061401280561833">Permitiuse o acceso á cámara e ao micrófono</translation>
+<translation id="5315870524563628285">Non hai nada para importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318298563956633672">Xa estás facendo un seguimento deste produto.</translation>
@@ -1105,6 +1111,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5457082343331641453">Engade unha consulta á busca</translation>
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
 <translation id="5467163657366219870">Desactivar vista previa de Maps</translation>
+<translation id="5475793109165786685">{count,plural, =0{Non se importou ningún contrasinal}=1{{count} contrasinal importado}other{{count} contrasinais importados}}</translation>
 <translation id="5478327362747197944">Fai clic nunha data dunha páxina web para crear directamente eventos no calendario.</translation>
 <translation id="5482922178977937393">Queres recibir notificacións de noticias, deportes e máis temas en función dos teus intereses?</translation>
 <translation id="5483838506518938965">Xa terminaches</translation>
@@ -1171,6 +1178,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5680012489335339762">Queres cambiar de conta? Eliminaranse os datos da conta que non se gardasen.</translation>
 <translation id="5683499062697987550">Para gardar os contrasinais na túa Conta de Google e poder usalos, verifica a túa identidade.</translation>
 <translation id="5684761169742812828">Este contrasinal quedou exposto debido a unha violación da seguranza dos datos en Internet. Se non tes tempo agora mesmo para cambialo, Google recoméndache gardar esta advertencia para lembralo máis tarde.</translation>
+<translation id="5688739340234490129">{count,plural, =1{{count} tarxeta}other{{count} tarxetas}}</translation>
 <translation id="5694848685995373177">Gardouse en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Podes cambiar a vista predeterminada do sitio pola aplicable a ordenadores; tan só tes que acceder á configuración e, logo, seleccionar a opción Configuración de contido</translation>
 <translation id="5702108177581350218">Se compartes unha copia do teu nome de usuario e contrasinal, o membro da túa familia poderá completalos co xestor de contrasinais de Google.</translation>
@@ -1273,6 +1281,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6090760257419195752">Advertencias ignoradas</translation>
 <translation id="6096965253650248286">Rersultados atopados: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Tes a sesión iniciada como <ph name="USER_EMAIL" />. Abre a configuración.</translation>
+<translation id="6100676328067737810">Os teus datos gardaranse na túa Conta de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Recibe respostas relevantes en función do contido da páxina na que te atopes</translation>
 <translation id="6103540626693881831">Encriptación no dispositivo</translation>
 <translation id="611361228753138223">Sitios que visitaches ultimamente neste dispositivo</translation>
@@ -1470,6 +1479,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6729493062119577923">Actividade do grupo de pestanas compartido</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6746338529702829275">Revisa os datos da túa conta</translation>
+<translation id="6750456911389438250">{count,plural, =1{{count} elemento do historial importado}other{{count} elementos do historial importados}}</translation>
 <translation id="6755200887046212842">Xestionar contas</translation>
 <translation id="6755733078693946548">Acceder aos contrasinais e claves de acceso desde calquera aplicación</translation>
 <translation id="6759709389246683070">Se queres volver acceder a esta pestana máis tarde, mantena premida para definir un recordatorio</translation>
@@ -1548,6 +1558,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="707086654079606593">Xestionar enderezos…</translation>
 <translation id="7080806333218412752">Envía enderezos URL á función Navegación segura para comprobalos. Tamén envía unha pequena mostra da información do sistema, da actividade das extensións, das páxinas e das descargas para axudar a descubrir novas ameazas. Vincula temporalmente estes datos coa túa Conta de Google cando inicies sesión para protexerte nas aplicacións de Google.</translation>
 <translation id="7082853213442715471">Cando esta opción está activada, bloquéanse determinadas tecnoloxías web, o que pode provocar que algúns sitios web tarden máis en cargar ou non funcionen correctamente.</translation>
+<translation id="7091023926159231962">{count,plural, =1{Non se puido importar {count} contrasinal}other{Non se puideron importar {count} contrasinais}}</translation>
 <translation id="7095110968493193530">No xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Na barra de enderezos, toca o historial de prezos para consultar os cambios nos prezos ao longo do tempo</translation>
 <translation id="7101580180124131336">Verás contido da canle <ph name="CHANNEL_NAME" /> e sobre ela en Seguindo.</translation>
@@ -1740,7 +1751,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7887552845761062935">Toca dúas veces e mantén premido o botón para obter máis opcións</translation>
 <translation id="7889910613639381518">Acceso seguro e sinxelo co widget do xestor de contrasinais de Google.</translation>
 <translation id="7899199123054742721">Marcar todo como non lido</translation>
-<translation id="7908957400505794782">Toca <ph name="BEGIN_BOLD" />Feito<ph name="END_BOLD" /></translation>
 <translation id="7911190106180361398">A túa organización non che permite sincronizalo todo.</translation>
 <translation id="792357691529995513">Non se atopou ningún problema</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
@@ -1789,6 +1799,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="804427445359061970">Aquí atoparás as túas pestanas doutros dispositivos</translation>
 <translation id="8049767396294520796">Aplicación de navegador predeterminada</translation>
 <translation id="8058655154417507695">Ano de caducidade</translation>
+<translation id="8059312861912872211">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="8059533439631660104">Contrae a sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
 <translation id="8069168488983557089">Obtén puntos claves e estatísticas que che axudarán a entender calquera tema</translation>
@@ -1864,6 +1875,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8343993175958086504">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo.</translation>
 <translation id="8348530355586151720">Toca o menú de tres puntos</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
+<translation id="8361189290032177785">{count,plural, =1{{count} marcador importado}other{{count} marcadores importados}}</translation>
 <translation id="8363484128299778310">Recuperación temporal en caso de problema</translation>
 <translation id="8364563001733875155">Para cambiar o PIN, primeiro configura un contrasinal no teu dispositivo.</translation>
 <translation id="8366466717204352506">Ningunha comprobación realizada</translation>

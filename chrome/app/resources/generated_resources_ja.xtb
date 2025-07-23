@@ -529,6 +529,7 @@
 <translation id="1354045473509304750"><ph name="HOST" /> によるカメラの使用と移動を引き続き許可する</translation>
 <translation id="1354148503392558902">パスワードを変更しています...</translation>
 <translation id="1355088139103479645">すべてのデータを削除しますか？</translation>
+<translation id="1355088659320425659">履歴とタブ</translation>
 <translation id="1356376170199999104">許可 – <ph name="PERMISSION_DETAILS" />。マイク本体のスイッチをオンにしてください。</translation>
 <translation id="1356959069439783953">アクティブでないタブのデザインを刷新</translation>
 <translation id="1358741672408003399">スペルと文法</translation>
@@ -2703,6 +2704,7 @@
 <translation id="2855243985454069333">同期しているすべてのデバイスから履歴を削除します</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> でログイン</translation>
 <translation id="2856776373509145513">新しいコンテナの作成</translation>
+<translation id="2857047802954430547">ログインすると、すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用できます</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポートします</translation>
 <translation id="2860710618359053450">あごを右に動かす</translation>
 <translation id="2861301611394761800">システムの更新が完了しました。システムを再起動してください。</translation>
@@ -11363,6 +11365,7 @@
 <translation id="9003185744423389627">デバイス管理サーバーに接続できませんでした（ステータス「<ph name="STATUS_TEXT" />」、<ph name="FAILURE_TIME" />）</translation>
 <translation id="90033698482696970">利用可能な eSIM プロファイルを自動的にスキャンしますか？</translation>
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>
+<translation id="9005774573776346118">すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="9007688236643268728">もう一度ログイン(&amp;S)</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> の詳細ページの戻るボタン</translation>

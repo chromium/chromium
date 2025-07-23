@@ -531,6 +531,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1354045473509304750">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru a hýbať ňou</translation>
 <translation id="1354148503392558902">Mení sa heslo…</translation>
 <translation id="1355088139103479645">Chcete odstrániť všetky dáta?</translation>
+<translation id="1355088659320425659">História a karty</translation>
 <translation id="1356376170199999104">Povolený – <ph name="PERMISSION_DETAILS" />. Fyzickým prepínačom zapnite mikrofón.</translation>
 <translation id="1356959069439783953">Neaktívne karty majú nový vzhľad</translation>
 <translation id="1358741672408003399">Pravopis a gramatika</translation>
@@ -2711,6 +2712,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2855243985454069333">Odstráni históriu zo všetkých synchronizovaných zariadení</translation>
 <translation id="2855812646048059450">Prihlásiť sa pomocou služby <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Vytvorenie nového kontajnera</translation>
+<translation id="2857047802954430547">Prihláste sa a používajte heslá, záložky a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="2859741939921354763">Import hesiel do služby <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Posuňte čeľusť doprava</translation>
 <translation id="2861301611394761800">Aktualizácia systému je dokončená. Reštartujte systém.</translation>
@@ -11387,6 +11389,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9003185744423389627">Nepodarilo sa pripojiť k serveru na správu zariadení. Stav o <ph name="FAILURE_TIME" />: <ph name="STATUS_TEXT" />.</translation>
 <translation id="90033698482696970">Chcete automaticky vyhľadávať dostupné profily eSIM?</translation>
 <translation id="9003647077635673607">Povoliť na všetkých webových stránkach</translation>
+<translation id="9005774573776346118">Ak chcete mať heslá, záložky a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">Znova sa prihlásiť</translation>
 <translation id="9008201768610948239">Ignorovať</translation>
 <translation id="9008201858626224558">Tlačidlo, pomocou ktorého sa vrátite na informačnú stránku <ph name="SUBPAGE_TITLE" />.</translation>

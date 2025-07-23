@@ -532,6 +532,7 @@
 <translation id="1354045473509304750">Разрешить сайту <ph name="HOST" /> и дальше использовать вашу камеру и перемещать ее</translation>
 <translation id="1354148503392558902">Изменение пароля…</translation>
 <translation id="1355088139103479645">Удалить все данные?</translation>
+<translation id="1355088659320425659">История и вкладки</translation>
 <translation id="1356376170199999104">Разрешено (<ph name="PERMISSION_DETAILS" />). Включите микрофон, используя физический переключатель.</translation>
 <translation id="1356959069439783953">Неактивные вкладки выглядят по-новому</translation>
 <translation id="1358741672408003399">Правописание и грамматика</translation>
@@ -2711,6 +2712,7 @@
 <translation id="2855243985454069333">История будет удалена со всех синхронизируемых устройств</translation>
 <translation id="2855812646048059450">Войти с аккаунтом <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Создайте контейнер</translation>
+<translation id="2857047802954430547">Войдите, чтобы получить доступ к паролям, закладкам и многому другому на всех своих устройствах.</translation>
 <translation id="2859741939921354763">Импортируйте пароли в <ph name="BRAND" />.</translation>
 <translation id="2860710618359053450">Сместить губы вправо</translation>
 <translation id="2861301611394761800">Обновление системы завершено. Перезапустите компьютер.</translation>
@@ -11391,6 +11393,7 @@
 <translation id="9003185744423389627">При подключении к серверу Диспетчера устройств произошла ошибка "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />).</translation>
 <translation id="90033698482696970">Выполнить автоматический поиск доступных профилей eSIM?</translation>
 <translation id="9003647077635673607">Разрешить на всех сайтах</translation>
+<translation id="9005774573776346118">Чтобы синхронизировать пароли, закладки и другие данные на всех устройствах, войдите в аккаунт <ph name="EMAIL" />.</translation>
 <translation id="9007688236643268728">&amp;Войти ещё раз</translation>
 <translation id="9008201768610948239">Пропустить</translation>
 <translation id="9008201858626224558">Кнопка "Назад" на странице сведений <ph name="SUBPAGE_TITLE" /></translation>

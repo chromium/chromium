@@ -529,6 +529,7 @@
 <translation id="1354045473509304750"><ph name="HOST" />-д таны камерыг ашиглах болон хөдөлгөхийг үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="1354148503392558902">Нууц үгийг өөрчилж байна..</translation>
 <translation id="1355088139103479645">Бүх өгөгдлийг устгах уу?</translation>
+<translation id="1355088659320425659">Түүх, табууд</translation>
 <translation id="1356376170199999104">Зөвшөөрсөн – <ph name="PERMISSION_DETAILS" />. Биет сэлгүүрийг ашиглан микрофоныг асаана уу.</translation>
 <translation id="1356959069439783953">Идэвхгүй таб шинэ төрхтэй боллоо</translation>
 <translation id="1358741672408003399">Үг, үсэг болон дүрмийн алдаа</translation>
@@ -2718,6 +2719,7 @@
 <translation id="2855243985454069333">Синк хийсэн бүх төхөөрөмжөөс түүхийг устгана</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />-р нэвтрэх</translation>
 <translation id="2856776373509145513">Шинэ контейнер үүсгэх</translation>
+<translation id="2857047802954430547">Нууц үг, хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="2859741939921354763">Нууц үгнүүдийг <ph name="BRAND" /> руу импорт хийх</translation>
 <translation id="2860710618359053450">Эрүүгээ баруун тийш хөдөлгөх</translation>
 <translation id="2861301611394761800">Системийн шинэчлэлт дууслаа. Системийг дахин эхлүүлнэ үү.</translation>
@@ -11384,6 +11386,7 @@
 <translation id="9003185744423389627">'<ph name="STATUS_TEXT" />' төлөвтэй Төхөөрөмжийн менежментийн серверийн холболт <ph name="FAILURE_TIME" />-д амжилтгүй болсон</translation>
 <translation id="90033698482696970">Боломжтой eSIM профайлууд байгаа эсэхийг автоматаар скан хийх үү?</translation>
 <translation id="9003647077635673607">Бүх вебсайт дээр зөвшөөрөх</translation>
+<translation id="9005774573776346118">Нууц үг, хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="9007688236643268728">&amp;Дахин нэвтэрнэ үү</translation>
 <translation id="9008201768610948239">Алгас</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />-н дэлгэрэнгүй мэдээллийн хуудасны буцах товч</translation>

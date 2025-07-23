@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">Ինքնալրացման կարգավորումն ավարտելու համար վերագործարկեք Chrome-ը հիմա։ Ձեր ներդիրներն ավտոմատ նորից կբացվեն։</translation>
 <translation id="2091863218454846791">Ցուցադրված է սեղմ տեսքը</translation>
 <translation id="2093731487903423814">վերջին 15 րոպեն</translation>
+<translation id="2096577711562668473">Փոխե՞լ ինքնալրացման ծառայությունը</translation>
 <translation id="2100273922101894616">Ավտոմատ մուտք</translation>
 <translation id="2109384632594340939">պրոֆիլի նկար</translation>
 <translation id="2111511281910874386">Բացել էջը</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">Դիտարկումների պատմություն</translation>
 <translation id="2497852260688568942">Ձեր ադմինիստրատորն անջատել է համաժամացումը</translation>
 <translation id="250020030759455918">Դուք կտեսնեք ձեր <ph name="SITE_NAME" /> հաշվի մուտքի կարգավիճակը, այցելությունների պատմությունը և կայքի տվյալները Chrome-ում</translation>
+<translation id="2502798195266898572">Ընթերցման ռեժիմի ներքևի էկրանն ամբողջությամբ բացված է</translation>
 <translation id="2510106555128151389">«<ph name="WEBAPK_NAME" />» հավելվածը տեղադրվում է…</translation>
 <translation id="2512234228327349533">Որոնել գնման տարբերակներ</translation>
 <translation id="2513403576141822879"><ph name="BEGIN_LINK" />Համաժամացում և Google-ի ծառայություններ<ph name="END_LINK" /> բաժնում դուք կարող եք գտնել գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներ։</translation>
@@ -934,6 +936,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Ֆայլը ներբեռնվում է…}one{Ներբեռնվում է # ֆայլ…}other{Ներբեռնվում է # ֆայլ…}}</translation>
 <translation id="5210286577605176222">Անցնել նախորդ ներդիր</translation>
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
+<translation id="5212800876504289412">Վերագործարկեք Chrome-ը՝ այս փոփոխությունը կիրառելու համար։ Վերագործարկումից հետո ներդիրներն ավտոմատ կերպով նորից կբացվեն։</translation>
 <translation id="5215957675041756913">Տվյալների ու հաշվի կառավարում</translation>
 <translation id="5218324087477576825">Քարտի համարը, պարտադիր է</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> և այլն <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ դուք վերջին ժամանակահատվածում չեք այցելել այս կայք</translation>
@@ -976,7 +979,6 @@
 <translation id="5414836363063783498">Ստուգում…</translation>
 <translation id="5415871492522952905">Պատմությունը և ներդիրները հասանելի կլինեն ձեր բոլոր սարքերում, այնպես որ դուք կկարողանաք սկսել օգտվել դիտարկիչից մեկ սարքում և շարունակել մյուսում</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />-ին (<ph name="EMAIL" />) անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը</translation>
-<translation id="5423934151118863508">Ձեր հաճախակի այցելած էջերը կցուցադրվեն այստեղ</translation>
 <translation id="5424588387303617268">Ազատ տարածքը՝ <ph name="GIGABYTES" /> ԳԲ</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
 <translation id="5433691172869980887">Օգտանունը պատճենվեց</translation>
@@ -1062,6 +1064,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Ցույց տալ ծանուցումը}one{Ցույց տալ ծանուցումը}other{Ցույց տալ ծանուցումները}}</translation>
 <translation id="5814749351757353073">Բաժանորդագրվեք ձեր սիրած կայքերին</translation>
 <translation id="5823093032261493462">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը <ph name="DOWNLOAD_DOMAIN" /> կայքից</translation>
+<translation id="5825135637446025843">Chrome-ի վերագործարկումից հետո նոր ծառայության կողմից պահված տեղեկությունները կօգտագործվեն գաղտնաբառերի, մուտքի բանալիների, հասցեների, վճարման եղանակների և այլ տեղեկությունների ինքնալրացման համար։</translation>
 <translation id="5828921839638612740">Տվյալները կարող եք ջնջել Chrome-ի կարգավորումներում</translation>
 <translation id="5829586821381540080">Պահվեց «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="583281660410589416">Անհայտ</translation>
@@ -1178,6 +1181,7 @@
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
 <translation id="6296366034485697675">Արտահանել և ջնջել</translation>
 <translation id="629730747756840877">Հաշիվ</translation>
+<translation id="6300697579369314762">Ընթերցման ռեժիմի ներքևի էկրանը բացված է կիսով չափ</translation>
 <translation id="6301526076346731664">Բացել ծրագրավորողի գործիքները</translation>
 <translation id="6303969859164067831">Դուրս գրվել հաշվից և անջատել համաժամացումը</translation>
 <translation id="6307241780749477694">Հաստատեք ձեր ինքնությունը, որպեսզի ձեզ հասանելի լինեն ձեր բոլոր գաղտնաբառերն այս սարքում</translation>
@@ -1398,6 +1402,7 @@
 <translation id="71503698506017927">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։
 
 Այս կարգավորումը փոխելու համար <ph name="BEGIN_LINK" />ջնջեք Chrome-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
+<translation id="7151332203500147130">Ընթերցման ռեժիմի ներքևի էկրանը փակ է</translation>
 <translation id="7165972437814027679">Իմանալ ավելին այն մասին, թե ինչու է Chrome-ը արգելափակում որոշ ֆայլեր</translation>
 <translation id="7168323970702333693">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ Բացել կարգավորումները:</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
@@ -1731,7 +1736,6 @@
 <translation id="8493948351860045254">Տարածք ազատել</translation>
 <translation id="8497242791509864205">Բացել տեսակավորման տարբերակները</translation>
 <translation id="8497480609928300907">Տեղեկություններ տվյալների պաշտպանության ուղեցույցի մասին</translation>
-<translation id="8497726226069778601">Առայժմ ոչինչ չկա</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="8505766168025405649">Ներբեռնման կարգավիճակը կարող եք տեսնել ծանուցման մեջ</translation>
 <translation id="8506357771923193001">Ձեր ներբեռնումները կտեսնեք այստեղ</translation>

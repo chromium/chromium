@@ -529,6 +529,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1354045473509304750">Luba hostil <ph name="HOST" /> ka edaspidi minu kaamerat kasutada ja liigutada</translation>
 <translation id="1354148503392558902">Parooli muutmine...</translation>
 <translation id="1355088139103479645">Kas kustutada kõik andmed?</translation>
+<translation id="1355088659320425659">Ajalugu ja vahelehed</translation>
 <translation id="1356376170199999104">Lubatud – <ph name="PERMISSION_DETAILS" />. Lülitage mikrofon füüsilise lüliti abil sisse.</translation>
 <translation id="1356959069439783953">Inaktiivseid vahelehti kuvatakse uutmoodi</translation>
 <translation id="1358741672408003399">Õigekiri ja grammatika</translation>
@@ -2713,6 +2714,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2855243985454069333">Kustutab ajaloo kõigist sünkroonitud seadmetest</translation>
 <translation id="2855812646048059450">Logige sisse pakkujaga <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Uue konteineri loomine</translation>
+<translation id="2857047802954430547">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma paroolidele, järjehoidjatele ja muule sisule.</translation>
 <translation id="2859741939921354763">Importige paroolid teenusesse <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Lõualuu paremale liigutamine</translation>
 <translation id="2861301611394761800">Süsteemi värskendus on lõpule viidud. Taaskäivitage süsteem.</translation>
@@ -11386,6 +11388,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9003185744423389627">Ühendus seadmehalduse serveriga ebaõnnestus: olek „<ph name="STATUS_TEXT" />“ – <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Kas soovite saadaolevaid eSIM-i profiile automaatselt otsida?</translation>
 <translation id="9003647077635673607">Luba kõikidel veebisaitidel</translation>
+<translation id="9005774573776346118">Kõigis oma seadmetes paroolidele, järjehoidjatele ja muule sisule juurdepääsuks logige sisse kontoga <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">&amp;Logige uuesti sisse</translation>
 <translation id="9008201768610948239">Eira</translation>
 <translation id="9008201858626224558">Üksikasjade lehe <ph name="SUBPAGE_TITLE" /> tagasiliikumise nupp</translation>

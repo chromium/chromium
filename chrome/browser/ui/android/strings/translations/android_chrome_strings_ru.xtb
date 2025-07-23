@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">Чтобы завершить настройку автозаполнения, перезапустите Chrome. Ваши вкладки откроются снова автоматически.</translation>
 <translation id="2091863218454846791">Включен компактный вид</translation>
 <translation id="2093731487903423814">за последние 15 минут</translation>
+<translation id="2096577711562668473">Заменить сервис автозаполнения?</translation>
 <translation id="2100273922101894616">Автоматический вход</translation>
 <translation id="2109384632594340939">фото профиля</translation>
 <translation id="2111511281910874386">Перейти на страницу</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
 <translation id="250020030759455918">Вы увидите статус входа на сайт <ph name="SITE_NAME" />, а также данные о работе в браузере и данные сайтов в Chrome.</translation>
+<translation id="2502798195266898572">Нижний экран Режима чтения открыт полностью</translation>
 <translation id="2510106555128151389">Установка приложения "<ph name="WEBAPK_NAME" />"…</translation>
 <translation id="2512234228327349533">Где ещё есть этот товар</translation>
 <translation id="2513403576141822879">Остальные настройки конфиденциальности, безопасности и сбора данных вы можете найти в разделе <ph name="BEGIN_LINK" />Синхронизация сервисов Google<ph name="END_LINK" />.</translation>
@@ -934,6 +936,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Скачивание 1 файла…}one{Скачивание # файла…}few{Скачивание # файлов…}many{Скачивание # файлов…}other{Скачивание # файла…}}</translation>
 <translation id="5210286577605176222">Перейти к предыдущей вкладке</translation>
 <translation id="5210365745912300556">Закрыть вкладку</translation>
+<translation id="5212800876504289412">Перезапустите Chrome, чтобы применить изменения. После перезапуска ваши вкладки откроются снова.</translation>
 <translation id="5215957675041756913">Управление данными и аккаунтом</translation>
 <translation id="5218324087477576825">Номер карты (обязательно)</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и другие <ph name="SEPARATOR" /> Chrome отозвал эти разрешения у сайта, так как вы давно его не посещали</translation>
@@ -976,7 +979,6 @@
 <translation id="5414836363063783498">Проверка…</translation>
 <translation id="5415871492522952905">История и вкладки будут доступны на всех ваших устройствах. Вы сможете начать пользоваться браузером на одном устройстве и продолжить на другом.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) сразу потеряет доступ к группе вкладок "<ph name="GROUP_NAME" />".</translation>
-<translation id="5423934151118863508">Здесь появятся страницы, которые вы чаще всего просматриваете.</translation>
 <translation id="5424588387303617268">Доступно: <ph name="GIGABYTES" /> ГБ</translation>
 <translation id="543338862236136125">Изменить пароль</translation>
 <translation id="5433691172869980887">Имя пользователя скопировано</translation>
@@ -1062,6 +1064,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Показать уведомление}one{Показать уведомления}few{Показать уведомления}many{Показать уведомления}other{Показать уведомления}}</translation>
 <translation id="5814749351757353073">Подпишитесь на любимые сайты</translation>
 <translation id="5823093032261493462">Все равно скачать файл <ph name="FILE_NAME" /> на странице <ph name="DOWNLOAD_DOMAIN" />?</translation>
+<translation id="5825135637446025843">После перезапуска Chrome информация, сохраненная новым сервисом, будет использоваться для автозаполнения паролей, ключей доступа, адресов, способов оплаты и другой информации.</translation>
 <translation id="5828921839638612740">Удалить данные можно в настройках Chrome.</translation>
 <translation id="5829586821381540080">Сохранено в папке <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Неизвестно</translation>
@@ -1178,6 +1181,7 @@
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6296366034485697675">Экспортировать и удалить</translation>
 <translation id="629730747756840877">Аккаунт</translation>
+<translation id="6300697579369314762">Нижний экран Режима чтения открыт на половину экрана</translation>
 <translation id="6301526076346731664">Открыть инструменты разработчика</translation>
 <translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
 <translation id="6307241780749477694">Подтвердите личность, чтобы получить доступ ко всем паролям на этом устройстве.</translation>
@@ -1398,6 +1402,7 @@
 <translation id="71503698506017927">Шифрование кодовой фразой не применяется к способам оплаты и адресам из Google Pay.
 
 Чтобы это изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">Нижний экран Режима чтения закрыт</translation>
 <translation id="7165972437814027679">Подробнее о том, почему Chrome блокирует некоторые файлы</translation>
 <translation id="7168323970702333693">Вы вошли как <ph name="USER_NAME" />. Открывает настройки.</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
@@ -1731,7 +1736,6 @@
 <translation id="8493948351860045254">Освободить место</translation>
 <translation id="8497242791509864205">Открыть параметры сортировки</translation>
 <translation id="8497480609928300907">Пояснение для руководства по конфиденциальности</translation>
-<translation id="8497726226069778601">Здесь появятся часто посещаемые страницы</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8505766168025405649">Статус скачивания можно увидеть в уведомлении.</translation>
 <translation id="8506357771923193001">Здесь будут показаны ваши скачанные файлы</translation>

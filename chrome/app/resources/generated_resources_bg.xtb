@@ -529,6 +529,7 @@
 <translation id="1354045473509304750">Използването и местенето на камерата ви от <ph name="HOST" /> продължават да са разрешени</translation>
 <translation id="1354148503392558902">Паролата се променя...</translation>
 <translation id="1355088139103479645">Да се изтрият ли всички данни?</translation>
+<translation id="1355088659320425659">История и раздели</translation>
 <translation id="1356376170199999104">Разрешено – <ph name="PERMISSION_DETAILS" />. Включете микрофона посредством физически превключвател.</translation>
 <translation id="1356959069439783953">Неактивните раздели имат нов облик</translation>
 <translation id="1358741672408003399">Правопис и граматика</translation>
@@ -2718,6 +2719,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2855243985454069333">Изтриване на историята от всички синхронизирани устройства</translation>
 <translation id="2855812646048059450">Влизане с(ъс) <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Създаване на нов контейнер</translation>
+<translation id="2857047802954430547">Влезте в профила си, за да получите своите пароли, отметки и др. на всичките си устройства</translation>
 <translation id="2859741939921354763">Импортиране на пароли в <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Преместване на челюстта надясно</translation>
 <translation id="2861301611394761800">Системната актуализация е завършена. Моля, рестартирайте системата.</translation>
@@ -11393,6 +11395,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9003185744423389627">В(ъв) <ph name="FAILURE_TIME" /> установяването на връзка със сървъра за управление на устройства не бе успешно със състояние „<ph name="STATUS_TEXT" />“</translation>
 <translation id="90033698482696970">Да се сканира ли автоматично за налични потребителски профили за електронна SIM карта?</translation>
 <translation id="9003647077635673607">Разрешаване за всички уебсайтове</translation>
+<translation id="9005774573776346118">За да получите своите пароли, отметки и др. на всичките си устройства, влезте като <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">&amp;Вход отново</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9008201858626224558">Бутон за връщане назад на страницата с подробности за <ph name="SUBPAGE_TITLE" /></translation>

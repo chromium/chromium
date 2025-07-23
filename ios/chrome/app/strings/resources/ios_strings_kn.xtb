@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">ಹೊಸ ಲಿಂಕ್ ಕಳುಹಿಸುವಂತೆ ಹೇಳಲು ಕಳುಹಿಸುವವರನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="1013952917065545813">ನೀವು ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪುನಃ ತೆರೆಯಲು, ನೀವು ಇಲ್ಲಿಗೆ ಮರಳಿ ಬರಬಹುದು</translation>
 <translation id="1016495303386450659">ಐಟಂ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="1019990162050689579">Gemini ಆ್ಯಪ್ ಚಟುವಟಿಕೆ</translation>
 <translation id="102916930470544692">ಪಾಸ್‌ಕೀ</translation>
 <translation id="1030376737535466765">Password Manager ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1035980983510608210">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚುವುದರಿಂದ ಪಿನ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸಹ ಮುಚ್ಚಲಾಗುತ್ತದೆ.</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1096992026380844478">ನಿಮ್ಮ ಕೊನೆಯ ಬ್ಯಾಕಪ್‌ ಆಧರಿಸಿ ನಿಮ್ಮ ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK" />ನೀವು ಏನನ್ನು ಸಿಂಕ್‌ ಮಾಡಬಹುದು ಎಂಬುದನ್ನು ನೋಡಿ<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">ಹೆಚ್ಚು ಸೂಕ್ತವಾದ ಉತ್ತರಗಳನ್ನು ಪಡೆಯಲು ಪುಟದ ಕಂಟೆಂಟ್ ಅನ್ನು Gemini ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಿ. ನೀವು Gemini ಜೊತೆಗೆ ಪುಟವನ್ನು ಹಂಚಿಕೊಂಡಾಗ, ಪುಟದ ಪೂರ್ಣ ಕಂಟೆಂಟ್ ಮತ್ತು URL ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">ಇತಿಹಾಸ ಸಿಂಕ್</translation>
 <translation id="1110772719190051587">ಫೇಸ್‌ ID ಬಳಸಿ ಅನ್‌ಲಾಕ್‌ ಮಾಡಿ</translation>
 <translation id="1112015203684611006">ಮುದ್ರಿಸುವಿಕೆ ವಿಫಲಗೊಂಡಿದೆ.</translation>
@@ -510,6 +512,7 @@
 <translation id="3010025794097054078">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳು, ಅಸುರಕ್ಷಿತ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿರಿ.</translation>
 <translation id="301080557829842765">ಗೌಪ್ಯತೆ ಗೈಡ್</translation>
 <translation id="3012310354105716927">ಕೆಲವು ಡೇಟಾವನ್ನು ಇನ್ನೂ ಸೇವ್‌ ಮಾಡಲಾಗಿಲ್ಲ</translation>
+<translation id="3013922155552460252">ನಿಮ್ಮ ಚಾಟ್‌ಗಳು, ಫೀಡ್‌ಬ್ಯಾಕ್ ಮತ್ತು ಪ್ರಾಂಪ್ಟ್‌ಗಳಂತಹ Gemini ಚಟುವಟಿಕೆಯನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3016518775797983090">ಪುಟವನ್ನು ಹಂಚಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3020183492814296499">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3021342271734507256">ಹುಡುಕಲು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಮೇಲೆ ಯಾವುದನ್ನಾದರೂ ಚಿತ್ರಿಸಿ, ಹೈಲೈಟ್ ಮಾಡಿ ಅಥವಾ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -534,6 +537,7 @@
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
 <translation id="309710370695886264">ನೀವು 1 ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಹೊಂದಿದ್ದೀರಿ. ಸುರಕ್ಷಿತವಾಗಿರಲು ಈಗಲೇ ಅದನ್ನು ಸರಿಪಡಿಸಿ.</translation>
 <translation id="3102790820790869053">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
+<translation id="3106258548858559536">ರೀಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="3106690631878101882">ಅನುವಾದಿಸಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="3112556859945124369">ಗುರುತಿಸಿ...</translation>
@@ -632,6 +636,7 @@
 <translation id="3533860663366814939">ಆಟೋಫಿಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3546122170015471515">Google.com ನಲ್ಲಿ Maps ಪೂರ್ವವೀಕ್ಷಣೆಗಳು</translation>
 <translation id="3547356470684043247">ವಿಮರ್ಶೆಗಳ ಮೂಲಕ ನಿಮ್ಮ ನಿರ್ಧಾರಗಳನ್ನು ತಿಳಿಸಲು ಸಹಾಯ ಮಾಡಲು ಉತ್ಪನ್ನಗಳು, ಸೇವೆಗಳು ಅಥವಾ ಅನುಭವದ ಕುರಿತು ಗ್ರಾಹಕರ ಮೌಲ್ಯಮಾಪನಗಳನ್ನು ಓದಿರಿ</translation>
+<translation id="3547933853190131743">AI ಮೋಡ್ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="3557336313807607643">ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="355765753469272474">ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="3565930036634619844">ಟ್ಯಾಬ್. <ph name="NUMBER_OF_TABS" /> ರಲ್ಲಿ <ph name="TAB_INDEX" />.</translation>
@@ -1751,7 +1756,6 @@
 <translation id="7887552845761062935">ಹೆಚ್ಚಿನ ಆಯ್ಕೆಗಳನ್ನು ತೆರೆಯಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತು ಹಿಡಿದುಕೊಳ್ಳಿ</translation>
 <translation id="7889910613639381518">Google Password Manager ವಿಜೆಟ್ ಮೂಲಕ ಸುಲಭ ಮತ್ತು ಸುರಕ್ಷಿತ ಆ್ಯಕ್ಸೆಸ್.</translation>
 <translation id="7899199123054742721">ಎಲ್ಲಾ ಓದದೇ ಇರುವವುಗಳನ್ನು ಗುರುತಿಸಿ</translation>
-<translation id="7908957400505794782"><ph name="BEGIN_BOLD" />ಮುಗಿದಿದೆ<ph name="END_BOLD" /> ಎಂಬುದನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="7911190106180361398">ಎಲ್ಲವನ್ನೂ ಸಿಂಕ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆ ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="792357691529995513">ಯಾವುದೇ ಸಮಸ್ಯೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="7925108652071887026">ಸ್ವಯಂಭರ್ತಿ ಡೇಟಾ</translation>
@@ -2099,6 +2103,7 @@
 <translation id="913036870884277353">ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸುಲಭವಾಗಿ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="9137013805542155359">ಮೂಲವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">ರೀಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="9144230693397287797">ನೀವು ಸೆಟ್ ಮಾಡಿದ ರಿಮೈಂಡರ್‌ಗಳಿಗೆ ಮತ್ತು ಇತರ ಸಾಧನಗಳಿಂದ ಟ್ಯಾಬ್‌ಗಳಿಗೆ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಿ</translation>
 <translation id="914781932147356857">ಎಲ್ಲವನ್ನೂ ಗುರುತಿಸಿ…</translation>
 <translation id="9148126808321036104">ಪುನಃ ಸೈನ್ ಇನ್  ಆಗಿ</translation>
@@ -2127,6 +2132,7 @@
 <translation id="94870150074703282">ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="952704832371081537">ರದ್ದುಮಾಡಿ</translation>
 <translation id="954667170699278022">ಓದುವ ಪಟ್ಟಿ</translation>
+<translation id="956218893102219091">ಅತ್ಯಂತ ನಿಖರವಾದ Gemini ಫಲಿತಾಂಶಗಳಿಗಾಗಿ ನಿಮ್ಮ IP ವಿಳಾಸವನ್ನು ಆಧರಿಸಿದ ಅಂದಾಜು ಮಾಡಿದ ಸ್ಥಳದ ಬದಲಾಗಿ ನಿಮ್ಮ ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ಬಳಸಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">ನೀವು <ph name="CHANNEL_NAME" /> ಅನ್ನು ಫಾಲೋ ಮಾಡುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="961856697154696964">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="963102227019621224">ವೆಬ್‌ ಮತ್ತು ಆ್ಯಪ್‌ ಚಟುವಟಿಕೆ</translation>

@@ -530,6 +530,7 @@
 <translation id="1354045473509304750"><ph name="HOST" /> को कैमरे का इस्तेमाल और उसे मूव करते रहने दें</translation>
 <translation id="1354148503392558902">पासवर्ड बदला जा रहा है...</translation>
 <translation id="1355088139103479645">क्या आप पूरा डेटा मिटाना चाहते हैं?</translation>
+<translation id="1355088659320425659">इतिहास और टैब</translation>
 <translation id="1356376170199999104">अनुमति है – <ph name="PERMISSION_DETAILS" />. फ़िज़िकल स्विच का इस्तेमाल करके, माइक्रोफ़ोन चालू करें.</translation>
 <translation id="1356959069439783953">इनऐक्टिव टैब अब नए तरीके से दिखेंगे</translation>
 <translation id="1358741672408003399">स्पेलिंग और व्याकरण</translation>
@@ -2723,6 +2724,7 @@
 <translation id="2855243985454069333">सिंक किए गए सभी डिवाइसों से ब्राउज़िंग इतिहास मिटा देता है</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> से साइन इन करें</translation>
 <translation id="2856776373509145513">नया कंटेनर बनाएं</translation>
+<translation id="2857047802954430547">अपने सभी डिवाइसों से पासवर्ड, बुकमार्क वगैरह ऐक्सेस करने के लिए साइन इन करें</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> में पासवर्ड इंपोर्ट करें</translation>
 <translation id="2860710618359053450">जबड़े को दाईं ओर ले जाएं</translation>
 <translation id="2861301611394761800">सिस्टम अपडेट पूरा हुआ. कृपया सिस्टम को रीस्टार्ट करें.</translation>
@@ -11394,6 +11396,7 @@
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> पर '<ph name="STATUS_TEXT" />' की वजह से, डिवाइस मैनेजमेंट सर्वर से कनेक्ट नहीं किया जा सका</translation>
 <translation id="90033698482696970">क्या आपको उपलब्ध ई-सिम प्रोफ़ाइलों को अपने-आप स्कैन करना है?</translation>
 <translation id="9003647077635673607">सभी वेबसाइटों पर अनुमति दें</translation>
+<translation id="9005774573776346118">अपने सभी डिवाइसों से पासवर्ड, बुकमार्क वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> से साइन इन करें</translation>
 <translation id="9007688236643268728">फिर से साइन इन करें</translation>
 <translation id="9008201768610948239">ध्यान न दें</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> की जानकारी वाले पेज का 'वापस जाएं' बटन</translation>

@@ -6,6 +6,7 @@
 <translation id="1010225406377140704">প্রেরকের সাথে যোগাযোগ করে নতুন একটি লিঙ্ক পাঠানোর অনুরোধ করুন</translation>
 <translation id="1013952917065545813">আপনি যেসব ট্যাবগুলি সম্প্রতি বন্ধ করেছন, সেগুলি আবার খুলতে আপনি এখানে ফিরে আসতে পারেন</translation>
 <translation id="1016495303386450659">আইটেম আপডেট হয়েছে</translation>
+<translation id="1019990162050689579">Gemini অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="102916930470544692">পাসকী</translation>
 <translation id="1030376737535466765">Password Manager খুলুন</translation>
 <translation id="1035980983510608210">সমস্ত ট্যাব বন্ধ করে দিলে পিন করা ট্যাবও বন্ধ হয়ে যাবে।</translation>
@@ -28,6 +29,7 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> খোলা যায়নি</translation>
 <translation id="1096992026380844478">আপনার শেষ ব্যাক-আপের উপর ভিত্তি করে সিঙ্ক সেটিংস ফিরিয়ে আনা হবে। <ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
+<translation id="110491332089958282">আরও বেশি প্রাসঙ্গিক উত্তর পাওয়ার জন্য Gemini-র সাথে পৃষ্ঠার কন্টেন্ট শেয়ার করুন। আপনি Gemini-র সাথে কোনও পৃষ্ঠা শেয়ার করলে, Google-এর কাছে, পৃষ্ঠাটির সম্পূর্ণ কন্টেন্ট ও URL পাঠানো হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1108938384783527433">ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1110772719190051587">ফেস আইডি ব্যবহার করে আনলক করুন</translation>
 <translation id="1112015203684611006">প্রিন্ট ব্যর্থ হয়েছে।</translation>
@@ -510,6 +512,7 @@
 <translation id="3010025794097054078">ডেটার নিরাপত্তা লঙ্ঘন, অসুরক্ষিত ওয়েবসাইট ও আরও অনেক কিছু থেকে নিরাপদ থাকুন।</translation>
 <translation id="301080557829842765">গোপনীয়তা সংক্রান্ত গাইড</translation>
 <translation id="3012310354105716927">কিছু ডেটা এখনও সেভ হয়নি</translation>
+<translation id="3013922155552460252">আপনার চার্ট, মতামত ও প্রম্পটের মতো Gemini অ্যাক্টিভিটি দেখুন ও ম্যানেজ করুন</translation>
 <translation id="3016518775797983090">পৃষ্ঠা শেয়ার করা যাবে না</translation>
 <translation id="3020183492814296499">শর্টকাট</translation>
 <translation id="3021342271734507256">আপনার স্ক্রিনে যেকোনও কিছু সার্চ করতে আঁকুন, হাইলাইট বা ট্যাপ করুন</translation>
@@ -534,6 +537,7 @@
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="309710370695886264">আপনার কাছে ১টি একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
 <translation id="3102790820790869053">সাম্প্রতিক ট্যাব সার্চ করুন</translation>
+<translation id="3106258548858559536">রিডিং মোড বন্ধ করুন</translation>
 <translation id="3106690631878101882">'অনুবাদ করুন' বিকল্প লুকান</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" />-এর পাসওয়ার্ড মুছতে চান?</translation>
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
@@ -632,6 +636,7 @@
 <translation id="3533860663366814939">অটোফিল ও পাসওয়ার্ডের সেটিংস খুলুন</translation>
 <translation id="3546122170015471515">Google.com-এ Maps-এর প্রিভিউ</translation>
 <translation id="3547356470684043247">রিভিউ সহ আপনার সিদ্ধান্ত জানানোর ব্যাপারে সহায়তা পেতে প্রোডাক্ট, পরিষেবা অথবা অভিজ্ঞতার বিষয়ে গ্রাহকদের মূল্যায়ন পড়ুন</translation>
+<translation id="3547933853190131743">AI মোডের মাধ্যমে সার্চ করুন</translation>
 <translation id="3557336313807607643">পরিচিতিতে যোগ করুন</translation>
 <translation id="355765753469272474">আগের অবস্থায় ফিরুন</translation>
 <translation id="3565930036634619844">ট্যাব। <ph name="NUMBER_OF_TABS" />টির মধ্যে <ph name="TAB_INDEX" /> নম্বর।</translation>
@@ -1752,7 +1757,6 @@
 <translation id="7887552845761062935">আরও বিকল্প খুলতে ডবল ট্যাপ করে ধরে থাকুন</translation>
 <translation id="7889910613639381518">Google Password Manager পরিষেবার উইজেট সহ সহজে ও নিরাপদে অ্যাক্সেস করুন।</translation>
 <translation id="7899199123054742721">সবগুলি 'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
-<translation id="7908957400505794782"><ph name="BEGIN_BOLD" />হয়ে গেছে<ph name="END_BOLD" /> বিকল্পে ট্যাপ করুন</translation>
 <translation id="7911190106180361398">আপনার প্রতিষ্ঠান আপনার জন্য সবকিছু সিঙ্ক করার অনুমতি দেয় না।</translation>
 <translation id="792357691529995513">কোনও সমস্যা খুঁজে পাওয়া যায়নি</translation>
 <translation id="7925108652071887026">স্বতঃপূর্ণ ডেটা</translation>
@@ -2100,6 +2104,7 @@
 <translation id="913036870884277353">অন্য অ্যাপে সহজেই লিঙ্ক খুলুন।</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
 <translation id="9140888637198815199">A</translation>
+<translation id="9144152097013965297">রিডিং মোড চালু করুন</translation>
 <translation id="9144230693397287797">সেট করা রিমাইন্ডার এবং অন্যান্য ডিভাইসের ট্যাব সম্পর্কে আপডেট পান</translation>
 <translation id="914781932147356857">সবগুলি চিহ্নিত করুন…</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>
@@ -2128,6 +2133,7 @@
 <translation id="94870150074703282">গ্রুপটি মুছবেন?</translation>
 <translation id="952704832371081537">বাতিল করুন</translation>
 <translation id="954667170699278022">পড়ার তালিকা</translation>
+<translation id="956218893102219091">Gemini থেকে সবচেয়ে নিখুঁত ফলাফল পেতে, আনুমানিক লোকেশনের পরিবর্তে, আপনার IP অ্যাড্রেসের ভিত্তিতে পাওয়া সুনির্দিষ্ট লোকেশন ব্যবহার করুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="959066944189734975">আপনি <ph name="CHANNEL_NAME" /> ফলো করছেন</translation>
 <translation id="961856697154696964">ব্রাউজ করা ডেটা মুছে দিন</translation>
 <translation id="963102227019621224">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>

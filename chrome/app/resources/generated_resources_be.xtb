@@ -532,6 +532,7 @@
 <translation id="1354045473509304750">І далей дазваляць сайту <ph name="HOST" /> выкарыстоўваць і перамяшчаць вашу камеру</translation>
 <translation id="1354148503392558902">Ідзе змена пароля…</translation>
 <translation id="1355088139103479645">Выдаліць усе даныя?</translation>
+<translation id="1355088659320425659">Гісторыя і ўкладкі</translation>
 <translation id="1356376170199999104">Выкарыстанне дазволена (<ph name="PERMISSION_DETAILS" />). Уключыце мікрафон фізічным пераключальнікам.</translation>
 <translation id="1356959069439783953">Неактыўныя ўкладкі атрымалі новы выгляд</translation>
 <translation id="1358741672408003399">Правапіс і граматыка</translation>
@@ -2710,6 +2711,7 @@
 <translation id="2855243985454069333">Гісторыя будзе выдалена з усіх сінхранізаваных прылад</translation>
 <translation id="2855812646048059450">Увайсці праз <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Стварэнне новага кантэйнера</translation>
+<translation id="2857047802954430547">Увайдзіце, каб атрымаць доступ да сваіх пароляў, закладак і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="2859741939921354763">Імпартаваць паролі ў <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Змясціце сківіцу ўправа</translation>
 <translation id="2861301611394761800">Абнаўленне сістэмы завершана. Перазапусціце сістэму.</translation>
@@ -11387,6 +11389,7 @@
 <translation id="9003185744423389627">Не ўдалося падключыцца да сервера кіравання прыладамі (стан: "<ph name="STATUS_TEXT" />", <ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Выконваць аўтаматычны пошук даступных профіляў eSIM-карт?</translation>
 <translation id="9003647077635673607">Дазволіць на ўсіх вэб-сайтах</translation>
+<translation id="9005774573776346118">Каб выкарыстоўваць свае паролі, закладкі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў сістэму як <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">&amp;Увайсці яшчэ раз</translation>
 <translation id="9008201768610948239">Ігнараваць</translation>
 <translation id="9008201858626224558">Кнопка "Назад" на старонцы падрабязных звестак "<ph name="SUBPAGE_TITLE" />"</translation>

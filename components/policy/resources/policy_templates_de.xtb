@@ -2170,6 +2170,7 @@ Wenn diese Richtlinie nicht konfiguriert oder auf „True“ gesetzt ist, ist di
 Wenn sie auf „False“ gesetzt ist, ist die Funktion für Gruppen ähnlicher Websites deaktiviert.</translation>
 <translation id="2555244983262829274">„Home“-Schaltfläche in der Symbolleiste ausblenden</translation>
 <translation id="2558154810835597313">Ermöglicht die Bereitstellung von Clientzertifikaten für verwaltete Nutzer und Profile</translation>
+<translation id="2559274305158103883">Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit WebRTC deaktivieren</translation>
 <translation id="2562213287271514629">Zulassen, dass veraltete <ph name="FLASH_PLUGIN_NAME" />-Plug-ins als normale <ph name="FLASH_PLUGIN_NAME" />-Plug-ins verwendet werden</translation>
 <translation id="2562339630163277285">Gibt die URL an, die die Suchmaschine für die Bereitstellung von Instant-Ergebnissen verwendet. Die URL sollte den String "<ph name="SEARCH_TERM_MARKER" />" enthalten, der bei der Abfrage durch den Text ersetzt wird, den der Nutzer bisher eingegeben hat.
 
@@ -2717,6 +2718,14 @@ Ist sie auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
 <translation id="2987155890997901449">ARC aktivieren</translation>
 <translation id="2987227569419001736">Verwendung der Web Bluetooth API steuern</translation>
+<translation id="2988299727303303535">Diese Richtlinie bietet für bestimmte Domains eine vorübergehende Ausnahme vom neuen ursprungsgebundenen Cookie-Verhalten.
+
+Wenn du eine Domain zur Liste hinzufügst, können Cookies aus dieser Domain über ein anderes Schema oder einen anderen Port verwendet werden.
+Weitere Informationen findest du unter <ph name="LEGACY_COOKIE_SCOPE_ENABLED_POLICY_NAME" />.
+
+Für Cookies in Domains, die diesen Mustern nicht entsprechen, oder für alle Cookies, falls diese Richtlinie nicht konfiguriert ist, gilt das ursprungsgebundene Cookie-Verhalten.
+
+Diese Richtlinie wird in Zukunft entfernt.</translation>
 <translation id="2989404644164421834">Seiten neu laden</translation>
 <translation id="299127280603727143">Eine Gruppe von Richtlinien zu den Einstellungen für den Zugriff auf das lokale Netzwerk.  Siehe https://developer.chrome.com/blog/local-network-access</translation>
 <translation id="299446489108785864">Eine Liste von URLs, die angibt, auf welche URLs die Richtlinie <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> angewendet wird. Diese Richtlinie hat keine Auswirkung auf automatisch geöffnete Werte, die von Nutzern festgelegt werden.
@@ -8117,10 +8126,12 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
 <translation id="6614648642325603511">Algorithmus für die Generierung von Schlüsselpaaren. Die EC-Option wird seit Version 132 unterstützt.</translation>
 <translation id="661610294649586421">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten nicht zulassen.</translation>
 <translation id="6617589895942747919">Beginn des Intervalls, inklusiv.</translation>
+<translation id="6620966939519407082">Einstellungen für den alten Cookie-Bereich</translation>
 <translation id="6621830999036927230">Wenn diese Richtlinie konfiguriert ist, verwendet der Host für den Remote-Zugriff diese URL zur Validierung von Authentifizierungstokens von Clients für den Remote-Zugriff, um Verbindungen zu akzeptieren. Diese Funktion ist deaktiviert, wenn sie leer oder nicht konfiguriert ist.
 
       Hinweis: Verwende diese Richtlinie mit <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die Rechtschreibprüfung aktiviert ist.</translation>
+<translation id="6625716212597516929">Altes Verhalten des Cookie-Bereichs wiederherstellen</translation>
 <translation id="6626319579493977784">Einstellungen für dynamischen Code</translation>
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
 <translation id="6628120204569232711">Speicherstatus melden</translation>
@@ -8170,6 +8181,17 @@ Unter <ph name="MS_WIN_NAME" /> wird die KDC-Richtlinie immer umgesetzt.</transl
 <translation id="6665670272107384733">Festlegen, wie oft der Nutzer das Passwort eingeben muss, um das schnelle Entsperren zu verwenden</translation>
 <translation id="6667586534922258705">Schaltfläche zum Anzeigen des Passworts auf dem Start- oder Sperrbildschirm anzeigen</translation>
 <translation id="6667636336079341367">Funktion „Scanner“ zulassen, ohne KI‑Modelle zu verbessern.</translation>
+<translation id="6668559639284945695">Mit dieser Richtlinie kann das alte Verhalten für den Cookie-Bereich wiederhergestellt werden.
+
+Das bedeutet, dass auf Cookies, die über ein bestimmtes Protokoll (z. B. HTTPS) oder einen bestimmten Port festgelegt wurden, über ein anderes Protokoll oder einen anderen Port zugegriffen werden kann.
+
+Wenn die Richtlinie aktiviert ist, sind Cookies nicht an ihr ursprüngliches Schema und ihren ursprünglichen Port gebunden.
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, verhalten sich Cookies entsprechend dem ursprungsgebundenen Bereich.
+
+Diese Konfiguration gilt nur für Top-Level-Domains (z. B. beispiel.de) und nicht für Subdomains (z. B. sub.beispiel.de).
+
+Diese Richtlinie wird in Zukunft entfernt.</translation>
 <translation id="6669244130218275293">Festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „Fingerprinting-Schutz“ im Inkognitomodus aktiviert werden soll.</translation>
 <translation id="6669691206059842248">Zusätzliche OAuth-Weiterleitungs-URLs pro Erweiterung konfigurieren</translation>
 <translation id="6669700740683748046">Durch diese Funktion wird die vollständige URL in der Adressleiste angezeigt.
@@ -8681,6 +8703,7 @@ Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
 <translation id="7016587686120059767">Gastmodus deaktivieren</translation>
 <translation id="7019805045859631636">Schnell</translation>
 <translation id="7021590945154530517">Überwachung des Gerätestatus aktivieren</translation>
+<translation id="7025153290982655996">Altes Verhalten des Cookie-Bereichs wiederherstellen</translation>
 <translation id="7025332601572838001">Konfiguriert die Nutzungsbedingungen während der ersten Ausführung für CCT</translation>
 <translation id="7026351325994257733">Erlauben, dass WLAN-Konfigurationen auf allen <ph name="PRODUCT_OS_NAME" />-Geräten und einem verbundenen Android-Smartphone synchronisiert werden.</translation>
 <translation id="7027057540229843762">Helles Design verwenden</translation>
@@ -8794,6 +8817,7 @@ Wenn diese Richtlinie festgelegt ist, wird die Liste der Standardwerte um die ne
 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden Informationen zum Lüfter des Geräts ausgegeben.</translation>
+<translation id="7097146706461004834">Cookies haben einen ursprungsgebundenen Bereich</translation>
 <translation id="710003290625031750">Ausführliche Schemabeschreibung:</translation>
 <translation id="7101550508196914704">App-Verknüpfung nicht in der Lesezeichenleiste anzeigen</translation>
 <translation id="7105084505972468353">Wenn diese Richtlinie konfiguriert ist, wird damit der Lupentyp bestimmt, der aktiviert ist.
@@ -9218,6 +9242,7 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
 
       Wenn die Richtlinie nicht konfiguriert oder auf "false" festgelegt ist, wird die Funktion "<ph name="TLS_FALSE_START" />" aktiviert. Ist "true" festgelegt, wird die Funktion "<ph name="TLS_FALSE_START" />" deaktiviert.</translation>
 <translation id="7427607504279694910">Ereignisprotokolle für die Android-App-Installation werden nicht an Google weitergegeben</translation>
+<translation id="7428523340768505080">Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit WebRTC aktivieren</translation>
 <translation id="7431456748240652287">Diese Richtlinie auf Geräteebene bestimmt, ob <ph name="PRODUCT_OS_NAME" /> unter Verwendung des NIST-Standards ML-KEM einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen bei TLS anbietet. Vor <ph name="PRODUCT_OS_NAME" /> 131 war der Algorithmus Kyber, eine frühere Entwurfsversion des Standards. Durch diese Richtlinie können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
 
 Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, bietet <ph name="PRODUCT_OS_NAME" /> bei TLS‑Verbindungen eine Post-Quanten-Schlüsselvereinbarung an. Nutzertraffic wird dann bei der Kommunikation mit kompatiblen Servern vor Quantencomputern geschützt.
@@ -9527,6 +9552,7 @@ Diese Richtlinie kann für bestimmte Ursprünge der isolierten Web-App überschr
 <translation id="7696534428021833264">Karte mit SharePoint- und OneDrive-Dateien auf der Seite „Neuer Tab“ aktivieren</translation>
 <translation id="7699644797467448158">„window.name“ löschen, wenn websiteübergreifende Seitenaufrufe auf oberster Ebene stattfinden und einen Wechsel von „BrowsingContextGroup“ herbeiführen.</translation>
 <translation id="7701341006446125684">Cache-Größe für Apps und Erweiterungen in Byte festlegen</translation>
+<translation id="7701825382808690457">Standardwert für den Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit WebRTC verwenden</translation>
 <translation id="7703041979684393741">Erfassen von WebRTC-Ereignisprotokollen aus Google-Diensten nicht zulassen</translation>
 <translation id="770339941914297201">Neues Verhalten: Kiosk-Chrome-Apps werden nur anhand der von der Richtlinie stammenden Update-URL aktualisiert</translation>
 <translation id="7703737669292992839">Dialogfelder zur Dateiauswahl verhindern</translation>
@@ -9802,6 +9828,7 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird kein Zertifika
 <translation id="7906983682927840536">Fetch-Keepalive-Dauer beim Herunterfahren</translation>
 <translation id="7908384265697653397">Zeitraum in Tagen, nach dem der Nutzer abgemeldet wird, wenn die Version von <ph name="PRODUCT_OS_NAME" /> niedriger ist als der angegebene <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />-Wert.</translation>
 <translation id="7909751052609510518">Druckaufträge (seit Version 129 unterstützt)</translation>
+<translation id="7909839744818798105">Altes Verhalten des Cookie-Bereichs für eine Liste von Domains aktivieren</translation>
 <translation id="7911685775490889216">Dadurch wird festgelegt, für wie viele Sekunden ein Bild angezeigt wird, wenn für den Bildschirmschoner des Sperrbildschirms mehrere Bilder verwendet werden.
 
 Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_OS_NAME" /> den Standardwert von 60 Sekunden.
@@ -10899,6 +10926,19 @@ Wenn JavaScript-Optimierungen deaktiviert sind (indem du den Wert dieser Richtli
 Die Richtlinie kann für bestimmte URL‑Muster überschrieben werden. Hierfür stehen die Richtlinien „<ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />“ und „<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />“ zur Verfügung.
 
 Ist diese Richtlinie nicht konfiguriert, sind JavaScript-Optimierungen aktiviert.</translation>
+<translation id="8669238010996709070">Mit dieser Richtlinie lässt sich die Post-Quanten-Schlüsselvereinbarung mit WebRTC verwalten.
+
+Wenn diese Richtlinie aktiviert ist, wird die Post-Quanten-Schlüsselvereinbarung mit WebRTC angeboten.
+
+Wenn diese Richtlinie deaktiviert ist, wird keine Post-Quanten-Schlüsselvereinbarung mit WebRTC angeboten.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird der Wert durch den standardmäßigen Einführungsprozess für die Post-Quanten-Schlüsselvereinbarung mit WebRTC festgelegt.
+
+Das Anbieten einer Post-Quanten-Schlüsselvereinbarung ist abwärtskompatibel. Bei vorhandenen DTLS-Peers und Netzwerk-Middleware wird voraussichtlich die neue Option ignoriert und eine frühere ausgewählt.
+
+Auf Geräten, auf denen DTLS nicht korrekt implementiert ist, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht post-quanten-kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
+
+Diese Richtlinie ist eine vorübergehende Maßnahme und wird nach einigen Meilensteinen entfernt.</translation>
 <translation id="8671119576957984818">Desktop-Freigabe-Hub aktivieren</translation>
 <translation id="8671193325113134911">Strikte MIME-Typprüfung für Worker-Skripts aktivieren</translation>
 <translation id="8671303329680827168">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie „<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />“.</translation>

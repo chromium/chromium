@@ -240,6 +240,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2088833076121753253">자동 완성 설정을 완료하려면 지금 Chrome을 다시 시작하세요. 탭이 자동으로 다시 열립니다</translation>
 <translation id="2091863218454846791">간단히 보기 표시 중</translation>
 <translation id="2093731487903423814">지난 15분</translation>
+<translation id="2096577711562668473">자동 완성 서비스를 변경하시겠습니까?</translation>
 <translation id="2100273922101894616">자동 로그인</translation>
 <translation id="2109384632594340939">프로필 사진</translation>
 <translation id="2111511281910874386">페이지로 이동</translation>
@@ -325,6 +326,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2496180316473517155">방문 기록</translation>
 <translation id="2497852260688568942">관리자가 동기화를 사용 중지했습니다.</translation>
 <translation id="250020030759455918">Chrome에서 <ph name="SITE_NAME" /> 로그인 상태, 인터넷 사용 기록, 사이트 데이터를 볼 수 있습니다.</translation>
+<translation id="2502798195266898572">읽기 모드 하단 시트가 전체 높이로 열림</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> 설치 중...</translation>
 <translation id="2512234228327349533">구매 옵션 검색</translation>
 <translation id="2513403576141822879">개인 정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
@@ -934,6 +936,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{파일 1개 다운로드 중…}other{파일 #개 다운로드 중…}}</translation>
 <translation id="5210286577605176222">이전 탭으로 이동</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
+<translation id="5212800876504289412">이 변경사항을 완료하려면 Chrome을 다시 시작하세요. 다시 시작하면 탭이 자동으로 다시 열립니다</translation>
 <translation id="5215957675041756913">데이터 및 계정 관리</translation>
 <translation id="5218324087477576825">카드 번호를 입력해야 합니다.</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 등 <ph name="SEPARATOR" /> 최근에 방문하지 않아 Chrome에서 이러한 권한을 삭제했습니다.</translation>
@@ -976,7 +979,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5414836363063783498">확인 중...</translation>
 <translation id="5415871492522952905">모든 기기에 방문 기록과 탭이 유지되므로 이전에 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />(<ph name="EMAIL" />)님이 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 됩니다.</translation>
-<translation id="5423934151118863508">자주 방문한 페이지가 여기에 표시됩니다.</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB 사용 가능</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
 <translation id="5433691172869980887">사용자 이름 복사됨</translation>
@@ -1062,6 +1064,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{알림 표시}other{알림 표시}}</translation>
 <translation id="5814749351757353073">즐겨 찾는 사이트의 최신 소식 확인하기</translation>
 <translation id="5823093032261493462">그래도 <ph name="DOWNLOAD_DOMAIN" />에서 "<ph name="FILE_NAME" />" 파일을 다운로드하시겠습니까?</translation>
+<translation id="5825135637446025843">Chrome이 다시 시작된 후에는 새 제공업체에서 저장된 정보가 비밀번호와 패스키, 주소, 결제 수단, 기타 정보를 자동 완성하는 데 사용됩니다</translation>
 <translation id="5828921839638612740">Chrome 설정에서 데이터를 삭제할 수 있습니다.</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" />에 저장됨</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -1178,6 +1181,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6296366034485697675">내보내기 및 삭제</translation>
 <translation id="629730747756840877">계정</translation>
+<translation id="6300697579369314762">읽기 모드 하단 시트가 절반 높이로 열림</translation>
 <translation id="6301526076346731664">개발자 도구 열기</translation>
 <translation id="6303969859164067831">로그아웃하고 동기화 사용 중지</translation>
 <translation id="6307241780749477694">이 기기에서 모든 비밀번호를 가져오려면 본인 인증을 진행하세요.</translation>
@@ -1398,6 +1402,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="71503698506017927">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
+<translation id="7151332203500147130">읽기 모드 하단 시트가 닫힘</translation>
 <translation id="7165972437814027679">Chrome에서 일부 파일을 차단하는 이유 자세히 알아보기</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. 설정을 엽니다.</translation>
 <translation id="7173114856073700355">설정 열기</translation>
@@ -1731,7 +1736,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8493948351860045254">저장 공간 확보하기</translation>
 <translation id="8497242791509864205">정렬 옵션 열기</translation>
 <translation id="8497480609928300907">개인 정보 보호 가이드 설명</translation>
-<translation id="8497726226069778601">아직 표시할 내용 없음</translation>
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="8505766168025405649">알림에서 다운로드 상태를 확인하세요.</translation>
 <translation id="8506357771923193001">여기에서 다운로드한 파일을 확인할 수 있습니다.</translation>

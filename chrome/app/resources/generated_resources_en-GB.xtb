@@ -529,6 +529,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1354045473509304750">Continue allowing <ph name="HOST" /> to use and move your camera</translation>
 <translation id="1354148503392558902">Changing password…</translation>
 <translation id="1355088139103479645">Delete all data?</translation>
+<translation id="1355088659320425659">History and tabs</translation>
 <translation id="1356376170199999104">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on microphone using a physical switch.</translation>
 <translation id="1356959069439783953">Inactive tabs get a new look</translation>
 <translation id="1358741672408003399">Spelling and Grammar</translation>
@@ -2722,6 +2723,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2855243985454069333">Deletes history from all synced devices</translation>
 <translation id="2855812646048059450">Sign in with <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Create a new container</translation>
+<translation id="2857047802954430547">Sign in to get your passwords, bookmarks and more on all your devices</translation>
 <translation id="2859741939921354763">Import passwords to <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Shift jaw right</translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
@@ -9041,7 +9043,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7396845648024431313"><ph name="APP_NAME" /> will launch at system startup and continue to run in the background, even once you've closed all other <ph name="PRODUCT_NAME" /> windows.</translation>
 <translation id="7399045143794278225">Customise sync</translation>
 <translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones you allow</translation>
-<translation id="7399802613464275309">Safety Check</translation>
+<translation id="7399802613464275309">Safety check</translation>
 <translation id="7400059772197434086">is blocked from using your information on</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Change back to <ph name="OLD_SEARCH_PROVIDER" />?</translation>
@@ -11395,6 +11397,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9003185744423389627">Connection to Device Management Server failed with status ‘<ph name="STATUS_TEXT" />’ at <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Automatically scan for available eSIM profiles?</translation>
 <translation id="9003647077635673607">Allow on all websites</translation>
+<translation id="9005774573776346118">To get your passwords, bookmarks and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">&amp;Sign in again</translation>
 <translation id="9008201768610948239">Ignore</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> details page back button</translation>

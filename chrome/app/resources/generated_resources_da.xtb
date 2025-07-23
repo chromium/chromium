@@ -530,6 +530,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1354045473509304750">Tillad fortsat, at <ph name="HOST" /> kan bruge og flytte dit kamera</translation>
 <translation id="1354148503392558902">Ændrer adgangskoden…</translation>
 <translation id="1355088139103479645">Vil du slette alle data?</translation>
+<translation id="1355088659320425659">Historik og faner</translation>
 <translation id="1356376170199999104">Tilladt – <ph name="PERMISSION_DETAILS" />. Aktivér mikrofonen ved hjælp af den fysiske kontakt.</translation>
 <translation id="1356959069439783953">En ny visning er tilgængelig for inaktive faner</translation>
 <translation id="1358741672408003399">Stavning og grammatik</translation>
@@ -2724,6 +2725,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2855243985454069333">Sletter historikken fra alle synkroniserede enheder</translation>
 <translation id="2855812646048059450">Log ind med <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Opret en ny container</translation>
+<translation id="2857047802954430547">Log ind for at få adgang til dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
 <translation id="2859741939921354763">Importér adgangskoder til <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Drej kæben til venstre</translation>
 <translation id="2861301611394761800">Opdateringen af systemet er fuldført. Genstart systemet.</translation>
@@ -5730,7 +5732,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4989966318180235467">Undersøg &amp;baggrundsside</translation>
 <translation id="4990673372047946816">Der er ikke et tilgængeligt kamera</translation>
 <translation id="4991420928586866460">Brug tasterne på øverste række som funktionstaster</translation>
-<translation id="4991873517942703737">Stil spørgsmål om dette dokument</translation>
+<translation id="4991873517942703737">Spørg om dette dokument</translation>
 <translation id="4992443049233195791">Microsoft 365-filindstillinger</translation>
 <translation id="4992458225095111526">Bekræft Powerwash</translation>
 <translation id="4992473555164495036">Din administrator har begrænset de tilgængelige indtastningsmetoder.</translation>
@@ -11400,6 +11402,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9003185744423389627">Forbindelsen til Device Management Server mislykkedes <ph name="FAILURE_TIME" /> med statussen "<ph name="STATUS_TEXT" />"</translation>
 <translation id="90033698482696970">Vil du automatisk søge efter tilgængelige eSIM-profiler?</translation>
 <translation id="9003647077635673607">Tillad på alle websites</translation>
+<translation id="9005774573776346118">Log ind som <ph name="EMAIL" /> for at få adgang til dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
 <translation id="9007688236643268728">&amp;Log ind igen</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9008201858626224558">Knappen Tilbage på infosiden for <ph name="SUBPAGE_TITLE" /></translation>

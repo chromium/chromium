@@ -2172,6 +2172,7 @@ Si no se define esta política o se le asigna el valor True, se habilitará la f
 Si se le asigna el valor False, se inhabilitará la función Conjuntos de sitios web relacionados.</translation>
 <translation id="2555244983262829274">Ocultar el botón de inicio de la barra de herramientas</translation>
 <translation id="2558154810835597313">Habilitar el aprovisionamiento de certificados de cliente para un usuario o perfil gestionado</translation>
+<translation id="2559274305158103883">Inhabilitar acuerdo de claves poscuántico para WebRTC</translation>
 <translation id="2562213287271514629">Permitir que se utilice una versión obsoleta de <ph name="FLASH_PLUGIN_NAME" /> como si fuera una versión normal de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">Especifica la URL del motor de búsqueda utilizada para proporcionar resultados instantáneos. La URL debe contener la cadena <ph name="SEARCH_TERM_MARKER" />, que se sustituirá en el momento de la consulta por el texto que el usuario haya introducido hasta el momento.
 
@@ -2721,6 +2722,14 @@ Si se le asigna el valor false, no podrán acceder a la función.</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de incorporación del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API Bluetooth web</translation>
+<translation id="2988299727303303535">Esta política proporciona una exención temporal para los dominios especificados del nuevo comportamiento de las cookies vinculadas al origen.
+
+Si añades un dominio a la lista, se permitirá que se usen las cookies de ese dominio con otro esquema o puerto.
+Puedes consultar más información en <ph name="LEGACY_COOKIE_SCOPE_ENABLED_POLICY_NAME" />.
+
+Para las cookies de dominios que no coincidan con los patrones indicados, o para todas las cookies si no se define esta política, se aplicará el comportamiento de las cookies vinculadas al origen.
+
+Esta política se eliminará en el futuro.</translation>
 <translation id="2989404644164421834">Volver a cargar páginas</translation>
 <translation id="299127280603727143">Un grupo de políticas relacionadas con los ajustes de acceso a la red local.  Consulta https://developer.chrome.com/blog/local-network-access</translation>
 <translation id="299446489108785864">Lista de URLs que especifica a qué URLs se aplicará <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Esta política no afecta a los valores abiertos automáticamente por los usuarios.
@@ -8173,10 +8182,12 @@ Los cambios de esta política solo se podrán aplicar si ARC no se está ejecuta
 <translation id="6614648642325603511">El algoritmo para generar pares de claves. La opción de EC es compatible desde la versión 132.</translation>
 <translation id="661610294649586421">No permitir solicitudes de la API WebAuthn en sitios con certificados TLS dañados.</translation>
 <translation id="6617589895942747919">Hora de inicio del intervalo, inclusiva.</translation>
+<translation id="6620966939519407082">Configuración anterior de alcance de las cookies</translation>
 <translation id="6621830999036927230">Si se le asigna un valor a esta política, el host de acceso remoto utilizará esta URL para validar los tokens de autenticación de los clientes de acceso remoto y para aceptar las conexiones. Esta función está inhabilitada si está vacía o no se le asigna ningún valor.
 
       Nota: Usa la política junto a <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de corrector ortográfico.</translation>
+<translation id="6625716212597516929">Volver al comportamiento anterior de alcance de las cookies</translation>
 <translation id="6626319579493977784">Configuración de código dinámico</translation>
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
@@ -8226,6 +8237,17 @@ En <ph name="MS_WIN_NAME" />, la política del KDC se respeta siempre.</translat
 <translation id="6665670272107384733">Definir la frecuencia con la que el usuario debe introducir la contraseña para utilizar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para mostrar la contraseña en las pantallas de inicio de sesión y bloqueo</translation>
 <translation id="6667636336079341367">Permitir Escáner sin mejorar los modelos de IA.</translation>
+<translation id="6668559639284945695">Esta política permite volver al comportamiento anterior de alcance de las cookies.
+
+Eso significa que se puede acceder a las cookies definidas en un protocolo o puerto específicos (por ejemplo, HTTPS) desde otro.
+
+Si se habilita esta política, las cookies no se vincularán a su esquema y puerto de origen.
+
+Si se inhabilita esta política o no se define, las cookies se comportarán con un alcance vinculado al origen.
+
+Esta configuración solo se aplicará a los dominios de nivel superior (por ejemplo, example.com) y no a los subdominios (por ejemplo, sub.example.com).
+
+Esta política se eliminará en el futuro.</translation>
 <translation id="6669244130218275293">Elegir si se habilita la función de protección contra la recogida de huellas digitales de <ph name="PRIVACY_SANDBOX_NAME" /> en modo Incógnito.</translation>
 <translation id="6669691206059842248">Configurar URLs de redirección de OAuth adicionales por extensión</translation>
 <translation id="6669700740683748046">Esta función permite mostrar la URL completa en la barra de direcciones.
@@ -8739,6 +8761,7 @@ Si se le asigna el valor 0 (<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_U
 <translation id="7016587686120059767">Inhabilitar el modo Invitado</translation>
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7021590945154530517">Habilitar la supervisión del estado de los dispositivos</translation>
+<translation id="7025153290982655996">Volver al comportamiento anterior de alcance de las cookies</translation>
 <translation id="7025332601572838001">Configuración del comportamiento de los Términos del Servicio durante la primera ejecución de CCT</translation>
 <translation id="7026351325994257733">Permitir que las configuraciones de la red Wi‑Fi se sincronicen en los dispositivos <ph name="PRODUCT_OS_NAME" /> y en un teléfono Android conectado.</translation>
 <translation id="7027057540229843762">Usar el tema claro</translation>
@@ -8852,6 +8875,7 @@ Si se define, la lista de valores predeterminados se amplía con los valores con
 
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se enviará esta información del dispositivo.
       Si se le asigna el valor "true", se enviará información sobre los ventiladores del dispositivo.</translation>
+<translation id="7097146706461004834">Las cookies tienen un alcance vinculado al origen</translation>
 <translation id="710003290625031750">Descripción del esquema ampliado:</translation>
 <translation id="7101550508196914704">No mostrar el acceso directo a aplicaciones en la barra de marcadores</translation>
 <translation id="7105084505972468353">Si se define la política, esta permite controlar el tipo de lupa que se habilita.
@@ -9277,6 +9301,7 @@ Si se le asigna el valor False, se habilitará el comportamiento anterior.</tran
 
       Si esta política no se establece o se le asigna el valor false, se habilitará <ph name="TLS_FALSE_START" />. Si se asigna el valor true a esta política, se inhabilitará <ph name="TLS_FALSE_START" />.</translation>
 <translation id="7427607504279694910">Los registros de eventos de instalación de aplicaciones Android no se comparten con Google</translation>
+<translation id="7428523340768505080">Habilitar acuerdo de claves poscuántico para WebRTC</translation>
 <translation id="7431456748240652287">Esta política a nivel de dispositivo determina si <ph name="PRODUCT_OS_NAME" /> ofrecerá un algoritmo de acuerdo de claves poscuántico en TLS, usando el estándar ML-KEM del NIST. Antes de <ph name="PRODUCT_OS_NAME" /> 131, el algoritmo era Kyber, un borrador de iteración anterior del estándar. Permite que los servidores compatibles eviten que los ordenadores cuánticos descifren el tráfico de usuarios posteriormente.
 
 Si se habilita esta política o no se define, <ph name="PRODUCT_OS_NAME" /> ofrecerá un acuerdo de claves poscuántico en las conexiones TLS. El tráfico de usuarios quedará protegido frente a ordenadores cuánticos cuando se comunique con servidores compatibles.
@@ -9593,6 +9618,7 @@ Esta política se puede anular para orígenes de aplicaciones web aisladas espec
 <translation id="7696534428021833264">Habilitar la tarjeta de archivo de SharePoint y OneDrive en la página Nueva pestaña</translation>
 <translation id="7699644797467448158">Borrar window.name cuando la navegación sea de nivel superior, entre sitios e intercambie BrowsingContextGroup.</translation>
 <translation id="7701341006446125684">Establecer el tamaño de caché de aplicaciones y extensiones (en bytes)</translation>
+<translation id="7701825382808690457">Usar valor predeterminado del acuerdo de claves poscuántico para WebRTC</translation>
 <translation id="7703041979684393741">No permitir que se recojan registros de eventos WebRTC de los servicios de Google</translation>
 <translation id="770339941914297201">Comportamiento nuevo: las aplicaciones de kiosco de Chrome solo se actualizarán con la URL de actualización de la política</translation>
 <translation id="7703737669292992839">Evitar los cuadros de diálogo de selección de archivos</translation>
@@ -9868,6 +9894,7 @@ Si se inhabilita esta política o no se define, no se generará ningún certific
 <translation id="7906983682927840536">Obtener duración de keepalive al cerrar</translation>
 <translation id="7908384265697653397">Número de días tras los que se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="7909751052609510518">Trabajos de impresión (compatibles a partir de la versión 129)</translation>
+<translation id="7909839744818798105">Habilitar el comportamiento anterior de alcance de las cookies para una lista de dominios</translation>
 <translation id="7911685775490889216">Configura el intervalo (en segundos) durante el que se mostrará una imagen si el salvapantallas de la pantalla de bloqueo de sesión dispone de varias imágenes para mostrar.
 
 Los valores válidos están comprendidos entre 1 y 9999 segundos. Si no se define esta política, <ph name="PRODUCT_OS_NAME" /> usará el valor predeterminado de 60 segundos.
@@ -10979,6 +11006,19 @@ Si se inhabilitan las optimizaciones de JavaScript (asignando el valor 2 a esta 
 Esta política se puede anular para patrones de URL específicos usando las políticas <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> y <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Si no se define esta política, se habilitarán las optimizaciones de JavaScript.</translation>
+<translation id="8669238010996709070">Esta política permite controlar el acuerdo de claves poscuántico para WebRTC.
+
+Si se habilita esta política, se suministrará un acuerdo de claves poscuántico para WebRTC.
+
+Si se inhabilita esta política, no se suministrará un acuerdo de claves poscuántico para WebRTC.
+
+Si no se define esta política, el valor se establecerá mediante el proceso de lanzamiento predeterminado del acuerdo de claves poscuántico ofrecido para WebRTC.
+
+El suministro de un acuerdo de claves poscuántico es retrocompatible. Se espera que los pares de DTLS y el middleware de red actuales ignoren la nueva opción y sigan seleccionando las anteriores.
+
+Sin embargo, es posible que los dispositivos que no implementen correctamente DTLS no funcionen correctamente cuando se ofrezca la nueva opción. Por ejemplo, puede que se desconecten en respuesta a opciones no reconocidas o a los mensajes resultantes de mayor tamaño. Esos dispositivos no están preparados para los sistemas poscuánticos e interferirán en la transición empresarial hacia esos sistemas. Si se detecta este problema, los administradores deben ponerse en contacto con el proveedor para solucionarlo.
+
+Esta política es una medida temporal y se eliminará tras algunos logros.</translation>
 <translation id="8671119576957984818">Habilitar el centro para compartir escritorio</translation>
 <translation id="8671193325113134911">Habilitar la comprobación estricta de tipos de MIME para secuencias de comandos de workers</translation>
 <translation id="8671303329680827168">Esta política está obsoleta. Usa la política <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>

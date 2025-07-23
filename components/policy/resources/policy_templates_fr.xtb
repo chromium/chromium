@@ -2170,6 +2170,7 @@ Si cette règle est définie sur "True" ou n'est pas configurée, la fonctionnal
 Si cette règle est définie sur "False", la fonctionnalité d'ensembles de sites Web associés est désactivée.</translation>
 <translation id="2555244983262829274">Masquer le bouton Accueil dans la barre d'outils</translation>
 <translation id="2558154810835597313">Activer le provisionnement des certificats client pour un utilisateur ou profil géré</translation>
+<translation id="2559274305158103883">Désactiver l'accord de clé post-quantique pour WebRTC</translation>
 <translation id="2562213287271514629">Autoriser le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /> à être utilisé comme un plug-in <ph name="FLASH_PLUGIN_NAME" /> normal</translation>
 <translation id="2562339630163277285">Spécifie l'URL du moteur de recherche utilisé pour fournir des résultats instantanés. Cette URL doit contenir la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée lors de la requête par le texte déjà saisi par l'utilisateur.
 
@@ -2717,6 +2718,14 @@ Si la règle est définie sur "False", les enseignants ne peuvent pas accéder �
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
+<translation id="2988299727303303535">Cette règle permet d'exempter temporairement les domaines spécifiés du nouveau comportement des cookies lié à l'origine.
+
+Si vous ajoutez un domaine à la liste, les cookies de ce domaine pourront être utilisés par un autre schéma ou port.
+Pour en savoir plus, consultez <ph name="LEGACY_COOKIE_SCOPE_ENABLED_POLICY_NAME" />.
+
+Pour les cookies sur des domaines autres que ceux représentés par les formats spécifiés ici, ou pour tous les cookies si cette règle n'est pas configurée, le comportement des cookies sera lié à l'origine.
+
+Cette règle sera supprimée prochainement.</translation>
 <translation id="2989404644164421834">Actualiser les pages</translation>
 <translation id="299127280603727143">Groupe de règles liées aux paramètres d'accès au réseau local.  Consultez https://developer.chrome.com/blog/local-network-access</translation>
 <translation id="299446489108785864">Liste d'URL indiquant les URL pour lesquelles la règle <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> s'applique. Cette règle n'a aucune incidence sur les valeurs définies par les utilisateurs pour l'ouverture automatique.
@@ -8129,10 +8138,12 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 <translation id="6614648642325603511">Algorithme pour générer des paires de clés. L'option EC est prise en charge depuis la version 132.</translation>
 <translation id="661610294649586421">Ne pas autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="6617589895942747919">Heure de début de l'intervalle (incluse).</translation>
+<translation id="6620966939519407082">Paramètres de l'ancien champ d'application des cookies</translation>
 <translation id="6621830999036927230">Si cette règle est configurée, l'hôte d'accès à distance utilise cette URL pour valider les jetons d'authentification provenant des clients d'accès à distance afin d'accepter les connexions. Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.
 
       Remarque : Utilisez cette règle avec la règle "<ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />".</translation>
 <translation id="6625136649067113817">Flag booléen spécifiant si le correcteur orthographique est disponible ou non avec le clavier à l'écran.</translation>
+<translation id="6625716212597516929">Rétablir l'ancien comportement du champ d'application des cookies</translation>
 <translation id="6626319579493977784">Paramètres du code dynamique</translation>
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
 <translation id="6628120204569232711">Envoyer des rapports sur l'état du stockage</translation>
@@ -8182,6 +8193,17 @@ Sous <ph name="MS_WIN_NAME" />, la règle KDC est toujours respectée.</transla
 <translation id="6665670272107384733">Définir la fréquence à laquelle l'utilisateur doit saisir le mot de passe pour utiliser le déverrouillage rapide</translation>
 <translation id="6667586534922258705">Activer le bouton permettant d'afficher le mot de passe sur l'écran de connexion et de verrouillage</translation>
 <translation id="6667636336079341367">Autoriser Scanner sans améliorer les modèles d'IA.</translation>
+<translation id="6668559639284945695">Cette règle permet de rétablir l'ancien comportement du champ d'application des cookies.
+
+Cela signifie que les cookies définis sur un protocole ou un port spécifique (par exemple, HTTPS) sont accessibles depuis un autre protocole ou port.
+
+Si elle est activée, les cookies ne seront pas liés à leur schéma et port d'origine.
+
+Si elle est désactivée ou n'est pas configurée, les cookies se comportent avec un champ d'application lié à l'origine.
+
+Cette configuration ne s'appliquera qu'aux domaines de premier niveau (comme example.com) et non aux sous-domaines (comme sub.example.com).
+
+Cette règle sera supprimée prochainement.</translation>
 <translation id="6669244130218275293">Activer ou non la fonctionnalité de protection contre le fingerprinting de la <ph name="PRIVACY_SANDBOX_NAME" /> en mode navigation privée.</translation>
 <translation id="6669691206059842248">Configurer des URL de redirection OAuth supplémentaires par extension</translation>
 <translation id="6669700740683748046">Permet d'afficher ou non l'URL complète dans la barre d'adresse.
@@ -8695,6 +8717,7 @@ Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
 <translation id="7016587686120059767">Désactiver le mode Invité</translation>
 <translation id="7019805045859631636">Rapide</translation>
 <translation id="7021590945154530517">Activer le contrôle de l'état de l'appareil</translation>
+<translation id="7025153290982655996">Revenir à l'ancien comportement du champ d'application des cookies</translation>
 <translation id="7025332601572838001">Configurer le comportement de la boîte de dialogue des conditions d'utilisation la première fois que des onglets personnalisés Chrome sont exécutés</translation>
 <translation id="7026351325994257733">Autoriser la synchronisation des configurations du réseau Wi-Fi entre les appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté.</translation>
 <translation id="7027057540229843762">Utiliser le thème clair</translation>
@@ -8808,6 +8831,7 @@ Si cette règle est définie, la liste de valeurs par défaut est complétée pa
 
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
       Si elle est définie sur "True", les informations concernant le ventilateur de l'appareil sont transmises.</translation>
+<translation id="7097146706461004834">Les cookies ont un champ d'application lié à l'origine</translation>
 <translation id="710003290625031750">Description détaillée du schéma :</translation>
 <translation id="7101550508196914704">Ne pas afficher de raccourcis d'applications dans la barre de favoris</translation>
 <translation id="7105084505972468353">Si cette règle est définie, elle contrôle le type de loupe activé.
@@ -9232,6 +9256,7 @@ Si elle est définie sur "False", l'ancien comportement est activé.</translatio
 
       Si cette règle n'est pas configurée, ou si elle est définie sur "False", <ph name="TLS_FALSE_START" /> est activé. Si elle est définie sur "True", <ph name="TLS_FALSE_START" /> est désactivé.</translation>
 <translation id="7427607504279694910">Les journaux d'événements pour les installations d'applis Android ne sont pas partagés avec Google.</translation>
+<translation id="7428523340768505080">Activer l'accord de clé post-quantique pour WebRTC</translation>
 <translation id="7431456748240652287">Cette règle au niveau de l'appareil définit si <ph name="PRODUCT_OS_NAME" /> proposera ou non un algorithme d'accord de clé post-quantique dans TLS, en utilisant la norme ML-KEM du NIST. Avant <ph name="PRODUCT_OS_NAME" /> 131, l'algorithme était Kyber, une version antérieure de la norme. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
 
 Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> proposera un accord de clé post-quantique dans les connexions TLS. Dans ce cas, le trafic utilisateur sera protégé contre les ordinateurs quantiques lorsqu'il communiquera avec des serveurs compatibles.
@@ -9544,6 +9569,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 <translation id="7696534428021833264">Activer la carte de fichiers SharePoint et OneDrive pour la page "Nouvel onglet"</translation>
 <translation id="7699644797467448158">Supprimer window.name lorsque la navigation est de premier niveau et intersites, et échange BrowsingContextGroup.</translation>
 <translation id="7701341006446125684">Régler la taille du cache pour les applications et les extensions (en octets)</translation>
+<translation id="7701825382808690457">Utiliser la valeur par défaut pour l'accord de clé post-quantique pour WebRTC</translation>
 <translation id="7703041979684393741">Ne pas autoriser la collecte des journaux des événements WebRTC à partir des services Google</translation>
 <translation id="770339941914297201">Nouveau comportement : les applis Chrome Kiosk ne seront mises à jour qu'avec l'URL de mise à jour fournie par la règle</translation>
 <translation id="7703737669292992839">Empêcher l'affichage de boîtes de dialogue de sélection de fichiers</translation>
@@ -9819,6 +9845,7 @@ Si vous désactivez cette règle, ou si vous ne la configurez pas, aucun certifi
 <translation id="7906983682927840536">Durée de traitement des demandes keepalive à la fermeture</translation>
 <translation id="7908384265697653397">Durée en jours au terme de laquelle l'utilisateur est déconnecté si la version de <ph name="PRODUCT_OS_NAME" /> est antérieure à la version <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> spécifiée</translation>
 <translation id="7909751052609510518">Tâches d'impression (compatibles depuis la version 129)</translation>
+<translation id="7909839744818798105">Activer l'ancien comportement du champ d'application des cookies pour une liste de domaines</translation>
 <translation id="7911685775490889216">Configure l'intervalle d'affichage des images, en secondes, lorsque l'économiseur d'écran de l'écran de verrouillage doit afficher plusieurs images.
 
 Les valeurs valides sont comprises entre 1 seconde et 9 999 secondes. Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la valeur par défaut (60 secondes).
@@ -10918,6 +10945,19 @@ Si vous désactivez les optimisations JavaScript (en définissant la valeur de c
 Pour les formats d'URL spécifiques, cette règle peut être remplacée par les règles <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> et <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Si cette règle n'est pas configurée, les optimisations JavaScript sont activées.</translation>
+<translation id="8669238010996709070">Cette règle permet de contrôler l'accord de clé post-quantique pour WebRTC.
+
+Si cette règle est activée, l'accord de clé post-quantique est proposé pour WebRTC.
+
+Si cette règle est désactivée, l'accord de clé post-quantique n'est pas proposé pour WebRTC.
+
+Si cette règle n'est pas configurée, la valeur est définie par le processus de déploiement par défaut pour l'accord de clé post-quantique proposé pour WebRTC.
+
+La proposition d'un accord de clé post-quantique est rétrocompatible. Les homologues DTLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
+
+Toutefois, les appareils qui n'implémentent pas correctement DTLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux qui en résultent. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
+
+Cette règle est une mesure temporaire qui sera supprimée dans quelque temps.</translation>
 <translation id="8671119576957984818">Activer le hub de partage du bureau</translation>
 <translation id="8671193325113134911">Activer la vérification stricte du type MIME pour les scripts de nœuds de calcul</translation>
 <translation id="8671303329680827168">Cette règle est obsolète (veuillez utiliser la règle <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> à la place).</translation>

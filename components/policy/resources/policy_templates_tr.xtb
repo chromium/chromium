@@ -2214,6 +2214,7 @@ Bu politika ayarlanmadığında veya Doğru değerine ayarlandığında İlgili 
 Bu politika Yanlış değerine ayarlandığında İlgili Web Sitesi Grupları özelliği devre dışı bırakılır.</translation>
 <translation id="2555244983262829274">Araç çubuğundan Ana sayfa düğmesini gizle</translation>
 <translation id="2558154810835597313">Yönetilen kullanıcı hesabı veya profil için istemci sertifikalarının temel hazırlığını etkinleştirir</translation>
+<translation id="2559274305158103883">WebRTC için kuantum sonrası anahtar anlaşmasını devre dışı bırak</translation>
 <translation id="2562213287271514629">Eski <ph name="FLASH_PLUGIN_NAME" /> eklentisinin normal <ph name="FLASH_PLUGIN_NAME" /> olarak kullanılmasına izin ver</translation>
 <translation id="2562339630163277285">Anında arama sonuçları sağlamak için kullanılan arama motorunun URL'sini belirtir. URL, <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir. Sorgu sırasında, kullanıcının girdiği metin bu dizenin yerini alır.
 
@@ -2767,6 +2768,14 @@ Politika, Yanlış değerine ayarlanırsa öğretmenler bu özelliğe erişemez.
 <translation id="2985927503455169394">Asistan ilk katılım deneyiminin varsayılan modunu kullanma</translation>
 <translation id="2987155890997901449">ARC'yi etkinleştir</translation>
 <translation id="2987227569419001736">Web Bluetooth API'sının kullanımını kontrol et</translation>
+<translation id="2988299727303303535">Bu politika, belirtilen alan adlarının yeni kaynağa bağlı çerez davranışından geçici olarak muaf tutulmasını sağlar.
+
+Listeye eklenen bir alan adından gelen çerezlerin farklı şema veya bağlantı noktası tarafından kullanılmasına izin verilir.
+Daha fazla bilgiyi <ph name="LEGACY_COOKIE_SCOPE_ENABLED_POLICY_NAME" /> politikasında bulabilirsiniz.
+
+Burada belirtilen kalıpların dışında kalan alan adlarındaki çerezler ya da bu politika ayarlanmazsa tüm çerezler, kaynağa bağlı çerez davranışıyla çalışır.
+
+Bu politika, gelecekte kaldırılacaktır.</translation>
 <translation id="2989404644164421834">Sayfaları Yeniden Yükle</translation>
 <translation id="299127280603727143">Yerel Ağ Erişimi ayarlarıyla ilgili politika grubu.  https://developer.chrome.com/blog/local-network-access adresine göz atın</translation>
 <translation id="299446489108785864"><ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> politikasının hangi URL'lere uygulanacağını belirten URL'lerin listesi. Bu politikanın, kullanıcılar tarafından belirlenen otomatik olarak açık değerler üzerinde hiçbir etkisi yoktur.
@@ -8261,10 +8270,12 @@ Politikada yapılacak değişiklikler yalnızca ARC çalışmıyorken (ör. Chro
 <translation id="6614648642325603511">Anahtar çifti oluşturmak için kullanılan algoritma. EC seçeneği, 132 sürümünden itibaren desteklenmektedir.</translation>
 <translation id="661610294649586421">Sorunlu TLS sertifikalarına sahip sitelerde WebAuthn API isteklerine izin verme.</translation>
 <translation id="6617589895942747919">Aranın başlangıç zamanı (girilen tarihler dahil).</translation>
+<translation id="6620966939519407082">Eski çerez kapsamı ayarları</translation>
 <translation id="6621830999036927230">Politika ayarlanırsa uzaktan erişim ana makinesi, bağlantıları kabul etmek için uzaktan erişim istemcilerinin kimlik doğrulama jetonlarını doğrulamak üzere bu URL'yi kullanır. Boş bırakılır veya ayarlanmazsa bu özellik devre dışı bırakılır.
 
       Not: Bu politikayı, <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> politikası ile birlikte kullanın.</translation>
 <translation id="6625136649067113817">Dokunmatik klavyede yazım denetimi özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
+<translation id="6625716212597516929">Eski çerez kapsamı davranışına geri dön</translation>
 <translation id="6626319579493977784">Dinamik Kod Ayarları</translation>
 <translation id="66265932317331474">CPU bilgisi raporlama</translation>
 <translation id="6628120204569232711">Depolama durumunu bildir</translation>
@@ -8314,6 +8325,18 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa KD
 <translation id="6665670272107384733">Hızlı kilit açmayı kullanmak için kullanıcının şifreyi hangi sıklıkta girmesi gerektiğini ayarla</translation>
 <translation id="6667586534922258705">Şifre görüntüleme düğmesini giriş ve kilit ekranında gösterir.</translation>
 <translation id="6667636336079341367">Yapay zeka modellerini daha iyi hale getirmeden Tarayıcı özelliğine izin ver.</translation>
+<translation id="6668559639284945695">Bu politika, çerez kapsamı için eski davranışa geri dönülmesine olanak tanır.
+
+Yani, belirli bir protokolde (ör. HTTPS) veya bağlantı noktasında ayarlanan çerezlere başka bir protokol ya da bağlantı noktasından erişilebilir.
+
+Politika, Etkin değerine ayarlanırsa çerezler, kaynak şemalarına ve bağlantı noktalarına bağlanmaz.
+
+Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa çerezler kaynağa bağlı kapsama göre davranır.
+
+Bu yapılandırma yalnızca üst düzey alan adları (ör. example.com) için geçerlidir ve alt alan adları
+(ör. sub.example.com) için geçerli değildir.
+
+Bu politika, gelecekte kaldırılacaktır.</translation>
 <translation id="6669244130218275293"><ph name="PRIVACY_SANDBOX_NAME" /> Dijital Parmak İzi Koruması'nın Gizli modda etkinleştirilip etkinleştirilmeyeceğini seçin.</translation>
 <translation id="6669691206059842248">Uzantı başına ek OAuth yönlendirme URL'lerini yapılandır.</translation>
 <translation id="6669700740683748046">Bu özellik, tam URL'nin adres çubuğunda görüntülenmesini sağlar.
@@ -8836,6 +8859,7 @@ Bu politika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" />
 <translation id="7016587686120059767">Misafir modunu devre dışı bırak</translation>
 <translation id="7019805045859631636">Hızlı</translation>
 <translation id="7021590945154530517">Cihaz sağlığını izlemeyi etkinleştir</translation>
+<translation id="7025153290982655996">Eski çerez kapsamı davranışına geri dön</translation>
 <translation id="7025332601572838001">CCT için ilk çalıştırma sırasında Hizmet Şartları davranışını yapılandırma</translation>
 <translation id="7026351325994257733"><ph name="PRODUCT_OS_NAME" /> cihazlar ve bağlı Android telefon arasında kablosuz ağ yapılandırmalarının senkronize edilmesine izin ver.</translation>
 <translation id="7027057540229843762">Açık temayı kullan</translation>
@@ -8951,6 +8975,7 @@ Politika ayarlanırsa varsayılan değer listesine yeni yapılandırılan değer
 
       Bu politika false (yanlış) değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
       True (doğru) değerine ayarlanırsa cihazın pervane bilgileri raporlanır.</translation>
+<translation id="7097146706461004834">Çerezlerin kaynağa bağlı kapsamı var</translation>
 <translation id="710003290625031750">Geniş şema açıklaması:</translation>
 <translation id="7101550508196914704">Yer işareti çubuğunda uygulamalar kısayolunu gösterme</translation>
 <translation id="7105084505972468353">Bu politika ayarlanırsa etkinleştirilmiş olan ekran büyütecinin türünü belirler.
@@ -9396,6 +9421,7 @@ Bu politika Yanlış değerine ayarlandığında eski davranış etkinleştirili
 
       Bu politika ayarlanmazsa veya yanlış seçeneğine ayarlanırsa <ph name="TLS_FALSE_START" /> özelliği etkinleştirilir. Doğru seçeneğine ayarlanırsa <ph name="TLS_FALSE_START" /> özelliği devre dışı olur.</translation>
 <translation id="7427607504279694910">Android uygulama yükleme olay günlükleri Google ile paylaşılmaz</translation>
+<translation id="7428523340768505080">Kuantum sonrası anahtar anlaşmasını WebRTC için etkinleştir</translation>
 <translation id="7431456748240652287">Cihaz düzeyindeki bu politika, <ph name="PRODUCT_OS_NAME" /> hizmetinin TLS'de ML-KEM NIST standardını kullanarak kuantum sonrası anahtar anlaşması algoritması sunup sunmayacağını yapılandırır. <ph name="PRODUCT_OS_NAME" /> 131 sürümünden önce algoritma, standardın daha önceki bir taslak iterasyonu olan Kyber'di. Böylece, destekleyen sunucular, kullanıcı trafiğinin daha sonra kuantum bilgisayarlar tarafından şifresinin çözülmesine karşı koruma sağlayabilir.
 
 Bu politika, Etkin değerine ayarlanır veya ayarlanmazsa <ph name="PRODUCT_OS_NAME" />, TLS bağlantılarında kuantum sonrası anahtar anlaşması sunar. Bu durumda kullanıcı trafiği, uyumlu sunucularla iletişim kurarken kuantum bilgisayarlara karşı korunur.
@@ -9715,6 +9741,7 @@ Bu politika, <ph name="SMART_CARD_CONNECT_ALLOWED_FOR_URLS_POLICY_NAME" /> ve <p
 <translation id="7696534428021833264">NTP SharePoint ve OneDrive Dosya Kartı'nı etkinleştir</translation>
 <translation id="7699644797467448158">Gezinme üst düzeyde, siteler arasında olduğunda ve BrowsingContextGroup'u değiştirdiğinde window.name öğesini temizleyin.</translation>
 <translation id="7701341006446125684">Uygulamalar ve Uzantılar için önbellek boyutunu ayarla (bayt olarak)</translation>
+<translation id="7701825382808690457">WebRTC için kuantum sonrası anahtar anlaşması için varsayılan değeri kullan</translation>
 <translation id="7703041979684393741">Google hizmetlerinden WebRTC olay günlüğü toplanmasına izin verme</translation>
 <translation id="770339941914297201">Yeni davranış: Kiosk Chrome Uygulamaları yalnızca politikadaki güncelleme URL'si kullanılarak güncellenecektir</translation>
 <translation id="7703737669292992839">Dosya seçimi iletişim kutularını engelle</translation>
@@ -9990,6 +10017,7 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa hi
 <translation id="7906983682927840536">Kapanışta keepalive süresini getir</translation>
 <translation id="7908384265697653397"><ph name="PRODUCT_OS_NAME" /> sürümü, belirtilen <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> sürümünden düşükse kullanıcı oturumunun kaç gün sonra kapatılacağı</translation>
 <translation id="7909751052609510518">Yazdırma İşleri (sürüm 129'dan beri destekleniyor)</translation>
+<translation id="7909839744818798105">Alan adı listesi için eski çerez kapsamı davranışını etkinleştir</translation>
 <translation id="7911685775490889216">Kilit ekranındaki ekran koruyucunun göstereceği birden fazla resim olduğunda bir resmin gösterileceği zaman aralığını saniye cinsinden yapılandırır.
 
 Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, 60 saniye olan varsayılan değeri kullanır.
@@ -11120,6 +11148,26 @@ Bu politikanın değerinin 2'ye ayarlanarak JavaScript optimizasyonlarının dev
 Bu politika, <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> ve <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> politikaları kullanılarak belirli URL kalıpları için geçersiz kılınabilir.
 
 Bu politika ayarlanmadan bırakılırsa JavaScript optimizasyonları etkin olur.</translation>
+<translation id="8669238010996709070">Bu politika, WebRTC için kuantum sonrası anahtar anlaşmasını kontrol etmeye olanak tanır.
+
+Bu politika, Etkin değerine ayarlanırsa WebRTC için kuantum sonrası anahtar anlaşması
+sunulur.
+
+Bu politika, Devre Dışı değerine ayarlanırsa WebRTC için kuantum sonrası anahtar anlaşması
+sunulmaz.
+
+Bu politika ayarlanmazsa değer, WebRTC için sunulan kuantum sonrası anahtar anlaşmasıyla
+ilgili varsayılan kullanıma sunma süreci tarafından ayarlanır.
+
+Kuantum sonrası anahtar anlaşması sunmak, geriye dönük uyumludur. Mevcut DTLS
+eşlerinin ve ağ kurulumu ara katman yazılımlarının yeni seçeneği yoksayıp önceki seçenekleri
+belirlemeye devam etmesi beklenir.
+
+Ancak, DTLS doğru uygulamayan cihazlar yeni seçenek sunulduğunda düzgün çalışmayabilir. Örneğin, tanınmayan seçenekler
+veya ortaya çıkan daha büyük mesajlar nedeniyle bağlantıları kesilebilir. Bu tür cihazlar,
+kuantum sonrası kullanıma hazır değildir ve kuruluşun kuantum sonrası geçişini etkileyebilir. Bu sorunla karşılaşan yöneticiler, düzeltilmesi için satıcıyla iletişime geçmelidir.
+
+Bu politika geçici bir çözüm olup birkaç aşamadan sonra kaldırılacaktır.</translation>
 <translation id="8671119576957984818">Masaüstü paylaşım merkezini etkinleştir</translation>
 <translation id="8671193325113134911">Çalışan komut dosyaları için sıkı MIME türü kontrolünü etkinleştir</translation>
 <translation id="8671303329680827168">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" politikasını kullanın.</translation>

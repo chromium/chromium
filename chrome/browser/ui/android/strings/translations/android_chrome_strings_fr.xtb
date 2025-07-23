@@ -240,6 +240,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2088833076121753253">Pour terminer la configuration de la saisie automatique, redémarrez Chrome maintenant. Vos onglets seront rouverts automatiquement.</translation>
 <translation id="2091863218454846791">Affichage de la vue compacte</translation>
 <translation id="2093731487903423814">15 dernières minutes</translation>
+<translation id="2096577711562668473">Modifier le service de saisie automatique ?</translation>
 <translation id="2100273922101894616">Connexion automatique</translation>
 <translation id="2109384632594340939">photo de profil</translation>
 <translation id="2111511281910874386">Accéder à la page</translation>
@@ -325,6 +326,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2497852260688568942">Votre administrateur a désactivé la synchronisation</translation>
 <translation id="250020030759455918">Vous verrez votre état de connexion à <ph name="SITE_NAME" />, ainsi que vos données de navigation et les données du site dans Chrome</translation>
+<translation id="2502798195266898572">Bottom sheet du mode Lecture ouvert à pleine hauteur</translation>
 <translation id="2510106555128151389">Installation de <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">Rechercher des options d'achat</translation>
 <translation id="2513403576141822879">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la section <ph name="BEGIN_LINK" />Services Google/Synchronisation<ph name="END_LINK" />.</translation>
@@ -934,6 +936,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Téléchargement du fichier…}one{Téléchargement de # fichier…}other{Téléchargement de # fichiers…}}</translation>
 <translation id="5210286577605176222">Accéder à l'onglet précédent</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
+<translation id="5212800876504289412">Redémarrez Chrome pour terminer cette modification. Les onglets se rouvrent automatiquement lorsque vous redémarrez.</translation>
 <translation id="5215957675041756913">Contrôler vos données et votre compte</translation>
 <translation id="5218324087477576825">Vous devez indiquer un numéro de carte</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et d'autres <ph name="SEPARATOR" /> Chrome a supprimé ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
@@ -976,7 +979,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5414836363063783498">Validation…</translation>
 <translation id="5415871492522952905">Comme vous aurez accès à votre historique et à vos onglets sur tous vos appareils, vous pourrez continuer vos activités</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
-<translation id="5423934151118863508">Les pages les plus consultées s'affichent ici.</translation>
 <translation id="5424588387303617268">Espace disponible : <ph name="GIGABYTES" /> Go</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
@@ -1062,6 +1064,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Afficher la notification}one{Afficher la notification}other{Afficher les notifications}}</translation>
 <translation id="5814749351757353073">Tenez-vous informé de l'actualité de vos sites préférés</translation>
 <translation id="5823093032261493462">Voulez-vous quand même télécharger "<ph name="FILE_NAME" />" depuis <ph name="DOWNLOAD_DOMAIN" /> ?</translation>
+<translation id="5825135637446025843">Après le redémarrage de Chrome, les informations enregistrées à partir de votre nouveau fournisseur seront utilisées pour saisir automatiquement des mots de passe, des clés d'accès, des adresses, des modes de paiement et d'autres informations.</translation>
 <translation id="5828921839638612740">Vous pouvez supprimer les données dans les paramètres Chrome</translation>
 <translation id="5829586821381540080">Enregistré dans "<ph name="FOLDER_NAME" />"</translation>
 <translation id="583281660410589416">Inconnu</translation>
@@ -1178,6 +1181,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6296366034485697675">Exporter et supprimer</translation>
 <translation id="629730747756840877">Compte</translation>
+<translation id="6300697579369314762">Bottom sheet du mode Lecture ouverte à mi-hauteur</translation>
 <translation id="6301526076346731664">Ouvrir les outils pour les développeurs</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6307241780749477694">Confirmez votre identité pour obtenir tous vos mots de passe sur cet appareil</translation>
@@ -1398,6 +1402,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="71503698506017927">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">Bottom sheet du mode Lecture fermée</translation>
 <translation id="7165972437814027679">Découvrir pourquoi Chrome bloque certains fichiers</translation>
 <translation id="7168323970702333693">Connecté en tant que <ph name="USER_NAME" />. Ouvre les paramètres.</translation>
 <translation id="7173114856073700355">Paramètres</translation>
@@ -1731,7 +1736,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8493948351860045254">Libérer de l'espace</translation>
 <translation id="8497242791509864205">Ouvrir les options de tri</translation>
 <translation id="8497480609928300907">Explications du Guide sur la confidentialité</translation>
-<translation id="8497726226069778601">Aucune page à afficher pour le moment</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8505766168025405649">Affichez la notification pour connaître l'état du téléchargement</translation>
 <translation id="8506357771923193001">Vos téléchargements s'afficheront ici</translation>

@@ -240,6 +240,7 @@
 <translation id="2088833076121753253">Каб завяршыць наладжванне аўтазапаўнення, перазапусціце Chrome. Вашы ўкладкі аўтаматычна адкрыюцца зноў.</translation>
 <translation id="2091863218454846791">Выбрана кампактнае адлюстраванне</translation>
 <translation id="2093731487903423814">апошнія 15 хвілін</translation>
+<translation id="2096577711562668473">Змяніць службу аўтазапаўнення?</translation>
 <translation id="2100273922101894616">Аўтаматычны ўваход</translation>
 <translation id="2109384632594340939">відарыс профілю</translation>
 <translation id="2111511281910874386">Перайдзіце на старонку</translation>
@@ -325,6 +326,7 @@
 <translation id="2496180316473517155">Гісторыя прагляду сайтаў</translation>
 <translation id="2497852260688568942">Сінхранізацыя выключана вашым адміністратарам</translation>
 <translation id="250020030759455918">Вы ўбачыце, ці выкананы ўваход на сайт <ph name="SITE_NAME" />, гісторыю праглядаў і даныя сайтаў у Chrome</translation>
+<translation id="2502798195266898572">Ніжні аркуш "Рэжым чытання" адкрыты на ўсю вышыню</translation>
 <translation id="2510106555128151389">Ідзе ўсталяванне праграмы "<ph name="WEBAPK_NAME" />"...</translation>
 <translation id="2512234228327349533">Пошук варыянтаў куплі</translation>
 <translation id="2513403576141822879">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце ў раздзеле <ph name="BEGIN_LINK" />Сінхранізацыя і сэрвісы Google<ph name="END_LINK" /></translation>
@@ -934,6 +936,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Ідзе спампоўванне файла…}one{Ідзе спампоўванне # файла…}few{Ідзе спампоўванне # файлаў…}many{Ідзе спампоўванне # файлаў…}other{Ідзе спампоўванне # файла…}}</translation>
 <translation id="5210286577605176222">Перайсці на папярэднюю ўкладку</translation>
 <translation id="5210365745912300556">Закрыць укладку</translation>
+<translation id="5212800876504289412">Перазапусціце Chrome, каб прымяніць гэта змяненне. Пасля перазапуску ўкладкі адкрыюцца зноў аўтаматычна.</translation>
 <translation id="5215957675041756913">Кіраванне данымі і ўліковым запісам</translation>
 <translation id="5218324087477576825">Трэба ўказаць нумар карткі</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і іншыя <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо вы не наведвалі гэты сайт у апошні час</translation>
@@ -976,7 +979,6 @@
 <translation id="5414836363063783498">Ідзе праверка…</translation>
 <translation id="5415871492522952905">Гісторыя і ўкладкі будуць захоўвацца на ўсіх вашых прыладах, каб вы заўжды маглі працягнуць рабіць на любой з гэтых прылад тое, што перад гэтым рабілі на іншай</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) адразу страціць доступ да групы ўкладак "<ph name="GROUP_NAME" />"</translation>
-<translation id="5423934151118863508">Тут будуць паказвацца старонкі, якія вы найчасцей наведваеце</translation>
 <translation id="5424588387303617268">Даступна <ph name="GIGABYTES" /> ГБ</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
 <translation id="5433691172869980887">Імя карыстальніка скапіравана</translation>
@@ -1062,6 +1064,7 @@
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Паказаць апавяшчэнне}one{Паказаць апавяшчэнні}few{Паказаць апавяшчэнні}many{Паказаць апавяшчэнні}other{Паказаць апавяшчэнні}}</translation>
 <translation id="5814749351757353073">Падпісвайцеся на любімыя сайты</translation>
 <translation id="5823093032261493462">Усё роўна спампаваць файл "<ph name="FILE_NAME" />" з дамена "<ph name="DOWNLOAD_DOMAIN" />"?</translation>
+<translation id="5825135637446025843">Пасля перазапуску Chrome інфармацыя, захаваная новай службай, будзе выкарыстоўвацца для аўтазапаўнення пры ўводзе пароляў, ключоў доступу, адрасоў, спосабаў аплаты і іншых звестак.</translation>
 <translation id="5828921839638612740">Даныя можна выдаліць у наладах Chrome</translation>
 <translation id="5829586821381540080">Захавана ў папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="583281660410589416">Невядома</translation>
@@ -1178,6 +1181,7 @@
 <translation id="6295158916970320988">Усе сайты</translation>
 <translation id="6296366034485697675">Экспартаваць і выдаліць</translation>
 <translation id="629730747756840877">Уліковы запіс</translation>
+<translation id="6300697579369314762">Ніжні аркуш "Рэжым чытання" адкрыты на палову экрана</translation>
 <translation id="6301526076346731664">Адкрыць інструменты распрацоўшчыка</translation>
 <translation id="6303969859164067831">Выйсці і выключыць сінхранізацыю</translation>
 <translation id="6307241780749477694">Каб атрымаць доступ да ўсіх пароляў на гэтай прыладзе, спраўдзіце сваю асобу</translation>
@@ -1398,6 +1402,7 @@
 <translation id="71503698506017927">Шыфраванне фразай-паролем не прымяняецца да спосабаў аплаты і адрасоў з Google Pay.
 
 Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
+<translation id="7151332203500147130">Ніжні аркуш "Рэжым чытання" закрыты</translation>
 <translation id="7165972437814027679">Даведацца больш пра тое, чаму Chrome блакіруе некаторыя файлы</translation>
 <translation id="7168323970702333693">Вы ўвайшлі як <ph name="USER_NAME" />. Кнопка адкрывае налады.</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
@@ -1731,7 +1736,6 @@
 <translation id="8493948351860045254">Вызваліць месца</translation>
 <translation id="8497242791509864205">Адкрыць параметры сартавання</translation>
 <translation id="8497480609928300907">Тлумачэнні адносна дапаможніка па прыватнасці</translation>
-<translation id="8497726226069778601">Тут нічога няма… пакуль што</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8505766168025405649">Стан спампоўкі можна паглядзець у апавяшчэнні</translation>
 <translation id="8506357771923193001">Тут з’явяцца вашы спампоўкі</translation>

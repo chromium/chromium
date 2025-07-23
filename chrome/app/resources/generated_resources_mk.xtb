@@ -530,6 +530,7 @@
 <translation id="1354045473509304750">Продолжете да дозволувате <ph name="HOST" /> да ја користи и движи камерата</translation>
 <translation id="1354148503392558902">Се променува лозинката…</translation>
 <translation id="1355088139103479645">Да се избришат сите податоци?</translation>
+<translation id="1355088659320425659">Картички и историја</translation>
 <translation id="1356376170199999104">Дозволено – <ph name="PERMISSION_DETAILS" />. Вклучете го микрофонот со физички прекинувач.</translation>
 <translation id="1356959069439783953">Неактивните картички ќе добијат нов изглед</translation>
 <translation id="1358741672408003399">Правопис и граматика</translation>
@@ -2723,6 +2724,7 @@
 <translation id="2855243985454069333">Ќе се избрише историјата од сите синхронизирани уреди</translation>
 <translation id="2855812646048059450">Најавување со <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Создајте нов контејнер</translation>
+<translation id="2857047802954430547">Најавете се за да ги добиете лозинките, обележувачите и друго на сите ваши уреди</translation>
 <translation id="2859741939921354763">Увезување лозинки на <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Помрднете ја вилицата надесно</translation>
 <translation id="2861301611394761800">Ажурирањето на системот заврши. Рестартирајте го системот.</translation>
@@ -11400,6 +11402,7 @@
 <translation id="9003185744423389627">Поврзувањето со серверот на „Управник со уреди“ не успеа и има статус „<ph name="STATUS_TEXT" />“ во <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Да се скенира автоматски за достапни профили на eSIM?</translation>
 <translation id="9003647077635673607">Дозволи на сите веб-локации</translation>
+<translation id="9005774573776346118">За да ги добиете лозинките, обележувачите и друго на сите ваши уреди, најавете се како <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">Најавете се повторно</translation>
 <translation id="9008201768610948239">Игнорирај</translation>
 <translation id="9008201858626224558">Копче за назад до страницата со детали за <ph name="SUBPAGE_TITLE" /></translation>

@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Otvaranje grupe <ph name="TITLE_OF_GROUP" /> s <ph name="TAB_COUNT2" /> karticom}one{Otvaranje grupe <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT2" /> karticom}few{Otvaranje grupe <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT2" /> kartice}other{Otvaranje grupe <ph name="TITLE_OF_GROUP" /> sa <ph name="TAB_COUNT2" /> kartica}}</translation>
 <translation id="1273910660700874265">Opcije grupe kartica "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1300188005269437765">Odaberite kada će se kartice i grupe kartica automatski premjestiti u odjeljak neaktivnih.</translation>
+<translation id="1321004960118052490">Neaktivne stavke neće se gomilati</translation>
 <translation id="1329584516321524826">Upravo ažurirano</translation>
 <translation id="1340839264183302272">Napusti grupu</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Proširivanje dijeljene grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> karticom, bojom <ph name="COLOR_NAME" /> i oznakom <ph name="CARD_LABEL" />.}one{Proširivanje dijeljene grupe kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> karticom, bojom <ph name="COLOR_NAME" /> i oznakom <ph name="CARD_LABEL" />.}few{Proširivanje dijeljene grupe kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartice, bojom <ph name="COLOR_NAME" /> i oznakom <ph name="CARD_LABEL" />.}other{Proširivanje dijeljene grupe kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartica, bojom <ph name="COLOR_NAME" /> i oznakom <ph name="CARD_LABEL" />.}}</translation>
@@ -110,6 +111,7 @@
 <translation id="5073204694187207510">Sakrij mrežu cijelog ekrana</translation>
 <translation id="5076161749301278626">Želite li pogledati recenzije trgovine?</translation>
 <translation id="5161254044473106830">Naslov je obavezan</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome automatski zatvara neaktivne kartice i grupe kartica nakon <ph name="AUTO_DELETE_DELAY_ONE" /> mjesec. To možete promijeniti u postavkama.}one{Chrome automatski zatvara neaktivne kartice i grupe kartica nakon <ph name="AUTO_DELETE_DELAY_MANY" /> mjesec. To možete promijeniti u postavkama.}few{Chrome automatski zatvara neaktivne kartice i grupe kartica nakon <ph name="AUTO_DELETE_DELAY_MANY" /> mjeseca. To možete promijeniti u postavkama.}other{Chrome automatski zatvara neaktivne kartice i grupe kartica nakon <ph name="AUTO_DELETE_DELAY_MANY" /> mjeseci. To možete promijeniti u postavkama.}}</translation>
 <translation id="5339733443032484186">Posljednja kartica</translation>
 <translation id="5380159289133845234">Arhiviraj duplikate kartica</translation>
 <translation id="5400836586163650660">Siva</translation>

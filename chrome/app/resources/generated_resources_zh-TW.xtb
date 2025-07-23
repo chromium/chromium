@@ -529,6 +529,7 @@
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用及調整攝影機</translation>
 <translation id="1354148503392558902">正在變更密碼...</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
+<translation id="1355088659320425659">歷史記錄和分頁</translation>
 <translation id="1356376170199999104">已允許 – <ph name="PERMISSION_DETAILS" />。請使用實體開關開啟麥克風。</translation>
 <translation id="1356959069439783953">閒置分頁新外觀登場</translation>
 <translation id="1358741672408003399">拼字與文法</translation>
@@ -2709,6 +2710,7 @@
 <translation id="2855243985454069333">從所有已同步裝置上刪除歷史記錄</translation>
 <translation id="2855812646048059450">使用 <ph name="CREDENTIAL_PROVIDER" /> 帳戶登入</translation>
 <translation id="2856776373509145513">建立新容器</translation>
+<translation id="2857047802954430547">只要在裝置上登入帳戶，即可存取密碼、書籤和其他資訊</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
 <translation id="2860710618359053450">將下巴往右移動</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
@@ -11371,6 +11373,7 @@
 <translation id="9003185744423389627">連線至裝置管理工具伺服器失敗，狀態顯示為「<ph name="STATUS_TEXT" />」在「<ph name="FAILURE_TIME" />」的時候</translation>
 <translation id="90033698482696970">要自動掃描可用的 eSIM 設定檔嗎？</translation>
 <translation id="9003647077635673607">允許在所有網站上執行</translation>
+<translation id="9005774573776346118">如要在所有裝置上使用你的密碼、書籤和其他資料，請登入 <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">重新登入(&amp;S)</translation>
 <translation id="9008201768610948239">略過</translation>
 <translation id="9008201858626224558">「<ph name="SUBPAGE_TITLE" />」詳細資料頁面返回按鈕</translation>

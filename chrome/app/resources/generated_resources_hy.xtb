@@ -531,6 +531,7 @@
 <translation id="1354045473509304750">Թույլատրել <ph name="HOST" /> կայքին օգտագործել և տեղաշարժել տեսախցիկը</translation>
 <translation id="1354148503392558902">Գաղտնաբառի փոխում...</translation>
 <translation id="1355088139103479645">Ջնջե՞լ բոլոր տվյալները</translation>
+<translation id="1355088659320425659">Պատմություն և ներդիրներ</translation>
 <translation id="1356376170199999104">Թույլատրված է – <ph name="PERMISSION_DETAILS" />։ Միացրեք խոսափողը՝ օգտագործելով ֆիզիկական փոխանջատիչը։</translation>
 <translation id="1356959069439783953">Ոչ ակտիվ ներդիրները նոր տեսք ունեն</translation>
 <translation id="1358741672408003399">Ուղղագրություն և քերականություն</translation>
@@ -2709,6 +2710,7 @@
 <translation id="2855243985454069333">Ջնջել պատմությունը բոլոր համաժամացված սարքերից</translation>
 <translation id="2855812646048059450">Մուտք գործել <ph name="CREDENTIAL_PROVIDER" />-ի միջոցով</translation>
 <translation id="2856776373509145513">Նոր կոնտեյների ստեղծում</translation>
+<translation id="2857047802954430547">Մուտք գործեք՝ ձեր գաղտնաբառերը, էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="2859741939921354763">Ներմուծել գաղտնաբառերը <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Ծնոտն աջ տարեք</translation>
 <translation id="2861301611394761800">Համակարգի թարմացումն ավարտված է: Վերագործարկեք համակարգը:</translation>
@@ -11376,6 +11378,7 @@
 <translation id="9003185744423389627">Սարքերի կառավարիչի սերվերի միացումը ձախողվեց <ph name="FAILURE_TIME" /> «<ph name="STATUS_TEXT" />» կարգավիճակով</translation>
 <translation id="90033698482696970">Ավտոմատ որոնե՞լ հասանելի eSIM պրոֆիլներ</translation>
 <translation id="9003647077635673607">Թույլ տալ բոլոր վեբկայքերում</translation>
+<translation id="9005774573776346118">Ձեր գաղտնաբառերը, էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք <ph name="EMAIL" /> հաշիվ</translation>
 <translation id="9007688236643268728">&amp;Նորից մուտք գործեք</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9008201858626224558">«<ph name="SUBPAGE_TITLE" />» մանրամասների էջ տանող «Հետ» կոճակ</translation>

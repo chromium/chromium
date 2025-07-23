@@ -530,6 +530,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1354045473509304750">Continuar permitindo que <ph name="HOST" /> use e mova sua câmera</translation>
 <translation id="1354148503392558902">Mudando senha…</translation>
 <translation id="1355088139103479645">Excluir todos os dados?</translation>
+<translation id="1355088659320425659">Histórico e guias</translation>
 <translation id="1356376170199999104">Concedida (<ph name="PERMISSION_DETAILS" />). Ative o microfone usando o interruptor físico.</translation>
 <translation id="1356959069439783953">As guias inativas estão de cara nova</translation>
 <translation id="1358741672408003399">Ortografia e gramática</translation>
@@ -2722,6 +2723,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2855243985454069333">Exclui o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Fazer login com <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Criar um novo contêiner</translation>
+<translation id="2857047802954430547">Faça login para acessar suas senhas, favoritos e muito mais em todos os seus dispositivos</translation>
 <translation id="2859741939921354763">Importar senhas para o <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Mover a mandíbula para a direita</translation>
 <translation id="2861301611394761800">A atualização do sistema foi concluída. Reinicie o sistema.</translation>
@@ -11400,6 +11402,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9003185744423389627">A conexão com o Servidor de gerenciamento de dispositivos falhou, apresentando o status "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Procurar automaticamente perfis de eSIM disponíveis?</translation>
 <translation id="9003647077635673607">Permitir em todos os websites</translation>
+<translation id="9005774573776346118">Para acessar senhas, favoritos e muito mais em todos os seus dispositivos, faça login com a conta <ph name="EMAIL" /></translation>
 <translation id="9007688236643268728">&amp;Faça login novamente</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botão "Voltar" da página de detalhes do <ph name="SUBPAGE_TITLE" /></translation>

@@ -531,6 +531,7 @@
 <translation id="1354045473509304750">זה בסדר, אפשר להמשיך להרשות ל-<ph name="HOST" /> להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="1354148503392558902">שינוי הסיסמה מתבצע…</translation>
 <translation id="1355088139103479645">למחוק את כל הנתונים?</translation>
+<translation id="1355088659320425659">היסטוריה וכרטיסיות</translation>
 <translation id="1356376170199999104">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך להפעיל את המיקרופון באמצעות מתג פיזי.</translation>
 <translation id="1356959069439783953">עיצוב חדש לכרטיסיות לא פעילות</translation>
 <translation id="1358741672408003399">איות ודקדוק</translation>
@@ -6314,7 +6315,7 @@
 <translation id="542073632571549028">הגישה של <ph name="MEMBER_FULL_NAME" /> ‏(<ph name="EMAIL" />) לקבוצת הכרטיסיות בשם '<ph name="GROUP_NAME" />' תאבד באופן מיידי</translation>
 <translation id="5420935737933866496">העתקת &amp;הקישור</translation>
 <translation id="5421048291985386320">&amp;כניסה מחדש</translation>
-<translation id="542237158771780634">‏כשההגדרה מופעלת, הנתונים נשמרים בחשבון שלך ב-Google וניתן להשתמש בהם בכל המכשירים שלך. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה.</translation>
+<translation id="542237158771780634">‏כשההגדרה מופעלת, הנתונים נשמרים בחשבון שלך ב-Google ויש לך אפשרות להשתמש בהם בכל המכשירים. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה.</translation>
 <translation id="5422781158178868512">מצטערים, לא ניתן לזהות את מכשיר האחסון החיצוני שלך.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423600335480706727">בביקור הבא שלך, <ph name="SITE" /> ישתמש בהרשאות ברירת המחדל</translation>
@@ -9639,7 +9640,7 @@
 <translation id="7796453472368605346">סימני ניקוד</translation>
 <translation id="7797571222998226653">כבוי</translation>
 <translation id="7798504574384119986">הצגת הרשאות האינטרנט</translation>
-<translation id="7798559336183476274">עוד פעולות לגבי <ph name="BUTTON_TITLE" /></translation>
+<translation id="7798559336183476274">עוד פעולות בכפתור <ph name="BUTTON_TITLE" /></translation>
 <translation id="7798844538707273832">ההרשאה <ph name="PERMISSION" /> נחסמה אוטומטית</translation>
 <translation id="7799650166313181433">רק מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" /> יכולים לשתף עם המכשיר הזה. אין צורך לאשר את השיתוף בין המכשירים שלך.</translation>
 <translation id="7800485561443537737">נעשה שימוש בחבילת הגלישה של <ph name="DEVICE_TYPE" />, והספק עשוי לחייב בעלויות נוספות. עשוי להיות שימוש מוגבר בסוללה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
