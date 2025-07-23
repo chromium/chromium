@@ -221,8 +221,7 @@ BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
 // This feature is being built as a replacement for Private Network Access
 // (PNA), and if this is on PNA features may stop working.
 //
-// Public explainer:
-// https://github.com/explainers-by-googlers/local-network-access
+// Spec: https://wicg.github.io/local-network-access/
 BASE_FEATURE(kLocalNetworkAccessChecks,
              "LocalNetworkAccessChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -238,8 +237,7 @@ BASE_FEATURE_PARAM(bool,
 // Blocks local network requests without user permission to prevent exploitation
 // of vulnerable local devices.
 //
-// Public explainer:
-// https://github.com/explainers-by-googlers/local-network-access
+// Spec: https://wicg.github.io/local-network-access/
 BASE_FEATURE(kLocalNetworkAccessChecksWebRTC,
              "LocalNetworkAccessChecksWebRTC",
              base::FEATURE_DISABLED_BY_DEFAULT);

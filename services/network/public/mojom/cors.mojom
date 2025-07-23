@@ -153,7 +153,7 @@ enum CorsError {
   kPrivateNetworkAccessPermissionDenied,
 
   // User did not grant permission to access the local network.
-  // See: https://github.com/explainers-by-googlers/local-network-access
+  // See: https://wicg.github.io/local-network-access/
   kLocalNetworkAccessPermissionDenied,
 };
 

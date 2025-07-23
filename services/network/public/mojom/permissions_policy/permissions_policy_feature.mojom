@@ -319,7 +319,7 @@ enum PermissionsPolicyFeature {
   kDeviceAttributes = 135,
 
   // Allows a site to make local network access requests.
-  // See https://github.com/explainers-by-googlers/local-network-access
+  // See: https://wicg.github.io/local-network-access/
   kLocalNetworkAccess = 136,
 
   // Controls Protected Audience API's view and click functionality.

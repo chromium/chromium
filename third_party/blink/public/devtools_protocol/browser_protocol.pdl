@@ -6362,7 +6362,7 @@ domain Network
       # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
       PrivateNetworkAccessPermissionDenied
       # Request was a local network request and is denied by user permission.
-      # https://github.com/explainers-by-googlers/local-network-access
+      # https://wicg.github.io/local-network-access/
       LocalNetworkAccessPermissionDenied
 
   type CorsErrorStatus extends object

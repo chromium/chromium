@@ -22,10 +22,10 @@ import "services/network/public/mojom/ip_address_space.mojom";
 // See the definition in the Private Network Access(PNA) specification:
 // https://wicg.github.io/private-network-access/#ip-address-space
 //
-// Note: work is being done to move from the PNA specification to LNA.
+// Note: work is being done to move from the PNA specification to Local Network
+// Access (LNA).
 //
-// Explainer:
-// https://github.com/explainers-by-googlers/local-network-access
+// LNA Spec: https://wicg.github.io/local-network-access/
 enum PrivateNetworkRequestPolicy {
   // Allow the requests.
   kAllow,

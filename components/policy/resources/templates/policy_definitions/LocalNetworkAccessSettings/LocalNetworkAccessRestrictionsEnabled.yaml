@@ -16,7 +16,7 @@ desc: |-
   name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> requests will use the
   default handling of these requests.
 
-  See https://github.com/explainers-by-googlers/local-network-access for <ph
+  See https://wicg.github.io/local-network-access/ for <ph
   name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
 default: false
 

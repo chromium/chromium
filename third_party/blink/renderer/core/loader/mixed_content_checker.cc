@@ -590,7 +590,7 @@ bool MixedContentChecker::ShouldBlockFetch(
   // permission for the LNA request to go through.
   //
   // Reference:
-  // https://github.com/explainers-by-googlers/local-network-access
+  // https://wicg.github.io/local-network-access/
   //
   // This only checks for mixed content subresources; subframe navigation mixed
   // content is checked in
@@ -947,7 +947,7 @@ bool MixedContentChecker::ShouldAutoupgrade(
   // considered secure and not mixed content.
   //
   // Reference:
-  // https://github.com/explainers-by-googlers/local-network-access
+  // https://wicg.github.io/local-network-access/
   //
   // TODO(crbug.com/395895368): check the IP address space for initiator, only
   // skip when the initiator is more public.

@@ -72,11 +72,7 @@ Policy DerivePolicyForNonSecureContext(
   if (local_network_access_checks_enabled) {
     // LNA blocks all local network access requests coming from non-secure
     // contexts.
-    // See:
-    // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#integration-with-fetch
-    //
-    // TODO(crbug.com/395895368): figure out how this interacts with https
-    // upgrades.
+    // See: https://wicg.github.io/local-network-access/
     return network::features::kLocalNetworkAccessChecksWarn.Get()
                ? Policy::kPermissionWarn
                : Policy::kBlock;
@@ -119,8 +115,7 @@ Policy DerivePolicyForNonSecureContext(
 Policy DerivePolicyForSecureContext(AddressSpace ip_address_space,
                                     bool local_network_access_checks_enabled) {
   if (local_network_access_checks_enabled) {
-    // See:
-    // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#permission-prompts
+    // See: https://wicg.github.io/local-network-access/
     return network::features::kLocalNetworkAccessChecksWarn.Get()
                ? Policy::kPermissionWarn
                : Policy::kPermissionBlock;

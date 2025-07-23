@@ -329,7 +329,7 @@ bool MixedContentChecker::ShouldBlockInternal(
   // has given permission for the LNA request to go through.
   //
   // Reference:
-  // https://github.com/explainers-by-googlers/local-network-access
+  // https://wicg.github.io/local-network-access/
   //
   // This only checks for mixed content subframe navigations; subresource mixed
   // content is checked in

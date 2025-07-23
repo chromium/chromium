@@ -6,8 +6,7 @@ module network.mojom;
 
 // Represents AddressSpace from the "Local Network Access" spec. The ordering
 // is important, as it's used to determine whether a request is a Local Network
-// Access requests.  See:
-// https://github.com/explainers-by-googlers/local-network-access
+// Access requests.  See: https://wicg.github.io/local-network-access/
 enum IPAddressSpace {
   kLoopback, // contains the loopback device only.
 
