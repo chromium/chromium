@@ -14,6 +14,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
+#include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"

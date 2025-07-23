@@ -13,15 +13,15 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -33,6 +33,7 @@ class GrDirectContext;
 namespace cc {
 class ImageDecodeCache;
 class PaintCanvas;
+class SkiaPaintCanvas;
 }  // namespace cc
 
 namespace gpu {
@@ -58,8 +59,11 @@ namespace blink {
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
 
+class CanvasResource;
+class CanvasResourceSharedImage;
+class ExternalCanvasResource;
 class MemoryManagedPaintCanvas;
-class WebGraphicsContext3DProviderWrapper;
+class StaticBitmapImage;
 class WebGraphicsSharedImageInterfaceProvider;
 
 // Specifies whether the provider should rasterize paint commands on the CPU

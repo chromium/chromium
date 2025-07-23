@@ -9,6 +9,7 @@ include_rules = [
     "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/command_buffer/common/capabilities.h",
     "+gpu/command_buffer/common/shared_image_capabilities.h",
+    "+gpu/command_buffer/client/shared_image_interface.h",
     "+gpu/config/gpu_driver_bug_workaround_type.h",
     "+gpu/config/gpu_feature_info.h",
     "+media/base/video_frame.h",
