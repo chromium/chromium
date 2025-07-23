@@ -329,6 +329,7 @@ def _objectbuild_from_bazel_log(action, platform: _Platform) -> ObjectBuild:
             'bf16-f32-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni',
             'f32-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni',
             'qd8-f32-qc8w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni',
+            'qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni',
     ):
         # TODO: crbug.com/395969334 - These target breaks windows builds.
         return None
