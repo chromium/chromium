@@ -254,6 +254,10 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
   if (builder->would_be_last_line_if_not_for_ellipsis_) {
     EnsureRareData()->set_would_be_last_line_if_not_for_ellipsis();
   }
+  if (builder->line_clamp_after_layout_object_) {
+    EnsureRareData()->line_clamp_after_layout_object =
+        builder->line_clamp_after_layout_object_;
+  }
 
   if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
     EnsureRareData()->tallest_unbreakable_block_size =
@@ -406,6 +410,7 @@ void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(non_overflowing_scroll_ranges);
   visitor->Trace(column_spanner_path);
   visitor->Trace(exclusion_space);
+  visitor->Trace(line_clamp_after_layout_object);
   visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
 }

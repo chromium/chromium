@@ -348,11 +348,15 @@ void BlockLayoutAlgorithm::SetupRelayoutData(
   if (relayout_type == kRelayoutIgnoringLineClamp) {
     line_clamp_data_.data.state = LineClampData::kDisabled;
     line_clamp_data_.ignore_line_clamp = true;
-  } else if (relayout_type == kRelayoutWithLineClampBlockSize) {
+  } else if (relayout_type == kRelayoutClampingByLines) {
     line_clamp_data_.data.state = LineClampData::kClampByLines;
     line_clamp_data_.data.lines_until_clamp =
         line_clamp_data_.initial_lines_until_clamp =
             previous.line_clamp_data_.data.lines_until_clamp;
+  } else if (relayout_type == kRelayoutClampingAfterLayoutObject) {
+    line_clamp_data_.data.state = LineClampData::kClampAfterLayoutObject;
+    line_clamp_data_.data.clamp_after_layout_object =
+        previous.line_clamp_data_.last_layout_object;
   } else if (previous.line_clamp_data_.data.state ==
              LineClampData::kClampByLines) {
     line_clamp_data_.data.state = LineClampData::kClampByLines;
@@ -622,7 +626,11 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
         return RelayoutIgnoringLineClamp();
       }
       if (GetConstraintSpace().IsNewFormattingContext()) {
-        return RelayoutWithLineClampBlockSize(result->LinesUntilClamp());
+        if (result->LineClampAfterLayoutObject()) {
+          return RelayoutClampingAfterLayoutObject(
+              result->LineClampAfterLayoutObject());
+        }
+        return RelayoutClampingByLines(result->LinesUntilClamp());
       }
       // Propagate the error upwards until we reach the BFC root.
       return result;
@@ -673,12 +681,22 @@ NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
   return Relayout<BlockLayoutAlgorithm>(kRelayoutIgnoringLineClamp);
 }
 
-NOINLINE const LayoutResult*
-BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize(int lines_until_clamp) {
+NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutClampingByLines(
+    int lines_until_clamp) {
   DCHECK_EQ(line_clamp_data_.data.state,
             LineClampData::kMeasureLinesUntilBfcOffset);
-  line_clamp_data_.data.lines_until_clamp = std::max(1, lines_until_clamp);
-  return Relayout<BlockLayoutAlgorithm>(kRelayoutWithLineClampBlockSize);
+  line_clamp_data_.data.lines_until_clamp = std::max(0, lines_until_clamp);
+  return Relayout<BlockLayoutAlgorithm>(kRelayoutClampingByLines);
+}
+
+NOINLINE const LayoutResult*
+BlockLayoutAlgorithm::RelayoutClampingAfterLayoutObject(
+    const LayoutObject* layout_object) {
+  DCHECK_EQ(line_clamp_data_.data.state,
+            LineClampData::kMeasureLinesUntilBfcOffset);
+  DCHECK(layout_object);
+  line_clamp_data_.last_layout_object = layout_object;
+  return Relayout<BlockLayoutAlgorithm>(kRelayoutClampingAfterLayoutObject);
 }
 
 NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutForTextBoxTrimEnd() {
@@ -739,8 +757,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
             (BorderScrollbarPadding().block_start + clamp_bfc_offset)
                 .ClampNegativeToZero();
       }
-      line_clamp_data_.UpdateClampOffsetFromStyle(
-          clamp_bfc_offset, BorderScrollbarPadding().block_start);
+      line_clamp_data_.UpdateClampOffsetFromStyle(clamp_bfc_offset);
     }
   } else if (Style().HasLineClamp()) {
     if (!line_clamp_data_.data.IsLineClampContext()) {
@@ -857,6 +874,16 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     DCHECK(!constraint_space.IsNewFormattingContext());
   }
 #endif
+
+  // Clamping at the start of a line-clamp container.
+  // This can only happen when clamping by a height (e.g. line-clamp: auto;
+  // max-height: 0).
+  if (constraint_space.IsNewFormattingContext() &&
+      line_clamp_data_.IsPastClampPoint()) {
+    DCHECK(Style().HasLineClamp() && Style().LineClamp() == 0);
+    line_clamp_data_.previous_inflow_position_when_clamped =
+        previous_inflow_position;
+  }
 
   // If this node is a quirky container, (we are in quirks mode and either a
   // table cell or body), we set our margin strut to a mode where it only
@@ -1374,6 +1401,8 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
   } else {
     container_builder_.SetLinesUntilClamp(
         line_clamp_data_.data.LinesUntilClamp(/*show_measured_lines*/ true));
+    container_builder_.SetLineClampAfterLayoutObject(
+        line_clamp_data_.last_layout_object);
   }
 
   if (constraint_space.UseFirstLineStyle()) {
@@ -1871,6 +1900,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
           *previous_inflow_position, Padding().block_end)) {
     container_builder_.SetLinesUntilClamp(
         line_clamp_data_.LinesUntilClamp(/*show_measured_lines*/ true));
+    container_builder_.SetLineClampAfterLayoutObject(
+        line_clamp_data_.last_layout_object);
     return LayoutResult::kNeedsLineClampRelayout;
   }
 
@@ -2207,6 +2238,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
     DCHECK_EQ(line_clamp_data_.data.state,
               LineClampData::kMeasureLinesUntilBfcOffset);
     container_builder_.SetLinesUntilClamp(layout_result->LinesUntilClamp());
+    container_builder_.SetLineClampAfterLayoutObject(
+        line_clamp_data_.PropagateClampAfterLayoutObject(layout_result));
     return LayoutResult::kNeedsLineClampRelayout;
   }
 
@@ -2412,6 +2445,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
       DCHECK_EQ(line_clamp_data_.data.state,
                 LineClampData::kMeasureLinesUntilBfcOffset);
       container_builder_.SetLinesUntilClamp(layout_result->LinesUntilClamp());
+      container_builder_.SetLineClampAfterLayoutObject(
+          line_clamp_data_.PropagateClampAfterLayoutObject(layout_result));
       return LayoutResult::kNeedsLineClampRelayout;
     }
 
@@ -2586,6 +2621,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
                                             Padding().block_end)) {
       container_builder_.SetLinesUntilClamp(
           line_clamp_data_.LinesUntilClamp(/*show_measured_lines*/ true));
+      container_builder_.SetLineClampAfterLayoutObject(
+          line_clamp_data_.last_layout_object);
       return LayoutResult::kNeedsLineClampRelayout;
     }
   }

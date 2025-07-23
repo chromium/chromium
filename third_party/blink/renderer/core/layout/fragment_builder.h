@@ -155,6 +155,10 @@ class CORE_EXPORT FragmentBuilder {
     would_be_last_line_if_not_for_ellipsis_ = true;
   }
 
+  void SetLineClampAfterLayoutObject(const LayoutObject* layout_object) {
+    line_clamp_after_layout_object_ = layout_object;
+  }
+
   bool IsBlockEndTrimmableLine() const { return is_block_end_trimmable_line_; }
   void SetIsBlockEndTrimmableLine() { is_block_end_trimmable_line_ = true; }
 
@@ -592,6 +596,7 @@ class CORE_EXPORT FragmentBuilder {
   MarginStrut end_margin_strut_;
   ExclusionSpace exclusion_space_;
   std::optional<int> lines_until_clamp_;
+  const LayoutObject* line_clamp_after_layout_object_ = nullptr;
 
   ChildrenVector children_;
 
