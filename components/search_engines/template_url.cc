@@ -294,7 +294,8 @@ TemplateURLRef::SearchTermsArgs::ContextualSearchParams::ContextualSearchParams(
     std::string target_lang,
     std::string fluent_languages,
     std::string related_searches_stamp,
-    bool apply_lang_hint)
+    bool apply_lang_hint,
+    bool use_snippet_as_subtitle)
     : version(version),
       contextual_cards_version(contextual_cards_version),
       home_country(home_country),
@@ -305,7 +306,8 @@ TemplateURLRef::SearchTermsArgs::ContextualSearchParams::ContextualSearchParams(
       target_lang(target_lang),
       fluent_languages(fluent_languages),
       related_searches_stamp(related_searches_stamp),
-      apply_lang_hint(apply_lang_hint) {}
+      apply_lang_hint(apply_lang_hint),
+      use_snippet_as_subtitle(use_snippet_as_subtitle) {}
 
 TemplateURLRef::SearchTermsArgs::ContextualSearchParams::ContextualSearchParams(
     const ContextualSearchParams& other) = default;
@@ -1128,6 +1130,8 @@ std::string TemplateURLRef::HandleReplacements(
           args.push_back("ctxsl_rs=" + params.related_searches_stamp);
         if (params.apply_lang_hint)
           args.push_back("ctxsl_applylh=1");
+        if (params.use_snippet_as_subtitle)
+          args.push_back("ctxs_usas=1");
 
         HandleReplacement(std::string(), base::JoinString(args, "&"),
                           replacement, &url);

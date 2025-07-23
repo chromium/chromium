@@ -147,6 +147,12 @@ class ContextualSearchContext {
     apply_lang_hint_ = apply_lang_hint;
   }
 
+  // Returns whether the snippet should be used as the touch to search subtitle.
+  bool GetUseSnippetAsSubtitle() const { return use_snippet_as_subtitle_; }
+  void SetUseSnippetAsSubtitle(bool use_snippet_as_subtitle) {
+    use_snippet_as_subtitle_ = use_snippet_as_subtitle;
+  }
+
   virtual base::WeakPtr<ContextualSearchContext> AsWeakPtr();
 
  private:
@@ -172,6 +178,7 @@ class ContextualSearchContext {
   TranslationLanguages translation_languages_;
   std::string related_searches_stamp_;
   bool apply_lang_hint_ = false;
+  bool use_snippet_as_subtitle_ = false;
 
   base::WeakPtrFactory<ContextualSearchContext> weak_ptr_factory_{this};
 };

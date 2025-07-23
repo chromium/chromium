@@ -124,6 +124,8 @@ class TemplateURLRef {
       // translation is forced using |source_lang|. Note that this only supports
       // Partial Translate and so may only be enabled for select clients on the
       // server.
+      // The |use_snippet_as_subtitle| specifies whether or not the entity
+      // snippet should be used as the subtitle of the card.
       ContextualSearchParams(int version,
                              int contextual_cards_version,
                              std::string home_country,
@@ -134,7 +136,8 @@ class TemplateURLRef {
                              std::string target_lang,
                              std::string fluent_languages,
                              std::string related_searches_stamp,
-                             bool apply_lang_hint);
+                             bool apply_lang_hint,
+                             bool use_snippet_as_subtitle);
       ContextualSearchParams(const ContextualSearchParams& other);
       ~ContextualSearchParams();
 
@@ -183,6 +186,9 @@ class TemplateURLRef {
 
       // Whether hinted language detection should be used on the backend.
       bool apply_lang_hint = false;
+
+      // Whether the snippet should be used as the subtitle.
+      bool use_snippet_as_subtitle = false;
     };
 
     // Estimates dynamic memory usage.
