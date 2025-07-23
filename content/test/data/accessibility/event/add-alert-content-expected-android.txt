@@ -1,3 +1,1 @@
-TYPE_ANNOUNCEMENT - [Foo]
-TYPE_ANNOUNCEMENT - [Second alert]
-TYPE_ANNOUNCEMENT - [Third alert]
+TYPE_ANNOUNCEMENT - [First alert]

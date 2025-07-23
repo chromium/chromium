@@ -70,13 +70,38 @@ public class WebContentsAccessibilityEventsTest {
     /**
      * Perform a single test which will:
      *      1. Open the given HTML file
-     *      2. Execute the given javascript method until the javascript method returns false
+     *      2. Execute the javascript method "go()"
+     *      3. Repeat above step a total of |count| times
+     *      4. Read expectations file and compare with results
+     *
+     * @param inputFile                     HTML test input file
+     * @param expectationFile               TXT expectations file
+     * @param count                         Number of times to run method.
+     */
+    private void performTestWithRepeatCounter(String inputFile, String expectationFile, int count) {
+        // Build page from given file and enable testing framework, set a tracker.
+        mActivityTestRule.setupTestFromFile(BASE_FILE_PATH + inputFile);
+
+        // Execute method a given number of times.
+        for (int i = 0; i < count; i++) {
+            mActivityTestRule.executeJS("go()");
+        }
+
+        // Send an "end of test" signal, then check results.
+        mActivityTestRule.sendEndOfTestSignal();
+        assertResults(expectationFile);
+    }
+
+    /**
+     * Perform a single test which will:
+     *      1. Open the given HTML file
+     *      2. Execute the given javascript method
      *      3. Read expectations file and compare with results
      *
-     * @param inputFile HTML test input file
-     * @param expectationFile TXT expectations file
-     * @param javascriptMethod javascript method (e.g. "expand()" or "go()")
-     * @param shouldFilterTrivialEvents Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
+     * @param inputFile                     HTML test input file
+     * @param expectationFile               TXT expectations file
+     * @param javascriptMethod              javascript method (e.g. "expand()" or "go()")
+     * @param shouldFilterTrivialEvents     Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
      */
     private void performTestWithJavascriptMethod(
             String inputFile,
@@ -86,21 +111,9 @@ public class WebContentsAccessibilityEventsTest {
         // Build page from given file and enable testing framework, set a tracker.
         mActivityTestRule.setupTestFromFile(BASE_FILE_PATH + inputFile, shouldFilterTrivialEvents);
 
-        // Execute go() method until it's returning false.
-        boolean runGoAgain;
-        do {
-            String result;
-            try {
-                result = mActivityTestRule.executeJSAndGetResult(javascriptMethod);
-            }
-            catch (Exception e)
-            {
-                Assert.fail("A timeout occurred during JavaScript execution.");
-                return;
-            }
-            runGoAgain = Boolean.parseBoolean(result);
-            mActivityTestRule.sendReadyForTestSignal();
-        } while (runGoAgain);
+        // Execute given javascript function.
+        executeJS(javascriptMethod);
+
         // Send an "end of test" signal, then check results.
         mActivityTestRule.sendEndOfTestSignal();
         assertResults(expectationFile);
@@ -134,6 +147,11 @@ public class WebContentsAccessibilityEventsTest {
                         + "\n\n",
                 expectedResults,
                 actualResults);
+    }
+
+    // Helper pass-through methods to make tests easier to read.
+    private void executeJS(String method) {
+        mActivityTestRule.executeJS(method);
     }
 
     private String getTrackerResults() {
@@ -283,7 +301,8 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaComboboxExpand() {
-        performTest("aria-combo-box-expand.html", "aria-combo-box-expand-expected-android.txt");
+        performTestWithRepeatCounter(
+                "aria-combo-box-expand.html", "aria-combo-box-expand-expected-android.txt", 3);
     }
 
     @Test
