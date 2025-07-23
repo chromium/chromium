@@ -20,9 +20,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_input_receiver_compat.h"
-#include "base/debug/crash_logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/time/time.h"
 #include "components/input/android/android_input_callback.h"
 #include "components/input/android/input_token_forwarder.h"
 #include "components/input/android/scoped_input_receiver.h"
@@ -60,13 +57,9 @@ void ForwardVizInputTransferToken(
       surface_handle, viz_input_token_java);
 }
 
-void SetNumInputReceiversCrashKey(int num_input_receivers) {
-  static auto* const crash_key = base::debug::AllocateCrashKeyString(
-      "431139615-NumReceivers", base::debug::CrashKeySize::Size32);
-  if (crash_key) {
-    base::debug::SetCrashKeyString(crash_key,
-                                   base::NumberToString(num_input_receivers));
-  }
+void DestroyReceiverData(
+    std::unique_ptr<input::InputReceiverData> receiver_data) {
+  receiver_data.reset();
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -140,9 +133,6 @@ enum class InputOnVizStateProcessingResult {
 
 InputManager::~InputManager() {
   frame_sink_manager_->RemoveObserver(this);
-#if BUILDFLAG(IS_ANDROID)
-  SetNumInputReceiversCrashKey(num_input_receivers_);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 InputManager::InputManager(FrameSinkManagerImpl* frame_sink_manager)
@@ -288,9 +278,8 @@ void InputManager::OnDestroyedCompositorFrameSink(
     if (base::android::android_info::sdk_int() >=
         base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&InputManager::DestroyReceiverData,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(receiver_data_)));
+          FROM_HERE,
+          base::BindOnce(&DestroyReceiverData, std::move(receiver_data_)));
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -947,26 +936,10 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
       parent_input_surface, input_surface, std::move(browser_input_token),
       std::move(android_input_callback), std::move(callbacks),
       std::move(receiver), std::move(viz_input_token));
-  num_input_receivers_++;
-  SetNumInputReceiversCrashKey(num_input_receivers_);
 }
 
 bool InputManager::TransferInputBackToBrowser() {
   return ReturnInputBackToBrowser();
-}
-
-void InputManager::DestroyReceiverData(
-    std::unique_ptr<input::InputReceiverData> receiver_data) {
-  static auto* const crash_key = base::debug::AllocateCrashKeyString(
-      "431139615-DestroyReceiverTs", base::debug::CrashKeySize::Size64);
-  if (crash_key) {
-    base::debug::SetCrashKeyString(
-        crash_key,
-        base::NumberToString(base::TimeTicks::Now().ToUptimeMillis()));
-  }
-  num_input_receivers_--;
-  SetNumInputReceiversCrashKey(num_input_receivers_);
-  receiver_data.reset();
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

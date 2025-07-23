@@ -196,9 +196,6 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id,
       const gpu::SurfaceHandle& surface_handle);
 
-  void DestroyReceiverData(
-      std::unique_ptr<input::InputReceiverData> receiver_data);
-
   AndroidStateTransferHandler android_state_transfer_handler_;
 
   std::unique_ptr<input::InputReceiverData> receiver_data_;
@@ -207,8 +204,6 @@ class VIZ_SERVICE_EXPORT InputManager
   // DestroyCompositorFrameSink call to come before the callback is ran.
   base::flat_map<FrameSinkId, std::unique_ptr<base::CancelableOnceClosure>>
       pending_create_input_receiver_callback_;
-  // TODO(431139615): Cleanup member and crash keys after investigation.
-  int num_input_receivers_ = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   friend class MockInputManager;
