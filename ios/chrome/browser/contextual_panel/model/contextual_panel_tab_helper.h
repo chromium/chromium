@@ -96,6 +96,10 @@ class ContextualPanelTabHelper
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
 
+  // Invalidates the provided `configuration` from the cached list.
+  void InvalidateContextualPanelItemConfiguration(
+      ContextualPanelItemConfiguration* configuration);
+
  protected:
   // Protected to allow test overriding.
   ContextualPanelTabHelper(
@@ -130,6 +134,9 @@ class ContextualPanelTabHelper
 
   // Query all the individual models for their data.
   void QueryModels();
+
+  // Updates item configurations to match model responses.
+  void UpdateItemConfigurations();
 
   // Do any necessary work after all requests are completed or time out.
   void AllRequestsFinished();

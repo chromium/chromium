@@ -180,6 +180,27 @@ void ContextualPanelTabHelper::WasHidden(web::WebState* web_state) {
   }
 }
 
+#pragma mark - ContextualPanelItemConfiguration::Delegate
+
+void ContextualPanelTabHelper::InvalidateContextualPanelItemConfiguration(
+    ContextualPanelItemConfiguration* configuration) {
+  // Reset `configuration` if found in `responses_` and check whether all
+  // responses have been completed.
+  bool all_responses_completed = true;
+  bool config_found = false;
+  for (auto& [key, response] : responses_) {
+    all_responses_completed = all_responses_completed && response.completed;
+    if (key == configuration->item_type &&
+        response.configuration.get() == configuration) {
+      response.configuration.reset();
+      config_found = true;
+    }
+  }
+  if (config_found && all_responses_completed) {
+    UpdateItemConfigurations();
+  }
+}
+
 #pragma mark - Private
 
 void ContextualPanelTabHelper::QueryModels() {
@@ -233,7 +254,7 @@ void ContextualPanelTabHelper::ModelCallbackReceived(
   AllRequestsFinished();
 }
 
-void ContextualPanelTabHelper::AllRequestsFinished() {
+void ContextualPanelTabHelper::UpdateItemConfigurations() {
   sorted_weak_configurations_.clear();
 
   // The active configurations passed to observers as weak ptrs.
@@ -265,7 +286,10 @@ void ContextualPanelTabHelper::AllRequestsFinished() {
   for (auto& observer : observers_) {
     observer.ContextualPanelHasNewData(this, sorted_weak_configurations_);
   }
+}
 
+void ContextualPanelTabHelper::AllRequestsFinished() {
+  UpdateItemConfigurations();
   FireRequestsFinishedMetrics();
 }
 
