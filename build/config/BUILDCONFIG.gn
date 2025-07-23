@@ -573,7 +573,7 @@ foreach(_target_type,
     target(_target_type, target_name) {
       forward_variables_from(invoker,
                              "*",
-                             TESTONLY_AND_VISIBILITY + [ "use_libcxx_modules" ])
+                             TESTONLY_AND_VISIBILITY + [ "use_clang_modules" ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
         inputs = []
@@ -582,9 +582,8 @@ foreach(_target_type,
         deps = []
       }
 
-      _use_libcxx_modules = use_clang_modules
-      if (defined(invoker.use_libcxx_modules)) {
-        _use_libcxx_modules = invoker.use_libcxx_modules
+      if (!defined(use_libcxx_modules)) {
+        use_libcxx_modules = use_clang_modules
       }
 
       if (filter_include(
@@ -598,10 +597,10 @@ foreach(_target_type,
               ]) != []) {
         # Exceptions and RTTI flags are incompatible with libc++ modules build.
         # So disable modules build for such targets.
-        _use_libcxx_modules = false
+        use_libcxx_modules = false
       }
 
-      if (is_clang && _use_libcxx_modules) {
+      if (use_libcxx_modules) {
         # This is necessary for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:all_modules" ]
         if (!defined(defines)) {
@@ -613,10 +612,6 @@ foreach(_target_type,
                  []) {
         configs -= [ "//build/config/compiler:libcxx_module" ]
       }
-
-      # _use_libcxx_modules is considered unused, if is_clang = false in the
-      # above conditional.
-      not_needed([ "_use_libcxx_modules" ])
 
       # Consumed by the unsafe-buffers plugin during compile.
       #
@@ -663,7 +658,7 @@ foreach(_target_type,
                              "*",
                              TESTONLY_AND_VISIBILITY + [
                                    "no_default_deps",
-                                   "use_libcxx_modules",
+                                   "use_clang_modules",
                                  ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
@@ -702,9 +697,8 @@ foreach(_target_type,
         deps += [ "//build/config:${_target_type}_deps" ]
       }
 
-      _use_libcxx_modules = use_clang_modules
-      if (defined(invoker.use_libcxx_modules)) {
-        _use_libcxx_modules = invoker.use_libcxx_modules
+      if (!defined(use_libcxx_modules)) {
+        use_libcxx_modules = use_clang_modules
       }
 
       if (filter_include(
@@ -718,10 +712,10 @@ foreach(_target_type,
               ]) != []) {
         # Exceptions and RTTI flags are incompatible with libc++ modules build.
         # So disable modules build for such targets.
-        _use_libcxx_modules = false
+        use_libcxx_modules = false
       }
 
-      if (is_clang && _use_libcxx_modules) {
+      if (use_libcxx_modules) {
         # These are necessary for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:all_modules" ]
         if (!defined(defines)) {
@@ -733,10 +727,6 @@ foreach(_target_type,
                  []) {
         configs -= [ "//build/config/compiler:libcxx_module" ]
       }
-
-      # _use_libcxx_modules is considered unused, if is_clang = false in the
-      # above conditional.
-      not_needed([ "_use_libcxx_modules" ])
 
       # On Android, write shared library output file to metadata. We will use
       # this information to, for instance, collect all shared libraries that
