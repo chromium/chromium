@@ -34,6 +34,7 @@ CORE_EXPORT LineClampData::LineClampData(const LineClampData& o)
       clamp_after_layout_object = o.clamp_after_layout_object;
       break;
     case kMeasureLinesUntilBfcOffset:
+    case kClampByLinesWithBfcOffset:
       lines_until_clamp = o.lines_until_clamp;
       clamp_bfc_offset = o.clamp_bfc_offset;
       break;
@@ -55,6 +56,7 @@ CORE_EXPORT LineClampData& LineClampData::operator=(const LineClampData& o) {
       clamp_after_layout_object = o.clamp_after_layout_object;
       break;
     case kMeasureLinesUntilBfcOffset:
+    case kClampByLinesWithBfcOffset:
       lines_until_clamp = o.lines_until_clamp;
       clamp_bfc_offset = o.clamp_bfc_offset;
       break;
