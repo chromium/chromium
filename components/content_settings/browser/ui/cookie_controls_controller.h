@@ -255,6 +255,10 @@ class CookieControlsController final
 
   bool waiting_for_page_load_finish_ = false;
 
+  // If we should show the UB icon as confirmation of a change in the user's
+  // protection state on the current site.
+  bool show_icon_as_confirmation_ = false;
+
   base::ObserverList<CookieControlsObserver> observers_;
 
   base::WeakPtrFactory<CookieControlsController> weak_ptr_factory_{this};

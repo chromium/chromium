@@ -221,12 +221,24 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
     CookieControlsState controls_state,
     CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
-  if (icon_visible != icon_visible_ || controls_state != controls_state_ ||
+  // In the ACT reloading UI leave the icon fixed so it matches the bubble text.
+  if (bubble_coordinator_->IsReloadingState()) {
+    return;
+  }
+
+  // Always respect a change to the visibility of the icon, as this may happen
+  // regardless of the controls state (e.g. the omnibox having or losing focus).
+  icon_visible_ = icon_visible;
+  if (!ShouldBeVisible()) {
+    ResetSlideAnimation(false);
+    SetVisible(false);
+    return;
+  }
+  SetVisible(true);
+
+  // If the controls state has changed in some way, update the icon.
+  if (controls_state != controls_state_ ||
       blocking_status != blocking_status_ || should_highlight_) {
-    if (bubble_coordinator_->IsReloadingState()) {
-      return;
-    }
-    icon_visible_ = icon_visible;
     state_changed_ = controls_state != controls_state_;
     controls_state_ = controls_state;
     blocking_status_ = blocking_status;
@@ -260,13 +272,7 @@ void CookieControlsIconView::MaybeAnimateIcon() {
 }
 
 void CookieControlsIconView::UpdateIcon() {
-  if (!ShouldBeVisible()) {
-    ResetSlideAnimation(false);
-    SetVisible(false);
-    return;
-  }
   UpdateIconImage();
-  SetVisible(true);
   if (state_changed_ || label()->GetText().empty()) {
     SetLabelForState();
   }
