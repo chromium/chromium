@@ -26,13 +26,11 @@ class TouchToFillPaymentMethodViewController {
   virtual void ScanCreditCard(JNIEnv* env) = 0;
   // Causes the payment methods settings page to be shown
   virtual void ShowPaymentMethodSettings(JNIEnv* env) = 0;
-  virtual void CreditCardSuggestionSelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& unique_id,
-      bool is_virtual) = 0;
-  virtual void LocalIbanSuggestionSelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& guid) = 0;
+  virtual void CreditCardSuggestionSelected(JNIEnv* env,
+                                            const std::string& unique_id,
+                                            bool is_virtual) = 0;
+  virtual void LocalIbanSuggestionSelected(JNIEnv* env,
+                                           const std::string& guid) = 0;
   virtual void ServerIbanSuggestionSelected(JNIEnv* env,
                                             long instrument_id) = 0;
   // Called when the user taps on a loyalty card in the payments TTF bottom

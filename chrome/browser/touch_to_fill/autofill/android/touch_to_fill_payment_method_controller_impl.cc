@@ -200,20 +200,18 @@ void TouchToFillPaymentMethodControllerImpl::ShowPaymentMethodSettings(
 
 void TouchToFillPaymentMethodControllerImpl::CreditCardSuggestionSelected(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& unique_id,
+    const std::string& unique_id,
     bool is_virtual) {
   if (delegate_) {
-    delegate_->CreditCardSuggestionSelected(
-        base::android::ConvertJavaStringToUTF8(env, unique_id), is_virtual);
+    delegate_->CreditCardSuggestionSelected(unique_id, is_virtual);
   }
 }
 
 void TouchToFillPaymentMethodControllerImpl::LocalIbanSuggestionSelected(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& guid) {
+    const std::string& guid) {
   if (delegate_) {
-    delegate_->IbanSuggestionSelected(
-        Iban::Guid((*env).GetStringUTFChars(guid.obj(), nullptr)));
+    delegate_->IbanSuggestionSelected(Iban::Guid(guid));
   }
 }
 

@@ -137,11 +137,12 @@ class TouchToFillPaymentMethodControllerBridge
 
         void creditCardSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,
-                String uniqueId,
+                @JniType("std::string") String uniqueId,
                 boolean isVirtual);
 
         void localIbanSuggestionSelected(
-                long nativeTouchToFillPaymentMethodViewController, String guid);
+                long nativeTouchToFillPaymentMethodViewController,
+                @JniType("std::string") String guid);
 
         void serverIbanSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController, long instrumentId);
