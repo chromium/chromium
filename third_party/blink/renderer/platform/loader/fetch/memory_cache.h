@@ -175,8 +175,30 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   void AddInternal(ResourceMap*, MemoryCacheEntry*);
   void RemoveInternal(ResourceMap*, const ResourceMap::iterator&);
 
+  // Multi-tiered pruning strategy for strong references.
+  //
+  // This strategy intentionally uses a two-pass system to separate two distinct
+  // eviction goals:
+  // 1. Staleness Prevention: A chronological pass removes any resource older
+  //    than a hard max lifetime. This guarantees that no resource, regardless
+  //    of its value, remains in the cache indefinitely.
+  // 2. Memory Management: If the cache is still over budget, a value-based
+  //    pass evicts the lowest-value items (scored by type, frequency, and
+  //    cost) until the size limit is met.
+  //
+  // TODO(crbug.com/429719026): In the future, consider making the
+  // chronological pass use a resource's specific expiration time (from its
+  // HTTP headers) instead of the global max_lifetime. This would allow for
+  // more precise eviction.
+  void PruneTieredStrongReferences();
+
   void PruneStrongReferences();
   void ClearStrongReferences();
+
+  // Helper for saving a resource to the tiered cache.
+  void SaveTieredStrongReference(Resource* resource);
+
+  double CalculateResourceValue(const Resource* resource) const;
 
   // The number of bytes currently consumed by resources in the cache.
   size_t size_ = 0;
@@ -186,6 +208,9 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // of the list. This list is pruned from the front based on size and
   // age.
   HeapLinkedHashSet<Member<Resource>> strong_references_;
+
+  HeapVector<Member<Resource>> tiered_strong_references_;
+
   base::TimeTicks strong_references_prune_time_;
   base::TimeDelta strong_references_prune_duration_;
 

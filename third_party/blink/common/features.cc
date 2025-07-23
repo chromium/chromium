@@ -1914,6 +1914,36 @@ BASE_FEATURE(kMixedContentAutoupgrade,
              "AutoupgradeMixedContent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMemoryCacheIntelligentPruning,
+             "MemoryCacheIntelligentPruning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Weight for the resource's type priority in the value calculation.
+// A high default makes type a primary factor in determining importance.
+BASE_FEATURE_PARAM(double,
+                   kMemoryCacheIntelligentPruningFreqWeight,
+                   &kMemoryCacheIntelligentPruning,
+                   "freq_weight",
+                   50.0);
+
+// This weight is intentionally low to scale down the raw byte size. It ensures
+// that cost acts as a secondary, tie-breaking factor and does not dominate
+// the score compared to the more critical signals of resource type or
+// frequency.
+BASE_FEATURE_PARAM(double,
+                   kMemoryCacheIntelligentPruningCostWeight,
+                   &kMemoryCacheIntelligentPruning,
+                   "cost_weight",
+                   0.0001);
+
+// Weight for the resource's usage frequency score in the value calculation.
+// This is tuned to balance the logarithmic hit count against other factors.
+BASE_FEATURE_PARAM(double,
+                   kMemoryCacheIntelligentPruningTypeWeight,
+                   &kMemoryCacheIntelligentPruning,
+                   "type_weight",
+                   100.0);
+
 BASE_FEATURE(kMemoryCacheStrongReference,
              "MemoryCacheStrongReference",
 // Finch study showed no improvement on Android for strong memory cache.

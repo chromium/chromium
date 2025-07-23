@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
+#include <iterator>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -33,14 +34,85 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+namespace {
+// Use function-local statics to cache the feature parameters. This avoids
+// global constructors and ensures the .Get() call happens only once.
+double GetFrequencyWeight() {
+  static const double kWeight =
+      features::kMemoryCacheIntelligentPruningFreqWeight.Get();
+  return kWeight;
+}
+
+double GetCostWeight() {
+  static const double kWeight =
+      features::kMemoryCacheIntelligentPruningCostWeight.Get();
+  return kWeight;
+}
+
+double GetTypeWeight() {
+  static const double kWeight =
+      features::kMemoryCacheIntelligentPruningTypeWeight.Get();
+  return kWeight;
+}
+
+int GetResourceTypePriority(ResourceType type) {
+  switch (type) {
+    // --- Highest Priority ---
+    // These are typically render-blocking and critical for the first paint.
+    // Keeping them in cache has the highest impact on LCP.
+    case ResourceType::kCSSStyleSheet:
+    case ResourceType::kFont:
+      return 10;
+
+    // --- High Priority ---
+    // Resources that are typically essential for page functionality and initial
+    // rendering.
+    case ResourceType::kScript:
+    case ResourceType::kXSLStyleSheet:
+    case ResourceType::kRaw:
+      return 8;
+
+    // --- Medium Priority ---
+    // Visible content that contributes to LCP but is often non-blocking.
+    case ResourceType::kImage:
+    case ResourceType::kSVGDocument:
+    case ResourceType::kManifest:
+    // For testing purposes only; not a real resource type.
+    case ResourceType::kMock:
+      return 5;
+
+    // --- Low Priority ---
+    // Media or other content that is often loaded later or is not critical
+    // for the initial user experience.
+    case ResourceType::kAudio:
+    case ResourceType::kVideo:
+    case ResourceType::kTextTrack:
+      return 2;
+
+    // --- Lowest Priority ---
+    // Speculative fetches that may or may not be used.
+    case ResourceType::kLinkPrefetch:
+    case ResourceType::kSpeculationRules:
+    case ResourceType::kDictionary:
+      return 1;
+
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
 
 static Persistent<MemoryCache>* g_memory_cache;
 
@@ -106,6 +178,7 @@ MemoryCache::~MemoryCache() = default;
 void MemoryCache::Trace(Visitor* visitor) const {
   visitor->Trace(resource_maps_);
   visitor->Trace(strong_references_);
+  visitor->Trace(tiered_strong_references_);
   MemoryCacheDumpClient::Trace(visitor);
   MemoryPressureListener::Trace(visitor);
 }
@@ -248,7 +321,14 @@ Resource* MemoryCache::ResourceForURL(const KURL& resource_url,
   if (resources_it == resources->end()) {
     return nullptr;
   }
-  return resources_it->value->GetResource();
+
+  Resource* resource = resources_it->value->GetResource();
+  if (resource &&
+      base::FeatureList::IsEnabled(features::kMemoryCacheIntelligentPruning)) {
+    resource->UpdateMemoryCacheLastAccessedTime();
+  }
+
+  return resource;
 }
 
 HeapVector<Member<Resource>> MemoryCache::ResourcesForURL(
@@ -404,6 +484,15 @@ void MemoryCache::OnMemoryPressure(
   }
 }
 
+void MemoryCache::SaveTieredStrongReference(Resource* resource) {
+  if (tiered_strong_references_.Contains(resource)) {
+    return;
+  }
+
+  // Just append. The list will be sorted later in PruneTieredStrongReferences.
+  tiered_strong_references_.push_back(resource);
+}
+
 void MemoryCache::SavePageResourceStrongReferences(
     HeapVector<Member<Resource>> resources) {
   DCHECK(base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference));
@@ -416,11 +505,80 @@ void MemoryCache::SavePageResourceStrongReferences(
 
 void MemoryCache::SaveStrongReference(Resource* resource) {
   resource->UpdateMemoryCacheLastAccessedTime();
-  strong_references_.AppendOrMoveToLast(resource);
-  PruneStrongReferences();
+  if (base::FeatureList::IsEnabled(features::kMemoryCacheIntelligentPruning)) {
+    CHECK(strong_references_.empty());
+    SaveTieredStrongReference(resource);
+  } else {
+    CHECK(tiered_strong_references_.empty());
+    strong_references_.AppendOrMoveToLast(resource);
+  }
+}
+
+void MemoryCache::PruneTieredStrongReferences() {
+  // Monitor the performance of this new value-based pruning logic to ensure
+  // the O(N log N) sorting step is not a bottleneck in production.
+  SCOPED_UMA_HISTOGRAM_TIMER("MemoryCache.PruneTieredStrongReferences.Time");
+
+  const size_t max_threshold = static_cast<size_t>(
+      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
+
+  size_t current_total_size = 0;
+  for (Resource* resource : tiered_strong_references_) {
+    current_total_size += resource->size();
+  }
+
+  // Enforce a maximum lifetime for all strong references.
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta max_lifetime = strong_references_prune_duration_;
+
+  WTF::EraseIf(tiered_strong_references_,
+               [&](const Member<Resource>& resource) {
+                 if (now - resource->MemoryCacheLastAccessed() > max_lifetime) {
+                   // This resource IS expired. Update the size and return true
+                   // to erase it.
+                   current_total_size -= resource->size();
+                   return true;
+                 }
+                 return false;
+               });
+
+  //  Early exit if already under budget
+  if (current_total_size <= max_threshold) {
+    return;
+  }
+
+  // Sort the vector from HIGHEST value to LOWEST value. This allows us to
+  // efficiently remove the lowest-value items from the end.
+  // We only pay O(N log N) cost when we know we have to evict.
+  // The sorting is "Just-In-Time" for the eviction decisions.
+  std::sort(tiered_strong_references_.begin(), tiered_strong_references_.end(),
+            [this](const Member<Resource>& a, const Member<Resource>& b) {
+              // Note: `>` sorts in descending order (highest value first).
+              return CalculateResourceValue(a.Get()) >
+                     CalculateResourceValue(b.Get());
+            });
+
+  // Evict the lowest-value items from the end of the sorted vector until we are
+  // within budget. This is very fast.
+  while (current_total_size > max_threshold) {
+    if (tiered_strong_references_.empty()) {
+      break;
+    }
+
+    Resource* resource_to_evict = tiered_strong_references_.back().Get();
+    current_total_size -= resource_to_evict->size();
+    tiered_strong_references_.pop_back();
+  }
 }
 
 void MemoryCache::PruneStrongReferences() {
+  if (base::FeatureList::IsEnabled(features::kMemoryCacheIntelligentPruning)) {
+    PruneTieredStrongReferences();
+    return;
+  }
+  // Measures the execution time of the original pruning logic.
+  SCOPED_UMA_HISTOGRAM_TIMER("MemoryCache.PruneStrongReferences.Time");
+
   DCHECK(base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference));
   static const size_t max_threshold = static_cast<size_t>(
       features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
@@ -466,6 +624,19 @@ void MemoryCache::PruneStrongReferences() {
 
 void MemoryCache::ClearStrongReferences() {
   strong_references_.clear();
+}
+
+double MemoryCache::CalculateResourceValue(const Resource* resource) const {
+  double cost_score = resource->EncodedSize() * GetCostWeight();
+  // Use log1p to apply diminishing returns to the hit count. This prevents a
+  // high frequency from dominating the resource's score and is numerically
+  // stable for low hit counts.
+  double frequency_score =
+      std::log1p(resource->MemoryCacheHitCount()) * GetFrequencyWeight();
+  double type_score =
+      GetResourceTypePriority(resource->GetType()) * GetTypeWeight();
+
+  return frequency_score + cost_score + type_score;
 }
 
 }  // namespace blink
