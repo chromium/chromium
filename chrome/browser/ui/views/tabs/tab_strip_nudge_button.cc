@@ -37,7 +37,8 @@ TabStripNudgeButton::TabStripNudgeButton(
     const std::u16string& label_text,
     const ui::ElementIdentifier& element_identifier,
     Edge flat_edge,
-    const gfx::VectorIcon& icon)
+    const gfx::VectorIcon& icon,
+    const bool show_close_button)
     : TabStripControlButton(tab_strip_controller,
                             std::move(pressed_callback),
                             icon,
@@ -61,7 +62,12 @@ TabStripNudgeButton::TabStripNudgeButton(
   label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
 
   const gfx::Insets label_margin =
-      gfx::Insets().set_left(kTabStripNudgeLabelMargin);
+      show_close_button
+          ? gfx::Insets().set_left(kTabStripNudgeLabelMargin)
+          :
+          // Set a right margin on the label when the close button is hidden.
+          gfx::Insets().set_left_right(kTabStripNudgeLabelMargin,
+                                       kTabStripNudgeCloseButtonMargin);
   label()->SetProperty(views::kMarginsKey, label_margin);
 
   SetForegroundFrameActiveColorId(kColorTabSearchButtonCRForegroundFrameActive);
@@ -73,7 +79,9 @@ TabStripNudgeButton::TabStripNudgeButton(
 
   set_paint_transparent_for_custom_image_theme(false);
 
-  SetCloseButton(std::move(close_pressed_callback));
+  if (show_close_button) {
+    SetCloseButton(std::move(close_pressed_callback));
+  }
 
   UpdateColors();
 }
@@ -84,7 +92,6 @@ void TabStripNudgeButton::SetOpacity(float factor) {
   label()->layer()->SetOpacity(factor);
   close_button_->layer()->SetOpacity(factor);
 }
-
 void TabStripNudgeButton::SetWidthFactor(float factor) {
   width_factor_ = factor;
   PreferredSizeChanged();

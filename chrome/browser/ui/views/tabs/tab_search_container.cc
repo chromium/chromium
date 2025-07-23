@@ -300,8 +300,8 @@ TabSearchContainer::CreateAutoTabGroupButton(
       base::BindRepeating(&TabSearchContainer::OnAutoTabGroupButtonDismissed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE), kAutoTabGroupButtonElementId,
-      GetFlatEdge(false, tab_search_before_chips),
-      gfx::VectorIcon::EmptyIcon());
+      GetFlatEdge(false, tab_search_before_chips), gfx::VectorIcon::EmptyIcon(),
+      /*show_close_button=*/true);
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
@@ -324,7 +324,7 @@ TabSearchContainer::CreateTabDeclutterButton(
           ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
           : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
       kTabDeclutterButtonElementId, GetFlatEdge(false, tab_search_before_chips),
-      gfx::VectorIcon::EmptyIcon());
+      gfx::VectorIcon::EmptyIcon(), /*show_close_button=*/true);
 
   button->SetTooltipText(
       features::IsTabstripDedupeEnabled()

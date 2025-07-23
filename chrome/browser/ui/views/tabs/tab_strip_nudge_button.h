@@ -21,7 +21,8 @@ class TabStripNudgeButton : public TabStripControlButton {
                       const std::u16string& initial_label_text,
                       const ui::ElementIdentifier& element_identifier,
                       Edge flat_edge,
-                      const gfx::VectorIcon& icon);
+                      const gfx::VectorIcon& icon,
+                      const bool show_close_button);
 
   TabStripNudgeButton(const TabStripNudgeButton&) = delete;
   TabStripNudgeButton& operator=(const TabStripNudgeButton&) = delete;
