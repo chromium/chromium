@@ -5626,6 +5626,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "hub-back-button",
+    "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "hub-slide-animation",
     "owners": [ "madhavpruthi@google.com", "ckitagawa@chromium.org" ],
     "expiry_milestone": 146

@@ -11,8 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "extensions/buildflags/buildflags.h"
 
-namespace chrome {
-namespace android {
+namespace chrome::android {
 
 // Alphabetical:
 BASE_DECLARE_FEATURE(kAccountForSuppressedKeyboardInsets);
@@ -154,6 +153,7 @@ BASE_DECLARE_FEATURE(kGroupNewTabWithParent);
 BASE_DECLARE_FEATURE(kHeadlessTabModel);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
 BASE_DECLARE_FEATURE(kHomepageIsNewTabPagePolicyAndroid);
+BASE_DECLARE_FEATURE(kHubBackButton);
 BASE_DECLARE_FEATURE(kHubSlideAnimation);
 BASE_DECLARE_FEATURE(kLockBackPressHandlerAtStart);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
@@ -325,7 +325,6 @@ constexpr base::FeatureParam<bool> kTouchToSearchCalloutSnippetAsSubtitle(
     "snippet_as_subtitle",
     /*default_value=*/false);
 
-}  // namespace android
-}  // namespace chrome
+}  // namespace chrome::android
 
 #endif  // CHROME_BROWSER_FLAGS_ANDROID_CHROME_FEATURE_LIST_H_

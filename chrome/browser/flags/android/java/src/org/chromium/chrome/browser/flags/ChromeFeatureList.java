@@ -435,6 +435,7 @@ public abstract class ChromeFeatureList {
     public static final String HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID =
             "HomepageIsNewTabPagePolicyAndroid";
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
+    public static final String HUB_BACK_BUTTON = "HubBackButton";
     public static final String HUB_SLIDE_ANIMATION = "HubSlideAnimation";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INSTANCE_SWITCHER_V2 = "InstanceSwitcherV2";
@@ -902,7 +903,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sHomepageIsNewTabPagePolicyAndroid =
             newCachedFlag(HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_ANDROID, false);
-    public static final CachedFlag sHubSlideAnimation = newCachedFlag(HUB_SLIDE_ANIMATION, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
     public static final CachedFlag sLegacyTabStateDeprecation =
@@ -1141,7 +1141,6 @@ public abstract class ChromeFeatureList {
                     sGridTabSwitcherUpdate,
                     sHistoryPaneAndroid,
                     sHomepageIsNewTabPagePolicyAndroid,
-                    sHubSlideAnimation,
                     sKeyboardEscBackNavigation,
                     sLegacyTabStateDeprecation,
                     sLockBackPressHandlerAtStart,
@@ -1259,6 +1258,10 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH, false);
     public static final MutableFlagWithSafeDefault sForceBrowserControlsUponExitingFullscreen =
             newMutableFlagWithSafeDefault(FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN, true);
+    public static final MutableFlagWithSafeDefault sHubBackButton =
+            newMutableFlagWithSafeDefault(HUB_BACK_BUTTON, false);
+    public static final MutableFlagWithSafeDefault sHubSlideAnimation =
+            newMutableFlagWithSafeDefault(HUB_SLIDE_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sMediaIndicatorsAndroid =

@@ -5991,6 +5991,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPinnedTabsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidPinnedTabs)},
 
+    {"hub-back-button", flag_descriptions::kHubBackButtonName,
+     flag_descriptions::kHubBackButtonDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kHubBackButton)},
+
     // Hub slide animation.
     {"hub-slide-animation", flag_descriptions::kHubSlideAnimationName,
      flag_descriptions::kHubSlideAnimationDescription, kOsAndroid,
@@ -12898,8 +12902,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"media-indicators-android",
-     flag_descriptions::kMediaIndicatorsAndroidName,
+    {"media-indicators-android", flag_descriptions::kMediaIndicatorsAndroidName,
      flag_descriptions::kMediaIndicatorsAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kMediaIndicatorsAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)

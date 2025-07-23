@@ -3053,6 +3053,9 @@ extern const char kTabGroupSyncDisableNetworkLayerDescription[];
 extern const char kAndroidPinnedTabsName[];
 extern const char kAndroidPinnedTabsDescription[];
 
+extern const char kHubBackButtonName[];
+extern const char kHubBackButtonDescription[];
+
 extern const char kHubSlideAnimationName[];
 extern const char kHubSlideAnimationDescription[];
 

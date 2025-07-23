@@ -324,6 +324,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHeadlessTabModel,
     &kHistoryPaneAndroid,
     &kHomepageIsNewTabPagePolicyAndroid,
+    &kHubBackButton,
     &kHubSlideAnimation,
     &kLegacyTabStateDeprecation,
     &kLockBackPressHandlerAtStart,
@@ -836,6 +837,10 @@ BASE_FEATURE(kGridTabSwitcherUpdate,
 
 BASE_FEATURE(kAndroidPinnedTabs,
              "AndroidPinnedTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHubBackButton,
+             "HubBackButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHubSlideAnimation,

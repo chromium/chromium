@@ -8231,6 +8231,7 @@ from previous Chrome versions.
   <int value="-2140007754" label="HomepageSettingsUIConversion:disabled"/>
   <int value="-2139889252" label="AllowCrossDeviceFeatureSuite:disabled"/>
   <int value="-2139379065" label="StoragePressureUI:enabled"/>
+  <int value="-2139096597" label="HubBackButton:enabled"/>
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
   <int value="-2138128164" label="FeedbackOnContinueSectionRemove:enabled"/>
   <int value="-2137491678" label="TabGroupsSaveV2:disabled"/>
@@ -14248,6 +14249,7 @@ from previous Chrome versions.
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
   <int value="63693157" label="cast-streaming-force-disable-hardware-h264"/>
   <int value="64016368" label="SafeBrowsingSeparateNetworkContexts:enabled"/>
+  <int value="64404303" label="HubBackButton:disabled"/>
   <int value="64547625" label="ScanningAppJelly:disabled"/>
   <int value="64942701" label="OfflinePagesSvelteConcurrentLoading:disabled"/>
   <int value="65245449" label="FilesBannerFramework:enabled"/>
