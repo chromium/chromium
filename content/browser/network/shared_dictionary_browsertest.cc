@@ -862,7 +862,7 @@ class SharedDictionaryBrowserTest
     RunWriteDictionaryTestImpl(
         GetTargetShell(), fetch_type, page_url, dictionary_url,
         GetBrowserType() == BrowserType::kNormal
-            ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+            ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
             : "Net.SharedDictionaryWriterInMemory.DictionarySize",
         expect_success);
   }
@@ -1517,7 +1517,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestEmptyString) {
   // Wait for the dictionary to be registered.
   EXPECT_TRUE(WaitForHistogram(
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize"));
 
   // Check that Chrome uses the dictionary while fetching the resource using
@@ -1546,7 +1546,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestScript) {
   // Wait for the dictionary to be registered.
   EXPECT_TRUE(WaitForHistogram(
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize"));
 
   // Check that Chrome uses the dictionary while fetching a script.

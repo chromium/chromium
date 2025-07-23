@@ -662,11 +662,11 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
     return;
   }
 
-  base::UmaHistogramMemoryKB(
-      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB", info.size());
-  base::UmaHistogramMemoryKB(
-      "Net.SharedDictionaryManagerOnDisk.TotalDictionarySizeKBWhenAdded",
-      result.value().total_dictionary_size());
+  base::UmaHistogramMemoryKB("Net.SharedDictionaryManagerOnDisk.DictionarySize",
+                             info.size());
+  base::UmaHistogramMemoryMB(
+      "Net.SharedDictionaryManagerOnDisk.TotalDictionarySizeWhenAdded",
+      result.value().total_dictionary_size() / (1000 * 1000));
   base::UmaHistogramCounts1000(
       "Net.SharedDictionaryManagerOnDisk.TotalDictionaryCountWhenAdded",
       result.value().total_dictionary_count());
