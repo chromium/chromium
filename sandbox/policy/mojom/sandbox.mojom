@@ -149,5 +149,5 @@ enum Sandbox {
   [EnableIf=is_linux|is_mac] kOnDeviceTranslation,
 
   // Like kUtility but allows loading of the shape detection internal library.
-  [EnableIf=is_chromeos|is_linux] kShapeDetection,
+  [EnableIf=is_chromeos] kShapeDetection,
 };
