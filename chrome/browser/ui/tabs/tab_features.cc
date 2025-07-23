@@ -258,6 +258,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<glic::GlicTabIndicatorHelper>(&tab);
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
+    if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
+      actor_ui_tab_controller_ =
+          std::make_unique<actor::ui::ActorUiTabController>(
+              tab, actor::ActorKeyedService::Get(profile));
+    }
   }  // IsInNormalWindow() end.
 
   // This block instantiates the page action controllers that depends on the
@@ -341,12 +346,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   tab_ui_helper_ = std::make_unique<TabUIHelper>(tab);
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
-
-  if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
-    actor_ui_tab_controller_ =
-        std::make_unique<actor::ui::ActorUiTabController>(
-            tab, actor::ActorKeyedService::Get(profile));
-  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

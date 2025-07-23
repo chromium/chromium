@@ -245,6 +245,7 @@ class TabFeatures {
 
   TabUIHelper* tab_ui_helper() { return tab_ui_helper_.get(); }
 
+  // actor_ui_tab_controller_ is only initialized for normal browser windows
   actor::ui::ActorUiTabController* actor_ui_tab_controller() {
     return actor_ui_tab_controller_.get();
   }
