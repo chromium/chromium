@@ -38,7 +38,8 @@ class NtpPromoOrderTest : public testing::Test {
   void RegisterPromo(NtpPromoIdentifier id,
                      base::flat_set<NtpPromoIdentifier> show_after,
                      int last_top_spot_session,
-                     int top_spot_session_count) {
+                     int top_spot_session_count,
+                     base::Time completed_time) {
     registry_.AddPromo(NtpPromoSpecification(
         id, NtpPromoContent("", 0, 0),
         NtpPromoSpecification::EligibilityCallback(),
@@ -48,13 +49,21 @@ class NtpPromoOrderTest : public testing::Test {
     KeyedNtpPromoData pref;
     pref.last_top_spot_session = last_top_spot_session;
     pref.top_spot_session_count = top_spot_session_count;
+    pref.completed = completed_time;
     storage_service_.SaveNtpPromoData(id, pref);
   }
 
   // Generates the list of ordered promos, from everything put in the registry.
+  // Eligible or completed state is ignored, since determining that is not
+  // part of the ordering system.
   std::vector<NtpPromoIdentifier> Pending() {
     auto promos = registry_.GetNtpPromoIdentifiers();
     return order_policy_->OrderPendingPromos(std::move(promos));
+  }
+
+  std::vector<NtpPromoIdentifier> Completed() {
+    auto promos = registry_.GetNtpPromoIdentifiers();
+    return order_policy_->OrderCompletedPromos(std::move(promos));
   }
 
  private:
@@ -65,76 +74,89 @@ class NtpPromoOrderTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(NtpPromoOrderTest, SinglePromo) {
-  RegisterPromo("a", {}, 0, 0);
+TEST_F(NtpPromoOrderTest, PendingSinglePromo) {
+  RegisterPromo("a", {}, 0, 0, base::Time());
   EXPECT_THAT(Pending(), ElementsAre("a"));
 }
 
-TEST_F(NtpPromoOrderTest, NoPromo) {
+TEST_F(NtpPromoOrderTest, PendingNoPromo) {
   EXPECT_THAT(Pending(), testing::IsEmpty());
 }
 
 // The promo registry orders by key; ensure this is preserved.
-TEST_F(NtpPromoOrderTest, StableOrder) {
-  RegisterPromo("c", {}, 0, 0);
-  RegisterPromo("b", {}, 0, 0);
-  RegisterPromo("a", {}, 0, 0);
+TEST_F(NtpPromoOrderTest, PendingStableOrder) {
+  RegisterPromo("c", {}, 0, 0, base::Time());
+  RegisterPromo("b", {}, 0, 0, base::Time());
+  RegisterPromo("a", {}, 0, 0, base::Time());
   EXPECT_THAT(Pending(), ElementsAre("a", "b", "c"));
 }
 
-TEST_F(NtpPromoOrderTest, CircularDependency) {
-  RegisterPromo("a", {"b"}, 0, 0);
-  RegisterPromo("b", {"a"}, 0, 0);
+TEST_F(NtpPromoOrderTest, PendingCircularDependency) {
+  RegisterPromo("a", {"b"}, 0, 0, base::Time());
+  RegisterPromo("b", {"a"}, 0, 0, base::Time());
   EXPECT_CHECK_DEATH(Pending());
 }
 
-TEST_F(NtpPromoOrderTest, ShowAfter) {
-  RegisterPromo("a", {"b"}, 0, 0);
-  RegisterPromo("b", {"c"}, 0, 0);
-  RegisterPromo("c", {}, 0, 0);
+TEST_F(NtpPromoOrderTest, PendingShowAfter) {
+  RegisterPromo("a", {"b"}, 0, 0, base::Time());
+  RegisterPromo("b", {"c"}, 0, 0, base::Time());
+  RegisterPromo("c", {}, 0, 0, base::Time());
   EXPECT_THAT(Pending(), ElementsAre("c", "b", "a"));
 }
 
 // Promos that have no dependencies should all be shown above any promos that
 // have dependencies. The no-dependency promos form an effective group at the
 // top of the list, so they need to be kept together.
-TEST_F(NtpPromoOrderTest, ShowsAfterAllTopRanked) {
-  RegisterPromo("a", {"b"}, 0, 0);
-  RegisterPromo("b", {}, 0, 0);
-  RegisterPromo("c", {}, 0, 0);
+TEST_F(NtpPromoOrderTest, PendingShowsAfterAllTopRanked) {
+  RegisterPromo("a", {"b"}, 0, 0, base::Time());
+  RegisterPromo("b", {}, 0, 0, base::Time());
+  RegisterPromo("c", {}, 0, 0, base::Time());
 
   EXPECT_THAT(Pending(), ElementsAre("b", "c", "a"));
 }
 
-TEST_F(NtpPromoOrderTest, LastTopPromoStaysTop) {
+TEST_F(NtpPromoOrderTest, PendingLastTopPromoStaysTop) {
   ASSERT_GT(kNumSessionsBetweenRotation, 1);
 
-  RegisterPromo("a", {}, 100, 1);
-  RegisterPromo("b", {}, 0, 0);
+  RegisterPromo("a", {}, 100, 1, base::Time());
+  RegisterPromo("b", {}, 0, 0, base::Time());
 
   EXPECT_THAT(Pending(), ElementsAre("a", "b"));
 }
 
-TEST_F(NtpPromoOrderTest, LastTopPromoStaysTopLastTime) {
-  RegisterPromo("a", {}, 100, kNumSessionsBetweenRotation - 1);
-  RegisterPromo("b", {}, 0, 0);
+TEST_F(NtpPromoOrderTest, PendingLastTopPromoStaysTopLastTime) {
+  RegisterPromo("a", {}, 100, kNumSessionsBetweenRotation - 1, base::Time());
+  RegisterPromo("b", {}, 0, 0, base::Time());
 
   EXPECT_THAT(Pending(), ElementsAre("a", "b"));
 }
 
-TEST_F(NtpPromoOrderTest, LastTopPromoRotates) {
-  RegisterPromo("a", {}, 100, kNumSessionsBetweenRotation);
-  RegisterPromo("b", {}, 0, 0);
+TEST_F(NtpPromoOrderTest, PendingLastTopPromoRotates) {
+  RegisterPromo("a", {}, 100, kNumSessionsBetweenRotation, base::Time());
+  RegisterPromo("b", {}, 0, 0, base::Time());
 
   EXPECT_THAT(Pending(), ElementsAre("b", "a"));
 }
 
-TEST_F(NtpPromoOrderTest, LastTopPromoRotatesWithDependencies) {
-  RegisterPromo("a", {}, 100, kNumSessionsBetweenRotation);
-  RegisterPromo("b", {}, 0, 0);
-  RegisterPromo("c", {"a"}, 0, 0);
+TEST_F(NtpPromoOrderTest, PendingLastTopPromoRotatesWithDependencies) {
+  RegisterPromo("a", {}, 100, kNumSessionsBetweenRotation, base::Time());
+  RegisterPromo("b", {}, 0, 0, base::Time());
+  RegisterPromo("c", {"a"}, 0, 0, base::Time());
 
   EXPECT_THAT(Pending(), ElementsAre("b", "a", "c"));
+}
+
+TEST_F(NtpPromoOrderTest, CompletedSinglePromo) {
+  RegisterPromo("a", {}, 0, 0, base::Time());
+
+  EXPECT_THAT(Completed(), ElementsAre("a"));
+}
+
+TEST_F(NtpPromoOrderTest, CompletedPromosShowMostRecentFirst) {
+  RegisterPromo("a", {}, 0, 0, base::Time::FromSecondsSinceUnixEpoch(2));
+  RegisterPromo("b", {}, 0, 0, base::Time::FromSecondsSinceUnixEpoch(3));
+  RegisterPromo("c", {}, 0, 0, base::Time::FromSecondsSinceUnixEpoch(1));
+  EXPECT_THAT(Completed(), ElementsAre("b", "a", "c"));
 }
 
 }  // namespace user_education

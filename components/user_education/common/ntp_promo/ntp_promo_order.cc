@@ -37,12 +37,18 @@ bool DependenciesSatisfied(const NtpPromoIdentifier& id,
   return difference.empty();
 }
 
-// Helper struct to facilitate sorting promos by their ordering criteria.
-struct SortablePromo {
+// Helper struct to facilitate sorting pending promos.
+struct SortablePendingPromo {
   NtpPromoIdentifier id;
   int rank = 0;
   int last_top_spot_session = 0;
   int top_spot_session_count = 0;
+};
+
+// Helper struct to facilitate sorting pending promos.
+struct SortableCompletedPromo {
+  NtpPromoIdentifier id;
+  base::Time completed;
 };
 
 }  // namespace
@@ -78,12 +84,12 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderPendingPromos(
   }
 
   // Construct a sortable list of promo ordering objects.
-  std::vector<SortablePromo> promos;
+  std::vector<SortablePendingPromo> promos;
   promos.reserve(ids.size());
   for (const auto& id : ids) {
     const auto prefs =
         storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
-    promos.push_back(SortablePromo{
+    promos.push_back(SortablePendingPromo{
         .id = id,
         .last_top_spot_session = prefs.last_top_spot_session,
         .top_spot_session_count = prefs.top_spot_session_count,
@@ -110,7 +116,8 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderPendingPromos(
 
   // Sort promos by rank, and then by least-recently shown.
   std::stable_sort(promos.begin(), promos.end(),
-                   [](const SortablePromo& a, const SortablePromo& b) {
+                   [](const SortablePendingPromo& a,
+                      const SortablePendingPromo& b) {
                      return a.rank < b.rank ||
                             (a.rank == b.rank &&
                              a.last_top_spot_session < b.last_top_spot_session);
@@ -123,9 +130,9 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderPendingPromos(
   // extracting and inserting at the beginning. Since we're searching from the
   // bottom, use a reverse iterator to find the last top-ranked promo, and
   // rotate it to the "end" of the reversed order (ie. the start).
-  auto it_r =
-      std::find_if(promos.rbegin(), promos.rend(),
-                   [](const SortablePromo& p) { return (p.rank == kTopRank); });
+  auto it_r = std::find_if(
+      promos.rbegin(), promos.rend(),
+      [](const SortablePendingPromo& p) { return (p.rank == kTopRank); });
   CHECK(it_r != promos.rend());
   if (it_r->top_spot_session_count > 0 &&
       it_r->top_spot_session_count < num_sessions_between_rotation_) {
@@ -136,7 +143,36 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderPendingPromos(
   std::vector<NtpPromoIdentifier> ordered_ids;
   ordered_ids.reserve(promos.size());
   std::transform(promos.begin(), promos.end(), std::back_inserter(ordered_ids),
-                 [](const SortablePromo& promo) { return promo.id; });
+                 [](const SortablePendingPromo& promo) { return promo.id; });
+  return ordered_ids;
+}
+
+std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderCompletedPromos(
+    const std::vector<NtpPromoIdentifier>& ids) {
+  // Construct a sortable list of promo ordering objects.
+  std::vector<SortableCompletedPromo> promos;
+  promos.reserve(ids.size());
+  for (const auto& id : ids) {
+    const auto prefs =
+        storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
+    promos.push_back(SortableCompletedPromo{
+        .id = id,
+        .completed = prefs.completed,
+    });
+  }
+
+  std::stable_sort(
+      promos.begin(), promos.end(),
+      [](const SortableCompletedPromo& a, const SortableCompletedPromo& b) {
+        // Descending time order.
+        return a.completed > b.completed;
+      });
+
+  // Distill and return the ordered list of IDs.
+  std::vector<NtpPromoIdentifier> ordered_ids;
+  ordered_ids.reserve(promos.size());
+  std::transform(promos.begin(), promos.end(), std::back_inserter(ordered_ids),
+                 [](const SortableCompletedPromo& promo) { return promo.id; });
   return ordered_ids;
 }
 
