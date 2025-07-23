@@ -106,6 +106,15 @@ bool TextureLayerImpl::WillDraw(
           /* main_thread_release_callback= */ std::move(release_callback_),
           /* evicted_callback= */ std::move(evicted_cb));
       DCHECK(resource_id_);
+
+      // Mark the layer to push its resource to viz.
+      // Under TreesInViz, SerializeTextureLayerExtra() sends the resource only
+      // if |needs_set_resource_push_| is true and |resource_id_| is valid.
+      // Since the resource is imported here in WillDraw() to generate a valid
+      // |resource_id_|, we must set this flag to ensure the resource gets
+      // serialized to Viz on the next frame. Without this, the layer may appear
+      // blank when it first becomes visible.
+      needs_set_resource_push_ = true;
     }
     own_resource_ = false;
   }
