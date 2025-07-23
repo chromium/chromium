@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Overflow: line-clamp takes priority over -webkit-line-clamp</title>
+<title>CSS Overflow: line-clamp and -webkit-line-clamp compete in cascade order</title>
 <link rel="author" title="Andreu Botella" href="mailto:abotella@igalia.com">
 <link rel="help" href="https://drafts.csswg.org/css-overflow-4/#line-clamp">
 <link rel="match" href="reference/webkit-line-clamp-005-ref.html">
-<meta name="assert" content="If both line-clamp and -webkit-line-clamp are present, line-clamp takes priority">
+<meta name="assert" content="line-clamp and -webkit-line-clamp are both shorthands for the same properties, so if both are present, whichever is greater in the cascade order wins.">
 <style>
 .clamp {
+  line-clamp: 2;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 4;
+  -webkit-line-clamp: 4;
   font: 16px / 32px serif;
   white-space: pre;
   padding: 0 4px;
