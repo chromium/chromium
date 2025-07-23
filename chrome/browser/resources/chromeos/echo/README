@@ -1,0 +1,5 @@
+Resources for echo-extension chrome-extension://kddnkjkcjddckihglkfcickdhbmaodcn/
+Allow all domains listed in https://www.google.com/supported_domains
+URLs listed under externally_connectable to give access to check model eligibility
+
+Project owner / POC for echo related topics: gdziadosz@google.com
