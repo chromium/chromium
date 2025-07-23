@@ -27,6 +27,10 @@ namespace android_tools {
 crypto::obsolete::Md5 MakeMd5HasherForMd5sumTool();
 }
 
+namespace autofill {
+crypto::obsolete::Md5 MakeMd5HasherForPasswordRequirementsSpec();
+}
+
 namespace bookmarks {
 class BookmarkCodec;
 }  // namespace bookmarks
@@ -110,6 +114,9 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 ash::printing::MakeMd5HasherForUsbPrinterUtil();
   friend Md5 ash::printing::MakeMd5HasherForZeroconf();
   friend std::string ash::printing::ServerPrinterId(const std::string& url);
+
+  // TODO(https://crbug.com/433545115): get rid of this.
+  friend Md5 autofill::MakeMd5HasherForPasswordRequirementsSpec();
 
   // TODO(https://crbug.com/426243026): get rid of this.
   friend class bookmarks::BookmarkCodec;

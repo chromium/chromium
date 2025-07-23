@@ -8,15 +8,17 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements_shard.pb.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_printer.h"
+#include "crypto/obsolete/md5.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -27,6 +29,10 @@
 #include "url/url_canon.h"
 
 namespace autofill {
+
+crypto::obsolete::Md5 MakeMd5HasherForPasswordRequirementsSpec() {
+  return {};
+}
 
 PasswordRequirementsSpecFetcherImpl::PasswordRequirementsSpecFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -66,10 +72,11 @@ std::string GetHashPrefix(const GURL& origin, size_t prefix_length) {
       net::registry_controlled_domains::GetDomainAndRegistry(
           origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
-  base::MD5Digest digest;
-  base::MD5Sum(base::as_byte_span(domain_and_registry), &digest);
+  crypto::obsolete::Md5 md5 = MakeMd5HasherForPasswordRequirementsSpec();
+  md5.Update(domain_and_registry);
+  std::array<uint8_t, crypto::obsolete::Md5::kSize> digest = md5.Finish();
 
-  for (auto& byte : digest.a) {
+  for (auto& byte : digest) {
     if (prefix_length >= 8) {
       prefix_length -= 8;
       continue;
@@ -82,7 +89,7 @@ std::string GetHashPrefix(const GURL& origin, size_t prefix_length) {
     }
   }
 
-  return base::MD5DigestToBase16(digest).substr(0, 4);
+  return base::ToLowerASCII(base::HexEncode(digest)).substr(0, 4);
 }
 
 // Returns the URL on gstatic.com where the passwords spec file can be found
