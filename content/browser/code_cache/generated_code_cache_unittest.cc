@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/code_cache/generated_code_cache.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -134,7 +130,7 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
       received_response_time_ = response_time;
       return;
     }
-    std::string str(data.data(), data.data() + data.size());
+    std::string str(data.data(), UNSAFE_TODO(data.data() + data.size()));
     received_ = true;
     received_null_ = false;
     received_data_ = str;

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/gamepad_controller.h"
 
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
@@ -300,7 +296,7 @@ void GamepadController::Reset() {
   if (!gamepads_)
     return;  // Shared memory failed.
 
-  memset(gamepads_, 0, sizeof(*gamepads_));
+  UNSAFE_TODO(memset(gamepads_, 0, sizeof(*gamepads_)));
   for (auto& monitor : monitors_)
     monitor->Reset();
 }
@@ -387,9 +383,9 @@ void GamepadController::SetId(int index, const std::string& src) {
   const int64_t now = CurrentTimeInMicroseconds();
   gamepads_->seqlock.WriteBegin();
   Gamepad& pad = gamepads_->data.items[index];
-  memset(pad.id, 0, sizeof(pad.id));
+  UNSAFE_TODO(memset(pad.id, 0, sizeof(pad.id)));
   for (unsigned i = 0; *p && i < Gamepad::kIdLengthCap - 1; ++i)
-    pad.id[i] = *p++;
+    UNSAFE_TODO(pad.id[i]) = *UNSAFE_TODO(p++);
   pad.timestamp = now;
   gamepads_->seqlock.WriteEnd();
 }
@@ -415,8 +411,8 @@ void GamepadController::SetButtonData(int index, int button, double data) {
   const int64_t now = CurrentTimeInMicroseconds();
   gamepads_->seqlock.WriteBegin();
   Gamepad& pad = gamepads_->data.items[index];
-  pad.buttons[button].value = data;
-  pad.buttons[button].pressed = data > kButtonPressedThreshold;
+  UNSAFE_TODO(pad.buttons[button]).value = data;
+  UNSAFE_TODO(pad.buttons[button]).pressed = data > kButtonPressedThreshold;
   pad.timestamp = now;
   gamepads_->seqlock.WriteEnd();
 }
@@ -442,7 +438,7 @@ void GamepadController::SetAxisData(int index, int axis, double data) {
   const int64_t now = CurrentTimeInMicroseconds();
   gamepads_->seqlock.WriteBegin();
   Gamepad& pad = gamepads_->data.items[index];
-  pad.axes[axis] = data;
+  UNSAFE_TODO(pad.axes[axis]) = data;
   pad.timestamp = now;
   gamepads_->seqlock.WriteEnd();
 }
@@ -506,9 +502,9 @@ void GamepadController::SetTouchData(int index,
   gamepads_->seqlock.WriteBegin();
   Gamepad& pad = gamepads_->data.items[index];
   pad.supports_touch_events_ = true;
-  pad.touch_events[touch].touch_id = touch_id;
-  pad.touch_events[touch].x = position_x;
-  pad.touch_events[touch].y = position_y;
+  UNSAFE_TODO(pad.touch_events[touch]).touch_id = touch_id;
+  UNSAFE_TODO(pad.touch_events[touch]).x = position_x;
+  UNSAFE_TODO(pad.touch_events[touch]).y = position_y;
   pad.timestamp = now;
   gamepads_->seqlock.WriteEnd();
 }

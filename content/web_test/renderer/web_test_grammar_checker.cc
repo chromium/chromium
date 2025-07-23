@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/web_test_grammar_checker.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <array>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
@@ -64,7 +60,7 @@ bool WebTestGrammarChecker::CheckGrammarOfString(
     size_t offset = 0;
     std::u16string error(
         kGrammarErrors[i].text,
-        kGrammarErrors[i].text + strlen(kGrammarErrors[i].text));
+        UNSAFE_TODO(kGrammarErrors[i].text + strlen(kGrammarErrors[i].text)));
     while ((offset = string_text.find(error, offset)) != std::u16string::npos) {
       results->push_back(blink::WebTextCheckingResult(
           blink::kWebTextDecorationTypeGrammar,

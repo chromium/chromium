@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/public/test/test_download_http_response.h"
 
 #include <inttypes.h>
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -210,8 +206,10 @@ std::string TestDownloadHttpResponse::GetPatternBytes(int seed,
     uint64_t data = XorShift64StarWithIndex(seed, seed_offset);
     int length_to_copy =
         std::min(length, static_cast<int>(sizeof(data) - first_byte_position));
-    char* start_pos = reinterpret_cast<char*>(&data) + first_byte_position;
-    std::string string_to_append(start_pos, start_pos + length_to_copy);
+    char* start_pos =
+        UNSAFE_TODO(reinterpret_cast<char*>(&data) + first_byte_position);
+    std::string string_to_append(start_pos,
+                                 UNSAFE_TODO(start_pos + length_to_copy));
     output.append(string_to_append);
     length -= length_to_copy;
     ++seed_offset;

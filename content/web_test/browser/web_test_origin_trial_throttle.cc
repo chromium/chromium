@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/browser/web_test_origin_trial_throttle.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/strings/string_util.h"
@@ -66,7 +62,7 @@ void WebTestOriginTrialThrottle::SetHeaderForRequest() {
         origin, partition_origin, base::Time::Now());
   }
   std::string header_value = base::JoinString(
-      base::span<std::string>(trials.begin(), trials.end()), ", ");
+      UNSAFE_TODO(base::span<std::string>(trials.begin(), trials.end())), ", ");
   if (!header_value.empty()) {
     navigation_handle()->SetRequestHeader(kWebTestOriginTrialHeaderName,
                                           header_value);

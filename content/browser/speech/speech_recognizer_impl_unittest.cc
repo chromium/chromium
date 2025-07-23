@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/374320451): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/speech/speech_recognizer_impl.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -250,7 +246,8 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
                   "FromInterleaved expects 2 bytes.");
     // Copy the created signal into an audio bus in a deinterleaved format.
     audio_bus_->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-        reinterpret_cast<int16_t*>(audio_packet_.data()), audio_bus_->frames());
+        UNSAFE_TODO(reinterpret_cast<int16_t*>(audio_packet_.data())),
+        audio_bus_->frames());
   }
 
   void FillPacketWithTestWaveform() {

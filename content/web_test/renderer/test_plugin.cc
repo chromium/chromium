@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/test_plugin.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -64,9 +60,9 @@ void PremultiplyAlpha(const uint8_t color_in[3],
                       float alpha,
                       float color_out[4]) {
   for (int i = 0; i < 3; ++i)
-    color_out[i] = (color_in[i] / 255.0f) * alpha;
+    UNSAFE_TODO(color_out[i]) = (UNSAFE_TODO(color_in[i]) / 255.0f) * alpha;
 
-  color_out[3] = alpha;
+  UNSAFE_TODO(color_out[3]) = alpha;
 }
 
 const char* PointState(blink::WebTouchPoint::State state) {
@@ -407,16 +403,16 @@ TestPlugin::Primitive TestPlugin::ParsePrimitive(
 // FIXME: This method should already exist. Use it.
 // For now just parse primary colors.
 void TestPlugin::ParseColor(const blink::WebString& string, uint8_t color[3]) {
-  color[0] = color[1] = color[2] = 0;
+  color[0] = UNSAFE_TODO(color[1]) = UNSAFE_TODO(color[2]) = 0;
   if (string == "black")
     return;
 
   if (string == "red") {
     color[0] = 255;
   } else if (string == "green") {
-    color[1] = 255;
+    UNSAFE_TODO(color[1]) = 255;
   } else if (string == "blue") {
-    color[2] = 255;
+    UNSAFE_TODO(color[2]) = 255;
   } else {
     NOTREACHED();
   }
@@ -625,8 +621,10 @@ blink::WebInputEventResult TestPlugin::HandleInputEvent(
   auto* frame_proxy = static_cast<WebFrameTestProxy*>(
       RenderFrame::FromWebFrame(web_local_frame_));
   const char* event_name = blink::WebInputEvent::GetName(event.GetType());
-  if (!strcmp(event_name, "") || !strcmp(event_name, "Undefined"))
+  if (!UNSAFE_TODO(strcmp(event_name, "")) ||
+      !UNSAFE_TODO(strcmp(event_name, "Undefined"))) {
     event_name = "unknown";
+  }
   test_runner_->PrintMessage(
       std::string("Plugin received event: ") + event_name + "\n", *frame_proxy);
   if (print_event_details_)

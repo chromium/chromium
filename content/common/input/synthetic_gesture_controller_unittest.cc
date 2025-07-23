@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/common/input/synthetic_gesture_controller.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -700,7 +696,7 @@ class MockSyntheticPointerTouchActionTarget
       if (params_list[i].pointer_action_type() !=
           SyntheticPointerActionParams::PointerActionType::IDLE)
         result = SyntheticTouchActionDispatchedCorrectly(
-            params_list[i], start_index + i, index_array[i]);
+            params_list[i], start_index + i, UNSAFE_TODO(index_array[i]));
       if (result == testing::AssertionFailure())
         return result;
     }

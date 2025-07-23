@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <iostream>
 
+#include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
@@ -34,8 +30,8 @@ int main(int argc, char** argv) {
   }
 
   for (int i = 1; i < argc; i = i + 2) {
-    std::string uuid_string(argv[i]);
-    std::string label_string((i + 1 < argc) ? argv[i + 1] : "");
+    std::string uuid_string(UNSAFE_TODO(argv[i]));
+    std::string label_string((i + 1 < argc) ? UNSAFE_TODO(argv[i + 1]) : "");
     device::BluetoothUUID uuid(uuid_string);
     std::string uuid_canonical_string = uuid.canonical_value();
     uint32_t hash = base::PersistentHash(uuid_canonical_string);

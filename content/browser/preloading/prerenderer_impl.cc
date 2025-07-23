@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/preloading/prerenderer_impl.h"
 
 #include <algorithm>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
@@ -194,14 +190,14 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     auto equal_prerender_end = std::ranges::find_if(
         started_it, started_prerenders_.end(),
         [&](const auto& started) { return started != prerender_info; });
-    base::span<PrerenderInfo> matching_prerenders(started_it,
-                                                  equal_prerender_end);
+    base::span<PrerenderInfo> UNSAFE_TODO(
+        matching_prerenders(started_it, equal_prerender_end));
     auto equal_candidate_end = std::ranges::find_if(
         candidate_it, prerender_candidates.end(), [&](const auto& candidate) {
           return PrerenderInfo(candidate.second) != prerender_info;
         });
     base::span<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
-        matching_candidates(candidate_it, equal_candidate_end);
+        UNSAFE_TODO(matching_candidates(candidate_it, equal_candidate_end));
 
     // Decide what started prerenders to cancel.
     for (PrerenderInfo& prerender : matching_prerenders) {

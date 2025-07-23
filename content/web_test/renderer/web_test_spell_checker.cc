@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/web_test_spell_checker.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <array>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace content {
@@ -194,9 +190,9 @@ bool WebTestSpellChecker::InitializeIfNeeded() {
 
   misspelled_words_.clear();
   for (size_t i = 0; i < std::size(misspelled_words); ++i)
-    misspelled_words_.push_back(
-        std::u16string(misspelled_words[i],
-                       misspelled_words[i] + strlen(misspelled_words[i])));
+    misspelled_words_.push_back(std::u16string(
+        misspelled_words[i],
+        UNSAFE_TODO(misspelled_words[i] + strlen(misspelled_words[i]))));
 
   // Mark as initialized to prevent this object from being initialized twice
   // or more.

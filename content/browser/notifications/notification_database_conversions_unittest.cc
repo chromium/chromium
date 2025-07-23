@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/notifications/notification_database_conversions.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <array>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -66,7 +62,8 @@ const std::map<std::string, std::string> kNotificationMetadata = {
 TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   std::vector<int> vibration_pattern(
       kNotificationVibrationPattern,
-      kNotificationVibrationPattern + std::size(kNotificationVibrationPattern));
+      UNSAFE_TODO(kNotificationVibrationPattern +
+                  std::size(kNotificationVibrationPattern)));
 
   std::vector<char> developer_data(
       kNotificationData.data(),

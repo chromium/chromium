@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/public/common/common_param_traits.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/values.h"
 #include "components/viz/common/surfaces/surface_info.h"
@@ -55,7 +51,7 @@ TEST(IPCMessageTest, Bitmap) {
   SkBitmap bitmap;
 
   bitmap.allocN32Pixels(10, 5);
-  memset(bitmap.getPixels(), 'A', bitmap.computeByteSize());
+  UNSAFE_TODO(memset(bitmap.getPixels(), 'A', bitmap.computeByteSize()));
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
   IPC::ParamTraits<SkBitmap>::Write(&msg, bitmap);
@@ -69,9 +65,9 @@ TEST(IPCMessageTest, Bitmap) {
   EXPECT_EQ(bitmap.height(), output.height());
   EXPECT_EQ(bitmap.rowBytes(), output.rowBytes());
   EXPECT_EQ(bitmap.computeByteSize(), output.computeByteSize());
-  EXPECT_EQ(
+  UNSAFE_TODO(EXPECT_EQ(
       memcmp(bitmap.getPixels(), output.getPixels(), bitmap.computeByteSize()),
-      0);
+      0));
 
   // Also test the corrupt case.
 

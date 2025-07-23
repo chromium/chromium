@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/byte_stream.h"
 
 #include <stddef.h>
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -44,7 +40,7 @@ class ByteStreamTest : public testing::Test {
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer_size);
     char *bufferp = buffer->data();
     for (size_t i = 0; i < buffer_size; i++)
-      bufferp[i] = (i + producing_seed_key_) % (1 << sizeof(char));
+      UNSAFE_TODO(bufferp[i]) = (i + producing_seed_key_) % (1 << sizeof(char));
     pointer_queue_.push_back(bufferp);
     length_queue_.push_back(buffer_size);
     ++producing_seed_key_;
@@ -83,11 +79,11 @@ class ByteStreamTest : public testing::Test {
 
     for (size_t i = 0; i < buffer_size; i++) {
       // Already incremented, so subtract one from the key.
-      EXPECT_EQ(static_cast<int>((i + consuming_seed_key_ - 1)
-                                 % (1 << sizeof(char))),
-                bufferp[i]);
+      UNSAFE_TODO(EXPECT_EQ(
+          static_cast<int>((i + consuming_seed_key_ - 1) % (1 << sizeof(char))),
+          bufferp[i]));
       if (static_cast<int>((i + consuming_seed_key_ - 1) %
-                           (1 << sizeof(char))) != bufferp[i]) {
+                           (1 << sizeof(char))) != UNSAFE_TODO(bufferp[i])) {
         return false;
       }
     }
