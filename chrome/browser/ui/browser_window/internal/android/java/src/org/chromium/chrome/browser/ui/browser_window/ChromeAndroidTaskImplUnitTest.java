@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,12 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static final long FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR = 42;
+
+    private final AndroidBrowserWindow.Natives mMockAndroidBrowserWindowNatives =
+            ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives(
+                    FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
     private static ChromeAndroidTaskImpl createChromeAndroidTask() {
         return createChromeAndroidTask(/* taskId= */ 1);
     }
@@ -37,6 +44,11 @@ public class ChromeAndroidTaskImplUnitTest {
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
         return new ChromeAndroidTaskImpl(activityWindowAndroid);
+    }
+
+    @Before
+    public void setUp() {
+        AndroidBrowserWindowJni.setInstanceForTesting(mMockAndroidBrowserWindowNatives);
     }
 
     @Test
@@ -205,6 +217,21 @@ public class ChromeAndroidTaskImplUnitTest {
         assertTrue(chromeAndroidTask.getAllFeaturesForTesting().isEmpty());
         verify(mockFeature1, times(1)).onTaskRemoved();
         verify(mockFeature2, times(1)).onTaskRemoved();
+    }
+
+    @Test
+    public void destroy_destroysAndroidBrowserWindow() {
+        // Arrange: create a ChromeAndroidTask and a fake native AndroidBrowserWindow pointer value.
+        var chromeAndroidTask = createChromeAndroidTask();
+        long nativeAndroidBrowserWindowPtr =
+                chromeAndroidTask.getAndroidBrowserWindowForTesting().getOrCreateNativePtr();
+        assertEquals(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR, nativeAndroidBrowserWindowPtr);
+
+        // Act.
+        chromeAndroidTask.destroy();
+
+        // Assert.
+        verify(mMockAndroidBrowserWindowNatives, times(1)).destroy(nativeAndroidBrowserWindowPtr);
     }
 
     @Test

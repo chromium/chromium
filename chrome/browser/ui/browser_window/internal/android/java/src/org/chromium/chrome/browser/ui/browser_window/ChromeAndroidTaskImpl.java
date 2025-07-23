@@ -37,7 +37,6 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
 
     private final int mId;
 
-    @SuppressWarnings("UnusedVariable")
     private final AndroidBrowserWindow mAndroidBrowserWindow;
 
     /**
@@ -126,8 +125,7 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
         clearActivityWindowAndroidInternal();
         destroyFeatures();
 
-        // TODO(crbug.com/427214087): Destroy mAndroidBrowserWindow.
-
+        mAndroidBrowserWindow.destroy();
         mState.set(State.DESTROYED);
     }
 
@@ -144,6 +142,10 @@ final class ChromeAndroidTaskImpl implements ChromeAndroidTask {
      */
     @Nullable ActivityWindowAndroid getActivityWindowAndroidForTesting() {
         return getActivityWindowAndroidInternal(/* assertAlive= */ false);
+    }
+
+    AndroidBrowserWindow getAndroidBrowserWindowForTesting() {
+        return mAndroidBrowserWindow;
     }
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */

@@ -115,6 +115,7 @@ if (is_android) {
     visibility = [
       ":*",
       "//chrome/android:chrome_all_java",
+      "//chrome/browser/ui/browser_window/test:junit_test_support",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
     ]
     sources = [

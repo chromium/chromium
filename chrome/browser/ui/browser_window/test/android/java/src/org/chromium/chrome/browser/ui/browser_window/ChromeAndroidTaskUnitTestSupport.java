@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,5 +36,17 @@ final class ChromeAndroidTaskUnitTestSupport {
         when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
 
         return mockActivityWindowAndroid;
+    }
+
+    /**
+     * Creates a mock {@link AndroidBrowserWindow.Natives} that returns the given {@code
+     * fakeNativePtr} when {@link AndroidBrowserWindow.Natives#create()} is called.
+     */
+    static AndroidBrowserWindow.Natives createMockAndroidBrowserWindowNatives(long fakeNativePtr) {
+        var mockAndroidBrowserWindowNatives = mock(AndroidBrowserWindow.Natives.class);
+
+        when(mockAndroidBrowserWindowNatives.create(any())).thenReturn(fakeNativePtr);
+
+        return mockAndroidBrowserWindowNatives;
     }
 }
