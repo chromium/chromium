@@ -48,7 +48,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void SetDamageTracker(DisplayDamageTracker* damage_tracker) override;
   void SetVisible(bool visible) override;
   void ForceImmediateSwapIfPossible() override;
-  void SetNeedsOneBeginFrame(bool needs_draw) override;
+  void SetNeedsOneBeginFrame(const BeginFrameArgs& args,
+                             bool needs_draw) override;
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;

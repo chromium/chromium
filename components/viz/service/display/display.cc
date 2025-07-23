@@ -1466,7 +1466,7 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
   // Prevent a delegated ink trail from staying on the screen
   // for more than one frame by forcing a new frame to be produced.
   if (!renderer_->GetDelegatedInkTrailDamageRect().IsEmpty()) {
-    scheduler_->SetNeedsOneBeginFrame(true);
+    scheduler_->SetNeedsOneBeginFrame(BeginFrameArgs(), /*needs_draw=*/true);
   }
 
   frame_sequence_number_ = ack.frame_id.sequence_number;
@@ -1497,9 +1497,9 @@ void Display::ForceImmediateDrawAndSwapIfPossible() {
     scheduler_->ForceImmediateSwapIfPossible();
 }
 
-void Display::SetNeedsOneBeginFrame() {
+void Display::SetNeedsOneBeginFrame(const BeginFrameArgs& args) {
   if (scheduler_)
-    scheduler_->SetNeedsOneBeginFrame(false);
+    scheduler_->SetNeedsOneBeginFrame(args, /*needs_draw=*/false);
 }
 
 #if BUILDFLAG(IS_ANDROID)

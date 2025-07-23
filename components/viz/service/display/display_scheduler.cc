@@ -391,12 +391,21 @@ int DisplayScheduler::MaxPendingSwaps() const {
   return std::clamp(deadline_max_pending_swaps, 1, param_max_pending_swaps);
 }
 
-void DisplayScheduler::SetNeedsOneBeginFrame(bool needs_draw) {
+void DisplayScheduler::SetNeedsOneBeginFrame(const BeginFrameArgs& args,
+                                             bool needs_draw) {
   // If we are not currently observing BeginFrames because needs_draw_ is false,
   // we will stop observing again after one BeginFrame in AttemptDrawAndSwap().
   StartObservingBeginFrames();
   if (needs_draw)
     needs_draw_ = true;
+  if (base::FeatureList::IsEnabled(features::kNoLateBeginFrames) &&
+      args.IsValid() &&
+      (!begin_frame_observer_->LastUsedBeginFrameArgs().IsValid() ||
+       args.frame_id.sequence_number >
+           begin_frame_observer_->LastUsedBeginFrameArgs()
+               .frame_id.sequence_number)) {
+    OnBeginFrame(args);
+  }
 }
 
 void DisplayScheduler::MaybeStartObservingBeginFrames() {

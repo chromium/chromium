@@ -37,7 +37,8 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
   // DisplaySchedulerBase implementation.
   void SetVisible(bool visible) override {}
   void ForceImmediateSwapIfPossible() override;
-  void SetNeedsOneBeginFrame(bool needs_draw) override;
+  void SetNeedsOneBeginFrame(const viz::BeginFrameArgs& args,
+                             bool needs_draw) override;
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override {}
   void OutputSurfaceLost() override;

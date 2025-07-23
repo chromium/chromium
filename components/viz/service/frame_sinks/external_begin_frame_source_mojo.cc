@@ -48,7 +48,7 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
   // if it doesn't currently need it. This way, we ensure that
   // OnDisplayDidFinishFrame will be called for this BeginFrame.
   DCHECK(display_);
-  display_->SetNeedsOneBeginFrame();
+  display_->SetNeedsOneBeginFrame(args);
   MaybeProduceFrameCallback();
 }
 

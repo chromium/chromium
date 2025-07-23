@@ -855,7 +855,7 @@ TEST_F(DisplaySchedulerTest, SetNeedsOneBeginFrame) {
 
   // SetNeedsOneBeginFrame should make DisplayScheduler active for just a single
   // BeginFrame.
-  scheduler_->SetNeedsOneBeginFrame(false);
+  scheduler_->SetNeedsOneBeginFrame(BeginFrameArgs(), false);
   EXPECT_TRUE(scheduler_->inside_begin_frame_deadline_interval());
   scheduler_->BeginFrameDeadlineForTest();
   EXPECT_EQ(BeginFrameAck(last_begin_frame_args_, false),
