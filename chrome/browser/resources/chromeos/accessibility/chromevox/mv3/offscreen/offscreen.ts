@@ -31,8 +31,9 @@ class OffscreenChromeVoxState {
 
   static init(): void {
     if (OffscreenChromeVoxState.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenChromeVoxState.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenChromeVoxState.');
     }
     OffscreenChromeVoxState.instance = new OffscreenChromeVoxState();
   }
@@ -57,8 +58,9 @@ class OffscreenBackgroundKeyboardHandler {
 
   static init(): void {
     if (OffscreenBackgroundKeyboardHandler.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'BackgroundKeyboardHandler.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'BackgroundKeyboardHandler.');
     }
     OffscreenBackgroundKeyboardHandler.instance =
         new OffscreenBackgroundKeyboardHandler();
@@ -110,8 +112,9 @@ class OffscreenLearnModeKeyboardHandler {
 
   static init(): void {
     if (OffscreenLearnModeKeyboardHandler.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenLearnModeKeyboardHandler.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenLearnModeKeyboardHandler.');
     }
     OffscreenLearnModeKeyboardHandler.instance =
         new OffscreenLearnModeKeyboardHandler();
@@ -174,8 +177,9 @@ class OffscreenClipboardHandler {
 
   static init(): void {
     if (OffscreenClipboardHandler.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenClipboardHandler.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenClipboardHandler.');
     }
     OffscreenClipboardHandler.instance = new OffscreenClipboardHandler();
   }
@@ -240,8 +244,9 @@ class OffscreenSpeechSynthesis {
 
   static init(): void {
     if (OffscreenSpeechSynthesis.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenSpeechSynthesis.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenSpeechSynthesis.');
     }
     OffscreenSpeechSynthesis.instance = new OffscreenSpeechSynthesis();
   }
@@ -268,8 +273,9 @@ class OffscreenBrailleDisplayManager {
 
   static init(): void {
     if (OffscreenBrailleDisplayManager.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenBrailleDisplayManager.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenBrailleDisplayManager.');
     }
     OffscreenBrailleDisplayManager.instance =
         new OffscreenBrailleDisplayManager();
@@ -315,8 +321,9 @@ class OffscreenMathHandler {
 
   static init(): void {
     if (OffscreenMathHandler.instance) {
-      throw 'Error: trying to create two instances of singleton ' +
-          'OffscreenMathHandler.';
+      throw new Error(
+          'Error: trying to create two instances of singleton ' +
+          'OffscreenMathHandler.');
     }
     OffscreenMathHandler.instance = new OffscreenMathHandler();
   }
