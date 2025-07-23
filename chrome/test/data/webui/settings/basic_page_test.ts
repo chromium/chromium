@@ -285,17 +285,15 @@ suite('PrivacyGuidePromo', () => {
     document.body.appendChild(page);
     page.scroller = document.body;
 
-    // Need to wait for the 'show-container' event to fire after every
-    // transition, to ensure no logic related to previous transitions is still
-    // running when later transitions are tested.
-    const whenDone = eventToPromise('show-container', page);
-
     // Ensure that all settings-section instances are rendered.
     flush();
     const sections = page.shadowRoot!.querySelectorAll('settings-section');
     assertTrue(sections.length > 1);
 
+    const whenDone = eventToPromise('show-container', page);
+    Router.getInstance().navigateTo(routes.PRIVACY);
     await whenDone;
+    return microtasksFinished();
   });
 
   test('load page', function() {
@@ -305,10 +303,6 @@ suite('PrivacyGuidePromo', () => {
   // Same as the SometimesMoreSectionsShown test in the suite above, but
   // including the privacy guide.
   test('SometimesMoreSectionsShownWithPrivacyGuide', async function() {
-    const whenDone = eventToPromise('show-container', page);
-    Router.getInstance().navigateTo(routes.PRIVACY);
-    await whenDone;
-    await microtasksFinished();
     await privacyGuideBrowserProxy.whenCalled('incrementPromoImpressionCount');
 
     const activeSections =

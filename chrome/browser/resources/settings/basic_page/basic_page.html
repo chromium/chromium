@@ -12,12 +12,6 @@
     <template is="dom-if" if="[[showBasicPage_(currentRoute_, inSearchMode)]]"
         restamp>
       <div id="basicPage">
-        <template is="dom-if" if="[[showPage_(pageVisibility_.people)]]" restamp>
-          <settings-section page-title="$i18n{peoplePageTitle}"
-              section="people">
-            <settings-people-page prefs="{{prefs}}"></settings-people-page>
-          </settings-section>
-        </template>
         <settings-section id="privacyGuidePromoSection" page-title=""
             hidden$="[[!showPrivacyGuidePromo_]]" nest-under-section="privacy"
             no-search>

@@ -65,9 +65,8 @@
         }
       }
     </style>
-    <settings-animated-pages id="pages" section="people"
-        focus-config="[[focusConfig_]]">
-      <div route-path="default">
+    <settings-section>
+      <div>
 <if expr="not is_chromeos">
         <template is="dom-if" if="[[shouldShowSyncAccountControl_(
             syncStatus.syncSystemEnabled)]]">
@@ -159,46 +158,7 @@ shown on non-ChromeOS platforms -->
 </if>
 
       </div>
-      <template is="dom-if" route-path="/syncSetup">
-        <settings-subpage
-            associated-control="[[$$('#sync-setup')]]"
-            page-title="$i18n{syncPageTitle}"
-            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-          <settings-sync-page prefs="{{prefs}}" focus-config="[[focusConfig_]]">
-          </settings-sync-page>
-        </settings-subpage>
-      </template>
-
-      <template is="dom-if" route-path="/syncSetup/advanced">
-        <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
-            associated-control="[[$$('#sync-setup')]]"
-            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-          <settings-sync-controls sync-status="[[syncStatus]]">
-          </settings-sync-controls>
-        </settings-subpage>
-      </template>
-
-<if expr="not is_chromeos">
-      <template is="dom-if" route-path="/manageProfile">
-        <settings-subpage
-            associated-control=
-                "[[getEditPersonAssocControl_(signinAllowed_)]]"
-            page-title="$i18n{editPerson}">
-          <settings-manage-profile></settings-manage-profile>
-        </settings-subpage>
-      </template>
-
-      <template is="dom-if" if="[[shouldShowAccountSettingsPage_]]" restamp>
-        <template is="dom-if" route-path="/account">
-          <settings-subpage page-title="$i18n{accountPageTitle}">
-            <settings-account-page prefs="{{prefs}}"
-                sync-status="[[syncStatus]]" no-search>
-            </settings-account-page>
-          </settings-subpage>
-        </template>
-      </template>
-</if>
-    </settings-animated-pages>
+    </settings-section>
 
 <if expr="not is_chromeos">
     <template is="dom-if" if="[[showSignoutDialog_]]" restamp>

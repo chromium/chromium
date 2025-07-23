@@ -352,6 +352,20 @@ suite('Basic', function() {
     resetRouterForTesting();
     assertFalse(!!routes.AUTOFILL_AI);
   });
+
+  // <if expr="not is_chromeos">
+  test('account route existence', function() {
+    resetPageVisibilityForTesting({people: true});
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetRouterForTesting();
+    assertFalse(!!routes.ACCOUNT);
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    resetRouterForTesting();
+    assertTrue(!!routes.ACCOUNT);
+  });
+  // </if>
 });
 
 suite('DynamicParameters', function() {

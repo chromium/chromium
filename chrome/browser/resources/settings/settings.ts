@@ -85,6 +85,7 @@ export {pageVisibility, PrivacyPageVisibility, resetPageVisibilityForTesting} fr
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.js';
 // </if>
 export {SettingsPeoplePageElement} from './people_page/people_page.js';
+export {SettingsPeoplePageIndexElement} from './people_page/people_page_index.js';
 // <if expr="not is_chromeos">
 export {SettingsSyncAccountControlElement} from './people_page/sync_account_control.js';
 // </if>

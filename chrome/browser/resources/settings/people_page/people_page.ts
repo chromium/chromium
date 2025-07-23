@@ -19,8 +19,7 @@ import '../controls/settings_toggle_button.js';
 import './sync_account_control.js';
 // </if>
 import '../icons.html.js';
-import '../settings_page/settings_animated_pages.js';
-import '../settings_page/settings_subpage.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
@@ -32,17 +31,18 @@ import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_pictur
 // </if>
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BaseMixin} from '../base_mixin.js';
-import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
+import type {Route} from '../router.js';
 import {Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 // <if expr="not is_chromeos">
 import {RouteObserverMixin} from '../router.js';
@@ -63,11 +63,11 @@ export interface SettingsPeoplePageElement {
 
 // <if expr="not is_chromeos">
 const SettingsPeoplePageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
+    SettingsViewMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement)));
 // </if>
 // <if expr="is_chromeos">
 const SettingsPeoplePageElementBase =
-    WebUiListenerMixin(BaseMixin(PolymerElement));
+    SettingsViewMixin(WebUiListenerMixin(PolymerElement));
 // </if>
 
 export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
@@ -186,27 +186,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
       showSignoutDialog_: Boolean,
       // </if>
-
-
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.SYNC) {
-            map.set(routes.SYNC.path, '#sync-setup');
-          }
-          // <if expr="not is_chromeos">
-          if (routes.MANAGE_PROFILE) {
-            map.set(
-                routes.MANAGE_PROFILE.path,
-                loadTimeData.getBoolean('signinAllowed') ?
-                    '#edit-profile' :
-                    '#profile-row .subpage-arrow');
-          }
-          // </if>
-          return map;
-        },
-      },
     };
   }
 
@@ -226,8 +205,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   declare private showImportDataDialog_: boolean;
   declare private showSignoutDialog_: boolean;
   // </if>
-
-  declare private focusConfig_: FocusConfig;
 
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
@@ -272,7 +249,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   // <if expr="not is_chromeos">
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     this.showImportDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.IMPORT_DATA;
 
@@ -288,12 +267,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
   }
   // </if>
-
-  private getEditPersonAssocControl_(): Element {
-    return this.signinAllowed_ ?
-        this.shadowRoot!.querySelector('#edit-profile')! :
-        this.shadowRoot!.querySelector('#profile-row')!;
-  }
 
   /**
    * Handler for when the profile's icon and name is updated.
@@ -332,7 +305,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   /**
    * Handler for when the sync state is pushed from the browser.
    */
-  private handleSyncStatus_(syncStatus: SyncStatus|null) {
+  private handleSyncStatus_(syncStatus: SyncStatus) {
     // Sign-in impressions should be recorded only if the sign-in promo is
     // shown. They should be recorder only once, the first time
     // |this.syncStatus| is set.
@@ -428,6 +401,61 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private isSyncing_() {
     return !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SYNCING;
+  }
+
+  // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const map = new Map();
+    if (routes.SYNC) {
+      map.set(routes.SYNC.path, '#sync-setup');
+    }
+    // <if expr="not is_chromeos">
+    if (routes.MANAGE_PROFILE) {
+      map.set(
+          routes.MANAGE_PROFILE.path,
+          loadTimeData.getBoolean('signinAllowed') ?
+              '#edit-profile' :
+              '#profile-row .subpage-arrow');
+    }
+    // </if>
+    return map;
+  }
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
+    const ids = [
+      'sync', 'syncControls',
+      // <if expr="not is_chromeos">
+      'manageProfile', 'account',
+      // </if>
+    ];
+    assert(ids.includes(childViewId));
+
+    let triggerId: string|null = null;
+    switch (childViewId) {
+      case 'sync':
+      case 'syncControls':
+        triggerId = 'sync-setup';
+        break;
+      // <if expr="not is_chromeos">
+      case 'manageProfile':
+        triggerId = this.signinAllowed_ ? 'edit-profile' : 'profile-row';
+        break;
+      case 'account':
+        assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
+        // TODO(crbug.com/429139804): Replace with actual entry point once
+        // implemented.
+        triggerId = 'sync-setup';
+        break;
+        // </if>
+    }
+
+    assert(triggerId);
+
+    const control =
+        this.shadowRoot!.querySelector<HTMLElement>(`#${triggerId}`);
+    assert(control);
+    return control;
   }
 }
 

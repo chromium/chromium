@@ -19,6 +19,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 // <if expr="not is_chromeos">
@@ -46,7 +47,9 @@ import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import type {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
 
+import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 // <if expr="is_chromeos">
 import type {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
@@ -65,8 +68,8 @@ export interface SettingsSyncPageElement {
  * 'settings-sync-page' is the settings page containing sync settings.
  */
 
-const SettingsSyncPageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+const SettingsSyncPageElementBase = SettingsViewMixin(
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   static get is() {
@@ -392,7 +395,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
   // </if>
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     const router = Router.getInstance();
     if (router.getCurrentRoute() === router.getRoutes().SYNC) {
       this.onNavigateToPage_();
@@ -696,6 +701,11 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         router.getCurrentRoute() === router.getRoutes().SYNC) {
       passphraseInput.focus();
     }
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

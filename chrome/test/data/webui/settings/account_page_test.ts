@@ -4,19 +4,26 @@
 
 import 'chrome://settings/lazy_load.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsAccountPageElement} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 
 suite('AccountPageTests', function() {
   let accountSettingsPage: SettingsAccountPageElement;
+  let testSyncBrowserProxy: TestSyncBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+
+    testSyncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
 
     accountSettingsPage = createSettingsAccountPageElement();
     Router.getInstance().navigateTo(routes.ACCOUNT);
@@ -26,7 +33,7 @@ suite('AccountPageTests', function() {
 
   function createSettingsAccountPageElement(): SettingsAccountPageElement {
     const element = document.createElement('settings-account-page');
-    element.syncStatus = {
+    testSyncBrowserProxy.testSyncStatus = {
       signedInState: SignedInState.SIGNED_IN,
       statusAction: StatusAction.NO_ACTION,
     };
@@ -47,28 +54,10 @@ suite('AccountPageTests', function() {
   // Tests that we navigate back to the people page if the user is not signed
   // in.
   test('accountSettingsPageUnavailableWhenNotSignedIn', async function() {
-    accountSettingsPage.syncStatus = {
+    webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SIGNED_OUT,
       statusAction: StatusAction.NO_ACTION,
-    };
-    await microtasksFinished();
-
-    assertEquals(routes.PEOPLE, Router.getInstance().getCurrentRoute());
-  });
-
-  // Tests that we navigate back to the people page if the flag is disabled.
-  test('accountSettingsPageUnavailableWithoutFlag', async function() {
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
-
-    // Recreate the element with the flag disabled and trigger a call to
-    // `syncStatusChanged_`.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    accountSettingsPage = createSettingsAccountPageElement();
-    Router.getInstance().navigateTo(routes.ACCOUNT);
-    accountSettingsPage.syncStatus = {
-      signedInState: SignedInState.SIGNED_IN,
-      statusAction: StatusAction.NO_ACTION,
-    };
+    });
     await microtasksFinished();
 
     assertEquals(routes.PEOPLE, Router.getInstance().getCurrentRoute());

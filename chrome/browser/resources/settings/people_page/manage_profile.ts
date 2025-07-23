@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 
@@ -23,14 +24,16 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
+import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './manage_profile.html.js';
 import type {ManageProfileBrowserProxy} from './manage_profile_browser_proxy.js';
 import {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
 
 const SettingsManageProfileElementBase =
-    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
+    SettingsViewMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement)));
 
 export interface SettingsManageProfileElement {
   $: {
@@ -132,7 +135,9 @@ export class SettingsManageProfileElement extends
         'profile-info-changed', this.onProfileInfoChanged_.bind(this));
   }
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
       if (this.profileName_) {
         this.$.nameInput.value = this.profileName_;
@@ -205,6 +210,11 @@ export class SettingsManageProfileElement extends
     } else {
       this.browserProxy_.removeProfileShortcut();
     }
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

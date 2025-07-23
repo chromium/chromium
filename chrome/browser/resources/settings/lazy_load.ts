@@ -62,7 +62,7 @@ import './people_page/account_page.js';
 import './people_page/manage_profile.js';
 // </if>
 import './people_page/signout_dialog.js';
-import './people_page/sync_controls.js';
+import './people_page/sync_controls_page.js';
 import './people_page/sync_page.js';
 // Sections
 import './a11y_page/a11y_page_index.js';

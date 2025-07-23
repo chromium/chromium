@@ -56,7 +56,6 @@ suite('SettingsMain', function() {
     // Check routes that are still residing within the old settings-basic-page
     // "plugin".
     const nonMigratedRoutes = [
-      routes.BASIC,
       routes.PRIVACY,
     ];
 
@@ -70,6 +69,8 @@ suite('SettingsMain', function() {
       // TODO(crbug.com/424223101): Update this list as more routes are
       // migrated.
 
+      {route: routes.PEOPLE, pluginTag: 'settings-people-page-index'},
+      {route: routes.BASIC, pluginTag: 'settings-people-page-index'},
       {route: routes.AUTOFILL, pluginTag: 'settings-autofill-page-index'},
       {route: routes.PERFORMANCE, pluginTag: 'settings-performance-page-index'},
       {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},
@@ -132,7 +133,7 @@ suite('SettingsMain', function() {
     function assertVisibilityRespected() {
       const viewIds: string[] = [
         'a11y', 'about', 'appearance', 'downloads', 'languages', 'onStartup',
-        'performance', 'reset', 'search',
+        'people', 'performance', 'reset', 'search',
 
         // <if expr='not is_chromeos'>
         'defaultBrowser', 'system',
@@ -176,13 +177,14 @@ suite('SettingsMain', function() {
   });
 
   // Test which section is displayed when chrome://settings/ is visited.
-  test('TopLevelRoute', function() {
+  test('TopLevelRoute', async function() {
+    await flushTasks();
     // Case1: Default (non-guest mode)
     assertFalse(loadTimeData.getBoolean('isGuest'));
     let active = settingsMain.$.switcher.querySelector<HTMLElement>(
         '.active[slot=view]');
     assertTrue(!!active);
-    assertEquals('old', active.id);
+    assertEquals('people', active.id);
 
     // Case2: Guest mode.
     loadTimeData.overrideValues({isGuest: true});

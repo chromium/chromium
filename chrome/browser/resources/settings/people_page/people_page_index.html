@@ -1,0 +1,32 @@
+<style include="settings-shared">
+  cr-view-manager [hidden-by-search],
+  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
+    display: none;
+  }
+</style>
+
+<cr-view-manager id="viewManager" class="cr-centered-card-container"
+    show-all$="[[shouldShowAll]]">
+  <settings-people-page slot="view" id="parent" prefs="{{prefs}}">
+  </settings-people-page>
+
+  <settings-sync-page slot="view" id="sync"
+      data-parent-view-id="parent" prefs="{{prefs}}">
+  </settings-sync-page>
+
+  <settings-sync-controls-page slot="view" id="syncControls"
+      data-parent-view-id="parent">
+  </settings-sync-controls-page>
+
+<if expr="not is_chromeos">
+   <settings-manage-profile slot="view" id="manageProfile"
+       data-parent-view-id="parent" profile-name="[[profileName_]]">
+   </settings-manage-profile>
+
+   <template is="dom-if" if="[[shouldShowAccountSettingsPage_]]" restamp>
+     <settings-account-page slot="view" id="account"
+         data-parent-view-id="parent" prefs="{{prefs}}">
+     </settings-account-page>
+   </template>
+</if>
+</cr-view-manager>

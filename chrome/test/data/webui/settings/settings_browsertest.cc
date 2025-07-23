@@ -335,6 +335,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePage) {
   RunTest("settings/people_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePageIndex) {
+  RunTest("settings/people_page_index_test.js", "mocha.run()");
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePageChromeOS) {
   RunTest("settings/people_page_test_cros.js", "mocha.run()");
