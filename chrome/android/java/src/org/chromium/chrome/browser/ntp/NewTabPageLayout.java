@@ -13,7 +13,6 @@ import android.graphics.Rect;
 import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.DragEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -88,8 +87,6 @@ public class NewTabPageLayout extends LinearLayout
 
     private int mSearchBoxTwoSideMargin;
     private final Context mContext;
-
-    private View mMiddleSpacer; // Spacer between toolbar and Most Likely.
 
     private LogoCoordinator mLogoCoordinator;
     private LogoView mLogoView;
@@ -212,10 +209,9 @@ public class NewTabPageLayout extends LinearLayout
         // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
         Log.i(TAG, "NewTabPageLayout.onFinishInflate before insertSiteSectionView");
 
-        mMiddleSpacer = findViewById(R.id.ntp_middle_spacer);
         mFakeSearchBoxLayout = findViewById(R.id.search_box);
         mFakeSearchBoxEditText = findViewById(R.id.search_box_text);
-        insertSiteSectionView();
+        initializeSiteSectionView();
 
         Log.i(TAG, "NewTabPageLayout.onFinishInflate after insertSiteSectionView");
     }
@@ -659,15 +655,10 @@ public class NewTabPageLayout extends LinearLayout
                 1f);
     }
 
-    private void insertSiteSectionView() {
-        int insertionPoint = indexOfChild(mMiddleSpacer) + 1;
-
+    private void initializeSiteSectionView() {
         mMvTilesContainerLayout =
-                (ViewGroup)
-                        LayoutInflater.from(getContext())
-                                .inflate(R.layout.mv_tiles_container, this, false);
+                (ViewGroup) ((ViewStub) findViewById(R.id.mv_tiles_layout_stub)).inflate();
         mMvTilesContainerLayout.setVisibility(View.VISIBLE);
-        addView(mMvTilesContainerLayout, insertionPoint);
         // The page contents are initially hidden; otherwise they'll be drawn centered on the
         // page before the tiles are available and then jump upwards to make space once the
         // tiles are available.

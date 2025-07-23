@@ -304,10 +304,7 @@ public class MostVisitedTilesLayoutTest {
                     ViewGroup containerLayout =
                             (ViewGroup)
                                     LayoutInflater.from(contentView.getContext())
-                                            .inflate(
-                                                    R.layout.mv_tiles_container,
-                                                    contentView,
-                                                    false);
+                                            .inflate(R.layout.mv_tiles_layout, contentView, false);
                     containerLayout.setVisibility(View.VISIBLE);
                     contentView.addView(containerLayout);
                     initializeCoordinator(containerLayout);

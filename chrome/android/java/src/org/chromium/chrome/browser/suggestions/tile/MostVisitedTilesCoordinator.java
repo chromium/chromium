@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -66,7 +65,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
 
-        ((ViewStub) mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout_stub)).inflate();
         MostVisitedTilesLayout tilesLayout =
                 mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
 

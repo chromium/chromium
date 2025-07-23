@@ -47,15 +47,15 @@ found in the LICENSE file.
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
-    <!-- Middle spacer -->
-    <View
-        android:id="@+id/ntp_middle_spacer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="0"
-        android:visibility="invisible" />
-
-    <!-- Insertion point of the SiteSectionView, see NewTabPageLayout#insertSiteSection() -->
+    <ViewStub
+        android:id="@+id/mv_tiles_layout_stub"
+        android:inflatedId="@+id/mv_tiles_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/mvt_container_top_margin"
+        android:layout_marginLeft="@dimen/mvt_container_lateral_margin"
+        android:layout_marginRight="@dimen/mvt_container_lateral_margin"
+        android:layout="@layout/mv_tiles_layout" />
 
     <ViewStub
         android:id="@+id/home_modules_recycler_view_stub"

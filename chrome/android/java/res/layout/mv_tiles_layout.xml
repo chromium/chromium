@@ -8,6 +8,9 @@ found in the LICENSE file.
 <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/home_surface_ui_background"
+    android:paddingTop="@dimen/mvt_container_top_padding"
+    android:paddingBottom="@dimen/mvt_container_bottom_padding"
     android:scrollbars="none">
 
   <org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout
