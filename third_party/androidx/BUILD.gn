@@ -622,6 +622,11 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_datastore_datastore_preferences_java") {
+    deps = [ ":androidx_datastore_datastore_preferences_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_documentfile_documentfile_java") {
     aar_path = "../androidx/cipd/libs/androidx_documentfile_documentfile/documentfile-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_documentfile_documentfile/androidx_documentfile_documentfile.info"
@@ -2402,6 +2407,17 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_datastore_datastore_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_datastore_datastore_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_datastore_datastore_core_android_java") {
     aar_path = "../androidx/cipd/libs/androidx_datastore_datastore_core_android/datastore-core-android-1.2.0-SNAPSHOT.aar"
@@ -2452,6 +2468,96 @@ if (!limit_android_deps) {
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_datastore_datastore_preferences_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_datastore_datastore_preferences_android/datastore-preferences-android-1.2.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_datastore_datastore_preferences_android/androidx_datastore_datastore_preferences_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_datastore_datastore_java",
+      ":androidx_datastore_datastore_preferences_core_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_datastore_datastore_preferences_core_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_datastore_datastore_preferences_core_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_datastore_datastore_preferences_core_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_datastore_datastore_preferences_core_android/datastore-preferences-core-android-1.2.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_datastore_datastore_preferences_core_android/androidx_datastore_datastore_preferences_core_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_datastore_datastore_core_java",
+      ":androidx_datastore_datastore_core_okio_java",
+      ":androidx_datastore_datastore_preferences_proto_java",
+      "//third_party/android_deps:com_squareup_okio_okio_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_prebuilt(
+      "androidx_datastore_datastore_preferences_external_protobuf_java") {
+    jar_path = "../androidx/cipd/libs/androidx_datastore_datastore_preferences_external_protobuf/datastore-preferences-external-protobuf-1.2.0-SNAPSHOT.jar"
+    output_name = "androidx_datastore_datastore_preferences_external_protobuf"
+    supports_android = true
+    requires_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_prebuilt(
+      "androidx_datastore_datastore_preferences_proto_java") {
+    jar_path = "../androidx/cipd/libs/androidx_datastore_datastore_preferences_proto/datastore-preferences-proto-1.2.0-SNAPSHOT.jar"
+    output_name = "androidx_datastore_datastore_preferences_proto"
+    supports_android = true
+    requires_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps =
+        [ ":androidx_datastore_datastore_preferences_external_protobuf_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
