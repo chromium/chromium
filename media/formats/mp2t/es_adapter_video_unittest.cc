@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -43,13 +44,18 @@ VideoDecoderConfig CreateFakeVideoConfig() {
                             EncryptionScheme::kUnencrypted);
 }
 
-BufferQueue GenerateFakeBuffers(const int* frame_pts_ms,
-                                const bool* is_key_frame,
-                                size_t frame_count) {
+BufferQueue GenerateFakeBuffers(
+    base::span<const int> frame_pts_ms,
+    base::span<const bool> is_key_frame,
+    size_t spanification_suspected_redundant_frame_count) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_frame_count == frame_pts_ms.size(),
+        base::NotFatalUntil::M143);
   std::array<uint8_t, 4> dummy_buffer = {0, 0, 0, 0};
 
-  BufferQueue buffers(frame_count);
-  for (size_t k = 0; k < frame_count; k++) {
+  BufferQueue buffers(spanification_suspected_redundant_frame_count);
+  for (size_t k = 0; k < spanification_suspected_redundant_frame_count; k++) {
     buffers[k] = StreamParserBuffer::CopyFrom(dummy_buffer, is_key_frame[k],
                                               DemuxerStream::VIDEO, 0);
     if (frame_pts_ms[k] < 0) {

@@ -15,6 +15,7 @@
 #include <array>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -532,10 +533,16 @@ class TrackRunIteratorTest : public testing::Test {
 
   // Add SampleGroupDescription Box to track level sample table and to
   // fragment. Populate SampleToGroup Box from input array.
-  void AddCencSampleGroup(Track* track,
-                          TrackFragment* frag,
-                          const SampleToGroupEntry* sample_to_group_entries,
-                          size_t num_entries) {
+  void AddCencSampleGroup(
+      Track* track,
+      TrackFragment* frag,
+      base::span<const SampleToGroupEntry> sample_to_group_entries,
+      size_t spanification_suspected_redundant_num_entries) {
+    // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+    // redundant in M143.
+    CHECK(spanification_suspected_redundant_num_entries ==
+              sample_to_group_entries.size(),
+          base::NotFatalUntil::M143);
     auto& track_cenc_group =
         track->media.information.sample_table.sample_group_description;
     track_cenc_group.grouping_type = FOURCC_SEIG;
@@ -566,8 +573,11 @@ class TrackRunIteratorTest : public testing::Test {
         base::span<const uint8_t>(kKeyId).subspan(std::size(kKeyId)).data());
 
     frag->sample_to_group.grouping_type = FOURCC_SEIG;
-    frag->sample_to_group.entries.assign(sample_to_group_entries,
-                                         sample_to_group_entries + num_entries);
+    frag->sample_to_group.entries.assign(
+        sample_to_group_entries.data(),
+        sample_to_group_entries
+            .subspan(spanification_suspected_redundant_num_entries)
+            .data());
   }
 
   // Add aux info covering the first track run to a TrackFragment, and update

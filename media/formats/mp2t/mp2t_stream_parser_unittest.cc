@@ -19,6 +19,7 @@
 #include <string>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -94,25 +95,25 @@ std::string DecryptSampleAES(const std::string& key,
   EVP_CIPHER_CTX_set_padding(ctx.get(), 0);
   auto output = base::HeapArray<char>::Uninit(input_size);
   uint8_t* in_ptr = const_cast<uint8_t*>(input);
-  uint8_t* out_ptr = reinterpret_cast<uint8_t*>(output.data());
+  base::span<uint8_t> out_ptr = base::as_writable_byte_span(output);
   size_t bytes_remaining = output.size();
 
   while (bytes_remaining) {
     int unused;
     size_t amount_to_decrypt = has_pattern ? 16UL : bytes_remaining;
     EXPECT_EQ(amount_to_decrypt % 16UL, 0UL);
-    EXPECT_EQ(EVP_CipherUpdate(ctx.get(), out_ptr, &unused, in_ptr,
+    EXPECT_EQ(EVP_CipherUpdate(ctx.get(), out_ptr.data(), &unused, in_ptr,
                                amount_to_decrypt),
               1);
     bytes_remaining -= amount_to_decrypt;
     if (bytes_remaining) {
-      out_ptr += amount_to_decrypt;
+      out_ptr = out_ptr.subspan(amount_to_decrypt);
       in_ptr += amount_to_decrypt;
       size_t amount_to_skip = 144UL;  // Skip 9 blocks.
       if (amount_to_skip > bytes_remaining)
         amount_to_skip = bytes_remaining;
-      memcpy(out_ptr, in_ptr, amount_to_skip);
-      out_ptr += amount_to_skip;
+      memcpy(out_ptr.data(), in_ptr, amount_to_skip);
+      out_ptr = out_ptr.subspan(amount_to_skip);
       in_ptr += amount_to_skip;
       bytes_remaining -= amount_to_skip;
     }

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
@@ -133,9 +134,13 @@ void WebMClusterParser::GetBuffers(StreamParser::BufferQueueMap* buffers) {
 }
 
 base::TimeDelta WebMClusterParser::TryGetEncodedAudioDuration(
-    const uint8_t* data,
-    int size) {
-
+    base::span<const uint8_t> data,
+    int spanification_suspected_redundant_size) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(base::checked_cast<size_t>(spanification_suspected_redundant_size) ==
+            data.size(),
+        base::NotFatalUntil::M143);
   // Duration is currently read assuming the *entire* stream is unencrypted.
   // The special "Signal Byte" prepended to Blocks in encrypted streams is
   // assumed to not be present.
@@ -143,7 +148,7 @@ base::TimeDelta WebMClusterParser::TryGetEncodedAudioDuration(
   // to return duration for any unencrypted blocks.
 
   if (audio_codec_ == AudioCodec::kOpus) {
-    return ReadOpusDuration(data, size);
+    return ReadOpusDuration(data, spanification_suspected_redundant_size);
   }
 
   // TODO(wolenetz/chcunningham): Implement duration reading for Vorbis. See
@@ -152,8 +157,14 @@ base::TimeDelta WebMClusterParser::TryGetEncodedAudioDuration(
   return kNoTimestamp;
 }
 
-base::TimeDelta WebMClusterParser::ReadOpusDuration(const uint8_t* data,
-                                                    int size) {
+base::TimeDelta WebMClusterParser::ReadOpusDuration(
+    base::span<const uint8_t> data,
+    int spanification_suspected_redundant_size) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(base::checked_cast<size_t>(spanification_suspected_redundant_size) ==
+            data.size(),
+        base::NotFatalUntil::M143);
   // Masks and constants for Opus packets. See
   // https://tools.ietf.org/html/rfc6716#page-14
   static const uint8_t kTocConfigMask = 0xf8;
@@ -161,7 +172,7 @@ base::TimeDelta WebMClusterParser::ReadOpusDuration(const uint8_t* data,
   static const uint8_t kFrameCountMask = 0x3f;
   static const base::TimeDelta kPacketDurationMax = base::Milliseconds(120);
 
-  if (size < 1) {
+  if (spanification_suspected_redundant_size < 1) {
     LIMITED_MEDIA_LOG(DEBUG, media_log_, num_duration_errors_,
                       kMaxDurationErrorLogs)
         << "Invalid zero-byte Opus packet; demuxed block duration may be "
@@ -183,7 +194,7 @@ base::TimeDelta WebMClusterParser::ReadOpusDuration(const uint8_t* data,
       break;
     case 3:
       // Type 3 indicates an arbitrary frame count described in the next byte.
-      if (size < 2) {
+      if (spanification_suspected_redundant_size < 2) {
         LIMITED_MEDIA_LOG(DEBUG, media_log_, num_duration_errors_,
                           kMaxDurationErrorLogs)
             << "Second byte missing from 'Code 3' Opus packet; demuxed block "
@@ -269,10 +280,10 @@ bool WebMClusterParser::OnListEnd(int id) {
     additional = base::span(block_additional_data_.value());
   }
 
-  bool result = ParseBlock(false, data.data(), data.size(), additional.data(),
-                           additional.size(), block_duration_,
-                           discard_padding_set_ ? discard_padding_ : 0,
-                           reference_block_set_);
+  bool result =
+      ParseBlock(false, data, data.size(), additional.data(), additional.size(),
+                 block_duration_, discard_padding_set_ ? discard_padding_ : 0,
+                 reference_block_set_);
   block_data_.reset();
   block_duration_ = -1;
   block_add_id_ = -1;
@@ -304,16 +315,21 @@ bool WebMClusterParser::OnUInt(int id, int64_t val) {
   return true;
 }
 
-bool WebMClusterParser::ParseBlock(bool is_simple_block,
-                                   const uint8_t* buf,
-                                   size_t size,
-                                   const uint8_t* additional,
-                                   int additional_size,
-                                   int duration,
-                                   int64_t discard_padding,
-                                   bool reference_block_set) {
+bool WebMClusterParser::ParseBlock(
+    bool is_simple_block,
+    base::span<const uint8_t> buf,
+    size_t spanification_suspected_redundant_size,
+    const uint8_t* additional,
+    int additional_size,
+    int duration,
+    int64_t discard_padding,
+    bool reference_block_set) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_size == buf.size(),
+        base::NotFatalUntil::M143);
   const size_t kBlockHeaderSize = 4;
-  if (size < kBlockHeaderSize) {
+  if (spanification_suspected_redundant_size < kBlockHeaderSize) {
     return false;
   }
 
@@ -346,8 +362,8 @@ bool WebMClusterParser::ParseBlock(bool is_simple_block,
   bool is_keyframe =
       is_simple_block ? (flags & 0x80) != 0 : !reference_block_set;
 
-  const uint8_t* frame_data = buf + kBlockHeaderSize;
-  size_t frame_size = size - kBlockHeaderSize;
+  base::span<const uint8_t> frame_data = buf.subspan(kBlockHeaderSize);
+  size_t frame_size = spanification_suspected_redundant_size - kBlockHeaderSize;
   return OnBlock(is_simple_block, track_num, timecode, duration, frame_data,
                  frame_size, additional, additional_size, discard_padding,
                  is_keyframe);
@@ -360,8 +376,7 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data_ptr, int size) {
       UNSAFE_TODO(base::span(data_ptr, base::checked_cast<size_t>(size)));
   switch (id) {
     case kWebMIdSimpleBlock:
-      return ParseBlock(true, data.data(), data.size(), nullptr, 0, -1, 0,
-                        false);
+      return ParseBlock(true, data, data.size(), nullptr, 0, -1, 0, false);
 
     case kWebMIdBlock:
       if (block_data_) {
@@ -425,12 +440,16 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
                                 int track_num,
                                 int timecode,
                                 int block_duration,
-                                const uint8_t* data,
-                                size_t size,
+                                base::span<const uint8_t> data,
+                                size_t spanification_suspected_redundant_size,
                                 const uint8_t* additional,
                                 size_t additional_size,
                                 int64_t discard_padding,
                                 bool is_keyframe) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_size == data.size(),
+        base::NotFatalUntil::M143);
   if (cluster_timecode_ == -1) {
     MEDIA_LOG(ERROR, media_log_) << "Got a block before cluster timecode.";
     return false;
@@ -450,7 +469,8 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     track = &audio_;
     encryption_key_id = audio_encryption_key_id_;
     if (encryption_key_id.empty()) {
-      encoded_duration = TryGetEncodedAudioDuration(data, size);
+      encoded_duration = TryGetEncodedAudioDuration(
+          data, spanification_suspected_redundant_size);
     }
   } else if (track_num == video_.track_num()) {
     track = &video_;
@@ -487,7 +507,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   size_t data_offset = 0;
   if (!encryption_key_id.empty() &&
       !WebMCreateDecryptConfig(
-          data, size,
+          data.data(), spanification_suspected_redundant_size,
           reinterpret_cast<const uint8_t*>(encryption_key_id.data()),
           encryption_key_id.size(), &decrypt_config, &data_offset)) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to extract decrypt config.";
@@ -497,7 +517,9 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type with remapped bytestream track numbers and allow multiple tracks as
   // applicable. See https://crbug.com/341581.
-  auto data_span = base::span(data, size).subspan(data_offset);
+  auto data_span =
+      base::span(data.data(), spanification_suspected_redundant_size)
+          .subspan(data_offset);
   auto buffer = StreamParserBuffer::CopyFrom(data_span, is_keyframe,
                                              buffer_type, track_num);
   if (additional_size) {

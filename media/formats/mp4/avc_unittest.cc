@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <optional>
 #include <ostream>
 
@@ -294,10 +295,11 @@ TEST_F(AVCConversionTest, StringConversionFunctions) {
 }
 
 TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
-  struct {
+  struct TestCases {
     const char* case_string;
     const bool is_keyframe;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       {"I", true},
       {"I I I I", true},
       {"AUD I", true},
@@ -324,7 +326,7 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
       {"SDA I", false},
       {"SDB I", false},
       {"SDC I", false},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
@@ -350,10 +352,11 @@ TEST_F(AVCConversionTest, EmptyBuffer) {
 }
 
 TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
-  struct {
+  struct TestCases {
     const char* case_string;
     const std::optional<bool> is_keyframe;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       // For these cases, lack of conformance is determined before detecting any
       // IDR or non-IDR slices, so the non-conformant frames' keyframe analysis
       // reports std::nullopt (which means undetermined analysis result).
@@ -377,7 +380,7 @@ TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
       // failure, so the non-conformant frame is reported as a non-keyframe.
       {"P SPS P",
        false},  // SPS after first VCL would indicate a new access unit.
-  };
+  });
 
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = false;

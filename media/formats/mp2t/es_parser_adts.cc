@@ -14,6 +14,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -65,7 +66,7 @@ struct EsParserAdts::AdtsFrame {
 
 bool EsParserAdts::LookForAdtsFrame(AdtsFrame* adts_frame) {
   int es_size = es_queue_->Data().size();
-  const uint8_t* es = es_queue_->Data().data();
+  base::span<const uint8_t> es = es_queue_->Data();
 
   int max_offset = es_size - kADTSHeaderMinSize;
   if (max_offset <= 0)
