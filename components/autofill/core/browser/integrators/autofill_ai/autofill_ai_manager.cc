@@ -384,7 +384,10 @@ bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
       client_->GetPersonalDataManager().payments_data_manager();
   if (adm.GetProfiles().empty() && paydm.GetCreditCards().empty() &&
       paydm.GetIbans().empty() && !paydm.HasEwalletAccounts() &&
-      !paydm.HasMaskedBankAccounts()) {
+      !paydm.HasMaskedBankAccounts() &&
+      !base::FeatureList::IsEnabled(
+          features::
+              kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph)) {
     return false;
   }
   const AutofillField* const focused_field = form.GetFieldById(field_id);

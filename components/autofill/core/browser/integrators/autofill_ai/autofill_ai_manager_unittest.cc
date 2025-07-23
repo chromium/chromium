@@ -229,6 +229,37 @@ TEST_F(AutofillAiManagerTest, ShouldDisplayIph) {
       manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
 }
 
+// Tests that IPH should not be displayed if the user is opted out of the
+// feature, but does not have address or payments data stored.
+TEST_F(AutofillAiManagerTest,
+       ShouldNotDisplayIphWhenUserHasNoAddressOrPaymentsData) {
+  test::FormDescription form_description = {.fields = {{}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
+  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
+
+  EXPECT_FALSE(
+      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
+}
+
+// Tests that if kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph is
+// enabled, IPH should be displayed when the user is opted out of the feature
+// and does not have address or payments data stored.
+TEST_F(AutofillAiManagerTest,
+       ShouldDisplayIphWhenUserHasNoAddressOrPaymentsDataAndFeatureFlagIsOn) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph};
+  test::FormDescription form_description = {.fields = {{}}};
+  FormData form = test::GetFormData(form_description);
+  FormStructure form_structure = FormStructure(form);
+  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
+  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
+
+  EXPECT_TRUE(
+      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
+}
+
 // Tests that IPH should not be displayed if the user is opted into AutofillAI
 // already.
 TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphWhenOptedIn) {

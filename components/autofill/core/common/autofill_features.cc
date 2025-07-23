@@ -89,6 +89,12 @@ BASE_FEATURE(kAutofillAiIgnoreLocale,
              "AutofillAiIgnoreLocale",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the existence of address or payments data is not required to show
+// the Iph bubble for AutofillAi.
+BASE_FEATURE(kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph,
+             "AutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, AutofillAi supports national id cards.
 BASE_FEATURE(kAutofillAiNationalIdCard,
              "AutofillAiNationalIdCard",
