@@ -87,6 +87,16 @@ bool ShouldShowNewTabButton(BrowserWindowInterface* browser) {
          !browser->GetAppBrowserController()->ShouldHideNewTabButton();
 }
 
+// Updates the border of `view` if the insets need to be updated.
+void UpdateBorderInsetsIfNeeded(views::View* view,
+                                const gfx::Insets& new_border_insets) {
+  CHECK(view);
+  if (!view->GetBorder() ||
+      view->GetBorder()->GetInsets() != new_border_insets) {
+    view->SetBorder(views::CreateEmptyBorder(new_border_insets));
+  }
+}
+
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
@@ -528,24 +538,23 @@ void TabStripRegionView::UpdateButtonBorders() {
   if (tab_strip_action_container_) {
     tab_strip_action_container_->UpdateButtonBorders(border_insets);
   }
+  if (new_tab_button_) {
+    UpdateBorderInsetsIfNeeded(new_tab_button_, border_insets);
+  }
+  if (tab_search_container_) {
+    UpdateBorderInsetsIfNeeded(tab_search_container_->tab_search_button(),
+                               border_insets);
 
-    if (new_tab_button_) {
-      new_tab_button_->SetBorder(views::CreateEmptyBorder(border_insets));
+    if (tab_search_container_->auto_tab_group_button()) {
+      UpdateBorderInsetsIfNeeded(tab_search_container_->auto_tab_group_button(),
+                                 border_insets);
     }
-    if (tab_search_container_) {
-      tab_search_container_->tab_search_button()->SetBorder(
-          views::CreateEmptyBorder(border_insets));
 
-      if (tab_search_container_->auto_tab_group_button()) {
-        tab_search_container_->auto_tab_group_button()->SetBorder(
-            views::CreateEmptyBorder(border_insets));
-      }
-
-      if (tab_search_container_->tab_declutter_button()) {
-        tab_search_container_->tab_declutter_button()->SetBorder(
-            views::CreateEmptyBorder(border_insets));
-      }
+    if (tab_search_container_->tab_declutter_button()) {
+      UpdateBorderInsetsIfNeeded(tab_search_container_->tab_declutter_button(),
+                                 border_insets);
     }
+  }
 }
 
 void TabStripRegionView::UpdateTabStripMargin() {
