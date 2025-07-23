@@ -1088,7 +1088,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       break;
     }
   }
-  [self updateDataAndReconfigureItemsInGroup:localGroup];
+  if (localGroup) {
+    [self updateDataAndReconfigureItemsInGroup:localGroup];
+  }
 }
 
 #pragma mark - TabCollectionDragDropHandler
