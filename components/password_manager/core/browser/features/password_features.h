@@ -57,6 +57,12 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswords);
 // Delete undecryptable passwords from the store when Sync is active.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Enables the Mojo JavaScript API for the password manager, replacing the
+// legacy passwordsPrivate extension API.
+BASE_DECLARE_FEATURE(kEnablePasswordManagerMojoApi);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables reading credentials from SharedPreferences.
 BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);

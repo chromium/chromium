@@ -197,6 +197,12 @@ BASE_FEATURE(kMarkAllCredentialsAsLeaked,
              "MarkAllCredentialsAsLeaked",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_FEATURE(kEnablePasswordManagerMojoApi,
+             "EnablePasswordManagerMojoApi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 BASE_FEATURE(kImprovedPasswordChangeService,
              "ImprovedPasswordChangeService",
              base::FEATURE_DISABLED_BY_DEFAULT);

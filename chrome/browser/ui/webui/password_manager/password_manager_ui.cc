@@ -38,6 +38,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -633,6 +634,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddBoolean("passwordChangeAvailable",
                      PasswordChangeServiceFactory::GetForProfile(profile)
                          ->IsPasswordChangeAvailable());
+
+  source->AddBoolean(
+      "enablePasswordManagerMojoApi",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordManagerMojoApi));
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
