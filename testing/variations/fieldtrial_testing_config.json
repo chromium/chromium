@@ -2057,21 +2057,6 @@
             ]
         }
     ],
-    "AutofillEnableCardBenefitsForAmericanExpress": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCardBenefitsForAmericanExpress"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableCardBenefitsForBmo": [
         {
             "platforms": [
