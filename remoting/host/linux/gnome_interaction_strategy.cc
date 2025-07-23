@@ -22,7 +22,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,12 +38,16 @@
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/keyboard_layout_monitor.h"
+#include "remoting/host/linux/curtain_mode_wayland.h"
 #include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_RemoteDesktop.h"
 #include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_ScreenCast.h"
-#include "remoting/host/linux/dbus_interfaces/org_gnome_ScreenSaver.h"
 #include "remoting/host/linux/ei_sender_session.h"
+#include "remoting/host/linux/gnome_action_executor.h"
 #include "remoting/host/linux/gnome_desktop_resizer.h"
 #include "remoting/host/linux/gnome_display_info_loader.h"
+#include "remoting/host/linux/gnome_input_injector.h"
+#include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
+#include "remoting/host/linux/gnome_local_input_monitor.h"
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
 #include "remoting/proto/action.pb.h"
@@ -85,24 +88,6 @@ base::OnceCallback<Ret(base::expected<Success, Error>)> MakeExpectedCallback(
       std::move(success), std::move(error));
 }
 
-class CurtainModeWayland : public CurtainMode {
- public:
-  CurtainModeWayland();
-
-  CurtainModeWayland(const CurtainModeWayland&) = delete;
-  CurtainModeWayland& operator=(const CurtainModeWayland&) = delete;
-
-  bool Activate() override;
-};
-
-CurtainModeWayland::CurtainModeWayland() = default;
-
-bool CurtainModeWayland::Activate() {
-  // Wayland support is only implemented for headless sessions which are
-  // already curtained.
-  return true;
-}
-
 }  // namespace
 
 GnomeInteractionStrategy::~GnomeInteractionStrategy() {
@@ -117,31 +102,6 @@ GnomeInteractionStrategy::~GnomeInteractionStrategy() {
 std::unique_ptr<ActionExecutor>
 GnomeInteractionStrategy::CreateActionExecutor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  class GnomeActionExecutor : public ActionExecutor {
-   public:
-    explicit GnomeActionExecutor(GDBusConnectionRef connection)
-        : connection_(std::move(connection)) {}
-    ~GnomeActionExecutor() override = default;
-    void ExecuteAction(const protocol::ActionRequest& request) override {
-      switch (request.action()) {
-        case protocol::ActionRequest::LOCK_WORKSTATION:
-          connection_.Call<org_gnome_ScreenSaver::Lock>(
-              "org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", std::tuple(),
-              base::BindOnce([](base::expected<std::tuple<>, Loggable> result) {
-                if (!result.has_value()) {
-                  LOG(WARNING) << "Failed to lock screen: " << result.error();
-                }
-              }));
-          break;
-        default:
-          break;
-      }
-    }
-
-   private:
-    GDBusConnectionRef connection_;
-  };
-
   return std::make_unique<GnomeActionExecutor>(connection_);
 }
 
@@ -152,44 +112,6 @@ std::unique_ptr<AudioCapturer> GnomeInteractionStrategy::CreateAudioCapturer() {
 
 std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  class GnomeInputInjector : public InputInjector {
-   public:
-    explicit GnomeInputInjector(base::WeakPtr<GnomeInteractionStrategy> session)
-        : session_(std::move(session)) {}
-    ~GnomeInputInjector() override = default;
-
-    // InputInjector implementation
-    void Start(
-        std::unique_ptr<protocol::ClipboardStub> client_clipboard) override {}
-
-    // InputStub implementation
-    void InjectKeyEvent(const protocol::KeyEvent& event) override {
-      if (!session_) {
-        return;
-      }
-      session_->InjectKeyEvent(event);
-    }
-    void InjectTextEvent(const protocol::TextEvent& event) override {
-      NOTIMPLEMENTED();
-    }
-    void InjectMouseEvent(const protocol::MouseEvent& event) override {
-      if (!session_) {
-        return;
-      }
-      session_->InjectMouseEvent(event);
-    }
-    void InjectTouchEvent(const protocol::TouchEvent& event) override {
-      NOTIMPLEMENTED();
-    }
-
-    // ClipboardStub implementation
-    void InjectClipboardEvent(const protocol::ClipboardEvent& event) override {
-      NOTIMPLEMENTED();
-    }
-
-   private:
-    base::WeakPtr<GnomeInteractionStrategy> session_;
-  };
   return std::make_unique<GnomeInputInjector>(weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -214,24 +136,13 @@ GnomeInteractionStrategy::CreateMouseCursorMonitor() {
 std::unique_ptr<KeyboardLayoutMonitor>
 GnomeInteractionStrategy::CreateKeyboardLayoutMonitor(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
-  // TODO(jamiewalch): Implement
-  class GnomeKeyboardLayoutMonitor : public KeyboardLayoutMonitor {
-   public:
-    ~GnomeKeyboardLayoutMonitor() override = default;
-    void Start() override {}
-  };
   return std::make_unique<GnomeKeyboardLayoutMonitor>();
 }
 
 std::unique_ptr<ActiveDisplayMonitor>
 GnomeInteractionStrategy::CreateActiveDisplayMonitor(
     base::RepeatingCallback<void(webrtc::ScreenId)> callback) {
-  // TODO(jamiewalch): Implement
-  class GnomeActiveDisplayMonitor : public ActiveDisplayMonitor {
-   public:
-    ~GnomeActiveDisplayMonitor() override = default;
-  };
-  return std::make_unique<GnomeActiveDisplayMonitor>();
+  return nullptr;
 }
 
 std::unique_ptr<DesktopDisplayInfoMonitor>
@@ -248,15 +159,6 @@ GnomeInteractionStrategy::CreateDisplayInfoMonitor() {
 
 std::unique_ptr<LocalInputMonitor>
 GnomeInteractionStrategy::CreateLocalInputMonitor() {
-  // TODO(jamiewalch): Implement
-  class GnomeLocalInputMonitor : public LocalInputMonitor {
-   public:
-    void StartMonitoringForClientSession(
-        base::WeakPtr<ClientSessionControl> client_session_control) override {}
-    void StartMonitoring(PointerMoveCallback on_pointer_input,
-                         KeyPressedCallback on_keyboard_input,
-                         base::RepeatingClosure on_error) override {}
-  };
   return std::make_unique<GnomeLocalInputMonitor>();
 }
 
