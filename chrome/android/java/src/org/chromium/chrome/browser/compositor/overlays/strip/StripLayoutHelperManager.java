@@ -1175,6 +1175,23 @@ public class StripLayoutHelperManager
                         (int) Math.ceil(tabStripRectDp.bottom * mDensity));
         rects.add(tabStripRect);
 
+        TintedCompositorButton ntb = getNewTabButton();
+        if (ntb != null && ntb.isVisible()) {
+            var ntbTouchRect = new RectF();
+            ntb.getTouchTarget(ntbTouchRect);
+            // The click slop in `CompositorButton` can extend the touchable region of the new
+            // tab button into the `mTopPadding` region, so the "top" coordinate  of `ntbRect`
+            // intentionally isn't bound by `mTopPadding`. Doing so causes an inaccurate region
+            // to ultimately be reported in `setSystemGestureExclusionRects()`.
+            Rect ntbRect =
+                    new Rect(
+                            (int) Math.floor(ntbTouchRect.left * mDensity),
+                            (int) Math.floor(ntbTouchRect.top * mDensity),
+                            (int) Math.ceil(ntbTouchRect.right * mDensity),
+                            (int) Math.ceil(ntbTouchRect.bottom * mDensity));
+            rects.add(ntbRect);
+        }
+
         if (mModelSelectorButton != null && mModelSelectorButton.isVisible()) {
             var msbTouchRect = new RectF();
             mModelSelectorButton.getTouchTarget(msbTouchRect);

@@ -829,7 +829,8 @@ public class StripLayoutHelper
 
     /**
      * Get the touchable area within the strip, presented as a {@link RectF}, where (0,0) is the
-     * top-left point of the StripLayoutHelper. The area will include the tabs and new tab button.
+     * top-left point of the StripLayoutHelper. The area will include the tabs, but not the new tab
+     * button.
      */
     RectF getTouchableRect() {
         return mTouchableRect;
@@ -1945,20 +1946,33 @@ public class StripLayoutHelper
             return;
         }
 
-        // When the tab strip is not full and not in recording mode, NTB is always showing after
-        // the last visible tab on strip.
-        RectF touchableRect = new RectF(0, 0, 0, mHeight);
-        RectF ntbTouchRect = new RectF();
-        getNewTabButton().getTouchTarget(ntbTouchRect);
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        if (isRtl) {
-            touchableRect.right = getVisibleRightBound();
-            touchableRect.left = Math.max(ntbTouchRect.left, getVisibleLeftBound());
-        } else {
-            touchableRect.left = getVisibleLeftBound();
-            touchableRect.right = Math.min(ntbTouchRect.right, getVisibleRightBound());
+        if (mStripTabs.length == 0) {
+            mTouchableRect.setEmpty();
+            return;
         }
-        mTouchableRect.set(touchableRect);
+
+        // Get the bounding box of all tabs.
+        StripLayoutTab firstTab = mStripTabs[0];
+        StripLayoutTab lastTab = mStripTabs[mStripTabs.length - 1];
+
+        float leftBound = firstTab.getDrawX();
+        float rightBound = lastTab.getDrawX() + lastTab.getWidth();
+
+        if (LocalizationUtils.isLayoutRtl()) {
+            leftBound = lastTab.getDrawX();
+            rightBound = firstTab.getDrawX() + firstTab.getWidth();
+        }
+
+        // Clamp the bounding box to the visible area.
+        float left = Math.max(leftBound, getVisibleLeftBound());
+        float right = Math.min(rightBound, getVisibleRightBound());
+
+        // Ensure left is not greater than right, which can happen if all tabs are off-screen.
+        if (left > right) {
+            mTouchableRect.setEmpty();
+        } else {
+            mTouchableRect.set(left, 0, right, mHeight);
+        }
     }
 
     /**

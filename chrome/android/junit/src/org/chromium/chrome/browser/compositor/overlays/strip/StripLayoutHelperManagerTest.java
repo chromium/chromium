@@ -1273,6 +1273,65 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void testUpdateTouchableAreas_WithNewTabButton() {
+        int leftPadding = 10;
+        int rightPadding = 20;
+        int topPadding = 5;
+        var appHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, (int) SCREEN_WIDTH, (int) SCREEN_HEIGHT),
+                        new Rect(
+                                leftPadding,
+                                0,
+                                (int) (SCREEN_WIDTH - rightPadding),
+                                TAB_STRIP_HEIGHT_PX + topPadding),
+                        true);
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
+
+        // Set startup info with 1 tab, which should make the new tab button visible.
+        TabModelStartupInfo startupInfo = new TabModelStartupInfo(1, 0, 0, -1, false, false);
+        mTabModelStartupInfoSupplier.set(startupInfo);
+
+        // Ensure incognito icon is NOT showing.
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(false);
+
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+        mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
+        mStripLayoutHelperManager.onHeightChanged(
+                TAB_STRIP_HEIGHT_PX + topPadding, /* applyScrimOverlay= */ true);
+        mStripLayoutHelperManager.onHeightTransitionFinished();
+        mStripLayoutHelperManager.updateOverlay(0, 0);
+
+        verify(mToolbarContainerView)
+                .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
+        assertEquals(
+                "Number of exclusion rects is wrong.",
+                2,
+                mSystemExclusionRectCaptor.getValue().size());
+
+        Rect rect = mSystemExclusionRectCaptor.getValue().get(0);
+        assertEquals("rect.top should be the top padding of the strip.", topPadding, rect.top);
+        assertEquals(
+                "rect.bottom should be the height of the strip.",
+                TAB_STRIP_HEIGHT_PX + topPadding,
+                rect.bottom);
+
+        Rect ntbRect = mSystemExclusionRectCaptor.getValue().get(1);
+        // The NTB touch target is calculated based on its draw position, expanded by click slop,
+        // and then offset by the top padding.
+        // Expected drawX for NTB with one tab is ~271dp.
+        // Left: 271 (drawX) - 8 (clickSlop) = 263
+        // Top: 3 (drawY) + 5 (topPadding) - 8 (clickSlop) = 0
+        // Right: 271 (drawX) + 32 (width) + 8 (clickSlop) = 311
+        // Bottom: 3 (drawY) + 5 (topPadding) + 32 (height) + 8 (clickSlop) = 48
+        assertEquals(
+                "2nd rect should represent new tab button.", new Rect(263, 0, 311, 48), ntbRect);
+    }
+
+    @Test
     public void testResizeDesktopWindow() {
         // Initially resize the window to hide the strip by triggering the fade transition.
         resizeDesktopWindowAndTriggerFadeTransition(/* showStrip= */ false);

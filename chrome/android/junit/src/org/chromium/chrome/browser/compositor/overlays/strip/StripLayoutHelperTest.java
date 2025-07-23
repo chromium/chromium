@@ -1138,10 +1138,10 @@ public class StripLayoutHelperTest {
                 271.f,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
-        // rightBound(311) = expectedNtbDrawX(271) + ntbWidth(32) + touchSlop(8)
+        // rightBound(247) = tabWidth(237) + tabOverLapWidth(28) + offsetXLeft(10)
         assertEquals(
-                "TouchableRect does not match. Right size should match ntb.getDrawX() + width.",
-                new RectF(PADDING_LEFT, 0, 311.f, SCREEN_HEIGHT),
+                "TouchableRect does not match. Right size should match last tab's right edge.",
+                new RectF(PADDING_LEFT, 0, 275.f, SCREEN_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 
@@ -1183,10 +1183,11 @@ public class StripLayoutHelperTest {
                 487,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
-        // leftBound(479) = drawX(487) - touchSlop(8)
+        // visualLeftBound(543) = stripWidth(800) - PADDING_RIGHT(20) - tabWidth(237)
+        // touchableLeftBound(515) = visualLeftBound(543) - TAB_OVERLAP_WIDTH_DP(28)
         assertEquals(
-                "TouchableRect does not match. Left side should equal to ntb.getDrawX()",
-                new RectF(479.f, 0, SCREEN_WIDTH - PADDING_RIGHT, SCREEN_HEIGHT),
+                "TouchableRect does not match. Left side should be extended by tab overlap.",
+                new RectF(515.f, 0, SCREEN_WIDTH - PADDING_RIGHT, SCREEN_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 
