@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
+#include "chrome/common/chrome_version.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -567,4 +569,14 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_NotStartup) {
 
   output = Creator::DetermineBrowserOpenBehavior(pref_last_and_urls, 0);
   EXPECT_EQ(Creator::BrowserOpenBehavior::NEW, output);
+}
+
+TEST_F(StartupBrowserCreatorImplTest, DetermineNonMilestoneUpdate) {
+  EXPECT_EQ(false, Creator::IsNonMilestoneUpdate("", "140.0.7297.0"));
+  EXPECT_EQ(false,
+            Creator::IsNonMilestoneUpdate("140.0.7297.0", "140.0.7297.0"));
+  EXPECT_EQ(false,
+            Creator::IsNonMilestoneUpdate("140.0.7297.0", "141.0.7327.0"));
+  EXPECT_EQ(true,
+            Creator::IsNonMilestoneUpdate("140.0.7297.0", "140.0.7297.1"));
 }

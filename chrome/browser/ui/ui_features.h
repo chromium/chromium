@@ -360,6 +360,9 @@ BASE_DECLARE_FEATURE_PARAM(bool, kTabSearchToolbarButton);
 
 bool HasTabSearchToolbarButton();
 
+// Controls whether to show a toast for Chrome non milestone update.
+BASE_DECLARE_FEATURE(kNonMilestoneUpdateToast);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

@@ -1780,6 +1780,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kToastAlertLevel, 0);
 
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterStringPref(prefs::kNonMilestoneUpdateToastVersion, "");
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }

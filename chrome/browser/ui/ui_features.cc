@@ -589,4 +589,8 @@ bool HasTabSearchToolbarButton() {
   return is_tab_search_moving;
 }
 
+BASE_FEATURE(kNonMilestoneUpdateToast,
+             "NonMilestoneUpdateToast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
