@@ -109,10 +109,6 @@ constexpr SkColor kMonochromeIconBgColor = SkColorSetARGB(255, 237, 242, 250);
 // The text color of the letter monochrome icons.
 constexpr SkColor kMonochromeIconTextColor = SkColorSetARGB(255, 71, 71, 71);
 
-constexpr auto kSuggestionTypesWithDoubleHeight =
-    DenseSet<SuggestionType>({SuggestionType::kBackupPasswordEntry,
-                              SuggestionType::kTroubleSigningInEntry});
-
 // Returns the name of the network for payment method icons, empty string
 // otherwise.
 std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
@@ -564,7 +560,6 @@ void AddSuggestionContentToView(
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
   if (!subtext_views.empty() ||
-      kSuggestionTypesWithDoubleHeight.contains(suggestion.type) ||
       (suggestion.type == SuggestionType::kCreditCardEntry &&
        base::FeatureList::IsEnabled(
            autofill::features::kAutofillEnableNewFopDisplayDesktop))) {
