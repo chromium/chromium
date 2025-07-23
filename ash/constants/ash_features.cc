@@ -113,6 +113,10 @@ BASE_FEATURE(kAutoScreenBrightness,
              "AutoScreenBrightness",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables a setting to automatically sign out a user when their account signs
+// in on a new device.
+BASE_FEATURE(kAutoSignOut, "AutoSignOut", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables params tuning experiment for autocorrect on ChromeOS.
 BASE_FEATURE(kAutocorrectParamsTuning,
              "AutocorrectParamsTuning",
@@ -3314,6 +3318,10 @@ bool IsApnRevampAndPoliciesEnabled() {
 
 bool IsAutoNightLightEnabled() {
   return base::FeatureList::IsEnabled(kAutoNightLight);
+}
+
+bool IsAutoSignOutEnabled() {
+  return base::FeatureList::IsEnabled(kAutoSignOut);
 }
 
 bool IsBackgroundBlurEnabled() {
