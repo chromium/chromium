@@ -261,6 +261,7 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS, nullptr},
     // TODO(crbug.com/430494524): Implement the WebUI
     {ContentSettingsType::GEOLOCATION_WITH_OPTIONS, nullptr},
+    {ContentSettingsType::DEVICE_ATTRIBUTES, nullptr},
 });
 
 static_assert(

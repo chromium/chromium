@@ -204,6 +204,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
           ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED:
       case ContentSettingsType::INITIALIZED_TRANSLATIONS:
       case ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS:
+      case ContentSettingsType::DEVICE_ATTRIBUTES:
         break;
 
       default:

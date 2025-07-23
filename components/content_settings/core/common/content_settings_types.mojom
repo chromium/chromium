@@ -499,5 +499,9 @@ enum ContentSettingsType {
   // site. Used for recovering notification contents from the database if the
   // user decides they would like to see all of these notifications.
   SUSPICIOUS_NOTIFICATION_IDS,
+
+  // Setting for enabling the Device Attributes API. Spec link:
+  // https://wicg.github.io/WebApiDevice/device_attributes/
+  DEVICE_ATTRIBUTES,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)
