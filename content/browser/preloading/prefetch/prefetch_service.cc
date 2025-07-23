@@ -695,23 +695,11 @@ void PrefetchService::PrefetchUrl(
                           weak_method_factory_.GetWeakPtr())});
 
   if (delegate_) {
+    const auto eligibility_from_delegate = delegate_->IsSomePreloadingEnabled();
     // If pre* actions are disabled then don't prefetch.
-    switch (delegate_->IsSomePreloadingEnabled()) {
-      case PreloadingEligibility::kEligible:
-        break;
-      case PreloadingEligibility::kDataSaverEnabled:
-        std::move(params).Finish(PreloadingEligibility::kDataSaverEnabled);
-        return;
-      case PreloadingEligibility::kBatterySaverEnabled:
-        std::move(params).Finish(PreloadingEligibility::kBatterySaverEnabled);
-        return;
-      case PreloadingEligibility::kPreloadingDisabled:
-        std::move(params).Finish(PreloadingEligibility::kPreloadingDisabled);
-        return;
-      default:
-        DVLOG(1) << *prefetch_container
-                 << ": not prefetched (PrefetchServiceDelegate)";
-        return;
+    if (eligibility_from_delegate != PreloadingEligibility::kEligible) {
+      std::move(params).Finish(eligibility_from_delegate);
+      return;
     }
 
     const auto& prefetch_type = prefetch_container->GetPrefetchType();
