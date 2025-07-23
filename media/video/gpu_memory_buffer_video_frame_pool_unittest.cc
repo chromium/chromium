@@ -322,6 +322,30 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
     ASSERT_EQ(kYValue, software_frame->visible_data(VideoFrame::Plane::kY)[80]);
     ASSERT_EQ(kUValue, software_frame->visible_data(VideoFrame::Plane::kU)[24]);
     ASSERT_EQ(kVValue, software_frame->visible_data(VideoFrame::Plane::kV)[24]);
+
+    // Compare the last pixel of each plane in |software_frame| and |frame|.
+    auto* client_si = sii_->MostRecentMappableSharedImage();
+    EXPECT_TRUE(!!client_si);
+    auto mapping = client_si->Map();
+
+    // Note: The output is in YV12, i.e. the `u` and `v` planes are swapped.
+    const auto* y_memory =
+        reinterpret_cast<uint8_t*>(mapping->GetMemoryForPlane(0).data());
+    const auto* v_memory =
+        reinterpret_cast<uint8_t*>(mapping->GetMemoryForPlane(1).data());
+    const auto* u_memory =
+        reinterpret_cast<uint8_t*>(mapping->GetMemoryForPlane(2).data());
+
+    auto y_stride = mapping->Stride(0);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::Plane::kY)[80],
+              y_memory[y_stride * 8 + 8]);
+    auto v_stride = mapping->Stride(1);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::Plane::kV)[24],
+              v_memory[v_stride * 4 + 4]);
+    auto u_stride = mapping->Stride(2);
+    EXPECT_EQ(software_frame->visible_data(VideoFrame::Plane::kU)[24],
+              u_memory[u_stride * 4 + 4]);
+
   } else {
     EXPECT_EQ(software_frame.get(), frame.get());
   }
