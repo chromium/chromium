@@ -4,12 +4,9 @@
 
 #include <string>
 #include <string_view>
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_features.h"
@@ -183,7 +180,7 @@ const uint8_t kHostCharacterTable[128] = {
 // clang-format on
 
 bool IsForbiddenHostCodePoint(uint8_t ch) {
-  return ch <= 0x7F && (kHostCharacterTable[ch] & kForbiddenHost);
+  return ch <= 0x7F && (UNSAFE_TODO(kHostCharacterTable[ch]) & kForbiddenHost);
 }
 
 // RFC1034 maximum FQDN length.
@@ -213,10 +210,11 @@ void ScanHostname(const CHAR* spec,
   *has_non_ascii = false;
   *has_escaped = false;
   for (int i = host.begin; i < end; i++) {
-    if (static_cast<UCHAR>(spec[i]) >= 0x80)
+    if (static_cast<UCHAR>(UNSAFE_TODO(spec[i])) >= 0x80) {
       *has_non_ascii = true;
-    else if (spec[i] == '%')
+    } else if (UNSAFE_TODO(spec[i]) == '%') {
       *has_escaped = true;
+    }
   }
 }
 
@@ -266,7 +264,7 @@ bool DoSimpleHost(std::basic_string_view<INCHAR> host,
 
     if (source < 0x80) {
       // We have ASCII input, we can use our lookup table.
-      unsigned char replacement = kHostCharLookup[source];
+      unsigned char replacement = UNSAFE_TODO(kHostCharLookup[source]);
       if (!replacement) {
         // Invalid character, add it as percent-escaped and mark as failed.
         AppendEscapedChar(source, output);
@@ -463,7 +461,7 @@ bool DoHostSubstring(const CHAR* spec,
 
   if (has_non_ascii || has_escaped) {
     return DoComplexHost<canon_mode>(
-        std::basic_string_view<CHAR>(&spec[host.begin],
+        std::basic_string_view<CHAR>(&UNSAFE_TODO(spec[host.begin]),
                                      static_cast<size_t>(host.len)),
         has_non_ascii, has_escaped, output);
   }

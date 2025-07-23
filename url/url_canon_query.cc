@@ -3,11 +3,8 @@
 // found in the LICENSE file.
 
 #include <string_view>
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
+#include "base/compiler_specific.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 
@@ -53,10 +50,12 @@ template<typename CHAR>
 void AppendRaw8BitQueryString(const CHAR* source, int length,
                               CanonOutput* output) {
   for (int i = 0; i < length; i++) {
-    if (!IsQueryChar(static_cast<unsigned char>(source[i])))
-      AppendEscapedChar(static_cast<unsigned char>(source[i]), output);
-    else  // Doesn't need escaping.
-      output->push_back(static_cast<char>(source[i]));
+    if (!IsQueryChar(static_cast<unsigned char>(UNSAFE_TODO(source[i])))) {
+      AppendEscapedChar(static_cast<unsigned char>(UNSAFE_TODO(source[i])),
+                        output);
+    } else {  // Doesn't need escaping.
+      output->push_back(static_cast<char>(UNSAFE_TODO(source[i])));
+    }
   }
 }
 

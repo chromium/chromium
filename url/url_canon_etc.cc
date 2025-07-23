@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 #include <string_view>
 
@@ -46,13 +41,14 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
     // write, even if we need to run it three times. (If this turns out to still
     // be a bottleneck, we could write our own vector code, but given that
     // memchr is so fast, it's unlikely to be relevant.)
-    found_whitespace = memchr(input, '\n', input_len) != nullptr ||
-                       memchr(input, '\r', input_len) != nullptr ||
-                       memchr(input, '\t', input_len) != nullptr;
+    found_whitespace = UNSAFE_TODO(memchr(input, '\n', input_len)) != nullptr ||
+                       UNSAFE_TODO(memchr(input, '\r', input_len)) != nullptr ||
+                       UNSAFE_TODO(memchr(input, '\t', input_len)) != nullptr;
   } else {
     for (int i = 0; i < input_len; i++) {
-      if (!IsRemovableURLWhitespace(input[i]))
+      if (!IsRemovableURLWhitespace(UNSAFE_TODO(input[i]))) {
         continue;
+      }
       found_whitespace = true;
       break;
     }
@@ -70,18 +66,20 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
   // TODO(mkwst): Ideally, this would use something like `base::StartsWith`, but
   // that turns out to be difficult to do correctly given this function's
   // character type templating.
-  if (input_len > 5 && input[0] == 'd' && input[1] == 'a' && input[2] == 't' &&
-      input[3] == 'a' && input[4] == ':') {
+  if (input_len > 5 && input[0] == 'd' && UNSAFE_TODO(input[1]) == 'a' &&
+      UNSAFE_TODO(input[2]) == 't' && UNSAFE_TODO(input[3]) == 'a' &&
+      UNSAFE_TODO(input[4]) == ':') {
     *output_len = input_len;
     return input;
   }
 
   // Remove the whitespace into the new buffer and return it.
   for (int i = 0; i < input_len; i++) {
-    if (!IsRemovableURLWhitespace(input[i])) {
-      if (potentially_dangling_markup && input[i] == 0x3C)
+    if (!IsRemovableURLWhitespace(UNSAFE_TODO(input[i]))) {
+      if (potentially_dangling_markup && UNSAFE_TODO(input[i]) == 0x3C) {
         *potentially_dangling_markup = true;
-      buffer->push_back(input[i]);
+      }
+      buffer->push_back(UNSAFE_TODO(input[i]));
     }
   }
   *output_len = buffer->length();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "url/url_canon_ip.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <limits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "url/url_canon_internal.h"
 #include "url/url_features.h"
 
@@ -61,7 +57,8 @@ void ChooseIPv6ContractionRange(const unsigned char address[16],
 
   for (int i = 0; i < 16; i += 2) {
     // Test for 16 bits worth of zero.
-    bool is_zero = (address[i] == 0 && address[i + 1] == 0);
+    bool is_zero =
+        (UNSAFE_TODO(address[i]) == 0 && UNSAFE_TODO(address[i + 1]) == 0);
 
     if (is_zero) {
       // Add the zero to the current range (or start a new one).
@@ -94,7 +91,7 @@ bool DoCanonicalizeIPv6Address(const CHAR* spec,
     // If it's not an IPv6 address, scan for characters that should *only*
     // exist in an IPv6 address.
     for (int i = host.begin; i < host.end(); i++) {
-      switch (spec[i]) {
+      switch (UNSAFE_TODO(spec[i])) {
         case '[':
         case ']':
         case ':':
@@ -123,10 +120,11 @@ bool DoCanonicalizeIPv6Address(const CHAR* spec,
 void AppendIPv4Address(const unsigned char address[4], CanonOutput* output) {
   for (int i = 0; i < 4; i++) {
     char str[16];
-    _itoa_s(address[i], str, 10);
+    _itoa_s(UNSAFE_TODO(address[i]), str, 10);
 
-    for (int ch = 0; str[ch] != 0; ch++)
-      output->push_back(str[ch]);
+    for (int ch = 0; UNSAFE_TODO(str[ch]) != 0; ch++) {
+      output->push_back(UNSAFE_TODO(str[ch]));
+    }
 
     if (i != 3)
       output->push_back('.');
@@ -152,15 +150,16 @@ void AppendIPv6Address(const unsigned char address[16], CanonOutput* output) {
       i = contraction_range.end();
     } else {
       // Consume the next 16 bits from |address|.
-      int x = address[i] << 8 | address[i + 1];
+      int x = UNSAFE_TODO(address[i]) << 8 | UNSAFE_TODO(address[i + 1]);
 
       i += 2;
 
       // Stringify the 16 bit number (at most requires 4 hex digits).
       char str[5];
       _itoa_s(x, str, 16);
-      for (int ch = 0; str[ch] != 0; ++ch)
-        output->push_back(str[ch]);
+      for (int ch = 0; UNSAFE_TODO(str[ch]) != 0; ++ch) {
+        output->push_back(UNSAFE_TODO(str[ch]));
+      }
 
       // Put a colon after each number, except the last.
       if (i < 16)

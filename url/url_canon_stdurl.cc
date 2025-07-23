@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Functions to canonicalize "standard" URLs, which are ones that have an
 // authority section including a host name.
 
+#include "base/compiler_specific.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_constants.h"
@@ -73,7 +69,8 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
     // Port: the port canonicalizer will handle the colon.
     if (scheme_supports_ports) {
       int default_port = DefaultPortForScheme(std::string_view(
-          &output->data()[new_parsed->scheme.begin], new_parsed->scheme.len));
+          &UNSAFE_TODO(output->data()[new_parsed->scheme.begin]),
+          new_parsed->scheme.len));
       success &= CanonicalizePort(source.port, parsed.port, default_port,
                                   output, &new_parsed->port);
     } else {

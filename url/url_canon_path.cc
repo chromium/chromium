@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 
 #include <optional>
@@ -14,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_features.h"
@@ -115,7 +111,7 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
     *consumed_len = 0;
     return DIRECTORY_CUR;
   }
-  if (IsSlashOrBackslash(spec[after_dot])) {
+  if (IsSlashOrBackslash(UNSAFE_TODO(spec[after_dot]))) {
     // Single dot followed by a slash.
     *consumed_len = 1;  // Consume the slash
     return DIRECTORY_CUR;
@@ -129,7 +125,7 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
       *consumed_len = second_dot_len;
       return DIRECTORY_UP;
     }
-    if (IsSlashOrBackslash(spec[after_second_dot])) {
+    if (IsSlashOrBackslash(UNSAFE_TODO(spec[after_second_dot]))) {
       // Double dot followed by a slash.
       *consumed_len = second_dot_len + 1;
       return DIRECTORY_UP;
@@ -208,7 +204,7 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
     } else {
       // Normal ASCII character or 8-bit input, use the lookup table.
       unsigned char out_ch = static_cast<unsigned char>(uch);
-      unsigned char flags = kPathCharLookup[out_ch];
+      unsigned char flags = UNSAFE_TODO(kPathCharLookup[out_ch]);
       if (flags & SPECIAL) {
         // Needs special handling of some sort.
         size_t dotlen;
