@@ -388,17 +388,18 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   if (printed_in_current_task || IsPrinting()) {
     reason = FlushReason::kCanvasPushFrameWhilePrinting;
   }
-  GetResourceProviderForCanvas2D()->FlushCanvas(reason);
+  RenderingContext()->GetResourceProviderForCanvas2D()->FlushCanvas(reason);
 
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
   // be trying to get a new context and may change modes.
-  if (!GetResourceProviderForCanvas2D()->IsValid()) {
+  if (!RenderingContext()->GetResourceProviderForCanvas2D()->IsValid()) {
     return false;
   }
 
-  scoped_refptr<CanvasResource> frame =
-      GetResourceProviderForCanvas2D()->ProduceCanvasResource(reason);
+  scoped_refptr<CanvasResource> frame = RenderingContext()
+                                            ->GetResourceProviderForCanvas2D()
+                                            ->ProduceCanvasResource(reason);
   if (!frame || !frame->IsValid()) {
     return false;
   }
