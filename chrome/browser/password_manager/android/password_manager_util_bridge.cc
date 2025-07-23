@@ -22,7 +22,6 @@
 #include "chrome/browser/password_manager/android/jni_headers/PasswordManagerUtilBridge_jni.h"
 
 using password_manager::IsGmsCoreUpdateRequired;
-using password_manager::UsesSplitStoresAndUPMForLocal;
 using password_manager_android_util::ShouldUseUpmWiring;
 
 jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
@@ -31,12 +30,6 @@ jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
     jboolean is_internal_backend_present) {
   return password_manager_android_util::IsPasswordManagerAvailable(
       pref_service, is_internal_backend_present);
-}
-
-jboolean JNI_PasswordManagerUtilBridge_UsesSplitStoresAndUPMForLocal(
-    JNIEnv* env,
-    PrefService* pref_service) {
-  return UsesSplitStoresAndUPMForLocal(pref_service);
 }
 
 // Called via JNI when it's necessary to check that the user is either syncing

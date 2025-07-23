@@ -48,16 +48,6 @@ public class PasswordManagerUtilBridge {
     }
 
     /**
-     * Checks whether the UPM for local users is activated for this client. This also means that the
-     * single password store has been split in account and local stores.
-     *
-     * @return True if UPM for local users and the split stores are active, false otherwise.
-     */
-    public static boolean usesSplitStoresAndUPMForLocal(PrefService prefService) {
-        return PasswordManagerUtilBridgeJni.get().usesSplitStoresAndUPMForLocal(prefService);
-    }
-
-    /**
      * Checks if the GMSCore update is required to use the Password Manager functionality.
      *
      * @param prefService Preference service for checking if the user is enrolled into UPM.
@@ -118,8 +108,6 @@ public class PasswordManagerUtilBridge {
         boolean shouldUseUpmWiring(
                 @JniType("syncer::SyncService*") SyncService syncService,
                 @JniType("PrefService*") PrefService prefService);
-
-        boolean usesSplitStoresAndUPMForLocal(@JniType("PrefService*") PrefService prefService);
 
         boolean isGmsCoreUpdateRequired(
                 @JniType("PrefService*") PrefService prefService,

@@ -78,8 +78,6 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat
     private void setPasswordChecks() {
         findPreference(SafetyCheckViewBinder.PASSWORDS_KEY_ACCOUNT)
                 .setVisible(mComponentDelegate.isAccountPasswordStorageUsed());
-        findPreference(SafetyCheckViewBinder.PASSWORDS_KEY_LOCAL)
-                .setVisible(mComponentDelegate.isLocalPasswordStorageUsed());
     }
 
     /**

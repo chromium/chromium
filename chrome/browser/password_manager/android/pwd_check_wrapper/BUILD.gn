@@ -7,7 +7,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/ChromeNativePasswordCheckController.java",
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/GmsCorePasswordCheckController.java",
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckController.java",
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckControllerFactory.java",
@@ -50,10 +49,7 @@ android_library("test_support_java") {
 
 robolectric_library("junit") {
   testonly = true
-  sources = [
-    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/ChromeNativePasswordCheckControllerTest.java",
-    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/GmsCorePasswordCheckControllerTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/pwd_check_wrapper/GmsCorePasswordCheckControllerTest.java" ]
 
   deps = [
     ":java",

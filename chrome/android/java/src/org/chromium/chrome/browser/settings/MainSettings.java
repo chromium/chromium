@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
-import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
@@ -501,16 +500,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         && getArguments().containsKey(PasswordExportLauncher.START_PASSWORDS_EXPORT)
                         && getArguments().getBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT);
         if (startPasswordsExportFlow) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
-                assert mSettingsCustomTabLauncher != null
-                        : "The CSV download flow dialog requires a non-null"
-                                + " SettingsCustomTabLauncher.";
-                PasswordManagerHelper.getForProfile(getProfile())
-                        .launchDownloadPasswordsCsvFlow(getContext(), mSettingsCustomTabLauncher);
-            } else {
-                PasswordAccessLossDialogHelper.launchExportFlow(
-                        getContext(), getProfile(), mModalDialogManagerSupplier);
-            }
+            assert mSettingsCustomTabLauncher != null
+                    : "The CSV download flow dialog requires a non-null"
+                            + " SettingsCustomTabLauncher.";
+            PasswordManagerHelper.getForProfile(getProfile())
+                    .launchDownloadPasswordsCsvFlow(getContext(), mSettingsCustomTabLauncher);
             getArguments().putBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT, false);
         }
     }
